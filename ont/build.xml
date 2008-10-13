@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="ont" default="war" basedir=".">
+
+	<property file="build.properties" />
+	<property name="build.dir" value="_generated" />
+
+	<!-- set classpath -->
+	<path id="project.class.path">
+		<fileset dir="${appserver.lib}">
+			<include name="servlet*.jar" />
+		</fileset>
+		<pathelement path="${java.class.path}/" />
+		<pathelement path="WebContent/WEB-INF/lib/commons-io-1.4.jar" />
+		<pathelement path="WebContent/WEB-INF/lib/junit.jar" />
+		<pathelement path="WebContent/WEB-INF/lib/commons-logging-1.1.1.jar" />
+	</path>
+
+	<target name="init">
+		<fail unless="bioportal.jdbc.password" />
+	</target>
+
+	<target name="compile" depends="init">
+		<mkdir dir="${build.dir}/classes" />
+		<javac srcdir="src" destdir="${build.dir}/classes" includes="**" debug="on" debuglevel="lines,vars,source">
+			<classpath refid="project.class.path" />
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile">
+		<mkdir dir="${build.dir}/lib" />
+		<jar destfile="WebContent/WEB-INF/lib/org.mmisw.ont.jar">
+			<fileset dir="${build.dir}/classes">
+				<include name="**/*.class" />
+			</fileset>
+		</jar>
+	</target>
+
+	
+	<target name="prepate2war" depends="jar">
+		<!-- prepare tmp.WebContent -->
+		<copy todir="${build.dir}/tmp.WebContent">
+			<fileset dir="WebContent">
+				<exclude name="META-INF/context.xml" />
+				<exclude name="WEB-INF/web.xml" />
+				<exclude name="WEB-INF/lib**" />
+				<exclude name="WEB-INF/classes/log4j.xml" />
+			</fileset>
+		</copy>
+
+		<copy file="WebContent/META-INF/context.xml" 
+			tofile="${build.dir}/tmp.WebContent/META-INF/context.xml" overwrite="true">
+			<filterset>
+				<filter token="bioportal.datasource.name" value="${bioportal.datasource.name}" />
+				<filter token="bioportal.jdbc.driver" value="${bioportal.jdbc.driver}" />
+				<filter token="bioportal.jdbc.username" value="${bioportal.jdbc.username}" />
+				<filter token="bioportal.jdbc.password" value="${bioportal.jdbc.password}" />
+				<filter token="bioportal.jdbc.url" value="${bioportal.jdbc.url}" />
+				<filter token="bioportal.jdbc.maxactive" value="${bioportal.jdbc.maxactive}" />
+				<filter token="bioportal.jdbc.maxidle" value="${bioportal.jdbc.maxidle}" />
+				<filter token="bioportal.jdbc.maxwait" value="${bioportal.jdbc.maxwait}" />
+			</filterset>
+		</copy>
+
+		<copy file="WebContent/WEB-INF/web.xml" 
+			tofile="${build.dir}/tmp.WebContent/WEB-INF/web.xml" overwrite="true">
+			<filterset>
+				<filter token="ont.app.logfilepath" value="${ont.app.logfilepath}" />
+				<filter token="bioportal.datasource.name" value="${bioportal.datasource.name}" />
+			</filterset>
+		</copy>
+
+		<copy file="WebContent/WEB-INF/classes/log4j.xml" 
+			tofile="${build.dir}/tmp.WebContent/WEB-INF/classes/log4j.xml" overwrite="true">
+			<filterset>
+				<filter token="ont.app.logfilepath" value="${ont.app.logfilepath}" />
+				<filter token="ont.app.maxlogfilesize" value="${ont.app.maxlogfilesize}" />
+				<filter token="ont.app.maxlogbackupindex" value="${ont.app.maxlogbackupindex}" />
+				<filter token="ont.app.log.deflevel" value="${ont.app.log.deflevel}" />
+				<filter token="ont.app.log.ontlevel" value="${ont.app.log.ontlevel}" />
+			</filterset>
+		</copy>
+		
+		<copy todir="${build.dir}/tmp.web-inf-lib" flatten="true">
+			<fileset dir="WebContent/WEB-INF/lib">
+				<include name="**.jar" />
+			</fileset>
+		</copy>
+		
+	</target>
+	
+	
+	<target name="war" depends="prepate2war">
+		<war warfile="${build.dir}/ont.war" webxml="${build.dir}/tmp.WebContent/WEB-INF/web.xml">
+			<fileset dir="${build.dir}/tmp.WebContent" />
+			<lib dir="${build.dir}/tmp.web-inf-lib" />
+		</war>
+
+		<!-- remove temporary dirs --> 
+		<delete includeEmptyDirs="true" failonerror="false">
+			<fileset dir="${build.dir}/tmp.web-inf-lib" />
+			<fileset dir="${build.dir}/tmp.WebContent" />
+		</delete>
+	</target>
+	
+	<target name="clean">
+		<delete file="WebContent/WEB-INF/lib/org.mmisw.ont.jar" />
+		<delete>
+			<fileset dir="${build.dir}" includes="**/*.class" />
+		</delete>
+	</target>
+
+</project>

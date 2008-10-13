@@ -1,0 +1,196 @@
+body {
+	background-color: white;
+	color: black;
+	font-family: Arial, sans-serif;
+	font-size: x-small;
+	margin: 8px;
+	margin-top: 3px;
+	margin: 0px 20px 20px 20px;
+}
+
+.gwt-TabPanel {
+	font-family: Arial, sans-serif;
+	font-size: x-small;
+	margin-top: 4px;
+}
+
+.gwt-TabPanelBottom {
+  background-color: #E8EEF7;
+}
+
+.gwt-TabBar {
+  padding-top: 2px;
+  border-bottom: 4px solid #87B3FF;
+  background-color: #fff;
+}
+
+.gwt-TabBar .gwt-TabBarFirst {
+}
+
+.gwt-TabBar .gwt-TabBarRest {
+}
+
+.gwt-TabBar .gwt-TabBarItem {
+  padding: 4px;
+  cursor: pointer;
+  cursor: hand;
+
+  background-color: #e8eef7;
+  border-bottom: 2px solid white;
+  margin-right: 2px;
+}
+
+.gwt-TabBar .gwt-TabBarItem-selected {
+  padding: 4px;
+  font-weight: bold;
+  cursor: default;
+
+  background-color: #87b3ff;
+  border-bottom: 2px solid #87b3ff;
+  margin-right: 2px;
+}
+
+
+
+
+div.outer {
+        width: 400px;
+        border: 1px solid green;
+}
+
+div.inner {
+        float: left;
+        white-space: nowrap;
+        padding-right: 3px;
+} 
+
+
+.gwt-Label { 
+	display: inline;
+}
+
+.gwt-DisclosurePanel {
+	font-family: Arial, sans-serif;
+	font-size: x-small;
+}
+
+.gwt-DisclosurePanel .header td {
+	font-family: Arial, sans-serif;
+	font-size: 12;
+}
+
+
+
+table {
+	empty-cells: hide;
+}
+
+/* inline tables */
+table.inline {
+  font-size: x-small;
+  background-color: #ffffff;
+  border-spacing: 0px;
+  border-collapse: collapse;
+}
+
+table.inline th {
+  padding: 3px;
+  border: 1px solid #8cacbb;
+  background-color: #dee7ec;
+}
+
+table.inline td {
+  padding: 3px;
+  border: 1px solid #8cacbb;
+}
+
+
+
+
+
+
+.gwt-HorizontalSplitPanel {
+  border: 8px solid #C3D9FF;
+}
+
+.gwt-HorizontalSplitPanel .hsplitter {
+  background-color: #C3D9FF;
+  cursor: move;
+}
+
+.gwt-HorizontalSplitPanel .left {
+  background-color: #E8EEF7;
+}
+
+.gwt-VerticalSplitPanel {
+}
+
+.gwt-VerticalSplitPanel .splitter {
+  background-color: #C3D9FF;
+  height: 8px;
+  cursor: move;
+}
+
+.gwt-Tree img {
+	vertical-align: middle;
+}
+
+.gwt-Tree .gwt-TreeItem {
+	#background-color: white;
+	font-size: x-small;
+	margin: 4px 0px 0px 4px;
+}
+
+.gwt-Tree .gwt-TreeItem-selected {
+	background-color: #E8EEF7;
+}
+
+
+.gwt-PushButton-up {
+  background-color: #C3D9FF;
+  padding: 2px;
+  border: 2px solid transparent;
+  border-color: #E8F1FF rgb(157, 174, 205) rgb(157, 174, 205) rgb(232, 241, 255);
+  cursor: pointer;
+  cursor: hand;
+}
+
+.gwt-PushButton-up-hovering {
+  background-color: #C3D9FF;
+  padding: 2px;
+  border: 2px solid transparent;
+  border-color: #E8F1FF rgb(157, 174, 205) rgb(157, 174, 205) rgb(232, 241, 255);
+  cursor: pointer;
+  cursor: hand;
+}
+
+.gwt-PushButton-down {
+  background-color: #C3D9FF;
+  padding: 2px;
+  border: 2px solid transparent;
+  border-color: #9DAECD rgb(232, 241, 255) rgb(232, 241, 255) rgb(157, 174, 205);
+  cursor: pointer;
+  cursor: hand;
+}
+
+.gwt-PushButton-down-hovering {
+  background-color: #C3D9FF;
+  padding: 2px;
+  border: 2px solid transparent;
+  border-color: #9DAECD rgb(232, 241, 255) rgb(232, 241, 255) rgb(157, 174, 205);
+  cursor: pointer;
+  cursor: hand;
+}
+
+.gwt-DialogBox {
+  border: 2px outset;
+  background-color: white;
+}
+
+.gwt-DialogBox .Caption {
+  background-color: #C3D9FF;
+  padding: 3px;
+  margin: 2px;
+  font-weight: bold;
+  cursor: move;
+}

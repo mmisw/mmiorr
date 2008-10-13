@@ -1,0 +1,22 @@
+org.mmisw.ont - Ontology URI resolver 
+Carlos Rueda - MMI / MBARI
+
+ChangeLog
+
+2008-10-13
+	- added "list" parameter: shows the list of ontologies as a convenience for
+	  testing the existing entries in the database.
+	  
+	  Note that all these convenience parameters shouldn't be visible for the
+	  general user.
+	  
+	- added logging mechanism.
+	  
+	
+2008-10-12
+	- Initial version 0.1.0
+	- NOTE: <version> component not yet handled.
+	
+	Note: mysql driver not included in the project nor in the generated war.
+	Instead, this application assumes the driver to be available in the container.
+	(I saved it under <apache-tomcat-home>/lib/ on mmi).
