@@ -28,15 +28,32 @@ class OntGraph {
 	private static Registry REGISTRY;
 	
 	
+	/**
+	 * Initializes the registry.
+	 * Does nothing if already initialized.
+	 * @throws ServletException
+	 */
 	static void initRegistry() throws ServletException {
 		System.out.println("OntGraph.initRegistry called.");
 		
 		if ( REGISTRY == null ) {
-			REGISTRY = new Registry();
+			REGISTRY = doInitRegistry();
+			System.out.println("\nOntGraph.initRegistry complete.");
 		}
-		
+		else {
+			System.out.println("\nOntGraph.initRegistry: already initialized.");
+		}
+	}
+	
+	static void reInitRegistry() throws ServletException {
+		System.out.println("OntGraph.reInitRegistry called.");
+		REGISTRY = doInitRegistry();
+		System.out.println("\nOntGraph.reInitRegistry complete.");
+	}
+	
+	private static Registry doInitRegistry() throws ServletException {
+		Registry registry = new Registry();
 		List<Ontology> onts = Db.getOntologies();
-		int cnt = 0;
 		for ( Ontology ontology : onts ) {
 			String full_path = "/Users/Shared/bioportal/resources/uploads/" 
 				+ontology.file_path + "/" + ontology.filename;
@@ -46,10 +63,9 @@ class OntGraph {
 			String absPath = "file:" + full_path;
 			
 			REGISTRY.addModel(absPath);
-			cnt++;
 			System.out.print("[loaded]");
 		}
-		System.out.println("\nOntGraph.initRegistry complete. Ontologies loaded: " +cnt);
+		return registry;
 	}
 
 	static Registry getRegistry() throws ServletException {

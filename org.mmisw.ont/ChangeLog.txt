@@ -3,6 +3,13 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2008-10-15
+	- OntGraph: load all ontologies into memory
+	- Added sparql support: .../ont?sparql=CONSTRUCT  { ?s ?p ?o } where{?s ?p ?o. } LIMIT 20
+	- Internal request to reload ontologies: .../ont?_reload
+	  TODO (perhaps): set up quantum (cronjob) to do thre reload 
+	
+	
 2008-10-13
 	- added "list" parameter: shows the list of ontologies as a convenience for
 	  testing the existing entries in the database.

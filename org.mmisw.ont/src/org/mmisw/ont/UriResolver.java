@@ -78,6 +78,12 @@ public class UriResolver extends HttpServlet {
 			_doSparqlQuery(request, response);
 		}
 		
+		
+		// reload graph?
+		else if ( _yes(request, "_reload")  ) {
+			OntGraph.reInitRegistry();
+		}
+		
 		// dispatch a db-query?
 		else if ( _yes(request, "dbquery")  ) {
 			_doDbQuery(request, response);
