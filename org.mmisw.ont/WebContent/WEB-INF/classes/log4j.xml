@@ -11,8 +11,8 @@
 
 	<appender name="file"
 		class="org.apache.log4j.RollingFileAppender">
-		<param name="File" value="@ont.app.logfilepath@" />
-		<param name="MaxFileSize" value="@ont.app.maxlogfilesize@" />
+		<param name="File"           value="@ont.app.logfilepath@" />
+		<param name="MaxFileSize"    value="@ont.app.maxlogfilesize@" />
 		<param name="MaxBackupIndex" value="@ont.app.maxlogbackupindex@" />
 		<param name="Append" value="true" />
 		<layout class="org.apache.log4j.PatternLayout">

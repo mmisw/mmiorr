@@ -25,7 +25,7 @@ import com.hp.hpl.jena.query.QueryFactory;
 class OntGraph {
 	
 	
-	private static Registry REGISTRY;
+	private static Registry _registry;
 	
 	
 	/**
@@ -36,8 +36,8 @@ class OntGraph {
 	static void initRegistry() throws ServletException {
 		System.out.println("OntGraph.initRegistry called.");
 		
-		if ( REGISTRY == null ) {
-			REGISTRY = doInitRegistry();
+		if ( _registry == null ) {
+			_registry = doInitRegistry();
 			System.out.println("\nOntGraph.initRegistry complete.");
 		}
 		else {
@@ -47,7 +47,7 @@ class OntGraph {
 	
 	static void reInitRegistry() throws ServletException {
 		System.out.println("OntGraph.reInitRegistry called.");
-		REGISTRY = doInitRegistry();
+		_registry = doInitRegistry();
 		System.out.println("\nOntGraph.reInitRegistry complete.");
 	}
 	
@@ -62,7 +62,7 @@ class OntGraph {
 			System.out.flush();
 			String absPath = "file:" + full_path;
 			
-			REGISTRY.addModel(absPath);
+			registry.addModel(absPath);
 			System.out.print("[loaded]");
 		}
 		return registry;
@@ -71,11 +71,11 @@ class OntGraph {
 	static Registry getRegistry() throws ServletException {
 		System.out.println("OntGraph.getRegistry called.");
 		
-		if ( REGISTRY == null ) {
+		if ( _registry == null ) {
 			initRegistry();
 		}
 		
-		return REGISTRY;
+		return _registry;
 	}
 
 	
@@ -86,7 +86,7 @@ class OntGraph {
 		Query query = QueryFactory.create(SPARQLQuery);
 		System.out.println("SPARQLQuery " + SPARQLQuery);
 
-		QueryExecution qExec = QueryExecutionFactory.create(query, REGISTRY
+		QueryExecution qExec = QueryExecutionFactory.create(query, _registry
 				.getModel());
 		Model model_ = qExec.execConstruct();
 		StringWriter writer = new StringWriter();

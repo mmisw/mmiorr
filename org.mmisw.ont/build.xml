@@ -80,11 +80,11 @@
 		<copy file="WebContent/WEB-INF/classes/log4j.xml" 
 			tofile="${build.dir}/tmp.WebContent/WEB-INF/classes/log4j.xml" overwrite="true">
 			<filterset>
-				<filter token="ont.app.logfilepath" value="${ont.app.logfilepath}" />
-				<filter token="ont.app.maxlogfilesize" value="${ont.app.maxlogfilesize}" />
+				<filter token="ont.app.logfilepath"       value="${ont.app.logfilepath}" />
+				<filter token="ont.app.maxlogfilesize"    value="${ont.app.maxlogfilesize}" />
 				<filter token="ont.app.maxlogbackupindex" value="${ont.app.maxlogbackupindex}" />
-				<filter token="ont.app.log.deflevel" value="${ont.app.log.deflevel}" />
-				<filter token="ont.app.log.ontlevel" value="${ont.app.log.ontlevel}" />
+				<filter token="ont.app.log.deflevel"      value="${ont.app.log.deflevel}" />
+				<filter token="ont.app.log.ontlevel"      value="${ont.app.log.ontlevel}" />
 			</filterset>
 		</copy>
 		
