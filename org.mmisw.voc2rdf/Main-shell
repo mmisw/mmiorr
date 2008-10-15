@@ -1,3 +1,0 @@
-#!/bin/sh
-APPDIR=`dirname $0`;
-java -XstartOnFirstThread -Xmx256M -cp "$APPDIR/base_war/WEB-INF/lib/org.restlet.gwt.jar:$APPDIR/base_war/WEB-INF/lib/com.noelios.restlet.ext.gwt_1.5.jar:$APPDIR/src:$APPDIR/bin:/Users/carueda/Software/gwt-mac-1.5.2/gwt-user.jar:/Users/carueda/Software/gwt-mac-1.5.2/gwt-dev-mac.jar" com.google.gwt.dev.GWTShell -out "$APPDIR/www" "$@" org.mmi.vine.gwt.Main/index.html;
