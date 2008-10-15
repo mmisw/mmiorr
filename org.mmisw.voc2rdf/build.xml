@@ -117,7 +117,6 @@
 			<classpath>
 				<pathelement path="src"/>
 				<pathelement path="base_war/WEB-INF/lib/org.mmisw.voc2rdf.gwt.jar"/>
-				<pathelement path="base_war/WEB-INF/lib/org.restlet.gwt.jar"/>
 				<pathelement path="base_war/WEB-INF/lib/commons-httpclient-3.1.jar"/>
 				<pathelement path="base_war/WEB-INF/lib/commons-codec-1.3.jar"/>
 				<pathelement path="${GWT_HOME}/gwt-user.jar"/>
