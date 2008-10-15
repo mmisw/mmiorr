@@ -12,6 +12,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
@@ -248,6 +249,7 @@ public class UriResolver extends HttpServlet {
 	
 	
 	
+	@SuppressWarnings("unchecked")
 	private void _showReq(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		response.setContentType("text/html");
@@ -287,6 +289,21 @@ public class UriResolver extends HttpServlet {
         out.println("request.getServerName()         = " + request.getServerName()  );
         out.println("request.getServerPort()         = " + request.getServerPort()  );
         out.println("request.isSecure()              = " + request.isSecure()  ); 
+        
+        out.println("request. headers             = ");
+        Enumeration hnames = request.getHeaderNames();
+        while ( hnames.hasMoreElements() ) {
+        	Object hname = hnames.nextElement();
+        	out.print("        " +hname+ " : ");
+        	Enumeration hvals = request.getHeaders(hname.toString());
+        	String sep = "";
+            while ( hvals.hasMoreElements() ) {
+            	Object hval = hvals.nextElement();
+				out.println(hval + sep);
+				sep = "  ;  ";
+            }
+            out.println();
+        }        
 
         out.println("</pre>");
         out.println("</body>");
