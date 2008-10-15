@@ -13,6 +13,14 @@
 		<pathelement path="WebContent/WEB-INF/lib/commons-io-1.4.jar" />
 		<pathelement path="WebContent/WEB-INF/lib/junit.jar" />
 		<pathelement path="WebContent/WEB-INF/lib/commons-logging-1.1.1.jar" />
+		<pathelement path="WebContent/WEB-INF/lib/org.mmi.ont.util.jar" />
+		<pathelement path="WebContent/WEB-INF/lib/jena.jar" />
+		<pathelement path="WebContent/WEB-INF/lib/xercesImpl.jar" />
+		<pathelement path="WebContent/WEB-INF/lib/jenatest.jar" />
+		<pathelement path="WebContent/WEB-INF/lib/iri.jar" />
+		<pathelement path="WebContent/WEB-INF/lib/icu4j_3_4.jar" />
+		<pathelement path="WebContent/WEB-INF/lib/arq.jar" />
+		<pathelement path="WebContent/WEB-INF/lib/concurrent.jar" />
 	</path>
 
 	<target name="init">

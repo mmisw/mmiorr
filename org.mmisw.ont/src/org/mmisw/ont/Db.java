@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -110,7 +112,37 @@ public class Db {
 		
 		return null;
 	}
-    
+
+	
+	static List<Ontology> getOntologies() throws ServletException {
+		List<Ontology> onts = new ArrayList<Ontology>();
+		try {
+			Connection _con = getConnection();
+			Statement _stmt = _con.createStatement();
+
+			String query = 
+				"select v.id, v.ontology_id, v.file_path, f.filename " +
+				"from v_ncbo_ontology v, ncbo_ontology_file f " +
+				"where v.id = f.id";
+			
+			ResultSet rs = _stmt.executeQuery(query);
+			
+	        while ( rs.next() ) {
+	        	Ontology ontology = new Ontology();
+	        	ontology.id = rs.getString(1);
+	        	ontology.ontology_id = rs.getString(2);
+	        	ontology.file_path = rs.getString(3);
+	        	ontology.filename = rs.getString(4);
+	        	onts.add(ontology);
+	        }
+		}
+		catch (SQLException e) {
+			throw new ServletException(e);
+		}
+		
+		return onts;
+	}
+	
     private Db() {}
 
 }

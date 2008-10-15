@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -48,10 +49,11 @@ public class UriResolver extends HttpServlet {
 		catch (Exception e) {
 			throw new ServletException("Cannot init db", e);
 		}
+	
+		OntGraph.initRegistry();
 		
-		String logFilePath = getServletContext().getInitParameter("ont.app.logfilepath");
-		
-		log.info("logFilePath = " +logFilePath);
+//		String logFilePath = getServletContext().getInitParameter("ont.app.logfilepath");
+//		log.info("logFilePath = " +logFilePath);
 	}
 	
 	/**
@@ -71,9 +73,14 @@ public class UriResolver extends HttpServlet {
 			_doListOntologies(request, response);
 		}
 		
-		// dispatch a query?
-		else if ( _yes(request, "query")  ) {
-			_doQuery(request, response);
+		// dispatch a sparql-query?
+		else if ( _yes(request, "sparql")  ) {
+			_doSparqlQuery(request, response);
+		}
+		
+		// dispatch a db-query?
+		else if ( _yes(request, "dbquery")  ) {
+			_doDbQuery(request, response);
 		}
 		
 		// resolve URI?
@@ -282,7 +289,7 @@ public class UriResolver extends HttpServlet {
 
 
 	
-	private void _doQuery(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	private void _doDbQuery(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
 			Connection _con = Db.getConnection();
 			Statement _stmt = _con.createStatement();
@@ -328,6 +335,20 @@ public class UriResolver extends HttpServlet {
 		catch (SQLException e) {
 			throw new ServletException(e);
 		}
+	}
+	
+	private void _doSparqlQuery(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String query = _getParam(request, "sparql", "");
+		if ( query.length() == 0 ) {
+			query = "CONSTRUCT  { ?s ?p ?o } where{?s ?p ?o. } LIMIT 20";
+		}
+		String result = OntGraph.getRDF(query);
+		
+		response.setContentType("Application/rdf+xml");
+		StringReader is = new StringReader(result);
+		ServletOutputStream os = response.getOutputStream();
+		IOUtils.copy(is, os);
+		os.close();
 	}
 	
 	private void _doListOntologies(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
