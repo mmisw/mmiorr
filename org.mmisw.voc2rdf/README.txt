@@ -1,4 +1,4 @@
-voc2rdf II
+org.mmisw.voc2rdf II
 Carlos Rueda
 October 2008
 

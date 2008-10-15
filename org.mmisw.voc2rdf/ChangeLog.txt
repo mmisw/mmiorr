@@ -1,0 +1,7 @@
+org.mmisw.voc2rdf II 
+Carlos Rueda - MMI / MBARI
+
+ChangeLog
+
+2008-10-14
+	- Initial version 0.1.0
