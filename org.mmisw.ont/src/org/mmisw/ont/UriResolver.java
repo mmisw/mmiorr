@@ -159,6 +159,7 @@ public class UriResolver extends HttpServlet {
 	        out.println("<html>");
 	        out.println("<head>");
 	        out.println("<title>" +TITLE+ "</title>");
+	        out.println("<link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\">");
 	        out.println("</head>");
 	        out.println("<body>");
 			out.println("<b>" +TITLE+ "</b><br/><br/>");
@@ -287,7 +288,7 @@ public class UriResolver extends HttpServlet {
 		}
 		
 		com.hp.hpl.jena.rdf.model.Statement labelRes = termRes.getProperty(RDFS.label);
-		String label = labelRes == null ? "null" : ""+labelRes.getObject();
+		String label = labelRes == null ? null : ""+labelRes.getObject();
 		
 		out.println("<pre>");
 		out.println("   term resource: " +termRes);
@@ -300,31 +301,35 @@ public class UriResolver extends HttpServlet {
 			StmtIterator iter = model.listStatements(termRes, (Property) null, (Property) null);
 			while (iter.hasNext()) {
 				com.hp.hpl.jena.rdf.model.Statement sta = iter.nextStatement();
-				out.println("      " 
-						+PrintUtil.print(sta.getPredicate().getURI())
-						+ "   "
-						+PrintUtil.print(sta.getObject().toString())
+				out.printf("      %30s   %s%n", 
+						PrintUtil.print(sta.getPredicate().getURI()),
+						PrintUtil.print(sta.getObject().toString())
 				);
 			}
 		}
 		
 		if ( true ) { // test for subclasses
-			out.println("\n    subclasses of : " +termRes.getURI());
+			out.println("\n    Subclasses of : " +termRes.getURI());
 			StmtIterator iter = model.listStatements(null, RDFS.subClassOf, termRes);
-			while (iter.hasNext()) {
-				com.hp.hpl.jena.rdf.model.Statement sta = iter.nextStatement();
-				out.println(" - " + PrintUtil.print(sta.getSubject().getURI()));
+			if  ( iter.hasNext() ) {
+				while ( iter.hasNext() ) {
+					com.hp.hpl.jena.rdf.model.Statement sta = iter.nextStatement();
+					out.println("  " + PrintUtil.print(sta.getSubject().getURI()));
+				}
+			}
+			else {
+				out.println("        (none)");
 			}
 		}
 		
 
 		if ( model instanceof OntModel ) {
 			OntModel ontModel = (OntModel) model;
-			out.println("  Individuals:");
+			out.println("    Individuals:");
 			ExtendedIterator iter = ontModel.listIndividuals(termRes);
 			while ( iter.hasNext() ) {
 				Resource indiv = (Resource) iter.next();
-				out.println("    " +indiv.getLocalName());
+				out.println("        " +indiv.getURI());
 			}
 		}
 	}		
@@ -357,6 +362,7 @@ public class UriResolver extends HttpServlet {
         out.println("<html>");
         out.println("<head>");
         out.println("<title>Show req</title>");
+        out.println("<link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\">");
         out.println("</head>");
         out.println("<body>");
         out.println("<pre>");
@@ -426,7 +432,8 @@ public class UriResolver extends HttpServlet {
 			response.setContentType("text/html");
 	        PrintWriter out = response.getWriter();
 	        out.println("<html>");
-	        out.println("<head> <link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\"> </head>");
+	        out.println("<head>");
+	        out.println("<link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\">");
 	        out.println("<title>" +query+ "</title>");
 	        out.println("</head>");
 	        out.println("<body>");
