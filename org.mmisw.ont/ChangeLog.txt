@@ -6,8 +6,10 @@ ChangeLog
 2008-10-15
 	- OntGraph: load all ontologies into memory
 	- Added sparql support: .../ont?sparql=CONSTRUCT  { ?s ?p ?o } where{?s ?p ?o. } LIMIT 20
+	  TODO testing
 	- Internal request to reload ontologies: .../ont?_reload
-	  TODO (perhaps): set up quantum (cronjob) to do thre reload 
+	  TODO (perhaps): set up quantum (cronjob) to do the reload 
+	  
 	
 	
 2008-10-13

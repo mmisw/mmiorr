@@ -39,6 +39,9 @@ public class UriResolver extends HttpServlet {
 	private static final String VERSION = "0.1.0 (2008-10-13)";
 	private static final String TITLE = "MMI Ontology URI resolver. Version " +VERSION;
 
+
+	private static final String SPARQL_EXAMPLE = "CONSTRUCT  { ?s ?p ?o } where{?s ?p ?o. } LIMIT 20";
+
 	
 	private final Log log = LogFactory.getLog(UriResolver.class);
 
@@ -363,7 +366,7 @@ public class UriResolver extends HttpServlet {
 	private void _doSparqlQuery(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String query = _getParam(request, "sparql", "");
 		if ( query.length() == 0 ) {
-			query = "CONSTRUCT  { ?s ?p ?o } where{?s ?p ?o. } LIMIT 20";
+			query = SPARQL_EXAMPLE;
 		}
 		String result = OntGraph.getRDF(query);
 		

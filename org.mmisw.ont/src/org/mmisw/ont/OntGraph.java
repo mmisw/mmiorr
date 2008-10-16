@@ -80,20 +80,20 @@ class OntGraph {
 
 	
 	
-	static String getRDF(String SPARQLQuery) {
-		System.out.println("OntGraph.getRDF: query = " +SPARQLQuery);
+	static String getRDF(String sparqlQuery) {
+		System.out.println("OntGraph.getRDF: query = " +sparqlQuery);
 
-		Query query = QueryFactory.create(SPARQLQuery);
-		System.out.println("SPARQLQuery " + SPARQLQuery);
+		Query query = QueryFactory.create(sparqlQuery);
+		System.out.println("sparqlQuery " + sparqlQuery);
 
-		QueryExecution qExec = QueryExecutionFactory.create(query, _registry
-				.getModel());
+		QueryExecution qExec = QueryExecutionFactory.create(query, 
+				_registry.getModel());
 		Model model_ = qExec.execConstruct();
 		StringWriter writer = new StringWriter();
 		model_.getWriter().write(model_, writer, null);
 
 		String result = writer.getBuffer().toString();
-		System.out.println("RESULT: " + result);
+		System.out.println("RESULT:\n" + result);
 		return result;
 	}
 
