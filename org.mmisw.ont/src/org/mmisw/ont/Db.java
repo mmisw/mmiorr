@@ -120,10 +120,13 @@ public class Db {
 			Connection _con = getConnection();
 			Statement _stmt = _con.createStatement();
 
+			// NOTE:
+			//    v_ncbo_ontology.id  ==  ncbo_ontology_file.ontology_version_id
+			//
 			String query = 
 				"select v.id, v.ontology_id, v.file_path, f.filename " +
 				"from v_ncbo_ontology v, ncbo_ontology_file f " +
-				"where v.id = f.id";
+				"where v.id = f.ontology_version_id";
 			
 			ResultSet rs = _stmt.executeQuery(query);
 			

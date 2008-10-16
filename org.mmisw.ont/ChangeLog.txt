@@ -10,6 +10,9 @@ ChangeLog
 	- Internal request to reload ontologies: .../ont?_reload
 	  TODO (perhaps): set up quantum (cronjob) to do the reload 
 	  
+	- Db.getOntologies: Fixed link to obtaing ontologies:
+	  The correct link between the two tables is:
+	    v_ncbo_ontology.id  ==  ncbo_ontology_file.ontology_version_id
 	
 	
 2008-10-13
