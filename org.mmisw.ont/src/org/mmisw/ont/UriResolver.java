@@ -276,6 +276,16 @@ public class UriResolver extends HttpServlet {
 		String termUri = mmiUri.getTermUri(true, "#");
 		Resource termRes = model.getResource(termUri);
 
+		if ( termRes == null ) {
+			termUri = mmiUri.getTermUri(true, "/");
+			termRes = model.getResource(termUri);
+		}
+		
+		if ( termRes == null ) {
+			out.println("   No resource found for URI: " +termUri);
+			return;
+		}
+		
 		String label = termRes.getProperty(RDFS.label).getObject().toString();
 		
 		out.println("<pre>");
@@ -284,7 +294,7 @@ public class UriResolver extends HttpServlet {
 		out.println("    getLocalName: " +termRes.getLocalName());
 		
 
-		if ( true ) { // test for subclasses
+		if ( true ) { // get all about the term
 			out.println("\n    All about: " +termRes.getURI());
 			StmtIterator iter = model.listStatements(termRes, (Property) null, (Property) null);
 			while (iter.hasNext()) {
