@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.PrintUtil;
@@ -233,7 +234,19 @@ public class UriResolver extends HttpServlet {
 			out.println(" Full path: <code>" + full_path + "</code> <br/>");
 			out.println(" Can read full path: <code>" + file.canRead() + "</code> <br/>");
 			
-			_showTermInfo(mmiUri, file, out);
+			if ( file.canRead() ) {
+				String uriFile = file.toURI().toString();
+				Model model = _loadModel(uriFile);
+	
+				out.println("<pre>");
+				if ( mmiUri.getTerm().length() > 0 ) {
+					_showTermInfo(mmiUri, model, out);
+				}
+				else {
+					_showAllTerms(mmiUri, model, out);
+				}
+				out.println("</pre>");
+			}
 		}
 		else {
 			if ( file.canRead() ) {
@@ -257,27 +270,33 @@ public class UriResolver extends HttpServlet {
 	}
 	
 
+	private void _showAllTerms(MmiUri mmiUri, Model model, PrintWriter out) {
+		ResIterator iter = model.listSubjects();
+		while (iter.hasNext()) {
+			Resource elem = iter.nextResource();
+			out.printf("      " 
+					+PrintUtil.print(elem)
+			);
+		}
+
+	}
+
 	/**
-	 * Shows information about the requested term, if any.
+	 * Shows information about the requested term.
 	 * @param mmiUri
 	 * @param file
 	 * @param out
 	 */
-	private void _showTermInfo(MmiUri mmiUri, File file, PrintWriter out) {
+	private void _showTermInfo(MmiUri mmiUri, Model model, PrintWriter out) {
 		String term = mmiUri.getTerm();
-		if ( term.length() == 0 || ! file.canRead() ) {
-			return;  // nothing to show
-		}
-
-		// first, load file:
-		String uriFile = file.toURI().toString();
-		Model model = _loadModel(uriFile);
-
-		// construct URI of term:
+		assert term.length() > 0 ;
+		
+		// construct URI of term with "#" separator
 		String termUri = mmiUri.getTermUri(true, "#");
 		Resource termRes = model.getResource(termUri);
 
 		if ( termRes == null ) {
+			// try with "/" separator
 			termUri = mmiUri.getTermUri(true, "/");
 			termRes = model.getResource(termUri);
 		}
@@ -290,7 +309,6 @@ public class UriResolver extends HttpServlet {
 		com.hp.hpl.jena.rdf.model.Statement labelRes = termRes.getProperty(RDFS.label);
 		String label = labelRes == null ? null : ""+labelRes.getObject();
 		
-		out.println("<pre>");
 		out.println("   term resource: " +termRes);
 		out.println("           label: " +label);
 		out.println("    getLocalName: " +termRes.getLocalName());
