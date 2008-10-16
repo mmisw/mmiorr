@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -274,12 +275,27 @@ public class UriResolver extends HttpServlet {
 		}
 		else {
 			if ( file.canRead() ) {
-				// respond with the contents of the file with contentType set to RDF+XML 
-				response.setContentType("Application/rdf+xml");
-				FileInputStream is = new FileInputStream(file);
-				ServletOutputStream os = response.getOutputStream();
-				IOUtils.copy(is, os);
-				os.close();
+				String term = mmiUri.getTerm();
+				if ( term.length() > 0 ) {
+					String uriFile = file.toURI().toString();
+					Model model = _loadModel(uriFile);
+					
+					// TODO "text/html" for now
+					String termContents = _resolveTerm(request, mmiUri, model);
+					StringReader is = new StringReader(termContents);
+					response.setContentType("text/html");
+					ServletOutputStream os = response.getOutputStream();
+					IOUtils.copy(is, os);
+					os.close();
+				}
+				else {
+					// respond with the contents of the file with contentType set to RDF+XML 
+					response.setContentType("Application/rdf+xml");
+					FileInputStream is = new FileInputStream(file);
+					ServletOutputStream os = response.getOutputStream();
+					IOUtils.copy(is, os);
+					os.close();
+				}
 			}
 			else {
 				// respond with a NotFound error:
@@ -393,6 +409,88 @@ public class UriResolver extends HttpServlet {
 		
 		out.println("</pre>");
 	}		
+
+	private String _resolveTerm(HttpServletRequest request, MmiUri mmiUri, Model model) {
+		String term = mmiUri.getTerm();
+		assert term.length() > 0 ;
+		
+		// construct URI of term with "#" separator
+		String termUri = mmiUri.getTermUri(true, "#");
+		Resource termRes = model.getResource(termUri);
+
+		if ( termRes == null ) {
+			// try with "/" separator
+			termUri = mmiUri.getTermUri(true, "/");
+			termRes = model.getResource(termUri);
+		}
+		
+		if ( termRes == null ) {
+			return null; // Not found.
+		}
+		
+		StringWriter strWriter = new StringWriter();
+		PrintWriter out = new PrintWriter(strWriter);
+        out.println("<html>");
+        out.println("<head>");
+        out.println("<title>" +termUri+ "</title>");
+        out.println("<link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\">");
+        out.println("</head>");
+        out.println("<body>");
+        out.println("<i>temporary response</i>");
+		
+		com.hp.hpl.jena.rdf.model.Statement labelRes = termRes.getProperty(RDFS.label);
+		String label = labelRes == null ? null : ""+labelRes.getObject();
+		
+		out.println("<pre>");
+		out.println("   term resource: " +termRes);
+		out.println("           label: " +label);
+		out.println("    getLocalName: " +termRes.getLocalName());
+		
+
+		if ( true ) { // get all about the term
+			out.println("\n    All about: " +termRes.getURI());
+			StmtIterator iter = model.listStatements(termRes, (Property) null, (Property) null);
+			while (iter.hasNext()) {
+				com.hp.hpl.jena.rdf.model.Statement sta = iter.nextStatement();
+				out.printf("      %30s   %s%n", 
+						PrintUtil.print(sta.getPredicate().getURI()),
+						PrintUtil.print(sta.getObject().toString())
+				);
+			}
+		}
+		
+		if ( true ) { // test for subclasses
+			out.println("\n    Subclasses of : " +termRes.getURI());
+			StmtIterator iter = model.listStatements(null, RDFS.subClassOf, termRes);
+			if  ( iter.hasNext() ) {
+				while ( iter.hasNext() ) {
+					com.hp.hpl.jena.rdf.model.Statement sta = iter.nextStatement();
+					out.println("  " + PrintUtil.print(sta.getSubject().getURI()));
+				}
+			}
+			else {
+				out.println("        (none)");
+			}
+		}
+		
+
+		if ( model instanceof OntModel ) {
+			OntModel ontModel = (OntModel) model;
+			out.println("    Individuals:");
+			ExtendedIterator iter = ontModel.listIndividuals(termRes);
+			while ( iter.hasNext() ) {
+				Resource indiv = (Resource) iter.next();
+				out.println("        " +indiv.getURI());
+			}
+		}
+		
+        out.println("</pre>");
+        out.println("</body>");
+        out.println("</html>");
+        
+        return strWriter.toString();
+	}
+
 
 	/**
 	 * Loads a model.
