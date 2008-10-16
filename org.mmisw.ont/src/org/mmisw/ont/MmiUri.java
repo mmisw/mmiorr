@@ -6,7 +6,7 @@ import java.net.URISyntaxException;
  * Represents a decomposition of a given requested URI.
  * 
  * <p>
- * TODO: NOTE: <i>version</> component not yet handled.
+ * TODO: NOTE: <i>version</i> component not yet handled.
  * 
  * <p>
  * The following requested URI is used as example to illustrate the various
@@ -108,5 +108,32 @@ public class MmiUri {
 	public String getTerm() {
 		return term;
 	}
+	
+	/** 
+	 * Returns the URI corresponding to the term.
+	 * 
+	 * @param removeExt true to remove ontology extension, if any; false to keep ontologyUri.
+	 *        Note that any trailing pound signs are always removed.
+	 *        
+	 * @param sep The separator to use between the ontology and the term, typically "#" or "/".
+	 * 
+	 * @returns the URI corresponding to the term.
+	 *          If removeExt is true: <code>http://mmisw.org/ont/mmi/someVocab#someTerm</code>;
+	 *          <br/>
+	 *          otherwise: <code>http://mmisw.org/ont/mmi/someVocab.owl#someTerm</code>
+	 *          (assumming sep == "#").
+	 */
+	public String getTermUri(boolean removeExt, String sep) {
+		String termUri;
+		if ( removeExt ) {
+			termUri = ontologyUri.replaceAll("\\.owl(#)*$", "") + sep + term;
+		}
+		else {
+			termUri = ontologyUri.replaceAll("#+$", "") + sep + term;
+		}
+		return termUri;
+	}
+
+
 
 }

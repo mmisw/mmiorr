@@ -27,8 +27,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.util.PrintUtil;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 import edu.drexel.util.rdf.JenaUtil;
 
@@ -42,7 +47,7 @@ public class UriResolver extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	
-	private static final String VERSION = "0.1.0 (2008-10-13)";
+	private static final String VERSION = "0.1.0 (2008-10-16)";
 	private static final String TITLE = "MMI Ontology URI resolver. Version " +VERSION;
 
 
@@ -227,39 +232,7 @@ public class UriResolver extends HttpServlet {
 			out.println(" Full path: <code>" + full_path + "</code> <br/>");
 			out.println(" Can read full path: <code>" + file.canRead() + "</code> <br/>");
 			
-			if ( file.canRead() ) {
-				String term = mmiUri.getTerm();
-				if ( term.length() > 0 ) {
-					// first, load file:
-					String uriFile = file.toURI().toString();
-					OntModel model = JenaUtil.loadModel(uriFile, false);
-					
-					// construct URI of term:
-					String termUri = ontologyUri.replaceAll("#+$", "") + "#" + term;
-					Resource termRes = model.getResource(termUri);
-					
-					out.println(" term resource: <code>" +termRes+ "</code> <br/>");
-					out.println(" termRes.getNameSpace(): <code>" +termRes.getNameSpace()+ "</code> <br/>");
-					out.println(" termRes.getLocalName(): <code>" +termRes.getLocalName()+ "</code> <br/>");
-					
-					if ( ontologyUri.endsWith(".owl") ) {
-						out.println(" without .owl:<br/>");
-						termUri = ontologyUri.replaceAll("\\.owl$", "") + "#" + term;
-						termRes = model.getResource(termUri);
-						
-						out.println(" term resource: <code>" +termRes+ "</code> <br/>");
-						out.println(" termRes.getNameSpace(): <code>" +termRes.getNameSpace()+ "</code> <br/>");
-						out.println(" termRes.getLocalName(): <code>" +termRes.getLocalName()+ "</code> <br/>");
-						
-						out.println("  Individuals: <br/>");
-						ExtendedIterator iter = model.listIndividuals(termRes);
-						while ( iter.hasNext() ) {
-							Object obj = iter.next();
-							out.println("  individual: <code>" +obj.getClass().getName()+ ", " +obj+ "</code> <br/>");
-						}
-					}
-				}
-			}
+			_showTermInfo(mmiUri, file, out);
 		}
 		else {
 			if ( file.canRead() ) {
@@ -282,6 +255,75 @@ public class UriResolver extends HttpServlet {
 		return true;   // dispatched here.
 	}
 	
+
+	/**
+	 * Shows information about the requested term, if any.
+	 * @param mmiUri
+	 * @param file
+	 * @param out
+	 */
+	private void _showTermInfo(MmiUri mmiUri, File file, PrintWriter out) {
+		String term = mmiUri.getTerm();
+		if ( term.length() == 0 || ! file.canRead() ) {
+			return;  // nothing to show
+		}
+
+		// first, load file:
+		String uriFile = file.toURI().toString();
+		Model model = _loadModel(uriFile);
+
+		// construct URI of term:
+		String termUri = mmiUri.getTermUri(true, "#");
+		Resource termRes = model.getResource(termUri);
+
+		String label = termRes.getProperty(RDFS.label).getObject().toString();
+		
+		out.println("<pre>");
+		out.println("   term resource: " +termRes);
+		out.println("           label: " +label);
+		out.println("    getLocalName: " +termRes.getLocalName());
+		
+
+		if ( true ) { // test for subclasses
+			out.println("\n    All about: " +termRes.getURI());
+			StmtIterator iter = model.listStatements(termRes, (Property) null, (Property) null);
+			while (iter.hasNext()) {
+				com.hp.hpl.jena.rdf.model.Statement sta = iter.nextStatement();
+				out.println(" - " + PrintUtil.print(sta.getSubject().getURI()));
+			}
+		}
+		
+		if ( true ) { // test for subclasses
+			out.println("\n    subclasses of : " +termRes.getURI());
+			StmtIterator iter = model.listStatements(null, RDFS.subClassOf, termRes);
+			while (iter.hasNext()) {
+				com.hp.hpl.jena.rdf.model.Statement sta = iter.nextStatement();
+				out.println(" - " + PrintUtil.print(sta.getSubject().getURI()));
+			}
+		}
+		
+
+		if ( model instanceof OntModel ) {
+			OntModel ontModel = (OntModel) model;
+			out.println("  Individuals:");
+			ExtendedIterator iter = ontModel.listIndividuals(termRes);
+			while ( iter.hasNext() ) {
+				Resource indiv = (Resource) iter.next();
+				out.println("    " +indiv.getLocalName());
+			}
+		}
+	}		
+
+	/**
+	 * Loads a model.
+	 * @param uriModel
+	 * @return
+	 */
+	private Model _loadModel(String uriModel) {
+		Model model = JenaUtil.loadModel(uriModel, false);
+		
+		return model;
+	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
