@@ -28,6 +28,8 @@ public class MmiUri {
 	private final String term;
 	private final String ontologyUri;
 	
+	private final String untilRoot;
+	
 	/**
 	 * Creates an MmiUri by analysing the given request.
 	 * 
@@ -51,6 +53,10 @@ public class MmiUri {
 		if ( afterRoot.startsWith("/") ) {
 			afterRoot = afterRoot.substring(1);
 		}
+		
+		int rootIdx = fullRequestedUri.indexOf(afterRoot);
+		untilRoot = fullRequestedUri.substring(0, rootIdx);
+		assert untilRoot.endsWith("/");
 		
 		// parts = { mmi, someVocab.owl, someTerm }
 		String[] parts = afterRoot.split("/", 3);
@@ -133,7 +139,17 @@ public class MmiUri {
 		}
 		return termUri;
 	}
+	
+	public String getUntilRoot() {
+		return untilRoot;
+	}
 
-
+	/** 
+	 */
+	public String getOntologyUriWithTopicExtension(String topicExt) {
+		String uri = untilRoot + authority+ "/" +topic+topicExt;
+		
+		return uri;
+	}
 
 }
