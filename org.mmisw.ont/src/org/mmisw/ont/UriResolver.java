@@ -26,6 +26,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Resource;
+
+import edu.drexel.util.rdf.JenaUtil;
+
 
 /**
  * The "ont" service to resolve ontology URIs.
@@ -220,6 +225,21 @@ public class UriResolver extends HttpServlet {
 			out.println("</pre>");
 			out.println(" Full path: <code>" + full_path + "</code> <br/>");
 			out.println(" Can read full path: <code>" + file.canRead() + "</code> <br/>");
+			
+			if ( file.canRead() ) {
+				String term = mmiUri.getTerm();
+				if ( term.length() > 0 ) {
+					// first, load file:
+					String uriFile = file.toURI().toString();
+					OntModel model = JenaUtil.loadModel(uriFile, false);
+					
+					// construct URI of term:
+					String termUri = ontologyUri.replaceAll("#+$", "") + "#" + term;
+					Resource termRes = model.getResource(termUri);
+					
+					out.println(" term resource: <code>" +termRes+ "</code> <br/>");
+				}
+			}
 		}
 		else {
 			if ( file.canRead() ) {
