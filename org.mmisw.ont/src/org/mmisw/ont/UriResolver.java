@@ -203,10 +203,29 @@ public class UriResolver extends HttpServlet {
 		// obtain info about the ontology:
     	Ontology ontology = Db.getOntology(ontologyUri);
 		
+		if ( info  ) {
+			out.println("<br/>Database result: ");
+		}
+		
+    	if ( ontology == null ) {
+    		// if topic has no extension, try with ".owl"
+    		if ( mmiUri.getTopic().indexOf('.') < 0 ) {
+    			String withExt = mmiUri.getOntologyUriWithTopicExtension(".owl");
+    			ontology = Db.getOntology(withExt);
+    			if ( ontology != null ) {
+    				ontologyUri = withExt;
+    				
+    				if ( info  ) {
+    					out.println(ontologyUri+ ": <font color=\"red\">Not found.</font> <br/>");
+    					out.println(    withExt+ ": <font color=\"green\">Found.</font> <br/>");
+    				}    		
+    			}
+    		}
+    	}
+    	
 		if ( ontology == null ) {
 			if ( info  ) {
-				out.println("<br/>Database result: ");
-				out.println("<font color=\"red\">ERROR: Ontology not found by the given URI.</font> <br/>");
+				out.println(ontologyUri+ ": <font color=\"red\">Not found.</font> <br/>");
 		        out.println("</body>");
 		        out.println("</html>");
 				return true;    // dispatched.
@@ -275,8 +294,9 @@ public class UriResolver extends HttpServlet {
 		while (iter.hasNext()) {
 			Resource elem = iter.nextResource();
 			String elemUri = elem.getURI();
+			String elemUriSlash = elemUri.replace('#' , '/');
 			out.printf("<li> <a href=\"%s\">%s</a> (<a href=\"%s?info\">info</a>) </li> %n", 
-					elemUri, elemUri, elemUri); 
+					elemUriSlash, elemUri, elemUriSlash); 
 		}
 		out.printf("</ul>%n");
 	}
