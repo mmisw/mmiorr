@@ -213,7 +213,9 @@ public class UriResolver extends HttpServlet {
 			}
     		// if topic has no extension, try with ".owl"
     		if ( mmiUri.getTopic().indexOf('.') < 0 ) {
-				out.println("Trying with .owl extension... <br/>");
+    			if ( info  ) {
+    				out.println("Trying with .owl extension... <br/>");
+    			}
     			String withExt = mmiUri.getOntologyUriWithTopicExtension(".owl");
     			ontology = Db.getOntology(withExt);
     			if ( ontology != null ) {
