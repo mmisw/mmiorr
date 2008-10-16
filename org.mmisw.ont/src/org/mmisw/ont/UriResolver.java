@@ -300,7 +300,11 @@ public class UriResolver extends HttpServlet {
 			StmtIterator iter = model.listStatements(termRes, (Property) null, (Property) null);
 			while (iter.hasNext()) {
 				com.hp.hpl.jena.rdf.model.Statement sta = iter.nextStatement();
-				out.println(" - " + PrintUtil.print(sta.getSubject().getURI()));
+				out.println("      " 
+						+PrintUtil.print(sta.getPredicate().getURI())
+						+ "   "
+						+PrintUtil.print(sta.getObject().toString())
+				);
 			}
 		}
 		
