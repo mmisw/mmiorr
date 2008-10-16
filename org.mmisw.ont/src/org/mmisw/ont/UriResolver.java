@@ -275,7 +275,8 @@ public class UriResolver extends HttpServlet {
 		while (iter.hasNext()) {
 			Resource elem = iter.nextResource();
 			String elemUri = elem.getURI();
-			out.printf("<li> <a href=\"%s\">%s</a> (<a href=\"%s?info\">info</a>) </li> %n", elemUri); 
+			out.printf("<li> <a href=\"%s\">%s</a> (<a href=\"%s?info\">info</a>) </li> %n", 
+					elemUri, elemUri, elemUri); 
 		}
 		out.printf("</ul>%n");
 	}
