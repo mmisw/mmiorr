@@ -238,6 +238,18 @@ public class UriResolver extends HttpServlet {
 					Resource termRes = model.getResource(termUri);
 					
 					out.println(" term resource: <code>" +termRes+ "</code> <br/>");
+					out.println(" termRes.getNameSpace(): <code>" +termRes.getNameSpace()+ "</code> <br/>");
+					out.println(" termRes.getLocalName(): <code>" +termRes.getLocalName()+ "</code> <br/>");
+					
+					if ( ontologyUri.endsWith(".owl") ) {
+						out.println(" without .owl:");
+						termUri = ontologyUri.replaceAll("\\.owl$", "") + "#" + term;
+						termRes = model.getResource(termUri);
+						
+						out.println(" term resource: <code>" +termRes+ "</code> <br/>");
+						out.println(" termRes.getNameSpace(): <code>" +termRes.getNameSpace()+ "</code> <br/>");
+						out.println(" termRes.getLocalName(): <code>" +termRes.getLocalName()+ "</code> <br/>");
+					}
 				}
 			}
 		}
