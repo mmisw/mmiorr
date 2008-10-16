@@ -191,7 +191,7 @@ public class UriResolver extends HttpServlet {
 			String authority = mmiUri.getAuthority();
 			String topic = mmiUri.getTopic();
 			String term = mmiUri.getTerm();
-			out.println("<br/>Parse result: OK<br/>");
+			out.println("Parse result: OK<br/>");
 			out.println("<pre>");
 			out.println("       Ontology URI: " + ontologyUri);
 			out.println("          authority: " + authority);
@@ -208,23 +208,28 @@ public class UriResolver extends HttpServlet {
 		}
 		
     	if ( ontology == null ) {
+			if ( info  ) {
+				out.println(ontologyUri+ ": <font color=\"red\">Not found.</font> <br/>");
+			}
     		// if topic has no extension, try with ".owl"
     		if ( mmiUri.getTopic().indexOf('.') < 0 ) {
+				out.println("Trying with .owl extension... <br/>");
     			String withExt = mmiUri.getOntologyUriWithTopicExtension(".owl");
     			ontology = Db.getOntology(withExt);
     			if ( ontology != null ) {
     				if ( info  ) {
-    					out.println(ontologyUri+ ": <font color=\"red\">Not found.</font> <br/>");
-    					out.println(    withExt+ ": <font color=\"green\">Found.</font> <br/>");
+    					out.println(withExt+ ": <font color=\"green\">Found.</font> <br/>");
     				}    		
     				ontologyUri = withExt;
+    			}
+    			else {
+    				out.println(withExt+ ": <font color=\"red\">Not found.</font> <br/>");
     			}
     		}
     	}
     	
 		if ( ontology == null ) {
 			if ( info  ) {
-				out.println(ontologyUri+ ": <font color=\"red\">Not found.</font> <br/>");
 		        out.println("</body>");
 		        out.println("</html>");
 				return true;    // dispatched.
@@ -241,7 +246,6 @@ public class UriResolver extends HttpServlet {
 
 		if ( info  ) {
 			// report the db info and whether the file can be read or not:
-			out.println("<br/>Database result: ");
 			out.println(" Ontology entry FOUND: <br/>");
 			out.println("<pre>");
 			out.println("                 id: " + ontology.id);
@@ -249,10 +253,12 @@ public class UriResolver extends HttpServlet {
 			out.println("          file_path: " + ontology.file_path);
 			out.println("           filename: " + ontology.filename);
 			out.println("</pre>");
-			out.println(" Full path: <code>" + full_path + "</code> <br/>");
-			out.println(" Can read full path: <code>" + file.canRead() + "</code> <br/>");
+			out.println(" Full path: <code>" + full_path + "</code> ");
+			out.println(" Can read it: <code>" + file.canRead() + "</code> <br/>");
 			
 			if ( file.canRead() ) {
+				out.println("<br/>");
+				
 				String uriFile = file.toURI().toString();
 				Model model = _loadModel(uriFile);
 	
@@ -288,16 +294,28 @@ public class UriResolver extends HttpServlet {
 
 	private void _showAllTerms(MmiUri mmiUri, Model model, PrintWriter out) {
 		out.printf(" All subjects in the model:<br/>%n"); 
+		out.println("<table class=\"inline\">");
+		out.printf("<tr>%n");
+		out.printf("<th>Subject</th> <th>Info</th> <th>Label</th>%n");
+		out.printf("</tr>%n");
+
 		ResIterator iter = model.listSubjects();
-		out.printf("<ul>%n");
 		while (iter.hasNext()) {
+			out.printf("<tr>%n");
+			
 			Resource elem = iter.nextResource();
 			String elemUri = elem.getURI();
 			String elemUriSlash = elemUri.replace('#' , '/');
-			out.printf("<li> <a href=\"%s\">%s</a> (<a href=\"%s?info\">info</a>) </li> %n", 
-					elemUriSlash, elemUri, elemUriSlash); 
+			
+			out.printf("<td> <a href=\"%s\">%s</a> </td> %n", elemUriSlash, elemUriSlash); 
+
+			out.printf("<td> <a href=\"%s?info\">info</a> </td> %n", elemUriSlash); 
+
+			out.printf("<td> %s </td> %n", elem.getLocalName()); 
+
+			out.printf("</tr>%n");
 		}
-		out.printf("</ul>%n");
+		out.println("</table>");
 	}
 
 	/**
