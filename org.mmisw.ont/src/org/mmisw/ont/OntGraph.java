@@ -58,12 +58,12 @@ class OntGraph {
 			String full_path = "/Users/Shared/bioportal/resources/uploads/" 
 				+ontology.file_path + "/" + ontology.filename;
 		
-			System.out.print("OntGraph.initRegistry: processing " +full_path+ "...");
+			System.out.print("OntGraph.initRegistry: processing " +full_path+ "... ");
 			System.out.flush();
 			String absPath = "file:" + full_path;
 			
 			registry.addModel(absPath);
-			System.out.print("[loaded]");
+			System.out.println("LOADED");
 		}
 		return registry;
 	}
