@@ -204,7 +204,7 @@ public class UriResolver extends HttpServlet {
     	Ontology ontology = Db.getOntology(ontologyUri);
 		
 		if ( info  ) {
-			out.println("<br/>Database result: ");
+			out.println("<br/>Database result:<br/> ");
 		}
 		
     	if ( ontology == null ) {
@@ -213,12 +213,11 @@ public class UriResolver extends HttpServlet {
     			String withExt = mmiUri.getOntologyUriWithTopicExtension(".owl");
     			ontology = Db.getOntology(withExt);
     			if ( ontology != null ) {
-    				ontologyUri = withExt;
-    				
     				if ( info  ) {
     					out.println(ontologyUri+ ": <font color=\"red\">Not found.</font> <br/>");
     					out.println(    withExt+ ": <font color=\"green\">Found.</font> <br/>");
     				}    		
+    				ontologyUri = withExt;
     			}
     		}
     	}
