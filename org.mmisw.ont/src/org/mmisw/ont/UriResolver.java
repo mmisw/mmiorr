@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 import edu.drexel.util.rdf.JenaUtil;
 
@@ -242,13 +243,20 @@ public class UriResolver extends HttpServlet {
 					out.println(" termRes.getLocalName(): <code>" +termRes.getLocalName()+ "</code> <br/>");
 					
 					if ( ontologyUri.endsWith(".owl") ) {
-						out.println(" without .owl:");
+						out.println(" without .owl:<br/>");
 						termUri = ontologyUri.replaceAll("\\.owl$", "") + "#" + term;
 						termRes = model.getResource(termUri);
 						
 						out.println(" term resource: <code>" +termRes+ "</code> <br/>");
 						out.println(" termRes.getNameSpace(): <code>" +termRes.getNameSpace()+ "</code> <br/>");
 						out.println(" termRes.getLocalName(): <code>" +termRes.getLocalName()+ "</code> <br/>");
+						
+						out.println("  Individuals: <br/>");
+						ExtendedIterator iter = model.listIndividuals(termRes);
+						while ( iter.hasNext() ) {
+							Object obj = iter.next();
+							out.println("  individual: <code>" +obj.getClass().getName()+ ", " +obj+ "</code> <br/>");
+						}
 					}
 				}
 			}
