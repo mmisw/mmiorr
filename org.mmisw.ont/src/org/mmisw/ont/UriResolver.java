@@ -238,14 +238,12 @@ public class UriResolver extends HttpServlet {
 				String uriFile = file.toURI().toString();
 				Model model = _loadModel(uriFile);
 	
-				out.println("<pre>");
 				if ( mmiUri.getTerm().length() > 0 ) {
 					_showTermInfo(mmiUri, model, out);
 				}
 				else {
 					_showAllTerms(mmiUri, model, out);
 				}
-				out.println("</pre>");
 			}
 		}
 		else {
@@ -271,14 +269,15 @@ public class UriResolver extends HttpServlet {
 	
 
 	private void _showAllTerms(MmiUri mmiUri, Model model, PrintWriter out) {
+		out.printf(" All subjects in the model:<br/>%n"); 
 		ResIterator iter = model.listSubjects();
+		out.printf("<ul>%n");
 		while (iter.hasNext()) {
 			Resource elem = iter.nextResource();
-			out.printf("      " 
-					+PrintUtil.print(elem)
-			);
+			String elemUri = elem.getURI();
+			out.printf("<li> <a href=\"%s\">%s</a> (<a href=\"%s?info\">info</a>) </li> %n", elemUri); 
 		}
-
+		out.printf("</ul>%n");
 	}
 
 	/**
@@ -309,6 +308,7 @@ public class UriResolver extends HttpServlet {
 		com.hp.hpl.jena.rdf.model.Statement labelRes = termRes.getProperty(RDFS.label);
 		String label = labelRes == null ? null : ""+labelRes.getObject();
 		
+		out.println("<pre>");
 		out.println("   term resource: " +termRes);
 		out.println("           label: " +label);
 		out.println("    getLocalName: " +termRes.getLocalName());
@@ -350,6 +350,8 @@ public class UriResolver extends HttpServlet {
 				out.println("        " +indiv.getURI());
 			}
 		}
+		
+		out.println("</pre>");
 	}		
 
 	/**
