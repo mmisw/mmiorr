@@ -286,7 +286,8 @@ public class UriResolver extends HttpServlet {
 			return;
 		}
 		
-		String label = termRes.getProperty(RDFS.label).getObject().toString();
+		com.hp.hpl.jena.rdf.model.Statement labelRes = termRes.getProperty(RDFS.label);
+		String label = labelRes == null ? "null" : ""+labelRes.getObject();
 		
 		out.println("<pre>");
 		out.println("   term resource: " +termRes);
