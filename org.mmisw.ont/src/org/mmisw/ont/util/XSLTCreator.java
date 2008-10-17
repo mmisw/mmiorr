@@ -1,6 +1,6 @@
 package org.mmisw.ont.util;
 
-import java.io.File;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 
@@ -12,9 +12,11 @@ import javax.xml.transform.stream.StreamSource;
 
 // from Luis, 2008-10-13
 
+// carlos: xslt param ass InputStream
+
 public class XSLTCreator {
 
-	public static String create(String inXML, File xslt) {
+	public static String create(String inXML, InputStream xslt) {
 		Source xmlSource = new StreamSource(new StringReader(inXML));
 		Source xslSource = new StreamSource(xslt);
 		System.setProperty("javax.xml.transform.TransformerFactory",

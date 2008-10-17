@@ -3,6 +3,7 @@ package org.mmisw.ont;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -26,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.ont.util.XSLTCreator;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -632,7 +634,14 @@ public class UriResolver extends HttpServlet {
 		}
 		String result = OntGraph.getRDF(query);
 		
-		response.setContentType("Application/rdf+xml");
+		if ( _yes(request, "xslt") ) {
+			InputStream xslt = getClass().getResourceAsStream("rdf.xslt");
+			result = XSLTCreator.create(result, xslt);
+			response.setContentType("text/html");
+		}
+		else {
+			response.setContentType("Application/rdf+xml");
+		}
 		StringReader is = new StringReader(result);
 		ServletOutputStream os = response.getOutputStream();
 		IOUtils.copy(is, os);
