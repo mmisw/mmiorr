@@ -5,6 +5,7 @@ ChangeLog
 
 2008-10-17
 	- main.css: normal font (instead of x-small)
+	- minor logging changes
 	
 	
 2008-10-16
