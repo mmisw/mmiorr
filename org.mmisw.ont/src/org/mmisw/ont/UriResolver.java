@@ -120,11 +120,18 @@ public class UriResolver extends HttpServlet {
 			String path = request.getPathTranslated();
 			File file = new File(path);
 			if ( !file.exists() || !file.canRead() || file.isDirectory() ) {
+				log.info(path+ ": NOT FOUND");
 				response.sendError(HttpServletResponse.SC_NOT_FOUND, 
 						request.getRequestURI()+ ": not found");
 				return;
 			}
+			log.info(path+ ": FOUND");
 			
+			String mime = getServletContext().getMimeType(path);
+			if ( mime != null ) {
+				log.info(" Mime type set to: " +mime);
+				response.setContentType(mime);
+			}
 			FileInputStream is = new FileInputStream(file);
 			ServletOutputStream os = response.getOutputStream();
 			IOUtils.copy(is, os);
