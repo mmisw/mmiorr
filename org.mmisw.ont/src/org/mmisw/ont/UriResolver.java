@@ -645,6 +645,13 @@ public class UriResolver extends HttpServlet {
 			}
 			response.setContentType("text/html");
 		}
+		else if ( _yes(request, "xslti") ) {
+			String xmlHeader = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>\n";
+			xmlHeader += "<?xml-stylesheet type=\"text/xsl\" href=\"" +
+							request.getContextPath()+ "/WEB-INF/classes/rdf.xslt" + "\"?>\n";
+			
+			result = xmlHeader + result;
+		}
 		else {
 			response.setContentType("Application/rdf+xml");
 		}
