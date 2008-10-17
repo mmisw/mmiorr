@@ -635,8 +635,14 @@ public class UriResolver extends HttpServlet {
 		String result = OntGraph.getRDF(query);
 		
 		if ( _yes(request, "xslt") ) {
-			InputStream xslt = getClass().getResourceAsStream("rdf.xslt");
-			result = XSLTCreator.create(result, xslt);
+			String XSLT_RESOURCE = "rdf.xslt";
+			InputStream xslt = getClass().getClassLoader().getResourceAsStream(XSLT_RESOURCE );
+			if ( xslt != null ) {
+				result = XSLTCreator.create(result, xslt);
+			}
+			else {
+				result = "Cannot find resource: " + XSLT_RESOURCE;
+			}
 			response.setContentType("text/html");
 		}
 		else {
