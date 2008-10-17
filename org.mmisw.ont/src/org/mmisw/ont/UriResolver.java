@@ -641,6 +641,7 @@ public class UriResolver extends HttpServlet {
 		}
 		String result = OntGraph.getRDF(query);
 		
+		// convert to HTML?
 		if ( _yes(request, "xslt") ) {
 			String XSLT_RESOURCE = "rdf.xslt";
 			InputStream xslt = getClass().getClassLoader().getResourceAsStream(XSLT_RESOURCE );
@@ -652,9 +653,18 @@ public class UriResolver extends HttpServlet {
 			}
 			response.setContentType("text/html");
 		}
+		
+		// put stylesheet at beginning of the result?
 		else if ( _yes(request, "xslti") ) {
+			// what type? I've tried:
+			//   type="text/xsl"
+			//   type="text/xml"
+			//   type="application/xslt+xml"
+			// without success.
+			//
+			String type="application/xslt+xml";
 			String xmlHeader = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>\n";
-			xmlHeader += "<?xml-stylesheet type=\"text/xsl\" href=\"" +
+			xmlHeader += "<?xml-stylesheet type=\"" +type+ "\" href=\"" +
 							request.getContextPath()+ "/rdf.xslt" + "\"?>\n";
 			
 			result = xmlHeader + result;
