@@ -337,24 +337,21 @@ public class UriResolver extends HttpServlet {
 		out.printf(" All subjects in the model:<br/>%n"); 
 		out.println("<table class=\"inline\">");
 		out.printf("<tr>%n");
-		out.printf("<th>Subject</th> <th>Info</th> <th>Label</th>%n");
+		out.printf("<th>Subject</th> <th>Info</th> <th>Name</th>%n");
 		out.printf("</tr>%n");
 
 		ResIterator iter = model.listSubjects();
 		while (iter.hasNext()) {
-			out.printf("<tr>%n");
-			
 			Resource elem = iter.nextResource();
 			String elemUri = elem.getURI();
-			String elemUriSlash = elemUri.replace('#' , '/');
-			
-			out.printf("<td> <a href=\"%s\">%s</a> </td> %n", elemUriSlash, elemUriSlash); 
-
-			out.printf("<td> <a href=\"%s?info\">info</a> </td> %n", elemUriSlash); 
-
-			out.printf("<td> %s </td> %n", elem.getLocalName()); 
-
-			out.printf("</tr>%n");
+			if ( elemUri != null ) {
+				String elemUriSlash = elemUri.replace('#' , '/');
+				out.printf("<tr>%n");
+				out.printf("<td> <a href=\"%s\">%s</a> </td> %n", elemUriSlash, elemUriSlash); 
+				out.printf("<td> <a href=\"%s?info\">info</a> </td> %n", elemUriSlash); 
+				out.printf("<td> %s </td> %n", elem.getLocalName()); 
+				out.printf("</tr>%n");
+			}
 		}
 		out.println("</table>");
 	}
