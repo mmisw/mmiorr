@@ -57,7 +57,8 @@ public class UriResolver extends HttpServlet {
 
 	private static final String SPARQL_EXAMPLE = "CONSTRUCT  { ?s ?p ?o } where{?s ?p ?o. } LIMIT 20";
 
-	
+
+
 	private final Log log = LogFactory.getLog(UriResolver.class);
 
 	public void init() throws ServletException {
@@ -65,14 +66,12 @@ public class UriResolver extends HttpServlet {
 		try {
 			Db.init();
 		} 
-		catch (Exception e) {
-			throw new ServletException("Cannot init db", e);
+		catch (Exception ex) {
+			log.error("Cannot init db: " +ex.getMessage(), ex);
+			throw new ServletException("Cannot init db", ex);
 		}
 	
 		OntGraph.initRegistry();
-		
-//		String logFilePath = getServletContext().getInitParameter("ont.app.logfilepath");
-//		log.info("logFilePath = " +logFilePath);
 	}
 	
 	/**
@@ -120,16 +119,25 @@ public class UriResolver extends HttpServlet {
 			String path = request.getPathTranslated();
 			File file = new File(path);
 			if ( !file.exists() || !file.canRead() || file.isDirectory() ) {
-				log.info(path+ ": NOT FOUND");
+				
+				if ( log.isDebugEnabled() ) {
+					log.debug(path+ ": NOT FOUND");
+				}
+				
 				response.sendError(HttpServletResponse.SC_NOT_FOUND, 
 						request.getRequestURI()+ ": not found");
 				return;
 			}
-			log.info(path+ ": FOUND");
+			
+			if ( log.isDebugEnabled() ) {
+				log.debug(path+ ": FOUND");
+			}
 			
 			String mime = getServletContext().getMimeType(path);
 			if ( mime != null ) {
-				log.info(" Mime type set to: " +mime);
+				if ( log.isDebugEnabled() ) {
+					log.debug(" Mime type set to: " +mime);
+				}
 				response.setContentType(mime);
 			}
 			FileInputStream is = new FileInputStream(file);
@@ -164,6 +172,10 @@ public class UriResolver extends HttpServlet {
 		PrintWriter out = null;    // only used iff info == true.
 		
 		if ( info ) {
+			if ( log.isDebugEnabled() ) {
+				log.debug("_resolveUrI: starting 'info' response.");
+			}
+			
 			// start the response page:
 			response.setContentType("text/html");
 			out = response.getWriter();
@@ -307,10 +319,12 @@ public class UriResolver extends HttpServlet {
 				}
 			}
 			else {
-				// respond with a NotFound error:
+				// This should not happen.
+				// Log the error and respond with a NotFound error:
 				String msg = full_path+ ": internal error: uploaded file ";
 				msg += file.exists() ? "exists but cannot be read." : "not found.";
 				msg += "Please, report this bug.";
+				log.error(msg, null);
 				response.sendError(HttpServletResponse.SC_NOT_FOUND, msg); 
 			}
 		}

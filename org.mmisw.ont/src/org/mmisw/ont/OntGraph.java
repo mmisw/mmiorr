@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mmi.ont.util.Registry;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.query.Query;
@@ -24,7 +26,8 @@ import com.hp.hpl.jena.query.QueryFactory;
  */
 class OntGraph {
 	
-	
+	private static final Log log = LogFactory.getLog(OntGraph.class);
+
 	private static Registry _registry;
 	
 	
@@ -34,21 +37,21 @@ class OntGraph {
 	 * @throws ServletException
 	 */
 	static void initRegistry() throws ServletException {
-		System.out.println("OntGraph.initRegistry called.");
+		log.debug("initRegistry called.");
 		
 		if ( _registry == null ) {
 			_registry = doInitRegistry();
-			System.out.println("\nOntGraph.initRegistry complete.");
+			log.debug("initRegistry complete.");
 		}
 		else {
-			System.out.println("\nOntGraph.initRegistry: already initialized.");
+			log.debug("initRegistry: already initialized.");
 		}
 	}
 	
 	static void reInitRegistry() throws ServletException {
-		System.out.println("OntGraph.reInitRegistry called.");
+		log.debug("reInitRegistry called.");
 		_registry = doInitRegistry();
-		System.out.println("\nOntGraph.reInitRegistry complete.");
+		log.debug("reInitRegistry complete.");
 	}
 	
 	private static Registry doInitRegistry() throws ServletException {
@@ -58,18 +61,16 @@ class OntGraph {
 			String full_path = "/Users/Shared/bioportal/resources/uploads/" 
 				+ontology.file_path + "/" + ontology.filename;
 		
-			System.out.print("OntGraph.initRegistry: processing " +full_path+ "... ");
-			System.out.flush();
+			log.debug("init registry: loading " +full_path+ "...");
 			String absPath = "file:" + full_path;
-			
 			registry.addModel(absPath);
-			System.out.println("LOADED");
+			log.debug("... LOADED.");			
 		}
 		return registry;
 	}
 
 	static Registry getRegistry() throws ServletException {
-		System.out.println("OntGraph.getRegistry called.");
+		log.debug("getRegistry called.");
 		
 		if ( _registry == null ) {
 			initRegistry();
@@ -81,11 +82,9 @@ class OntGraph {
 	
 	
 	static String getRDF(String sparqlQuery) {
-		System.out.println("OntGraph.getRDF: query = " +sparqlQuery);
+		log.debug("getRDF: query string = [" +sparqlQuery+ "]");
 
 		Query query = QueryFactory.create(sparqlQuery);
-		System.out.println("sparqlQuery " + sparqlQuery);
-
 		QueryExecution qExec = QueryExecutionFactory.create(query, 
 				_registry.getModel());
 		Model model_ = qExec.execConstruct();
@@ -93,7 +92,7 @@ class OntGraph {
 		model_.getWriter().write(model_, writer, null);
 
 		String result = writer.getBuffer().toString();
-		System.out.println("RESULT:\n" + result);
+		log.debug("getRDF: result = [" +result+ "]");
 		return result;
 	}
 

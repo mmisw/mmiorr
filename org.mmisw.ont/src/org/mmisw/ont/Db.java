@@ -16,6 +16,9 @@ import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.sql.DataSource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 
 /**
  * A helper to work with the database.
@@ -23,6 +26,9 @@ import javax.sql.DataSource;
  * @author Carlos Rueda
  */
 public class Db {
+	
+	private static final Log log = LogFactory.getLog(Db.class);
+
 
 	// TODO: read this in a more dynamic way (from the servlet context perhaps)
 	private static final String DATASOURCE_CONTEXT = "java:comp/env/jdbc/BioPortalDataSource";
@@ -30,6 +36,7 @@ public class Db {
 	
 	/** Basic initialization - required. */
 	static void init() throws Exception {
+		log.debug("init called.");
 		// nothing done here (yet).
 	}
 	
@@ -82,8 +89,8 @@ public class Db {
 		        		ontology.filename = new File(uri_.getPath()).getName();
 		        	}
 		        	catch (MalformedURLException e) {
-		        		// TODO Auto-generated catch block
-		        		e.printStackTrace();
+		        		// should not occur.
+		        		log.debug("should not occur.", e);
 		        	}
 		        	return ontology;
 		        }
@@ -92,7 +99,8 @@ public class Db {
 				String query = 
 					"select v.id, v.ontology_id, v.file_path, f.filename " +
 					"from v_ncbo_ontology v, ncbo_ontology_file f " +
-					"where v.urn='" +ontologyUri+ "' and v.id = f.id";
+					"where v.urn='" +ontologyUri+ "'" +
+					"  and v.id = f.ontology_version_id";
 				
 				ResultSet rs = _stmt.executeQuery(query);
 				
