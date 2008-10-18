@@ -10,12 +10,19 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 // from Luis, 2008-10-13
 
-// carlos: xslt param ass InputStream
+// carlos: 
+//   - xslt param as InputStream 
+//   - Logger
 
 public class XSLTCreator {
 
+	private final static Log log = LogFactory.getLog(XSLTCreator.class);
+	
 	public static String create(String inXML, InputStream xslt) {
 		Source xmlSource = new StreamSource(new StringReader(inXML));
 		Source xslSource = new StreamSource(xslt);
@@ -32,9 +39,8 @@ public class XSLTCreator {
 			sw.close();
 			return buff.toString();
 
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception ex) {
+			log.warn("error while transforming", ex);
 		}
 		return null;
 
