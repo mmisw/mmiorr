@@ -80,6 +80,10 @@ public class UriResolver extends HttpServlet {
 		}
 	}
 	
+	public void destroy() {
+		log.info(TITLE+ ": destroy called.\n\n");
+	}
+	
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
