@@ -57,6 +57,7 @@ The generated file is _generated/ont.war.
 
 Main classes in package org.mmisw.ont:
 	- UriResolver: the main servlet.
+	- OntConfig: configuration.
 	- MmiUri: helper class to decompose a requested URI.
 	- Ontology: basic info about an ontology retrieved from the database.
 	- Db: a helper class to interact with the database.

@@ -51,10 +51,10 @@ public class UriResolver extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	
-	private static final String VERSION = "0.1.0 (2008-10-16)";
+	private static final String VERSION = "0.1.1 (20081018)";
 	private static final String TITLE = "MMI Ontology URI resolver. Version " +VERSION;
 
-
+	// TODO move sparql stuff to another class.
 	private static final String SPARQL_EXAMPLE = "CONSTRUCT  { ?s ?p ?o } where{?s ?p ?o. } LIMIT 20";
 
 	

@@ -3,7 +3,7 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
-2008-10-18
+2008-10-18  v. 0.1.1 (20081018)
 	- General code clean-up (loggers, non "static" classes)
 	- New OntConfig to handle configuration parameters; removed hard-coded params.
 	
