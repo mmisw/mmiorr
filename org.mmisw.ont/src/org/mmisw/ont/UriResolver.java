@@ -3,7 +3,6 @@ package org.mmisw.ont;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -15,7 +14,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -27,7 +25,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mmisw.ont.util.XSLTCreator;
+import org.mmisw.ont.sparql.SparqlDispatcher;
+import org.mmisw.ont.util.Util;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -54,11 +53,6 @@ public class UriResolver extends HttpServlet {
 	private static final String VERSION = "0.1.1 (20081018)";
 	private static final String TITLE = "MMI Ontology URI resolver. Version " +VERSION;
 
-	// TODO move sparql stuff to another class.
-	private static final String SPARQL_EXAMPLE = "CONSTRUCT  { ?s ?p ?o } where{?s ?p ?o. } LIMIT 20";
-
-	
-	
 	private final Log log = LogFactory.getLog(UriResolver.class);
 
 	private final OntConfig ontConfig = new OntConfig();
@@ -92,28 +86,28 @@ public class UriResolver extends HttpServlet {
 		// first, see if there are any testing requests to dispatch 
 		
 		// show request info?
-		if ( _yes(request, "showreq")  ) {
+		if ( Util.yes(request, "showreq")  ) {
 			_showReq(request, response);
 		} 
 		
 		// dispatch list of ontologies?
-		else if ( _yes(request, "list")  ) {
+		else if ( Util.yes(request, "list")  ) {
 			_doListOntologies(request, response);
 		}
 		
 		// dispatch a sparql-query?
-		else if ( _yes(request, "sparql")  ) {
-			_doSparqlQuery(request, response);
+		else if ( Util.yes(request, "sparql")  ) {
+			new SparqlDispatcher().execute(request, response, ontGraph);
 		}
 		
 		
 		// reload graph?
-		else if ( _yes(request, "_reload")  ) {
+		else if ( Util.yes(request, "_reload")  ) {
 			ontGraph.reInitRegistry();
 		}
 		
 		// dispatch a db-query?
-		else if ( _yes(request, "dbquery")  ) {
+		else if ( Util.yes(request, "dbquery")  ) {
 			_doDbQuery(request, response);
 		}
 		
@@ -177,7 +171,7 @@ public class UriResolver extends HttpServlet {
 		
 		// if the "info" parameter is included, show some info about the URI parse
 		// and the ontology from the database (but do not serve the contents)
-		boolean info = _yes(request, "info");
+		boolean info = Util.yes(request, "info");
 		PrintWriter out = null;    // only used iff info == true.
 		
 		if ( info ) {
@@ -559,7 +553,7 @@ public class UriResolver extends HttpServlet {
         out.println("request.getQueryString()        = " + request.getQueryString()  );
         
         out.println("request.getParameterMap()       = " + request.getParameterMap()  );
-		Map<String, String[]> params = _getParams(request);
+		Map<String, String[]> params = Util.getParams(request);
 		for ( String key: params.keySet() ) {
 			out.println("    " +key+ " => " + Arrays.asList(params.get(key))  );	
 		}
@@ -609,8 +603,8 @@ public class UriResolver extends HttpServlet {
 		try {
 			Connection _con = db.getConnection();
 			Statement _stmt = _con.createStatement();
-			String table = _getParam(request, "table", "ncbo_ontology");
-			int limit = Integer.parseInt(_getParam(request, "limit", "500"));
+			String table = Util.getParam(request, "table", "ncbo_ontology");
+			int limit = Integer.parseInt(Util.getParam(request, "limit", "500"));
 
 			String query = "select * from " +table+ "  limit " +limit;
 			
@@ -654,57 +648,12 @@ public class UriResolver extends HttpServlet {
 		}
 	}
 	
-	private void _doSparqlQuery(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String query = _getParam(request, "sparql", "");
-		if ( query.length() == 0 ) {
-			query = SPARQL_EXAMPLE;
-		}
-		String result = ontGraph.getRDF(query);
-		
-		// convert to HTML?
-		if ( _yes(request, "xslt") ) {
-			String XSLT_RESOURCE = "rdf.xslt";
-			InputStream xslt = getClass().getClassLoader().getResourceAsStream(XSLT_RESOURCE );
-			if ( xslt != null ) {
-				result = XSLTCreator.create(result, xslt);
-			}
-			else {
-				result = "Cannot find resource: " + XSLT_RESOURCE;
-			}
-			response.setContentType("text/html");
-		}
-		
-		// put stylesheet at beginning of the result?
-		else if ( _yes(request, "xslti") ) {
-			// what type? I've tried:
-			//   type="text/xsl"
-			//   type="text/xml"
-			//   type="application/xslt+xml"
-			// without success.
-			//
-			String type="application/xslt+xml";
-			String xmlHeader = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>\n";
-			xmlHeader += "<?xml-stylesheet type=\"" +type+ "\" href=\"" +
-							request.getContextPath()+ "/rdf.xslt" + "\"?>\n";
-			
-			result = xmlHeader + result;
-			response.setContentType("Application/rdf+xml");
-		}
-		else {
-			response.setContentType("Application/rdf+xml");
-		}
-		StringReader is = new StringReader(result);
-		ServletOutputStream os = response.getOutputStream();
-		IOUtils.copy(is, os);
-		os.close();
-	}
-	
 	private void _doListOntologies(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
 			Connection _con = db.getConnection();
 			Statement _stmt = _con.createStatement();
 			String table = "v_ncbo_ontology";
-			int limit = Integer.parseInt(_getParam(request, "limit", "500"));
+			int limit = Integer.parseInt(Util.getParam(request, "limit", "500"));
 
 			String query = 
 				"select id, ontology_id, user_id, urn " +
@@ -760,44 +709,6 @@ public class UriResolver extends HttpServlet {
 		catch (SQLException e) {
 			throw new ServletException(e);
 		}
-	}
-	
-	
-	@SuppressWarnings("unchecked")
-	private Map<String, String[]> _getParams(HttpServletRequest request) {
-		Map<String, String[]> params = request.getParameterMap();
-		return params;
-	}
-
-	/** @returns true iff the given param is defined in the request
-	 * AND either no value is associated OR none of the values is equal to "n".
-	 */
-	private boolean _yes(HttpServletRequest request, String param) {
-		List<String> values = _paramValues(request, param);
-		return values != null && ! values.contains("n");
-	}
-
-	/** @returns the list of values associated to the given param.
-	 * null if the param is not included in the request.
-	 */
-	private List<String> _paramValues(HttpServletRequest request, String param) {
-		Map<String, String[]> params = _getParams(request);
-		String[] vals = params.get(param);
-		if ( null == vals ) {
-			return null;
-		}
-		List<String> list = Arrays.asList(params.get(param));
-		return list;
-	}
-
-	private String _getParam(HttpServletRequest request, String param, String defaultValue) {
-		Map<String, String[]> params = _getParams(request);
-		String[] array = params.get(param);
-		if ( array == null || array.length == 0 ) {
-			return defaultValue;
-		}
-		// return last value in the array: 
-		return array[array.length -1];
 	}
 
 }

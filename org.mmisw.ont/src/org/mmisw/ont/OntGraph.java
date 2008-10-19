@@ -21,7 +21,7 @@ import com.hp.hpl.jena.rdf.model.Model;
  * 
  * @author Carlos Rueda
  */
-class OntGraph {
+public class OntGraph {
 	
 	private final Log log = LogFactory.getLog(OntGraph.class);
 
@@ -90,7 +90,7 @@ class OntGraph {
 
 	
 	
-	String getRDF(String sparqlQuery) {
+	public String getRDF(String sparqlQuery) {
 		log.debug("getRDF: query string = [" +sparqlQuery+ "]");
 
 		Query query = QueryFactory.create(sparqlQuery);

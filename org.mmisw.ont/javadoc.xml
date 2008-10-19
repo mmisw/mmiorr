@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="javadoc">
+	<target name="javadoc">
+		<javadoc access="public" author="true" classpath="WebContent/WEB-INF/lib/iri.jar:WebContent/WEB-INF/lib/xercesImpl.jar:WebContent/WEB-INF/lib/jenatest.jar:WebContent/WEB-INF/lib/junit.jar:/Users/carueda/Software/apache-tomcat-6.0.18/lib/servlet-api.jar:WebContent/WEB-INF/lib/org.mmi.ont.util.jar:WebContent/WEB-INF/lib/jena.jar:WebContent/WEB-INF/lib/icu4j_3_4.jar:WebContent/WEB-INF/lib/commons-pool-1.4.jar:WebContent/WEB-INF/lib/commons-logging-1.1.1.jar:WebContent/WEB-INF/lib/log4j-1.2.15.jar:WebContent/WEB-INF/lib/arq.jar:WebContent/WEB-INF/lib/concurrent.jar:WebContent/WEB-INF/lib/commons-io-1.4.jar:WebContent/WEB-INF/lib/commons-dbcp-1.2.2.jar" destdir="javadoc" doctitle="Ont service" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="org.mmisw.ont.util,org.mmisw.ont,org.mmisw.ont.sparql" source="1.5" sourcepath="src" splitindex="false" use="true" version="true" />
+	</target>
+</project>
