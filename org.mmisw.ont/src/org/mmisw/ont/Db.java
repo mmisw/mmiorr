@@ -27,24 +27,33 @@ import org.apache.commons.logging.LogFactory;
  */
 public class Db {
 	
-	private static final Log log = LogFactory.getLog(Db.class);
-
-
-	// TODO: read this in a more dynamic way (from the servlet context perhaps)
-	private static final String DATASOURCE_CONTEXT = "java:comp/env/jdbc/BioPortalDataSource";
+	private final Log log = LogFactory.getLog(Db.class);
 	
-	
-	/** Basic initialization - required. */
-	static void init() throws Exception {
-		log.debug("init called.");
-		// nothing done here (yet).
+	private final OntConfig ontConfig;
+
+	// obtained from the config in the init() method
+	private String aquaportalDatasource; 
+
+	/** 
+	 * Creates an instance of this helper. 
+	 * Call {@link #init()} to initialize it.
+	 * @param ontConfig Used at initialization.
+	 */
+	Db(OntConfig ontConfig) {
+		this.ontConfig = ontConfig;
 	}
 	
-	static Connection getConnection() throws SQLException, ServletException {
+	/** Basic initialization - required. */
+	void init() throws Exception {
+		log.debug("init called.");
+		aquaportalDatasource = ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_DATASOURCE); 
+	}
+	
+	Connection getConnection() throws SQLException, ServletException {
 		Connection result = null;
 		try {
 			Context initialContext = new InitialContext();
-			DataSource dataSource = (DataSource) initialContext.lookup(DATASOURCE_CONTEXT);
+			DataSource dataSource = (DataSource) initialContext.lookup(aquaportalDatasource);
 			if ( dataSource != null ) {
 				result = dataSource.getConnection();
 			}
@@ -65,7 +74,7 @@ public class Db {
 	 * @return
 	 * @throws ServletException
 	 */
-	static Ontology getOntology(String ontologyUri) throws ServletException {
+	Ontology getOntology(String ontologyUri) throws ServletException {
 		try {
 			Connection _con = getConnection();
 			Statement _stmt = _con.createStatement();
@@ -122,7 +131,7 @@ public class Db {
 	}
 
 	
-	static List<Ontology> getOntologies() throws ServletException {
+	List<Ontology> getOntologies() throws ServletException {
 		List<Ontology> onts = new ArrayList<Ontology>();
 		try {
 			Connection _con = getConnection();
@@ -153,7 +162,4 @@ public class Db {
 		
 		return onts;
 	}
-	
-    private Db() {}
-
 }

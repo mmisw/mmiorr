@@ -24,7 +24,7 @@
 	</path>
 
 	<target name="init">
-		<fail unless="bioportal.jdbc.password" />
+		<fail unless="aquaportal.jdbc.password" />
 	</target>
 
 	<target name="compile" depends="init">
@@ -58,14 +58,14 @@
 		<copy file="WebContent/META-INF/context.xml" 
 			tofile="${build.dir}/tmp.WebContent/META-INF/context.xml" overwrite="true">
 			<filterset>
-				<filter token="bioportal.datasource.name" value="${bioportal.datasource.name}" />
-				<filter token="bioportal.jdbc.driver" value="${bioportal.jdbc.driver}" />
-				<filter token="bioportal.jdbc.username" value="${bioportal.jdbc.username}" />
-				<filter token="bioportal.jdbc.password" value="${bioportal.jdbc.password}" />
-				<filter token="bioportal.jdbc.url" value="${bioportal.jdbc.url}" />
-				<filter token="bioportal.jdbc.maxactive" value="${bioportal.jdbc.maxactive}" />
-				<filter token="bioportal.jdbc.maxidle" value="${bioportal.jdbc.maxidle}" />
-				<filter token="bioportal.jdbc.maxwait" value="${bioportal.jdbc.maxwait}" />
+				<filter token="aquaportal.datasource.name" value="${aquaportal.datasource.name}" />
+				<filter token="aquaportal.jdbc.driver" value="${aquaportal.jdbc.driver}" />
+				<filter token="aquaportal.jdbc.username" value="${aquaportal.jdbc.username}" />
+				<filter token="aquaportal.jdbc.password" value="${aquaportal.jdbc.password}" />
+				<filter token="aquaportal.jdbc.url" value="${aquaportal.jdbc.url}" />
+				<filter token="aquaportal.jdbc.maxactive" value="${aquaportal.jdbc.maxactive}" />
+				<filter token="aquaportal.jdbc.maxidle" value="${aquaportal.jdbc.maxidle}" />
+				<filter token="aquaportal.jdbc.maxwait" value="${aquaportal.jdbc.maxwait}" />
 			</filterset>
 		</copy>
 
@@ -73,7 +73,9 @@
 			tofile="${build.dir}/tmp.WebContent/WEB-INF/web.xml" overwrite="true">
 			<filterset>
 				<filter token="ont.app.logfilepath" value="${ont.app.logfilepath}" />
-				<filter token="bioportal.datasource.name" value="${bioportal.datasource.name}" />
+				<filter token="aquaportal.datasource.name" value="${aquaportal.datasource.name}" />
+				<filter token="aquaportal.uploads.directory" value="${aquaportal.uploads.directory}" />
+				<filter token="aquaportal.datasource" value="${aquaportal.datasource}" />
 			</filterset>
 		</copy>
 

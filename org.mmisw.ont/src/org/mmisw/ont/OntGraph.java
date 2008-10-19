@@ -8,80 +8,89 @@ import javax.servlet.ServletException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmi.ont.util.Registry;
-import com.hp.hpl.jena.rdf.model.Model;
+
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.rdf.model.Model;
 
 
 /**
- * Handles the "big" graph of all existing ontologies.
- * 
- * <p>
- * Currently, it uses main memory.
- * 
+ * A helper to handle the "big" graph of all existing ontologies.
  * 
  * @author Carlos Rueda
  */
 class OntGraph {
 	
-	private static final Log log = LogFactory.getLog(OntGraph.class);
+	private final Log log = LogFactory.getLog(OntGraph.class);
 
-	private static Registry _registry;
+	private final OntConfig ontConfig;
+	private final Db db;
 	
+	private Registry _registry;
+
 	
 	/**
-	 * Initializes the registry.
+	 * Creates an instance of this helper.
+	 * @param ontConfig Used at initialization.
+	 * @param db The database helper.
+	 */
+	OntGraph(OntConfig ontConfig, Db db) {
+		this.ontConfig = ontConfig;
+		this.db = db;
+	}
+
+	
+	/**
+	 * Initializes the graph.
 	 * Does nothing if already initialized.
 	 * @throws ServletException
 	 */
-	static void initRegistry() throws ServletException {
-		log.debug("initRegistry called.");
+	void initRegistry() throws ServletException {
+		log.info("initRegistry called.");
 		
 		if ( _registry == null ) {
 			_registry = doInitRegistry();
-			log.debug("initRegistry complete.");
+			log.info("initRegistry complete.");
 		}
 		else {
 			log.debug("initRegistry: already initialized.");
 		}
 	}
 	
-	static void reInitRegistry() throws ServletException {
-		log.debug("reInitRegistry called.");
+	void reInitRegistry() throws ServletException {
+		log.info("reInitRegistry called.");
 		_registry = doInitRegistry();
-		log.debug("reInitRegistry complete.");
+		log.info("reInitRegistry complete.");
 	}
 	
-	private static Registry doInitRegistry() throws ServletException {
-		Registry registry = new Registry();
-		List<Ontology> onts = Db.getOntologies();
-		for ( Ontology ontology : onts ) {
-			String full_path = "/Users/Shared/bioportal/resources/uploads/" 
-				+ontology.file_path + "/" + ontology.filename;
+	private Registry doInitRegistry() throws ServletException {
+		String aquaUploadsDir = ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY);
 		
-			log.debug("init registry: loading " +full_path+ "...");
+		Registry registry = new Registry();
+		List<Ontology> onts = db.getOntologies();
+		for ( Ontology ontology : onts ) {
+			String full_path = aquaUploadsDir 
+				+ "/" +ontology.file_path + "/" + ontology.filename;
+		
+			log.info("init registry: loading " +full_path);
 			String absPath = "file:" + full_path;
 			registry.addModel(absPath);
-			log.debug("... LOADED.");			
 		}
 		return registry;
 	}
 
-	static Registry getRegistry() throws ServletException {
-		log.debug("getRegistry called.");
-		
+	Registry getRegistry() throws ServletException {
 		if ( _registry == null ) {
 			initRegistry();
 		}
-		
 		return _registry;
 	}
 
 	
 	
-	static String getRDF(String sparqlQuery) {
+	String getRDF(String sparqlQuery) {
 		log.debug("getRDF: query string = [" +sparqlQuery+ "]");
 
 		Query query = QueryFactory.create(sparqlQuery);
@@ -96,5 +105,4 @@ class OntGraph {
 		return result;
 	}
 
-	private OntGraph() {}
 }

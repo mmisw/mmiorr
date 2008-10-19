@@ -57,21 +57,27 @@ public class UriResolver extends HttpServlet {
 
 	private static final String SPARQL_EXAMPLE = "CONSTRUCT  { ?s ?p ?o } where{?s ?p ?o. } LIMIT 20";
 
-
-
+	
+	
 	private final Log log = LogFactory.getLog(UriResolver.class);
+
+	private final OntConfig ontConfig = new OntConfig();
+	private final Db db = new Db(ontConfig);
+	private final OntGraph ontGraph = new OntGraph(ontConfig, db);
+
 
 	public void init() throws ServletException {
 		log.info(TITLE+ ": initializing");
+		
 		try {
-			Db.init();
+			ontConfig.init(getServletConfig());
+			db.init();
+			ontGraph.initRegistry();
 		} 
 		catch (Exception ex) {
-			log.error("Cannot init db: " +ex.getMessage(), ex);
-			throw new ServletException("Cannot init db", ex);
+			log.error("Cannot initialize: " +ex.getMessage(), ex);
+			throw new ServletException("Cannot initialize", ex);
 		}
-	
-		OntGraph.initRegistry();
 	}
 	
 	/**
@@ -99,7 +105,7 @@ public class UriResolver extends HttpServlet {
 		
 		// reload graph?
 		else if ( _yes(request, "_reload")  ) {
-			OntGraph.reInitRegistry();
+			ontGraph.reInitRegistry();
 		}
 		
 		// dispatch a db-query?
@@ -118,28 +124,27 @@ public class UriResolver extends HttpServlet {
 		else {
 			String path = request.getPathTranslated();
 			File file = new File(path);
-			if ( !file.exists() || !file.canRead() || file.isDirectory() ) {
-				
+			if ( !file.canRead() || file.isDirectory() ) {
 				if ( log.isDebugEnabled() ) {
-					log.debug(path+ ": NOT FOUND");
+					log.debug(path+ ": not found or cannot be read");
 				}
-				
 				response.sendError(HttpServletResponse.SC_NOT_FOUND, 
 						request.getRequestURI()+ ": not found");
+
 				return;
-			}
-			
-			if ( log.isDebugEnabled() ) {
-				log.debug(path+ ": FOUND");
 			}
 			
 			String mime = getServletContext().getMimeType(path);
 			if ( mime != null ) {
-				if ( log.isDebugEnabled() ) {
-					log.debug(" Mime type set to: " +mime);
-				}
 				response.setContentType(mime);
 			}
+			
+			if ( log.isDebugEnabled() ) {
+				log.debug(path+ ": FOUND. " +
+						(mime != null ? "Mime type set to: " +mime : "No Mime type set.")
+				);
+			}
+
 			FileInputStream is = new FileInputStream(file);
 			ServletOutputStream os = response.getOutputStream();
 			IOUtils.copy(is, os);
@@ -223,7 +228,7 @@ public class UriResolver extends HttpServlet {
 		}
 
 		// obtain info about the ontology:
-    	Ontology ontology = Db.getOntology(ontologyUri);
+    	Ontology ontology = db.getOntology(ontologyUri);
 		
 		if ( info  ) {
 			out.println("<br/>Database result:<br/> ");
@@ -239,7 +244,7 @@ public class UriResolver extends HttpServlet {
     				out.println("Trying with .owl extension... <br/>");
     			}
     			String withExt = mmiUri.getOntologyUriWithTopicExtension(".owl");
-    			ontology = Db.getOntology(withExt);
+    			ontology = db.getOntology(withExt);
     			if ( ontology != null ) {
     				if ( info  ) {
     					out.println(withExt+ ": <font color=\"green\">Found.</font> <br/>");
@@ -264,8 +269,8 @@ public class UriResolver extends HttpServlet {
 		}
 		
 		// prepare info about the path to the file on disk:
-		String full_path = "/Users/Shared/bioportal/resources/uploads/" 
-			+ontology.file_path + "/" + ontology.filename;
+		String full_path = ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY) 
+			+ "/" +ontology.file_path + "/" + ontology.filename;
 		File file = new File(full_path);
 
 		if ( info  ) {
@@ -598,7 +603,7 @@ public class UriResolver extends HttpServlet {
 	
 	private void _doDbQuery(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
-			Connection _con = Db.getConnection();
+			Connection _con = db.getConnection();
 			Statement _stmt = _con.createStatement();
 			String table = _getParam(request, "table", "ncbo_ontology");
 			int limit = Integer.parseInt(_getParam(request, "limit", "500"));
@@ -650,7 +655,7 @@ public class UriResolver extends HttpServlet {
 		if ( query.length() == 0 ) {
 			query = SPARQL_EXAMPLE;
 		}
-		String result = OntGraph.getRDF(query);
+		String result = ontGraph.getRDF(query);
 		
 		// convert to HTML?
 		if ( _yes(request, "xslt") ) {
@@ -692,7 +697,7 @@ public class UriResolver extends HttpServlet {
 	
 	private void _doListOntologies(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
-			Connection _con = Db.getConnection();
+			Connection _con = db.getConnection();
 			Statement _stmt = _con.createStatement();
 			String table = "v_ncbo_ontology";
 			int limit = Integer.parseInt(_getParam(request, "limit", "500"));

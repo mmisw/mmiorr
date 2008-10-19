@@ -8,8 +8,12 @@
 		<servlet-name>uriResolver</servlet-name>
 		<servlet-class>org.mmisw.ont.UriResolver</servlet-class>
 		<init-param>
-			<param-name>ont.app.logfilepath</param-name>
-			<param-value>@ont.app.logfilepath@</param-value>
+			<param-name>aquaportal.uploads.directory</param-name>
+			<param-value>@aquaportal.uploads.directory@</param-value>
+		</init-param>
+		<init-param>
+			<param-name>aquaportal.datasource</param-name>
+			<param-value>@aquaportal.datasource@</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
@@ -19,7 +23,7 @@
 	</servlet-mapping>
 	<resource-ref>
 		<description>DB Connection</description>
-		<res-ref-name>@bioportal.datasource.name@</res-ref-name>
+		<res-ref-name>@aquaportal.datasource.name@</res-ref-name>
 		<res-type>javax.sql.DataSource</res-type>
 		<res-auth>Container</res-auth>
 	</resource-ref>
