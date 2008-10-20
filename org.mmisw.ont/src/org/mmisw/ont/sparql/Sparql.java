@@ -3,6 +3,8 @@ package org.mmisw.ont.sparql;
 import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 
+import org.mmisw.ont.util.Unfinished;
+
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -11,6 +13,12 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Model;
 
+/**
+ * Dispatcher of SPARQL queries.
+ * 
+ * @author Carlos Rueda
+ */
+@Unfinished(priority=Unfinished.Priority.MEDIUM)
 public class Sparql {
 	
 	public static class QueryResult {
@@ -53,13 +61,13 @@ public class Sparql {
 				ResultSetFormatter.out(os, results, query);
 	
 				queryResult.setResult(os.toString());
-				queryResult.setContentType("plain/text");
+				queryResult.setContentType("text/plain");
 			}
 			
 			// TODO handle other types of queries.
 			else {
 				queryResult.setResult("Sorry, query type " +query.getQueryType()+ " not handled yet");
-				queryResult.setContentType("plain/text");
+				queryResult.setContentType("text/plain");
 			}
 		}
 		finally {
@@ -67,23 +75,6 @@ public class Sparql {
 		}
 		
 		return queryResult;
-	}
-
-	private static String getRDF(Model model, String sparqlQuery) {
-		Query query = QueryFactory.create(sparqlQuery);
-		QueryExecution qExec = QueryExecutionFactory.create(query, model);
-		
-		try {
-			Model model_ = qExec.execConstruct();
-			StringWriter writer = new StringWriter();
-			model_.getWriter().write(model_, writer, null);
-
-			String result = writer.getBuffer().toString();
-			return result;
-		}
-		finally {
-			qExec.close();
-		}
 	}
 
 	private Sparql() {}
