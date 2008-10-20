@@ -207,6 +207,8 @@ public class UriResolver extends HttpServlet {
 		String topicExt = mmiUri.getTopicExtension();
 		Accept accept = new Accept(request);
 		
+		String dominating = accept.getDominating();
+		
 		if ( log.isDebugEnabled() ) {
 			log.debug("===== Starting dereferencing ====== ");
 			log.debug("  accept entries:");
@@ -214,7 +216,7 @@ public class UriResolver extends HttpServlet {
 			for ( Entry entry : entries ) {
 				log.debug("      " +entry);
 			}
-			log.debug("  dominating entry: " +accept.getDominating());
+			log.debug("  dominating entry: " +dominating);
 			log.debug("topicExt = " +topicExt);
 		}
 
@@ -226,7 +228,19 @@ public class UriResolver extends HttpServlet {
 			// dereferenced according to content negotiation as:
 			
 			// (a) an OWL document (if Accept: application/rdf+xml dominates)
-			if ( "application/rdf+xml".equalsIgnoreCase(accept.getDominating()) ) {
+			if ( "application/rdf+xml".equalsIgnoreCase(dominating) ) {
+				return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML);
+			}
+			
+			// (a.1) firefox doesn't explicitly say "application/rdf+xml" and I guess this
+			// is also the case with other standard browsers. In particula, my firefox sends:
+			//     text/html
+			//     application/xhtml+xml	
+			//     application/xml; q = 0.9
+			//      */*; q = 0.8
+			// Since the extension is not ".html", I would consider the following case:
+			//
+			else if ( accept.contains("application/xml") ) {
 				return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML);
 			}
 			
