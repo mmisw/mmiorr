@@ -6,6 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * A helper class to query the "accept" header values.
  * 
@@ -41,7 +43,9 @@ public class Accept {
 	 * 
 	 * @param acceptList Accept list from the request.
 	 */
-	public Accept(List<String> acceptList) {
+	public Accept(HttpServletRequest request) {
+		List<String> acceptList = Util.getHeader(request, "accept");
+		
 		for ( String field: acceptList ) {
 			String[] tokEntries = field.split("\\s*,\\s*");
 			for (String entry : tokEntries ) {
@@ -98,5 +102,18 @@ public class Accept {
 	
 	public String toString() {
 		return String.valueOf(entries)+ "  Dominating: " +dominating;
+	}
+
+	public boolean contains(String contentType) {
+		for ( Entry ctEntry : entries ) {
+			if ( contentType.equalsIgnoreCase(ctEntry.contentType) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean isEmpty() {
+		return entries.isEmpty();
 	}
 }

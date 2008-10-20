@@ -128,7 +128,7 @@ public class UriResolver extends HttpServlet {
 			File file = new File(path);
 			if ( !file.canRead() || file.isDirectory() ) {
 				if ( log.isDebugEnabled() ) {
-					log.debug(path+ ": not found or cannot be read");
+					log.debug("Other resource: " +path+ ": not found or cannot be read");
 				}
 				response.sendError(HttpServletResponse.SC_NOT_FOUND, 
 						request.getRequestURI()+ ": not found");
@@ -191,6 +191,9 @@ public class UriResolver extends HttpServlet {
 		}
 		catch (URISyntaxException e) {
 			// Not dispatched here; allow caller to dispatch in any other convenient way:
+			if ( log.isDebugEnabled() ) {
+				log.debug("MMI URI not well formed: " +e.getMessage());
+			}
 			return false;   
 		}
 		
@@ -202,8 +205,7 @@ public class UriResolver extends HttpServlet {
 
 		// The response type depends of the following elements:
 		String topicExt = mmiUri.getTopicExtension();
-		List<String> acceptList = Util.getHeader(request, "accept");
-		Accept accept = new Accept(acceptList);
+		Accept accept = new Accept(request);
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("===== Starting dereferencing ====== ");
@@ -212,6 +214,7 @@ public class UriResolver extends HttpServlet {
 			for ( Entry entry : entries ) {
 				log.debug("      " +entry);
 			}
+			log.debug("  dominating entry: " +accept.getDominating());
 			log.debug("topicExt = " +topicExt);
 		}
 
@@ -228,15 +231,15 @@ public class UriResolver extends HttpServlet {
 			}
 			
 			// (b) an HTML document (if Accept: text/html but not application/rdf+xml)
-			else if ( acceptList.contains("text/html") ) {
+			else if ( accept.contains("text/html") ) {
 				
 				return _resolveUriHtml(request, response, mmiUri);
 			}
 			
 			// (c) an HTML document (if Accept: text/html, application/rdf+xml or Accept: */*)
-			else if ( acceptList.contains("text/html") ||
-					  acceptList.contains("application/rdf+xml") ||
-					  acceptList.contains("*/*")
+			else if ( accept.contains("text/html") ||
+					  accept.contains("application/rdf+xml") ||
+					  accept.contains("*/*")
 			) {
 				
 				if ( topicExt.equalsIgnoreCase(".owl") ) {
@@ -248,13 +251,20 @@ public class UriResolver extends HttpServlet {
 			}
 			
 			// (d) an OWL document with referenced style sheet (if no Accept)
-			else if ( acceptList.isEmpty() ) {
+			else if ( accept.isEmpty() ) {
 				// TODO accept list empty
 				// arbitrarely returning in HTML:
 				log.warn("Case (d): \"accept\" list is empty. " +
 						"'OWL document with referenced style sheet' Not implemented yet." +
 						" Returning HTML temporarily.");
 				
+				return _resolveUriHtml(request, response, mmiUri);
+			}
+			
+			
+			// Else: arbitrarely returning in HTML:
+			else {
+				log.warn("Default case: Returning HTML.");
 				return _resolveUriHtml(request, response, mmiUri);
 			}
 		}
