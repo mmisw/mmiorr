@@ -1,10 +1,22 @@
 package org.mmisw.ont.util;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.mmisw.ont.Db;
 
 /**
  * Misc utilities.
@@ -52,6 +64,123 @@ public class Util {
 		Map<String, String[]> params = request.getParameterMap();
 		return params;
 	}
+	
+	/**
+	 * Developer option.
+	 */
+	public static  void showReq(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+		response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        out.println("<html>");
+        out.println("<head>");
+        out.println("<title>Show req</title>");
+        out.println("<link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\">");
+        out.println("</head>");
+        out.println("<body>");
+        out.println("<pre>");
+        
+        out.println("request.getRequestURL()         = " + request.getRequestURL()  );
+        out.println("request.getRequestURI()         = " + request.getRequestURI()  );
+        out.println("request.getQueryString()        = " + request.getQueryString()  );
+        
+        out.println("request.getParameterMap()       = " + request.getParameterMap()  );
+		Map<String, String[]> params = Util.getParams(request);
+		for ( String key: params.keySet() ) {
+			out.println("    " +key+ " => " + Arrays.asList(params.get(key))  );	
+		}
+        
+        out.println("request.getContextPath()        = " + request.getContextPath() ); 
+        out.println("request.getMethod()             = " + request.getMethod()  ); 
+        out.println("request.getPathInfo()           = " + request.getPathInfo()  ); 
+        out.println("request.getPathTranslated()     = " + request.getPathTranslated()  ); 
+        out.println("request.getRemoteUser()         = " + request.getRemoteUser()  );
+        out.println("request.getRequestedSessionId() = " + request.getRequestedSessionId()  );
+        out.println("request.getServletPath()        = " + request.getServletPath()  );
+        out.println("request.getAttributeNames()     = " + request.getAttributeNames()  ); 
+        out.println("request.getCharacterEncoding()  = " + request.getCharacterEncoding()  );
+        out.println("request.getContentLength()      = " + request.getContentLength()  );
+        out.println("request.getContentType()        = " + request.getContentType()  );
+        out.println("request.getProtocol()           = " + request.getProtocol()  );
+        out.println("request.getRemoteAddr()         = " + request.getRemoteAddr()  );
+        out.println("request.getRemoteHost()         = " + request.getRemoteHost()  ); 
+        out.println("request.getScheme()             = " + request.getScheme()  );
+        out.println("request.getServerName()         = " + request.getServerName()  );
+        out.println("request.getServerPort()         = " + request.getServerPort()  );
+        out.println("request.isSecure()              = " + request.isSecure()  ); 
+        
+        out.println("request. headers             = ");
+        Enumeration<?> hnames = request.getHeaderNames();
+        while ( hnames.hasMoreElements() ) {
+        	Object hname = hnames.nextElement();
+        	out.print("        " +hname+ " : ");
+        	Enumeration<?> hvals = request.getHeaders(hname.toString());
+        	String sep = "";
+            while ( hvals.hasMoreElements() ) {
+            	Object hval = hvals.nextElement();
+				out.println(hval + sep);
+				sep = "  ;  ";
+            }
+            out.println();
+        }        
+
+        out.println("</pre>");
+        out.println("</body>");
+        out.println("</html>");
+	}
+
+	/**
+	 * Developer option.
+	 */
+	public static void doDbQuery(HttpServletRequest request, HttpServletResponse response, Db db) throws ServletException, IOException {
+		try {
+			Connection _con = db.getConnection();
+			Statement _stmt = _con.createStatement();
+			String table = Util.getParam(request, "table", "ncbo_ontology");
+			int limit = Integer.parseInt(Util.getParam(request, "limit", "500"));
+
+			String query = "select * from " +table+ "  limit " +limit;
+			
+			ResultSet rs = _stmt.executeQuery(query);
+			
+			response.setContentType("text/html");
+	        PrintWriter out = response.getWriter();
+	        out.println("<html>");
+	        out.println("<head>");
+	        out.println("<link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\">");
+	        out.println("<title>" +query+ "</title>");
+	        out.println("</head>");
+	        out.println("<body>");
+	        out.println("<code>" +query+ "</code>");
+	        out.println("<table class=\"inline\">");
+
+			
+	        ResultSetMetaData md = rs.getMetaData();
+	        int cols = md.getColumnCount();
+	        out.println("<tr>");
+	        for (int i = 0; i < cols; i++) {
+	        	out.println("<th>");
+	        	out.println(md.getColumnLabel(i+1));
+	            out.println("</th>");
+	        }
+	        out.println("</tr>");
+
+	        while ( rs.next() ) {
+	        	out.println("<tr>");
+	        	for (int i = 0; i < cols; i++) {
+		        	out.println("<td>");
+		        	out.println(rs.getObject(i+1));
+		            out.println("</td>");
+	        	}
+	        	out.println("</tr>");
+	        }
+
+		} 
+		catch (SQLException e) {
+			throw new ServletException(e);
+		}
+	}
+	
 
 	private Util() {}
 }

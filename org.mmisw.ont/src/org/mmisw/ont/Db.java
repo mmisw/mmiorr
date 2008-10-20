@@ -49,7 +49,7 @@ public class Db {
 		aquaportalDatasource = ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_DATASOURCE); 
 	}
 	
-	Connection getConnection() throws SQLException, ServletException {
+	public Connection getConnection() throws SQLException, ServletException {
 		Connection result = null;
 		try {
 			Context initialContext = new InitialContext();
