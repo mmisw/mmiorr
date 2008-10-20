@@ -72,12 +72,23 @@ public class SparqlTest {
 
 		// Execute the query and obtain results
 		QueryExecution qe = QueryExecutionFactory.create(query, model);
-		ResultSet results = qe.execSelect();
+		
+		if ( query.isSelectType() ) {
+			ResultSet results = qe.execSelect();
+			ResultSetFormatter.out(System.out, results, query);
+		}
+		else if ( query.isConstructType() ) {
+			Model model_ = qe.execConstruct();
+			
+//			_listStatements(model_);
 
-		// Output query results	
-		ResultSetFormatter.out(System.out, results, query);
+			StringWriter writer = new StringWriter();
+			model_.getWriter().write(model_, writer, null);
 
-		// Important - free up resources used running the query
+			String result = writer.getBuffer().toString();
+			System.out.println(result);
+
+		}
 		qe.close();
 	}
 	

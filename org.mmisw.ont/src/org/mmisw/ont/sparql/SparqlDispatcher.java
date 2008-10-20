@@ -3,7 +3,6 @@ package org.mmisw.ont.sparql;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.io.StringWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -17,12 +16,6 @@ import org.mmisw.ont.OntGraph;
 import org.mmisw.ont.util.Unfinished;
 import org.mmisw.ont.util.Util;
 import org.mmisw.ont.util.XSLTCreator;
-
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.rdf.model.Model;
 
 
 
@@ -54,39 +47,46 @@ public class SparqlDispatcher {
 		if ( query.length() == 0 ) {
 			query = SPARQL_EXAMPLE;
 		}
-		String result = _getRDF(query);
+		Sparql.QueryResult queryResult = _execute(query);
 		
-		// convert to HTML?
-		if ( Util.yes(request, "xslt") ) {
-			String XSLT_RESOURCE = "rdf.xslt";
-			InputStream xslt = getClass().getClassLoader().getResourceAsStream(XSLT_RESOURCE);
-			if ( xslt != null ) {
-				result = XSLTCreator.create(result, xslt);
+		String result = queryResult.getResult();
+		
+		if ( "Application/rdf+xml".equals(queryResult.getContentType()) ) {
+			// convert to HTML?
+			if ( Util.yes(request, "xslt") ) {
+				String XSLT_RESOURCE = "rdf.xslt";
+				InputStream xslt = getClass().getClassLoader().getResourceAsStream(XSLT_RESOURCE);
+				if ( xslt != null ) {
+					result = XSLTCreator.create(result, xslt);
+				}
+				else {
+					result = "Cannot find resource: " + XSLT_RESOURCE;
+				}
+				response.setContentType("text/html");
+			}
+			
+			// put stylesheet at beginning of the result?
+			else if ( Util.yes(request, "xslti") ) {
+				// what type? I've tried:
+				//   type="text/xsl"
+				//   type="text/xml"
+				//   type="application/xslt+xml"
+				// without success.
+				//
+				String type="application/xslt+xml";
+				String xmlHeader = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>\n";
+				xmlHeader += "<?xml-stylesheet type=\"" +type+ "\" href=\"" +
+								request.getContextPath()+ "/rdf.xslt" + "\"?>\n";
+				
+				result = xmlHeader + result;
+				response.setContentType("Application/rdf+xml");
 			}
 			else {
-				result = "Cannot find resource: " + XSLT_RESOURCE;
+				response.setContentType("Application/rdf+xml");
 			}
-			response.setContentType("text/html");
-		}
-		
-		// put stylesheet at beginning of the result?
-		else if ( Util.yes(request, "xslti") ) {
-			// what type? I've tried:
-			//   type="text/xsl"
-			//   type="text/xml"
-			//   type="application/xslt+xml"
-			// without success.
-			//
-			String type="application/xslt+xml";
-			String xmlHeader = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>\n";
-			xmlHeader += "<?xml-stylesheet type=\"" +type+ "\" href=\"" +
-							request.getContextPath()+ "/rdf.xslt" + "\"?>\n";
-			
-			result = xmlHeader + result;
-			response.setContentType("Application/rdf+xml");
 		}
 		else {
-			response.setContentType("Application/rdf+xml");
+			response.setContentType(queryResult.getContentType());
 		}
 		StringReader is = new StringReader(result);
 		ServletOutputStream os = response.getOutputStream();
@@ -94,19 +94,19 @@ public class SparqlDispatcher {
 		os.close();
 	}
 
-	private String _getRDF(String sparqlQuery) {
+	private Sparql.QueryResult _execute(String sparqlQuery) {
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("getRDF: query string = [" +sparqlQuery+ "]");
 		}
 		
-		String result = Sparql.getRDF(ontGraph.getModel(), sparqlQuery);
+		Sparql.QueryResult queryResult = Sparql.executeQuery(ontGraph.getModel(), sparqlQuery);
 
 		if ( log.isDebugEnabled() ) {
-			log.debug("getRDF: result = [" +result+ "]");
+			log.debug("getRDF: result = [" +queryResult+ "]");
 		}
 		
-		return result;
+		return queryResult;
 	}
 
 }

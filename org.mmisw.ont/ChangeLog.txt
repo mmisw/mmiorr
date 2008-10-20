@@ -8,6 +8,9 @@ ChangeLog
 	- sparql stuff moved to package org.mmisw.ont.sparql
 	- package-info.java files added
 	
+	- sparql queries now working
+	- "construct" and "select" queries accepted and processed.
+	
 	
 2008-10-18  v. 0.1.1 (20081018)
 	- General code clean-up (loggers, non "static" classes)

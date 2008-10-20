@@ -101,27 +101,21 @@ public class OntGraph {
 			}
 		}
 
-		if ( log.isDebugEnabled() ) {
-			_listStatements();
+		if ( false && log.isDebugEnabled() ) {
+			log.debug("_listStatements:");
+			StmtIterator iter = _model.listStatements();
+			while (iter.hasNext()) {
+				com.hp.hpl.jena.rdf.model.Statement sta = iter.nextStatement();
+				Resource sjt = sta.getSubject();
+				log.debug("      " + 
+						PrintUtil.print(sjt)
+						+ "   " +
+						PrintUtil.print(sta.getPredicate().getURI())
+						+ "   " +
+						PrintUtil.print(sta.getObject().toString())
+				);
+			}
 		}
 	}
-
-	
-	private void _listStatements() {
-		log.debug("_listStatements:");
-		StmtIterator iter = _model.listStatements();
-		while (iter.hasNext()) {
-			com.hp.hpl.jena.rdf.model.Statement sta = iter.nextStatement();
-			Resource sjt = sta.getSubject();
-			log.debug("      " + 
-					PrintUtil.print(sjt)
-					+ "   " +
-					PrintUtil.print(sta.getPredicate().getURI())
-					+ "   " +
-					PrintUtil.print(sta.getObject().toString())
-			);
-		}
-	}
-
 
 }
