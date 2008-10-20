@@ -20,11 +20,14 @@ public class MmiUriTest extends TestCase {
         assertEquals("mmi", mmiUri.getAuthority());
         assertEquals("someVocab.owl", mmiUri.getTopic());
         assertEquals("someTerm", mmiUri.getTerm());
+        assertEquals(".owl", mmiUri.getTopicExtension());
     }
 
     public void testTermUris() throws URISyntaxException {
     	MmiUri mmiUri = new MmiUri(fullRequestedUri, requestedUri, contextPath);
     
+    	assertEquals(".owl", mmiUri.getTopicExtension());
+    	
         assertEquals("http://mmisw.org/ont/mmi/someVocab#someTerm", mmiUri.getTermUri(true, "#"));
         assertEquals("http://mmisw.org/ont/mmi/someVocab/someTerm", mmiUri.getTermUri(true, "/"));
         
@@ -37,7 +40,10 @@ public class MmiUriTest extends TestCase {
     	String requestedUri = "/ont/mmi/someVocab/someTerm";
     	MmiUri mmiUri = new MmiUri(fullRequestedUri, requestedUri, contextPath);
     
+    	assertEquals("", mmiUri.getTopicExtension());
+
     	// ontologyUri with an extension:
         assertEquals("http://mmisw.org/ont/mmi/someVocab.owl", mmiUri.getOntologyUriWithTopicExtension(".owl"));
+        
     }
 }

@@ -3,6 +3,10 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2008-10-20
+	- MmmUri: fixed getTermUri();  new getTopicExtension().
+	
+	
 2008-10-19
 	- new convenience annotation @org.mmisw.ont.util.Unfinished
 	- sparql stuff moved to package org.mmisw.ont.sparql

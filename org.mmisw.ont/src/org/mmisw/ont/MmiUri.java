@@ -107,6 +107,19 @@ public class MmiUri {
 		return topic;
 	}
 
+	/** 
+	 * @returns the extension of the topic.
+	 *          (<code>.owl</code>)
+	 * */
+	public String getTopicExtension() {
+		String ext = "";
+		int dotIdx = topic.lastIndexOf('.');
+		if ( dotIdx >= 0) {
+			ext = topic.substring(dotIdx);
+		}
+		return ext;
+	}
+
 	/**
 	 * @returns the term.
 	 *          (<code>someTerm</code>)
@@ -132,7 +145,16 @@ public class MmiUri {
 	public String getTermUri(boolean removeExt, String sep) {
 		String termUri;
 		if ( removeExt ) {
-			termUri = ontologyUri.replaceAll("\\.owl(#)*$", "") + sep + term;
+			String ext = getTopicExtension();
+			if ( ext.length() > 0 ) {
+				// replace any dot with \\. 
+				ext = ext.replaceAll("\\.", "\\\\.");
+				// so, the replacing pattern is well formed:
+				termUri = ontologyUri.replaceAll(ext+ "(#)*$", "") + sep + term;
+			}
+			else {
+				termUri = ontologyUri.replaceAll("#+$", "") + sep + term;	
+			}
 		}
 		else {
 			termUri = ontologyUri.replaceAll("#+$", "") + sep + term;
