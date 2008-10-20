@@ -97,13 +97,13 @@ public class SparqlDispatcher {
 	private Sparql.QueryResult _execute(String sparqlQuery) {
 		
 		if ( log.isDebugEnabled() ) {
-			log.debug("getRDF: query string = [" +sparqlQuery+ "]");
+			log.debug("execute: query string = [" +sparqlQuery+ "]");
 		}
 		
 		Sparql.QueryResult queryResult = Sparql.executeQuery(ontGraph.getModel(), sparqlQuery);
 
 		if ( log.isDebugEnabled() ) {
-			log.debug("getRDF: result = [" +queryResult+ "]");
+			log.debug("execute: result = [" +queryResult.getResult()+ "]");
 		}
 		
 		return queryResult;
