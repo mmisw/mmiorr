@@ -1,4 +1,4 @@
-package org.mmisw.ont.util;
+package org.mmisw.ont.sparql;
 
 import java.io.InputStream;
 import java.io.StringReader;
@@ -19,7 +19,7 @@ import org.apache.commons.logging.LogFactory;
 //   - xslt param as InputStream 
 //   - Logger
 
-public class XSLTCreator {
+class XSLTCreator {
 
 	private final static Log log = LogFactory.getLog(XSLTCreator.class);
 	
