@@ -3,6 +3,7 @@ package org.mmisw.ont.sparql;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.io.StringWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -10,10 +11,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.OntGraph;
 import org.mmisw.ont.util.Unfinished;
 import org.mmisw.ont.util.Util;
 import org.mmisw.ont.util.XSLTCreator;
+
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.rdf.model.Model;
 
 
 
@@ -24,24 +33,33 @@ import org.mmisw.ont.util.XSLTCreator;
  */
 @Unfinished(priority=Unfinished.Priority.MEDIUM)
 public class SparqlDispatcher {
-
+	
 	/** The default query */
 	private static final String SPARQL_EXAMPLE = "CONSTRUCT { ?s ?p ?o } where {?s ?p ?o. } LIMIT 20";
+	
+	private final Log log = LogFactory.getLog(SparqlDispatcher.class);
+	
+	// ontGraph.getModel() is used as the model to process queries
+	private final OntGraph ontGraph;
+	
+	public SparqlDispatcher(OntGraph ontGraph) {
+		this.ontGraph = ontGraph;
+	}
 
 	/** 
 	 * Executes the query indicated as argument of the "sparql" parameter.
 	 */
-	public void execute(HttpServletRequest request, HttpServletResponse response, OntGraph ontGraph) throws ServletException, IOException {
+	public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String query = Util.getParam(request, "sparql", "");
 		if ( query.length() == 0 ) {
 			query = SPARQL_EXAMPLE;
 		}
-		String result = ontGraph.getRDF(query);
+		String result = _getRDF(query);
 		
 		// convert to HTML?
 		if ( Util.yes(request, "xslt") ) {
 			String XSLT_RESOURCE = "rdf.xslt";
-			InputStream xslt = getClass().getClassLoader().getResourceAsStream(XSLT_RESOURCE );
+			InputStream xslt = getClass().getClassLoader().getResourceAsStream(XSLT_RESOURCE);
 			if ( xslt != null ) {
 				result = XSLTCreator.create(result, xslt);
 			}
@@ -74,6 +92,21 @@ public class SparqlDispatcher {
 		ServletOutputStream os = response.getOutputStream();
 		IOUtils.copy(is, os);
 		os.close();
+	}
+
+	private String _getRDF(String sparqlQuery) {
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug("getRDF: query string = [" +sparqlQuery+ "]");
+		}
+		
+		String result = Sparql.getRDF(ontGraph.getModel(), sparqlQuery);
+
+		if ( log.isDebugEnabled() ) {
+			log.debug("getRDF: result = [" +result+ "]");
+		}
+		
+		return result;
 	}
 
 }

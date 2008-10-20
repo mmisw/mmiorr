@@ -1,19 +1,17 @@
 package org.mmisw.ont;
 
-import java.io.StringWriter;
 import java.util.List;
 
 import javax.servlet.ServletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mmi.ont.util.Registry;
 
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.util.PrintUtil;
 
 
 /**
@@ -28,7 +26,9 @@ public class OntGraph {
 	private final OntConfig ontConfig;
 	private final Db db;
 	
-	private Registry _registry;
+	private Model _model;
+	
+	private String aquaUploadsDir;
 
 	
 	/**
@@ -41,68 +41,87 @@ public class OntGraph {
 		this.db = db;
 	}
 
-	
+	public Model getModel() {
+		return _model;
+	}
+
+
 	/**
 	 * Initializes the graph.
 	 * Does nothing if already initialized.
 	 * @throws ServletException
 	 */
-	void initRegistry() throws ServletException {
-		log.info("initRegistry called.");
+	void init() throws ServletException {
+		log.info("init called.");
 		
-		if ( _registry == null ) {
-			_registry = doInitRegistry();
-			log.info("initRegistry complete.");
+		aquaUploadsDir = ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY);
+		
+		if ( _model == null ) {
+			_doInitModel();
+			log.info("init complete.");
 		}
 		else {
-			log.debug("initRegistry: already initialized.");
+			log.debug("init: already initialized.");
 		}
 	}
 	
-	void reInitRegistry() throws ServletException {
-		log.info("reInitRegistry called.");
-		_registry = doInitRegistry();
-		log.info("reInitRegistry complete.");
+	/**
+	 * Reinitializes the graph.
+	 * @throws ServletException
+	 */
+	void reinit() throws ServletException {
+		log.info("reinit called.");
+		_doInitModel();
+		log.info("reinit complete.");
 	}
 	
-	private Registry doInitRegistry() throws ServletException {
-		String aquaUploadsDir = ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY);
-		
-		Registry registry = new Registry();
+	private void _doInitModel() throws ServletException {
+		_model = ModelFactory.createDefaultModel();
 		List<Ontology> onts = db.getOntologies();
 		for ( Ontology ontology : onts ) {
 			String full_path = aquaUploadsDir 
 				+ "/" +ontology.file_path + "/" + ontology.filename;
 		
-			log.info("init registry: loading " +full_path);
+			log.info("init: loading: " +full_path);
 			String absPath = "file:" + full_path;
-			registry.addModel(absPath);
+			
+			try {
+				
+				_model.read(absPath, "", null);
+				
+//				// TODO processImports: true or false?
+//				boolean processImports = false;
+//				Model model_ = JenaUtil.loadModel(absPath, processImports);
+//				_model.add(model_);
+				
+				log.info("added " + absPath + " to model");
+			} 
+			catch (Exception e) {
+				log.error("Unable to add " + absPath + " to model");
+			}
 		}
-		return registry;
-	}
 
-	Registry getRegistry() throws ServletException {
-		if ( _registry == null ) {
-			initRegistry();
+		if ( log.isDebugEnabled() ) {
+			_listStatements();
 		}
-		return _registry;
 	}
 
 	
-	
-	public String getRDF(String sparqlQuery) {
-		log.debug("getRDF: query string = [" +sparqlQuery+ "]");
-
-		Query query = QueryFactory.create(sparqlQuery);
-		QueryExecution qExec = QueryExecutionFactory.create(query, 
-				_registry.getModel());
-		Model model_ = qExec.execConstruct();
-		StringWriter writer = new StringWriter();
-		model_.getWriter().write(model_, writer, null);
-
-		String result = writer.getBuffer().toString();
-		log.debug("getRDF: result = [" +result+ "]");
-		return result;
+	private void _listStatements() {
+		log.debug("_listStatements:");
+		StmtIterator iter = _model.listStatements();
+		while (iter.hasNext()) {
+			com.hp.hpl.jena.rdf.model.Statement sta = iter.nextStatement();
+			Resource sjt = sta.getSubject();
+			log.debug("      " + 
+					PrintUtil.print(sjt)
+					+ "   " +
+					PrintUtil.print(sta.getPredicate().getURI())
+					+ "   " +
+					PrintUtil.print(sta.getObject().toString())
+			);
+		}
 	}
+
 
 }

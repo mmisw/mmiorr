@@ -58,6 +58,8 @@ public class UriResolver extends HttpServlet {
 	private final OntConfig ontConfig = new OntConfig();
 	private final Db db = new Db(ontConfig);
 	private final OntGraph ontGraph = new OntGraph(ontConfig, db);
+	
+	private final SparqlDispatcher sparqlDispatcher = new SparqlDispatcher(ontGraph);
 
 
 	public void init() throws ServletException {
@@ -66,7 +68,7 @@ public class UriResolver extends HttpServlet {
 		try {
 			ontConfig.init(getServletConfig());
 			db.init();
-			ontGraph.initRegistry();
+			ontGraph.init();
 		} 
 		catch (Exception ex) {
 			log.error("Cannot initialize: " +ex.getMessage(), ex);
@@ -97,13 +99,13 @@ public class UriResolver extends HttpServlet {
 		
 		// dispatch a sparql-query?
 		else if ( Util.yes(request, "sparql")  ) {
-			new SparqlDispatcher().execute(request, response, ontGraph);
+			sparqlDispatcher.execute(request, response);
 		}
 		
 		
 		// reload graph?
 		else if ( Util.yes(request, "_reload")  ) {
-			ontGraph.reInitRegistry();
+			ontGraph.reinit();
 		}
 		
 		// dispatch a db-query?
@@ -287,7 +289,7 @@ public class UriResolver extends HttpServlet {
 				out.println("<br/>");
 				
 				String uriFile = file.toURI().toString();
-				Model model = _loadModel(uriFile);
+				Model model = JenaUtil.loadModel(uriFile, false);
 	
 				if ( mmiUri.getTerm().length() > 0 ) {
 					_showTermInfo(mmiUri, model, out);
@@ -302,7 +304,7 @@ public class UriResolver extends HttpServlet {
 				String term = mmiUri.getTerm();
 				if ( term.length() > 0 ) {
 					String uriFile = file.toURI().toString();
-					Model model = _loadModel(uriFile);
+					Model model = JenaUtil.loadModel(uriFile, false);
 					
 					// TODO "text/html" for now
 					String termContents = _resolveTerm(request, mmiUri, model);
@@ -514,17 +516,6 @@ public class UriResolver extends HttpServlet {
         return strWriter.toString();
 	}
 
-
-	/**
-	 * Loads a model.
-	 * @param uriModel
-	 * @return
-	 */
-	private Model _loadModel(String uriModel) {
-		Model model = JenaUtil.loadModel(uriModel, false);
-		
-		return model;
-	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
