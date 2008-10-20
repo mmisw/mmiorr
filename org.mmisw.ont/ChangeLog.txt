@@ -6,6 +6,8 @@ ChangeLog
 2008-10-20
 	- MmmUri: fixed getTermUri();  new getTopicExtension().
 	
+	- Accept: A helper class to query the "accept" header values.
+	
 	
 2008-10-19
 	- new convenience annotation @org.mmisw.ont.util.Unfinished

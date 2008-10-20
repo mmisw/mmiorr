@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -23,7 +24,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.sparql.SparqlDispatcher;
+import org.mmisw.ont.util.Accept;
 import org.mmisw.ont.util.Util;
+import org.mmisw.ont.util.Accept.Entry;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -58,6 +61,8 @@ public class UriResolver extends HttpServlet {
 	
 	private final SparqlDispatcher sparqlDispatcher = new SparqlDispatcher(ontGraph);
 
+	
+	private enum OntFormat { RDFXML, N3 };
 
 	public void init() throws ServletException {
 		log.info(TITLE+ ": initializing");
@@ -166,30 +171,16 @@ public class UriResolver extends HttpServlet {
 	private boolean _resolveUri(HttpServletRequest request, HttpServletResponse response) 
 	throws ServletException, IOException {
 		
-		final String fullRequestedUri = request.getRequestURL().toString();
-		
 		// if the "info" parameter is included, show some info about the URI parse
 		// and the ontology from the database (but do not serve the contents)
 		boolean info = Util.yes(request, "info");
-		PrintWriter out = null;    // only used iff info == true.
-		
 		if ( info ) {
-			if ( log.isDebugEnabled() ) {
-				log.debug("_resolveUrI: starting 'info' response.");
-			}
-			
-			// start the response page:
-			response.setContentType("text/html");
-			out = response.getWriter();
-	        out.println("<html>");
-	        out.println("<head>");
-	        out.println("<title>" +TITLE+ "</title>");
-	        out.println("<link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\">");
-	        out.println("</head>");
-	        out.println("<body>");
-			out.println("<b>" +TITLE+ "</b><br/><br/>");
-			out.println(" Full requested URI: <code>" + fullRequestedUri + "</code> <br/><br/>");
+			_resolveUriInfo(request, response);
+			return true;
 		}
+		
+		final String fullRequestedUri = request.getRequestURL().toString();
+		
 		
 		// parse the given URI:
 		final String requestedUri = request.getRequestURI();
@@ -199,53 +190,273 @@ public class UriResolver extends HttpServlet {
 			mmiUri = new MmiUri(fullRequestedUri, requestedUri, contextPath);
 		}
 		catch (URISyntaxException e) {
-			if ( info ) {
-				out.println("<font color=\"red\">ERROR: " +e.getReason()+ "</font><br/>");
-		        out.println("</body>");
-		        out.println("</html>");
-				return true;   // dispatched here.
+			// Not dispatched here; allow caller to dispatch in any other convenient way:
+			return false;   
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////
+		//    Dereferencing rules
+		////////////////////////////////////////////////////////////////////////////////
+		
+		// Dereferencing is done according to the "accept" header and the topic extension.
+
+		// The response type depends of the following elements:
+		String topicExt = mmiUri.getTopicExtension();
+		List<String> acceptList = Util.getHeader(request, "accept");
+		Accept accept = new Accept(acceptList);
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug("===== Starting dereferencing ====== ");
+			log.debug("  accept entries:");
+			List<Entry> entries = accept.getEntries();
+			for ( Entry entry : entries ) {
+				log.debug("      " +entry);
 			}
-			return false;   // not dispatched here.
+			log.debug("topicExt = " +topicExt);
+		}
+
+		
+		if ( topicExt.length() == 0                  // No ontology extension? 
+		||   topicExt.equalsIgnoreCase(".owl")       // OR extension is .owl
+		||   topicExt.equalsIgnoreCase(".rdf")       // OR extension is .rdf
+		) {
+			// dereferenced according to content negotiation as:
+			
+			// (a) an OWL document (if Accept: application/rdf+xml dominates)
+			if ( "application/rdf+xml".equalsIgnoreCase(accept.getDominating()) ) {
+				return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML);
+			}
+			
+			// (b) an HTML document (if Accept: text/html but not application/rdf+xml)
+			else if ( acceptList.contains("text/html") ) {
+				
+				return _resolveUriHtml(request, response, mmiUri);
+			}
+			
+			// (c) an HTML document (if Accept: text/html, application/rdf+xml or Accept: */*)
+			else if ( acceptList.contains("text/html") ||
+					  acceptList.contains("application/rdf+xml") ||
+					  acceptList.contains("*/*")
+			) {
+				
+				if ( topicExt.equalsIgnoreCase(".owl") ) {
+					return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML);
+				}
+				else {
+					return _resolveUriHtml(request, response, mmiUri);
+				}
+			}
+			
+			// (d) an OWL document with referenced style sheet (if no Accept)
+			else if ( acceptList.isEmpty() ) {
+				// TODO accept list empty
+				// arbitrarely returning in HTML:
+				log.warn("Case (d): \"accept\" list is empty. " +
+						"'OWL document with referenced style sheet' Not implemented yet." +
+						" Returning HTML temporarily.");
+				
+				return _resolveUriHtml(request, response, mmiUri);
+			}
+		}
+		
+		// Else: ontology extension (other than .owl or .rdf) included:
+		
+		// .html:
+		else if ( topicExt.equalsIgnoreCase(".html") ) {
+			return _resolveUriHtml(request, response, mmiUri);
+		}
+			
+		// .n3:
+		else if ( topicExt.equalsIgnoreCase(".n3") ) {
+			return _resolveUriOntFormat(request, response, mmiUri, OntFormat.N3);
+		}
+			
+		// .pdf:
+		else if ( topicExt.equalsIgnoreCase(".pdf") ) {
+			// TODO .pdf Not implemented yet.
+			// arbitrarely returning in HTML:
+			log.warn("PDF format requested, but not implemented yet.");
+			return false;   // handle this by saying "not dispatched here."
+		}
+			
+		return false;   // not dispatched here.
+	}
+	
+	/**
+	 * Helper method to dispatch a request with response in the givenontology format.
+	 * 
+	 * @return true for dispatch completed here; false otherwise.
+	 */
+	// TODO dispatch N3 format
+	private boolean _resolveUriOntFormat(HttpServletRequest request, HttpServletResponse response, 
+			MmiUri mmiUri, OntFormat ontFormat) 
+	throws ServletException, IOException {
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug("_resolveUriOntFormat: starting response.");
 		}
 		
 		String ontologyUri = mmiUri.getOntologyUri();
 	
-		if ( info  ) {
-			// show the parse result:
-			String authority = mmiUri.getAuthority();
-			String topic = mmiUri.getTopic();
-			String term = mmiUri.getTerm();
-			out.println("Parse result: OK<br/>");
-			out.println("<pre>");
-			out.println("       Ontology URI: " + ontologyUri);
-			out.println("          authority: " + authority);
-			out.println("              topic: " + topic);
-			out.println("               Term: " + term);
-			out.println("</pre>");
+		// obtain info about the ontology:
+    	Ontology ontology = db.getOntology(ontologyUri);
+		
+    	if ( ontology == null ) {
+    		// if topic has no extension, try with ".owl"
+    		if ( mmiUri.getTopic().indexOf('.') < 0 ) {
+    			String withExt = mmiUri.getOntologyUriWithTopicExtension(".owl");
+    			ontology = db.getOntology(withExt);
+    			if ( ontology != null ) {
+    				ontologyUri = withExt;
+    			}
+    		}
+    	}
+    	
+		if ( ontology == null ) {
+			return false;   // not dispatched here.
 		}
+		
+		// prepare info about the path to the file on disk:
+		String full_path = ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY) 
+			+ "/" +ontology.file_path + "/" + ontology.filename;
+		File file = new File(full_path);
+
+		if ( file.canRead() ) {
+			String term = mmiUri.getTerm();
+			
+			// Term included?
+			if ( term.length() > 0 ) {
+				String uriFile = file.toURI().toString();
+				Model model = JenaUtil.loadModel(uriFile, false);
+
+				// TODO "text/html" for now
+				String termContents = _resolveTerm(request, mmiUri, model);
+				StringReader is = new StringReader(termContents);
+				response.setContentType("text/html");
+				ServletOutputStream os = response.getOutputStream();
+				IOUtils.copy(is, os);
+				os.close();
+			}
+			
+			// No term included:
+			else {
+				// respond with the contents of the file with contentType set to RDF+XML 
+				response.setContentType("Application/rdf+xml");
+				FileInputStream is = new FileInputStream(file);
+				ServletOutputStream os = response.getOutputStream();
+				IOUtils.copy(is, os);
+				os.close();
+			}
+		}
+		else {
+			// This should not happen.
+			// Log the error and respond with a NotFound error:
+			String msg = full_path+ ": internal error: uploaded file ";
+			msg += file.exists() ? "exists but cannot be read." : "not found.";
+			msg += "Please, report this bug.";
+			log.error(msg, null);
+			response.sendError(HttpServletResponse.SC_NOT_FOUND, msg); 
+		}
+		
+		return true;   // dispatched here.
+	}
+
+
+	/**
+	 * Helper method to dispatch an "HTML" request.
+	 * 
+	 * @return true for dispatch completed here; false otherwise.
+	 */
+	private boolean _resolveUriHtml(HttpServletRequest request, HttpServletResponse response, MmiUri mmiUri) 
+	throws ServletException, IOException {
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug("_resolveUriHtml: starting response.");
+		}
+		
+		// TODO dispatch HTML response.
+		
+		// Temporarily using the "?info" strategy for preliminary testing
+		if ( true ) {
+			_resolveUriInfo(request, response);
+		}
+		
+		return true;
+	}
+
+	
+	/**
+	 * Helper method to dispatch an "?info" request.
+	 * The dispatch is always completed here.
+	 */
+	private void _resolveUriInfo(HttpServletRequest request, HttpServletResponse response) 
+	throws ServletException, IOException {
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug("_resolveUriInfo: starting 'info' response.");
+		}
+		
+		final String fullRequestedUri = request.getRequestURL().toString();
+		
+		PrintWriter out = null; 
+		
+
+		// start the response page:
+		response.setContentType("text/html");
+		out = response.getWriter();
+		out.println("<html>");
+		out.println("<head>");
+		out.println("<title>" +TITLE+ "</title>");
+		out.println("<link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\">");
+		out.println("</head>");
+		out.println("<body>");
+		out.println("<b>" +TITLE+ "</b><br/><br/>");
+		out.println(" Full requested URI: <code>" + fullRequestedUri + "</code> <br/><br/>");
+		
+		// parse the given URI:
+		final String requestedUri = request.getRequestURI();
+		final String contextPath = request.getContextPath();
+		MmiUri mmiUri = null;
+		try {
+			mmiUri = new MmiUri(fullRequestedUri, requestedUri, contextPath);
+		}
+		catch (URISyntaxException e) {
+			out.println("<font color=\"red\">ERROR: " +e.getReason()+ "</font><br/>");
+			out.println("</body>");
+			out.println("</html>");
+			return;
+		}
+		
+		String ontologyUri = mmiUri.getOntologyUri();
+	
+		// show the parse result:
+		String authority = mmiUri.getAuthority();
+		String topic = mmiUri.getTopic();
+		String term = mmiUri.getTerm();
+		out.println("Parse result: OK<br/>");
+		out.println("<pre>");
+		out.println("       Ontology URI: " + ontologyUri);
+		out.println("          authority: " + authority);
+		out.println("              topic: " + topic);
+		out.println("               Term: " + term);
+		out.println("</pre>");
 
 		// obtain info about the ontology:
     	Ontology ontology = db.getOntology(ontologyUri);
 		
-		if ( info  ) {
-			out.println("<br/>Database result:<br/> ");
-		}
+    	out.println("<br/>Database result:<br/> ");
 		
     	if ( ontology == null ) {
-			if ( info  ) {
-				out.println(ontologyUri+ ": <font color=\"red\">Not found.</font> <br/>");
-			}
+    		out.println(ontologyUri+ ": <font color=\"red\">Not found.</font> <br/>");
+
     		// if topic has no extension, try with ".owl"
     		if ( mmiUri.getTopic().indexOf('.') < 0 ) {
-    			if ( info  ) {
-    				out.println("Trying with .owl extension... <br/>");
-    			}
+    			out.println("Trying with .owl extension... <br/>");
+
     			String withExt = mmiUri.getOntologyUriWithTopicExtension(".owl");
     			ontology = db.getOntology(withExt);
     			if ( ontology != null ) {
-    				if ( info  ) {
-    					out.println(withExt+ ": <font color=\"green\">Found.</font> <br/>");
-    				}    		
+    				out.println(withExt+ ": <font color=\"green\">Found.</font> <br/>");
     				ontologyUri = withExt;
     			}
     			else {
@@ -255,14 +466,9 @@ public class UriResolver extends HttpServlet {
     	}
     	
 		if ( ontology == null ) {
-			if ( info  ) {
-		        out.println("</body>");
-		        out.println("</html>");
-				return true;    // dispatched.
-			}
-			else {
-				return false;   // not dispatched here.
-			}
+			out.println("</body>");
+			out.println("</html>");
+			return;
 		}
 		
 		// prepare info about the path to the file on disk:
@@ -270,71 +476,33 @@ public class UriResolver extends HttpServlet {
 			+ "/" +ontology.file_path + "/" + ontology.filename;
 		File file = new File(full_path);
 
-		if ( info  ) {
-			// report the db info and whether the file can be read or not:
-			out.println(" Ontology entry FOUND: <br/>");
-			out.println("<pre>");
-			out.println("                 id: " + ontology.id);
-			out.println("        ontology_id: " + ontology.ontology_id);
-			out.println("          file_path: " + ontology.file_path);
-			out.println("           filename: " + ontology.filename);
-			out.println("</pre>");
-			out.println(" Full path: <code>" + full_path + "</code> ");
-			out.println(" Can read it: <code>" + file.canRead() + "</code> <br/>");
-			
-			if ( file.canRead() ) {
-				out.println("<br/>");
-				
-				String uriFile = file.toURI().toString();
-				Model model = JenaUtil.loadModel(uriFile, false);
-	
-				if ( mmiUri.getTerm().length() > 0 ) {
-					_showTermInfo(mmiUri, model, out);
-				}
-				else {
-					_showAllTerms(mmiUri, model, out);
-				}
-			}
-		}
-		else {
-			if ( file.canRead() ) {
-				String term = mmiUri.getTerm();
-				if ( term.length() > 0 ) {
-					String uriFile = file.toURI().toString();
-					Model model = JenaUtil.loadModel(uriFile, false);
-					
-					// TODO "text/html" for now
-					String termContents = _resolveTerm(request, mmiUri, model);
-					StringReader is = new StringReader(termContents);
-					response.setContentType("text/html");
-					ServletOutputStream os = response.getOutputStream();
-					IOUtils.copy(is, os);
-					os.close();
-				}
-				else {
-					// respond with the contents of the file with contentType set to RDF+XML 
-					response.setContentType("Application/rdf+xml");
-					FileInputStream is = new FileInputStream(file);
-					ServletOutputStream os = response.getOutputStream();
-					IOUtils.copy(is, os);
-					os.close();
-				}
+		// report the db info and whether the file can be read or not:
+		out.println(" Ontology entry FOUND: <br/>");
+		out.println("<pre>");
+		out.println("                 id: " + ontology.id);
+		out.println("        ontology_id: " + ontology.ontology_id);
+		out.println("          file_path: " + ontology.file_path);
+		out.println("           filename: " + ontology.filename);
+		out.println("</pre>");
+		out.println(" Full path: <code>" + full_path + "</code> ");
+		out.println(" Can read it: <code>" + file.canRead() + "</code> <br/>");
+
+		if ( file.canRead() ) {
+			out.println("<br/>");
+
+			String uriFile = file.toURI().toString();
+			Model model = JenaUtil.loadModel(uriFile, false);
+
+			if ( mmiUri.getTerm().length() > 0 ) {
+				_showTermInfo(mmiUri, model, out);
 			}
 			else {
-				// This should not happen.
-				// Log the error and respond with a NotFound error:
-				String msg = full_path+ ": internal error: uploaded file ";
-				msg += file.exists() ? "exists but cannot be read." : "not found.";
-				msg += "Please, report this bug.";
-				log.error(msg, null);
-				response.sendError(HttpServletResponse.SC_NOT_FOUND, msg); 
+				_showAllTerms(mmiUri, model, out);
 			}
 		}
-		
-		return true;   // dispatched here.
 	}
 	
-
+	
 	private void _showAllTerms(MmiUri mmiUri, Model model, PrintWriter out) {
 		out.printf(" All subjects in the model:<br/>%n"); 
 		out.println("<table class=\"inline\">");

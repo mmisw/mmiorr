@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
@@ -63,6 +64,21 @@ public class Util {
 	public static Map<String, String[]> getParams(HttpServletRequest request) {
 		Map<String, String[]> params = request.getParameterMap();
 		return params;
+	}
+	
+	/**
+	 * @returns the list of values associated with a header. Never null.
+	 */
+	public static List<String> getHeader(HttpServletRequest request, String hname) {
+		List<String> values = new ArrayList<String>();
+		
+    	Enumeration<?> hvals = request.getHeaders(hname.toString());
+        while ( hvals.hasMoreElements() ) {
+        	String hval = String.valueOf(hvals.nextElement());
+        	values.add(hval);
+        }
+		
+		return values;
 	}
 	
 	/**
