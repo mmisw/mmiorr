@@ -9,5 +9,14 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/junit.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="/Users/carueda/Software/apache-tomcat-6.0.18/lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/org.mmi.ont.util.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jenatest.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/iri.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/icu4j_3_4.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/arq.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/concurrent.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/antlr-2.7.5.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jena.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
