@@ -10,6 +10,7 @@ ChangeLog
 	
 	- sparql queries now working
 	- "construct" and "select" queries accepted and processed.
+	- WebContent/sparql.html - tests page
 	
 	
 2008-10-18  v. 0.1.1 (20081018)

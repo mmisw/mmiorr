@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+
+  
+  
+  <style type="text/css">
+
+.indented
+   {
+   padding-left: 50pt;
+   padding-right: 50pt;
+   }
+</style>
+  
+  </head><body>
+   
+  <h3> SPARQL tests  </h3>  
+   <div class="indented">
+  
+
+<table border="1">
+<tbody><tr> <th> CONSTRUCT </th>   <th> SELECT </th>  </tr>
+
+<tr>
+    <td>
+    <form name="testForm" method="get" action="/ont/?sparql">
+        <textarea rows="1" cols="60" name="sparql" readonly="yes">CONSTRUCT  { ?s ?p ?o } WHERE {?s ?p ?o. } LIMIT 20
+</textarea>
+        <input value="Submit" type="submit">
+    </form>
+    </td>
+
+    <td>
+    <form name="testForm" method="get" action="/ont/?sparql">
+        <textarea rows="1" cols="60" name="sparql" readonly="yes">SELECT  ?s ?p ?o WHERE {?s ?p ?o. } LIMIT 20
+</textarea>
+        <input value="Submit" type="submit">
+    </form>
+    </td>
+
+</tr>
+ 
+<tr>
+   <td>
+    <form name="testForm" method="get" action="/ont/?sparql">
+	<textarea rows="3" cols="60" name="sparql" readonly="yes">PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+CONSTRUCT { ?s dc:creator ?creator }
+WHERE { ?s dc:creator ?creator. }
+</textarea>
+    	<input value="Submit" type="submit">
+    </form>
+   </td>
+   <td>
+    <form name="testForm" method="get" action="/ont/?sparql">
+        <textarea rows="3" cols="60" name="sparql" readonly="yes">PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+SELECT  ?s  ?creator 
+WHERE { ?s dc:creator ?creator. }
+</textarea>
+        <input value="Submit" type="submit">
+    </form>
+   </td>
+
+</tr>
+
+
+<tr>
+    <td>
+    <form name="testForm" method="get" action="/ont/?sparql">
+	<textarea rows="4" cols="60" name="sparql" readonly="yes">PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; 
+PREFIX owl: &lt;http://www.w3.org/2002/07/owl#&gt; 
+CONSTRUCT { ?cls rdf:type owl:Class. } 
+WHERE { ?cls rdf:type owl:Class. } LIMIT 20</textarea>
+    	<input value="Submit" type="submit">
+    </form>
+    </td>
+    <td>
+    <form name="testForm" method="get" action="/ont/?sparql">
+        <textarea rows="4" cols="60" name="sparql" readonly="yes">PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+PREFIX owl: &lt;http://www.w3.org/2002/07/owl#&gt;
+SELECT ?cls 
+WHERE { ?cls rdf:type owl:Class. } LIMIT 20</textarea>
+        <input value="Submit" type="submit">
+    </form>
+    </td>
+
+</tr>
+
+
+<tr>
+    <td>
+    <form name="testForm" method="get" action="/ont/?sparql">
+        <textarea rows="3" cols="60" name="sparql" readonly="yes">PREFIX dev: &lt;http://mmisw.org/ont/mmi/device#&gt;
+CONSTRUCT  { dev:System ?p ?o } 
+WHERE { dev:System ?p ?o. }
+</textarea>
+        <input value="Submit" type="submit">
+    </form>
+    </td>
+    <td>
+    <form name="testForm" method="get" action="/ont/?sparql">
+        <textarea rows="3" cols="60" name="sparql" readonly="yes">PREFIX dev: &lt;http://mmisw.org/ont/mmi/device#&gt;
+SELECT   ?p ?o
+WHERE { dev:System ?p ?o. }
+</textarea>
+        <input value="Submit" type="submit">
+    </form>
+    </td>
+
+</tr>
+
+</tbody></table>
+
+<br>
+    <form name="testForm" method="get" action="/ont/?sparql">
+    	Your query:<br>
+	<textarea rows="6" cols="60" name="sparql">
+        </textarea>
+    	<input value="Submit" type="submit">
+    </form>
+
+  </div>
+  </body></html>
