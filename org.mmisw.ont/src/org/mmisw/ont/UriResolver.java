@@ -399,7 +399,7 @@ public class UriResolver extends HttpServlet {
 				}
 				case N3 : {
 					// respond with the contents of the file with contentType set to RDF+XML 
-					response.setContentType("text/rdf+n3");   // TODO text/rdf+n3 although not registered (?)
+					response.setContentType("text/plain");//rdf+n3");   // TODO text/rdf+n3 although not registered (?)
 					StringReader is = _getN3(file);
 					IOUtils.copy(is, os);
 					break;
