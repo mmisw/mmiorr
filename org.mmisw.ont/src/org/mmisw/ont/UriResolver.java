@@ -28,6 +28,7 @@ import org.mmisw.ont.util.Util;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -204,9 +205,9 @@ public class UriResolver extends HttpServlet {
 		// The response type depends of the following elements:
 		String topicExt = mmiUri.getTopicExtension();
 		Accept accept = new Accept(request);
-		String form = Util.getParam(request, "form", "");
+		String outFormat = Util.getParam(request, "form", "");
 		
-		// NOTE: I use this 'form' variable to handle the extension of the topic as well as the
+		// NOTE: I use this 'outFormat' variable to handle the extension of the topic as well as the
 		// optional parameter "form".  This parameter, if given, takes precedence over the extension.
 		
 		String dominating = accept.getDominating();
@@ -216,36 +217,36 @@ public class UriResolver extends HttpServlet {
 			log.debug("===Accept entries: " +accept.getEntries());
 			log.debug("===Dominating entry: " +dominating);
 			log.debug("===topicExt = " +topicExt);
-			log.debug("===form = " +form);
+			log.debug("===form = " +outFormat);
 		}
 
-		// prepare 'form' according to "form" parameter (if given) and file extension:
-		if ( form.length() == 0 ) {
+		// prepare 'outFormat' according to "form" parameter (if given) and file extension:
+		if ( outFormat.length() == 0 ) {
 			// no "form" parameter given. Ok, use the variable to hold the extension
 			// without any leading dots:
-			form = topicExt.replaceAll("^\\.+", "");
+			outFormat = topicExt.replaceAll("^\\.+", "");
 		}
 		else {
 			// "form" parameter given. Use it regardless of file extension:
 			if ( topicExt.length() > 0 ) {
 				if ( log.isDebugEnabled() ) {
-					log.debug("form param (=" +form+ ") will take precedence over file extension: " +topicExt);
+					log.debug("form param (=" +outFormat+ ") will take precedence over file extension: " +topicExt);
 				}
 			}
 		}
 		
-		assert !form.startsWith(".");
+		assert !outFormat.startsWith(".");
 		
 		if ( log.isDebugEnabled() ) {
-			log.debug("Using form = " +form+ " for format resolution");
+			log.debug("Using outFormat = " +outFormat+ " for format resolution");
 		}
 
-		// OK, from here I use 'form' to check the requested format for the response.
+		// OK, from here I use 'outFormat' to check the requested format for the response.
 		// 'topicExt' not used from here any more.
 		
-		if ( form.length() == 0                 // No explicit form (either extension or via "form" param) 
-		||   form.equalsIgnoreCase("owl")       // OR form is "owl"
-		||   form.equalsIgnoreCase("rdf")       // OR form is "rdf"
+		if ( outFormat.length() == 0                 // No explicit outFormat 
+		||   outFormat.equalsIgnoreCase("owl")       // OR outFormat is "owl"
+		||   outFormat.equalsIgnoreCase("rdf")       // OR outFormat is "rdf"
 		) {
 			// dereferenced according to content negotiation as:
 			
@@ -278,7 +279,7 @@ public class UriResolver extends HttpServlet {
 					  accept.contains("*/*")
 			) {
 				
-				if ( form.equalsIgnoreCase("owl") ) {
+				if ( outFormat.equalsIgnoreCase("owl") ) {
 					return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML);
 				}
 				else {
@@ -305,20 +306,20 @@ public class UriResolver extends HttpServlet {
 			}
 		}
 		
-		// Else: form (other than "owl" and "rdf") included:
+		// Else: non-empty outFormat (other than "owl" and "rdf"):
 		
 		// "html":
-		else if ( form.equalsIgnoreCase("html") ) {
+		else if ( outFormat.equalsIgnoreCase("html") ) {
 			return _resolveUriHtml(request, response, mmiUri);
 		}
 			
 		// "n3":
-		else if ( form.equalsIgnoreCase("n3") ) {
+		else if ( outFormat.equalsIgnoreCase("n3") ) {
 			return _resolveUriOntFormat(request, response, mmiUri, OntFormat.N3);
 		}
 			
 		// "pdf":
-		else if ( form.equalsIgnoreCase("pdf") ) {
+		else if ( outFormat.equalsIgnoreCase("pdf") ) {
 			// TODO "pdf" Not implemented yet.
 			log.warn("PDF format requested, but not implemented yet.");
 			return false;   // handle this by saying "not dispatched here."
@@ -375,7 +376,7 @@ public class UriResolver extends HttpServlet {
 				String uriFile = file.toURI().toString();
 				Model model = JenaUtil.loadModel(uriFile, false);
 
-				// TODO "text/html" for now
+				// TODO Handle requested format -- for now: "text/html" 
 				String termContents = _resolveTerm(request, mmiUri, model);
 				StringReader is = new StringReader(termContents);
 				response.setContentType("text/html");
@@ -386,11 +387,26 @@ public class UriResolver extends HttpServlet {
 			
 			// No term included:
 			else {
-				// respond with the contents of the file with contentType set to RDF+XML 
-				response.setContentType("Application/rdf+xml");
-				FileInputStream is = new FileInputStream(file);
 				ServletOutputStream os = response.getOutputStream();
-				IOUtils.copy(is, os);
+				switch ( ontFormat ) {
+				case RDFXML: {
+					// respond with the contents of the file with contentType set to RDF+XML
+					// TODO this assumes ALL ontologies are stored in RDF/XML format!!
+					response.setContentType("Application/rdf+xml");
+					FileInputStream is = new FileInputStream(file);
+					IOUtils.copy(is, os);
+					break;
+				}
+				case N3 : {
+					// respond with the contents of the file with contentType set to RDF+XML 
+					response.setContentType("text/rdf+n3");   // TODO text/rdf+n3 although not registered (?)
+					StringReader is = _getN3(file);
+					IOUtils.copy(is, os);
+					break;
+				}
+				default:
+					throw new AssertionError(ontFormat+ " unexpected case");
+				}
 				os.close();
 			}
 		}
@@ -407,6 +423,17 @@ public class UriResolver extends HttpServlet {
 		return true;   // dispatched here.
 	}
 
+
+	private StringReader _getN3(File file) {
+		log.debug("_getN3: " +file);
+		Model model = ModelFactory.createDefaultModel();
+		String absPath = "file:" + file.getAbsolutePath();
+		model.read(absPath, "", null);
+		StringWriter writer = new StringWriter();
+		model.getWriter("N3").write(model, writer, null);
+		StringReader reader = new StringReader(writer.toString());
+		return reader;
+	}
 
 	/**
 	 * Helper method to dispatch an "HTML" request.
