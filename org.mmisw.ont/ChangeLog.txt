@@ -10,6 +10,8 @@ ChangeLog
 	- Accept: A helper class to query the "accept" header values.
 	- "form" parameter also handled. If given, this parameter takes precedence
 	  over the file extension.
+	  
+	- parameter "info" changed to "_debug"
 	
 	
 	

@@ -170,9 +170,9 @@ public class UriResolver extends HttpServlet {
 	private boolean _resolveUri(HttpServletRequest request, HttpServletResponse response) 
 	throws ServletException, IOException {
 		
-		// if the "info" parameter is included, show some info about the URI parse
+		// if the "_debug" parameter is included, show some info about the URI parse
 		// and the ontology from the database (but do not serve the contents)
-		boolean info = Util.yes(request, "info");
+		boolean info = Util.yes(request, "_debug");
 		if ( info ) {
 			_resolveUriInfo(request, response);
 			return true;
