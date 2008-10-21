@@ -206,6 +206,10 @@ public class UriResolver extends HttpServlet {
 		// The response type depends of the following elements:
 		String topicExt = mmiUri.getTopicExtension();
 		Accept accept = new Accept(request);
+		String form = Util.getParam(request, "form", "");
+		
+		// NOTE: I use this 'form' variable to handle the extension of the topic as well as the
+		// optional parameter "form".  This parameter, if given, takes precedence over the extension.
 		
 		String dominating = accept.getDominating();
 		
@@ -218,12 +222,32 @@ public class UriResolver extends HttpServlet {
 			}
 			log.debug("  dominating entry: " +dominating);
 			log.debug("topicExt = " +topicExt);
+			log.debug("form = " +form);
 		}
 
+		// prepare 'form' according to "form" parameter (if given) and file extension:
+		if ( form.length() == 0 ) {
+			// no "form" parameter given. Ok, use the variable to hold the extension
+			// without any leading dots:
+			form = topicExt.replaceAll("^\\.+", "");
+		}
+		else {
+			// "form" parameter given. Use it regardless of file extension:
+			if ( topicExt.length() > 0 ) {
+				if ( log.isDebugEnabled() ) {
+					log.debug("form param (=" +form+ ") will take precedence over file extension: " +topicExt);
+				}
+			}
+		}
 		
-		if ( topicExt.length() == 0                  // No ontology extension? 
-		||   topicExt.equalsIgnoreCase(".owl")       // OR extension is .owl
-		||   topicExt.equalsIgnoreCase(".rdf")       // OR extension is .rdf
+		assert !form.startsWith(".");
+		
+		// OK, from here I use 'form' to check the requested format for the response.
+		// 'topicExt' not used from here any more.
+		
+		if ( form.length() == 0                 // No explicit form (either extension or via "form" param) 
+		||   form.equalsIgnoreCase("owl")       // OR form is "owl"
+		||   form.equalsIgnoreCase("rdf")       // OR form is "rdf"
 		) {
 			// dereferenced according to content negotiation as:
 			
@@ -233,7 +257,7 @@ public class UriResolver extends HttpServlet {
 			}
 			
 			// (a.1) firefox doesn't explicitly say "application/rdf+xml" and I guess this
-			// is also the case with other standard browsers. In particula, my firefox sends:
+			// is also the case with other standard browsers. In particular, my firefox sends:
 			//     text/html
 			//     application/xhtml+xml	
 			//     application/xml; q = 0.9
@@ -256,7 +280,7 @@ public class UriResolver extends HttpServlet {
 					  accept.contains("*/*")
 			) {
 				
-				if ( topicExt.equalsIgnoreCase(".owl") ) {
+				if ( form.equalsIgnoreCase("owl") ) {
 					return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML);
 				}
 				else {
@@ -283,22 +307,21 @@ public class UriResolver extends HttpServlet {
 			}
 		}
 		
-		// Else: ontology extension (other than .owl or .rdf) included:
+		// Else: form (other than "owl" and "rdf") included:
 		
-		// .html:
-		else if ( topicExt.equalsIgnoreCase(".html") ) {
+		// "html":
+		else if ( form.equalsIgnoreCase("html") ) {
 			return _resolveUriHtml(request, response, mmiUri);
 		}
 			
-		// .n3:
-		else if ( topicExt.equalsIgnoreCase(".n3") ) {
+		// "n3":
+		else if ( form.equalsIgnoreCase("n3") ) {
 			return _resolveUriOntFormat(request, response, mmiUri, OntFormat.N3);
 		}
 			
-		// .pdf:
-		else if ( topicExt.equalsIgnoreCase(".pdf") ) {
-			// TODO .pdf Not implemented yet.
-			// arbitrarely returning in HTML:
+		// "pdf":
+		else if ( form.equalsIgnoreCase("pdf") ) {
+			// TODO "pdf" Not implemented yet.
 			log.warn("PDF format requested, but not implemented yet.");
 			return false;   // handle this by saying "not dispatched here."
 		}

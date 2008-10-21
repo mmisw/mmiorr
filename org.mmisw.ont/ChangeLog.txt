@@ -6,7 +6,11 @@ ChangeLog
 2008-10-20
 	- MmmUri: fixed getTermUri();  new getTopicExtension().
 	
+	- First implementation of the current Dereferencing rules, but unfinished.
 	- Accept: A helper class to query the "accept" header values.
+	- "form" parameter also handled. If given, this parameter takes precedence
+	  over the file extension.
+	
 	
 	
 2008-10-19
