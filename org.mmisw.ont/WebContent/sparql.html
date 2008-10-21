@@ -1,27 +1,53 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
+<html>
+<head>
 <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
-
-
-  
-  
   <style type="text/css">
-
 .indented
    {
    padding-left: 50pt;
    padding-right: 50pt;
    }
 </style>
-  
-  </head><body>
-   
-  <h3> SPARQL tests  </h3>  
+</head>
+<body>
+   <img src="http://mmisw.org/or/images/ncbo_logo_portal.gif" />Alpha
    <div class="indented">
   
+  
+  <table >
+  <tbody>
+    <tr> 
+	    <td>
+	    <form name="testForm" method="get" action="/ont/?sparql">
+	    	SPARQL query:<br>
+		<textarea rows="6" cols="60" name="sparql">
+	        </textarea>
+	    	<input value="Submit" type="submit">
+	    </form>
+	</td>
 
+	<td>
+	<a href="http://www.w3.org/TR/rdf-sparql-query/">SPARQL</a> 
+	(<b>S</b>imple <b>P</b>rotocol and <b>R</b>DF <b>Q</b>uery <b>L</b>anguage) is the  standard query language for 
+	<a href="http://www.w3.org/RDF/>RDF</a> (Resource Description Framework). 
+	(More info at <a href="http://en.wikipedia.org/wiki/SPARQL">wikipedia.org</a>).
+	
+	<br/>
+	<br/>
+	Use this form to submit your SPARQL query against the 
+	<a href="http://mmisw.org/or">MMI Ontology Registry and Respository</a>. 
+	See some examples below.
+	<br/><br/><br/>
+	Note: The registry system is under development. Do not use for production.
+	</td>
+  </tr>
+ </tbody>
+ </table>  
+
+<br/>
 <table border="1">
-<tbody><tr> <th> CONSTRUCT </th>   <th> SELECT </th>  </tr>
+<tbody><tr> <th> CONSTRUCT examples</th>   <th> SELECT examples</th>  </tr>
 
 <tr>
     <td>
@@ -112,13 +138,6 @@ WHERE { dev:System ?p ?o. }
 
 </tbody></table>
 
-<br>
-    <form name="testForm" method="get" action="/ont/?sparql">
-    	Your query:<br>
-	<textarea rows="6" cols="60" name="sparql">
-        </textarea>
-    	<input value="Submit" type="submit">
-    </form>
 
   </div>
   </body></html>
