@@ -59,6 +59,9 @@ public class UriResolver extends HttpServlet {
 	private final OntGraph ontGraph = new OntGraph(ontConfig, db);
 	
 	private final SparqlDispatcher sparqlDispatcher = new SparqlDispatcher(ontGraph);
+	
+	
+	private final MdDispatcher mdDispatcher = new MdDispatcher(ontConfig, db);
 
 	
 	private enum OntFormat { RDFXML, N3 };
@@ -169,6 +172,12 @@ public class UriResolver extends HttpServlet {
 	 */
 	private boolean _resolveUri(HttpServletRequest request, HttpServletResponse response) 
 	throws ServletException, IOException {
+		
+		// dispatch metadata?
+		if ( Util.yes(request, "_md")  ) {
+			mdDispatcher.execute(request, response);
+			return true;
+		}
 		
 		// if the "_debug" parameter is included, show some info about the URI parse
 		// and the ontology from the database (but do not serve the contents)
