@@ -12,7 +12,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -26,7 +25,6 @@ import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.sparql.SparqlDispatcher;
 import org.mmisw.ont.util.Accept;
 import org.mmisw.ont.util.Util;
-import org.mmisw.ont.util.Accept.Entry;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -214,15 +212,11 @@ public class UriResolver extends HttpServlet {
 		String dominating = accept.getDominating();
 		
 		if ( log.isDebugEnabled() ) {
-			log.debug("===== Starting dereferencing ====== ");
-			log.debug("  accept entries:");
-			List<Entry> entries = accept.getEntries();
-			for ( Entry entry : entries ) {
-				log.debug("      " +entry);
-			}
-			log.debug("  dominating entry: " +dominating);
-			log.debug("topicExt = " +topicExt);
-			log.debug("form = " +form);
+			log.debug("===Starting dereferencing ====== ");
+			log.debug("===Accept entries: " +accept.getEntries());
+			log.debug("===Dominating entry: " +dominating);
+			log.debug("===topicExt = " +topicExt);
+			log.debug("===form = " +form);
 		}
 
 		// prepare 'form' according to "form" parameter (if given) and file extension:
@@ -242,6 +236,10 @@ public class UriResolver extends HttpServlet {
 		
 		assert !form.startsWith(".");
 		
+		if ( log.isDebugEnabled() ) {
+			log.debug("Using form = " +form+ " for format resolution");
+		}
+
 		// OK, from here I use 'form' to check the requested format for the response.
 		// 'topicExt' not used from here any more.
 		
@@ -349,8 +347,9 @@ public class UriResolver extends HttpServlet {
     	Ontology ontology = db.getOntology(ontologyUri);
 		
     	if ( ontology == null ) {
-    		// if topic has no extension, try with ".owl"
-    		if ( mmiUri.getTopic().indexOf('.') < 0 ) {
+    		
+    		// if topic has extension different from ".owl", try with ".owl":
+    		if ( ! ".owl".equalsIgnoreCase(mmiUri.getTopicExtension()) ) {
     			String withExt = mmiUri.getOntologyUriWithTopicExtension(".owl");
     			ontology = db.getOntology(withExt);
     			if ( ontology != null ) {
@@ -496,10 +495,10 @@ public class UriResolver extends HttpServlet {
     	if ( ontology == null ) {
     		out.println(ontologyUri+ ": <font color=\"red\">Not found.</font> <br/>");
 
-    		// if topic has no extension, try with ".owl"
-    		if ( mmiUri.getTopic().indexOf('.') < 0 ) {
+    		
+    		// if topic has extension different from ".owl", try with ".owl":
+    		if ( ! ".owl".equalsIgnoreCase(mmiUri.getTopicExtension()) ) {
     			out.println("Trying with .owl extension... <br/>");
-
     			String withExt = mmiUri.getOntologyUriWithTopicExtension(".owl");
     			ontology = db.getOntology(withExt);
     			if ( ontology != null ) {

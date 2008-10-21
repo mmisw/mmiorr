@@ -167,9 +167,16 @@ public class MmiUri {
 	}
 
 	/** 
+	 * Gets an Ontology URI with the given topic extension.
 	 */
 	public String getOntologyUriWithTopicExtension(String topicExt) {
-		String uri = untilRoot + authority+ "/" +topic+topicExt;
+		String topicNoExt = topic;
+		String ext = getTopicExtension();
+		if ( ext.length() > 0 ) {
+			int idx = topic.lastIndexOf(ext);
+			topicNoExt = topic.substring(0, idx);
+		}
+		String uri = untilRoot + authority+ "/" + topicNoExt + topicExt;
 		
 		return uri;
 	}
