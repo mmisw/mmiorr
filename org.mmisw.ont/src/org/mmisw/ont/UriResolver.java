@@ -449,7 +449,7 @@ public class UriResolver extends HttpServlet {
 		
 		// TODO dispatch HTML response.
 		
-		// Temporarily using the "?info" strategy for preliminary testing
+		// Temporarily using the "?_debug" strategy for preliminary testing
 		if ( true ) {
 			_resolveUriInfo(request, response);
 		}
@@ -459,14 +459,14 @@ public class UriResolver extends HttpServlet {
 
 	
 	/**
-	 * Helper method to dispatch an "?info" request.
+	 * Helper method to dispatch an "?_debug" request.
 	 * The dispatch is always completed here.
 	 */
 	private void _resolveUriInfo(HttpServletRequest request, HttpServletResponse response) 
 	throws ServletException, IOException {
 		
 		if ( log.isDebugEnabled() ) {
-			log.debug("_resolveUriInfo: starting 'info' response.");
+			log.debug("_resolveUriInfo: starting '_debug' response.");
 		}
 		
 		final String fullRequestedUri = request.getRequestURL().toString();
@@ -580,7 +580,7 @@ public class UriResolver extends HttpServlet {
 		out.printf(" All subjects in the model:<br/>%n"); 
 		out.println("<table class=\"inline\">");
 		out.printf("<tr>%n");
-		out.printf("<th>Subject</th> <th>Info</th> <th>Name</th>%n");
+		out.printf("<th>Subject</th> <th>_debug</th> <th>Name</th>%n");
 		out.printf("</tr>%n");
 
 		ResIterator iter = model.listSubjects();
@@ -591,7 +591,7 @@ public class UriResolver extends HttpServlet {
 				String elemUriSlash = elemUri.replace('#' , '/');
 				out.printf("<tr>%n");
 				out.printf("<td> <a href=\"%s\">%s</a> </td> %n", elemUriSlash, elemUriSlash); 
-				out.printf("<td> <a href=\"%s?info\">info</a> </td> %n", elemUriSlash); 
+				out.printf("<td> <a href=\"%s?_debug\">_debug</a> </td> %n", elemUriSlash); 
 				out.printf("<td> %s </td> %n", elem.getLocalName()); 
 				out.printf("</tr>%n");
 			}
