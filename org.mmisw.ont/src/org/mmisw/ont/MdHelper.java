@@ -4,6 +4,9 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.mmisw.ont.vocabulary.Omv;
+import org.mmisw.ont.vocabulary.OmvMmi;
+
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -15,30 +18,62 @@ import com.hp.hpl.jena.vocabulary.OWL;
 import edu.drexel.util.rdf.JenaUtil;
 import edu.drexel.util.rdf.OwlModel;
 
+/**
+ * Handles the metadata attributes for the ontologies stored in the
+ * MMI Registry.
+ * 
+ * @author Carlos Rueda
+ */
 public class MdHelper {
-	private static String title = "Dublin Core attributes";
+	private static String title = "Metadata";
 	
-	private static Property[] dcProps = {
-		DC.contributor,
-		DC.coverage,
-		DC.creator,
-		DC.date,
-		DC.description,
-		DC.format,
-		DC.identifier,
-		DC.language,
-		DC.publisher,
-		DC.relation,
-		DC.rights,
-		DC.source,
-		DC.subject,
-		DC.title,
-		DC.type,
+	/** A single attribute definition */
+	static class AttrDef {
+		
+		final Property[] props;
+
+		/** 
+		 * The properties that provide for the same attribute.
+		 * The first element takes precedence.
+		 */
+		public AttrDef(Property... props) {
+			assert props.length > 0;
+			this.props = props;
+		}
+		
+	}
+	
+	private static AttrDef[] attrDefs = {
+		
+		// with DC precedence
+		new AttrDef(DC.title),
+		new AttrDef(DC.creator),
+		new AttrDef(DC.subject, Omv.hasDomain),
+		new AttrDef(DC.description, Omv.description),
+		new AttrDef(DC.publisher),
+		new AttrDef(DC.contributor, Omv.hasContributor),
+		new AttrDef(DC.date, Omv.creationDate),
+		new AttrDef(DC.identifier, Omv.uri),
+		new AttrDef(DC.source, OmvMmi.origVocUri),
+
+//		new AttrDef(DC.coverage),
+//		new AttrDef(DC.format),
+//		new AttrDef(DC.language),
+//		new AttrDef(DC.relation),
+//		new AttrDef(DC.rights),
+//		new AttrDef(DC.type),
+		
+		// with Omv precedence
+		new AttrDef(Omv.uri),
+		
+		// with OmvMmi precedence
+		new AttrDef(DC.source, OmvMmi.origVocUri),
 	};
 	
 	private static Map<String,Attribute> _initAttributes(Map<String,Attribute> attributes) {
-		for ( Property dcProp : dcProps) {
-			attributes.put(dcProp.getLocalName(), new Attribute(dcProp));
+		for ( AttrDef attrDef : attrDefs ) {
+			Property dcProp = attrDef.props[0];
+			attributes.put(dcProp.getLocalName(), new Attribute(attrDef));
 		}
 		return attributes;	
 	}
@@ -101,7 +136,7 @@ public class MdHelper {
 		for ( Attribute attr : getAttributes() ) {
 			String value = attr.getValue();
 			if ( value.length() > 0 ) {
-				ontolgy.addProperty(attr.dcProp, value);
+				ontolgy.addProperty(attr.attrDef.props[0], value);
 			}
 		}
 	}
@@ -123,7 +158,8 @@ public class MdHelper {
 			return;
 		}
 		
-		for ( Property dcProp : dcProps ) {
+		for ( AttrDef attrDef : attrDefs ) {
+			Property dcProp = attrDef.props[0];
 			String value = JenaUtil.getValue(ontRes, dcProp);
 			if (value == null) {
 				continue;
@@ -141,20 +177,19 @@ public class MdHelper {
 
 	
 	/**
-	 * A metadata attribute.
+	 * A metadata attribute 
 	 * Each attribute has a pre-determined name, but its value can be set.
 	 */
 	public static class Attribute {
-		private Property dcProp;
+		private AttrDef attrDef;
 		private String value = "";
 		
-		public Attribute(Property dcProp) {
-			// TODO Auto-generated constructor stub
-			this.dcProp = dcProp;
+		public Attribute(AttrDef attrDef) {
+			this.attrDef = attrDef;
 		}
 
 		public String getLabel() {
-			return dcProp.getLocalName();
+			return attrDef.props[0].getLocalName();
 		}
 		
 		public String getValue() {
