@@ -13,6 +13,7 @@ public class MmiUriTest extends TestCase {
 	String requestedUri = "/ont/mmi/someVocab.owl/someTerm";
 	String contextPath = "/ont";
 	
+	
     public void testBasic() throws URISyntaxException {
     	MmiUri mmiUri = new MmiUri(fullRequestedUri, requestedUri, contextPath);
     
@@ -32,6 +33,26 @@ public class MmiUriTest extends TestCase {
         assertEquals("http://mmisw.org/ont/mmi/someVocab/someTerm", mmiUri.getTermUri(true, "/"));
         
         assertEquals("http://mmisw.org/ont/mmi/someVocab.owl#someTerm", mmiUri.getTermUri(false, "#"));
+    }
+
+    public void testNoTerm() throws URISyntaxException {
+    	String fullRequestedUri = "http://mmisw.org/ont/mmi/someVocab";
+    	String requestedUri = "/ont/mmi/someVocab";
+    	MmiUri mmiUri = new MmiUri(fullRequestedUri, requestedUri, contextPath);
+    
+    	assertEquals("", mmiUri.getTerm());
+    	assertEquals("mmi", mmiUri.getAuthority());
+    	assertEquals("someVocab", mmiUri.getTopic());
+    	assertEquals(null, mmiUri.getVersion());
+    }
+
+    public void testNoTerm2() throws URISyntaxException {
+    	String fullRequestedUri = "http://mmisw.org/ont/mmi/someVocab/";
+    	String requestedUri = "/ont/mmi/someVocab/";
+    	MmiUri mmiUri = new MmiUri(fullRequestedUri, requestedUri, contextPath);
+    
+    	assertEquals("", mmiUri.getTerm());
+    	assertEquals(null, mmiUri.getVersion());
     }
 
     public void testTopicExt() throws URISyntaxException {

@@ -62,17 +62,44 @@ public class MmiUri {
 		
 		String[] parts = afterRoot.split("/");
 
-		// Either:  3 parts = { mmi, someVocab.owl, someTerm }
+		// Either:  2 parts = { mmi, someVocab.owl }
+		//     or:  3 parts = { mmi, someVocab.owl, someTerm }
+		//               or = { mmi, someVersion, someVocab.owl}
 		//     or:  4 parts = { mmi, someVersion, someVocab.owl, someTerm }
-		if ( parts.length < 3 || parts.length > 4 ) {
-			throw new URISyntaxException(fullRequestedUri, "3 or 4 parts expected: "
+		if ( parts.length < 2 || parts.length > 4 ) {
+			throw new URISyntaxException(fullRequestedUri, "2, 3, or 4 parts expected: "
 					+Arrays.asList(parts));
 		}
-		
+
 		authority =  parts[0];
-		version = parts.length == 4 ? parts[1] : null;
-		topic =   parts.length == 4 ? parts[2] : parts[1];
-		term =    parts.length == 4 ? parts[3] : parts[2];
+		
+		String _version = null; // will remain null if not given.
+		String _topic = "";
+		String _term = "";     // will remain "" if not given
+		
+		if ( parts.length == 2 ) {
+			_topic = parts[1];
+		}
+		else {
+			int idx_vocab = 1;
+			try {
+				// TODO: check version against ISO format
+				Long.parseLong(parts[1]); // for now, simply checking it's a decimal number
+				// Ok, so take the version and update index for vocab
+				_version = parts[1];
+				idx_vocab = 2;
+			}
+			catch (NumberFormatException ignore) {				
+			}
+			_topic = parts[idx_vocab];
+			if ( idx_vocab + 1 < parts.length ) {
+				_term = parts[idx_vocab + 1];
+			}
+		}
+		
+		version = _version;    // note: will be null if not given
+		topic =   _topic;
+		term =    _term;
 		
 		if ( authority.length() == 0 ) {
 			throw new URISyntaxException(fullRequestedUri, "Missing authority in URI");
