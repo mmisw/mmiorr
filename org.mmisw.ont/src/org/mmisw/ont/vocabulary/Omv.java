@@ -14,6 +14,9 @@ import com.hp.hpl.jena.rdf.model.Resource;
  * @author Carlos Rueda
  */
 public class Omv {
+	private Omv() {}
+	
+	
     /** <p>The RDF model that holds the vocabulary terms</p> */
     private static Model m_model = ModelFactory.createDefaultModel();
     
