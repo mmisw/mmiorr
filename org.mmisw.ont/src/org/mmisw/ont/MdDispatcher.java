@@ -40,8 +40,19 @@ public class MdDispatcher {
 		this.db = db;
 	}
 
-	public void execute(HttpServletRequest request, HttpServletResponse response)
-	throws IOException, ServletException {
+	/**
+	 * Dispatch the display of metadata.
+	 * @param request
+	 * @param response
+	 * @param mmiUri            Used is not null; otherwise, created internally.
+	 * @param completePage      true to create complete page; false to just add the table.
+	 * @throws IOException
+	 * @throws ServletException
+	 */
+	public void execute(HttpServletRequest request, HttpServletResponse response, 
+			MmiUri mmiUri, boolean completePage
+	) throws IOException, ServletException {
+		
 		if ( log.isDebugEnabled() ) {
 			log.debug("MdDispatcher.execute: starting response.");
 		}
@@ -49,14 +60,15 @@ public class MdDispatcher {
 		final String fullRequestedUri = request.getRequestURL().toString();
 		final String requestedUri = request.getRequestURI();
 		final String contextPath = request.getContextPath();
-		MmiUri mmiUri = null;
-		try {
-			mmiUri = new MmiUri(fullRequestedUri, requestedUri, contextPath);
-		}
-		catch (URISyntaxException e) {
-			response.sendError(HttpServletResponse.SC_NOT_FOUND, 
-					request.getRequestURI()+ ": not found");
-			return;
+		if ( mmiUri == null ) {
+			try {
+				mmiUri = new MmiUri(fullRequestedUri, requestedUri, contextPath);
+			}
+			catch (URISyntaxException e) {
+				response.sendError(HttpServletResponse.SC_NOT_FOUND, 
+						request.getRequestURI()+ ": not found");
+				return;
+			}
 		}
 
 		String ontologyUri = mmiUri.getOntologyUri();
@@ -95,10 +107,12 @@ public class MdDispatcher {
 		}
 		Model model = JenaUtil.loadModel(uriFile, false);
 		
-		_dispatchMetadata(request, response, model);
+		_dispatchMetadata(request, response, model, completePage);
 	}
 
-	private void _dispatchMetadata(HttpServletRequest request, HttpServletResponse response, Model model) throws IOException {
+	private void _dispatchMetadata(HttpServletRequest request, HttpServletResponse response, 
+			Model model, boolean completePage
+	) throws IOException {
 
 		MdHelper mdHelper = new MdHelper();
 		
@@ -120,22 +134,22 @@ public class MdDispatcher {
 			list.add(attr);
 		}
 		
-		PrintWriter out = null; 
+		PrintWriter out = response.getWriter();
 		
-
-		// start the response page:
-		response.setContentType("text/html");
-		out = response.getWriter();
-		out.println("<html>");
-		out.println("<head>");
-		out.println("<title>metadata</title>");
-		out.println("<link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\">");
-		out.println("</head>");
-		out.println("<body>");
+		if ( completePage ) {
+			// start the response page:
+			response.setContentType("text/html");
+			out.println("<html>");
+			out.println("<head>");
+			out.println("<title>metadata</title>");
+			out.println("<link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\">");
+			out.println("</head>");
+			out.println("<body>");
+		}
+		
 		out.println("<table class=\"inline\">");
 		out.println("<tbody>");
 		out.println("<tr><th>name</th> <th>value</th> </tr>");
-		
 		
 		for ( String ns : groups.keySet() ) {
 			List<AttributeValue> list = groups.get(ns);
@@ -159,9 +173,10 @@ public class MdDispatcher {
 		out.println("</tbody>");
 		out.println("</table>");
 		
-		out.println("</body>");
-		out.println("</html>");
-
+		if ( completePage ) {
+			out.println("</body>");
+			out.println("</html>");
+		}
 	}
 
 }

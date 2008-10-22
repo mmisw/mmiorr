@@ -175,7 +175,7 @@ public class UriResolver extends HttpServlet {
 		
 		// dispatch metadata?
 		if ( Util.yes(request, "_md")  ) {
-			mdDispatcher.execute(request, response);
+			mdDispatcher.execute(request, response, null, true);
 			return true;
 		}
 		
@@ -456,13 +456,66 @@ public class UriResolver extends HttpServlet {
 			log.debug("_resolveUriHtml: starting response.");
 		}
 		
-		// TODO dispatch HTML response.
+		final String fullRequestedUri = request.getRequestURL().toString();
 		
-		// Temporarily using the "?_debug" strategy for preliminary testing
-		if ( true ) {
-			_resolveUriInfo(request, response);
+		String ontologyUri = mmiUri.getOntologyUri();
+		Ontology ontology = db.getOntology(ontologyUri);
+		if ( ontology == null ) {
+    		// if topic has extension different from ".owl", try with ".owl":
+    		if ( ! ".owl".equalsIgnoreCase(mmiUri.getTopicExtension()) ) {
+    			String withExt = mmiUri.getOntologyUriWithTopicExtension(".owl");
+    			ontology = db.getOntology(withExt);
+    			if ( ontology != null ) {
+    				ontologyUri = withExt;
+    			}
+    		}
 		}
 		
+		if ( ontology == null ) {
+			response.sendError(HttpServletResponse.SC_NOT_FOUND, 
+					request.getRequestURI()+ ": not found");
+			return true;
+		}
+
+		String full_path = ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY) 
+						+ "/" +ontology.file_path + "/" + ontology.filename;
+		
+		File file = new File(full_path);
+		if ( ! file.canRead() ) {
+			response.sendError(HttpServletResponse.SC_NOT_FOUND, 
+					request.getRequestURI()+ ": not found");
+			return true;
+		}
+		
+		
+		
+		PrintWriter out = response.getWriter();
+		
+
+		// start the response page:
+		response.setContentType("text/html");
+		out.println("<html>");
+		out.println("<head>");
+		out.println("<title>" +fullRequestedUri+ "</title>");
+		out.println("<link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\">");
+		out.println("</head>");
+		out.println("<body>");
+		
+		// start with the metadata:
+		mdDispatcher.execute(request, response, mmiUri, false);
+		
+		
+		out.println("<br/>");
+
+		String uriFile = file.toURI().toString();
+		Model model = JenaUtil.loadModel(uriFile, false);
+
+		if ( mmiUri.getTerm().length() > 0 ) {
+			_showTermInfo(mmiUri, model, out);
+		}
+		else {
+			_showAllTerms(mmiUri, model, out);
+		}
 		return true;
 	}
 
