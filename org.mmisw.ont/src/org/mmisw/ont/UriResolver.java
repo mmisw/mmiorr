@@ -49,7 +49,7 @@ public class UriResolver extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	
-	private static final String VERSION = "0.1.1 (20081018)";
+	private static final String VERSION = "0.1.2 (20081021)";
 	private static final String TITLE = "MMI Ontology URI resolver. Version " +VERSION;
 
 	private final Log log = LogFactory.getLog(UriResolver.class);

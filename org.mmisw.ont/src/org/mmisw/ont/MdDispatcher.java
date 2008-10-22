@@ -129,7 +129,6 @@ public class MdDispatcher {
 		out.println("<link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\">");
 		out.println("</head>");
 		out.println("<body>");
-		out.println("<b>Metadata</b>");
 		out.println("<table class=\"inline\">");
 		out.println("<tbody>");
 		out.println("<tr><th>name</th> <th>value</th> </tr>");
@@ -137,9 +136,9 @@ public class MdDispatcher {
 		
 		for ( String ns : groups.keySet() ) {
 			List<Attribute> list = groups.get(ns);
-			String prefix = mdHelper.getPreferredPrefix(ns);
+			String prefix = MdHelper.getPreferredPrefix(ns);
 			
-			out.println("<tr><th colspan=\"2\"> PREFIX " +prefix+ ": " +ns+ "</th> </tr>");
+			out.println("<tr><th colspan=\"2\" align=\"left\"> PREFIX " +prefix+ " = " +ns+ "</th> </tr>");
 			for ( Attribute attr : list ) {
 				String lbl = attr.getLabel();
 				String val = attr.getValue();
