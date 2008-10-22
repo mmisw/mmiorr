@@ -176,7 +176,8 @@ public class UriResolver extends HttpServlet {
 		// dispatch metadata?
 		if ( Util.yes(request, "_md")  ) {
 			boolean completePage = false; // not even as the whole response
-			mdDispatcher.execute(request, response, null, completePage);
+			String tableClass = "metadata";   // TODO make tableClass a parameter
+			mdDispatcher.execute(request, response, null, completePage, tableClass);
 			return true;
 		}
 		
@@ -502,8 +503,9 @@ public class UriResolver extends HttpServlet {
 		out.println("</head>");
 		out.println("<body>");
 		
+		String tableClass = "inline";
 		// start with the metadata:
-		mdDispatcher.execute(request, response, mmiUri, false);
+		mdDispatcher.execute(request, response, mmiUri, false, tableClass);
 		
 		
 		out.println("<br/>");

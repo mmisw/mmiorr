@@ -50,7 +50,7 @@ public class MdDispatcher {
 	 * @throws ServletException
 	 */
 	public void execute(HttpServletRequest request, HttpServletResponse response, 
-			MmiUri mmiUri, boolean completePage
+			MmiUri mmiUri, boolean completePage, String tableClass
 	) throws IOException, ServletException {
 		
 		if ( log.isDebugEnabled() ) {
@@ -107,11 +107,11 @@ public class MdDispatcher {
 		}
 		Model model = JenaUtil.loadModel(uriFile, false);
 		
-		_dispatchMetadata(request, response, model, completePage);
+		_dispatchMetadata(request, response, model, completePage, tableClass);
 	}
 
 	private void _dispatchMetadata(HttpServletRequest request, HttpServletResponse response, 
-			Model model, boolean completePage
+			Model model, boolean completePage, String tableClass
 	) throws IOException {
 
 		MdHelper mdHelper = new MdHelper();
@@ -147,7 +147,7 @@ public class MdDispatcher {
 			out.println("<body>");
 		}
 		
-		out.println("<table class=\"inline\">");
+		out.println("<table class=\"" +tableClass+ "\">");
 		out.println("<tbody>");
 		
 		// don't even show the table header if there are no values to show:
