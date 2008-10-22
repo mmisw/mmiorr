@@ -7,7 +7,9 @@ import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
  * Vocabulary definitions for Omv following
- * <a href="http://marinemetadata.org/files/mmi/OntologyExampleOMV.owl">this example</a>.
+ * <a href="http://marinemetadata.org/files/mmi/OntologyExampleOMV.owl">this example</a>
+ * in a similiar way as with
+ * <a href="http://jena.sourceforge.net/javadoc/com/hp/hpl/jena/vocabulary/DC_11.html">DC_11 in Jena</a>.
  * 
  * <p>
  * 
