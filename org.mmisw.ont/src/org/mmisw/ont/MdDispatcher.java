@@ -147,11 +147,14 @@ public class MdDispatcher {
 			out.println("<body>");
 		}
 		
-		out.println("\n<!-- begin metadata generated front ont service -->");
+		out.println("\n<!-- Ont MD -->");
 		if ( tableClass != null ) {
 			out.println("<table class=\"" +tableClass+ "\">");
 		}
 		else {
+			// TODO: integrate stylesheets.
+			// for now, inlining the style here; perhaps not correct, but
+			// works in my firefox and safari browsers.
 			out.println(
 				"<style type=\"text/css\">\n" +
 					"table.inline {\n" +
@@ -197,7 +200,7 @@ public class MdDispatcher {
 					}
 
 					if ( ! groupHeaderDone ) {
-						out.println("<tr><td colspan=\"2\"><label> " +prefix+ " = " +ns+ " </label> </td> </tr>");
+						out.println("<tr><td colspan=\"2\" align=\"center\"><label> " +prefix+ " = " +ns+ " </label> </td> </tr>");
 						groupHeaderDone = true;
 					}
 					
@@ -207,7 +210,7 @@ public class MdDispatcher {
 		}
 		out.println("</tbody>");
 		out.println("</table>");
-		out.println("<!-- end metadata generated front ont service -->");
+		out.println("<!-- Ont MD -->");
 		
 		if ( completePage ) {
 			out.println("</body>");
