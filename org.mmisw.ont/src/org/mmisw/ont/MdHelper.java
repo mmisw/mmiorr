@@ -1,6 +1,7 @@
 package org.mmisw.ont;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -26,6 +27,9 @@ import edu.drexel.util.rdf.OwlModel;
  */
 public class MdHelper {
 	private static String title = "Metadata";
+	
+	// Examples: preferredPrefix(DC.NS) == "dc";
+	private static Map<String,String> preferredPrefix = new HashMap<String,String>();
 	
 	/** A single attribute definition */
 	static class AttrDef {
@@ -113,8 +117,16 @@ public class MdHelper {
 	 */
 	public MdHelper() {
 		if ( attributes == null ) {
+			preferredPrefix.put(DC.NS, "dc");
+			preferredPrefix.put(Omv.NS, "omv");
+			preferredPrefix.put(OmvMmi.NS, "omvmi");
+			
 			attributes = _initAttributes(new LinkedHashMap<String,Attribute>());	
 		}
+	}
+	
+	public String getPreferredPrefix(String namespace) {
+		return preferredPrefix.get(namespace);
 	}
 
 	public String getTitle() {
@@ -212,6 +224,10 @@ public class MdHelper {
 			this.attrDef = attrDef;
 		}
 
+		public String getNamespace() {
+			return attrDef.props[0].getNameSpace();
+		}
+		
 		public String getLabel() {
 			return attrDef.props[0].getLocalName();
 		}

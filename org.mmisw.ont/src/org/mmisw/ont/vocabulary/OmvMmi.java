@@ -29,70 +29,70 @@ public class OmvMmi {
     
     
     /** OM.5 ; source of omv:acronym */
-    public static final Property shortNameUri = m_model.createProperty( NS + "shortNameUri" );
+    public static final Property shortNameUri = m_model.createProperty( NS , "shortNameUri" );
     
     /** UL.1 */
-    public static final Property contact = m_model.createProperty( NS + "contact" );
+    public static final Property contact = m_model.createProperty( NS , "contact" );
     
     /** UL.2 */
-    public static final Property contactRole = m_model.createProperty( NS + "contactRole" );
+    public static final Property contactRole = m_model.createProperty( NS , "contactRole" );
     
     /** UL.5 */
-    public static final Property accessStatus = m_model.createProperty( NS + "accessStatus" );
+    public static final Property accessStatus = m_model.createProperty( NS , "accessStatus" );
     
     /** UL.8 */
-    public static final Property accessStatusDate = m_model.createProperty( NS + "accessStatusDate" );
+    public static final Property accessStatusDate = m_model.createProperty( NS , "accessStatusDate" );
     
     /** UL.9 ; until omv:hasLicense */
-    public static final Property licenseCode = m_model.createProperty( NS + "licenseCode" );
+    public static final Property licenseCode = m_model.createProperty( NS , "licenseCode" );
     
     /** UL.10 */
-    public static final Property licenseReference = m_model.createProperty( NS + "licenseReference" );
+    public static final Property licenseReference = m_model.createProperty( NS , "licenseReference" );
     
     /** UL.11 */
-    public static final Property licenseAsOfDate = m_model.createProperty( NS + "licenseAsOfDate" );
+    public static final Property licenseAsOfDate = m_model.createProperty( NS , "licenseAsOfDate" );
     
     /** UL.12 */
-    public static final Property temporaryMmiRole = m_model.createProperty( NS + "temporaryMmiRole" );
+    public static final Property temporaryMmiRole = m_model.createProperty( NS , "temporaryMmiRole" );
     
     /** UL.13 */
-    public static final Property agreedMmiRole = m_model.createProperty( NS + "agreedMmiRole" );
+    public static final Property agreedMmiRole = m_model.createProperty( NS , "agreedMmiRole" );
     
     /** UL.17 */
-    public static final Property creditRequired = m_model.createProperty( NS + "creditRequired" );
+    public static final Property creditRequired = m_model.createProperty( NS , "creditRequired" );
     
     /** UL.18 */
-    public static final Property creditConditions = m_model.createProperty( NS + "creditConditions" );
+    public static final Property creditConditions = m_model.createProperty( NS , "creditConditions" );
     
     /** UL.19 */
-    public static final Property creditCitation = m_model.createProperty( NS + "creditCitation" );
+    public static final Property creditCitation = m_model.createProperty( NS , "creditCitation" );
     
     /** OSI.1 */
-    public static final Property origVocUri = m_model.createProperty( NS + "origVocUri" );
+    public static final Property origVocUri = m_model.createProperty( NS , "origVocUri" );
     
     /** OSI.2 */
-    public static final Property origVocManager = m_model.createProperty( NS + "origVocManager" );
+    public static final Property origVocManager = m_model.createProperty( NS , "origVocManager" );
     
     /** OSI.7 */
-    public static final Property origVocDocumentationUri = m_model.createProperty( NS + "origVocDocumentationUri" );
+    public static final Property origVocDocumentationUri = m_model.createProperty( NS , "origVocDocumentationUri" );
     
     /** OSI.9.1 */
-    public static final Property origVocShortName = m_model.createProperty( NS + "origVocShortName" );
+    public static final Property origVocShortName = m_model.createProperty( NS , "origVocShortName" );
     
     /** OSI.9.2 */
-    public static final Property origVocDescriptiveName = m_model.createProperty( NS + "origVocDescriptiveName" );
+    public static final Property origVocDescriptiveName = m_model.createProperty( NS , "origVocDescriptiveName" );
     
     /** OSI.9.3 */
-    public static final Property origVocVersionId = m_model.createProperty( NS + "origVocVersionId" );
+    public static final Property origVocVersionId = m_model.createProperty( NS , "origVocVersionId" );
     
     /** OSI.9.4 */
-    public static final Property origVocKeywords = m_model.createProperty( NS + "origVocKeywords" );
+    public static final Property origVocKeywords = m_model.createProperty( NS , "origVocKeywords" );
     
     /** OSI.9.5 */
-    public static final Property origVocSyntaxFormat = m_model.createProperty( NS + "origVocSyntaxFormat" );
+    public static final Property origVocSyntaxFormat = m_model.createProperty( NS , "origVocSyntaxFormat" );
 
     /** OSM.1 */
-    public static final Property origMaintainerCode = m_model.createProperty( NS + "origMaintainerCode" );
+    public static final Property origMaintainerCode = m_model.createProperty( NS , "origMaintainerCode" );
     
 
 }

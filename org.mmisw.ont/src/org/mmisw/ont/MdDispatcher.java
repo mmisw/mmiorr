@@ -4,7 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +23,10 @@ import com.hp.hpl.jena.rdf.model.Model;
 import edu.drexel.util.rdf.JenaUtil;
 
 
-
+/**
+ * Dispatches the metadata output.
+ * @author Carlos Rueda
+ */
 public class MdDispatcher {
 	
 	private final Log log = LogFactory.getLog(MdDispatcher.class);
@@ -98,6 +105,17 @@ public class MdDispatcher {
 		// display the attributes:
 		Collection<Attribute> attrs = mdHelper.getAttributes();
 		
+		// example: groups[DC.NS] == list of DC attributes:
+		Map<String,List<Attribute>> groups = new LinkedHashMap<String,List<Attribute>>();
+		for ( Attribute attr : attrs ) {
+			String ns = attr.getNamespace();
+			List<Attribute> list = groups.get(ns);
+			if ( list == null ) {
+				list = new ArrayList<Attribute>();
+				groups.put(ns, list);
+			}
+			list.add(attr);
+		}
 		
 		PrintWriter out = null; 
 		
@@ -115,11 +133,19 @@ public class MdDispatcher {
 		out.println("<table class=\"inline\">");
 		out.println("<tbody>");
 		out.println("<tr><th>name</th> <th>value</th> </tr>");
-		for ( Attribute attr : attrs ) {
-			String lbl = attr.getLabel();
-			String val = attr.getValue();
-			if ( val.trim().length() > 0 ) {
-				out.printf("<tr><td>%s</td> <td>%s</td> </tr> %n", lbl, val);
+		
+		
+		for ( String ns : groups.keySet() ) {
+			List<Attribute> list = groups.get(ns);
+			String prefix = mdHelper.getPreferredPrefix(ns);
+			
+			out.println("<tr><th colspan=\"2\"> PREFIX " +prefix+ ": " +ns+ "</th> </tr>");
+			for ( Attribute attr : list ) {
+				String lbl = attr.getLabel();
+				String val = attr.getValue();
+				if ( val.trim().length() > 0 ) {
+					out.printf("<tr><td>%s:%s</td> <td>%s</td> </tr> %n", prefix, lbl, val);
+				}
 			}
 		}
 		out.println("</tbody>");

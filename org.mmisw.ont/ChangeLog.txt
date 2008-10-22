@@ -3,6 +3,24 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2008-10-21
+	- Starting handling of metadata vocabularies.
+	- New package package org.mmisw.ont.vocabulary:
+	     Omv: Vocabulary definitions for Omv
+	     OmvMmi: Vocabulary definitions for OmvMmi
+	  The definition are based on the current contents of:
+	     http://marinemetadata.org/files/mmi/OntologyExampleOMV.owl
+	  which I saved in the same package for reference.
+	  
+	- Dispatching the metadata:
+		"_md" parameter used to display the metadata, example:
+		     http://mmisw.org/ont/foo/mytopic.owl?_md
+		(I added some of the new attributes in mytopic.owl for testing).
+	  Main classes:
+		MdDispatcher: Dispatches the metadata output
+		MdHelper: Handles the metadata attributes.
+	
+	
 2008-10-20
 	- MmmUri: fixed getTermUri();  new getTopicExtension().
 	

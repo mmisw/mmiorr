@@ -29,46 +29,46 @@ public class Omv {
     
     
     /** OM.1 */
-    public static final Property uri = m_model.createProperty( NS + "uri" );
+    public static final Property uri = m_model.createProperty( NS , "uri" );
     
     /** OM.22 */
-    public static final Property name = m_model.createProperty( NS + "name" );
+    public static final Property name = m_model.createProperty( NS , "name" );
     
     /** OM.9 */
-    public static final Property description = m_model.createProperty( NS + "description" );
+    public static final Property description = m_model.createProperty( NS , "description" );
     
     /** OM.4 ; is really short name, not acronym */
-    public static final Property acronym = m_model.createProperty( NS + "acronym" );
+    public static final Property acronym = m_model.createProperty( NS , "acronym" );
     
     /** OM.2 */
-    public static final Property version = m_model.createProperty( NS + "version" );
+    public static final Property version = m_model.createProperty( NS , "version" );
     
     /** OM.12 */
-    public static final Property keywords = m_model.createProperty( NS + "keywords" );
+    public static final Property keywords = m_model.createProperty( NS , "keywords" );
     
     /** OSI.5 */
-    public static final Property hasCreator = m_model.createProperty( NS + "hasCreator" );
+    public static final Property hasCreator = m_model.createProperty( NS , "hasCreator" );
     
     /** OM.3 ; creation date of this version */
-    public static final Property creationDate = m_model.createProperty( NS + "creationDate" );
+    public static final Property creationDate = m_model.createProperty( NS , "creationDate" );
     
     /** OM.23 */
-    public static final Property hasDomain = m_model.createProperty( NS + "hasDomain" );
+    public static final Property hasDomain = m_model.createProperty( NS , "hasDomain" );
     
     /** OM.25 ; same as uri + '.owl' */
-    public static final Property resourceLocator = m_model.createProperty( NS + "resourceLocator" );
+    public static final Property resourceLocator = m_model.createProperty( NS , "resourceLocator" );
     
     /** OM.15 */
-    public static final Property documentation = m_model.createProperty( NS + "documentation" );
+    public static final Property documentation = m_model.createProperty( NS , "documentation" );
     
     /** OM.17 */
-    public static final Property naturalLanguage = m_model.createProperty( NS + "naturalLanguage" );
+    public static final Property naturalLanguage = m_model.createProperty( NS , "naturalLanguage" );
     
     /** OM.21 */
-    public static final Property hasContributor = m_model.createProperty( NS + "hasContributor" );
+    public static final Property hasContributor = m_model.createProperty( NS , "hasContributor" );
     
     /** OM.19 */
-    public static final Property hasPriorVersion = m_model.createProperty( NS + "hasPriorVersion" );
+    public static final Property hasPriorVersion = m_model.createProperty( NS , "hasPriorVersion" );
     
 
 }
