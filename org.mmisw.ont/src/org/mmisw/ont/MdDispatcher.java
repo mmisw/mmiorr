@@ -138,11 +138,17 @@ public class MdDispatcher {
 			List<Attribute> list = groups.get(ns);
 			String prefix = MdHelper.getPreferredPrefix(ns);
 			
-			out.println("<tr><th colspan=\"2\" align=\"left\"> PREFIX " +prefix+ " = " +ns+ "</th> </tr>");
+			boolean headerDone = false;
 			for ( Attribute attr : list ) {
 				String lbl = attr.getLabel();
 				String val = attr.getValue();
 				if ( val.trim().length() > 0 ) {
+					
+					if ( ! headerDone ) {
+						out.println("<tr><th colspan=\"2\" align=\"left\"> PREFIX " +prefix+ " = " +ns+ "</th> </tr>");
+						headerDone = true;
+					}
+					
 					out.printf("<tr><td>%s:%s</td> <td>%s</td> </tr> %n", prefix, lbl, val);
 				}
 			}
