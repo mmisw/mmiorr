@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mmisw.ont.MdHelper.Attribute;
+import org.mmisw.ont.MdHelper.AttributeValue;
 
 import com.hp.hpl.jena.rdf.model.Model;
 
@@ -106,15 +106,15 @@ public class MdDispatcher {
 		mdHelper.updateAttributesFromModel(model);
 		
 		// display the attributes:
-		Collection<Attribute> attrs = mdHelper.getAttributes();
+		Collection<AttributeValue> attrs = mdHelper.getAttributes();
 		
 		// example: groups[DC.NS] == list of DC attributes:
-		Map<String,List<Attribute>> groups = new LinkedHashMap<String,List<Attribute>>();
-		for ( Attribute attr : attrs ) {
+		Map<String,List<AttributeValue>> groups = new LinkedHashMap<String,List<AttributeValue>>();
+		for ( AttributeValue attr : attrs ) {
 			String ns = attr.getNamespace();
-			List<Attribute> list = groups.get(ns);
+			List<AttributeValue> list = groups.get(ns);
 			if ( list == null ) {
-				list = new ArrayList<Attribute>();
+				list = new ArrayList<AttributeValue>();
 				groups.put(ns, list);
 			}
 			list.add(attr);
@@ -138,11 +138,11 @@ public class MdDispatcher {
 		
 		
 		for ( String ns : groups.keySet() ) {
-			List<Attribute> list = groups.get(ns);
+			List<AttributeValue> list = groups.get(ns);
 			String prefix = MdHelper.getPreferredPrefix(ns);
 			
 			boolean headerDone = false;
-			for ( Attribute attr : list ) {
+			for ( AttributeValue attr : list ) {
 				String lbl = attr.getLabel();
 				String val = attr.getValue();
 				if ( val.trim().length() > 0 ) {

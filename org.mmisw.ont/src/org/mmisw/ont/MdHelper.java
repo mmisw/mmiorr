@@ -110,10 +110,10 @@ public class MdHelper {
 		new AttrDef(OmvMmi.origMaintainerCode),
 	};
 	
-	private static Map<String,Attribute> _initAttributes(Map<String,Attribute> attributes) {
+	private static Map<String,AttributeValue> _initAttributes(Map<String,AttributeValue> attributes) {
 		for ( AttrDef attrDef : attrDefs ) {
 			Property dcProp = attrDef.props[0];
-			attributes.put(dcProp.getLocalName(), new Attribute(attrDef));
+			attributes.put(dcProp.getLocalName(), new AttributeValue(attrDef));
 		}
 		return attributes;	
 	}
@@ -121,16 +121,14 @@ public class MdHelper {
 	/**
 	 * attributes that can/should be associated
 	 */
-	private Map<String,Attribute> attributes;
+	private Map<String,AttributeValue> attributes;
 	
 	
 	/** 
 	 * Creates an ontology metadata helper.
 	 */
 	public MdHelper() {
-		if ( attributes == null ) {
-			attributes = _initAttributes(new LinkedHashMap<String,Attribute>());	
-		}
+		attributes = _initAttributes(new LinkedHashMap<String,AttributeValue>());	
 	}
 	
 	public String getTitle() {
@@ -141,7 +139,7 @@ public class MdHelper {
 	 * Gets all the attributes
 	 * @return All the attributes
 	 */
-	public Collection<Attribute> getAttributes() {
+	public Collection<AttributeValue> getAttributes() {
 		return attributes.values();
 	}
 	
@@ -156,7 +154,7 @@ public class MdHelper {
 
 		// see that at least one attribute has a value associated
 		boolean hasValues = false;
-		for ( Attribute attr : getAttributes() ) {
+		for ( AttributeValue attr : getAttributes() ) {
 			String values = attr.getValue();
 			if ( values.length() > 0 ) {
 				hasValues = true;
@@ -173,7 +171,7 @@ public class MdHelper {
 		OwlModel newOntModel = new OwlModel(ontModel);
 		Ontology ontolgy = newOntModel.createOntology(JenaUtil.getURIForBase(""));
 		
-		for ( Attribute attr : getAttributes() ) {
+		for ( AttributeValue attr : getAttributes() ) {
 			String value = attr.getValue();
 			if ( value.length() > 0 ) {
 				ontolgy.addProperty(attr.attrDef.props[0], value);
@@ -206,7 +204,7 @@ public class MdHelper {
 			}
 			//	value = JenaUtil.getBaseURI(ontModel);
 			
-			Attribute attr = attributes.get(dcProp.getLocalName());
+			AttributeValue attr = attributes.get(dcProp.getLocalName());
 			if ( attr != null ) {
 				attr.setValue(value);
 			}
@@ -217,14 +215,13 @@ public class MdHelper {
 
 	
 	/**
-	 * A metadata attribute 
-	 * Each attribute has a pre-determined name, but its value can be set.
+	 * A metadata attribute with associated value. 
 	 */
-	public static class Attribute {
+	public static class AttributeValue {
 		private AttrDef attrDef;
 		private String value = "";
 		
-		public Attribute(AttrDef attrDef) {
+		public AttributeValue(AttrDef attrDef) {
 			this.attrDef = attrDef;
 		}
 
