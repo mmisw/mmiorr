@@ -149,24 +149,33 @@ public class MdDispatcher {
 		
 		out.println("<table class=\"inline\">");
 		out.println("<tbody>");
-		out.println("<tr><th>name</th> <th>value</th> </tr>");
+		
+		// don't even show the table header if there are no values to show:
+		boolean tableHeaderDone = false;
 		
 		for ( String ns : groups.keySet() ) {
 			List<AttributeValue> list = groups.get(ns);
 			String prefix = MdHelper.getPreferredPrefix(ns);
 			
-			boolean headerDone = false;
+			// don't show the group "header" if there are no associated values to show:
+			boolean groupHeaderDone = false;
+			
 			for ( AttributeValue attr : list ) {
 				String lbl = attr.getLabel();
 				String val = attr.getValue();
 				if ( val.trim().length() > 0 ) {
 					
-					if ( ! headerDone ) {
-						out.println("<tr><th colspan=\"2\" align=\"left\"> " +prefix+ " = " +ns+ "</th> </tr>");
-						headerDone = true;
+					if ( ! tableHeaderDone ) {
+						out.println("<tr><th>Attribute</th> <th>Value</th> </tr>");
+						tableHeaderDone = true;
+					}
+
+					if ( ! groupHeaderDone ) {
+						out.println("<tr><td colspan=\"2\"><label> " +prefix+ " = " +ns+ " </label> </td> </tr>");
+						groupHeaderDone = true;
 					}
 					
-					out.printf("<tr><td>%s:%s</td> <td>%s</td> </tr> %n", prefix, lbl, val);
+					out.printf("<tr><td><label>%s:%s</label></td> <td>%s</td> </tr> %n", prefix, lbl, val);
 				}
 			}
 		}

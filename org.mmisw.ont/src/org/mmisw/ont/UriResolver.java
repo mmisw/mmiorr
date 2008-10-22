@@ -175,7 +175,8 @@ public class UriResolver extends HttpServlet {
 		
 		// dispatch metadata?
 		if ( Util.yes(request, "_md")  ) {
-			mdDispatcher.execute(request, response, null, true);
+			boolean completePage = false; // not even as the whole response
+			mdDispatcher.execute(request, response, null, completePage);
 			return true;
 		}
 		
