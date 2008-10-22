@@ -24,6 +24,7 @@ import java.net.URISyntaxException;
 public class MmiUri {
 
 	private final String authority;
+	private final String version;
 	private final String topic;
 	private final String term;
 	private final String ontologyUri;
@@ -58,20 +59,31 @@ public class MmiUri {
 		untilRoot = fullRequestedUri.substring(0, rootIdx);
 		assert untilRoot.endsWith("/");
 		
-		// parts = { mmi, someVocab.owl, someTerm }
-		String[] parts = afterRoot.split("/", 3);
+		String[] parts = afterRoot.split("\\s*/\\s*");
+
+		// Either:  parts = { mmi, someVocab.owl, someTerm }
+		//     or:  parts = { mmi, someVersion, someVocab.owl, someTerm }
+		if ( parts.length < 3 || parts.length > 4 ) {
+			throw new URISyntaxException(fullRequestedUri, "3 or 4 parts expected.");
+		}
 		
-		authority =  parts.length >= 1 ? parts[0] : "";
+		authority =  parts[0];
+		version = parts.length == 4 ? parts[1] : null;
+		topic =   parts.length == 4 ? parts[2] : parts[1];
+		term =    parts.length == 4 ? parts[3] : parts[2];
+		
 		if ( authority.length() == 0 ) {
 			throw new URISyntaxException(fullRequestedUri, "Missing authority in URI");
 		}
-		
-		topic = parts.length >= 2 ? parts[1] : "";
 		if ( topic.length() == 0 ) {
 			throw new URISyntaxException(fullRequestedUri, "Missing topic in URI");
 		}
 		
-		term =  parts.length >= 3 ? parts[2] : "";
+		// check version, if given:
+		if ( version != null && version.length() == 0 ) {
+			throw new URISyntaxException(fullRequestedUri, "Version given but empty");
+		}
+		
 		
 		// ontologyUri is everything but the term and without trailing slashes
 		if ( term.length() > 0 ) {
@@ -97,6 +109,14 @@ public class MmiUri {
 	 */
 	public String getAuthority() {
 		return authority;
+	}
+
+	/** 
+	 * @returns the version 
+	 *          (<code>null</code> in the example.)
+	 */
+	public String getVersion() {
+		return version;
 	}
 
 	/** 
@@ -176,7 +196,9 @@ public class MmiUri {
 			int idx = topic.lastIndexOf(ext);
 			topicNoExt = topic.substring(0, idx);
 		}
-		String uri = untilRoot + authority+ "/" + topicNoExt + topicExt;
+		String uri = untilRoot + authority+ "/" 
+				   + (version != null ? version + "/" : "")
+				   + topicNoExt + topicExt;
 		
 		return uri;
 	}
