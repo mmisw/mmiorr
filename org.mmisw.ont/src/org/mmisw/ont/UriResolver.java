@@ -514,11 +514,13 @@ public class UriResolver extends HttpServlet {
 		// show the parse result:
 		String authority = mmiUri.getAuthority();
 		String topic = mmiUri.getTopic();
+		String version = mmiUri.getVersion();
 		String term = mmiUri.getTerm();
 		out.println("Parse result: OK<br/>");
 		out.println("<pre>");
 		out.println("       Ontology URI: " + ontologyUri);
 		out.println("          authority: " + authority);
+		out.println("            version: " + (version != null ? version : "(not given)"));
 		out.println("              topic: " + topic);
 		out.println("               Term: " + term);
 		out.println("</pre>");

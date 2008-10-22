@@ -81,6 +81,16 @@ public class MmiUriTest extends TestCase {
     
     	assertEquals("20081021", mmiUri.getVersion());
     }
+    public void testVersionInvalid() throws URISyntaxException {
+    	String fullRequestedUri = "http://mmisw.org/ont/mmi/2008x1021/someVocab/someTerm";
+    	String requestedUri = "/ont/mmi/2008x1021/someVocab/someTerm";
+    	try {
+    		new MmiUri(fullRequestedUri, requestedUri, contextPath);
+    		fail(); // test fails!
+    	}
+    	catch (URISyntaxException ok) {
+    	}
+    }
     public void testTopicExtAndVersion() throws URISyntaxException {
     	String fullRequestedUri = "http://mmisw.org/ont/mmi/20081021/someVocab.owl/someTerm";
     	String requestedUri = "/ont/mmi/20081021/someVocab.owl/someTerm";

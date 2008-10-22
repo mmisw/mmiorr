@@ -81,23 +81,20 @@ public class MmiUri {
 			_topic = parts[1];
 		}
 		else {
-			int idx_vocab = 1;
-			try {
-				// TODO: check version against ISO format
-				Long.parseLong(parts[1]); // for now, simply checking it's a decimal number
-				// Ok, so take the version and update index for vocab
+			int idx_topic = 1;
+			// if parts[1] starts with a digit, take that part as the version:
+			if ( parts[1].length() > 0 && Character.isDigit(parts[1].charAt(0)) ) {
+				// Ok, so take the version and update index for topic
 				_version = parts[1];
-				idx_vocab = 2;
+				idx_topic = 2;
 			}
-			catch (NumberFormatException ignore) {				
-			}
-			_topic = parts[idx_vocab];
-			if ( idx_vocab + 1 < parts.length ) {
-				_term = parts[idx_vocab + 1];
+			_topic = parts[idx_topic];
+			if ( idx_topic + 1 < parts.length ) {
+				_term = parts[idx_topic + 1];
 			}
 		}
 		
-		version = _version;    // note: will be null if not given
+		version = _version;
 		topic =   _topic;
 		term =    _term;
 		
@@ -109,10 +106,17 @@ public class MmiUri {
 		}
 		
 		// check version, if given:
-		if ( version != null && version.length() == 0 ) {
-			throw new URISyntaxException(fullRequestedUri, "Version given but empty");
+		if ( version != null ) {
+			// TODO: check version against ISO format
+			// for now, simply checking it's a decimal number
+			try {
+				Long.parseLong(version); 
+				// version OK.
+			}
+			catch (NumberFormatException ignore) {				
+				throw new URISyntaxException(fullRequestedUri, "Invalid version string: " +version);
+			}
 		}
-		
 		
 		// ontologyUri is everything but the term and without trailing slashes
 		if ( term.length() > 0 ) {
