@@ -17,6 +17,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/arq.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/concurrent.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/antlr-2.7.5.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jena.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jena.jar" sourcepath="/Users/carueda/Software/Jena-2.5.6/src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
