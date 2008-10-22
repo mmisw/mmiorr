@@ -111,7 +111,7 @@ public class MdDispatcher {
 		out.println("<link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\">");
 		out.println("</head>");
 		out.println("<body>");
-		out.println("<b>Detadata</b>");
+		out.println("<b>Metadata</b>");
 		out.println("<table class=\"inline\">");
 		out.println("<tbody>");
 		out.println("<tr><th>name</th> <th>value</th> </tr>");

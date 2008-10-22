@@ -45,7 +45,6 @@ public class MdHelper {
 	
 	private static AttrDef[] attrDefs = {
 		
-		// with DC precedence
 		new AttrDef(DC.title),
 		new AttrDef(DC.creator),
 		new AttrDef(DC.subject, Omv.hasDomain),
@@ -63,11 +62,36 @@ public class MdHelper {
 //		new AttrDef(DC.rights),
 //		new AttrDef(DC.type),
 		
-		// with Omv precedence
-		new AttrDef(Omv.uri),
 		
-		// with OmvMmi precedence
-		new AttrDef(DC.source, OmvMmi.origVocUri),
+		
+		new AttrDef(Omv.hasPriorVersion),
+		
+		
+		
+		new AttrDef(OmvMmi.shortNameUri),
+		new AttrDef(OmvMmi.contact),
+		new AttrDef(OmvMmi.contactRole),
+		new AttrDef(OmvMmi.accessStatus),
+
+		new AttrDef(OmvMmi.accessStatusDate),
+		new AttrDef(OmvMmi.licenseCode),
+		new AttrDef(OmvMmi.licenseReference),
+		new AttrDef(OmvMmi.licenseAsOfDate),
+		new AttrDef(OmvMmi.temporaryMmiRole),
+		new AttrDef(OmvMmi.agreedMmiRole),
+		new AttrDef(OmvMmi.creditRequired),
+		new AttrDef(OmvMmi.creditConditions),
+		new AttrDef(OmvMmi.creditCitation),
+
+		new AttrDef(OmvMmi.origVocUri),
+		new AttrDef(OmvMmi.origVocManager),
+		new AttrDef(OmvMmi.origVocDocumentationUri),
+		new AttrDef(OmvMmi.origVocDescriptiveName),
+		new AttrDef(OmvMmi.origVocVersionId),
+		new AttrDef(OmvMmi.origVocKeywords),
+
+		new AttrDef(OmvMmi.origVocSyntaxFormat),
+		new AttrDef(OmvMmi.origMaintainerCode),
 	};
 	
 	private static Map<String,Attribute> _initAttributes(Map<String,Attribute> attributes) {
