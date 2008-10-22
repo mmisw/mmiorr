@@ -147,7 +147,50 @@ public class MdDispatcher {
 			out.println("<body>");
 		}
 		
-		out.println("\n<!-- Ont MD -->");
+		// don't show the table if there are no values to show:
+		boolean contentsGenerated = false;
+		
+		for ( String ns : groups.keySet() ) {
+			List<AttributeValue> list = groups.get(ns);
+			String prefix = MdHelper.getPreferredPrefix(ns);
+			
+			// don't show the group "header" if there are no associated values to show:
+			boolean groupHeaderDone = false;
+			
+			for ( AttributeValue attr : list ) {
+				String lbl = attr.getLabel();
+				String val = attr.getValue();
+				if ( val.trim().length() > 0 ) {
+					
+					if ( ! contentsGenerated ) {
+						_printPre(out, tableClass);
+						contentsGenerated = true;
+					}
+
+					if ( ! groupHeaderDone ) {
+						out.println("<tr><td colspan=\"2\" align=\"center\"><label> " +prefix+ " = " +ns+ " </label> </td> </tr>");
+						groupHeaderDone = true;
+					}
+					
+					out.printf("<tr><td><label>%s:%s</label></td> <td>%s</td> </tr> %n", prefix, lbl, val);
+				}
+			}
+		}
+		if ( contentsGenerated ) {
+			_printPos(out);
+		}
+		else {
+			out.println("<!-- No Ont MD -->");
+		}
+		
+		if ( completePage ) {
+			out.println("</body>");
+			out.println("</html>");
+		}
+	}
+	
+	private static void _printPre(PrintWriter out, String tableClass) {
+		out.println("\n<!-- begin Ont MD -->");
 		if ( tableClass != null ) {
 			out.println("<table class=\"" +tableClass+ "\">");
 		}
@@ -176,46 +219,13 @@ public class MdDispatcher {
 			);
 			out.println("<table class=\"inline\">");
 		}
-		
-		out.println("<tbody>");
-		
-		// don't even show the table header if there are no values to show:
-		boolean tableHeaderDone = false;
-		
-		for ( String ns : groups.keySet() ) {
-			List<AttributeValue> list = groups.get(ns);
-			String prefix = MdHelper.getPreferredPrefix(ns);
-			
-			// don't show the group "header" if there are no associated values to show:
-			boolean groupHeaderDone = false;
-			
-			for ( AttributeValue attr : list ) {
-				String lbl = attr.getLabel();
-				String val = attr.getValue();
-				if ( val.trim().length() > 0 ) {
-					
-					if ( ! tableHeaderDone ) {
-						out.println("<tr><th>Attribute</th> <th>Value</th> </tr>");
-						tableHeaderDone = true;
-					}
-
-					if ( ! groupHeaderDone ) {
-						out.println("<tr><td colspan=\"2\" align=\"center\"><label> " +prefix+ " = " +ns+ " </label> </td> </tr>");
-						groupHeaderDone = true;
-					}
-					
-					out.printf("<tr><td><label>%s:%s</label></td> <td>%s</td> </tr> %n", prefix, lbl, val);
-				}
-			}
-		}
+		out.println("<tr><th>Attribute</th> <th>Value</th> </tr>");
+	}
+	
+	private static void _printPos(PrintWriter out) {
 		out.println("</tbody>");
 		out.println("</table>");
-		out.println("<!-- Ont MD -->");
-		
-		if ( completePage ) {
-			out.println("</body>");
-			out.println("</html>");
-		}
+		out.println("<!-- end Ont MD -->");
 	}
 
 }
