@@ -1,6 +1,7 @@
 package org.mmisw.ont;
 
 import java.net.URISyntaxException;
+import java.util.Arrays;
 
 /**
  * Represents a decomposition of a given requested URI.
@@ -59,12 +60,13 @@ public class MmiUri {
 		untilRoot = fullRequestedUri.substring(0, rootIdx);
 		assert untilRoot.endsWith("/");
 		
-		String[] parts = afterRoot.split("\\s*/\\s*");
+		String[] parts = afterRoot.split("/");
 
-		// Either:  parts = { mmi, someVocab.owl, someTerm }
-		//     or:  parts = { mmi, someVersion, someVocab.owl, someTerm }
+		// Either:  3 parts = { mmi, someVocab.owl, someTerm }
+		//     or:  4 parts = { mmi, someVersion, someVocab.owl, someTerm }
 		if ( parts.length < 3 || parts.length > 4 ) {
-			throw new URISyntaxException(fullRequestedUri, "3 or 4 parts expected.");
+			throw new URISyntaxException(fullRequestedUri, "3 or 4 parts expected: "
+					+Arrays.asList(parts));
 		}
 		
 		authority =  parts[0];
