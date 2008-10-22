@@ -147,7 +147,7 @@ public class MdDispatcher {
 			out.println("<body>");
 		}
 		
-		out.println("<!-- begin metadata generated fron ont service -->");
+		out.println("\n<!-- begin metadata generated front ont service -->");
 		if ( tableClass != null ) {
 			out.println("<table class=\"" +tableClass+ "\">");
 		}
@@ -171,7 +171,7 @@ public class MdDispatcher {
 					"}\n" +
 				"</style>\n"
 			);
-			out.println("<table style=\"inline\">");
+			out.println("<table class=\"inline\">");
 		}
 		
 		out.println("<tbody>");
@@ -207,7 +207,7 @@ public class MdDispatcher {
 		}
 		out.println("</tbody>");
 		out.println("</table>");
-		out.println("<!-- end metadata generated fron ont service -->");
+		out.println("<!-- end metadata generated front ont service -->");
 		
 		if ( completePage ) {
 			out.println("</body>");
