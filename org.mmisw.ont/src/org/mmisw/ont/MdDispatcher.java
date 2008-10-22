@@ -54,7 +54,7 @@ public class MdDispatcher {
 	) throws IOException, ServletException {
 		
 		if ( log.isDebugEnabled() ) {
-			log.debug("MdDispatcher.execute: starting response.");
+			log.debug("MdDispatcher.execute: starting response. tableClass=" +tableClass);
 		}
 		
 		final String fullRequestedUri = request.getRequestURL().toString();
@@ -147,7 +147,33 @@ public class MdDispatcher {
 			out.println("<body>");
 		}
 		
-		out.println("<table class=\"" +tableClass+ "\">");
+		out.println("<!-- begin metadata generated fron ont service -->");
+		if ( tableClass != null ) {
+			out.println("<table class=\"" +tableClass+ "\">");
+		}
+		else {
+			out.println(
+				"<style type=\"text/css\">\n" +
+					"table.inline {\n" +
+					"font-size: normal;\n" +
+					"background-color: #ffffff;\n" +
+					"border-spacing: 0px;\n" +
+					"border-collapse: collapse;\n" +
+					"}\n" +
+					"table.inline th {\n" +
+					"padding: 3px;\n" +
+					"border: 1px solid #8cacbb;\n" +
+					"background-color: #dee7ec;\n" +
+		            "}\n" +
+					"table.inline td {\n" +
+					"padding: 3px;\n" +
+					"border: 1px solid #8cacbb;\n" +
+					"}\n" +
+				"</style>\n"
+			);
+			out.println("<table style=\"inline\">");
+		}
+		
 		out.println("<tbody>");
 		
 		// don't even show the table header if there are no values to show:
@@ -181,6 +207,7 @@ public class MdDispatcher {
 		}
 		out.println("</tbody>");
 		out.println("</table>");
+		out.println("<!-- end metadata generated fron ont service -->");
 		
 		if ( completePage ) {
 			out.println("</body>");

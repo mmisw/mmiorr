@@ -49,7 +49,7 @@ public class UriResolver extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	
-	private static final String VERSION = "0.1.2 (20081021)";
+	private static final String VERSION = "0.1.3 (20081022)";
 	private static final String TITLE = "MMI Ontology URI resolver. Version " +VERSION;
 
 	private final Log log = LogFactory.getLog(UriResolver.class);
@@ -175,8 +175,18 @@ public class UriResolver extends HttpServlet {
 		
 		// dispatch metadata?
 		if ( Util.yes(request, "_md")  ) {
-			boolean completePage = false; // not even as the whole response
-			String tableClass = "metadata";   // TODO make tableClass a parameter
+			//
+			// This option is mainly to support metadata display in the RoR front-end.
+			// In general, this parameter is used without any value, so only the
+			// table component is generated.
+			// For convenience, the following are also accepted:
+			//    _md=completepage         -> to generate a complete HTML page
+			//    _mdtableclass=somestyle  -> to specify the style for the table; by default, 
+			//                                "metadata", the one used in the RoR front-end.
+			//
+			String _md = Util.getParam(request, "_md", "");
+			boolean completePage = "completepage".equalsIgnoreCase(_md);
+			String tableClass = Util.getParam(request, "_mdtableclass", null);   
 			mdDispatcher.execute(request, response, null, completePage, tableClass);
 			return true;
 		}
