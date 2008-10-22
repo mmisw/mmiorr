@@ -188,7 +188,7 @@ public class MdHelper {
 	 * 
 	 * @param model The model to read metadata from.
 	 */
-	public void updateAttributes(Model ontModel) {
+	public void updateAttributesFromModel(Model ontModel) {
 
 		System.out.println(this.getClass().getName()+ ": updating attributes with model metadata ...");
 		

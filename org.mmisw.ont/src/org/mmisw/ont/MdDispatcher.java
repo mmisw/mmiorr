@@ -34,8 +34,6 @@ public class MdDispatcher {
 	private OntConfig ontConfig;
 	private Db db;
 	
-	private MdHelper mdHelper = new MdHelper();
-	
 	
 	MdDispatcher(OntConfig ontConfig, Db db) {
 		this.ontConfig = ontConfig;
@@ -92,6 +90,9 @@ public class MdDispatcher {
 		}
 		
 		String uriFile = file.toURI().toString();
+		if ( log.isDebugEnabled() ) {
+			log.debug("MdDispatcher.loading model: " +uriFile);
+		}
 		Model model = JenaUtil.loadModel(uriFile, false);
 		
 		_dispatchMetadata(request, response, model);
@@ -99,8 +100,10 @@ public class MdDispatcher {
 
 	private void _dispatchMetadata(HttpServletRequest request, HttpServletResponse response, Model model) throws IOException {
 
+		MdHelper mdHelper = new MdHelper();
+		
 		// get attributes from the model:
-		mdHelper.updateAttributes(model);
+		mdHelper.updateAttributesFromModel(model);
 		
 		// display the attributes:
 		Collection<Attribute> attrs = mdHelper.getAttributes();
@@ -145,7 +148,7 @@ public class MdDispatcher {
 				if ( val.trim().length() > 0 ) {
 					
 					if ( ! headerDone ) {
-						out.println("<tr><th colspan=\"2\" align=\"left\"> PREFIX " +prefix+ " = " +ns+ "</th> </tr>");
+						out.println("<tr><th colspan=\"2\" align=\"left\"> " +prefix+ " = " +ns+ "</th> </tr>");
 						headerDone = true;
 					}
 					
