@@ -666,7 +666,9 @@ public class UriResolver extends HttpServlet {
 			String elemUri = elem.getURI();
 			if ( elemUri != null ) {
 				String elemUriSlash = elemUri.replace('#' , '/');
-				out.printf("<tr>%n");
+				
+				// generate anchor for the term using "id" in the row: 
+				out.printf("<tr id=\"%s\">%n", elem.getLocalName());
 				out.printf("<td> <a href=\"%s\">%s</a> </td> %n", elemUriSlash, elemUriSlash); 
 				out.printf("<td> <a href=\"%s?_debug\">_debug</a> </td> %n", elemUriSlash); 
 				out.printf("<td> %s </td> %n", elem.getLocalName()); 
