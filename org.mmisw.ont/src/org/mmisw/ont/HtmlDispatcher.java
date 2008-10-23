@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.ont.util.Util;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -44,6 +45,15 @@ public class HtmlDispatcher {
 	}
 
 
+	/** 
+	 * Dispatchs the HTML response.
+	 * @param request
+	 * @param response
+	 * @param mmiUri
+	 * @return
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	boolean dispatch(HttpServletRequest request, HttpServletResponse response, 
 			MmiUri mmiUri) 
 	throws ServletException, IOException {
@@ -51,6 +61,8 @@ public class HtmlDispatcher {
 		if ( log.isDebugEnabled() ) {
 			log.debug("HtmlDispatcher: starting 'HTML' response.");
 		}
+		
+		boolean debug = Util.yes(request, "_debug");
 		
 		final String fullRequestedUri = request.getRequestURL().toString();
 		
@@ -99,8 +111,7 @@ public class HtmlDispatcher {
 		
 		String tableClass = "inline";
 		// start with the metadata:
-		out.printf(" Metadata:<br/>%n"); 
-		mdDispatcher.execute(request, response, mmiUri, false, tableClass);
+		mdDispatcher.execute(request, response, mmiUri, false, tableClass, "Metadata");
 		
 		
 		
@@ -112,7 +123,7 @@ public class HtmlDispatcher {
 			_showTermInfo(mmiUri, model, out);
 		}
 		else {
-			_showAllTerms(mmiUri, model, out, true);
+			_showAllTerms(mmiUri, model, out, debug);
 		}
 		
 		return true;

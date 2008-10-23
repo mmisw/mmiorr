@@ -191,7 +191,7 @@ public class UriResolver extends HttpServlet {
 			String _md = Util.getParam(request, "_md", "");
 			boolean completePage = "completepage".equalsIgnoreCase(_md);
 			String tableClass = Util.getParam(request, "_mdtableclass", null);   
-			mdDispatcher.execute(request, response, null, completePage, tableClass);
+			mdDispatcher.execute(request, response, null, completePage, tableClass, null);
 			return true;
 		}
 		
@@ -521,8 +521,7 @@ public class UriResolver extends HttpServlet {
 		
 		String tableClass = "inline";
 		// start with the metadata:
-		out.printf(" Metadata:<br/>%n"); 
-		mdDispatcher.execute(request, response, mmiUri, false, tableClass);
+		mdDispatcher.execute(request, response, mmiUri, false, tableClass, "Metadata");
 		
 		
 		out.println("<br/>");

@@ -50,7 +50,8 @@ public class MdDispatcher {
 	 * @throws ServletException
 	 */
 	public void execute(HttpServletRequest request, HttpServletResponse response, 
-			MmiUri mmiUri, boolean completePage, String tableClass
+			MmiUri mmiUri, boolean completePage, String tableClass,
+			String tableTitle
 	) throws IOException, ServletException {
 		
 		if ( log.isDebugEnabled() ) {
@@ -107,11 +108,12 @@ public class MdDispatcher {
 		}
 		Model model = JenaUtil.loadModel(uriFile, false);
 		
-		_dispatchMetadata(request, response, model, completePage, tableClass);
+		_dispatchMetadata(request, response, model, completePage, tableClass, tableTitle);
 	}
 
+	
 	private void _dispatchMetadata(HttpServletRequest request, HttpServletResponse response, 
-			Model model, boolean completePage, String tableClass
+			Model model, boolean completePage, String tableClass, String tableTitle
 	) throws IOException {
 
 		MdHelper mdHelper = new MdHelper();
@@ -163,7 +165,7 @@ public class MdDispatcher {
 				if ( val.trim().length() > 0 ) {
 					
 					if ( ! contentsGenerated ) {
-						_printPre(out, tableClass);
+						_printPre(out, tableClass, tableTitle);
 						contentsGenerated = true;
 					}
 
@@ -189,7 +191,7 @@ public class MdDispatcher {
 		}
 	}
 	
-	private static void _printPre(PrintWriter out, String tableClass) {
+	private static void _printPre(PrintWriter out, String tableClass, String tableTitle) {
 		out.println("\n<!-- begin Ont MD -->");
 		if ( tableClass != null ) {
 			out.println("<table class=\"" +tableClass+ "\">");
@@ -218,6 +220,10 @@ public class MdDispatcher {
 				"</style>\n"
 			);
 			out.println("<table class=\"inline\">");
+		}
+		
+		if ( tableTitle != null ) {
+			out.printf("<tr><th colspan=\"2\">%s</th></tr>%n", tableTitle);
 		}
 		out.println("<tr><th>Attribute</th> <th>Value</th> </tr>");
 	}
