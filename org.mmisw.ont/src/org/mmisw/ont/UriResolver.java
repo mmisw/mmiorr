@@ -144,7 +144,8 @@ public class UriResolver extends HttpServlet {
 				response.setContentType(mime);
 			}
 			
-			if ( log.isDebugEnabled() ) {
+			if ( false &&  // to avoid too many messages for now 
+				 log.isDebugEnabled() ) {
 				log.debug(path+ ": FOUND. " +
 						(mime != null ? "Mime type set to: " +mime : "No Mime type set.")
 				);
