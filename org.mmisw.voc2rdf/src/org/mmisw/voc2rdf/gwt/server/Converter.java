@@ -9,10 +9,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import org.mmi.ont.voc2owl.trans.OwlCreatorComplex;
 import org.mmi.ont.voc2owl.trans.TransProperties;
-import org.mmi.ont.voc2owl.trans.Transformer;
 import org.mmi.util.ISO8601Date;
+import org.mmisw.voc2rdf.transf.OwlCreatorComplex;
+import org.mmisw.voc2rdf.transf.Transformer;
 
 /**
  * Dispatchs the conversion.
