@@ -741,7 +741,7 @@ public class UriResolver extends HttpServlet {
 					Property prd = sta.getPredicate();
 					String prdUri = prd.getURI();
 					if ( prdUri != null ) {
-						out.printf("<td><a href=\"%s\">%s</a></td>", prdUri);
+						out.printf("<td><a href=\"%s\">%s</a></td>", prdUri, prdUri);
 					}
 					else {
 						out.printf("<td>%s</td>", prd.toString());
@@ -754,7 +754,7 @@ public class UriResolver extends HttpServlet {
 						objUri = objRes.getURI();
 					}
 					if ( objUri != null ) {
-						out.printf("<td><a href=\"%s\">%s</a></td>", objUri);
+						out.printf("<td><a href=\"%s\">%s</a></td>", objUri, objUri);
 					}
 					else {
 						out.printf("<td>%s</td>", obj.toString());
@@ -784,7 +784,7 @@ public class UriResolver extends HttpServlet {
 					String sjtUri = sjt.getURI();
 
 					if ( sjtUri != null ) {
-						out.printf("<td><a href=\"%s\">%s</a></td>", sjtUri);
+						out.printf("<td><a href=\"%s\">%s</a></td>", sjtUri, sjtUri);
 					}
 					else {
 						out.printf("<td>%s</td>", sjt.toString());
@@ -814,7 +814,7 @@ public class UriResolver extends HttpServlet {
 					String idvUri = idv.getURI();
 					
 					if ( idvUri != null ) {
-						out.printf("<td><a href=\"%s\">%s</a></td>", idvUri);
+						out.printf("<td><a href=\"%s\">%s</a></td>", idvUri, idvUri);
 					}
 					else {
 						out.printf("<td>%s</td>", idv.toString());
