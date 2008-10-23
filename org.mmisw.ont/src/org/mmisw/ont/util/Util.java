@@ -204,7 +204,7 @@ public class Util {
 	
 	/** "cleans" the string so it can be embedded in a html comment */
 	public static String toHtmlComment(String s) {
-		return s.replaceAll("--", "\\-\\-");
+		return s.replaceAll("--", "\\\\-\\\\-");
 	}
 	
 
