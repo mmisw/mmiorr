@@ -86,8 +86,10 @@ public class SparqlDispatcher {
 		}
 		else if ( "text/html".equals(queryResult.getContentType()) ) {
 			String pre = "<html><head><title>Query result</title>" +
-			             "<link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\">" +
-			             "</head><body>";
+			             "<link rel=stylesheet href=\"" +
+			                  request.getContextPath()+ "/main.css\" type=\"text/css\">" +
+			             "</head><body>\n";
+			pre += "\n<!-- Query:\n" +query+ "\n-->\n\n";
 			result = pre + result + "</body></html>";
 			response.setContentType(queryResult.getContentType());
 		}

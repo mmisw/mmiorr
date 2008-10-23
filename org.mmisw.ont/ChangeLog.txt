@@ -6,6 +6,7 @@ ChangeLog
 2008-10-22
 	- HTML output improved a bit. New class HtmlDispatcher.
 	- doPost was calling super.doGet!! (a typo).  Fixed.
+	- Sparql "select" response now in HTML.
 	
 	
 2008-10-21

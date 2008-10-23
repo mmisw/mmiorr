@@ -97,7 +97,7 @@ public class Sparql {
 		out.printf("<tr>%n");
 		List<?> vars = results.getResultVars();
 		for ( Object var: vars ) {
-			out.printf("<th>%s</th>%n", var.toString());
+			out.printf("\t<th>%s</th>%n", var.toString());
 		}
 		out.printf("</tr>%n");
 		
@@ -108,7 +108,7 @@ public class Sparql {
 				Iterator<?> varNames = sol.varNames();
 				while ( varNames.hasNext() ) {
 					String varName = varNames.next().toString();
-					out.printf("<td>%s</td>", sol.get(varName).toString());
+					out.printf("\t<td>%s</td>%n", sol.get(varName).toString());
 				}
 				out.printf("</tr>%n");
 			}
