@@ -109,20 +109,17 @@ public class HtmlDispatcher {
 		out.println("</head>");
 		out.println("<body>");
 		
-		String tableClass = "inline";
-		// start with the metadata:
-		mdDispatcher.execute(request, response, mmiUri, false, tableClass, "Metadata");
-		
-		
-		
 		
 		String uriFile = file.toURI().toString();
 		Model model = JenaUtil.loadModel(uriFile, false);
 
 		if ( mmiUri.getTerm().length() > 0 ) {
-			_showTermInfo(mmiUri, model, out);
+			dispatchTerm(mmiUri, model, out);
 		}
 		else {
+			// start with the metadata:
+			mdDispatcher.execute(request, response, mmiUri, false, "inline", "Metadata");
+			
 			_showAllTerms(mmiUri, model, out, debug);
 		}
 		
@@ -178,7 +175,7 @@ public class HtmlDispatcher {
 	 * @param file
 	 * @param out
 	 */
-	private void _showTermInfo(MmiUri mmiUri, Model model, PrintWriter out) {
+	void dispatchTerm(MmiUri mmiUri, Model model, PrintWriter out) {
 		String term = mmiUri.getTerm();
 		assert term.length() > 0 ;
 		
