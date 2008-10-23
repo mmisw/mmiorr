@@ -3,6 +3,15 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2008-10-23
+	Paul:  Carlos, got an update: we're now using your table formatting, including CSS, on the
+	metadata table when we show ontologies. If you could change your output again (sorry) to 
+	only put out the contents of the table (starting with <tr> instead of <table>) then I 
+	think it will become seamless.
+	
+	--> done.
+	
+
 2008-10-22
 	- HTML output improved a bit. New class HtmlDispatcher.
 	- doPost was calling super.doGet!! (a typo).  Fixed.

@@ -34,7 +34,6 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.util.PrintUtil;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
@@ -50,7 +49,7 @@ public class UriResolver extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	
-	private static final String VERSION = "0.1.3 (20081022)";
+	private static final String VERSION = "0.1.3 (20081023)";
 	static final String TITLE = "MMI Ontology URI resolver. Version " +VERSION;
 
 	private final Log log = LogFactory.getLog(UriResolver.class);

@@ -165,7 +165,7 @@ public class MdDispatcher {
 				if ( val.trim().length() > 0 ) {
 					
 					if ( ! contentsGenerated ) {
-						_printPre(out, tableClass, tableTitle);
+						_printPre(out, completePage, tableClass, tableTitle);
 						contentsGenerated = true;
 					}
 
@@ -179,7 +179,7 @@ public class MdDispatcher {
 			}
 		}
 		if ( contentsGenerated ) {
-			_printPos(out);
+			_printPos(out, completePage);
 		}
 		else {
 			out.println("<!-- No Ont MD -->");
@@ -191,35 +191,15 @@ public class MdDispatcher {
 		}
 	}
 	
-	private static void _printPre(PrintWriter out, String tableClass, String tableTitle) {
+	private static void _printPre(PrintWriter out, boolean completePage, String tableClass, String tableTitle) {
 		out.println("\n<!-- begin Ont MD -->");
-		if ( tableClass != null ) {
-			out.println("<table class=\"" +tableClass+ "\">");
-		}
-		else {
-			// TODO: integrate stylesheets.
-			// for now, inlining the style here; perhaps not correct, but
-			// works in my firefox and safari browsers.
-			out.println(
-				"<style type=\"text/css\">\n" +
-					"table.inline {\n" +
-					"font-size: normal;\n" +
-					"background-color: #ffffff;\n" +
-					"border-spacing: 0px;\n" +
-					"border-collapse: collapse;\n" +
-					"}\n" +
-					"table.inline th {\n" +
-					"padding: 3px;\n" +
-					"border: 1px solid #8cacbb;\n" +
-					"background-color: #dee7ec;\n" +
-		            "}\n" +
-					"table.inline td {\n" +
-					"padding: 3px;\n" +
-					"border: 1px solid #8cacbb;\n" +
-					"}\n" +
-				"</style>\n"
-			);
-			out.println("<table class=\"inline\">");
+		if ( completePage ) {
+			if ( tableClass != null ) {
+				out.println("<table class=\"" +tableClass+ "\">");
+			}
+			else {
+				out.println("<table class=\"inline\">");
+			}
 		}
 		
 		if ( tableTitle != null ) {
@@ -228,9 +208,11 @@ public class MdDispatcher {
 		out.println("<tr><th>Attribute</th> <th>Value</th> </tr>");
 	}
 	
-	private static void _printPos(PrintWriter out) {
-		out.println("</tbody>");
-		out.println("</table>");
+	private static void _printPos(PrintWriter out, boolean completePage) {
+		if ( completePage ) {
+			out.println("</tbody>");
+			out.println("</table>");
+		}
 		out.println("<!-- end Ont MD -->");
 	}
 
