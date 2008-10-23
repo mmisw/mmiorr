@@ -51,7 +51,7 @@ public class UriResolver extends HttpServlet {
 	
 	
 	private static final String VERSION = "0.1.3 (20081022)";
-	private static final String TITLE = "MMI Ontology URI resolver. Version " +VERSION;
+	static final String TITLE = "MMI Ontology URI resolver. Version " +VERSION;
 
 	private final Log log = LogFactory.getLog(UriResolver.class);
 
@@ -63,6 +63,8 @@ public class UriResolver extends HttpServlet {
 	
 	
 	private final MdDispatcher mdDispatcher = new MdDispatcher(ontConfig, db);
+	
+	private final HtmlDispatcher htmlDispatcher = new HtmlDispatcher(ontConfig, db, mdDispatcher);
 
 	
 	private enum OntFormat { RDFXML, N3 };
@@ -291,7 +293,10 @@ public class UriResolver extends HttpServlet {
 			// (b) an HTML document (if Accept: text/html but not application/rdf+xml)
 			else if ( accept.contains("text/html") ) {
 				
-				return _resolveUriHtml(request, response, mmiUri);
+				return htmlDispatcher.dispatch(request, response, mmiUri);
+				
+				// TODO remove
+//				return _resolveUriHtml(request, response, mmiUri);
 			}
 			
 			// (c) an HTML document (if Accept: text/html, application/rdf+xml or Accept: */*)
