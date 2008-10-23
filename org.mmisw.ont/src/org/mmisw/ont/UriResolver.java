@@ -395,16 +395,23 @@ public class UriResolver extends HttpServlet {
 			
 			// Term included?
 			if ( term.length() > 0 ) {
+				
 				String uriFile = file.toURI().toString();
 				Model model = JenaUtil.loadModel(uriFile, false);
 
-				// TODO Handle requested format -- for now: "text/html" 
-				String termContents = _resolveTerm(request, mmiUri, model);
-				StringReader is = new StringReader(termContents);
-				response.setContentType("text/html");
-				ServletOutputStream os = response.getOutputStream();
-				IOUtils.copy(is, os);
-				os.close();
+				// TODO Handle requested ontology format for this term.
+				// This would be probably in a form similar to a response from
+				// a sparql query about the term.
+				// For now, replying with the HTML format: 
+				PrintWriter out = response.getWriter();
+				htmlDispatcher.dispatchTerm(mmiUri, model, out );
+
+//				String termContents = _resolveTerm(request, mmiUri, model);
+//				StringReader is = new StringReader(termContents);
+//				response.setContentType("text/html");
+//				ServletOutputStream os = response.getOutputStream();
+//				IOUtils.copy(is, os);
+//				os.close();
 			}
 			
 			// No term included:
