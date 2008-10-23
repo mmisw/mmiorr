@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.MdHelper.AttributeValue;
+import org.mmisw.ont.util.Util;
 
 import com.hp.hpl.jena.rdf.model.Model;
 
@@ -116,6 +117,8 @@ public class MdDispatcher {
 			Model model, boolean completePage, String tableClass, String tableTitle
 	) throws IOException {
 
+		boolean _md = Util.yes(request, "_md");
+
 		MdHelper mdHelper = new MdHelper();
 		
 		// get attributes from the model:
@@ -165,7 +168,7 @@ public class MdDispatcher {
 				if ( val.trim().length() > 0 ) {
 					
 					if ( ! contentsGenerated ) {
-						_printPre(out, completePage, tableClass, tableTitle);
+						_printPre(out, _md, tableClass, tableTitle);
 						contentsGenerated = true;
 					}
 
@@ -179,7 +182,7 @@ public class MdDispatcher {
 			}
 		}
 		if ( contentsGenerated ) {
-			_printPos(out, completePage);
+			_printPos(out, _md);
 		}
 		else {
 			out.println("<!-- No Ont MD -->");
@@ -191,9 +194,9 @@ public class MdDispatcher {
 		}
 	}
 	
-	private static void _printPre(PrintWriter out, boolean completePage, String tableClass, String tableTitle) {
+	private static void _printPre(PrintWriter out, boolean _md, String tableClass, String tableTitle) {
 		out.println("\n<!-- begin Ont MD -->");
-		if ( completePage ) {
+		if ( ! _md ) {
 			if ( tableClass != null ) {
 				out.println("<table class=\"" +tableClass+ "\">");
 			}
@@ -208,8 +211,8 @@ public class MdDispatcher {
 		out.println("<tr><th>Attribute</th> <th>Value</th> </tr>");
 	}
 	
-	private static void _printPos(PrintWriter out, boolean completePage) {
-		if ( completePage ) {
+	private static void _printPos(PrintWriter out, boolean _md) {
+		if ( ! _md ) {
 			out.println("</tbody>");
 			out.println("</table>");
 		}
