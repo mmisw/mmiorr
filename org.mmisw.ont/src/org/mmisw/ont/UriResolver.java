@@ -30,6 +30,7 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
@@ -193,9 +194,8 @@ public class UriResolver extends HttpServlet {
 		
 		// if the "_debug" parameter is included, show some info about the URI parse
 		// and the ontology from the database (but do not serve the contents)
-		boolean info = Util.yes(request, "_debug");
-		if ( info ) {
-			_resolveUriInfo(request, response);
+		if ( Util.yes(request, "_debug") ) {
+			_resolveUriDebug(request, response);
 			return true;
 		}
 		
@@ -211,7 +211,8 @@ public class UriResolver extends HttpServlet {
 		}
 		catch (URISyntaxException e) {
 			// Not dispatched here; allow caller to dispatch in any other convenient way:
-			if ( log.isDebugEnabled() ) {
+			if ( false &&  // to avoid too many messages, while keeping the DEBUG level I want. 
+			     log.isDebugEnabled() ) {
 				log.debug("MMI URI not well formed: " +e.getMessage());
 			}
 			return false;   
@@ -248,11 +249,9 @@ public class UriResolver extends HttpServlet {
 			outFormat = topicExt.replaceAll("^\\.+", "");
 		}
 		else {
-			// "form" parameter given. Use it regardless of file extension:
-			if ( topicExt.length() > 0 ) {
-				if ( log.isDebugEnabled() ) {
-					log.debug("form param (=" +outFormat+ ") will take precedence over file extension: " +topicExt);
-				}
+			// "form" parameter given. Use it regardless of file extension.
+			if ( log.isDebugEnabled() && topicExt.length() > 0 ) {
+				log.debug("form param (=" +outFormat+ ") will take precedence over file extension: " +topicExt);
 			}
 		}
 		
@@ -354,7 +353,6 @@ public class UriResolver extends HttpServlet {
 	 * 
 	 * @return true for dispatch completed here; false otherwise.
 	 */
-	// TODO dispatch N3 format
 	private boolean _resolveUriOntFormat(HttpServletRequest request, HttpServletResponse response, 
 			MmiUri mmiUri, OntFormat ontFormat) 
 	throws ServletException, IOException {
@@ -411,7 +409,6 @@ public class UriResolver extends HttpServlet {
 				ServletOutputStream os = response.getOutputStream();
 				switch ( ontFormat ) {
 				case RDFXML: {
-					// respond with the contents of the file with contentType set to RDF+XML
 					// TODO this assumes ALL ontologies are stored in RDF/XML format!!
 					response.setContentType("Application/rdf+xml");
 					FileInputStream is = new FileInputStream(file);
@@ -419,8 +416,8 @@ public class UriResolver extends HttpServlet {
 					break;
 				}
 				case N3 : {
-					// respond with the contents of the file with contentType set to RDF+XML 
-					response.setContentType("text/plain");//rdf+n3");   // TODO text/rdf+n3 although not registered (?)
+					String contentType = "text/plain";  // NOTE: "text/rdf+n3" is not registered.
+					response.setContentType(contentType);
 					StringReader is = _getN3(file);
 					IOUtils.copy(is, os);
 					break;
@@ -444,7 +441,7 @@ public class UriResolver extends HttpServlet {
 		return true;   // dispatched here.
 	}
 
-
+	/** Creates the N3 version of the model */
 	private StringReader _getN3(File file) {
 		log.debug("_getN3: " +file);
 		Model model = ModelFactory.createDefaultModel();
@@ -515,6 +512,7 @@ public class UriResolver extends HttpServlet {
 		
 		String tableClass = "inline";
 		// start with the metadata:
+		out.printf(" Metadata:<br/>%n"); 
 		mdDispatcher.execute(request, response, mmiUri, false, tableClass);
 		
 		
@@ -527,17 +525,17 @@ public class UriResolver extends HttpServlet {
 			_showTermInfo(mmiUri, model, out);
 		}
 		else {
-			_showAllTerms(mmiUri, model, out);
+			_showAllTerms(mmiUri, model, out, false);
 		}
 		return true;
 	}
 
 	
 	/**
-	 * Helper method to dispatch an "?_debug" request.
+	 * Helper method to dispatch a "_debug" request.
 	 * The dispatch is always completed here.
 	 */
-	private void _resolveUriInfo(HttpServletRequest request, HttpServletResponse response) 
+	private void _resolveUriDebug(HttpServletRequest request, HttpServletResponse response) 
 	throws ServletException, IOException {
 		
 		if ( log.isDebugEnabled() ) {
@@ -647,17 +645,23 @@ public class UriResolver extends HttpServlet {
 				_showTermInfo(mmiUri, model, out);
 			}
 			else {
-				_showAllTerms(mmiUri, model, out);
+				_showAllTerms(mmiUri, model, out, true);
 			}
 		}
 	}
 	
 	
-	private void _showAllTerms(MmiUri mmiUri, Model model, PrintWriter out) {
-		out.printf(" All subjects in the model:<br/>%n"); 
+	/** Generated a table with all the terms */
+	private void _showAllTerms(MmiUri mmiUri, Model model, PrintWriter out, boolean debug) {
+		out.printf(" All subjects in the ontology:<br/>%n"); 
 		out.println("<table class=\"inline\">");
 		out.printf("<tr>%n");
-		out.printf("<th>Subject</th> <th>_debug</th> <th>Name</th>%n");
+		out.printf("<th>URI</th>");
+		out.printf("<th>Resolve</th>");
+		if ( debug ) {
+			out.printf("<th>_debug</th>");
+		}
+		//out.printf("<th>Name</th>%n");
 		out.printf("</tr>%n");
 
 		ResIterator iter = model.listSubjects();
@@ -669,9 +673,19 @@ public class UriResolver extends HttpServlet {
 				
 				// generate anchor for the term using "id" in the row: 
 				out.printf("<tr id=\"%s\">%n", elem.getLocalName());
-				out.printf("<td> <a href=\"%s\">%s</a> </td> %n", elemUriSlash, elemUriSlash); 
-				out.printf("<td> <a href=\"%s?_debug\">_debug</a> </td> %n", elemUriSlash); 
-				out.printf("<td> %s </td> %n", elem.getLocalName()); 
+				
+				// Original URI (may be with # separator):
+				out.printf("<td> <a href=\"%s\">%s</a> </td> %n", elemUri, elemUri);
+				
+				// resolve value with any # replaced with /
+				out.printf("<td> <a href=\"%s\">resolve</a> </td> %n", elemUriSlash);
+				
+				if ( debug ) {
+					out.printf("<td> <a href=\"%s?_debug\">_debug</a> </td> %n", elemUriSlash);
+				}
+				
+				//out.printf("<td> %s </td> %n", elem.getLocalName());
+				
 				out.printf("</tr>%n");
 			}
 		}
@@ -688,12 +702,13 @@ public class UriResolver extends HttpServlet {
 		String term = mmiUri.getTerm();
 		assert term.length() > 0 ;
 		
-		// construct URI of term with "#" separator
+		// construct URI of term.
+		// First, try with "#" separator:
 		String termUri = mmiUri.getTermUri(true, "#");
 		Resource termRes = model.getResource(termUri);
 
 		if ( termRes == null ) {
-			// try with "/" separator
+			// then, try with "/" separator
 			termUri = mmiUri.getTermUri(true, "/");
 			termRes = model.getResource(termUri);
 		}
@@ -703,53 +718,113 @@ public class UriResolver extends HttpServlet {
 			return;
 		}
 		
-		com.hp.hpl.jena.rdf.model.Statement labelRes = termRes.getProperty(RDFS.label);
-		String label = labelRes == null ? null : ""+labelRes.getObject();
+//		com.hp.hpl.jena.rdf.model.Statement labelRes = termRes.getProperty(RDFS.label);
+//		String label = labelRes == null ? null : ""+labelRes.getObject();
 		
-		out.println("<pre>");
-		out.println("   term resource: " +termRes);
-		out.println("           label: " +label);
-		out.println("    getLocalName: " +termRes.getLocalName());
-		
+		out.println("<table class=\"inline\">");
+		out.printf("<tr><td>Resource:</td><td>%s</td></tr> %n", termRes);
+//		out.printf("<tr><td>Label:</td><td>%s</td></tr> %n", label);
+		out.printf("<tr><td>Name:</td><td>%s</td></tr> %n", termRes.getLocalName());
+		out.println("</table>");
 
 		if ( true ) { // get all about the term
-			out.println("\n    All about: " +termRes.getURI());
 			StmtIterator iter = model.listStatements(termRes, (Property) null, (Property) null);
-			while (iter.hasNext()) {
-				com.hp.hpl.jena.rdf.model.Statement sta = iter.nextStatement();
-				out.printf("      %30s   %s%n", 
-						PrintUtil.print(sta.getPredicate().getURI()),
-						PrintUtil.print(sta.getObject().toString())
-				);
+			if (iter.hasNext()) {
+				out.println("<br/>");
+				out.println("<table class=\"inline\">");
+				
+				while (iter.hasNext()) {
+					com.hp.hpl.jena.rdf.model.Statement sta = iter.nextStatement();
+					
+					out.printf("<tr>%n");
+							
+					Property prd = sta.getPredicate();
+					String prdUri = prd.getURI();
+					if ( prdUri != null ) {
+						out.printf("<td><a href=\"%s\">%s</a></td>", prdUri);
+					}
+					else {
+						out.printf("<td>%s</td>", prd.toString());
+					}
+					
+					RDFNode obj = sta.getObject();
+					String objUri = null;
+					if ( obj instanceof Resource ) {
+						Resource objRes = (Resource) obj;
+						objUri = objRes.getURI();
+					}
+					if ( objUri != null ) {
+						out.printf("<td><a href=\"%s\">%s</a></td>", objUri);
+					}
+					else {
+						out.printf("<td>%s</td>", obj.toString());
+					}
+					
+					out.printf("</tr>%n");
+				}
+				
+				out.println("</table>");
 			}
 		}
 		
 		if ( true ) { // test for subclasses
-			out.println("\n    Subclasses of : " +termRes.getURI());
 			StmtIterator iter = model.listStatements(null, RDFS.subClassOf, termRes);
 			if  ( iter.hasNext() ) {
+				out.println("<br/>");
+				out.println("<table class=\"inline\">");
+				out.printf("<tr>%n");
+				out.printf("<th>Subclasses</th>");
+				out.printf("</tr>%n");
 				while ( iter.hasNext() ) {
 					com.hp.hpl.jena.rdf.model.Statement sta = iter.nextStatement();
-					out.println("  " + PrintUtil.print(sta.getSubject().getURI()));
+					
+					out.printf("<tr>%n");
+					
+					Resource sjt = sta.getSubject();
+					String sjtUri = sjt.getURI();
+
+					if ( sjtUri != null ) {
+						out.printf("<td><a href=\"%s\">%s</a></td>", sjtUri);
+					}
+					else {
+						out.printf("<td>%s</td>", sjt.toString());
+					}
+
+					out.printf("</tr>%n");
 				}
-			}
-			else {
-				out.println("        (none)");
+				out.println("</table>");
 			}
 		}
 		
 
 		if ( model instanceof OntModel ) {
 			OntModel ontModel = (OntModel) model;
-			out.println("    Individuals:");
 			ExtendedIterator iter = ontModel.listIndividuals(termRes);
-			while ( iter.hasNext() ) {
-				Resource indiv = (Resource) iter.next();
-				out.println("        " +indiv.getURI());
+			if ( iter.hasNext() ) {
+				out.println("<br/>");
+				out.println("<table class=\"inline\">");
+				out.printf("<tr>%n");
+				out.printf("<th>Individuals</th>");
+				out.printf("</tr>%n");
+				while ( iter.hasNext() ) {
+					Resource idv = (Resource) iter.next();
+					
+					out.printf("<tr>%n");
+					
+					String idvUri = idv.getURI();
+					
+					if ( idvUri != null ) {
+						out.printf("<td><a href=\"%s\">%s</a></td>", idvUri);
+					}
+					else {
+						out.printf("<td>%s</td>", idv.toString());
+					}
+					
+					out.printf("</tr>%n");
+				}
 			}
 		}
 		
-		out.println("</pre>");
 	}		
 
 	private String _resolveTerm(HttpServletRequest request, MmiUri mmiUri, Model model) {
