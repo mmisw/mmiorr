@@ -1,20 +1,28 @@
-package org.mmi.web;
+package org.mmisw.voc2rdf.gwt.server;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import org.mmi.ont.html.XMLtoHTML;
 import org.mmi.ont.voc2owl.trans.OwlCreatorComplex;
 import org.mmi.ont.voc2owl.trans.TransProperties;
 import org.mmi.ont.voc2owl.trans.Transformer;
 import org.mmi.util.ISO8601Date;
 
-public class MetadataBean {
+/**
+ * Dispatchs the conversion.
+ * 
+ * <p>
+ * Adapted from org.mmi.web.MetadataBean.
+ * 
+ * @author Carlos Rueda
+ */
+class Converter {
 
 	private static String tmp = "/Users/Shared/registry/tmp/";
 
@@ -28,15 +36,7 @@ public class MetadataBean {
 
 	private String creator = "John Smith";
 
-//	private String email = "email";
-
-	// <carueda> originally:
-//-	private String namespace = "http://mmisw.org/";
-	
-	// NOTE temporary initialization to facilitate resolution in the regtest
 	private String namespace = "http://mmisw.org/ont";
-	// actually it should be: "http://mmisw.org/ont";
-	// where "ont" is the 'root' component as explained in the mmi document.
 	
 	// To set TransProperties.NS
 	private String finalNamespace;
@@ -45,49 +45,42 @@ public class MetadataBean {
 		return finalNamespace;
 	}
 
-	// carueda: was only used in setNamespace() previously. TODO: remove
-//-	private String basic_namespace = "http://mmisw.org/ont";
 
 	private String primaryClass = "parameter";
 
-//	private String ontologyString = null;
 
 	private String ONE_CLASS_ALL_INSTANCES = OwlCreatorComplex.ONE_CLASS_ALL_INSTANCES;
 
-//	private String CLASS_HIERARCHY = OwlCreatorComplex.CLASS_HIERARCHY;
 
 	private String convertionType = ONE_CLASS_ALL_INSTANCES;
 
 	private Transformer trans;
 
-//	private SelectItem item_csv = new SelectItem("csv", "comma");
-//
-//	private SelectItem item_tab = new SelectItem("tab", "tab");
-//
-//	private SelectItem currentFieldSeparator = item_csv;
-
-	// private String user=null;
-	private String userName = null;
-
-	private String password = null;
-
-	private boolean isLogged = false;
 
 	private String fieldSeparator = "csv";
 
-	private boolean uploadNext;
-
 	private String uid = "1000";
 
-	private String fileName = "test.owl";
-
-	private static Logger logger = Logger.getLogger("org.mmi.web.MetadataBean");
+	private static Logger logger = Logger.getLogger(Converter.class.getName());
 
 	private static String getASCII() {
 		String s = "name,description" + "\r"
 				+ "sea surface salinity, salinity at the sea surface >10 m."
 				+ "\r" + "sst, sea surface temperature";
 		return s;
+	}
+	
+	
+	
+	Converter(Map<String, String> values) {
+		this.setCreator(values.get("creator"));
+		this.setOrgAbbreviation(values.get("orgAbbreviation"));
+		this.setTitle(values.get("title"));
+		this.setDescription(values.get("description"));
+		this.setPrimaryClass(values.get("primaryConcept"));
+		this.setAscii(values.get("ascii"));
+		this.setFieldSeparator(values.get("fieldSeparator"));
+		this.setNamespace(values.get("namespace"));
 	}
 
 	public String createOntology() {
@@ -162,8 +155,6 @@ public class MetadataBean {
 		String fileInText = tmp + createUniqueName() + ".txt";
 		saveInFile(fileInText);
 		String fileOutRDF = tmp + createUniqueName() + ".rdf";
-		fileName = fileOutRDF;
-
 		prop.setProperty(TransProperties.fileIn, fileInText);
 		prop.setProperty(TransProperties.fileOut, fileOutRDF);
 
@@ -219,7 +210,7 @@ public class MetadataBean {
 		}
 	}
 
-	public String verify() {
+	private String verify() {
 
 		return "success";
 
@@ -228,7 +219,7 @@ public class MetadataBean {
 	/**
 	 * @return the description
 	 */
-	public String getDescription() {
+	private String getDescription() {
 		return description;
 	}
 
@@ -236,14 +227,14 @@ public class MetadataBean {
 	 * @param description
 	 *            the description to set
 	 */
-	public void setDescription(String description) {
+	private void setDescription(String description) {
 		this.description = description;
 	}
 
 	/**
 	 * @return the title
 	 */
-	public String getTitle() {
+	private String getTitle() {
 		return title;
 	}
 
@@ -251,7 +242,7 @@ public class MetadataBean {
 	 * @param title
 	 *            the title to set
 	 */
-	public void setTitle(String title) {
+	private void setTitle(String title) {
 //		if (title.length() < 2) {
 //			addMessage("loginForm:title", "title length must be greater than 2");
 //		}
@@ -261,7 +252,7 @@ public class MetadataBean {
 	/**
 	 * @return the ascii
 	 */
-	public String getAscii() {
+	private String getAscii() {
 		return ascii;
 	}
 
@@ -269,14 +260,14 @@ public class MetadataBean {
 	 * @param ascii
 	 *            the ascii to set
 	 */
-	public void setAscii(String ascii) {
+	private void setAscii(String ascii) {
 		this.ascii = ascii;
 	}
 
 	/**
 	 * @return the creator
 	 */
-	public String getCreator() {
+	private String getCreator() {
 		return creator;
 	}
 
@@ -284,32 +275,22 @@ public class MetadataBean {
 	 * @param creator
 	 *            the creator to set
 	 */
-	public void setCreator(String creator) {
+	private void setCreator(String creator) {
 		this.creator = creator;
-	}
-
-	/**
-	 * @return the namespace
-	 */
-	public String getNamespace() {
-		// return "http://marinemetadata.org/ont/"
-		// + ISO8601Date.getCurrentDateForNamespace() + "/"
-		// + getOrgAbbreviation() + "_" + getPrimaryClass();
-		return namespace;
 	}
 
 	/**
 	 * @param namespace
 	 *            the namespace to set
 	 */
-	public void setNamespace(String namespace) {
+	private void setNamespace(String namespace) {
 		this.namespace = namespace;
 	}
 
 	/**
 	 * @return the primaryClass
 	 */
-	public String getPrimaryClass() {
+	private String getPrimaryClass() {
 
 		return primaryClass;
 	}
@@ -318,71 +299,23 @@ public class MetadataBean {
 	 * @param primaryClass
 	 *            the primaryClass to set
 	 */
-	public void setPrimaryClass(String primaryClass) {
+	private void setPrimaryClass(String primaryClass) {
 		logger.info("setting primary class " + primaryClass);
 		this.primaryClass = primaryClass;
 	}
 
-	/**
-	 * Sets a message for a value of a JSP object. it should be in the form
-	 * idForm:idObject. Specially use for validation.
-	 * 
-	 * @param objectJSP
-	 * @param message
-	 */
-//	private void addMessage(String objectJSP, String message) {
-//		FacesContext.getCurrentInstance().addMessage(objectJSP,
-//				new FacesMessage(message));
-//	}
 
-	/**
-	 * @return the getOntologyString
-	 */
-	public String getOntologyString() {
-		XMLtoHTML xmlToHTML = new XMLtoHTML();
-		return xmlToHTML.convert(trans.getOntologyAsString());
-		// return trans.getOntologyAsString();
-
-	}
 
 	public String getOntologyStringXml() {
 		return trans.getOntologyAsString();
 	}
 
-	/**
-	 * @param getOntologyString
-	 *            the getOntologyString to set
-	 */
-//	public void setOntologyString(String ontologyString) {
-//		this.ontologyString = ontologyString;
-//	}
 
-//	public List getfieldSeparatorList() {
-//		List list = new ArrayList();
-//
-//		list.add(item_csv);
-//		list.add(item_tab);
-//		return list;
-//
-//	}
-
-	/**
-	 * @param fieldSeparator
-	 *            the fieldSeparator to set
-	 */
-//	public void setCurrentFieldSeparator(SelectItem item) {
-//		logger.info("Setting field separator " + item);
-//		this.currentFieldSeparator = item;
-//	}
-//
-//	public SelectItem getCurrentFieldSeparator() {
-//		return currentFieldSeparator;
-//	}
 
 	/**
 	 * @return the fieldSeparator
 	 */
-	public String getFieldSeparator() {
+	private String getFieldSeparator() {
 		return fieldSeparator;
 	}
 
@@ -390,184 +323,26 @@ public class MetadataBean {
 	 * @param fieldSeparator
 	 *            the fieldSeparator to set
 	 */
-	public void setFieldSeparator(String fieldSeparator) {
+	private void setFieldSeparator(String fieldSeparator) {
 		this.fieldSeparator = fieldSeparator;
 	}
 
-	// /**
-	// * @return the user
-	// */
-	// public String getUser() {
-	// return user;
-	// }
-	//
-	// /**
-	// * @param user the user to set
-	// */
-	// public void setUser(String user) {
-	// String users = ResourceLoader.getUrlResource("users.txt");
-	// Properties usersProp = new Properties();
-	// String user_ = usersProp.getProperty(user);
-	// if (user_!=null){
-	// this.user = user;
-	// }else{
-	// addMessage("uploadForm:user", "user not found");
-	// }
-	//		
-	// }
 
-	public String uploadOntologyToServer() {
-		if (isLogged) {
-			logger.info("is logged");
-			setUploadNext(false);
-			return "OntologyUploaded";
-		} else {
-			setUploadNext(true);
-			return "UserNotLogged";
-		}
-
-	}
-
-	// //////
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getUserName() {
-		return userName;
-	}
-
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-
-	public boolean isOk() {
-		if (getUserName().equals("guest") && getPassword().equals("guest")) {
-			return true;
-		} else {
-			return false;
-		}
-
-	}
-
-	// String users = ResourceLoader.getUrlResource("users.txt");
-	// Properties usersProp = new Properties();
-	// if (user!=null){
-	// String pass = usersProp.getProperty(user);
-	// if (pass.equals(password)){
-	// this.password = password;
-	// }else{
-	// addMessage("uploadForm:password", "password is wrong for user");
-	// }
-	// }else{
-	// addMessage("uploadForm:password", "user not found");
-	// }
-
-//	public String loginUser() {
-//
-//		if (isOk()) {
-//			isLogged = true;
-//			return "loginSuccess";
-//
-//		} else {
-//			FacesContext facesContext = FacesContext.getCurrentInstance();
-//			FacesMessage facesMessage = new FacesMessage(
-//					"You have entered an invalid user name and/or password");
-//			facesContext.addMessage("loginForm", facesMessage);
-//			isLogged = false;
-//			return "loginFailure";
-//		}
-//	}
-
-	/**
-	 * @return the isLogged
-	 */
-	public boolean getIsLogged() {
-		return isLogged;
-	}
-
-	/**
-	 * @param isLogged
-	 *            the isLogged to set
-	 */
-	public void setIsLogged(boolean isLogged) {
-		this.isLogged = isLogged;
-	}
-
-	/**
-	 * @return the uploadNext
-	 */
-	public boolean isUploadNext() {
-		return uploadNext;
-	}
-
-	/**
-	 * @return the uploadNext
-	 */
-	public boolean getUploadNext() {
-		return uploadNext;
-	}
-
-	/**
-	 * @param uploadNext
-	 *            the uploadNext to set
-	 */
-	public void setUploadNext(boolean uploadNext) {
-		logger.info("next is upload = " + uploadNext);
-		this.uploadNext = uploadNext;
-	}
-
-	public String signOut() {
-		userName = null;
-		password = null;
-		isLogged = false;
-		return "signOut";
-	}
-
-	/**
-	 * @return the orgAbbreviation
-	 */
-	public String getOrgAbbreviation() {
-		return orgAbbreviation;
-	}
 
 	/**
 	 * @param orgAbbreviation
 	 *            the orgAbbreviation to set
 	 */
-	public void setOrgAbbreviation(String orgAbbreviation) {
+	private void setOrgAbbreviation(String orgAbbreviation) {
 		this.orgAbbreviation = orgAbbreviation;
 	}
 
 	/**
 	 * @return the convertionType
 	 */
-	public String getConvertionType() {
+	private String getConvertionType() {
 		return convertionType;
 	}
-
-	/**
-	 * @param convertionType
-	 *            the convertionType to set
-	 */
-	public void setConvertionType(String convertionType) {
-		this.convertionType = convertionType;
-	}
-
-	// public void sendToRegistry(){
-	// String fileIn =
-	// trans.getProperties().getProperty(TransProperties.fileIn);
-	//		
-	//		
-	//		
-	//	
-	//	
-	// }
 
 	private String createUniqueName() {
 //		FacesContext context = FacesContext.getCurrentInstance();
@@ -583,36 +358,8 @@ public class MetadataBean {
 	/**
 	 * @return the uid
 	 */
-	public String getUid() {
+	private String getUid() {
 		return uid;
-	}
-
-	/**
-	 * @param uid
-	 *            the uid to set
-	 */
-	public void setUid(String uid) {
-		this.uid = uid;
-	}
-
-	/**
-	 * @return the fileName
-	 */
-	public String getFileName() {
-		return fileName;
-	}
-
-	// /**
-	// * @param fileName the fileName to set
-	// */
-	// public void setFileName(String fileName) {
-	// this.fileName = fileName;
-	// }
-	//	
-
-	public String changeNamespace() {
-		namespace = namespace + getOrgAbbreviation();
-		return "success";
 	}
 
 }

@@ -3,7 +3,6 @@ package org.mmisw.voc2rdf.gwt.server;
 import java.net.URL;
 import java.util.Map;
 
-import org.mmi.web.MetadataBean;
 import org.mmisw.voc2rdf.gwt.client.rpc.BaseInfo;
 import org.mmisw.voc2rdf.gwt.client.rpc.ConversionResult;
 import org.mmisw.voc2rdf.gwt.client.rpc.UploadResult;
@@ -33,29 +32,19 @@ public class Voc2RdfServiceImpl extends RemoteServiceServlet implements Voc2RdfS
 	
 	public ConversionResult convert(Map<String, String> values) {
 		
-		MetadataBean mb = new MetadataBean();
-		
-		mb.setCreator(values.get("creator"));
-		mb.setOrgAbbreviation(values.get("orgAbbreviation"));
-		mb.setTitle(values.get("title"));
-		mb.setDescription(values.get("description"));
-		mb.setPrimaryClass(values.get("primaryConcept"));
-		mb.setAscii(values.get("ascii"));
-		mb.setFieldSeparator(values.get("fieldSeparator"));
-		mb.setNamespace(values.get("namespace"));
-//		mb.setUid(uid);
+		Converter ontConverter = new Converter(values);
 		
 		ConversionResult result = new ConversionResult();
 		
-		String res = mb.createOntology();
+		String res = ontConverter.createOntology();
 		if ( res.equals("failure") ) {
 			result.setError(res);
 		}
 		else {
-			String finalNamespace = mb.getFinalNamespace();
+			String finalNamespace = ontConverter.getFinalNamespace();
 			System.out.println(this.getClass().getName()+ " convert: finalNamespace = " +finalNamespace);
 			result.setFinalNamespace(finalNamespace);
-			String rdf = mb.getOntologyStringXml();
+			String rdf = ontConverter.getOntologyStringXml();
 			result.setRdf(rdf);
 		}
 
