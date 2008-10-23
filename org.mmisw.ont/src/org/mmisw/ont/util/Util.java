@@ -197,6 +197,16 @@ public class Util {
 		}
 	}
 	
+	/** "cleans" the string so it can be embedded in html content */
+	public static String toHtml(String s) {
+		return s.replaceAll("&", "&amp;").replaceAll("<", "&lt;");
+	}
+	
+	/** "cleans" the string so it can be embedded in a html comment */
+	public static String toHtmlComment(String s) {
+		return s.replaceAll("--", "\\-\\-");
+	}
+	
 
 	private Util() {}
 }

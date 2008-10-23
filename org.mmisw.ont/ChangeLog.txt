@@ -7,6 +7,9 @@ ChangeLog
 	- HTML output improved a bit. New class HtmlDispatcher.
 	- doPost was calling super.doGet!! (a typo).  Fixed.
 	- Sparql "select" response now in HTML.
+	- Util.{toHtml,toHtmlComment}() added to avoid inserted code
+	  in html responses.
+	  TODO: use in ALL html output.
 	
 	
 2008-10-21

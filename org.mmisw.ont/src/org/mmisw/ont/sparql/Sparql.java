@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mmisw.ont.util.Unfinished;
+import org.mmisw.ont.util.Util;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -97,7 +98,7 @@ public class Sparql {
 		out.printf("<tr>%n");
 		List<?> vars = results.getResultVars();
 		for ( Object var: vars ) {
-			out.printf("\t<th>%s</th>%n", var.toString());
+			out.printf("\t<th>%s</th>%n", Util.toHtml(var.toString()));
 		}
 		out.printf("</tr>%n");
 		
@@ -108,7 +109,7 @@ public class Sparql {
 				Iterator<?> varNames = sol.varNames();
 				while ( varNames.hasNext() ) {
 					String varName = varNames.next().toString();
-					out.printf("\t<td>%s</td>%n", sol.get(varName).toString());
+					out.printf("\t<td>%s</td>%n", Util.toHtml(sol.get(varName).toString()));
 				}
 				out.printf("</tr>%n");
 			}
