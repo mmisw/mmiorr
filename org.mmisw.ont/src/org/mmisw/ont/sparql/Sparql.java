@@ -63,13 +63,13 @@ public class Sparql {
 				ResultSet results = qe.execSelect();
 				
 				if ( true ) {
-					queryResult.setResult(_htmlSelectResults(results));
 					queryResult.setContentType("text/html");
+					queryResult.setResult(_htmlSelectResults(results));
 				}
 				else {
+					queryResult.setContentType("text/plain");
 					ByteArrayOutputStream os = new ByteArrayOutputStream();
 					ResultSetFormatter.out(os, results, query);
-					queryResult.setContentType("text/plain");
 					queryResult.setResult(os.toString());
 				}
 			}
@@ -87,10 +87,12 @@ public class Sparql {
 		return queryResult;
 	}
 
+	/** Formats the results in HTML */
 	private static String _htmlSelectResults(ResultSet results) {
 		
 		StringWriter sw = new StringWriter();
 		PrintWriter out = new PrintWriter(sw);
+		
 		out.printf("<table class=\"inline\">%n");
 		out.printf("<tr>%n");
 		List<?> vars = results.getResultVars();
