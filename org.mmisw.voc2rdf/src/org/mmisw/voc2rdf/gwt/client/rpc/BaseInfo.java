@@ -5,6 +5,12 @@ import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+/**
+ * Provides the main elements used to create the attributes to
+ * be captured.
+ * 
+ * @author Carlos Rueda
+ */
 public class BaseInfo implements IsSerializable {
 	
 	private List<Attribute> attributes = new ArrayList<Attribute>();

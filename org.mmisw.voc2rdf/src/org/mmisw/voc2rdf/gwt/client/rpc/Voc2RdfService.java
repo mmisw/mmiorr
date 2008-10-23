@@ -5,15 +5,13 @@ import java.util.Map;
 import com.google.gwt.user.client.rpc.RemoteService;
 
 /**
- * Interface to get info from the server.
+ * Interface to interact with the server.
  * 
  * @author Carlos Rueda
  * @version $Id$
  */
 public interface Voc2RdfService extends RemoteService {
 
-	// TODO
-	
 	BaseInfo getBaseInfo();
 	
 	ConversionResult convert(Map<String,String> values);

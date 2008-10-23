@@ -2,6 +2,12 @@ package org.mmisw.voc2rdf.gwt.client.rpc;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+/**
+ * Defines an attribute to be captured. Includes convenience information
+ * like tooltip and example value.
+ * 
+ * @author Carlos Rueda
+ */
 public class Attribute implements IsSerializable {
 
 	private String name;

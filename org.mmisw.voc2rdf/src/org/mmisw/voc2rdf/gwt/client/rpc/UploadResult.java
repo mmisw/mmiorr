@@ -2,6 +2,11 @@ package org.mmisw.voc2rdf.gwt.client.rpc;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+/**
+ * Info about the result of an upload operation.
+ * 
+ * @author Carlos Rueda
+ */
 public class UploadResult implements IsSerializable {
 
 	private String error = null;

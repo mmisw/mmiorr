@@ -2,6 +2,10 @@ package org.mmisw.voc2rdf.gwt.client.rpc;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+/**
+ * 
+ * @author Carlos Rueda
+ */
 public class PrimaryConcept implements IsSerializable {
 
 	private String name;
