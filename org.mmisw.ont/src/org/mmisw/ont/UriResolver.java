@@ -88,6 +88,13 @@ public class UriResolver extends HttpServlet {
 	}
 	
 	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
+	}
+	
+	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -847,95 +854,6 @@ public class UriResolver extends HttpServlet {
 		
 	}		
 
-	private String _resolveTerm(HttpServletRequest request, MmiUri mmiUri, Model model) {
-		String term = mmiUri.getTerm();
-		assert term.length() > 0 ;
-		
-		// construct URI of term with "#" separator
-		String termUri = mmiUri.getTermUri(true, "#");
-		Resource termRes = model.getResource(termUri);
-
-		if ( termRes == null ) {
-			// try with "/" separator
-			termUri = mmiUri.getTermUri(true, "/");
-			termRes = model.getResource(termUri);
-		}
-		
-		if ( termRes == null ) {
-			return null; // Not found.
-		}
-		
-		StringWriter strWriter = new StringWriter();
-		PrintWriter out = new PrintWriter(strWriter);
-        out.println("<html>");
-        out.println("<head>");
-        out.println("<title>" +termUri+ "</title>");
-        out.println("<link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\">");
-        out.println("</head>");
-        out.println("<body>");
-        out.println("<i>temporary response</i>");
-		
-		com.hp.hpl.jena.rdf.model.Statement labelRes = termRes.getProperty(RDFS.label);
-		String label = labelRes == null ? null : ""+labelRes.getObject();
-		
-		out.println("<pre>");
-		out.println("   term resource: " +termRes);
-		out.println("           label: " +label);
-		out.println("    getLocalName: " +termRes.getLocalName());
-		
-
-		if ( true ) { // get all about the term
-			out.println("\n    All about: " +termRes.getURI());
-			StmtIterator iter = model.listStatements(termRes, (Property) null, (Property) null);
-			while (iter.hasNext()) {
-				com.hp.hpl.jena.rdf.model.Statement sta = iter.nextStatement();
-				out.printf("      %30s   %s%n", 
-						PrintUtil.print(sta.getPredicate().getURI()),
-						PrintUtil.print(sta.getObject().toString())
-				);
-			}
-		}
-		
-		if ( true ) { // test for subclasses
-			out.println("\n    Subclasses of : " +termRes.getURI());
-			StmtIterator iter = model.listStatements(null, RDFS.subClassOf, termRes);
-			if  ( iter.hasNext() ) {
-				while ( iter.hasNext() ) {
-					com.hp.hpl.jena.rdf.model.Statement sta = iter.nextStatement();
-					out.println("  " + PrintUtil.print(sta.getSubject().getURI()));
-				}
-			}
-			else {
-				out.println("        (none)");
-			}
-		}
-		
-
-		if ( model instanceof OntModel ) {
-			OntModel ontModel = (OntModel) model;
-			out.println("    Individuals:");
-			ExtendedIterator iter = ontModel.listIndividuals(termRes);
-			while ( iter.hasNext() ) {
-				Resource indiv = (Resource) iter.next();
-				out.println("        " +indiv.getURI());
-			}
-		}
-		
-        out.println("</pre>");
-        out.println("</body>");
-        out.println("</html>");
-        
-        return strWriter.toString();
-	}
-
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		super.doGet(request, response);
-	}
-	
 	
 	private void _doListOntologies(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
