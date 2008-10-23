@@ -97,24 +97,15 @@ public class HtmlDispatcher {
 		
 		
 		
-		PrintWriter out = response.getWriter();
-		
+		_startPage(request, response, fullRequestedUri);
 
-		// start the response page:
-		response.setContentType("text/html");
-		out.println("<html>");
-		out.println("<head>");
-		out.println("<title>" +fullRequestedUri+ "</title>");
-		out.println("<link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\">");
-		out.println("</head>");
-		out.println("<body>");
-		
+		PrintWriter out = response.getWriter();
 		
 		String uriFile = file.toURI().toString();
 		Model model = JenaUtil.loadModel(uriFile, false);
 
 		if ( mmiUri.getTerm().length() > 0 ) {
-			dispatchTerm(mmiUri, model, out);
+			dispatchTerm(request, response, mmiUri, model, false);
 		}
 		else {
 			// start with the metadata:
@@ -127,6 +118,19 @@ public class HtmlDispatcher {
 	}
 	
 	
+	private void _startPage(HttpServletRequest request, HttpServletResponse response, 
+			String fullRequestedUri) throws IOException {
+		response.setContentType("text/html");
+		PrintWriter out = response.getWriter();
+		out.println("<html>");
+		out.println("<head>");
+		out.println("<title>" +fullRequestedUri+ "</title>");
+		out.println("<link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\">");
+		out.println("</head>");
+		out.println("<body>");
+	}
+
+
 	/** Generated a table with all the terms */
 	private void _showAllTerms(MmiUri mmiUri, Model model, PrintWriter out, boolean debug) {
 		out.printf(" All subjects in the ontology:<br/>%n"); 
@@ -174,8 +178,12 @@ public class HtmlDispatcher {
 	 * @param mmiUri
 	 * @param file
 	 * @param out
+	 * @param completePage 
+	 * @throws IOException 
 	 */
-	void dispatchTerm(MmiUri mmiUri, Model model, PrintWriter out) {
+	void dispatchTerm(HttpServletRequest request, HttpServletResponse response, 
+			MmiUri mmiUri, Model model, boolean completePage) throws IOException {
+		
 		String term = mmiUri.getTerm();
 		assert term.length() > 0 ;
 		
@@ -190,6 +198,8 @@ public class HtmlDispatcher {
 			termRes = model.getResource(termUri);
 		}
 		
+		PrintWriter out = response.getWriter();
+		
 		if ( termRes == null ) {
 			out.println("   No resource found for URI: " +termUri);
 			return;
@@ -197,6 +207,11 @@ public class HtmlDispatcher {
 		
 //		com.hp.hpl.jena.rdf.model.Statement labelRes = termRes.getProperty(RDFS.label);
 //		String label = labelRes == null ? null : ""+labelRes.getObject();
+		
+		if ( completePage ) {
+			String fullRequestedUri = request.getRequestURL().toString();
+			_startPage(request, response, fullRequestedUri);
+		}
 		
 		out.println("<table class=\"inline\" width=\"100%\">");
 		out.printf("<tr><th>%s</th></tr> %n", termRes);

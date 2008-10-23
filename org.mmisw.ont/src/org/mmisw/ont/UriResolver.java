@@ -402,9 +402,8 @@ public class UriResolver extends HttpServlet {
 				// TODO Handle requested ontology format for this term.
 				// This would be probably in a form similar to a response from
 				// a sparql query about the term.
-				// For now, replying with the HTML format: 
-				PrintWriter out = response.getWriter();
-				htmlDispatcher.dispatchTerm(mmiUri, model, out );
+				// For now, replying with the HTML format:
+				htmlDispatcher.dispatchTerm(request, response, mmiUri, model, true);
 
 //				String termContents = _resolveTerm(request, mmiUri, model);
 //				StringReader is = new StringReader(termContents);
