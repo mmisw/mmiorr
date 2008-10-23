@@ -1,7 +1,10 @@
 package org.mmisw.ont.sparql;
 
 import java.io.ByteArrayOutputStream;
+import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Iterator;
+import java.util.List;
 
 import org.mmisw.ont.util.Unfinished;
 
@@ -9,6 +12,7 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -57,11 +61,17 @@ public class Sparql {
 			}
 			else if ( query.isSelectType() ) {
 				ResultSet results = qe.execSelect();
-				ByteArrayOutputStream os = new ByteArrayOutputStream();
-				ResultSetFormatter.out(os, results, query);
-	
-				queryResult.setResult(os.toString());
-				queryResult.setContentType("text/plain");
+				
+				if ( true ) {
+					queryResult.setResult(_htmlSelectResults(results));
+					queryResult.setContentType("text/html");
+				}
+				else {
+					ByteArrayOutputStream os = new ByteArrayOutputStream();
+					ResultSetFormatter.out(os, results, query);
+					queryResult.setContentType("text/plain");
+					queryResult.setResult(os.toString());
+				}
 			}
 			
 			// TODO handle other types of queries.
@@ -75,6 +85,35 @@ public class Sparql {
 		}
 		
 		return queryResult;
+	}
+
+	private static String _htmlSelectResults(ResultSet results) {
+		
+		StringWriter sw = new StringWriter();
+		PrintWriter out = new PrintWriter(sw);
+		out.printf("<table class=\"inline\">%n");
+		out.printf("<tr>%n");
+		List<?> vars = results.getResultVars();
+		for ( Object var: vars ) {
+			out.printf("<th>%s</th>%n", var.toString());
+		}
+		out.printf("</tr>%n");
+		
+		if ( results.hasNext() ) {
+			while ( results.hasNext() ) {
+				out.printf("<tr>%n");
+				QuerySolution sol = results.nextSolution();
+				Iterator<?> varNames = sol.varNames();
+				while ( varNames.hasNext() ) {
+					String varName = varNames.next().toString();
+					out.printf("<td>%s</td>", sol.get(varName).toString());
+				}
+				out.printf("</tr>%n");
+			}
+		}
+		out.printf("</table>%n");
+		
+		return sw.toString();
 	}
 
 	private Sparql() {}
