@@ -655,7 +655,7 @@ public class UriResolver extends HttpServlet {
 	/** Generated a table with all the terms */
 	private void _showAllTerms(MmiUri mmiUri, Model model, PrintWriter out, boolean debug) {
 		out.printf(" All subjects in the ontology:<br/>%n"); 
-		out.println("<table class=\"inline\">");
+		out.println("<table class=\"inline\" width=\"100%\">");
 		out.printf("<tr>%n");
 		out.printf("<th>URI</th>");
 		out.printf("<th>Resolve</th>");
@@ -722,17 +722,23 @@ public class UriResolver extends HttpServlet {
 //		com.hp.hpl.jena.rdf.model.Statement labelRes = termRes.getProperty(RDFS.label);
 //		String label = labelRes == null ? null : ""+labelRes.getObject();
 		
-		out.println("<table class=\"inline\">");
-		out.printf("<tr><td>Resource:</td><td>%s</td></tr> %n", termRes);
-//		out.printf("<tr><td>Label:</td><td>%s</td></tr> %n", label);
-		out.printf("<tr><td>Name:</td><td>%s</td></tr> %n", termRes.getLocalName());
+		out.println("<table class=\"inline\" width=\"100%\">");
+		out.printf("<tr><th>%s</th></tr> %n", termRes);
 		out.println("</table>");
 
-		if ( true ) { // get all about the term
+		if ( true ) { // get all statements about the term
 			StmtIterator iter = model.listStatements(termRes, (Property) null, (Property) null);
 			if (iter.hasNext()) {
 				out.println("<br/>");
-				out.println("<table class=\"inline\">");
+				out.println("<table class=\"inline\" width=\"100%\">");
+				out.printf("<tr><th colspan=\"2\">%s</th></tr> %n", "Statements");
+
+				out.printf("<tr>%n");
+				out.printf("<th>%s</th>", "Predicate");
+				out.printf("<th>%s</th>", "Object");
+				out.printf("</tr>%n");
+				
+				
 				
 				while (iter.hasNext()) {
 					com.hp.hpl.jena.rdf.model.Statement sta = iter.nextStatement();
@@ -772,7 +778,7 @@ public class UriResolver extends HttpServlet {
 			StmtIterator iter = model.listStatements(null, RDFS.subClassOf, termRes);
 			if  ( iter.hasNext() ) {
 				out.println("<br/>");
-				out.println("<table class=\"inline\">");
+				out.println("<table class=\"inline\" width=\"100%\">");
 				out.printf("<tr>%n");
 				out.printf("<th>Subclasses</th>");
 				out.printf("</tr>%n");
@@ -803,7 +809,7 @@ public class UriResolver extends HttpServlet {
 			ExtendedIterator iter = ontModel.listIndividuals(termRes);
 			if ( iter.hasNext() ) {
 				out.println("<br/>");
-				out.println("<table class=\"inline\">");
+				out.println("<table class=\"inline\" width=\"100%\">");
 				out.printf("<tr>%n");
 				out.printf("<th>Individuals</th>");
 				out.printf("</tr>%n");
@@ -939,7 +945,7 @@ public class UriResolver extends HttpServlet {
 	        out.println("</head>");
 	        out.println("<body>");
 	        out.println("<code>" +query+ "</code>");
-	        out.println("<table class=\"inline\">");
+	        out.println("<table class=\"inline\" width=\"100%\">");
 
 			
 	        ResultSetMetaData md = rs.getMetaData();
