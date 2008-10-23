@@ -10,6 +10,11 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * Helps to display a panel in a dialog box.
+ * 
+ * @author Carlos Rueda
+ */
 public class MyDialog extends DialogBox {
 	
 	MyDialog(Panel contents) {

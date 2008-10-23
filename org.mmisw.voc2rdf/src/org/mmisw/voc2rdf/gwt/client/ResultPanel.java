@@ -15,6 +15,11 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * Contains the result of a conversion.
+ * 
+ * @author Carlos Rueda
+ */
 public class ResultPanel extends VerticalPanel {
 
 	private MainPanel mainPanel;

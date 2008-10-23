@@ -21,6 +21,11 @@ import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * Captures login info and starts the upload to the registry.
+ * 
+ * @author Carlos Rueda
+ */
 public class UploadPanel extends VerticalPanel {
 
 	private MainPanel mainPanel;

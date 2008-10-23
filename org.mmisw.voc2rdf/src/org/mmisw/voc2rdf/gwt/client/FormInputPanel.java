@@ -25,6 +25,11 @@ import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * The form.
+ * 
+ * @author Carlos Rueda
+ */
 public class FormInputPanel extends VerticalPanel {
 
 	private MainPanel mainPanel;

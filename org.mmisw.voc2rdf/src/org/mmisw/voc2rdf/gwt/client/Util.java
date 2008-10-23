@@ -15,6 +15,11 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.UIObject;
 
 
+/**
+ * Misc utilities.
+ * 
+ * @author Carlos Rueda
+ */
 public class Util {
     static native String getLocationSearch() /*-{
 	    return $wnd.location.search;

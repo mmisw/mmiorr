@@ -23,7 +23,9 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Entry point classes define <code>onModuleLoad()</code>.
+ * The entry point.
+ * 
+ * @author Carlos Rueda
  */
 public class Main implements EntryPoint {
 

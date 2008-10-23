@@ -12,6 +12,11 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+/**
+ * The main panel.
+ * 
+ * @author Carlos Rueda
+ */
 public class MainPanel extends VerticalPanel {
 
 	private FormInputPanel formInputPanel;
