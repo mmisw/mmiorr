@@ -293,10 +293,7 @@ public class UriResolver extends HttpServlet {
 			// (b) an HTML document (if Accept: text/html but not application/rdf+xml)
 			else if ( accept.contains("text/html") ) {
 				
-				return htmlDispatcher.dispatch(request, response, mmiUri);
-				
-				// TODO remove
-//				return _resolveUriHtml(request, response, mmiUri);
+				return _resolveUriHtml(request, response, mmiUri);
 			}
 			
 			// (c) an HTML document (if Accept: text/html, application/rdf+xml or Accept: */*)
@@ -466,6 +463,12 @@ public class UriResolver extends HttpServlet {
 	 */
 	private boolean _resolveUriHtml(HttpServletRequest request, HttpServletResponse response, MmiUri mmiUri) 
 	throws ServletException, IOException {
+
+		if ( true ) {
+			return htmlDispatcher.dispatch(request, response, mmiUri);
+		}
+		
+		// TODO remove the rest of this
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("_resolveUriHtml: starting response.");
