@@ -4,6 +4,8 @@ import java.util.Map;
 
 import org.mmisw.voc2rdf.gwt.client.img.Voc2RdfImageBundle;
 import org.mmisw.voc2rdf.gwt.client.rpc.BaseInfo;
+import org.mmisw.voc2rdf.gwt.client.rpc.ConversionResult;
+import org.mmisw.voc2rdf.gwt.client.rpc.UploadResult;
 import org.mmisw.voc2rdf.gwt.client.rpc.Voc2RdfService;
 import org.mmisw.voc2rdf.gwt.client.rpc.Voc2RdfServiceAsync;
 
@@ -67,7 +69,12 @@ public class Main implements EntryPoint {
 
 		}
 
-		getVoc2RdfService();
+		if ( GWT.isScript() ) { // ie, actually running on the server.
+			getVoc2RdfService();
+		}
+		else {
+			getVoc2RdfServiceMock();
+		}
 		getPrimaryConcepts(params);
 	}
 
@@ -121,6 +128,37 @@ public class Main implements EntryPoint {
 		log("   voc2rdfService " + voc2rdfService);
 	}
 
+	
+	/** A mock-up implementation. */
+	private static void getVoc2RdfServiceMock() {
+		voc2rdfService = new Voc2RdfServiceAsync() {
+
+			BaseInfo baseInfo = new BaseInfo();
+
+			public void convert(Map<String, String> values, 
+					AsyncCallback<ConversionResult> callback) 
+			{
+				ConversionResult result = new ConversionResult();
+				result.setRdf("PRETEND THIS IS AN RDF");
+				callback.onSuccess(result);
+			}
+
+			public void getBaseInfo(AsyncCallback<BaseInfo> callback) {
+				callback.onSuccess(baseInfo);
+			}
+
+			public void upload(ConversionResult result,
+					Map<String, String> values,
+					AsyncCallback<UploadResult> callback) 
+			{
+				UploadResult uploadResult = new UploadResult();
+				uploadResult.setInfo("PRETEND THIS IS NORMAL UPLOAD RESULT MESSAGE");
+				callback.onSuccess(uploadResult);
+			}
+			
+		};
+		
+	}
 	private void getPrimaryConcepts(final Map<String, String> params) {
 		AsyncCallback<BaseInfo> callback = new AsyncCallback<BaseInfo>() {
 			public void onFailure(Throwable thr) {

@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.mmisw.voc2rdf.gwt.client.rpc.Attribute;
 import org.mmisw.voc2rdf.gwt.client.rpc.ColumnSeparator;
-import org.mmisw.voc2rdf.gwt.client.rpc.PrimaryConcept;
 
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -25,11 +24,11 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * The form.
+ * Form elements for the contents of the vocabulary.
  * 
  * @author Carlos Rueda
  */
-public class FormInputPanel extends VerticalPanel {
+public class VocabPanel extends VerticalPanel {
 
 	private static class Elem {
 		Attribute attr;
@@ -45,9 +44,13 @@ public class FormInputPanel extends VerticalPanel {
 	
 	private PushButton exampleButton;
 	
-	FormInputPanel() {
-		super();
-		
+	private PushButton convertButton;
+
+	protected MainPanel mainPanel;
+
+	
+	VocabPanel(MainPanel mainPanel) {
+		this.mainPanel = mainPanel;
 		add(createForm());
 	}
 
@@ -65,38 +68,11 @@ public class FormInputPanel extends VerticalPanel {
 		row++;
 		
 
-		final List<Attribute> attrs = Main.baseInfo.getAttributes();
+		final List<Attribute> attrs = Main.baseInfo.getVocAttributes();
 		for ( Attribute attr : attrs ) {
 			Widget widget;
 			final String attrName = attr.getName();
-			if ( "primaryConcept".equals(attrName) ) {
-				final ListBox lb = new ListBox();
-				lb.setName(attrName);
-				for ( PrimaryConcept comp : Main.baseInfo.getPrimaryConcepts() ) {
-					lb.addItem(comp.getLabel(), comp.getName());
-				}
-				lb.addChangeListener(new ChangeListener () {
-					public void onChange(Widget sender) {
-//						int idx = lb.getSelectedIndex();
-						formChanged();
-					}
-
-				});
-				widget = lb;
-			}
-			else if ( "description".equals(attrName) ) {
-				final TextArea ta = new TextArea();
-				ta.setName(attrName);
-				ta.setSize("600", "80");
-				ta.addChangeListener(new ChangeListener () {
-					public void onChange(Widget sender) {
-//						String text = ta.getText();
-						formChanged();
-					}
-				});
-				widget = ta;
-			}
-			else if ( "ascii".equals(attrName) ) {
+			if ( "ascii".equals(attrName) ) {
 				final TextArea ta = new TextArea();
 				ta.setName(attrName);
 				ta.setSize("600", "160");
@@ -164,8 +140,15 @@ public class FormInputPanel extends VerticalPanel {
 				example();
 			}
 		});
-		exampleButton.setTitle("Fills in example values in this section");
 		panel.add(exampleButton);
+		
+		convertButton = new PushButton("Test conversion", new ClickListener() {
+			public void onClick(Widget sender) {
+				mainPanel.convertTest();
+			}
+		});
+		convertButton.setTitle("Tests the conversion os the current vocabulary contents");
+		panel.add(convertButton);
 		
 		return panel;
 	}
@@ -197,6 +180,7 @@ public class FormInputPanel extends VerticalPanel {
 		return null;
 	}
 
+	
 	void reset() {
 		for ( Elem elem : widgets.values() ) {
 			String value = "";
@@ -227,5 +211,4 @@ public class FormInputPanel extends VerticalPanel {
 
 		}
 	}
-	
 }

@@ -3,6 +3,7 @@ package org.mmisw.voc2rdf.gwt.server;
 import java.net.URL;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.mmisw.voc2rdf.gwt.client.rpc.BaseInfo;
 import org.mmisw.voc2rdf.gwt.client.rpc.ConversionResult;
 import org.mmisw.voc2rdf.gwt.client.rpc.UploadResult;
@@ -21,6 +22,8 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class Voc2RdfServiceImpl extends RemoteServiceServlet implements Voc2RdfService {
 	private static final long serialVersionUID = 1L;
 
+	
+	private static Logger log = Logger.getLogger(Voc2RdfServiceImpl.class);
 	
 	private BaseInfo baseInfo = new BaseInfo();
 	
@@ -41,9 +44,8 @@ public class Voc2RdfServiceImpl extends RemoteServiceServlet implements Voc2RdfS
 			result.setError(res);
 		}
 		else {
-			String finalNamespace = ontConverter.getFinalNamespace();
-			System.out.println(this.getClass().getName()+ " convert: finalNamespace = " +finalNamespace);
-			result.setFinalNamespace(finalNamespace);
+			String finalUri = ontConverter.getFinalUri();
+			result.setFinalUri(finalUri);
 			String rdf = ontConverter.getOntologyStringXml();
 			result.setRdf(rdf);
 		}
@@ -54,7 +56,7 @@ public class Voc2RdfServiceImpl extends RemoteServiceServlet implements Voc2RdfS
 	
 	public UploadResult upload(ConversionResult conversionResult, Map<String,String> values) {
 		
-		System.out.println(this.getClass().getName()+ ": uploading ...");
+		log.debug(": uploading ...");
 		UploadResult uploadResult = new UploadResult();
 		String sessionId;
 		
@@ -65,7 +67,7 @@ public class Voc2RdfServiceImpl extends RemoteServiceServlet implements Voc2RdfS
 			Login login = new Login(userName, userPassword);
 			sessionId = login.getSessionId();
 
-			String uri = conversionResult.getFinalNamespace();
+			String uri = conversionResult.getFinalUri();
 			String fileName;
 			fileName = new URL(uri).getPath();
 			String rdf = conversionResult.getRdf();
@@ -84,7 +86,7 @@ public class Voc2RdfServiceImpl extends RemoteServiceServlet implements Voc2RdfS
 			uploadResult.setError(ex.getClass().getName()+ ": " +ex.getMessage());
 		}
 		
-		System.out.println("uploadResult = " +uploadResult);
+		log.debug("uploadResult = " +uploadResult);
 		
 		return uploadResult;
 	}

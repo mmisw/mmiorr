@@ -11,18 +11,18 @@ public class ConversionResult implements IsSerializable {
 	private String error = null;
 	private String rdf = "";
 	
-	private String finalNamespace;
+	private String finalUri;
 	
 	public ConversionResult () {
 	}
 	
 	
-	public void setFinalNamespace(String finalNamespace) {
-		this.finalNamespace = finalNamespace;
+	public void setFinalUri(String finalNamespace) {
+		this.finalUri = finalNamespace;
 	}
 	
-	public String getFinalNamespace() {
-		return finalNamespace;
+	public String getFinalUri() {
+		return finalUri;
 	}
 
 	public String getRdf() {

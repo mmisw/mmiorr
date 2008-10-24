@@ -23,13 +23,15 @@ import com.google.gwt.user.client.ui.Widget;
 public class ResultPanel extends VerticalPanel {
 
 	private MainPanel mainPanel;
-	private ConversionResult result;
 	
+	private PushButton convertButton;
 	
-	ResultPanel(MainPanel mainPanel, ConversionResult result) {
+	private final Label msgLabel = new Label();
+	private final TextArea ta = new TextArea();
+	
+	ResultPanel(MainPanel mainPanel) {
 		super();
 		this.mainPanel = mainPanel;
-		this.result = result;
 		
 		add(createContents());
 	}
@@ -37,10 +39,9 @@ public class ResultPanel extends VerticalPanel {
 	private Widget createContents() {
 		FlexTable panel = new FlexTable();
 		
-		String error = result.getError();
 		
 		int row = 0;
-		panel.setWidget(row++, 0, new Label(error == null ? "Congratulations" : "Error"));
+		panel.setWidget(row++, 0, msgLabel);
 		
 		CellPanel buttons = createButtons();
 		panel.getFlexCellFormatter().setColSpan(0, 0, 2);
@@ -50,19 +51,8 @@ public class ResultPanel extends VerticalPanel {
 		);
 		row++;
 		
-		
-		TextArea ta = new TextArea();
 		ta.setReadOnly(true);
-		if ( error == null ) {
-			String rdf = result.getRdf();
-			Main.log(rdf);
-			ta.setText(rdf);
-//			ta.setSelectionRange(0, Integer.MAX_VALUE);
-		}
-		else {
-			ta.setText(error);
-		}
-	    ta.setSize("700px", "280px");
+	    ta.setSize("700px", "250px");
 		DecoratorPanel decPanel = new DecoratorPanel();
 	    decPanel.setWidget(ta);
 	    add(decPanel);
@@ -72,21 +62,46 @@ public class ResultPanel extends VerticalPanel {
 		return panel;
 	}
 
+	void updateContents(ConversionResult result) {
+		if ( result == null ) {
+			msgLabel.setText("");
+			ta.setText("");
+//			convertButton.setEnabled(false);
+			return;
+		}
+
+		String error = result .getError();
+
+		if ( error == null ) {
+			msgLabel.setText("Congratulations");
+			String rdf = result.getRdf();
+			Main.log(rdf);
+			ta.setText(rdf);
+//			ta.setSelectionRange(0, Integer.MAX_VALUE);
+//			convertButton.setEnabled(false);
+		}
+		else {
+			msgLabel.setText("Error");
+			ta.setText(error);
+//			convertButton.setEnabled(false);
+		}
+		
+	}
 	
 	private CellPanel createButtons() {
 		CellPanel panel = new HorizontalPanel();
 		panel.setSpacing(2);
 
-		String error = result.getError();
+		convertButton = new PushButton("Do conversion", new ClickListener() {
+			public void onClick(Widget sender) {
+				mainPanel.convert();
+			}
+		});
 		
-		if ( error == null ) {
-			PushButton uploadButton = new PushButton("Upload to MMI Registry", new ClickListener() {
-				public void onClick(Widget sender) {
-					mainPanel.upload(result);
-				}
-			});
-			panel.add(uploadButton);
-		}
+		// TODO handle the enable in general
+		convertButton.setEnabled(true);
+		
+		panel.add(convertButton);
 
 		return panel;
 	}

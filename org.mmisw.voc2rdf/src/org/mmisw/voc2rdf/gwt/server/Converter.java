@@ -24,51 +24,44 @@ import org.mmisw.voc2rdf.transf.Transformer;
  */
 class Converter {
 
-	private static String tmp = "/Users/Shared/registry/tmp/";
+	private static final String tmp = "/Users/Shared/registry/tmp/";
 
-	private String title = "Project X Parameters";
+	private String title;
 
-	private String description = "parameters used in project X";
+	private String description;
 
-	private String orgAbbreviation = "mmi";
+	private String orgAbbreviation;
 
-	private String ascii = getASCII();
+	private String ascii;
 
-	private String creator = "John Smith";
+	private String creator;
 
-	private String namespace = "http://mmisw.org/ont";
+	private String namespaceRoot = "http://mmisw.org/ont";
 	
 	// To set TransProperties.NS
-	private String finalNamespace;
+	private String finalUri;
 	
-	public String getFinalNamespace() {
-		return finalNamespace;
+	public String getFinalUri() {
+		return finalUri;
 	}
 
 
-	private String primaryClass = "parameter";
+	private String primaryClass;
 
 
-	private String ONE_CLASS_ALL_INSTANCES = OwlCreatorComplex.ONE_CLASS_ALL_INSTANCES;
-
+	private static final String ONE_CLASS_ALL_INSTANCES = OwlCreatorComplex.ONE_CLASS_ALL_INSTANCES;
 
 	private String convertionType = ONE_CLASS_ALL_INSTANCES;
 
 	private Transformer trans;
 
 
-	private String fieldSeparator = "csv";
+	private String fieldSeparator;
 
-	private String uid = "1000";
+	private Object version;
 
 	private static Logger logger = Logger.getLogger(Converter.class.getName());
 
-	private static String getASCII() {
-		String s = "name,description" + "\r"
-				+ "sea surface salinity, salinity at the sea surface >10 m."
-				+ "\r" + "sst, sea surface temperature";
-		return s;
-	}
 	
 	
 	
@@ -80,7 +73,7 @@ class Converter {
 		this.setPrimaryClass(values.get("primaryConcept"));
 		this.setAscii(values.get("ascii"));
 		this.setFieldSeparator(values.get("fieldSeparator"));
-		this.setNamespace(values.get("namespace"));
+		this.setNamespaceRoot(values.get("namespaceRoot"));
 	}
 
 	public String createOntology() {
@@ -90,7 +83,7 @@ class Converter {
 			return "failure";
 		} else {
 
-			setNamespace();
+			setFinalUri();
 			processCreateOntology();
 
 			logger.info("Sucessfull creation");
@@ -99,23 +92,24 @@ class Converter {
 
 	}
 
-	private void setNamespace() {
+	private void setFinalUri() {
 
-		String orgAbbrev = orgAbbreviation.trim().replace(" ", "");
+		// remove any trailing slashes
+		namespaceRoot = namespaceRoot.replaceAll("(/|\\\\)+$", "");  
 		
-		// <carueda> 2008-10-02:  setNamespace(ns) was not honored ...
-		// this was the original code:
-//-		namespace = basic_namespace + "/" + orgAbbrev + "/"+getPrimaryClass()+".owl";
-		// so namespace would always start with basic_namespace (which never changed)
+		String orgAbbrev = orgAbbreviation.replaceAll("\\s+", "");
 		
-		// A quick solution (to minimize changes in the code) is to consider the
-		// bean property "namespace" as actually the namespaceRoot to construct
-		// the final TransProperties.NS property:
-		namespace = namespace.replaceAll("(/|\\\\)+$", "");  // remove any trailing slashes
-		finalNamespace = namespace + "/" + orgAbbrev + "/"+getPrimaryClass()+".owl";
+		finalUri = namespaceRoot + "/" + orgAbbrev;
+		
+		if ( version != null ) {
+			finalUri +=  "/" + version;
+		}
+		
+		finalUri += "/" + getPrimaryClass() + ".owl";
+		
 		// see createProperties()
 		
-		logger.info("setNamespace() finalNamespace = " +finalNamespace);
+		logger.info("setFinalUri: " +finalUri);
 	}
 
 	private Properties createProperties() {
@@ -125,8 +119,8 @@ class Converter {
 		prop.setProperty(TransProperties.description, getDescription());
 		
 //-		prop.setProperty(TransProperties.NS, getNamespace());
-		logger.info("createProperties() finalNamespace = " +finalNamespace);
-		prop.setProperty(TransProperties.NS, finalNamespace);
+		logger.info("createProperties() finalNamespace = " +finalUri);
+		prop.setProperty(TransProperties.NS, finalUri);
 		
 		prop.setProperty(TransProperties.creator, getCreator());
 		prop
@@ -280,11 +274,11 @@ class Converter {
 	}
 
 	/**
-	 * @param namespace
+	 * @param namespaceRoot
 	 *            the namespace to set
 	 */
-	private void setNamespace(String namespace) {
-		this.namespace = namespace;
+	private void setNamespaceRoot(String namespaceRoot) {
+		this.namespaceRoot = namespaceRoot;
 	}
 
 	/**
@@ -345,21 +339,8 @@ class Converter {
 	}
 
 	private String createUniqueName() {
-//		FacesContext context = FacesContext.getCurrentInstance();
-//
-//		String param = (String) context.getExternalContext()
-//				.getRequestParameterMap().get("uid");
+		return "" +System.currentTimeMillis();
 
-		long l = System.currentTimeMillis();
-		return getUid() + "" + l;
-
-	}
-
-	/**
-	 * @return the uid
-	 */
-	private String getUid() {
-		return uid;
 	}
 
 }

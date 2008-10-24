@@ -13,18 +13,31 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class BaseInfo implements IsSerializable {
 	
-	private List<Attribute> attributes = new ArrayList<Attribute>();
+	// metadata related
+	private List<Attribute> mdAttributes = new ArrayList<Attribute>();
 	private List<PrimaryConcept> primaryConcepts = new ArrayList<PrimaryConcept>();
+	
+	// vocabulary related
+	private List<Attribute> vocAttributes = new ArrayList<Attribute>();
 	private List<ColumnSeparator> columnSeparators = new ArrayList<ColumnSeparator>();
 	
+	
 	public BaseInfo() {
-		prepateAttributes();
-		prepatePrimaryConcepts();
-		prepateColumnSeparators();
+		prepareMdAttributes();
+		preparePrimaryConcepts();
+		
+		prepareVocAttributes();
+		prepareColumnSeparators();
 	}
 	
+	/** Gets the metadata attributes */
 	public List<Attribute> getAttributes() {
-		return attributes;
+		return mdAttributes;
+	}
+	
+	/** Gets the vocabulary attributes */
+	public List<Attribute> getVocAttributes() {
+		return vocAttributes;
 	}
 	
 	public List<PrimaryConcept> getPrimaryConcepts() {
@@ -37,34 +50,25 @@ public class BaseInfo implements IsSerializable {
 
 
 	
-	private void prepateAttributes() {
+	private void prepareMdAttributes() {
 		Attribute attr;
 		
-		attributes.add(attr = new Attribute("creator", "Creator's name:", "TODO", "John Smith"));
+		mdAttributes.add(attr = new Attribute("title", "Title:", "TODO", "Project X Parameters"));
 		
-		attributes.add(attr = new Attribute("contributor", "Contributor(s):", "TODO"));
+		mdAttributes.add(attr = new Attribute("creator", "Creator's name:", "TODO", "John Smith"));
+		
+		mdAttributes.add(attr = new Attribute("contributor", "Contributor(s):", "TODO"));
 		attr.setRequired(false);
 		
-		attributes.add(attr = new Attribute("orgAbbreviation", "Abbreviation of your organization:", "TODO", "mmi"));
+		mdAttributes.add(attr = new Attribute("orgAbbreviation", "Abbreviation of your organization:", "TODO", "mmi"));
 		
-		attributes.add(attr = new Attribute("title", "Title:", "TODO", "Project X Parameters"));
+		mdAttributes.add(attr = new Attribute("description", "Description:", "TODO", "parameters used in project X"));
 		
-		attributes.add(attr = new Attribute("description", "Description:", "TODO", "parameters used in project X"));
+		mdAttributes.add(attr = new Attribute("primaryConcept", "Main theme of this vocabulary:", "TODO", "parameter"));
 		
-		attributes.add(attr = new Attribute("primaryConcept", "Main theme of this vocabulary:", "TODO", "parameter"));
-		
-		attributes.add(attr = new Attribute("ascii", "Vocabulary in text format:", "TODO",
-				"name,description\n" +
-				"sea surface salinity, salinity at the sea surface >10 m.\n" +
-				"sst, sea surface temperature\n"
-				));
-		
-		attributes.add(attr = new Attribute("fieldSeparator", "Column character separator:", "TODO", "csv"));
-		
-		attributes.add(attr = new Attribute("namespace", "Root namespace:", "TODO", "http://mmisw.org/ont"));
 	}
 
-	private void prepatePrimaryConcepts() {
+	private void preparePrimaryConcepts() {
 		primaryConcepts.add(new PrimaryConcept("parameter", "Parameters (It will include terms like 'sea surface salinity')"));
 		primaryConcepts.add(new PrimaryConcept("sensorType", "Sensor types (It will include terms like 'Thermometer')"));
 		primaryConcepts.add(new PrimaryConcept("platform types", "Platform types (It will include terms like 'Mooring')"));
@@ -79,7 +83,23 @@ public class BaseInfo implements IsSerializable {
 				
 	}
 
-	private void prepateColumnSeparators() {
+	
+	private void prepareVocAttributes() {
+		Attribute attr;
+		
+		vocAttributes.add(attr = new Attribute("ascii", "Vocabulary in text format:", "TODO",
+				"name,description\n" +
+				"sea surface salinity, salinity at the sea surface >10 m.\n" +
+				"sst, sea surface temperature\n"
+				));
+		
+		vocAttributes.add(attr = new Attribute("fieldSeparator", "Column character separator:", "TODO", "csv"));
+		
+		vocAttributes.add(attr = new Attribute("namespaceRoot", "Namespace root:", "TODO", "http://mmisw.org/ont"));
+	}
+
+
+	private void prepareColumnSeparators() {
 		columnSeparators.add(new ColumnSeparator("csv", "comma"));
 		columnSeparators.add(new ColumnSeparator("tab", "tabulator"));
 	}
