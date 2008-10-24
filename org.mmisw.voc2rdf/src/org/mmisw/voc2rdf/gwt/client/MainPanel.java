@@ -153,7 +153,11 @@ public class MainPanel extends VerticalPanel {
 		AsyncCallback<ConversionResult> callback = new AsyncCallback<ConversionResult>() {
 			public void onFailure(Throwable thr) {
 				conversionResult = new ConversionResult();
-				conversionResult.setError(thr.getClass().getName()+ ": " +thr.getMessage());
+				String error = thr.getClass().getName()+ ": " +thr.getMessage();
+				while ( (thr = thr.getCause()) != null ) {
+					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
+				}
+				conversionResult.setError(error);
 				resultPanel.updateContents(conversionResult);
 				tabPanel.selectTab(tabPanel.getWidgetIndex(resultPanel));
 			}
