@@ -9,9 +9,12 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import org.mmi.ont.voc2owl.trans.TransProperties;
 import org.mmi.util.ISO8601Date;
+
+//import org.mmi.ont.voc2owl.trans.OwlCreatorComplex;
+//import org.mmi.ont.voc2owl.trans.Transformer;
 import org.mmisw.voc2rdf.transf.OwlCreatorComplex;
+import org.mmisw.voc2rdf.transf.TransProperties;
 import org.mmisw.voc2rdf.transf.Transformer;
 
 /**
@@ -77,6 +80,7 @@ class Converter {
 	}
 
 	public String createOntology() {
+		logger.info("!!!!!!!!!!!!!!!! Converter.createOntology");
 		String status = verify();
 		if (status == "failure") {
 			logger.warning("Failure to convert");

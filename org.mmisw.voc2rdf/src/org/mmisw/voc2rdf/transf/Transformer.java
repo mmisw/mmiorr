@@ -14,8 +14,6 @@ import java.util.StringTokenizer;
 //import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 //import org.eclipse.core.runtime.IProgressMonitor;
-import org.mmi.ont.voc2owl.trans.StringManipulationInterface;
-import org.mmi.ont.voc2owl.trans.TransProperties;
 import org.mmi.util.ResourceLoader;
 
 //import com.hp.hpl.jena.ontology.OntModel;

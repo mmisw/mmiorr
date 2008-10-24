@@ -3,6 +3,16 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2008-10-24
+	- Because of problems to use the java sources in:
+	  http://mmi.cvs.sourceforge.net/viewvc/mmi/org.mmi.ont.voc2owl/src/org/mmi/ont/voc2owl/trans/
+	  I asked Luis to make sure the repository is up to date... well, there were uncommitted changes!
+	  Ok, now it works, so I'm removing the dependency on the org.mmi.ont.voc2owl.trans.jar library,
+	  and continuing using the new package org.mmisw.voc2rdf.transf as indicated yesterday.
+	  Now, will continue with clean-up and preparation to support metadata
+	  attributes in a more flexible way (current library only uses a set of the DC properties).
+	  
+	  
 2008-10-23
 	- Starting changes for enhanced metadata handling in the conversion:
 		- new Converter which is a simplified adaptation of 

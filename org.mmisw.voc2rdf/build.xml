@@ -20,7 +20,7 @@
   	
   	<pathelement path="base_war/WEB-INF/lib/org.mmi.util.jar"/>
   	<pathelement path="base_war/WEB-INF/lib/org.mmi.ont.util.jar"/>
-	<pathelement path="base_war/WEB-INF/lib/org.mmi.ont.voc2owl.trans.jar"/>
+	<!-- pathelement path="base_war/WEB-INF/lib/org.mmi.ont.voc2owl.trans.jar"/ -->
   	<pathelement path="base_war/WEB-INF/lib/datafile.jar"/>
   	<pathelement path="base_war/WEB-INF/lib/commons-logging.jar"/>
   	<pathelement path="base_war/WEB-INF/lib/log4j-1.2.7.jar"/>

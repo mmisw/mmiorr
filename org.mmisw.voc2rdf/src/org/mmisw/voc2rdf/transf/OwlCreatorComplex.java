@@ -11,8 +11,6 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
-import org.mmi.ont.voc2owl.trans.StringManipulationInterface;
-import org.mmi.ont.voc2owl.trans.StringManipulationUtil;
 import org.mmi.util.ResourceLoader;
 
 import com.hp.hpl.jena.ontology.DatatypeProperty;
@@ -457,6 +455,9 @@ public class OwlCreatorComplex {
 //					total);
 //		}
 		createNewOntology();
+
+		// set conversion type
+		convertionType = trans.getConvertionType();
 
 		if (convertionType.equalsIgnoreCase(ONE_CLASS_ALL_INSTANCES)) {
 			createOntologIndividuals();
