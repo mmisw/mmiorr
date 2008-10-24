@@ -11,6 +11,7 @@ import org.mmisw.voc2rdf.gwt.client.rpc.Voc2RdfServiceAsync;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.ButtonBase;
@@ -135,25 +136,41 @@ public class Main implements EntryPoint {
 
 			BaseInfo baseInfo = new BaseInfo();
 
-			public void convert(Map<String, String> values, 
-					AsyncCallback<ConversionResult> callback) 
+			public void convert(final Map<String, String> values, 
+					final AsyncCallback<ConversionResult> callback) 
 			{
-				ConversionResult result = new ConversionResult();
-				result.setRdf("PRETEND THIS IS AN RDF");
-				callback.onSuccess(result);
+				new Timer() {
+					@Override
+					public void run() {
+						ConversionResult result = new ConversionResult();
+						if ( values.get("creator").startsWith("error") ) {
+							result.setError("PRETEND THIS IS AN ERROR");
+							callback.onFailure(new Exception("PRETEND an ERROR"));
+						}
+						else {
+							result.setRdf("PRETEND THIS IS AN RDF");
+							callback.onSuccess(result);
+						}
+					}
+				}.schedule(1000);
 			}
 
 			public void getBaseInfo(AsyncCallback<BaseInfo> callback) {
 				callback.onSuccess(baseInfo);
 			}
 
-			public void upload(ConversionResult result,
-					Map<String, String> values,
-					AsyncCallback<UploadResult> callback) 
+			public void upload(final ConversionResult result,
+					final Map<String, String> values,
+					final AsyncCallback<UploadResult> callback) 
 			{
-				UploadResult uploadResult = new UploadResult();
-				uploadResult.setInfo("PRETEND THIS IS NORMAL UPLOAD RESULT MESSAGE");
-				callback.onSuccess(uploadResult);
+				new Timer() {
+					@Override
+					public void run() {
+						UploadResult uploadResult = new UploadResult();
+						uploadResult.setInfo("PRETEND THIS IS NORMAL UPLOAD RESULT MESSAGE");
+						callback.onSuccess(uploadResult);
+					}
+				}.schedule(1000);
 			}
 			
 		};

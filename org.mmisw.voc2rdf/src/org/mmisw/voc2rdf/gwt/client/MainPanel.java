@@ -32,17 +32,23 @@ public class MainPanel extends VerticalPanel {
 
 	private CellPanel container = new VerticalPanel();
 	private TabPanel tabPanel = new TabPanel();
-	private FormInputPanel formInputPanel = new FormInputPanel();
+	
+	private MetadataPanel metadataPanel = new MetadataPanel();
 	private VocabPanel vocabPanel = new VocabPanel(this);
 	
-	private ResultPanel resultPanel = new ResultPanel(this);
+	private ConversionPanel resultPanel = new ConversionPanel(this);
 	
-	private UploadPanel uploadPanel = new UploadPanel(this, null);
+	private UploadPanel uploadPanel = new UploadPanel(this);
 	
 	
 	private PushButton exampleButton;
 	private PushButton resetButton;
 
+	
+	
+	private ConversionResult conversionResult;
+	
+	
 	
 	MainPanel(final Map<String, String> params) {
 		super();
@@ -57,6 +63,7 @@ public class MainPanel extends VerticalPanel {
 	    
 	    /////////
 		FlexTable flexPanel = new FlexTable();
+		flexPanel.setWidth("740px");
 		
 		int row = 0;
 		
@@ -76,7 +83,7 @@ public class MainPanel extends VerticalPanel {
 	    container.add(flexPanel); // tabPanel);
 	    
 	    tabPanel.add(vocabPanel, "Vocabulary");
-	    tabPanel.add(formInputPanel, "Metadata");
+	    tabPanel.add(metadataPanel, "Metadata");
 	    
 	    tabPanel.add(resultPanel, "Conversion");
 	    
@@ -91,7 +98,7 @@ public class MainPanel extends VerticalPanel {
 		panel.setSpacing(2);
 		exampleButton = new PushButton("Example", new ClickListener() {
 			public void onClick(Widget sender) {
-				formInputPanel.example();
+				metadataPanel.example();
 				vocabPanel.example();
 			}
 		});
@@ -99,7 +106,7 @@ public class MainPanel extends VerticalPanel {
 		
 		resetButton = new PushButton("Reset all", new ClickListener() {
 			public void onClick(Widget sender) {
-				formInputPanel.reset();
+				metadataPanel.reset();
 				vocabPanel.reset();
 				resultPanel.updateContents(null);
 				tabPanel.selectTab(tabPanel.getWidgetIndex(vocabPanel));
@@ -129,8 +136,8 @@ public class MainPanel extends VerticalPanel {
 		if ( (error = vocabPanel.putValues(values)) != null ) {
 			tabPanel.selectTab(tabPanel.getWidgetIndex(vocabPanel));
 		}
-		else if ( (error = formInputPanel.putValues(values)) != null ) {
-			tabPanel.selectTab(tabPanel.getWidgetIndex(formInputPanel));
+		else if ( (error = metadataPanel.putValues(values)) != null ) {
+			tabPanel.selectTab(tabPanel.getWidgetIndex(metadataPanel));
 		}
 		
 		if ( error != null ) {
@@ -145,14 +152,15 @@ public class MainPanel extends VerticalPanel {
 	public void doConversion(final Map<String, String> values) {
 		AsyncCallback<ConversionResult> callback = new AsyncCallback<ConversionResult>() {
 			public void onFailure(Throwable thr) {
-				ConversionResult result = new ConversionResult();
-				result.setError(thr.getClass().getName()+ ": " +thr.getMessage());
-				resultPanel.updateContents(result);
+				conversionResult = new ConversionResult();
+				conversionResult.setError(thr.getClass().getName()+ ": " +thr.getMessage());
+				resultPanel.updateContents(conversionResult);
 				tabPanel.selectTab(tabPanel.getWidgetIndex(resultPanel));
 			}
 
-			public void onSuccess(ConversionResult result) {
-				resultPanel.updateContents(result);
+			public void onSuccess(ConversionResult conversionResult) {
+				MainPanel.this.conversionResult = conversionResult;
+				resultPanel.updateContents(conversionResult);
 				tabPanel.selectTab(tabPanel.getWidgetIndex(resultPanel));
 			}
 		};
@@ -162,8 +170,9 @@ public class MainPanel extends VerticalPanel {
 	}
 	
 	
-	public void upload(ConversionResult result) {
-		UploadPanel uploadPanel = new UploadPanel(this, result);
+	private void upload(ConversionResult conversionResult) {
+		this.conversionResult = conversionResult;
+		UploadPanel uploadPanel = new UploadPanel(this);
 		Main.log("uploadPanel created");
 		MyDialog popup = new MyDialog(uploadPanel);
 		popup.setText("User account");
@@ -172,7 +181,12 @@ public class MainPanel extends VerticalPanel {
 	}
 
 	
-	void doUpload(ConversionResult result, Map<String, String> values) {
+	void doUpload(Map<String, String> values) {
+		if ( conversionResult == null ) {
+			Main.log("doUpload: conversionResult is null.");
+			return;
+		}
+		
 		AsyncCallback<UploadResult> callback = new AsyncCallback<UploadResult>() {
 			public void onFailure(Throwable thr) {
 				container.clear();				
@@ -201,7 +215,7 @@ public class MainPanel extends VerticalPanel {
 		};
 
 		Main.log("Uploading ...");
-		Main.voc2rdfService.upload(result, values, callback);
+		Main.voc2rdfService.upload(conversionResult, values, callback);
 	}
 
 }

@@ -60,7 +60,7 @@ public class FormInputPanel extends VerticalPanel {
 		panel.getFlexCellFormatter().setColSpan(0, 0, 2);
 		panel.setWidget(row, 0, buttons);
 		panel.getFlexCellFormatter().setAlignment(row, 0, 
-				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		row++;
 		

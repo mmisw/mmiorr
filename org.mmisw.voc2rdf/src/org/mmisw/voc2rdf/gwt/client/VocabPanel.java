@@ -63,7 +63,7 @@ public class VocabPanel extends VerticalPanel {
 		panel.getFlexCellFormatter().setColSpan(0, 0, 2);
 		panel.setWidget(row, 0, buttons);
 		panel.getFlexCellFormatter().setAlignment(row, 0, 
-				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		row++;
 		
@@ -75,7 +75,7 @@ public class VocabPanel extends VerticalPanel {
 			if ( "ascii".equals(attrName) ) {
 				final TextArea ta = new TextArea();
 				ta.setName(attrName);
-				ta.setSize("600", "160");
+				ta.setSize("600", "200");
 				ta.addChangeListener(new ChangeListener () {
 					public void onChange(Widget sender) {
 //						String text = ta.getText();
@@ -140,14 +140,15 @@ public class VocabPanel extends VerticalPanel {
 				example();
 			}
 		});
+		exampleButton.setTitle("Fills in example values in this section");
 		panel.add(exampleButton);
 		
-		convertButton = new PushButton("Test conversion", new ClickListener() {
+		convertButton = new PushButton("Test", new ClickListener() {
 			public void onClick(Widget sender) {
 				mainPanel.convertTest();
 			}
 		});
-		convertButton.setTitle("Tests the conversion os the current vocabulary contents");
+		convertButton.setTitle("Tests the conversion of the current vocabulary contents");
 		panel.add(convertButton);
 		
 		return panel;
