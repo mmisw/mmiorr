@@ -43,6 +43,16 @@
 		</jar>
 	</target>
 
+	<!-- creates the vocabulary jar -->
+	<target name="voc-jar" depends="compile">
+		<mkdir dir="${build.dir}/lib" />
+		<jar destfile="org.mmisw.ont.vocabulary.jar">
+			<fileset dir="${build.dir}/classes">
+				<include name="org/mmisw/ont/vocabulary/**.class" />
+			</fileset>
+		</jar>
+	</target>
+
 	
 	<target name="prepate2war" depends="jar">
 		<!-- prepare tmp.WebContent -->
