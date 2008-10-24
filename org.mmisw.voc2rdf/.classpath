@@ -8,10 +8,9 @@
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/arq.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmi.ont.util.jar"/>
-	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmi.ont.voc2owl.trans.jar" sourcepath="/org.mmi.ont.voc2owl-mmi/src"/>
-	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmi.util.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/commons-codec-1.3.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/commons-httpclient-3.1.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/datafile.jar"/>
+	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmi.util.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
