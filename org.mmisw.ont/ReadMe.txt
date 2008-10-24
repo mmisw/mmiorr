@@ -7,8 +7,6 @@ appropriately deployed in the tomcat container, that is, the "ont" part in
 the address of the service coincides with the <ontologiesRoot> component of 
 the ontology URIs as described in the MMI recommendation. 
 
-NOTE: URI <version> component not yet handled.
-
 * Using the service
 
 For the following description, I use our deployment in http://mmisw.org/ont.
