@@ -3,6 +3,8 @@ package org.mmisw.voc2rdf.gwt.client.rpc;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mmisw.voc2rdf.gwt.client.vocabulary.AttrGroup;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -12,6 +14,17 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author Carlos Rueda
  */
 public class BaseInfo implements IsSerializable {
+	
+	private AttrGroup[] attrGroups;
+	
+	public AttrGroup[] getAttrGroups() {
+		return attrGroups;
+	}
+	
+	public void setAttrGroups(AttrGroup[] attrGroups) {
+		this.attrGroups = attrGroups;
+	}
+	
 	
 	// metadata related
 	private List<Attribute> mdAttributes = new ArrayList<Attribute>();
@@ -49,22 +62,27 @@ public class BaseInfo implements IsSerializable {
 	}
 
 
+	public void removeAttributes() {
+		mdAttributes.clear();
+	}
+	
+	public Attribute addAttribute(Attribute attr) {
+		mdAttributes.add(attr);
+		return attr;
+	}
 	
 	private void prepareMdAttributes() {
-		Attribute attr;
+		addAttribute(new Attribute("title", "Title:", "TODO", "Project X Parameters"));
 		
-		mdAttributes.add(attr = new Attribute("title", "Title:", "TODO", "Project X Parameters"));
+		addAttribute(new Attribute("creator", "Creator's name:", "TODO", "John Smith"));
 		
-		mdAttributes.add(attr = new Attribute("creator", "Creator's name:", "TODO", "John Smith"));
+		addAttribute(new Attribute("contributor", "Contributor(s):", "TODO")).setRequired(false);
 		
-		mdAttributes.add(attr = new Attribute("contributor", "Contributor(s):", "TODO"));
-		attr.setRequired(false);
+		addAttribute(new Attribute("orgAbbreviation", "Abbreviation of your organization:", "TODO", "mmi"));
 		
-		mdAttributes.add(attr = new Attribute("orgAbbreviation", "Abbreviation of your organization:", "TODO", "mmi"));
+		addAttribute(new Attribute("description", "Description:", "TODO", "parameters used in project X"));
 		
-		mdAttributes.add(attr = new Attribute("description", "Description:", "TODO", "parameters used in project X"));
-		
-		mdAttributes.add(attr = new Attribute("primaryConcept", "Main theme of this vocabulary:", "TODO", "parameter"));
+		addAttribute(new Attribute("primaryConcept", "Main theme of this vocabulary:", "TODO", "parameter"));
 		
 	}
 
@@ -85,17 +103,15 @@ public class BaseInfo implements IsSerializable {
 
 	
 	private void prepareVocAttributes() {
-		Attribute attr;
-		
-		vocAttributes.add(attr = new Attribute("ascii", "Vocabulary in text format:", "TODO",
+		vocAttributes.add(new Attribute("ascii", "Vocabulary in text format:", "TODO",
 				"name,description\n" +
 				"sea surface salinity, salinity at the sea surface >10 m.\n" +
 				"sst, sea surface temperature\n"
 				));
 		
-		vocAttributes.add(attr = new Attribute("fieldSeparator", "Column character separator:", "TODO", "csv"));
+		vocAttributes.add(new Attribute("fieldSeparator", "Column character separator:", "TODO", "csv"));
 		
-		vocAttributes.add(attr = new Attribute("namespaceRoot", "Namespace root:", "TODO", "http://mmisw.org/ont"));
+		vocAttributes.add(new Attribute("namespaceRoot", "Namespace root:", "TODO", "http://mmisw.org/ont"));
 	}
 
 

@@ -111,6 +111,7 @@ public class Transformer {
 			String value = properties.getProperty(prop);
 			assign(prop, value);
 
+			logger.info("!!!!!! createTransformation: " +prop+ " <- " + value);
 		}
 	}
 	

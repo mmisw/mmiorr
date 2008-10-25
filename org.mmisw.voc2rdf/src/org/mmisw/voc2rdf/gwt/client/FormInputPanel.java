@@ -137,7 +137,7 @@ public class FormInputPanel extends VerticalPanel {
 			
 			widgets.put(attrName, new Elem(attr, widget));
 			
-			Label lbl = new Label(attr.getLabel());
+			Label lbl = new Label(attr.getLabel()+ ":");
 			lbl.setTitle(attr.getTooltip());
 			widget.setTitle(attr.getTooltip());
 			

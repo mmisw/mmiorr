@@ -1,21 +1,33 @@
 package org.mmisw.voc2rdf.gwt.server;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
-import java.util.Properties;
+import java.util.TimeZone;
 import java.util.logging.Logger;
 
-import org.mmi.util.ISO8601Date;
+import org.mmisw.ont.vocabulary.util.MdHelper;
+import org.mmisw.voc2rdf.transf.StringManipulationInterface;
+import org.mmisw.voc2rdf.transf.StringManipulationUtil;
 
-//import org.mmi.ont.voc2owl.trans.OwlCreatorComplex;
-//import org.mmi.ont.voc2owl.trans.Transformer;
-import org.mmisw.voc2rdf.transf.OwlCreatorComplex;
-import org.mmisw.voc2rdf.transf.TransProperties;
-import org.mmisw.voc2rdf.transf.Transformer;
+import com.hp.hpl.jena.ontology.DatatypeProperty;
+import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.ObjectProperty;
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.Ontology;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.DC;
+import com.hp.hpl.jena.vocabulary.RDFS;
+import com.infomata.data.CSVFormat;
+import com.infomata.data.DataFile;
+import com.infomata.data.DataRow;
+
+import edu.drexel.util.rdf.JenaUtil;
+import edu.drexel.util.rdf.OwlModel;
 
 /**
  * Dispatchs the conversion.
@@ -29,15 +41,9 @@ class Converter {
 
 	private static final String tmp = "/Users/Shared/registry/tmp/";
 
-	private String title;
+	private String orgAbbreviation = "FIXME-orgAbbreviation";
 
-	private String description;
-
-	private String orgAbbreviation;
-
-	private String ascii;
-
-	private String creator;
+	private String ascii = "FIXME-ascii";
 
 	private String namespaceRoot = "http://mmisw.org/ont";
 	
@@ -49,17 +55,13 @@ class Converter {
 	}
 
 
-	private String primaryClass;
+	private String primaryClass = "FIXME-primaryClass";
 
 
-	private static final String ONE_CLASS_ALL_INSTANCES = OwlCreatorComplex.ONE_CLASS_ALL_INSTANCES;
+//	private static final String ONE_CLASS_ALL_INSTANCES = OwlCreatorComplex.ONE_CLASS_ALL_INSTANCES;
+//
+//	private String convertionType = ONE_CLASS_ALL_INSTANCES;
 
-	private String convertionType = ONE_CLASS_ALL_INSTANCES;
-
-	private Transformer trans;
-
-
-	private String fieldSeparator;
 
 	private Object version;
 
@@ -67,35 +69,279 @@ class Converter {
 
 	
 	
+	private final Map<String, String> values;
 	
-	Converter(Map<String, String> values) {
-		this.setCreator(values.get("creator"));
-		this.setOrgAbbreviation(values.get("orgAbbreviation"));
-		this.setTitle(values.get("title"));
-		this.setDescription(values.get("description"));
-		this.setPrimaryClass(values.get("primaryConcept"));
-		this.setAscii(values.get("ascii"));
-		this.setFieldSeparator(values.get("fieldSeparator"));
-		this.setNamespaceRoot(values.get("namespaceRoot"));
+	
+	private Resource[] res;
+	private OwlModel newOntModel;
+	private OntClass classForTerms;
+	
+	private StringManipulationInterface stringManipulation = new StringManipulationUtil();
+
+	
+	
+	Converter(
+			String namespaceRoot, 
+			String orgAbbreviation,
+			String primaryClass,
+			String ascii, 
+			String fieldSeparator,
+			Map<String, String> values) 
+	{
+		this.values = values;
+		
+		logger.info("!!!!!!!!!!!!!!!! Converter: values = " +values);
+		this.namespaceRoot = namespaceRoot;
+		this.orgAbbreviation = orgAbbreviation;
+		this.primaryClass = primaryClass;
+		
+		this.ascii = ascii;
+
+
+		logger.info("setting primary class " + primaryClass);
+		
 	}
 
-	public String createOntology() {
+	public String createOntology() throws Exception {
 		logger.info("!!!!!!!!!!!!!!!! Converter.createOntology");
-		String status = verify();
-		if (status == "failure") {
-			logger.warning("Failure to convert");
-			return "failure";
-		} else {
+		
+		setFinalUri();
+		processCreateOntology();
 
-			setFinalUri();
-			processCreateOntology();
+		
+		return "success";
+	}
+	
+	
+	
+	private void processCreateOntology() throws Exception {
 
-			logger.info("Sucessfull creation");
-			return "success";
+		
+		String fileInText = tmp + createUniqueName() + ".txt";
+		saveInFile(fileInText);
+//		String fileOutRDF = tmp + createUniqueName() + ".rdf";
+//		prop.setProperty(TransProperties.fileIn, fileInText);
+//		prop.setProperty(TransProperties.fileOut, fileOutRDF);
+
+		
+		
+		newOntModel = new OwlModel(JenaUtil.createDefaultOntModel());
+		String ns_ = JenaUtil.getURIForNS(finalUri);
+		String base_ = JenaUtil.getURIForBase(finalUri);
+		newOntModel.setNsPrefix("", ns_);
+		Ontology ont = newOntModel.createOntology(base_);
+		logger.info("New ontology created with namespace " + ns_ + " base "
+				+ base_);
+
+		
+		Map<String, Property> uriPropMap = MdHelper.getUriPropMap();
+		for ( String uri : values.keySet() ) {
+			String value = values.get(uri);
+			if ( value.trim().length() > 0 ) {
+				Property prop = uriPropMap.get(uri);
+				ont.addProperty(prop, value.trim());
+			}
+		}
+		
+		// TODO remove the following temporary direct association of DC.date
+		Date date = new Date(System.currentTimeMillis());
+		SimpleDateFormat sdf = new SimpleDateFormat(
+				"yyyy-MM-dd'T'HH:mm:ssZ");
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+		String formatted = sdf.format(date);
+		ont.addProperty(DC.date, formatted);
+
+		
+		
+		createOntologIndividuals(fileInText);
+		
+
+	}
+
+
+	
+	
+	private void createOntologIndividuals(String fileInText) throws Exception {
+
+		DataFile read = DataFile.createReader("8859_1");
+		// TODO: for now, comma-separated
+		read.setDataFormat(new CSVFormat());
+		
+		read.open(new File(fileInText));
+
+		try {
+			DataRow row = null;
+			// first row
+			row = read.next();
+			if (row != null) {
+				createPropertiesAndClasses(row);
+			}
+
+			try {
+				for (row = read.next(); row != null; row = read.next()) {
+					createIndividual(row);
+//					if (monitor != null) {
+//						monitor.worked(1);
+//						monitor.subTask("Processing " + row.getString(0));
+//					}
+				}
+			} catch (ArrayIndexOutOfBoundsException ae) {
+				throw (ae);
+			}
+
+		} catch (Exception e) {
+			throw (e);
+		}
+
+		finally {
+			read.close();
+		}
+	}
+
+	private void createPropertiesAndClasses(DataRow row) {
+		int size = row.size();
+		res = new Resource[size];
+
+		// object properties is set up later, when creating individuals
+
+		classForTerms = createClassNameGiven();
+		System.out.println("class for terms created " + classForTerms);
+
+
+		for (int i = 0; i < size; i++) {
+
+			logger.info("converting column header " + i
+					+ " to a datatype property");
+			res[i] = createDatatypeProperty(row, i);
 		}
 
 	}
 
+	private void createIndividual(DataRow row) {
+		// create individual
+		Individual ind = null;
+		try {
+			int id = 0;
+
+			ind = createIndividual(row, id, classForTerms);
+
+			// add the properties
+			createNotHierarchyIndividual(ind, row);
+
+		} catch (ArrayIndexOutOfBoundsException e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+	
+	private void createNotHierarchyIndividual(Individual ind, DataRow row) {
+
+		if (ind != null) {
+			for (int i = 0; i < row.size(); i++) {
+				// this contains either classes or datatypeproperties
+				Resource r = res[i];
+				if (row.getString(i).length() > 0) {
+					if (r instanceof OntClass) {
+						OntClass cls = (OntClass) r;
+						Individual ind2 = createIndividual(row, i, cls);
+						ObjectProperty p = getPropertyForARangeClass(cls);
+						if (cls == null || ind2 == null || p == null
+								|| ind == null) {
+							System.err.println("cls " + cls + "  p " + p
+									+ "  ind2 " + ind2 + " ind " + ind);
+						} else {
+							ind.addProperty(p, ind2);
+						}
+
+					} else {
+						DatatypeProperty dp = (DatatypeProperty) r;
+						ind.addProperty(dp, row.getString(i).trim());
+
+					}
+				}
+
+			}
+		}
+
+	}
+
+	
+	private ObjectProperty getPropertyForARangeClass(OntClass cs) {
+		String nameOfProperty = "has" + cs.getLocalName();
+		ObjectProperty op = newOntModel.createObjectProperty(cs.getNameSpace()
+				+ nameOfProperty);
+		op.setDomain(classForTerms);
+		op.setRange(cs);
+
+		return op;
+
+	}
+
+
+
+
+	private boolean isGood(DataRow row, int id) {
+		return row.getString(id).trim().length() > 0;
+
+	}
+
+
+	private Individual createIndividual(DataRow row, int id, OntClass cs) {
+
+		if (isGood(row, id)) {
+			String resourceString = getGoodName(row, id);
+			Individual ind = newOntModel.createIndividual(resourceString, cs);
+			ind.addProperty(RDFS.label, row.getString(id).trim());
+			logger.info("ind created " + ind);
+			return ind;
+		}
+		return null;
+	}
+
+
+	
+	private DatatypeProperty createDatatypeProperty(DataRow row, int id) {
+		String resourceString = getGoodName(row, id).toLowerCase();
+		logger.info("datatype Property created " + resourceString);
+		DatatypeProperty p = newOntModel.createDatatypeProperty(resourceString);
+		p.addProperty(RDFS.label, row.getString(id).trim());
+		p.addDomain(classForTerms);
+		return p;
+	}
+
+	private String getGoodName(DataRow row, int id) {
+		return finalUri + cleanStringforID(row.getString(id).trim());
+	}
+
+	private String cleanStringforID(String s) {
+
+		return stringManipulation.replaceString(s.trim());
+
+	}
+
+	
+	
+	private OntClass createClassNameGiven() {
+		String resourceString = finalUri
+				+ setFirstUpperCase(cleanStringforID(primaryClass));
+
+		logger.info("class created " + resourceString);
+		OntClass cls = newOntModel.createClass(resourceString);
+		cls.addProperty(RDFS.label, primaryClass);
+		return cls;
+
+	}
+
+	private String setFirstUpperCase(String s) {
+		// return s;
+		return s.substring(0, 1).toUpperCase() + s.substring(1);
+	}
+
+
+	
+	
+	
 	private void setFinalUri() {
 
 		// remove any trailing slashes
@@ -116,74 +362,6 @@ class Converter {
 		logger.info("setFinalUri: " +finalUri);
 	}
 
-	private Properties createProperties() {
-		Properties prop = new Properties();
-		logger.info("setting up properties from form");
-		prop.setProperty(TransProperties.title, getTitle());
-		prop.setProperty(TransProperties.description, getDescription());
-		
-//-		prop.setProperty(TransProperties.NS, getNamespace());
-		logger.info("createProperties() finalNamespace = " +finalUri);
-		prop.setProperty(TransProperties.NS, finalUri);
-		
-		prop.setProperty(TransProperties.creator, getCreator());
-		prop
-				.setProperty(TransProperties.nameForPrimaryClass,
-						getPrimaryClass());
-		prop.setProperty(TransProperties.columnForPrimaryClass, 0 + "");
-		prop.setProperty(TransProperties.createAllRelationsHierarchy, "false");
-		prop.setProperty(TransProperties.format, getFieldSeparator());
-		prop.setProperty(TransProperties.treatAsHierarchy, "false");
-		prop.setProperty(TransProperties.convertionType, getConvertionType());
-		// prop.setProperty(TransProperties.format, getCurrentFieldSeparator()
-		// .getValue().toString());
-		// logger.info("String Separator "
-		// + prop.getProperty(TransProperties.format));
-		// String tmp = ResourceLoader.getUrlResource("tmp");
-		return prop;
-
-	}
-
-	private void processCreateOntology() {
-		Properties prop = createProperties();
-
-//		String intermName = ISO8601Date.getCurrentDateBasicFormat();
-
-		// String fileIn = tmp + intermName + ".txt";
-		String fileInText = tmp + createUniqueName() + ".txt";
-		saveInFile(fileInText);
-		String fileOutRDF = tmp + createUniqueName() + ".rdf";
-		prop.setProperty(TransProperties.fileIn, fileInText);
-		prop.setProperty(TransProperties.fileOut, fileOutRDF);
-
-		trans = new Transformer(prop);
-		trans.getProperties();
-		try {
-			trans.transformAndSave();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		String propFile = tmp + createUniqueName() + ".properties";
-		storeProperties(prop, propFile);
-
-		String stats = tmp + "stats.txt";
-		try {
-			File f = new File(stats);
-			f.createNewFile();
-
-			FileWriter fw = new FileWriter(f, true);
-			fw.write(ISO8601Date.getCurrentDateBasicFormat() + " , "
-					+ getTitle() + " , " + propFile + " , " + fileOutRDF);
-			fw.write(System.getProperty("line.separator"));
-			fw.close();
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
 
 	private void saveInFile(String fileLocation) {
 		try {
@@ -196,56 +374,6 @@ class Converter {
 		}
 	}
 
-	private void storeProperties(Properties prop, String propFile) {
-		try {
-			prop.store(new FileOutputStream(propFile), "voc2rdf properties");
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	private String verify() {
-
-		return "success";
-
-	}
-
-	/**
-	 * @return the description
-	 */
-	private String getDescription() {
-		return description;
-	}
-
-	/**
-	 * @param description
-	 *            the description to set
-	 */
-	private void setDescription(String description) {
-		this.description = description;
-	}
-
-	/**
-	 * @return the title
-	 */
-	private String getTitle() {
-		return title;
-	}
-
-	/**
-	 * @param title
-	 *            the title to set
-	 */
-	private void setTitle(String title) {
-//		if (title.length() < 2) {
-//			addMessage("loginForm:title", "title length must be greater than 2");
-//		}
-		this.title = title;
-	}
 
 	/**
 	 * @return the ascii
@@ -254,36 +382,6 @@ class Converter {
 		return ascii;
 	}
 
-	/**
-	 * @param ascii
-	 *            the ascii to set
-	 */
-	private void setAscii(String ascii) {
-		this.ascii = ascii;
-	}
-
-	/**
-	 * @return the creator
-	 */
-	private String getCreator() {
-		return creator;
-	}
-
-	/**
-	 * @param creator
-	 *            the creator to set
-	 */
-	private void setCreator(String creator) {
-		this.creator = creator;
-	}
-
-	/**
-	 * @param namespaceRoot
-	 *            the namespace to set
-	 */
-	private void setNamespaceRoot(String namespaceRoot) {
-		this.namespaceRoot = namespaceRoot;
-	}
 
 	/**
 	 * @return the primaryClass
@@ -293,54 +391,15 @@ class Converter {
 		return primaryClass;
 	}
 
-	/**
-	 * @param primaryClass
-	 *            the primaryClass to set
-	 */
-	private void setPrimaryClass(String primaryClass) {
-		logger.info("setting primary class " + primaryClass);
-		this.primaryClass = primaryClass;
-	}
 
 
 
 	public String getOntologyStringXml() {
-		return trans.getOntologyAsString();
+		return JenaUtil.getOntModelAsString(newOntModel);
+//		return trans.getOntologyAsString();
 	}
 
 
-
-	/**
-	 * @return the fieldSeparator
-	 */
-	private String getFieldSeparator() {
-		return fieldSeparator;
-	}
-
-	/**
-	 * @param fieldSeparator
-	 *            the fieldSeparator to set
-	 */
-	private void setFieldSeparator(String fieldSeparator) {
-		this.fieldSeparator = fieldSeparator;
-	}
-
-
-
-	/**
-	 * @param orgAbbreviation
-	 *            the orgAbbreviation to set
-	 */
-	private void setOrgAbbreviation(String orgAbbreviation) {
-		this.orgAbbreviation = orgAbbreviation;
-	}
-
-	/**
-	 * @return the convertionType
-	 */
-	private String getConvertionType() {
-		return convertionType;
-	}
 
 	private String createUniqueName() {
 		return "" +System.currentTimeMillis();

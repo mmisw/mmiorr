@@ -10,9 +10,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class Attribute implements IsSerializable {
 
-	private String name;
-	private String label;
-	private String tooltip;
+	private String name = "";
+	private String label = "";
+	private String tooltip = "";
 	private boolean required;
 	
 	private String example;
@@ -20,21 +20,33 @@ public class Attribute implements IsSerializable {
 	public Attribute() {
 	}
 
-	Attribute(String name, String label) {
+	public Attribute(String name, String label) {
 		this(name, label, "", "");
 	}
 
-	Attribute(String name, String label, String tootip) {
+	public Attribute(String name, String label, String tootip) {
 		this(name, label, tootip, "");
 	}
 
-	Attribute(String name, String label, String tootip, String example) {
+	public Attribute(String name, String label, String tootip, String example) {
 		super();
 		this.name = name;
 		this.label = label;
 		this.tooltip = tootip;
 		this.example = example;
 		this.required = true;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+	public void setTooltip(String tooltip) {
+		this.tooltip = tooltip;
 	}
 
 	public String getName() {

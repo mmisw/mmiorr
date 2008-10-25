@@ -440,6 +440,9 @@ public class OwlCreatorComplex {
 			} catch (FileNotFoundException e1) {
 				logger.error("File: " + trans.getFileIn() + " was not found");
 				// e1.printStackTrace();
+				
+				// do not continue:
+				throw new Exception("File: " + trans.getFileIn() + " was not found");
 			}
 		}
 
