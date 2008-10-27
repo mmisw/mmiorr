@@ -5,10 +5,12 @@ import java.util.Map;
 
 import org.mmisw.voc2rdf.gwt.client.rpc.ConversionResult;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -28,6 +30,10 @@ public class ConversionPanel extends VerticalPanel {
 
 	private MainPanel mainPanel;
 	
+	private Map<String, Widget> widgets = new HashMap<String, Widget>();
+	
+	private TextBox namespaceRoot_tb;
+	
 	private PushButton convertButton;
 	
 	private final Label msgLabel = new Label();
@@ -37,7 +43,13 @@ public class ConversionPanel extends VerticalPanel {
 	
 	ConversionPanel(MainPanel mainPanel) {
 		super();
+		setWidth("700");
 		this.mainPanel = mainPanel;
+		
+		add(new HTML("This panel shows the generated RDF output. The generation will use both " +
+				"the contents of the vocabulary and all the metadata explicitly provided. " +
+				"If you are going to upload your vocabulary to the MMI Registry and Repository, " +
+				"you are encouraged to use http://mmisw.org/ont as the root of the namespace."));
 		
 		add(createContents());
 	}
@@ -82,50 +94,13 @@ public class ConversionPanel extends VerticalPanel {
 		return panel;
 	}
 
-	void updateContents(ConversionResult result) {
-		if ( result == null ) {
-			resultPanel.clear();
-			msgLabel.setText("");
-			textArea.setText("");
-//			convertButton.setEnabled(false);
-			return;
-		}
-
-		String error = result .getError();
-
-		if ( error == null ) {
-			msgLabel.setText("Congratulations");
-			String rdf = result.getRdf();
-			Main.log(rdf);
-			textArea.setText(rdf);
-//			ta.setSelectionRange(0, Integer.MAX_VALUE);
-//			convertButton.setEnabled(false);
-			
-			resultPanel.clear();
-			DecoratorPanel decPanel = new DecoratorPanel();
-		    decPanel.setWidget(textArea);
-		    resultPanel.add(decPanel);
-			
-		}
-		else {
-			msgLabel.setText("Error");
-			textArea.setText(error);
-//			convertButton.setEnabled(false);
-			resultPanel.clear();
-		    resultPanel.add(textArea);
-		}
-		
-	}
-	
-	
-	private Map<String, Widget> widgets = new HashMap<String, Widget>();
-	
 	private Widget createForm() {
 		FlexTable panel = new FlexTable();
-		panel.setWidth("700");
+//		panel.setWidth("700");
 		
 		int row = 0;
 		
+		// NOTE: only one, which is namespaceRoot
 		String[] attrNames =  { "namespaceRoot",  };
 		String[] attrLabels = { "Namespace root:",  };
 		String[] attrValues = { "http://mmisw.org/ont", };
@@ -136,7 +111,7 @@ public class ConversionPanel extends VerticalPanel {
 			String attrValue = attrValues[i];
 			
 			Widget widget;
-			final TextBox tb = new TextBox();
+			final TextBox tb = namespaceRoot_tb = new TextBox();
 			tb.setName(attrName );
 			tb.setText(attrValue );
 			tb.setWidth("200");
@@ -174,11 +149,17 @@ public class ConversionPanel extends VerticalPanel {
 
 		convertButton = new PushButton("Convert to RDF", new ClickListener() {
 			public void onClick(Widget sender) {
-				msgLabel.setText("Converting");
-				resultPanel.clear();
-				resultPanel.add(new Label("Please, wait..."));
-				
-				mainPanel.convert();
+				String namespaceRoot = namespaceRoot_tb.getText().trim();
+				if ( namespaceRoot.length() > 0 ) {
+					msgLabel.setText("Converting");
+					resultPanel.clear();
+					resultPanel.add(new Label("Please, wait..."));
+					mainPanel.convert(namespaceRoot);
+				}
+				else {
+					updateContents(null);
+					Window.alert("Namespace root not specified");
+				}
 			}
 		});
 		
@@ -193,4 +174,40 @@ public class ConversionPanel extends VerticalPanel {
 
 		return panel;
 	}
+	
+	void updateContents(ConversionResult result) {
+		if ( result == null ) {
+			resultPanel.clear();
+			msgLabel.setText("");
+			textArea.setText("");
+//			convertButton.setEnabled(false);
+			return;
+		}
+
+		String error = result .getError();
+
+		if ( error == null ) {
+			msgLabel.setText("Congratulations");
+			String rdf = result.getRdf();
+			Main.log(rdf);
+			textArea.setText(rdf);
+//			ta.setSelectionRange(0, Integer.MAX_VALUE);
+//			convertButton.setEnabled(false);
+			
+			resultPanel.clear();
+			DecoratorPanel decPanel = new DecoratorPanel();
+		    decPanel.setWidget(textArea);
+		    resultPanel.add(decPanel);
+			
+		}
+		else {
+			msgLabel.setText("Error");
+			textArea.setText(error);
+//			convertButton.setEnabled(false);
+			resultPanel.clear();
+		    resultPanel.add(textArea);
+		}
+		
+	}
+	
 }

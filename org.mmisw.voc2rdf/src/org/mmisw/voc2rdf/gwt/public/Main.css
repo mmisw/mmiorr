@@ -10,3 +10,27 @@
 #pc-template-img {
   margin-top: 20px;
 }
+
+table {
+	empty-cells: hide;
+}
+
+/* inline tables */
+table.inline {
+  font-size: small;
+  background-color: #ffffff;
+  border-spacing: 0px;
+  border-collapse: collapse;
+}
+
+table.inline th {
+  padding: 3px;
+  border: 1px solid #8cacbb;
+  background-color: #dee7ec;
+}
+
+table.inline td {
+  padding: 3px;
+  border: 1px solid #8cacbb;
+}
+

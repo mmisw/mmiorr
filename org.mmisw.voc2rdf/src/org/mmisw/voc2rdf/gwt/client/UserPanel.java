@@ -8,6 +8,7 @@ import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -50,7 +51,7 @@ public class UserPanel extends VerticalPanel {
 		int row = 0;
 		
 		panel.getFlexCellFormatter().setColSpan(row, 0, 2);
-		panel.setWidget(row, 0, new Label("Your account in the MMI Registry"));
+		panel.setWidget(row, 0, new HTML("<strong>Your account in the MMI Registry</strong>"));
 		panel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE
 		);

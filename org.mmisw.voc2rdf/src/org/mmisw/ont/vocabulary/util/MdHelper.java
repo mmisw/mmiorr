@@ -1,6 +1,7 @@
 package org.mmisw.ont.vocabulary.util;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -9,6 +10,7 @@ import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.voc2rdf.gwt.client.vocabulary.AttrDef;
 import org.mmisw.voc2rdf.gwt.client.vocabulary.AttrGroup;
+import org.mmisw.voc2rdf.gwt.client.vocabulary.Option;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.Ontology;
@@ -30,13 +32,22 @@ import edu.drexel.util.rdf.OwlModel;
 public class MdHelper {
 	private static String title = "Metadata";
 	
-	// Examples: preferredPrefix(DC.NS) == "dc";
+	// Examples: preferredPrefix(Omv.NS) == "omv";
 	private static Map<String,String> preferredPrefix = new HashMap<String,String>();
 	
 	static {
 		preferredPrefix.put(DC.NS, "dc");
 		preferredPrefix.put(Omv.NS, "omv");
 		preferredPrefix.put(OmvMmi.NS, "omvmmi");
+		preferredPrefix = Collections.unmodifiableMap(preferredPrefix);
+	}
+	
+	/** 
+	 * Returns a map of preferred prefixes, eg., <code>preferredPrefix(Omv.NS) == "omv"</code>.
+	 * This is an unmodifiable map. 
+	 */
+	public static Map<String,String> getPreferredPrefixMap() {
+		return preferredPrefix;
 	}
 
 	/**
@@ -71,47 +82,67 @@ public class MdHelper {
 		return attrDef;
 	}
 	
-	private static AttrDef createAttrDef(Property prop, boolean required, boolean internal, String... options) {
-		AttrDef attrDef = createAttrDef(prop);
-		attrDef.setRequired(required);
-		attrDef.setInternal(internal);
-		attrDef.setOptions(options);
-		attrDef.setExample(options.length > 0 ? options[0] : "");
-		return attrDef;
-	}
-	
 	private static AttrGroup[] attrGroups = {
 		new AttrGroup("General",
 			new AttrDef[] {
-				createAttrDef(OmvMmi.origMaintainerCode, true, false, 
-						"mmi", "argo", "q2o", "cf", "gcmd", "ioosdif", "*"
-				), 
-				createAttrDef(Omv.name, true).setExample("Project X Parameters"),
-				createAttrDef(Omv.hasCreator, true).setExample("John Smith"),
-				createAttrDef(Omv.hasDomain),
-				createAttrDef(Omv.description, true).setExample("parameters used in project X"),
+				
+				createAttrDef(Omv.name, true)
+					.setLabel("Title")
+					.setExample("Project X Parameters")
+				,
+				createAttrDef(Omv.hasCreator, true)
+					.setLabel("Creator")
+					.setExample("John Smith")
+				,
+				createAttrDef(Omv.description, true)
+					.setLabel("Description")
+					.setExample("Parameters used in Project X")
+				,
+				createAttrDef(OmvMmi.origMaintainerCode, true)
+					.setLabel("Authority abbreviation")
+					.addOption(new Option("mmi", "mmi: Marine Metadata Interoperability"))
+					.addOption(new Option("argo", "argo: "))
+					.addOption(new Option("q2o", "q2o: "))
+					.addOption(new Option("gcmd", "gcmd: "))
+					.addOption(new Option("cf", "cf: "))
+					.addOption(new Option("*", "--other, please specify"))
+				, 
+				
+//				createAttrDef(Omv.hasDomain),
+				
+				createAttrDef(Omv.creationDate)
+					.setLabel("Creation date")
+					.setInternal(true)
+					.setExample(org.mmi.util.ISO8601Date.getCurrentDateBasicFormat())
+				,
 				
 				
-				createAttrDef(Omv.acronym, true, false, 
-						"parameter",
-						"sensorType",
-						"platform types",
-						"units",
-						"keyword",
-						"organization",
-						"process",
-						"missingflag",
-						"qualityflag",
-						"featureType",
-						"GeographicFeature"
-				), 
+				createAttrDef(Omv.acronym, true) 
+					.setLabel("Main theme")
+					.addOption(new Option("parameter", "Parameters (It will include terms like 'sea surface salinity')"))
+					.addOption(new Option("sensorType", "Sensor types (It will include terms like 'Thermometer')"))
+					.addOption(new Option("platformType", "Platform types (It will include terms like 'Mooring')"))
+					.addOption(new Option("unit", "Units  (It will include terms like 'meter')"))
+					.addOption(new Option("keyword", "Keywords  (It will include terms like 'climate', 'oceans')"))
+					.addOption(new Option("organization", "Organizations  (It will include terms like 'MBARI' or 'MMI')"))
+					.addOption(new Option("process", "Processes  (It will include terms like 'data quality control')"))
+					.addOption(new Option("missingflag", "Missing flags  (It will include terms like '-999')"))
+					.addOption(new Option("qualityflag", "Quality flags  (It will include terms like '10')"))
+					.addOption(new Option("featureType", "Feature types  (It will include terms like 'body of water')"))
+					.addOption(new Option("GeographicFeature", "Geographic features  (It will include terms like 'Monterey Bay')"))
+				, 
 
 				
 				//createAttrDef(DC.publisher),
 				
-				createAttrDef(Omv.hasContributor),
-				createAttrDef(Omv.creationDate).setExample(org.mmi.util.ISO8601Date.getCurrentDateBasicFormat()),
-				createAttrDef(Omv.uri),
+				createAttrDef(Omv.hasContributor)
+					.setLabel("Contributor(s)")
+				,
+				
+				createAttrDef(Omv.uri)
+					.setInternal(true)
+				,
+				
 				createAttrDef(OmvMmi.origVocUri),
 
 				createAttrDef(Omv.hasPriorVersion),

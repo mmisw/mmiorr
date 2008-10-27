@@ -26,9 +26,10 @@
 	<!-- pathelement path="base_war/WEB-INF/lib/org.mmi.ont.voc2owl.trans.jar"/ -->
   	<pathelement path="base_war/WEB-INF/lib/datafile.jar"/>
   	<pathelement path="base_war/WEB-INF/lib/commons-logging.jar"/>
-  	<pathelement path="base_war/WEB-INF/lib/log4j-1.2.7.jar"/>
+  	<pathelement path="base_war/WEB-INF/lib/log4j-1.2.12.jar"/>
   	<pathelement path="base_war/WEB-INF/lib/jena.jar"/>
-  	<pathelement path="base_war/WEB-INF/lib/icu4j.jar"/>
+  	<pathelement path="base_war/WEB-INF/lib/icu4j_3_4.jar"/>
+  	<pathelement path="base_war/WEB-INF/lib/iri.jar"/>
   	<pathelement path="base_war/WEB-INF/lib/jakarta-oro-2.0.5.jar"/>
   </path>
 

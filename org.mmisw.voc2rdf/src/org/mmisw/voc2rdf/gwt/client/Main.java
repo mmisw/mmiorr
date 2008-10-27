@@ -33,8 +33,8 @@ import com.google.gwt.user.client.ui.Widget;
 public class Main implements EntryPoint {
 
 	public static final String APP_NAME = "Voc2RDF";
-	public static final String VERSION = "0.1.0";
-	public static final String VERSION_COMMENT = "- ";
+	public static final String VERSION = "2.0.1alpha";
+	public static final String VERSION_COMMENT = " ";
 
 	static String baseUrl;
 
@@ -70,7 +70,7 @@ public class Main implements EntryPoint {
 
 		}
 
-		if ( GWT.isScript() ) { // ie, actually running on the server.
+		if ( true || GWT.isScript() ) { // ie, actually running on the server.
 			getVoc2RdfService();
 		}
 		else {
@@ -132,6 +132,7 @@ public class Main implements EntryPoint {
 	
 	/** A mock-up implementation. */
 	private static void getVoc2RdfServiceMock() {
+		log("Creating mock service");
 		voc2rdfService = new Voc2RdfServiceAsync() {
 
 			BaseInfo baseInfo = new BaseInfo();
@@ -143,7 +144,7 @@ public class Main implements EntryPoint {
 					@Override
 					public void run() {
 						ConversionResult result = new ConversionResult();
-						if ( values.get("creator").startsWith("error") ) {
+						if ( values.get("creator") == null || values.get("creator").startsWith("error") ) {
 							result.setError("PRETEND THIS IS AN ERROR");
 							callback.onFailure(new Exception("PRETEND an ERROR"));
 						}

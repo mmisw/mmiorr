@@ -76,6 +76,7 @@ public class MainPanel extends VerticalPanel {
 		row++;
 	    /////////
 	    
+		tabPanel.setAnimationEnabled(true);
 		
 		flexPanel.setWidget(row, 0, tabPanel);
 	    
@@ -121,14 +122,12 @@ public class MainPanel extends VerticalPanel {
 	 * Runs the "test conversion" on the vocabulary contents and with
 	 * ad hoc metadata atttributes.
 	 */
-	// TODO convertTest
 	void convertTest() {
-		
-		// TODO for now, run the general conversion.
-		convert();
+		// just use namespaceRoot = "http://mmisw.org/ont" 
+		convert("http://mmisw.org/ont");
 	}
 	
-	void convert() {
+	void convert(String namespaceRoot) {
 		Map<String, String> values = new HashMap<String, String>();
 		
 		String error;
@@ -145,11 +144,11 @@ public class MainPanel extends VerticalPanel {
 			Window.alert(error);
 		}
 		else {
-			doConversion(values);
+			doConversion(namespaceRoot, values);
 		}
 	}
 
-	public void doConversion(final Map<String, String> values) {
+	public void doConversion(String namespaceRoot, Map<String, String> values) {
 		AsyncCallback<ConversionResult> callback = new AsyncCallback<ConversionResult>() {
 			public void onFailure(Throwable thr) {
 				conversionResult = new ConversionResult();
@@ -169,6 +168,8 @@ public class MainPanel extends VerticalPanel {
 			}
 		};
 
+		Main.log("doConversion: setting namespaceRoot = " +namespaceRoot);
+		values.put("namespaceRoot", namespaceRoot);
 		Main.log("Converting ...");
 		Main.voc2rdfService.convert(values, callback);
 	}

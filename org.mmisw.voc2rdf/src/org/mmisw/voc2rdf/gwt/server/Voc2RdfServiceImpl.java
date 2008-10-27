@@ -5,13 +5,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
+import org.mmisw.ont.vocabulary.Omv;
+import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.ont.vocabulary.util.MdHelper;
-import org.mmisw.voc2rdf.gwt.client.rpc.Attribute;
 import org.mmisw.voc2rdf.gwt.client.rpc.BaseInfo;
 import org.mmisw.voc2rdf.gwt.client.rpc.ConversionResult;
 import org.mmisw.voc2rdf.gwt.client.rpc.UploadResult;
 import org.mmisw.voc2rdf.gwt.client.rpc.Voc2RdfService;
-import org.mmisw.voc2rdf.gwt.client.vocabulary.AttrDef;
 import org.mmisw.voc2rdf.gwt.client.vocabulary.AttrGroup;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -41,94 +41,33 @@ public class Voc2RdfServiceImpl extends RemoteServiceServlet implements Voc2RdfS
 	}
 	
 	private void prepareBaseInfo() {
-		
 		log.info("preparing base info ...");
-		
 		baseInfo = new BaseInfo();
-		
-		baseInfo.removeAttributes();
-		
-		
 		AttrGroup[] attrGroups = MdHelper.getAttrGroups();
-		
 		baseInfo.setAttrGroups(attrGroups);
-		
-		
-		// to be moved
-		for ( AttrGroup attrGroup: attrGroups ) {
-			AttrDef[] attrDefs = attrGroup.getAttrDefs();
-			for ( AttrDef attrDef: attrDefs ) {
-				
-				String ns = attrDef.getNameSpace();
-				String localName = attrDef.getLocalName();
-				
-				String prefix = MdHelper.getPreferredPrefix(ns);
-				
-				Attribute attr = new Attribute();
-				attr.setName(prefix+ ":" +localName );
-				attr.setTooltip(prefix+ ":" +localName+ " = " + attrDef.getUri());
-				
-				String label = localName.length() > 0 
-						? Character.toUpperCase(localName.charAt(0)) + localName.substring(1)
-						: localName;
-				if ( attrDef.isRequired() ) {
-					label = "*" + label;
-				}
-				attr.setLabel(label);
-
-				baseInfo.addAttribute(attr);
-			}
-		}
-		
-		
-//		MdHelper mdHelper = new MdHelper();
-//		
-//		Collection<AttributeValue> attrVals = mdHelper.getAttributes();
-//		for ( AttributeValue attrVal : attrVals ) {
-//			Property prop = attrVal.getProperty();
-//			String ns = prop.getNameSpace();
-//			String localName = prop.getLocalName();
-//			
-//			String prefix = MdHelper.getPreferredPrefix(ns);
-//			
-//			Attribute attr = new Attribute();
-//			attr.setName(prefix+ ":" +localName );
-//			attr.setTooltip(prefix+ ":" +localName );
-//			
-//			String label = localName.length() > 0 
-//					? Character.toUpperCase(localName.charAt(0)) + localName.substring(1)
-//					: localName;
-//			if ( attrVal.isRequired() ) {
-//				label = "*" + label;
-//			}
-//			attr.setLabel(label);
-//
-//			baseInfo.addAttribute(attr);
-//		}
-		
 	}
 	
 	
 	public ConversionResult convert(Map<String, String> values) {
 		
-		log.info("convert: values:");
-		for ( Entry<String, String> e : values.entrySet() ) {
-			log.info("    " +e.getKey()+ " = " +e.getValue());
+		if ( log.isDebugEnabled() ) {
+			log.debug("convert: values:");
+			for ( Entry<String, String> e : values.entrySet() ) {
+				log.debug("    " +e.getKey()+ " = " +e.getValue());
+			}
 		}
 		
 		ConversionResult result = new ConversionResult();
 
 		String namespaceRoot = values.get("namespaceRoot");
-		String primaryClass = values.get("acronym");
-		String orgAbbreviation = values.get("origMaintainerCode");
+		values.remove("namespaceRoot");
 		String ascii = values.get("ascii");
+		values.remove("ascii");
 		String fieldSeparator = values.get("fieldSeparator");
+		values.remove("fieldSeparator");
 
 		if ( namespaceRoot == null ) {
 			result.setError("missing namespaceRoot");
-		}
-		if ( orgAbbreviation == null ) {
-			result.setError("missing origMaintainerCode");
 		}
 		if ( ascii == null ) {
 			result.setError("missing ascii");
@@ -136,9 +75,17 @@ public class Voc2RdfServiceImpl extends RemoteServiceServlet implements Voc2RdfS
 		if ( fieldSeparator == null ) {
 			result.setError("missing fieldSeparator");
 		}
+		
+		String orgAbbreviation = values.get(OmvMmi.origMaintainerCode.getURI());
+		String primaryClass = values.get(Omv.acronym.getURI());
+
+		if ( orgAbbreviation == null ) {
+			result.setError("missing origMaintainerCode");
+		}
 		if ( primaryClass == null ) {
 			result.setError("missing acronym");
 		}
+
 		
 		if ( result.getError() != null ) {
 			return result;
@@ -147,8 +94,8 @@ public class Voc2RdfServiceImpl extends RemoteServiceServlet implements Voc2RdfS
 		
 		Converter ontConverter = new Converter(
 				namespaceRoot,
-				primaryClass,
 				orgAbbreviation,
+				primaryClass,
 				ascii,
 				fieldSeparator,
 				values);
@@ -200,6 +147,8 @@ public class Voc2RdfServiceImpl extends RemoteServiceServlet implements Voc2RdfS
 			String fileName;
 			fileName = new URL(uri).getPath();
 			String rdf = conversionResult.getRdf();
+			
+			// TODO: use some of the metadata in values map to set some of the aquaportal attributes
 			OntologyUploader createOnt = new OntologyUploader(uri, fileName, rdf , userName, sessionId);
 			String res = createOnt.create();
 			

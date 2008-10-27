@@ -1,10 +1,12 @@
 package org.mmisw.voc2rdf.gwt.client;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.mmisw.voc2rdf.gwt.client.vocabulary.AttrDef;
 import org.mmisw.voc2rdf.gwt.client.vocabulary.AttrGroup;
+import org.mmisw.voc2rdf.gwt.client.vocabulary.Option;
 
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -61,7 +63,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 		panel.getFlexCellFormatter().setColSpan(0, 0, 2);
 		panel.setWidget(row, 0, buttons);
 		panel.getFlexCellFormatter().setAlignment(row, 0, 
-				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		row++;
 		
@@ -76,12 +78,18 @@ public class MetadataGroupPanel extends VerticalPanel {
 			Widget widget;
 			String attrName = attr.getLocalName();
 			
-			final String[] options = attr.getOptions();
+			final List<Option> options = attr.getOptions();
 			if ( options != null ) {
 				final ListBox lb = new ListBox();
 				lb.setName(attrName);
-				for ( String option : options ) {
-					lb.addItem(option);
+				for ( Option option : options ) {
+					String lab = option.getLabel();
+					if ( lab != null && lab.length() > 0 ) {
+						lb.addItem(option.getLabel(), option.getName());
+					}
+					else {
+						lb.addItem(option.getName());
+					}
 				}
 				lb.addChangeListener(new ChangeListener () {
 					public void onChange(Widget sender) {
@@ -107,7 +115,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 			
 			widgets.put(attrName, new Elem(attr, widget));
 			
-			String label = attr.getLocalName() + ":";
+			String label = attr.getLabel() + ":";
 			if ( attr.isRequired() ) {
 				label += "*";
 			}
@@ -174,7 +182,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 					return error;
 				}
 			}
-			values.put(elem.attr.getLocalName(), value.trim());
+			values.put(elem.attr.getUri(), value.trim());
 		}
 		return null;
 	}

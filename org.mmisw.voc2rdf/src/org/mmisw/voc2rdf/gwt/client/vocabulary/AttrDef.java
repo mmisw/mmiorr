@@ -1,6 +1,8 @@
 package org.mmisw.voc2rdf.gwt.client.vocabulary;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -14,8 +16,12 @@ public class AttrDef implements Serializable {
 	private String uri;
 	private String nameSpace;
 	private String localName;
+	
+	private String label;
+	
+
 	private boolean required;
-	private String[] options;
+	private List<Option> options = null;
 	private boolean internal;
 
 	private String example = "";
@@ -41,11 +47,22 @@ public class AttrDef implements Serializable {
 		return localName;
 	}
 
+	public String getLabel() {
+		return label;
+	}
+
+
+	public AttrDef setLabel(String label) {
+		this.label = label;
+		return this;
+	}
+
 	public boolean isRequired() {
 		return required;
 	}
 
-	public String[] getOptions() {
+	/** @returns the list of options; null if no options */
+	public List<Option> getOptions() {
 		return options;
 	}
 
@@ -59,8 +76,11 @@ public class AttrDef implements Serializable {
 	}
 
 
-	public AttrDef setOptions(String[] options) {
-		this.options = options;
+	public AttrDef addOption(Option option) {
+		if ( options == null ) {
+			options = new ArrayList<Option>();
+		}
+		options.add(option);
 		return this;
 	}
 

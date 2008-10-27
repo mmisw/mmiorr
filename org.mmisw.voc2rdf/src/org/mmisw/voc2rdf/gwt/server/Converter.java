@@ -3,12 +3,10 @@ package org.mmisw.voc2rdf.gwt.server;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.logging.Logger;
 
+import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.util.MdHelper;
 import org.mmisw.voc2rdf.transf.StringManipulationInterface;
 import org.mmisw.voc2rdf.transf.StringManipulationUtil;
@@ -20,11 +18,11 @@ import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.DC;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.infomata.data.CSVFormat;
 import com.infomata.data.DataFile;
 import com.infomata.data.DataRow;
+import com.infomata.data.TabFormat;
 
 import edu.drexel.util.rdf.JenaUtil;
 import edu.drexel.util.rdf.OwlModel;
@@ -41,9 +39,10 @@ class Converter {
 
 	private static final String tmp = "/Users/Shared/registry/tmp/";
 
-	private String orgAbbreviation = "FIXME-orgAbbreviation";
+	private String orgAbbreviation;
 
-	private String ascii = "FIXME-ascii";
+	private String ascii;
+	private String fieldSeparator;
 
 	private String namespaceRoot = "http://mmisw.org/ont";
 	
@@ -74,6 +73,9 @@ class Converter {
 	
 	private Resource[] res;
 	private OwlModel newOntModel;
+	private String ns_;
+	private String base_;
+
 	private OntClass classForTerms;
 	
 	private StringManipulationInterface stringManipulation = new StringManipulationUtil();
@@ -88,16 +90,14 @@ class Converter {
 			String fieldSeparator,
 			Map<String, String> values) 
 	{
-		this.values = values;
-		
-		logger.info("!!!!!!!!!!!!!!!! Converter: values = " +values);
 		this.namespaceRoot = namespaceRoot;
 		this.orgAbbreviation = orgAbbreviation;
 		this.primaryClass = primaryClass;
-		
 		this.ascii = ascii;
-
-
+		this.fieldSeparator = fieldSeparator;
+		this.values = values;
+		
+		logger.info("!!!!!!!!!!!!!!!! Converter: values = " +values);
 		logger.info("setting primary class " + primaryClass);
 		
 	}
@@ -116,22 +116,25 @@ class Converter {
 	
 	private void processCreateOntology() throws Exception {
 
-		
 		String fileInText = tmp + createUniqueName() + ".txt";
 		saveInFile(fileInText);
-//		String fileOutRDF = tmp + createUniqueName() + ".rdf";
-//		prop.setProperty(TransProperties.fileIn, fileInText);
-//		prop.setProperty(TransProperties.fileOut, fileOutRDF);
 
 		
 		
 		newOntModel = new OwlModel(JenaUtil.createDefaultOntModel());
-		String ns_ = JenaUtil.getURIForNS(finalUri);
-		String base_ = JenaUtil.getURIForBase(finalUri);
+		ns_ = JenaUtil.getURIForNS(finalUri);
+		base_ = JenaUtil.getURIForBase(finalUri);
+		
+		// set NS prefixes:
 		newOntModel.setNsPrefix("", ns_);
+		Map<String, String> preferredPrefixMap = MdHelper.getPreferredPrefixMap();
+		for ( String uri : preferredPrefixMap.keySet() ) {
+			String prefix = preferredPrefixMap.get(uri);
+			newOntModel.setNsPrefix(prefix, uri);
+		}
+		
 		Ontology ont = newOntModel.createOntology(base_);
-		logger.info("New ontology created with namespace " + ns_ + " base "
-				+ base_);
+		logger.info("New ontology created with namespace " + ns_ + " base " + base_);
 
 		
 		Map<String, Property> uriPropMap = MdHelper.getUriPropMap();
@@ -139,17 +142,24 @@ class Converter {
 			String value = values.get(uri);
 			if ( value.trim().length() > 0 ) {
 				Property prop = uriPropMap.get(uri);
+				if ( prop == null ) {
+					logger.warning("No property found for uri='" +uri+ "'");
+					continue;
+				}
 				ont.addProperty(prop, value.trim());
 			}
 		}
 		
+		// set Omv.uri from final
+		ont.addProperty(Omv.uri, finalUri);
+		
 		// TODO remove the following temporary direct association of DC.date
-		Date date = new Date(System.currentTimeMillis());
-		SimpleDateFormat sdf = new SimpleDateFormat(
-				"yyyy-MM-dd'T'HH:mm:ssZ");
-		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-		String formatted = sdf.format(date);
-		ont.addProperty(DC.date, formatted);
+//		Date date = new Date(System.currentTimeMillis());
+//		SimpleDateFormat sdf = new SimpleDateFormat(
+//				"yyyy-MM-dd'T'HH:mm:ssZ");
+//		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+//		String formatted = sdf.format(date);
+//		ont.addProperty(DC.date, formatted);
 
 		
 		
@@ -164,8 +174,16 @@ class Converter {
 	private void createOntologIndividuals(String fileInText) throws Exception {
 
 		DataFile read = DataFile.createReader("8859_1");
-		// TODO: for now, comma-separated
-		read.setDataFormat(new CSVFormat());
+		if ( "csv".equalsIgnoreCase(fieldSeparator) ) {
+			read.setDataFormat(new CSVFormat());
+		}
+		else if ( "tab".equalsIgnoreCase(fieldSeparator) ) {
+			read.setDataFormat(new TabFormat());
+		}
+		else {
+			throw new Exception("Unexpected field separator value: " +fieldSeparator+
+					"\nMust be one of: csv, tab");
+		}
 		
 		read.open(new File(fileInText));
 
@@ -180,10 +198,6 @@ class Converter {
 			try {
 				for (row = read.next(); row != null; row = read.next()) {
 					createIndividual(row);
-//					if (monitor != null) {
-//						monitor.worked(1);
-//						monitor.subTask("Processing " + row.getString(0));
-//					}
 				}
 			} catch (ArrayIndexOutOfBoundsException ae) {
 				throw (ae);
@@ -311,7 +325,8 @@ class Converter {
 	}
 
 	private String getGoodName(DataRow row, int id) {
-		return finalUri + cleanStringforID(row.getString(id).trim());
+//		return finalUri + cleanStringforID(row.getString(id).trim());
+		return ns_ + cleanStringforID(row.getString(id).trim());
 	}
 
 	private String cleanStringforID(String s) {
@@ -323,8 +338,8 @@ class Converter {
 	
 	
 	private OntClass createClassNameGiven() {
-		String resourceString = finalUri
-				+ setFirstUpperCase(cleanStringforID(primaryClass));
+//		String resourceString = finalUri + setFirstUpperCase(cleanStringforID(primaryClass));
+		String resourceString = ns_ + setFirstUpperCase(cleanStringforID(primaryClass));
 
 		logger.info("class created " + resourceString);
 		OntClass cls = newOntModel.createClass(resourceString);

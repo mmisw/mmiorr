@@ -6,6 +6,7 @@ import org.mmisw.voc2rdf.gwt.client.vocabulary.AttrGroup;
 
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -28,15 +29,17 @@ public class MetadataPanel extends VerticalPanel {
 
 	MetadataPanel() {
 		super();
+//		setBorderWidth(3);
+		setSize("700", "500");
 		
+		add(new HTML("Use the tabs in this panel to associate metadata to your vocabulary"));
 	    add(container);
 
+	    tabPanel.setAnimationEnabled(true);
 	    
-	    /////////
 		FlexTable flexPanel = new FlexTable();
-		
 		int row = 0;
-		
+
 		CellPanel buttons = createButtons();
 		flexPanel.getFlexCellFormatter().setColSpan(0, 0, 2);
 		flexPanel.setWidget(row, 0, buttons);
@@ -44,36 +47,16 @@ public class MetadataPanel extends VerticalPanel {
 				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		row++;
-	    /////////
 	    
 		
 		flexPanel.setWidget(row, 0, tabPanel);
-	    
-	    
 	    container.add(flexPanel); // tabPanel);
 	    
-	    
-	    ////////
 		for ( AttrGroup attrGroup: Main.baseInfo.getAttrGroups() ) {
-			
 			CellPanel groupPanel = new MetadataGroupPanel(attrGroup);
-			
-			
 			tabPanel.add(groupPanel, attrGroup.getName());
 		}
 		
-
-	    ///
-	    
-	    
-	    
-	    
-	    
-	    
-	    // TODO remove
-//	    tabPanel.add(formInputPanel, "General");
-	    
-	    
 	    tabPanel.selectTab(0);
 	}
 	

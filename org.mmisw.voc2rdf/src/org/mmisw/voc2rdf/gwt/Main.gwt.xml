@@ -19,4 +19,5 @@
       <!-- Specify the application specific style sheet.              -->
       <stylesheet src='Main.css' />
 	
+	<servlet path="/voc2rdfService" class="org.mmisw.voc2rdf.gwt.server.Voc2RdfServiceImpl"/>
 </module>
