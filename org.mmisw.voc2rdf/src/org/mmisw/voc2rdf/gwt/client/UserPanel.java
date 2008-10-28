@@ -1,7 +1,8 @@
 package org.mmisw.voc2rdf.gwt.client;
 
-import java.util.HashMap;
 import java.util.Map;
+
+import org.mmisw.voc2rdf.gwt.client.rpc.LoginResult;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CellPanel;
@@ -16,7 +17,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -30,9 +30,12 @@ public class UserPanel extends VerticalPanel {
 	private MainPanel mainPanel;
 	private CellPanel container = new VerticalPanel();
 	
-	private PushButton uploadButton;
+	private TextBox userName;
+	private PasswordTextBox userPassword;
 	
-	private Map<String, Widget> widgets = new HashMap<String, Widget>();
+	private PushButton loginButton;
+	private PushButton logoutButton;
+	private PushButton uploadButton;
 	
 	
 	UserPanel(MainPanel mainPanel) {
@@ -59,33 +62,29 @@ public class UserPanel extends VerticalPanel {
 		row++;
 
 		
-		String[] attrNames =  { "userId", "userPassword" };
-		String[] attrLabels = { "Username:", "Password:" };
-		
-		for ( int i = 0; i < attrNames.length; i++ ) {
-			String attrName = attrNames[i];
-			String attrLabel = attrLabels[i];
-			
-			Widget widget;
-			final TextBox tb = "userPassword".equals(attrName) ? new PasswordTextBox() : new TextBox();
-			tb.setName(attrName );
-			tb.setWidth("200");
-			
-			widget = tb;
-				
-			widgets.put(attrName, widget);
-				
-			Label lbl = new Label(attrLabel);
-			panel.setWidget(row, 0, lbl);
-			panel.setWidget(row, 1, widget);
-			panel.getFlexCellFormatter().setAlignment(row, 0, 
-					HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
-			);
-			panel.getFlexCellFormatter().setAlignment(row, 1, 
-					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
-			);
-			row++;
-		}
+		panel.setWidget(row, 0, new Label("Username:"));
+		userName = new TextBox();
+		userName.setWidth("200");
+		panel.setWidget(row, 1, userName);
+		panel.getFlexCellFormatter().setAlignment(row, 0, 
+				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		panel.getFlexCellFormatter().setAlignment(row, 1, 
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		row++;
+
+		panel.setWidget(row, 0, new Label("Password:"));
+		userPassword = new PasswordTextBox();
+		userPassword.setWidth("200");
+		panel.setWidget(row, 1, userPassword);
+		panel.getFlexCellFormatter().setAlignment(row, 0, 
+				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		panel.getFlexCellFormatter().setAlignment(row, 1, 
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		row++;
 		
 		CellPanel buttons = createButtons();
 		panel.getFlexCellFormatter().setColSpan(row, 0, 2);
@@ -102,49 +101,60 @@ public class UserPanel extends VerticalPanel {
 		CellPanel panel = new HorizontalPanel();
 		panel.setSpacing(2);
 		
+		loginButton = new PushButton("Log in", new ClickListener() {
+			public void onClick(Widget sender) {
+				login();
+			}
+		});
+		panel.add(loginButton);
+
+		logoutButton = new PushButton("Log out", new ClickListener() {
+			public void onClick(Widget sender) {
+				logout();
+			}
+		});
+		panel.add(logoutButton);
+		logoutButton.setEnabled(false);
+
 		uploadButton = new PushButton("Upload", new ClickListener() {
 			public void onClick(Widget sender) {
 				upload();
 			}
 		});
 		panel.add(uploadButton);
+		uploadButton.setEnabled(false);
 
 		return panel;
 	}
 	
 	String putValues(Map<String, String> values) {
-		for ( String attrName : widgets.keySet() ) {
-			Widget widget = widgets.get(attrName);
-			String value = null;
-			if ( widget instanceof TextBoxBase ) {
-				value = ((TextBoxBase) widget).getText();
-			}
-			
-			if ( value == null || value.trim().length() == 0 ) {
-				return attrName+ "\n   A value is required.";
-			}
-			values.put(attrName, value.trim());
-		}
 		return null;
 	}
 
-	private void upload() {
-		Map<String, String> values = new HashMap<String, String>();
-		putValues(values);
-		for ( String attrName : widgets.keySet() ) {
-			Widget widget = widgets.get(attrName);
-			String value = null;
-			if ( widget instanceof TextBoxBase ) {
-				value = ((TextBoxBase) widget).getText();
-			}
-			
-			if ( value == null || value.trim().length() == 0 ) {
-				Window.alert(attrName+ "\n   A value is required.");
-				return;
-			}
-			values.put(attrName, value.trim());
+	private void login() {
+		String username = userName.getText();
+		String password = userPassword.getText();
+		if ( username.trim().length() == 0 || password.trim().length() == 0 ) {
+			Window.alert("Please provide your account information");
+			return;
 		}
-		mainPanel.doUpload(values);
+		mainPanel.doLogin(username, password);
+	}
+	
+	private void upload() {
+		mainPanel.doUpload();
+	}
+	
+	private void logout() {
+		mainPanel.logout();
+	}
+
+
+	public void setLoginResult(LoginResult loginResult) {
+		boolean ok = loginResult != null && loginResult.getError() == null;
+		loginButton.setEnabled(! ok);
+		logoutButton.setEnabled(ok);
+		uploadButton.setEnabled(ok);
 	}
 
 }

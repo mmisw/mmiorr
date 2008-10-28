@@ -4,14 +4,14 @@ import java.util.Map;
 
 import org.mmisw.voc2rdf.gwt.client.img.Voc2RdfImageBundle;
 import org.mmisw.voc2rdf.gwt.client.rpc.BaseInfo;
-import org.mmisw.voc2rdf.gwt.client.rpc.ConversionResult;
-import org.mmisw.voc2rdf.gwt.client.rpc.UploadResult;
 import org.mmisw.voc2rdf.gwt.client.rpc.Voc2RdfService;
 import org.mmisw.voc2rdf.gwt.client.rpc.Voc2RdfServiceAsync;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.HistoryListener;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.ButtonBase;
@@ -24,9 +24,6 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.HistoryListener;
-import com.google.gwt.user.client.Window;
 
 
 /**
@@ -78,12 +75,7 @@ public class Main implements EntryPoint {
 
 		}
 
-		if ( true || GWT.isScript() ) { // ie, actually running on the server.
-			getVoc2RdfService();
-		}
-		else {
-			getVoc2RdfServiceMock();
-		}
+		getVoc2RdfService();
 		getPrimaryConcepts(params);
 	}
 
@@ -158,53 +150,6 @@ public class Main implements EntryPoint {
 	}
 
 	
-	/** A mock-up implementation. */
-	private static void getVoc2RdfServiceMock() {
-		log("Creating mock service");
-		voc2rdfService = new Voc2RdfServiceAsync() {
-
-			BaseInfo baseInfo = new BaseInfo();
-
-			public void convert(final Map<String, String> values, 
-					final AsyncCallback<ConversionResult> callback) 
-			{
-				new Timer() {
-					@Override
-					public void run() {
-						ConversionResult result = new ConversionResult();
-						if ( values.get("creator") == null || values.get("creator").startsWith("error") ) {
-							result.setError("PRETEND THIS IS AN ERROR");
-							callback.onFailure(new Exception("PRETEND an ERROR"));
-						}
-						else {
-							result.setRdf("PRETEND THIS IS AN RDF");
-							callback.onSuccess(result);
-						}
-					}
-				}.schedule(1000);
-			}
-
-			public void getBaseInfo(AsyncCallback<BaseInfo> callback) {
-				callback.onSuccess(baseInfo);
-			}
-
-			public void upload(final ConversionResult result,
-					final Map<String, String> values,
-					final AsyncCallback<UploadResult> callback) 
-			{
-				new Timer() {
-					@Override
-					public void run() {
-						UploadResult uploadResult = new UploadResult();
-						uploadResult.setInfo("PRETEND THIS IS NORMAL UPLOAD RESULT MESSAGE");
-						callback.onSuccess(uploadResult);
-					}
-				}.schedule(1000);
-			}
-			
-		};
-		
-	}
 	private void getPrimaryConcepts(final Map<String, String> params) {
 		AsyncCallback<BaseInfo> callback = new AsyncCallback<BaseInfo>() {
 			public void onFailure(Throwable thr) {

@@ -249,7 +249,8 @@ public class VocabPanel extends VerticalPanel {
 			
 			// any missing columns? 
 			for ( int c = cols.length; c < headerCols.length; c++ ) {
-				sb.append("<td> <font color=\"red\">" +"?"+ "</font></td>");
+//				sb.append("<td> <font color=\"red\">" +"?"+ "</font></td>");
+				sb.append("<td></td>");
 			}
 			
 			sb.append("</tr>\n");
@@ -267,6 +268,8 @@ public class VocabPanel extends VerticalPanel {
 		}
 		ascii_ta.setText("");
 		fieldSeparator_lb.setSelectedIndex(0);
+		tabular_cb.setChecked(false);
+		updateContents(contentsContainer, false);
 	}
 
 	void example(boolean confirm) {
@@ -282,5 +285,9 @@ public class VocabPanel extends VerticalPanel {
 				"depth, measurement depth, , derived from pressure\n"
 		);
 		fieldSeparator_lb.setSelectedIndex(0);
+		boolean tabular = tabular_cb.isChecked();
+		if ( tabular ) {
+			updateContents(contentsContainer, tabular);
+		}
 	}
 }

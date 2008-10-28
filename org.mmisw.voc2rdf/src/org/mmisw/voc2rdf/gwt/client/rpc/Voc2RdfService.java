@@ -16,6 +16,8 @@ public interface Voc2RdfService extends RemoteService {
 	
 	ConversionResult convert(Map<String,String> values);
 	
-	UploadResult upload(ConversionResult result, Map<String,String> values);
+	LoginResult login(String userName, String userPassword);
+	
+	UploadResult upload(ConversionResult result, LoginResult loginResult);
 	
 }

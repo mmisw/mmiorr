@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.mmisw.voc2rdf.gwt.client.rpc.ConversionResult;
+import org.mmisw.voc2rdf.gwt.client.rpc.LoginResult;
 import org.mmisw.voc2rdf.gwt.client.rpc.UploadResult;
 
 import com.google.gwt.user.client.Window;
@@ -45,7 +46,7 @@ public class MainPanel extends VerticalPanel {
 	private PushButton resetButton;
 
 	
-	
+	private LoginResult loginResult;
 	private ConversionResult conversionResult;
 	
 	
@@ -241,14 +242,57 @@ public class MainPanel extends VerticalPanel {
 	}
 	
 	
+	void doLogin(String userName, String userPassword) {
+		
+		AsyncCallback<LoginResult> callback = new AsyncCallback<LoginResult>() {
+
+			public void onFailure(Throwable ex) {
+				loginResult = new LoginResult();
+				loginResult.setError(ex.getMessage());
+				Main.log("login error: " +loginResult);
+				Window.alert("Error validating credentials: " +ex.getMessage());
+			}
+
+			public void onSuccess(LoginResult loginResult) {
+				MainPanel.this.loginResult = loginResult;
+				if ( loginResult.getError() != null ) {
+					Main.log("login error: " +loginResult);
+					Window.alert(loginResult.getError());
+				}
+				else {
+					Main.log("login ok: " +loginResult);
+				}
+				uploadPanel.setLoginResult(loginResult);
+			}
+			
+		};
+		Main.log("login ...");
+		Main.voc2rdfService.login(userName, userPassword, callback);
+
+	}
 	
-	void doUpload(Map<String, String> values) {
+	public void logout() {
+		loginResult = null;
+		uploadPanel.setLoginResult(null);
+	}
+
+	
+	void doUpload() {
 		if ( conversionResult == null ) {
 			Window.alert("Please, perform a conversion first");
 			return;
 		}
 		if ( conversionResult.getError() != null ) {
 			Window.alert("Please, perform a successfull conversion first");
+			return;
+		}
+		
+		if ( loginResult == null ) {
+			Window.alert("Please, login");
+			return;
+		}
+		if ( loginResult.getError() != null ) {
+			Window.alert("Please, login");
 			return;
 		}
 		
@@ -280,7 +324,7 @@ public class MainPanel extends VerticalPanel {
 		};
 
 		Main.log("Uploading ...");
-		Main.voc2rdfService.upload(conversionResult, values, callback);
+		Main.voc2rdfService.upload(conversionResult, loginResult, callback);
 	}
 
 	private void example(boolean confirm) {
@@ -300,4 +344,6 @@ public class MainPanel extends VerticalPanel {
 		conversionPanel.updateContents(null);
 //		tabPanel.selectTab(tabPanel.getWidgetIndex(vocabPanel));
 	}
+
+
 }

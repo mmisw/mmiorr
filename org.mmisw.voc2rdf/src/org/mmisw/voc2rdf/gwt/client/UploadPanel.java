@@ -1,5 +1,7 @@
 package org.mmisw.voc2rdf.gwt.client;
 
+import org.mmisw.voc2rdf.gwt.client.rpc.LoginResult;
+
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
@@ -67,6 +69,10 @@ public class UploadPanel extends VerticalPanel {
 		
 		
 		return panel;
+	}
+
+	public void setLoginResult(LoginResult loginResult) {
+		userInfoPanel.setLoginResult(loginResult);
 	}
 	
 

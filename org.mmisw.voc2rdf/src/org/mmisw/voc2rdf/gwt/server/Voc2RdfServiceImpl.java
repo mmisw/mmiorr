@@ -10,6 +10,7 @@ import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.ont.vocabulary.util.MdHelper;
 import org.mmisw.voc2rdf.gwt.client.rpc.BaseInfo;
 import org.mmisw.voc2rdf.gwt.client.rpc.ConversionResult;
+import org.mmisw.voc2rdf.gwt.client.rpc.LoginResult;
 import org.mmisw.voc2rdf.gwt.client.rpc.UploadResult;
 import org.mmisw.voc2rdf.gwt.client.rpc.Voc2RdfService;
 import org.mmisw.voc2rdf.gwt.client.vocabulary.AttrGroup;
@@ -130,26 +131,53 @@ public class Voc2RdfServiceImpl extends RemoteServiceServlet implements Voc2RdfS
 	}
 	
 	
-	public UploadResult upload(ConversionResult conversionResult, Map<String,String> values) {
+	public LoginResult login(String userName, String userPassword) {
+		LoginResult loginResult = new LoginResult();
 		
-		log.info(": uploading ...");
-		UploadResult uploadResult = new UploadResult();
-		String sessionId;
-		
-		String userName = values.get("userId");
-		String userPassword = values.get("userPassword");
-		
+		log.info(": authenticating user " +userName+ " ...");
 		try {
 			Login login = new Login(userName, userPassword);
-			sessionId = login.getSessionId();
+			login.getSession(loginResult);
+		}
+		catch (Exception ex) {
+			loginResult.setError(ex.getMessage());
+		}
 
+		return loginResult;
+	}
+	
+	public UploadResult upload(ConversionResult conversionResult, LoginResult loginResult) {
+		
+		UploadResult uploadResult = new UploadResult();
+
+		String userId = null;
+		String sessionId = null;
+
+		if ( loginResult == null ) {
+			uploadResult.setError("No login information");
+		}
+		else if ( loginResult.getError() != null ) {
+			uploadResult.setError("Authentication has errors ");
+		}
+		else {
+			userId = loginResult.getUserId();
+			sessionId = loginResult.getSessionId();
+		}
+		
+		if ( uploadResult.getError() != null ) {
+			log.info(": error: " +uploadResult.getError());
+			return uploadResult;
+		}
+		
+		log.info(": uploading ...");
+		try {
 			String uri = conversionResult.getFinalUri();
 			String fileName;
 			fileName = new URL(uri).getPath();
 			String rdf = conversionResult.getRdf();
 			
 			// TODO: use some of the metadata in values map to set some of the aquaportal attributes
-			OntologyUploader createOnt = new OntologyUploader(uri, fileName, rdf , userName, sessionId);
+			OntologyUploader createOnt = new OntologyUploader(uri, fileName, rdf, userId, sessionId);
 			String res = createOnt.create();
 			
 			if ( res.startsWith("OK") ) {

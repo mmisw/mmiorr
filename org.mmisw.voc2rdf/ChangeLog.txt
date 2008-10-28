@@ -18,6 +18,10 @@ ChangeLog
 	  		
 	- ConversionPanel: Simplified: fixed namespace root ("http://mmisw.org/ont)
 	
+	- Upload/user panels: Now, user first logs in to the registry using his/her username (not
+	  userId) and password. This action obtains a sessionId and the userId than can be used for
+	  the actual upload.
+	  
 	- Several other changes.
 	
 	TODO:
