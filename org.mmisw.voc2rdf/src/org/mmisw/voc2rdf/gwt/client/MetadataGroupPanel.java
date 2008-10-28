@@ -8,6 +8,7 @@ import org.mmisw.voc2rdf.gwt.client.vocabulary.AttrDef;
 import org.mmisw.voc2rdf.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.voc2rdf.gwt.client.vocabulary.Option;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -143,7 +144,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 		panel.setSpacing(2);
 		exampleButton = new PushButton("Example", new ClickListener() {
 			public void onClick(Widget sender) {
-				example();
+				example(true);
 			}
 		});
 		exampleButton.setTitle("Fills in example values in this section");
@@ -151,7 +152,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 		
 		resetButton = new PushButton("Reset", new ClickListener() {
 			public void onClick(Widget sender) {
-				reset();
+				reset(true);
 			}
 		});
 		resetButton.setTitle("Resets the fields in this section");
@@ -163,6 +164,22 @@ public class MetadataGroupPanel extends VerticalPanel {
 	private void formChanged() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	/** 
+	 * Puts test values. These are the example values for the
+	 * required, non-internal attributes.
+	 */
+	void putTestValues(Map<String, String> values) {
+		AttrDef[] attrDefs = attrGroup.getAttrDefs();
+		for ( AttrDef attr : attrDefs ) {
+			if ( attr.isRequired() && ! attr.isInternal() ) {
+				String value = attr.getExample();
+				if ( value != null && value.trim().length() > 0 ) {
+					values.put(attr.getUri(), value.trim());
+				}
+			}
+		}
 	}
 
 	String putValues(Map<String, String> values) {
@@ -178,7 +195,8 @@ public class MetadataGroupPanel extends VerticalPanel {
 			
 			if ( value == null || value.trim().length() == 0 ) {
 				if ( elem.attr.isRequired() ) {
-					String error = "`" +elem.attr.getLocalName()+ "'\n   A value is required.";
+					String error = "Please provide a value for the field with label: " +
+						elem.attr.getLabel();
 					return error;
 				}
 			}
@@ -187,7 +205,10 @@ public class MetadataGroupPanel extends VerticalPanel {
 		return null;
 	}
 
-	void reset() {
+	void reset(boolean confirm) {
+		if ( confirm && ! Window.confirm("This action will replace the current values in this section") ) {
+			return;
+		}
 		for ( Elem elem : widgets.values() ) {
 			String value = "";
 			if ( elem.widget instanceof TextBoxBase ) {
@@ -197,7 +218,10 @@ public class MetadataGroupPanel extends VerticalPanel {
 		
 	}
 
-	void example() {
+	void example(boolean confirm) {
+		if ( confirm && ! Window.confirm("This action will replace the current values in this section") ) {
+			return;
+		}
 		for ( Elem elem : widgets.values() ) {
 			String value = elem.attr.getExample();
 			if ( elem.widget instanceof TextBoxBase ) {
@@ -214,7 +238,6 @@ public class MetadataGroupPanel extends VerticalPanel {
 				}
 				lb.setSelectedIndex(idx);
 			}
-
 		}
 	}
 	

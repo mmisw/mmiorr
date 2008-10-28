@@ -36,7 +36,7 @@ public class MainPanel extends VerticalPanel {
 	private MetadataPanel metadataPanel = new MetadataPanel();
 	private VocabPanel vocabPanel = new VocabPanel(this);
 	
-	private ConversionPanel resultPanel = new ConversionPanel(this);
+	private ConversionPanel conversionPanel = new ConversionPanel(this);
 	
 	private UploadPanel uploadPanel = new UploadPanel(this);
 	
@@ -55,7 +55,7 @@ public class MainPanel extends VerticalPanel {
 		
 		add(Main.images.voc2rdf().createImage());
 		
-		container.setSize("740px", "400px");
+//		container.setSize("800px", "450px");
 		DecoratorPanel decPanel = new DecoratorPanel();
 	    decPanel.setWidget(container);
 	    add(decPanel);
@@ -63,7 +63,7 @@ public class MainPanel extends VerticalPanel {
 	    
 	    /////////
 		FlexTable flexPanel = new FlexTable();
-		flexPanel.setWidth("740px");
+//		flexPanel.setWidth("800px");
 		
 		int row = 0;
 		
@@ -76,7 +76,7 @@ public class MainPanel extends VerticalPanel {
 		row++;
 	    /////////
 	    
-		tabPanel.setAnimationEnabled(true);
+//		tabPanel.setAnimationEnabled(true);
 		
 		flexPanel.setWidget(row, 0, tabPanel);
 	    
@@ -86,7 +86,7 @@ public class MainPanel extends VerticalPanel {
 	    tabPanel.add(vocabPanel, "Vocabulary");
 	    tabPanel.add(metadataPanel, "Metadata");
 	    
-	    tabPanel.add(resultPanel, "Conversion");
+	    tabPanel.add(conversionPanel, "Conversion");
 	    
 	    tabPanel.add(uploadPanel, "MMI Registry");
 	    
@@ -99,34 +99,99 @@ public class MainPanel extends VerticalPanel {
 		panel.setSpacing(2);
 		exampleButton = new PushButton("Example", new ClickListener() {
 			public void onClick(Widget sender) {
-				metadataPanel.example();
-				vocabPanel.example();
+				example(true);
 			}
 		});
+		exampleButton.setTitle("Fills in example values in all sections");
 		panel.add(exampleButton);
 		
 		resetButton = new PushButton("Reset all", new ClickListener() {
 			public void onClick(Widget sender) {
-				metadataPanel.reset();
-				vocabPanel.reset();
-				resultPanel.updateContents(null);
-				tabPanel.selectTab(tabPanel.getWidgetIndex(vocabPanel));
+				reset(true);
 			}
 		});
+		resetButton.setTitle("Resets the fields in all sections");
 		panel.add(resetButton);
 		
 		return panel;
 	}
 
+	
 	/**
 	 * Runs the "test conversion" on the vocabulary contents and with
 	 * ad hoc metadata atttributes.
 	 */
 	void convertTest() {
-		// just use namespaceRoot = "http://mmisw.org/ont" 
-		convert("http://mmisw.org/ont");
+		String namespaceRoot = "http://mmisw.org/ont"; 
+		
+		Map<String, String> values = new HashMap<String, String>();
+
+		// error only possibly from the vocabPanel:
+		String error;
+		if ( (error = vocabPanel.putValues(values)) != null ) {
+			tabPanel.selectTab(tabPanel.getWidgetIndex(vocabPanel));
+		}
+		if ( error != null ) {
+			Window.alert(error);
+			return;
+		}
+		
+		// get test values:
+		metadataPanel.putTestValues(values);
+		Main.log("testConvert: values = " +values);
+
+		final TextArea textArea = new TextArea();
+		textArea.setReadOnly(true);
+	    textArea.setSize("600px", "350px");
+		DecoratorPanel decPanel = new DecoratorPanel();
+	    decPanel.setWidget(textArea);
+	    textArea.setText("converting ...");
+
+		final MyDialog popup = new MyDialog(decPanel);
+		popup.setText("Test Conversion: please wait ...");
+		popup.center();
+		popup.show();
+
+
+		// do test conversion
+		AsyncCallback<ConversionResult> callback = new AsyncCallback<ConversionResult>() {
+			public void onFailure(Throwable thr) {
+				String error = thr.getClass().getName()+ ": " +thr.getMessage();
+				while ( (thr = thr.getCause()) != null ) {
+					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
+				}
+				Main.log("convertTest: error: " +error);
+				popup.setText("Test Conversion: Error");
+				textArea.setText(error);
+			}
+
+			public void onSuccess(ConversionResult conversionResult) {
+				String error = conversionResult.getError();
+				if ( error != null ) {
+					Main.log("convertTest: error: " +error);
+					popup.setText("Test Conversion: Error");
+					textArea.setText(error);
+				}
+				else {
+					Main.log("convertTest: OK: " +conversionResult.getRdf());
+					popup.setText("Test Conversion: OK");
+					textArea.setText(conversionResult.getRdf());
+				}
+			}
+		};
+
+		values.put("namespaceRoot", namespaceRoot);
+
+		Main.log("convertTest: converting ... ");
+		
+		Main.voc2rdfService.convert(values, callback);
+
 	}
 	
+	
+	/**
+	 * The regular conversion using all provided information.
+	 */
 	void convert(String namespaceRoot) {
 		Map<String, String> values = new HashMap<String, String>();
 		
@@ -140,7 +205,7 @@ public class MainPanel extends VerticalPanel {
 		}
 		
 		if ( error != null ) {
-			resultPanel.updateContents(null);
+			conversionPanel.updateContents(null);
 			Window.alert(error);
 		}
 		else {
@@ -157,17 +222,18 @@ public class MainPanel extends VerticalPanel {
 					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
 				}
 				conversionResult.setError(error);
-				resultPanel.updateContents(conversionResult);
-				tabPanel.selectTab(tabPanel.getWidgetIndex(resultPanel));
+				conversionPanel.updateContents(conversionResult);
 			}
 
 			public void onSuccess(ConversionResult conversionResult) {
 				MainPanel.this.conversionResult = conversionResult;
-				resultPanel.updateContents(conversionResult);
-				tabPanel.selectTab(tabPanel.getWidgetIndex(resultPanel));
+				conversionPanel.updateContents(conversionResult);
 			}
 		};
 
+		conversionPanel.prepareForConversion();
+		tabPanel.selectTab(tabPanel.getWidgetIndex(conversionPanel));
+		
 		Main.log("doConversion: setting namespaceRoot = " +namespaceRoot);
 		values.put("namespaceRoot", namespaceRoot);
 		Main.log("Converting ...");
@@ -175,20 +241,14 @@ public class MainPanel extends VerticalPanel {
 	}
 	
 	
-	private void upload(ConversionResult conversionResult) {
-		this.conversionResult = conversionResult;
-		UploadPanel uploadPanel = new UploadPanel(this);
-		Main.log("uploadPanel created");
-		MyDialog popup = new MyDialog(uploadPanel);
-		popup.setText("User account");
-		popup.center();
-		popup.show();
-	}
-
 	
 	void doUpload(Map<String, String> values) {
 		if ( conversionResult == null ) {
-			Main.log("doUpload: conversionResult is null.");
+			Window.alert("Please, perform a conversion first");
+			return;
+		}
+		if ( conversionResult.getError() != null ) {
+			Window.alert("Please, perform a successfull conversion first");
 			return;
 		}
 		
@@ -204,7 +264,7 @@ public class MainPanel extends VerticalPanel {
 				String msg = error == null ? result.getInfo() : error;
 				
 				TextArea ta = new TextArea();
-				ta.setSize("400px", "100px");
+				ta.setSize("500", "200");
 				ta.setReadOnly(true);
 				ta.setText(msg);
 				VerticalPanel vp = new VerticalPanel();
@@ -223,4 +283,21 @@ public class MainPanel extends VerticalPanel {
 		Main.voc2rdfService.upload(conversionResult, values, callback);
 	}
 
+	private void example(boolean confirm) {
+		if ( confirm && ! Window.confirm("This action will replace the current values in all sections") ) {
+			return;
+		}
+		metadataPanel.example(false);
+		vocabPanel.example(false);
+		conversionPanel.updateContents(null);
+	}
+	private void reset(boolean confirm) {
+		if ( confirm && ! Window.confirm("This action will replace the current values in all sections") ) {
+			return;
+		}
+		metadataPanel.reset(false);
+		vocabPanel.reset(false);
+		conversionPanel.updateContents(null);
+//		tabPanel.selectTab(tabPanel.getWidgetIndex(vocabPanel));
+	}
 }

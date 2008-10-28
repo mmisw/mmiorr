@@ -24,6 +24,10 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.HistoryListener;
+import com.google.gwt.user.client.Window;
+
 
 /**
  * The entry point.
@@ -33,8 +37,8 @@ import com.google.gwt.user.client.ui.Widget;
 public class Main implements EntryPoint {
 
 	public static final String APP_NAME = "Voc2RDF";
-	public static final String VERSION = "2.0.1alpha";
-	public static final String VERSION_COMMENT = " ";
+	public static final String VERSION = "2.0.alpha1";
+	public static final String VERSION_COMMENT = "";
 
 	static String baseUrl;
 
@@ -51,6 +55,10 @@ public class Main implements EntryPoint {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
+		if ( false ) { // disabled for now.
+			prepareHistory(); // TODO: proper history handling
+		}
+		
 		log("Util.getLocationProtocol() = " + Util.getLocationProtocol());
 		log("Util.getLocationHost()     = " + Util.getLocationHost());
 		log("GWT.getHostPageBaseURL()   = " + GWT.getHostPageBaseURL());
@@ -77,6 +85,26 @@ public class Main implements EntryPoint {
 			getVoc2RdfServiceMock();
 		}
 		getPrimaryConcepts(params);
+	}
+
+	private void prepareHistory() {
+		History.newItem("");
+		History.newItem("app");
+		History.addHistoryListener(new HistoryListener() {
+			public void onHistoryChanged(String historyToken) {
+				// get to the initial token?
+				if ( "".equals(historyToken) ) {
+					if ( Window.confirm("Do you want to leave this Voc2RDF session?") ) {
+						History.back();
+					}
+					else {
+						History.forward();				
+					}
+				}
+				log("onHistoryChanged: " +historyToken);
+			}
+		});
+
 	}
 
 	private void startGui(final Map<String, String> params) {

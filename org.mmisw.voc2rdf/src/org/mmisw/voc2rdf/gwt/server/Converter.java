@@ -160,12 +160,9 @@ class Converter {
 //		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 //		String formatted = sdf.format(date);
 //		ont.addProperty(DC.date, formatted);
-
 		
 		
 		createOntologIndividuals(fileInText);
-		
-
 	}
 
 

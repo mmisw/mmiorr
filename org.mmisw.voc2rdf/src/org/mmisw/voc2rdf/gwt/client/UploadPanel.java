@@ -3,11 +3,7 @@ package org.mmisw.voc2rdf.gwt.client;
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -18,7 +14,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class UploadPanel extends VerticalPanel {
 
-	private TextBox ontologyUri;
+//	private TextBox ontologyUri;
 	
 	private UserPanel userInfoPanel;
 	
@@ -46,22 +42,21 @@ public class UploadPanel extends VerticalPanel {
 	private Widget createForm() {
 		FlexTable panel = new FlexTable();
 		panel.setWidth("700");
-		
-		int row = 0;
-		
-		Label lbl = new Label("Ontology URI:");
-		panel.setWidget(row, 0, lbl);
-		panel.getFlexCellFormatter().setAlignment(row, 0, 
-				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
-		);
-		
-		ontologyUri = new TextBox();
-		ontologyUri.setWidth("200");
-		panel.setWidget(row, 1, ontologyUri);
-		panel.getFlexCellFormatter().setAlignment(row, 1, 
-				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
-		);
-		row++;
+//		int row = 0;
+//		
+//		Label lbl = new Label("Ontology URI:");
+//		panel.setWidget(row, 0, lbl);
+//		panel.getFlexCellFormatter().setAlignment(row, 0, 
+//				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
+//		);
+//		
+//		ontologyUri = new TextBox();
+//		ontologyUri.setWidth("200");
+//		panel.setWidget(row, 1, ontologyUri);
+//		panel.getFlexCellFormatter().setAlignment(row, 1, 
+//				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+//		);
+//		row++;
 		
 		return panel;
 	}

@@ -37,6 +37,7 @@ public class UserPanel extends VerticalPanel {
 	
 	UserPanel(MainPanel mainPanel) {
 		this.mainPanel = mainPanel;
+		container.setSpacing(4);
 		DecoratorPanel decPanel = new DecoratorPanel();
 	    decPanel.setWidget(container);
 	    add(decPanel);
@@ -145,6 +146,5 @@ public class UserPanel extends VerticalPanel {
 		}
 		mainPanel.doUpload(values);
 	}
-
 
 }

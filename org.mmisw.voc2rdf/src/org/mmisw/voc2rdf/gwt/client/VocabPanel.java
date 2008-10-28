@@ -2,6 +2,7 @@ package org.mmisw.voc2rdf.gwt.client;
 
 import java.util.Map;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -44,7 +45,7 @@ public class VocabPanel extends VerticalPanel {
 	
 	VocabPanel(MainPanel mainPanel) {
 		this.mainPanel = mainPanel;
-		setWidth("700");
+		setWidth("850");
 		
 		add(new HTML("Use this panel to provide the contents of your vocabulary in text format"));
 		add(createForm());
@@ -87,7 +88,7 @@ public class VocabPanel extends VerticalPanel {
 		lbl = new Label("Column separator:");
 		fieldSeparator_lb = new ListBox();
 		fieldSeparator_lb.addItem("Comma", "csv");
-		fieldSeparator_lb.addItem("Tabulator", "tab");
+		fieldSeparator_lb.addItem("Tab", "tab");
 		hp.add(lbl);
 		hp.add(fieldSeparator_lb);
 		fieldSeparator_lb.addChangeListener(new ChangeListener() {
@@ -131,7 +132,7 @@ public class VocabPanel extends VerticalPanel {
 		panel.setSpacing(2);
 		exampleButton = new PushButton("Example", new ClickListener() {
 			public void onClick(Widget sender) {
-				example();
+				example(true);
 			}
 		});
 		exampleButton.setTitle("Fills in example values in this section");
@@ -142,7 +143,9 @@ public class VocabPanel extends VerticalPanel {
 				mainPanel.convertTest();
 			}
 		});
-		convertButton.setTitle("Tests the conversion of the current vocabulary contents");
+		convertButton.setTitle(
+				"Tests the conversion of the current vocabulary contents into RDF format. " +
+				"Example values are automatically provided for the required metadata attributes.");
 		panel.add(convertButton);
 		
 		return panel;
@@ -208,6 +211,9 @@ public class VocabPanel extends VerticalPanel {
 		String[] headerCols = lines[0].split(separator);
 		for ( int c = 0; c < headerCols.length; c++ ) {
 			String str = headerCols[c];
+			if ( str.trim().length() == 0 ) {
+				str = "<font color=\"red\">" +"empty column header"+ "</font>";
+			}
 			sb.append("<th>" +str+ "</th>");	
 		}		
 		
@@ -227,9 +233,10 @@ public class VocabPanel extends VerticalPanel {
 			String[] cols = lines[r].split(separator);
 			for ( int c = 0; c < cols.length; c++ ) {
 				String str = cols[c].trim();
-				if ( str.length() == 0 ) {
-					str = "<font color=\"red\">" +"?"+ "</font>";
-				}
+				
+//				if ( str.length() == 0 ) {
+//					str = "<font color=\"red\">" +"?"+ "</font>";
+//				}
 				
 				if ( c < headerCols.length ) {
 					sb.append("<td>" +str+ "</td>");
@@ -252,16 +259,27 @@ public class VocabPanel extends VerticalPanel {
 		return sb.toString();
 	}
 
-	void reset() {
+	void reset(boolean confirm) {
+		if ( confirm
+		&&  ascii_ta.getText().trim().length() > 0
+		&&  ! Window.confirm("This action will replace the current values") ) {
+			return;
+		}
 		ascii_ta.setText("");
 		fieldSeparator_lb.setSelectedIndex(0);
 	}
 
-	void example() {
+	void example(boolean confirm) {
+		if ( confirm 
+		&&  ascii_ta.getText().trim().length() > 0
+		&&  ! Window.confirm("This action will replace the current values") ) {
+			return;
+		}
 		ascii_ta.setText(
-				"name,description\n" +
-				"sea surface salinity, salinity at the sea surface >10 m.\n" +
-				"sst, sea surface temperature\n"
+				"name,description,see also,comment\n" +
+				"sea surface salinity, sea water salinity, salinity at the sea surface (above 3m.), an example comment\n" +
+				"sst, water temperature, ocean temperature, temperature at the sea surface (above 3m.)\n" +
+				"depth, measurement depth, , derived from pressure\n"
 		);
 		fieldSeparator_lb.setSelectedIndex(0);
 	}

@@ -75,7 +75,7 @@ public class OmvMmi {
     /** OSI.1 */
     public static final Property origVocUri = m_model.createProperty( NS , "origVocUri" );
     
-    /** OSI.2 */
+    /** OSI.3 */
     public static final Property origVocManager = m_model.createProperty( NS , "origVocManager" );
     
     /** OSI.7 */

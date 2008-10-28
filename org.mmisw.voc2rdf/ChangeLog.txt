@@ -3,15 +3,26 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
-2008-10-26
+2008-10-27 (2.0.alpha1)
+
 	- Complete new layout based on tabs:
 		Vocabulary: with contents of the vocabulary including optional tabular for inspection
 		Metadata: with subtabs for the various metadata groups
 		Conversion: to allow namespace root and show RDF result
 		Upload: to capture user login and perform upload to the registry
+	- More flexible mechanism to associate metadata attributes (not just a fixes set of
+	  DC ones). Currently using some of the properties defined in Omv and OmvMmi.
+
+	- "test conversion" button on vocabPanel: it now runs the conversion in a dialog; it uses 
+	the example values for the required metadata attributes.
+	  		
+	- ConversionPanel: Simplified: fixed namespace root ("http://mmisw.org/ont)
+	
+	- Several other changes.
+	
+	TODO:
+		- doUpload: check response and show more user-friendly message
 		
-	TODO: complete the definition of attributes to be included:
-		 label, required flag, tooltip, example. 
 	
 2008-10-24
 	- Because of problems to use the java sources in:

@@ -24,18 +24,21 @@ public class MetadataPanel extends VerticalPanel {
 
 	private CellPanel container = new VerticalPanel();
 	private TabPanel tabPanel = new TabPanel();
-//	private FormInputPanel formInputPanel = new FormInputPanel();
 	
 
 	MetadataPanel() {
 		super();
 //		setBorderWidth(3);
-		setSize("700", "500");
+		setWidth("850");
+		setSize("850", "500");
 		
-		add(new HTML("Use the tabs in this panel to associate metadata to your vocabulary"));
+		add(new HTML(
+				"Use the tabs in this panel to associate metadata to your vocabulary.<br>" +
+				"Fields marked * are required. " +
+				"Use commas to separate values in multi-valued fields."));
 	    add(container);
 
-	    tabPanel.setAnimationEnabled(true);
+//	    tabPanel.setAnimationEnabled(true);
 	    
 		FlexTable flexPanel = new FlexTable();
 		int row = 0;
@@ -64,16 +67,18 @@ public class MetadataPanel extends VerticalPanel {
 	private CellPanel createButtons() {
 		CellPanel panel = new HorizontalPanel();
 		panel.setSpacing(2);
-//		exampleButton = new PushButton("Example", new ClickListener() {
-//			public void onClick(Widget sender) {
-//				formInputPanel.example();
-//				vocabPanel.example();
-//			}
-//		});
-//		panel.add(exampleButton);
-		
 		
 		return panel;
+	}
+	
+	/** Puts test values */
+	void putTestValues(Map<String, String> values) {
+		for ( int i = 0, c = tabPanel.getWidgetCount(); i < c; i++ ) {
+			Widget w = tabPanel.getWidget(i);
+			if ( w instanceof MetadataGroupPanel ) {
+				((MetadataGroupPanel) w).putTestValues(values);
+			}
+		}
 	}
 	
 	String putValues(Map<String, String> values) {
@@ -87,27 +92,24 @@ public class MetadataPanel extends VerticalPanel {
 			}
 		}
 		return null;
-//		return formInputPanel.putValues(values);
 	}
 	
-	void example() {
+	void example(boolean confirm) {
 		for ( int i = 0, c = tabPanel.getWidgetCount(); i < c; i++ ) {
 			Widget w = tabPanel.getWidget(i);
 			if ( w instanceof MetadataGroupPanel ) {
-				((MetadataGroupPanel) w).example();
+				((MetadataGroupPanel) w).example(confirm);
 			}
 		}
-//		formInputPanel.example();
 	}
 	
-	void reset() {
+	void reset(boolean confirm) {
 		for ( int i = 0, c = tabPanel.getWidgetCount(); i < c; i++ ) {
 			Widget w = tabPanel.getWidget(i);
 			if ( w instanceof MetadataGroupPanel ) {
-				((MetadataGroupPanel) w).reset();
+				((MetadataGroupPanel) w).reset(confirm);
 			}
 		}
-//		formInputPanel.reset();
 	}
 
 }

@@ -82,29 +82,53 @@ public class MdHelper {
 		return attrDef;
 	}
 	
+	///////////////////////////////////////////////////////////////////////
+	// The metadata groups
 	private static AttrGroup[] attrGroups = {
+		
 		new AttrGroup("General",
 			new AttrDef[] {
 				
 				createAttrDef(Omv.name, true)
 					.setLabel("Title")
-					.setExample("Project X Parameters")
+					.setExample("Project Athena Parameters")
 				,
 				createAttrDef(Omv.hasCreator, true)
 					.setLabel("Creator")
-					.setExample("John Smith")
+					.setExample("Athena Project")
 				,
 				createAttrDef(Omv.description, true)
 					.setLabel("Description")
-					.setExample("Parameters used in Project X")
+					.setExample("Parameters used in Project Athena")
 				,
+				
+				createAttrDef(Omv.keywords, false)
+					.setLabel("Keywords")
+					.setExample("ocean, physical oceanography, environmental science, climate change")
+				,
+			
+				createAttrDef(OmvMmi.origVocUri)
+					.setLabel("Link to original vocabulary")
+					.setExample("http://marinemetadata.org/community/teams/athena/parameters.html")
+				,
+
+				createAttrDef(Omv.documentation, false)
+					.setExample("http://marinemetadata.org/community/teams/athena")
+					.setLabel("Documentation URL")
+				,
+		
 				createAttrDef(OmvMmi.origMaintainerCode, true)
 					.setLabel("Authority abbreviation")
+					.setExample("mmi")
+					.addOption(new Option("--choose--", "--choose one--"))
+					.addOption(new Option("cencoos", "cencoos: Central California Ocean Observing System"))
+					.addOption(new Option("gcoos", "gcoos: Gulf of Mexico Ocean Observing System"))
 					.addOption(new Option("mmi", "mmi: Marine Metadata Interoperability"))
-					.addOption(new Option("argo", "argo: "))
-					.addOption(new Option("q2o", "q2o: "))
-					.addOption(new Option("gcmd", "gcmd: "))
-					.addOption(new Option("cf", "cf: "))
+					.addOption(new Option("oi2008demo", "oi2008demo: Oceans Innovations 2008 Demonstration"))
+					.addOption(new Option("q2o", "q2o: QARTOD-to-OGC Project"))
+//					.addOption(new Option("argo", "argo: Argo Project"))
+//					.addOption(new Option("gcmd", "gcmd: Global Change Master Directory"))
+//					.addOption(new Option("cf", "cf: Climate and Forecast Conventions Standards Names"))
 					.addOption(new Option("*", "--other, please specify"))
 				, 
 				
@@ -119,6 +143,7 @@ public class MdHelper {
 				
 				createAttrDef(Omv.acronym, true) 
 					.setLabel("Main theme")
+					.setExample("parameter")
 					.addOption(new Option("parameter", "Parameters (It will include terms like 'sea surface salinity')"))
 					.addOption(new Option("sensorType", "Sensor types (It will include terms like 'Thermometer')"))
 					.addOption(new Option("platformType", "Platform types (It will include terms like 'Mooring')"))
@@ -137,20 +162,22 @@ public class MdHelper {
 				
 				createAttrDef(Omv.hasContributor)
 					.setLabel("Contributor(s)")
+					.setExample("Jane Collaborator, Joe Vocabulary Manager, Fido the Mascot")
 				,
 				
 				createAttrDef(Omv.uri)
 					.setInternal(true)
 				,
 				
-				createAttrDef(OmvMmi.origVocUri),
-
-				createAttrDef(Omv.hasPriorVersion),
-				createAttrDef(OmvMmi.shortNameUri),
-				createAttrDef(OmvMmi.contact),
-				createAttrDef(OmvMmi.contactRole),
-				createAttrDef(OmvMmi.accessStatus),
-				createAttrDef(OmvMmi.accessStatusDate),
+				
+				// TODO createAttrDef(Omv.hasPriorVersion),
+				
+				
+				createAttrDef(OmvMmi.shortNameUri)
+					.setLabel("URI of ontology topic")
+					.setExample("http://mmisw.org/ont/mmi/topicTheme/parameter")
+				,
+				
 				
 //				createAttrDef(DC.coverage),
 //				createAttrDef(DC.format),
@@ -163,25 +190,86 @@ public class MdHelper {
 		),
 		new AttrGroup("Usage/License/Permissions",
 			new AttrDef[] {
-				createAttrDef(OmvMmi.licenseCode),
-				createAttrDef(OmvMmi.licenseReference),
-				createAttrDef(OmvMmi.licenseAsOfDate),
-				createAttrDef(OmvMmi.temporaryMmiRole),
-				createAttrDef(OmvMmi.agreedMmiRole),
-				createAttrDef(OmvMmi.creditRequired),
-				createAttrDef(OmvMmi.creditConditions),
-				createAttrDef(OmvMmi.creditCitation),
+				
+				createAttrDef(OmvMmi.origVocManager)
+					.setLabel("Manager of source vocabulary")
+					.setExample("Athena Project")
+				,
+				
+				createAttrDef(OmvMmi.contact)
+					.setLabel("Contact/Responsible Party")
+					.setExample("Joe Vocabulary Manager")
+				,
+				createAttrDef(OmvMmi.contactRole)
+					.setLabel("Contact role")
+					.setExample("content manager")
+					.addOption(new Option("--choose one--"))
+					.addOption(new Option("content manager"))
+					.addOption(new Option("ontology producer"))
+					.addOption(new Option("organizational manager"))
+					.addOption(new Option("IP negotiator"))
+					.addOption(new Option("other"))
+				,
+				
+				// TODO createAttrDef(OmvMmi.accessStatus),
+				
+				// TODO createAttrDef(OmvMmi.accessStatusDate),
+
+				// TODO createAttrDef(OmvMmi.licenseCode),
+				// TODO createAttrDef(OmvMmi.licenseReference),
+				// TODO createAttrDef(OmvMmi.licenseAsOfDate),
+				
+				createAttrDef(OmvMmi.temporaryMmiRole)
+					.setLabel("Temporary MMI role")
+					.setExample("ontology producer")
+					.addOption(new Option("--choose one--"))
+					.addOption(new Option("content manager"))
+					.addOption(new Option("ontology producer"))
+					.addOption(new Option("ontology republisher"))
+					.addOption(new Option("other"))
+				,
+				
+				// TODO createAttrDef(OmvMmi.agreedMmiRole),
+				
+				createAttrDef(OmvMmi.creditRequired)
+					.setExample("yes")
+					.setLabel("Author credit required")
+					.addOption(new Option("not specified"))
+					.addOption(new Option("yes"))
+					.addOption(new Option("no"))
+					.addOption(new Option("conditional"))
+				,
+				
+				// TODO createAttrDef(OmvMmi.creditConditions),
+				
+				createAttrDef(OmvMmi.creditCitation)
+					.setLabel("Citation string")
+					.setExample("Vocabulary provided by Athena Project")
+				,
 			}
 		),
 		new AttrGroup("Original source",
 			new AttrDef[] {
-				createAttrDef(OmvMmi.origVocUri),
-				createAttrDef(OmvMmi.origVocManager),
-				createAttrDef(OmvMmi.origVocDocumentationUri),
-				createAttrDef(OmvMmi.origVocDescriptiveName),
-				createAttrDef(OmvMmi.origVocVersionId),
-				createAttrDef(OmvMmi.origVocKeywords),
-				createAttrDef(OmvMmi.origVocSyntaxFormat),
+				
+				createAttrDef(OmvMmi.origVocDocumentationUri)
+					.setLabel("URI of original vocabulary")
+				,
+				
+				createAttrDef(OmvMmi.origVocDescriptiveName)
+					.setLabel("Descriptive name")
+				,
+				
+				createAttrDef(OmvMmi.origVocVersionId)
+					.setLabel("Version")
+				,
+				
+				createAttrDef(OmvMmi.origVocKeywords)
+					.setLabel("Keywords")
+				,
+				
+				createAttrDef(OmvMmi.origVocSyntaxFormat)
+					.setLabel("Syntax format")
+				,
 			}
 		),
 	};
