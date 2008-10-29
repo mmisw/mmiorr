@@ -7,25 +7,26 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * 
  * @author Carlos Rueda
  */
-public class UploadResult implements IsSerializable {
+public class ReviewResult implements IsSerializable {
 
 	private String error = null;
 	private String uri = null;
-	private String info = null;
+	private String fullPath;
+	private String rdf = null;
 
-	public UploadResult() {
+	public ReviewResult() {
 	}
 
 	public String getError() {
 		return error;
 	}
 
-	public String getInfo() {
-		return info;
+	public String getRdf() {
+		return rdf;
 	}
 
-	public void setInfo(String info) {
-		this.info = info;
+	public void setRdf(String rdf) {
+		this.rdf = rdf;
 	}
 
 	public void setError(String error) {
@@ -33,7 +34,7 @@ public class UploadResult implements IsSerializable {
 	}
 
 	public String toString() {
-		return "UploadResult{info=" +info+" , error=" +error+ "}";
+		return "ReviewResult{uri=" +uri+ ", rdf=" +rdf+" , error=" +error+ "}";
 	}
 
 	public void setUri(String uri) {
@@ -44,5 +45,12 @@ public class UploadResult implements IsSerializable {
 		return uri;
 	}
 
+	public String getFullPath() {
+		return fullPath;
+	}
+
+	public void setFullPath(String fullPath) {
+		this.fullPath = fullPath;
+	}
 
 }

@@ -1,7 +1,5 @@
 package org.mmisw.ontmd.gwt.client.rpc;
 
-import java.util.Map;
-
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
@@ -18,6 +16,8 @@ public interface OntMdServiceAsync {
 	
 	void getOntologyInfo(String uploadResults, AsyncCallback<OntologyInfo> callback);
 	
-	void upload(OntologyInfo result, LoginResult loginResult, AsyncCallback<UploadResult> callback);
+	void review(OntologyInfo ontologyInfo, LoginResult loginResult, AsyncCallback<ReviewResult> callback);
+	
+	void upload(ReviewResult reviewResult, LoginResult loginResult, AsyncCallback<UploadResult> callback);
 	
 }

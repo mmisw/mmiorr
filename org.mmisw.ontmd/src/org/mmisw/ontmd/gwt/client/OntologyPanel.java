@@ -156,7 +156,7 @@ public class OntologyPanel extends VerticalPanel {
 			}
 
 			public void onSuccess(OntologyInfo ontologyInfo) {
-				mainPanel.setOntologyInfo(ontologyInfo);
+				mainPanel.setOntologyInfo(ontologyInfo, false);
 			}
 		};
 

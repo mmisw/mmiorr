@@ -144,6 +144,7 @@ public class MdHelper {
 				createAttrDef(Omv.acronym, true) 
 					.setLabel("Main theme")
 					.setExample("parameter")
+					.addOption(new Option("--choose one--"))
 					.addOption(new Option("parameter", "Parameters (It will include terms like 'sea surface salinity')"))
 					.addOption(new Option("sensorType", "Sensor types (It will include terms like 'Thermometer')"))
 					.addOption(new Option("platformType", "Platform types (It will include terms like 'Mooring')"))

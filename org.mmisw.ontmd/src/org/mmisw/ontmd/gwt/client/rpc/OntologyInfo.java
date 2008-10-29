@@ -11,7 +11,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class OntologyInfo implements IsSerializable {
 
 	private String error = null;
-	private String rdf = "";
+	private String fullPath;
 	private Map<String,String> values;
 	
 	public Map<String, String> getValues() {
@@ -37,8 +37,8 @@ public class OntologyInfo implements IsSerializable {
 		return finalUri;
 	}
 
-	public String getRdf() {
-		return rdf;
+	public String getFullPath() {
+		return fullPath;
 	}
 
 	public String getError() {
@@ -49,8 +49,8 @@ public class OntologyInfo implements IsSerializable {
 		this.error = error;
 	}
 
-	public void setRdf(String rdf) {
-		this.rdf = rdf;
+	public void setFullPath(String fullPath) {
+		this.fullPath = fullPath;
 	}
 
 }

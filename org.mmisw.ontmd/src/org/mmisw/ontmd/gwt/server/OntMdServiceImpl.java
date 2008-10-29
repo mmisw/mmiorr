@@ -1,28 +1,42 @@
 package org.mmisw.ontmd.gwt.server;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.IOUtils;
+import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.util.MdHelper;
 import org.mmisw.ontmd.gwt.client.rpc.BaseInfo;
 import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
 import org.mmisw.ontmd.gwt.client.rpc.OntMdService;
 import org.mmisw.ontmd.gwt.client.rpc.OntologyInfo;
+import org.mmisw.ontmd.gwt.client.rpc.ReviewResult;
 import org.mmisw.ontmd.gwt.client.rpc.UploadResult;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrGroup;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.OWL;
 
 import edu.drexel.util.rdf.JenaUtil;
+import edu.drexel.util.rdf.OwlModel;
 
 
 
@@ -55,8 +69,26 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		baseInfo = new BaseInfo();
 		AttrGroup[] attrGroups = MdHelper.getAttrGroups();
 		baseInfo.setAttrGroups(attrGroups);
+		log.info("preparing base info ... DONE");
 	}
 	
+	
+	public LoginResult login(String userName, String userPassword) {
+		LoginResult loginResult = new LoginResult();
+		
+		log.info(": authenticating user " +userName+ " ...");
+		try {
+			Login login = new Login(userName, userPassword);
+			login.getSession(loginResult);
+		}
+		catch (Exception ex) {
+			loginResult.setError(ex.getMessage());
+		}
+
+		return loginResult;
+	}
+	
+
 	
 	public OntologyInfo getOntologyInfo(String uploadResults) {
 		OntologyInfo ontologyInfo = new OntologyInfo();
@@ -124,43 +156,155 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		}
 		
 		ontologyInfo.setValues(values);
-		ontologyInfo.setRdf("TODO(contents of RDF)"); // TODO put RDF also?
+		ontologyInfo.setFullPath(full_path);
 	
 		return ontologyInfo;
 	}
 	
 	
-	public LoginResult login(String userName, String userPassword) {
-		LoginResult loginResult = new LoginResult();
+	public ReviewResult review(OntologyInfo ontologyInfo, LoginResult loginResult) {
 		
-		log.info(": authenticating user " +userName+ " ...");
-		try {
-			Login login = new Login(userName, userPassword);
-			login.getSession(loginResult);
+		getBaseInfo();
+		
+		ReviewResult reviewResult = new ReviewResult();
+		reviewResult.setFullPath(ontologyInfo.getFullPath());
+		
+		
+		////////////////////////////////////////////
+		// check for errors
+		
+		if ( loginResult == null ) {
+			reviewResult.setError("No login information");
 		}
-		catch (Exception ex) {
-			loginResult.setError(ex.getMessage());
+		else if ( loginResult.getError() != null ) {
+			reviewResult.setError("Authentication has errors ");
+		}
+		
+		if ( reviewResult.getError() != null ) {
+			log.info(": error: " +reviewResult.getError());
+			return reviewResult;
+		}
+		
+		if ( ontologyInfo.getError() != null ) {
+			reviewResult.setError("there was an error while loading the ontology: " +ontologyInfo.getError());
+			log.info(": there was an error while loading the ontology: " +ontologyInfo.getError());
+			return reviewResult;
+		}
+		
+		////////////////////////////////////////////
+		// load pre-uploaded model
+
+		String full_path = ontologyInfo.getFullPath();
+		log.info("Loading model: " +full_path);
+		
+		File file = new File(full_path);
+		if ( ! file.canRead() ) {
+			log.info("Unexpected: cannot read: " +full_path);
+			reviewResult.setError("Unexpected: cannot read: " +full_path);
+			return reviewResult;
+		}
+		
+		String uriFile = file.toURI().toString();
+		OntModel model = JenaUtil.loadModel(uriFile, false);
+		
+		OwlModel newOntModel = new OwlModel(model);
+
+		///////////////////////////////////////////////////////
+		// Update attributes in model:
+		
+		log.info("Updating metadata attributes ...");
+
+		String finalUri = model.getNsPrefixURI("");
+		String ns_ = JenaUtil.getURIForNS(finalUri);
+		String base_ = JenaUtil.getURIForBase(finalUri);
+		
+		newOntModel.setNsPrefix("", ns_);
+		Map<String, String> preferredPrefixMap = MdHelper.getPreferredPrefixMap();
+		for ( String uri : preferredPrefixMap.keySet() ) {
+			String prefix = preferredPrefixMap.get(uri);
+			newOntModel.setNsPrefix(prefix, uri);
+		}
+		
+		Ontology ont = newOntModel.createOntology(base_);
+		log.info("New ontology created with namespace " + ns_ + " base " + base_);
+		
+		Map<String, String> values = ontologyInfo.getValues();
+		
+		Map<String, Property> uriPropMap = MdHelper.getUriPropMap();
+		for ( String uri : values.keySet() ) {
+			String value = values.get(uri).trim();
+			if ( value.length() > 0 ) {
+				Property prop = uriPropMap.get(uri);
+				if ( prop == null ) {
+					log.info("No property found for uri='" +uri+ "'");
+					continue;
+				}
+				log.info("assigning: " +uri+ " = " +value);
+				ont.addProperty(prop, value);
+			}
+		}
+		
+		// set Omv.uri from final
+		ont.addProperty(Omv.uri, base_);
+		
+		reviewResult.setUri(base_);
+		
+
+		// Get resulting model:
+		String rdf = JenaUtil.getOntModelAsString(newOntModel);
+		
+		// update the temporary file:
+		if ( ! file.canWrite() ) {
+			log.info("Unexpected: cannot write: " +full_path);
+			reviewResult.setError("Unexpected: cannot write: " +full_path);
+			return reviewResult;
+		}
+		
+		PrintWriter os;
+		try {
+			os = new PrintWriter(file);
+		}
+		catch (FileNotFoundException e) {
+			log.info("Unexpected: file not found: " +full_path);
+			reviewResult.setError("Unexpected: file not found: " +full_path);
+			return reviewResult;
+		}
+		StringReader is = new StringReader(rdf);
+		try {
+			IOUtils.copy(is, os);
+			os.flush();
+		}
+		catch (IOException e) {
+			log.info("Unexpected: IO error while writing to: " +full_path);
+			reviewResult.setError("Unexpected: IO error while writing to: " +full_path);
+			return reviewResult;
 		}
 
-		return loginResult;
+		// Ok, we're done:
+		reviewResult.setRdf(rdf);
+
+		return reviewResult;
 	}
 	
-	public UploadResult upload(OntologyInfo conversionResult, LoginResult loginResult) {
+	
+	/**
+	 * Does the final upload of the temporary file (which is assumed to be already updated)
+	 * to the registry.
+	 */
+	public UploadResult upload(ReviewResult reviewResult, LoginResult loginResult) {
+		
+		getBaseInfo();
 		
 		UploadResult uploadResult = new UploadResult();
 
-		String userId = null;
-		String sessionId = null;
-
+		////////////////////////////////////////////
+		// check for errors
+		
 		if ( loginResult == null ) {
 			uploadResult.setError("No login information");
 		}
 		else if ( loginResult.getError() != null ) {
 			uploadResult.setError("Authentication has errors ");
-		}
-		else {
-			userId = loginResult.getUserId();
-			sessionId = loginResult.getSessionId();
 		}
 		
 		if ( uploadResult.getError() != null ) {
@@ -168,12 +312,68 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			return uploadResult;
 		}
 		
-		log.info(": uploading ...");
+		if ( reviewResult.getError() != null ) {
+			uploadResult.setError("there was an error while reviewing the ontology: " +reviewResult.getError());
+			log.info(": there was an error while reviewing the ontology: " +reviewResult.getError());
+			return uploadResult;
+		}
+		
+		////////////////////////////////////////////
+		// load the temporary file into a string
+
+		String full_path = reviewResult.getFullPath();
+		log.info("Reading in temporary file: " +full_path);
+		
+		File file = new File(full_path);
+		if ( ! file.canRead() ) {
+			log.info("Unexpected: cannot read: " +full_path);
+			uploadResult.setError("Unexpected: cannot read: " +full_path);
+			return uploadResult;
+		}
+		
+		// Get resulting model:
+		StringWriter sw = new StringWriter();
+		PrintWriter os = new PrintWriter(sw);
+		BufferedReader is;
 		try {
-			String uri = conversionResult.getFinalUri();
+			is = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+		}
+		catch (FileNotFoundException e) {
+			log.info("Unexpected: file not found: " +full_path);
+			uploadResult.setError("Unexpected: file not found: " +full_path);
+			return uploadResult;
+		}
+		try {
+			IOUtils.copy(is, os);
+			os.flush();
+		}
+		catch (IOException e) {
+			log.info("Unexpected: IO error while reading from: " +full_path);
+			reviewResult.setError("Unexpected: IO error while reading from: " +full_path);
+			return uploadResult;
+		}
+		
+		// ok, we have our ontology:
+		String rdf = sw.toString();
+		
+		
+		//////////////////////////////////////////////////////////////////////////
+		// finally, do actual upload to MMI registry
+
+		// Get final URI of resulting model
+		// FIXME this uses the same original URI
+		String uri = reviewResult.getUri();
+		
+		log.info(": uploading ...");
+		String userId = loginResult.getUserId();
+		String sessionId = loginResult.getSessionId();
+		assert userId != null;
+		assert sessionId != null;
+		
+		try {
+			
 			String fileName;
 			fileName = new URL(uri).getPath();
-			String rdf = conversionResult.getRdf();
 			
 			// TODO: use some of the metadata in values map to set some of the aquaportal attributes
 			OntologyUploader createOnt = new OntologyUploader(uri, fileName, rdf, userId, sessionId);

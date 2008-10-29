@@ -22,13 +22,17 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class MetadataPanel extends VerticalPanel {
 
-
+	private MainPanel mainPanel;
 	private CellPanel container = new VerticalPanel();
 	private TabPanel tabPanel = new TabPanel();
 	
+	private boolean enabled = true;
+	
 
-	MetadataPanel() {
+	MetadataPanel(MainPanel mainPanel) {
 		super();
+		this.mainPanel = mainPanel;
+		
 //		setBorderWidth(3);
 		setWidth("850");
 		setSize("850", "500");
@@ -57,11 +61,12 @@ public class MetadataPanel extends VerticalPanel {
 	    container.add(flexPanel); // tabPanel);
 	    
 		for ( AttrGroup attrGroup: Main.baseInfo.getAttrGroups() ) {
-			CellPanel groupPanel = new MetadataGroupPanel(attrGroup);
+			CellPanel groupPanel = new MetadataGroupPanel(mainPanel, attrGroup);
 			tabPanel.add(groupPanel, attrGroup.getName());
 		}
 		
 	    tabPanel.selectTab(0);
+	    enable(false);
 	}
 	
 	
@@ -104,6 +109,23 @@ public class MetadataPanel extends VerticalPanel {
 		}
 	}
 	
+	/** Delegates to the metadata group panels and
+	 * updates the internal 'enabled' flag.
+	 */
+	void enable(boolean enabled) {
+		for ( int i = 0, c = tabPanel.getWidgetCount(); i < c; i++ ) {
+			Widget w = tabPanel.getWidget(i);
+			if ( w instanceof MetadataGroupPanel ) {
+				((MetadataGroupPanel) w).enable(enabled);
+			}
+		}
+		this.enabled = enabled;
+	}
+	
+	boolean isEnabled() {
+		return enabled;
+	}
+
 	void reset(boolean confirm) {
 		for ( int i = 0, c = tabPanel.getWidgetCount(); i < c; i++ ) {
 			Widget w = tabPanel.getWidget(i);
@@ -114,11 +136,12 @@ public class MetadataPanel extends VerticalPanel {
 	}
 
 
-	public void setOntologyInfo(OntologyInfo ontologyInfo) {
+	void setOntologyInfo(OntologyInfo ontologyInfo, boolean confirm) {
+		reset(false);
 		for ( int i = 0, c = tabPanel.getWidgetCount(); i < c; i++ ) {
 			Widget w = tabPanel.getWidget(i);
 			if ( w instanceof MetadataGroupPanel ) {
-				((MetadataGroupPanel) w).setOntologyInfo(ontologyInfo);
+				((MetadataGroupPanel) w).setOntologyInfo(ontologyInfo, confirm);
 			}
 		}
 	}

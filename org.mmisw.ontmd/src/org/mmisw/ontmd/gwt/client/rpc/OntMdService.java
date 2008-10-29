@@ -16,6 +16,8 @@ public interface OntMdService extends RemoteService {
 	
 	OntologyInfo getOntologyInfo(String uploadResults);
 	
-	UploadResult upload(OntologyInfo result, LoginResult loginResult);
+	ReviewResult review(OntologyInfo ontologyInfo, LoginResult loginResult);
+	
+	UploadResult upload(ReviewResult reviewResult, LoginResult loginResult);
 	
 }

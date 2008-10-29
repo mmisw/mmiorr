@@ -43,14 +43,33 @@ public class MetadataGroupPanel extends VerticalPanel {
 	}
 	
 	
+	private MainPanel mainPanel;
+	
 	private AttrGroup attrGroup;
 	
 	private Map<String, Elem> widgets = new HashMap<String, Elem>();
 	
-	private PushButton exampleButton;
-	private PushButton resetButton;
+	private PushButton exampleButton = new PushButton("Example", new ClickListener() {
+		public void onClick(Widget sender) {
+			example(true);
+		}
+	});
+
+	private PushButton resetButton = new PushButton("Reset", new ClickListener() {
+		public void onClick(Widget sender) {
+			OntologyInfo ontologyInfo = mainPanel.getOntologyInfo();
+			if ( ontologyInfo != null && ontologyInfo.getError() == null ) {
+				setOntologyInfo(ontologyInfo,true);
+			}
+			else {
+				reset(true);
+			}
+		}
+	});
+
 	
-	MetadataGroupPanel(AttrGroup attrGroup) {
+	MetadataGroupPanel(MainPanel mainPanel, AttrGroup attrGroup) {
+		this.mainPanel = mainPanel;
 		this.attrGroup = attrGroup;
 		
 		add(createForm());
@@ -143,19 +162,9 @@ public class MetadataGroupPanel extends VerticalPanel {
 	private CellPanel createButtons() {
 		CellPanel panel = new HorizontalPanel();
 		panel.setSpacing(2);
-		exampleButton = new PushButton("Example", new ClickListener() {
-			public void onClick(Widget sender) {
-				example(true);
-			}
-		});
 		exampleButton.setTitle("Fills in example values in this section");
 		panel.add(exampleButton);
 		
-		resetButton = new PushButton("Reset", new ClickListener() {
-			public void onClick(Widget sender) {
-				reset(true);
-			}
-		});
 		resetButton.setTitle("Resets the fields in this section");
 		panel.add(resetButton);
 		
@@ -183,9 +192,14 @@ public class MetadataGroupPanel extends VerticalPanel {
 		}
 	}
 
+	/**
+	 * Puts the non-empty values in the given map, if not null.
+	 * @param values null to just do the checking of required attributes.
+	 * @return null if OK; otherwise a message about the missing required attribute.
+	 */
 	String putValues(Map<String, String> values) {
 		for ( Elem elem : widgets.values() ) {
-			String value = null;
+			String value = "";
 			if ( elem.widget instanceof TextBoxBase ) {
 				value = ((TextBoxBase) elem.widget).getText();
 			}
@@ -194,16 +208,42 @@ public class MetadataGroupPanel extends VerticalPanel {
 				value = lb.getValue(lb.getSelectedIndex());
 			}
 			
-			if ( value == null || value.trim().length() == 0 ) {
+			value = value.trim();
+			
+			if ( value.trim().length() == 0 
+			||   value.startsWith("--")
+			) {
 				if ( elem.attr.isRequired() ) {
 					String error = "Please provide a value for the field with label: " +
 						elem.attr.getLabel();
 					return error;
 				}
 			}
-			values.put(elem.attr.getUri(), value.trim());
+			else {
+				String uri = elem.attr.getUri();
+				value = value.trim();
+				if ( values != null ) {
+					// do actual assignment
+					values.put(uri, value);
+				}
+				Main.log("assigned: " +uri+ " = " +value);
+			}
 		}
 		return null;
+	}
+
+	void enable(boolean enabled) {
+		for ( Elem elem : widgets.values() ) {
+			if ( elem.widget instanceof TextBoxBase ) {
+				((TextBoxBase) elem.widget).setEnabled(enabled);
+			}
+			else if ( elem.widget instanceof ListBox ) {
+				ListBox lb = (ListBox) elem.widget;
+				lb.setEnabled(enabled);
+			}
+		}
+		exampleButton.setEnabled(enabled);
+		resetButton.setEnabled(enabled);
 	}
 
 	void reset(boolean confirm) {
@@ -214,6 +254,11 @@ public class MetadataGroupPanel extends VerticalPanel {
 			String value = "";
 			if ( elem.widget instanceof TextBoxBase ) {
 				((TextBoxBase) elem.widget).setText(value);
+			}
+			else if ( elem.widget instanceof ListBox ) {
+				ListBox lb = (ListBox) elem.widget;
+				int idx = 0;
+				lb.setSelectedIndex(idx);
 			}
 		}
 		
@@ -242,7 +287,11 @@ public class MetadataGroupPanel extends VerticalPanel {
 		}
 	}
 
-	public void setOntologyInfo(OntologyInfo ontologyInfo) {
+	void setOntologyInfo(OntologyInfo ontologyInfo, boolean confirm) {
+		if ( confirm && ! Window.confirm("This action will replace the current values in this section") ) {
+			return;
+		}
+		reset(false);
 		Map<String, String> values = ontologyInfo.getValues();
 		
 		for ( Elem elem : widgets.values() ) {
