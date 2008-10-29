@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+
+	<servlet>
+		<servlet-name>ontmdService</servlet-name>
+		<servlet-class>org.mmisw.ontmd.gwt.server.OntMdServiceImpl</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>ontmdService</servlet-name>
+		<url-pattern>/ontmdService</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>upload</servlet-name>
+		<servlet-class>org.mmisw.ontmd.gwt.server.UploadServlet</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>upload</servlet-name>
+		<url-pattern>/upload</url-pattern>
+	</servlet-mapping>
+
+</web-app>

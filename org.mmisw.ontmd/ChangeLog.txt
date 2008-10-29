@@ -1,0 +1,7 @@
+org.mmisw.ontmd Ontology Metadata Manager
+Carlos Rueda - MMI / MBARI
+
+ChangeLog
+
+2008-10-28 (started; based on voc2rdf)
+
