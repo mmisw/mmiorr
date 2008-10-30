@@ -33,6 +33,10 @@ public class Db {
 
 	// obtained from the config in the init() method
 	private String aquaportalDatasource; 
+	
+	// obtained in the init() methos
+	private DataSource dataSource;
+	
 
 	/** 
 	 * Creates an instance of this helper. 
@@ -43,27 +47,28 @@ public class Db {
 		this.ontConfig = ontConfig;
 	}
 	
-	/** Basic initialization - required. */
+	/** 
+	 * Required initialization.
+	 */
 	void init() throws Exception {
 		log.debug("init called.");
 		aquaportalDatasource = ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_DATASOURCE); 
-	}
-	
-	public Connection getConnection() throws SQLException, ServletException {
-		Connection result = null;
+		
 		try {
 			Context initialContext = new InitialContext();
-			DataSource dataSource = (DataSource) initialContext.lookup(aquaportalDatasource);
-			if ( dataSource != null ) {
-				result = dataSource.getConnection();
-			}
-			else {
+			dataSource = (DataSource) initialContext.lookup(aquaportalDatasource);
+			if ( dataSource == null ) {
 				throw new ServletException("Failed to lookup datasource.");
 			}
 		}
 		catch ( NamingException ex ) {
 			throw new ServletException("Failed to lookup datasource.", ex);
 		}
+
+	}
+	
+	public Connection getConnection() throws SQLException, ServletException {
+		Connection result = dataSource.getConnection();
 		return result;
     }
 	

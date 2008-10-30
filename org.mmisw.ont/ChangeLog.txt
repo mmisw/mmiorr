@@ -3,6 +3,15 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2008-10-30
+	 - Issue 14: "mysql db connection timeout error"
+	   http://code.google.com/p/mmisw/issues/detail?id=14
+	   
+	   Db.java: move DataSource lookup to the init() method.
+	   Ref: http://www.ibm.com/developerworks/websphere/library/bestpractices/using_httpservlet_method.html
+	   TODO: still need to see if this helps solve the issue.
+	   
+	 
 2008-10-29
 	- show requested URI, remote host, and user-agent 
 	- return no-content to googlebot
