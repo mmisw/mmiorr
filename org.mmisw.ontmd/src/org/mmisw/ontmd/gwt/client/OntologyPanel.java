@@ -2,6 +2,7 @@ package org.mmisw.ontmd.gwt.client;
 
 import org.mmisw.ontmd.gwt.client.rpc.OntologyInfo;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CellPanel;
@@ -18,6 +19,7 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PushButton;
+import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -31,17 +33,21 @@ import com.google.gwt.user.client.ui.Widget;
 public class OntologyPanel extends VerticalPanel {
 
 	private static final String UPLOAD_ACTION = 
-		"/upload";
-//		"http://localhost:8080/ont/?_upload";
+		GWT.isScript() ? "/ontmd/upload" : "/upload";
 	
-	
+	private RadioButton rb0 = new RadioButton("grp", "Local file:");
+	private RadioButton rb1 = new RadioButton("grp", "Registry file:");
+
 	private FormPanel formPanel = new FormPanel();
-	private FileUpload upload = new FileUpload();
-	private TextBox uploadStatus = new TextBox();
+	private FileUpload upload;
+	private TextBox statusField = new TextBox();
 	
 	private final TextArea textArea = new TextArea();
 	
 	private PushButton loadButton;
+	
+	private String registryOntologyUri;
+	private PushButton selectButton;
 	
 	protected MainPanel mainPanel;
 
@@ -50,24 +56,30 @@ public class OntologyPanel extends VerticalPanel {
 		this.mainPanel = mainPanel;
 		setWidth("850");
 		
-		add(new HTML("Please specify your ontology file"));
-		add(createForm());
+		recreate();
+	}
+	
+	
+	void recreate() {
+		upload = new FileUpload();
+		upload.setTitle("The path to the ontology in your local system");
+		upload.setWidth("300");
+		upload.setName("ontologyFile");
+
+		statusField.setText("");
+		textArea.setText("");
+		clear();
+		add(new HTML("Please specify your ontology file."));
+		add(createWidget());
 	}
 
-	private Widget createForm() {
+	
+	
+	private Widget createWidget() {
 
 		FlexTable panel = new FlexTable();
 		
 		int row = 0;
-		
-		CellPanel buttons = createButtons();
-		panel.getFlexCellFormatter().setColSpan(row, 0, 2);
-		panel.setWidget(row, 0, buttons);
-		panel.getFlexCellFormatter().setAlignment(row, 0, 
-				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
-		);
-		row++;
-		
 		
 		panel.getFlexCellFormatter().setColSpan(row, 0, 2);
 		panel.setWidget(row, 0, prepareUploadPanel());
@@ -75,12 +87,18 @@ public class OntologyPanel extends VerticalPanel {
 				HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		row++;
+
 		
 		
-		uploadStatus.setWidth("700");
-		uploadStatus.setReadOnly(true);
-		panel.getFlexCellFormatter().setColSpan(row, 0, 2);
-		panel.setWidget(row, 0, uploadStatus);
+		CellPanel buttons = createButtons();
+		panel.setWidget(row, 0, buttons);
+		panel.getFlexCellFormatter().setAlignment(row, 0, 
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		
+		statusField.setWidth("600");
+		statusField.setReadOnly(true);
+		panel.setWidget(row, 1, statusField);
 		panel.getFlexCellFormatter().setAlignment(row, 1, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
@@ -89,7 +107,7 @@ public class OntologyPanel extends VerticalPanel {
 		
 		CellPanel resultPanel = new VerticalPanel();
 		textArea.setReadOnly(true);
-	    textArea.setSize("800px", "100px");
+	    textArea.setSize("700px", "300px");
 	    
 	    panel.getFlexCellFormatter().setColSpan(row, 0, 2);
 		panel.setWidget(row, 0, resultPanel);
@@ -98,9 +116,6 @@ public class OntologyPanel extends VerticalPanel {
 	    decPanel.setWidget(textArea);
 	    resultPanel.add(decPanel);
 	    row++;
-
-
-		
 
 
 		return panel;
@@ -113,24 +128,84 @@ public class OntologyPanel extends VerticalPanel {
 		formPanel.setEncoding(FormPanel.ENCODING_MULTIPART);
 		formPanel.setMethod(FormPanel.METHOD_POST);
 
-		VerticalPanel panel = new VerticalPanel();
+		
+		FlexTable panel = new FlexTable();
 		formPanel.setWidget(panel);
+		
+		int row = 0;
 
-		upload.setTitle("The path to the ontology in your local system");
-		upload.setWidth("400");
-		upload.setName("ontologyFile");
-		panel.add(upload);
+		selectButton = new PushButton("Select registered ontology", new ClickListener() {
+			public void onClick(Widget sender) {
+				Window.alert("Sorry, not yet implemented");
+				registryOntologyUri = null;  // TODO
+			}
+		});
+		selectButton.setTitle("Selects an ontology from the MMI Registry");
+
+		final HorizontalPanel uploadContainer = new HorizontalPanel();
+		uploadContainer.add(upload);
+		rb0.setChecked(true);
+//		upload.setEnabled(true);   // --> this method is not available
+		selectButton.setEnabled(false);
+		ClickListener clickListener = new ClickListener() {
+			private TextBox chooseLabel;
+			public void onClick(Widget sender) {
+				statusField.setText("");
+//				upload.setEnabled(rb0.isChecked());  // --> this method is not available 
+				uploadContainer.clear();
+				if ( rb0.isChecked() ) {
+					uploadContainer.add(upload);
+				}
+				else {
+					if ( chooseLabel == null ) {
+						chooseLabel = new TextBox();
+						chooseLabel.setText("");
+						chooseLabel.setEnabled(false);
+					}
+					uploadContainer.add(chooseLabel);
+				}
+				selectButton.setEnabled(rb1.isChecked());
+			}
+		};
+		rb0.addClickListener(clickListener);
+		rb1.addClickListener(clickListener);
+
+
+		panel.setWidget(row, 0, rb0);
+		panel.getFlexCellFormatter().setAlignment(row, 0, 
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		panel.setWidget(row, 1, uploadContainer);
+		panel.getFlexCellFormatter().setAlignment(row, 1, 
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+//		panel.setWidget(row, 2, new Label("To submit a new ontology"));
+		row++;
+
+
+		
+		panel.setWidget(row, 0, rb1);
+		panel.getFlexCellFormatter().setAlignment(row, 0, 
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		panel.setWidget(row, 1, selectButton);
+		panel.getFlexCellFormatter().setAlignment(row, 1, 
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+//		panel.setWidget(row, 2, new Label("To prepare a new version of an existing ontology"));
+		row++;
+
 
 		
 		formPanel.addFormHandler(new FormHandler() {
 
 			public void onSubmit(FormSubmitEvent event) {
-				uploadStatus.setText("Loading ...");
+				statusField.setText("Loading ...");
 				Main.log("onSubmit.");
 			}
 
 			public void onSubmitComplete(FormSubmitCompleteEvent event) {
-				uploadStatus.setText("submit complete");
+				statusField.setText("Examining ontology ...");
 				String results = event.getResults();
 				Main.log("onSubmitComplete: " +results);
 				if ( results != null ) {
@@ -148,6 +223,7 @@ public class OntologyPanel extends VerticalPanel {
 	private void getOntologyInfo(String uploadResults) {
 		AsyncCallback<OntologyInfo> callback = new AsyncCallback<OntologyInfo>() {
 			public void onFailure(Throwable thr) {
+				statusField.setText("Error loading");
 				String error = thr.getClass().getName()+ ": " +thr.getMessage();
 				while ( (thr = thr.getCause()) != null ) {
 					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
@@ -156,7 +232,12 @@ public class OntologyPanel extends VerticalPanel {
 			}
 
 			public void onSuccess(OntologyInfo ontologyInfo) {
+				statusField.setText("Ontology loaded. Original base URI: " +ontologyInfo.getUri());
 				mainPanel.setOntologyInfo(ontologyInfo, false);
+				String rdf = ontologyInfo.getRdf();
+				if ( rdf != null ) {
+					textArea.setText(rdf);
+				}
 			}
 		};
 
@@ -171,11 +252,16 @@ public class OntologyPanel extends VerticalPanel {
 		loadButton = new PushButton("Load ontology", new ClickListener() {
 			public void onClick(Widget sender) {
 				String filename = upload.getFilename();
-				if ( filename != null && filename.length() > 0 ) {
-					formPanel.submit();
+				if ( rb0.isChecked() ) {
+					if ( filename != null && filename.length() > 0 ) {
+						formPanel.submit();
+					}
+					else {
+						statusField.setText("Please, select the local ontology file");
+					}
 				}
 				else {
-					uploadStatus.setText("Please, specify the file");
+					loadRegistryOntology();
 				}
 			}
 		});
@@ -185,5 +271,14 @@ public class OntologyPanel extends VerticalPanel {
 		return panel;
 	}
 	
+
+	private void loadRegistryOntology() {
+		if ( registryOntologyUri == null ) {
+			statusField.setText("Please, select the registry ontology");
+			return;
+		}
+		// TODO: load selected remote ontology
+		// ...
+	}
 
 }

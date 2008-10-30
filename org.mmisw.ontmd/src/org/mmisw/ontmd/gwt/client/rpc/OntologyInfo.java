@@ -13,6 +13,9 @@ public class OntologyInfo implements IsSerializable {
 	private String error = null;
 	private String fullPath;
 	private Map<String,String> values;
+
+	private String uri;
+	private String rdf;
 	
 	public Map<String, String> getValues() {
 		return values;
@@ -23,18 +26,17 @@ public class OntologyInfo implements IsSerializable {
 		this.values = values;
 	}
 
-	private String finalUri;
 	
 	public OntologyInfo () {
 	}
 	
 	
-	public void setFinalUri(String finalNamespace) {
-		this.finalUri = finalNamespace;
+	public void setUri(String uri) {
+		this.uri = uri;
 	}
 	
-	public String getFinalUri() {
-		return finalUri;
+	public String getUri() {
+		return uri;
 	}
 
 	public String getFullPath() {
@@ -52,5 +54,15 @@ public class OntologyInfo implements IsSerializable {
 	public void setFullPath(String fullPath) {
 		this.fullPath = fullPath;
 	}
+
+
+	public String getRdf() {
+		return rdf;
+	}
+
+	public void setRdf(String rdf) {
+		this.rdf = rdf;
+	}
+
 
 }

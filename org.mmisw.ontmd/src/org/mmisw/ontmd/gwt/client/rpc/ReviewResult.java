@@ -13,8 +13,19 @@ public class ReviewResult implements IsSerializable {
 	private String uri = null;
 	private String fullPath;
 	private String rdf = null;
+	
+	private OntologyInfo ontologyInfo;
 
 	public ReviewResult() {
+	}
+
+	
+	public OntologyInfo getOntologyInfo() {
+		return ontologyInfo;
+	}
+
+	public void setOntologyInfo(OntologyInfo ontologyInfo) {
+		this.ontologyInfo = ontologyInfo;
 	}
 
 	public String getError() {

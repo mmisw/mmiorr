@@ -11,7 +11,6 @@ import org.mmisw.ontmd.gwt.client.rpc.UploadResult;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratorPanel;
@@ -70,8 +69,6 @@ public class MainPanel extends VerticalPanel {
 	
 	private ReviewResult reviewResult;
 	
-	private boolean enabled;
-	
 	
 	
 	OntologyInfo getOntologyInfo() {
@@ -82,24 +79,24 @@ public class MainPanel extends VerticalPanel {
 	MainPanel(final Map<String, String> params) {
 		super();
 		
-		add(Main.images.mmior().createImage());
-		
-//		container.setSize("800px", "450px");
-		DecoratorPanel decPanel = new DecoratorPanel();
-	    decPanel.setWidget(container);
-	    add(decPanel);
-
 	    if ( params.get("sessionId") != null && params.get("userId") != null ) {
 	    	loginResult = new LoginResult();
 	    	loginResult.setSessionId(params.get("sessionId"));
 	    	loginResult.setUserId(params.get("userId"));
+	    	String userName = params.get("userName");
+	    	if ( userName == null ) {
+	    		userName = "?";
+	    	}
+	    	loginResult.setUserName(userName);
 	    	
 	    	container.add(prepareInterface());
 	    }
 	    else if ( ! GWT.isScript() ) {
+	    	Main.log("NOTE: Using an ad hoc session under hosted environment.");
 	    	loginResult = new LoginResult();
 	    	loginResult.setSessionId("22222222222222222");
 	    	loginResult.setUserId("1002");
+	    	loginResult.setUserName("carueda");
 	    	
 	    	container.add(prepareInterface());
 	    }
@@ -107,6 +104,15 @@ public class MainPanel extends VerticalPanel {
 	    	container.add(userInfoPanel);
 	    }
 	    
+	    if ( ! "n".equalsIgnoreCase(params.get("_logo")) ) {
+	    	add(Main.images.mmior().createImage());
+	    }
+	    
+//		container.setSize("800px", "450px");
+		DecoratorPanel decPanel = new DecoratorPanel();
+	    decPanel.setWidget(container);
+	    add(decPanel);
+
 	    enable(false);
 	}
 	
@@ -121,19 +127,21 @@ public class MainPanel extends VerticalPanel {
 	
 	private FlexTable prepareInterface() {
 		FlexTable flexPanel = new FlexTable();
-//		flexPanel.setWidth("800px");
+		flexPanel.setWidth("800px");
 		
 		int row = 0;
-		
+
 		CellPanel buttons = createButtons();
-		flexPanel.getFlexCellFormatter().setColSpan(0, 0, 2);
+		flexPanel.getFlexCellFormatter().setColSpan(row, 0, 2);
 		flexPanel.setWidget(row, 0, buttons);
 		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		row++;
-	    /////////
-	    
+
+		
+
+		flexPanel.getFlexCellFormatter().setColSpan(row, 0, 2);
 		flexPanel.setWidget(row, 0, tabPanel);
 	    
 	    
@@ -153,7 +161,14 @@ public class MainPanel extends VerticalPanel {
 		CellPanel panel = new HorizontalPanel();
 		panel.setSpacing(2);
 		
-		reviewButton.setTitle("Updates the contents of the ontology for review");
+		String userName = loginResult.getUserName();
+		if ( userName == null ) {
+			userName = "?";
+		}
+		panel.add(new Label(userName));
+
+		reviewButton.setTitle("Checks the metadata associated with the ontology " +
+				"and prepares for its subsequent upload to the MMI Registry");
 		panel.add(reviewButton);
 		
 		uploadButton.setTitle("Uploads the new version of the ontology");
@@ -230,7 +245,7 @@ public class MainPanel extends VerticalPanel {
 		};
 
 		Main.log("Reviewing ...");
-		reenableButton(reviewButton, "Reviewing...", false);
+		reenableButton(reviewButton, "Review", false);
 		Main.ontmdService.review(ontologyInfo, loginResult, callback);
 	}
 
@@ -245,7 +260,7 @@ public class MainPanel extends VerticalPanel {
 			vp.add(new Label("Ontology URI: " +reviewResult.getUri()));
 			vp.add(new Label("Contents:"));
 			
-			metadataPanel.setOntologyInfo(ontologyInfo, false);
+			metadataPanel.setOntologyInfo(ontologyInfo, reviewResult, false);
 			
 			sb.append(reviewResult.getRdf());
 		}
@@ -321,18 +336,20 @@ public class MainPanel extends VerticalPanel {
 		
 		AsyncCallback<UploadResult> callback = new AsyncCallback<UploadResult>() {
 			public void onFailure(Throwable thr) {
+				ontologyInfo = null;
 				reenableButton(uploadButton, "Upload", true);
 				container.clear();				
 				container.add(new HTML(thr.toString()));
 			}
 
 			public void onSuccess(UploadResult result) {
+				reenableButton(uploadButton, "Upload", true);
 				uploadCompleted(result);
 			}
 		};
 
 		Main.log("Uploading ...");
-		reenableButton(uploadButton, "Uploading...", false);
+		reenableButton(uploadButton, "Upload", false);
 		Main.ontmdService.upload(reviewResult, loginResult, callback);
 	}
 
@@ -345,16 +362,18 @@ public class MainPanel extends VerticalPanel {
 		VerticalPanel vp = new VerticalPanel();
 		
 		if ( error == null ) {
-			metadataPanel.setOntologyInfo(ontologyInfo, false);
+			metadataPanel.setOntologyInfo(ontologyInfo, null, false);
 
 			vp.add(new Label("Ontology URI: " +result.getUri()));
-			vp.add(new Label("Response form Registry back-end:"));
+			vp.add(new Label("Response from Registry back-end:"));
 
 			sb.append(result.getInfo());
 			
 			// and, disable all editing fields/buttons:
 			// (user will have to start from the "load" step)
 			enable(false);
+			ontologyInfo = null;
+			reviewResult = null;
 		}
 		else {
 			sb.append(error);
@@ -381,8 +400,6 @@ public class MainPanel extends VerticalPanel {
 		uploadButton.setEnabled(enabled);
 		resetAllButton.setEnabled(enabled);
 		metadataPanel.enable(enabled);
-		
-		this.enabled = enabled;
 	}
 
 	void setOntologyInfo(OntologyInfo ontologyInfo, boolean confirm) {
@@ -397,7 +414,7 @@ public class MainPanel extends VerticalPanel {
 		else {
 			this.ontologyInfo = ontologyInfo;
 			enable(true);
-			metadataPanel.setOntologyInfo(ontologyInfo, false);
+			metadataPanel.setOntologyInfo(ontologyInfo, reviewResult, false);
 		}
 	}
 

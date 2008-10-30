@@ -113,11 +113,13 @@ class Login {
 			return;
 		}
 		
-		// get user id and sessionId
+		// get sssionId, userId, and username
 		
 		Pattern pat = Pattern.compile(
 				".*<sessionId>([^<]+)</sessionId>" +
 				".*<id>([^>]+)</id>" +
+				".*" +
+				".*<username>([^>]+)</username>" +
 				".*"
 		);
 		
@@ -125,6 +127,7 @@ class Login {
 		if ( matcher.find() ) {
 			loginResult.setSessionId(matcher.group(1));
 			loginResult.setUserId(matcher.group(2));
+			loginResult.setUserName(matcher.group(3));
 		}
 		else {
 			loginResult.setError("Could not parse response from registry server Please try again later.");

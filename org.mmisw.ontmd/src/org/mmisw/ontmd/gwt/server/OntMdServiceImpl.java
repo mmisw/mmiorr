@@ -10,13 +10,17 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.mmisw.ont.vocabulary.Omv;
+import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.ont.vocabulary.util.MdHelper;
 import org.mmisw.ontmd.gwt.client.rpc.BaseInfo;
 import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
@@ -126,12 +130,16 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 
 		
 		File file = new File(full_path);
-		if ( ! file.canRead() ) {
+		
+		try {
+			ontologyInfo.setRdf(readRdf(file));
+		}
+		catch (IOException e) {
 			log.info("Unexpected: cannot read: " +full_path);
 			ontologyInfo.setError("Unexpected: cannot read: " +full_path);
 			return ontologyInfo;
 		}
-		
+
 		String uriFile = file.toURI().toString();
 		log.info("Loading model: " +uriFile);
 		Model model = JenaUtil.loadModel(uriFile, false);
@@ -157,18 +165,55 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		
 		ontologyInfo.setValues(values);
 		ontologyInfo.setFullPath(full_path);
+		
+		// associate the original base URI:
+		String uri = model.getNsPrefixURI("");
+		if ( uri != null ) {
+			String base_ = JenaUtil.getURIForBase(uri);
+			ontologyInfo.setUri(base_);
+		}
 	
 		return ontologyInfo;
 	}
 	
-	
+	/**
+	 * Reads a file.
+	 * @param file the file to read in
+	 * @return the contents of the text file.
+	 * @throws IOException 
+	 */
+	private String readRdf(File file) throws IOException {
+		BufferedReader is = null;
+		try {
+			is = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+			StringWriter sw = new StringWriter();
+			PrintWriter os = new PrintWriter(sw);
+			IOUtils.copy(is, os);
+			os.flush();
+			String rdf = sw.toString();
+			return rdf;
+		}
+		finally {
+			if ( is != null ) {
+				try {
+					is.close();
+				}
+				catch(IOException ignore) {
+				}
+			}
+		}
+	}
+
 	public ReviewResult review(OntologyInfo ontologyInfo, LoginResult loginResult) {
 		
 		getBaseInfo();
 		
 		ReviewResult reviewResult = new ReviewResult();
 		reviewResult.setFullPath(ontologyInfo.getFullPath());
+		reviewResult.setOntologyInfo(ontologyInfo);
 		
+		
+		Map<String, String> values = ontologyInfo.getValues();
 		
 		////////////////////////////////////////////
 		// check for errors
@@ -191,6 +236,21 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			return reviewResult;
 		}
 		
+		String orgAbbreviation = values.get(OmvMmi.origMaintainerCode.getURI());
+		String primaryClass = values.get(Omv.acronym.getURI());
+
+		if ( orgAbbreviation == null ) {
+			log.info("missing origMaintainerCode");
+			reviewResult.setError("missing origMaintainerCode");
+			return reviewResult;
+		}
+		if ( primaryClass == null ) {
+			log.info("missing acronym");
+			reviewResult.setError("missing acronym");
+			return reviewResult;
+		}
+
+		
 		////////////////////////////////////////////
 		// load pre-uploaded model
 
@@ -211,10 +271,27 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 
 		///////////////////////////////////////////////////////
 		// Update attributes in model:
-		
+
 		log.info("Updating metadata attributes ...");
 
-		String finalUri = model.getNsPrefixURI("");
+		
+		// ontology root:
+		final String namespaceRoot = "http://mmisw.org/ont";
+		
+		// version:
+		Date date = new Date(System.currentTimeMillis());
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss");
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+		final String version = sdf.format(date);
+		
+//		String finalUri = model.getNsPrefixURI("");
+		String finalUri = namespaceRoot + "/" +
+		                        orgAbbreviation + "/" +
+		                        version + "/" +
+		                        primaryClass;
+
+		
+		
 		String ns_ = JenaUtil.getURIForNS(finalUri);
 		String base_ = JenaUtil.getURIForBase(finalUri);
 		
@@ -228,7 +305,6 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		Ontology ont = newOntModel.createOntology(base_);
 		log.info("New ontology created with namespace " + ns_ + " base " + base_);
 		
-		Map<String, String> values = ontologyInfo.getValues();
 		
 		Map<String, Property> uriPropMap = MdHelper.getUriPropMap();
 		for ( String uri : values.keySet() ) {
@@ -246,6 +322,8 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		
 		// set Omv.uri from final
 		ont.addProperty(Omv.uri, base_);
+		ont.addProperty(Omv.version, version);
+
 		
 		reviewResult.setUri(base_);
 		
@@ -295,7 +373,13 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		
 		getBaseInfo();
 		
+		// the values from the ontologyInfo are used to fill in some of the
+		// fields required by the bioportal back-end
+		Map<String, String> values = reviewResult.getOntologyInfo().getValues();
+		
 		UploadResult uploadResult = new UploadResult();
+		uploadResult.setUri(reviewResult.getUri());
+		
 
 		////////////////////////////////////////////
 		// check for errors
@@ -332,20 +416,9 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		}
 		
 		// Get resulting model:
-		StringWriter sw = new StringWriter();
-		PrintWriter os = new PrintWriter(sw);
-		BufferedReader is;
+		String rdf;
 		try {
-			is = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-		}
-		catch (FileNotFoundException e) {
-			log.info("Unexpected: file not found: " +full_path);
-			uploadResult.setError("Unexpected: file not found: " +full_path);
-			return uploadResult;
-		}
-		try {
-			IOUtils.copy(is, os);
-			os.flush();
+			rdf = readRdf(file);
 		}
 		catch (IOException e) {
 			log.info("Unexpected: IO error while reading from: " +full_path);
@@ -354,7 +427,6 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		}
 		
 		// ok, we have our ontology:
-		String rdf = sw.toString();
 		
 		
 		//////////////////////////////////////////////////////////////////////////
@@ -375,8 +447,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			String fileName;
 			fileName = new URL(uri).getPath();
 			
-			// TODO: use some of the metadata in values map to set some of the aquaportal attributes
-			OntologyUploader createOnt = new OntologyUploader(uri, fileName, rdf, userId, sessionId);
+			OntologyUploader createOnt = new OntologyUploader(uri, fileName, rdf, userId, sessionId, values);
 			String res = createOnt.create();
 			
 			if ( res.startsWith("OK") ) {

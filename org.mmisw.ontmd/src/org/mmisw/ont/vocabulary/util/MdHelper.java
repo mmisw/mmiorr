@@ -108,7 +108,7 @@ public class MdHelper {
 				,
 			
 				createAttrDef(OmvMmi.origVocUri)
-					.setLabel("Link to original vocabulary")
+					.setLabel("Link to original ontology")
 					.setExample("http://marinemetadata.org/community/teams/athena/parameters.html")
 				,
 
@@ -163,7 +163,7 @@ public class MdHelper {
 				
 				createAttrDef(Omv.hasContributor)
 					.setLabel("Contributor(s)")
-					.setExample("Jane Collaborator, Joe Vocabulary Manager, Fido the Mascot")
+					.setExample("Jane Collaborator, Joe Ontology Manager, Fido the Mascot")
 				,
 				
 				createAttrDef(Omv.uri)
@@ -193,13 +193,13 @@ public class MdHelper {
 			new AttrDef[] {
 				
 				createAttrDef(OmvMmi.origVocManager)
-					.setLabel("Manager of source vocabulary")
+					.setLabel("Manager of source ontology")
 					.setExample("Athena Project")
 				,
 				
 				createAttrDef(OmvMmi.contact)
 					.setLabel("Contact/Responsible Party")
-					.setExample("Joe Vocabulary Manager")
+					.setExample("Joe Ontology Manager")
 				,
 				createAttrDef(OmvMmi.contactRole)
 					.setLabel("Contact role")
@@ -245,7 +245,7 @@ public class MdHelper {
 				
 				createAttrDef(OmvMmi.creditCitation)
 					.setLabel("Citation string")
-					.setExample("Vocabulary provided by Athena Project")
+					.setExample("Ontology provided by Athena Project")
 				,
 			}
 		),
@@ -253,7 +253,7 @@ public class MdHelper {
 			new AttrDef[] {
 				
 				createAttrDef(OmvMmi.origVocDocumentationUri)
-					.setLabel("URI of original vocabulary")
+					.setLabel("URI of original ontology")
 				,
 				
 				createAttrDef(OmvMmi.origVocDescriptiveName)

@@ -3,6 +3,7 @@ package org.mmisw.ontmd.gwt.client;
 import java.util.Map;
 
 import org.mmisw.ontmd.gwt.client.rpc.OntologyInfo;
+import org.mmisw.ontmd.gwt.client.rpc.ReviewResult;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrGroup;
 
 import com.google.gwt.user.client.ui.CellPanel;
@@ -11,7 +12,9 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -22,23 +25,41 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class MetadataPanel extends VerticalPanel {
 
-	private MainPanel mainPanel;
+//	private MainPanel mainPanel;
 	private CellPanel container = new VerticalPanel();
 	private TabPanel tabPanel = new TabPanel();
 	
 	private boolean enabled = true;
 	
+	private TextBox originalUri_tb = new TextBox();
+	private TextBox newUri_tb = new TextBox();
+	
 
 	MetadataPanel(MainPanel mainPanel) {
 		super();
-		this.mainPanel = mainPanel;
+//		this.mainPanel = mainPanel;
 		
 //		setBorderWidth(3);
 		setWidth("850");
 		setSize("850", "500");
 		
+		HorizontalPanel hp = new HorizontalPanel();
+		hp.setSpacing(4);
+		add(hp);
+		hp.add(new Label("Original URI:"));
+		hp.add(originalUri_tb);
+		originalUri_tb.setWidth("300");
+		originalUri_tb.setReadOnly(true);
+		
+//		hp = new HorizontalPanel();
+//		hp.setSpacing(4);
+//		add(hp);
+		hp.add(new Label("New URI:"));
+		hp.add(newUri_tb);
+		newUri_tb.setWidth("300");
+		newUri_tb.setReadOnly(true);
+		
 		add(new HTML(
-				"Use the tabs in this panel to associate metadata to your vocabulary.<br>" +
 				"Fields marked * are required. " +
 				"Use commas to separate values in multi-valued fields."));
 	    add(container);
@@ -127,6 +148,8 @@ public class MetadataPanel extends VerticalPanel {
 	}
 
 	void reset(boolean confirm) {
+		originalUri_tb.setText("");
+		newUri_tb.setText("");
 		for ( int i = 0, c = tabPanel.getWidgetCount(); i < c; i++ ) {
 			Widget w = tabPanel.getWidget(i);
 			if ( w instanceof MetadataGroupPanel ) {
@@ -136,12 +159,23 @@ public class MetadataPanel extends VerticalPanel {
 	}
 
 
-	void setOntologyInfo(OntologyInfo ontologyInfo, boolean confirm) {
+	void setOntologyInfo(OntologyInfo ontologyInfo, ReviewResult reviewResult, boolean confirm) {
 		reset(false);
 		for ( int i = 0, c = tabPanel.getWidgetCount(); i < c; i++ ) {
 			Widget w = tabPanel.getWidget(i);
 			if ( w instanceof MetadataGroupPanel ) {
 				((MetadataGroupPanel) w).setOntologyInfo(ontologyInfo, confirm);
+			}
+		}
+		String origUri = ontologyInfo.getUri();
+		if ( origUri != null ) {
+			originalUri_tb.setText(origUri);
+		}
+		
+		if ( reviewResult != null ) {
+			String newUri = reviewResult.getUri();
+			if ( origUri != null ) {
+				newUri_tb.setText(newUri);
 			}
 		}
 	}
