@@ -50,7 +50,7 @@ public class UriResolver extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	
-	private static final String VERSION = "0.1.3 (20081023)";
+	private static final String VERSION = "0.1.4 (20081030)";
 	static final String TITLE = "MMI Ontology URI resolver. Version " +VERSION;
 
 	private final Log log = LogFactory.getLog(UriResolver.class);
@@ -373,6 +373,50 @@ public class UriResolver extends HttpServlet {
 		return false;   // not dispatched here.
 	}
 	
+	
+	
+	
+	/**
+	 * Helper method to get an ontology by trying the original ontology URI,
+	 * and the file extensions "", ".owl", and ".rdf" in sequence until successful
+	 * or returning null if none of these tries works.
+	 * 
+	 * @param mmiUri
+	 * @param foundUri If not null, the URI that was success is stored at foundUri[0]. 
+	 * 
+	 * @throws ServletException 
+	 */
+	private Ontology _getOntology(MmiUri mmiUri, String[] foundUri) throws ServletException {
+		// try with given URI:
+		String ontologyUri = mmiUri.getOntologyUri();
+		Ontology ontology = db.getOntology(ontologyUri);
+		if ( ontology != null ) {
+			if ( foundUri != null ) {
+				foundUri[0] = ontologyUri;
+			}
+			return ontology;
+		}
+		
+		// try with a different extension, including no extension:
+		String[] exts = { "", ".owl", ".rdf" };
+		String topicExt = mmiUri.getTopicExtension();
+		for (String ext : exts ) {
+			if ( ! ext.equalsIgnoreCase(topicExt) ) {
+				String withNewExt = mmiUri.getOntologyUriWithTopicExtension(ext);
+				ontology = db.getOntology(withNewExt);
+				if ( ontology != null ) {
+					if ( foundUri != null ) {
+						foundUri[0] = withNewExt;
+					}
+					return ontology;
+				}
+			}
+		}
+
+		return ontology;
+	}	
+	
+
 	/**
 	 * Helper method to dispatch a request with response in the givenontology format.
 	 * 
@@ -386,23 +430,10 @@ public class UriResolver extends HttpServlet {
 			log.debug("_resolveUriOntFormat: starting response.");
 		}
 		
-		String ontologyUri = mmiUri.getOntologyUri();
+		//String ontologyUri = mmiUri.getOntologyUri();
 	
 		// obtain info about the ontology:
-    	Ontology ontology = db.getOntology(ontologyUri);
-		
-    	if ( ontology == null ) {
-    		
-    		// if topic has extension different from ".owl", try with ".owl":
-    		if ( ! ".owl".equalsIgnoreCase(mmiUri.getTopicExtension()) ) {
-    			String withExt = mmiUri.getOntologyUriWithTopicExtension(".owl");
-    			ontology = db.getOntology(withExt);
-    			if ( ontology != null ) {
-    				ontologyUri = withExt;
-    			}
-    		}
-    	}
-    	
+    	Ontology ontology = _getOntology(mmiUri, null);
 		if ( ontology == null ) {
 			return false;   // not dispatched here.
 		}
@@ -504,19 +535,7 @@ public class UriResolver extends HttpServlet {
 		
 		final String fullRequestedUri = request.getRequestURL().toString();
 		
-		String ontologyUri = mmiUri.getOntologyUri();
-		Ontology ontology = db.getOntology(ontologyUri);
-		if ( ontology == null ) {
-    		// if topic has extension different from ".owl", try with ".owl":
-    		if ( ! ".owl".equalsIgnoreCase(mmiUri.getTopicExtension()) ) {
-    			String withExt = mmiUri.getOntologyUriWithTopicExtension(".owl");
-    			ontology = db.getOntology(withExt);
-    			if ( ontology != null ) {
-    				ontologyUri = withExt;
-    			}
-    		}
-		}
-		
+    	Ontology ontology = _getOntology(mmiUri, null);
 		if ( ontology == null ) {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND, 
 					request.getRequestURI()+ ": not found");
@@ -626,34 +645,21 @@ public class UriResolver extends HttpServlet {
 		out.println("</pre>");
 
 		// obtain info about the ontology:
-    	Ontology ontology = db.getOntology(ontologyUri);
+		String[] foundUri = { null };
+    	Ontology ontology = _getOntology(mmiUri, foundUri);
 		
     	out.println("<br/>Database result:<br/> ");
 		
-    	if ( ontology == null ) {
-    		out.println(ontologyUri+ ": <font color=\"red\">Not found.</font> <br/>");
-
-    		
-    		// if topic has extension different from ".owl", try with ".owl":
-    		if ( ! ".owl".equalsIgnoreCase(mmiUri.getTopicExtension()) ) {
-    			out.println("Trying with .owl extension... <br/>");
-    			String withExt = mmiUri.getOntologyUriWithTopicExtension(".owl");
-    			ontology = db.getOntology(withExt);
-    			if ( ontology != null ) {
-    				out.println(withExt+ ": <font color=\"green\">Found.</font> <br/>");
-    				ontologyUri = withExt;
-    			}
-    			else {
-    				out.println(withExt+ ": <font color=\"red\">Not found.</font> <br/>");
-    			}
-    		}
+    	if ( ontology != null ) {
+			out.println(foundUri[0]+ ": <font color=\"green\">Found.</font> <br/>");
     	}
-    	
-		if ( ontology == null ) {
-			out.println("</body>");
-			out.println("</html>");
-			return;
-		}
+    	else {
+    		out.println(ontologyUri+ ": <font color=\"red\">Not found.</font> <br/>");
+    		out.println("</body>");
+    		out.println("</html>");
+    		return;
+    	}
+
 		
 		// prepare info about the path to the file on disk:
 		String full_path = ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY) 

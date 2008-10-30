@@ -220,7 +220,7 @@ public class MmiUri {
 	}
 
 	/** 
-	 * Gets an Ontology URI with the given topic extension.
+	 * Gets an Ontology URI with the given topic extension, which can be empty.
 	 */
 	public String getOntologyUriWithTopicExtension(String topicExt) {
 		String topicNoExt = topic;

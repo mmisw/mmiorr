@@ -102,5 +102,21 @@ public class MmiUriTest extends TestCase {
         assertEquals("http://mmisw.org/ont/mmi/20081021/someVocab.n3", mmiUri.getOntologyUriWithTopicExtension(".n3"));
     }
 
+    public void testChangeExt1() throws URISyntaxException {
+    	String fullRequestedUri = "http://mmisw.org/ont/a/0/v/t";
+    	String requestedUri = "/ont/a/0/v/t";
+    	MmiUri mmiUri = new MmiUri(fullRequestedUri, requestedUri, contextPath);
+    
+    	assertEquals("", mmiUri.getTopicExtension());
+    	assertEquals("http://mmisw.org/ont/a/0/v.owl", mmiUri.getOntologyUriWithTopicExtension(".owl"));
+    }
+    public void testChangeExt2() throws URISyntaxException {
+    	String fullRequestedUri = "http://mmisw.org/ont/a/0/v.owl/t";
+    	String requestedUri = "/ont/a/0/v.owl/t";
+    	MmiUri mmiUri = new MmiUri(fullRequestedUri, requestedUri, contextPath);
+    
+    	assertEquals(".owl", mmiUri.getTopicExtension());
+    	assertEquals("http://mmisw.org/ont/a/0/v", mmiUri.getOntologyUriWithTopicExtension(""));
+    }
 
 }

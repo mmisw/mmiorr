@@ -13,6 +13,9 @@ ChangeLog
 	   
 	   Also, closing all connections after they are used.
 	   
+	 - Not resolving request with extension (eg., .../topic.html) when the original URI
+	   in the db is with no extension (eg, .../topic). -- Fixed.
+	   
 	 
 2008-10-29
 	- show requested URI, remote host, and user-agent 
