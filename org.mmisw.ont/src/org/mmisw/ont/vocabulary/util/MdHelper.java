@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
 
@@ -145,6 +147,10 @@ public class MdHelper {
 		return attributes;	
 	}
 	
+	
+	
+	private final Log log = LogFactory.getLog(MdHelper.class);
+	
 	/**
 	 * attributes that can/should be associated
 	 */
@@ -190,11 +196,11 @@ public class MdHelper {
 		}
 		
 		if ( !hasValues ) {
-			System.out.println(this.getClass().getName()+ ": no metadata to update in model...");
+			log.debug(" no metadata to update in model...");
 			return;
 		}
 		
-		System.out.println(this.getClass().getName()+ ": updating metadata in model ...");
+		log.debug(" updating metadata in model ...");
 		OwlModel newOntModel = new OwlModel(ontModel);
 		Ontology ontolgy = newOntModel.createOntology(JenaUtil.getURIForBase(""));
 		
@@ -215,14 +221,16 @@ public class MdHelper {
 	 */
 	public void updateAttributesFromModel(Model ontModel) {
 
-		System.out.println(this.getClass().getName()+ ": updating attributes with model metadata ...");
+		log.debug(" updating attributes with model metadata ...");
 		
 		Resource ontRes = JenaUtil.getFirstIndividual(ontModel, OWL.Ontology);
 		
 		if ( ontRes == null ) {
+			log.debug("No OWL.Ontology individual found");
 			return;
 		}
 		
+		int assigned = 0;
 		for ( AttrDef attrDef : attrDefs ) {
 			Property dcProp = uriPropMap.get(attrDef.getUri());
 			String value = JenaUtil.getValue(ontRes, dcProp);
@@ -234,10 +242,11 @@ public class MdHelper {
 			AttributeValue attr = attributes.get(dcProp.getLocalName());
 			if ( attr != null ) {
 				attr.setValue(value);
+				assigned ++;
 			}
 			
 		}
-		System.out.println();
+		log.debug("attributes assigned: " +assigned);
 	}
 
 	
