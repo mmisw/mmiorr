@@ -1,5 +1,6 @@
 package org.mmisw.ontmd.gwt.server;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -32,6 +33,12 @@ public class UploadServlet extends HttpServlet {
 	private static class MyLog { void info(String m) { System.out.println("LOG: " +m); } }
 	private final MyLog log = new MyLog();
 //	private final Log log = LogFactory.getLog(UploadServlet.class);
+	
+	
+	// there the pre-loaded files are stored:
+	private static final String PRE_UPLOADS_DIR = "/Users/Shared/mmiregistry/preuploads/"; 
+	private static final File preUploadsDir = new File(PRE_UPLOADS_DIR);
+
 	
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -103,12 +110,11 @@ public class UploadServlet extends HttpServlet {
 		response.setContentType("text/plain");
 		
 		try {
-			String remoteAddr = request.getRemoteAddr();
-			int remotePort = request.getRemotePort();
-
+			String sessionId = request.getSession().getId();
+			File file = File.createTempFile("ontmd_" +sessionId+"_", ".tmp", preUploadsDir );
+			String filename = file.getAbsolutePath();
 			InputStream is = item.getInputStream();
-			String filename = "/Users/Shared/mmiregistry/preuploads/" + remoteAddr + "_" + remotePort;
-			PrintWriter os = new PrintWriter(filename);
+			PrintWriter os = new PrintWriter(file);
 			IOUtils.copy(is, os);
 			
 			os.flush();
