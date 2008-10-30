@@ -11,6 +11,10 @@ public interface OntMdImageBundle extends ImageBundle {
 	
 	public AbstractImagePrototype mmior();
 	
+	/** From: <a href="http://www.sanbaldo.com/wordpress/1/ajax_gif/
+	 *  >http://www.sanbaldo.com/wordpress/1/ajax_gif/</a>
+	 */
+	public AbstractImagePrototype mozilla_blu();
 
 	public AbstractImagePrototype search();
 	 
