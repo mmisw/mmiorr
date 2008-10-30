@@ -99,6 +99,22 @@ public class UriResolver extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
+		if ( log.isDebugEnabled() ) {
+			String fullRequestedUri = request.getRequestURL().toString();
+			List<String> uaList = Util.getHeader(request, "user-agent");
+			log.debug("___ doGet ___");
+			log.debug("     fullRequestedUri: " + fullRequestedUri);
+			log.debug("          Remote host: " +request.getRemoteHost());
+			log.debug("           user-agent: " +uaList);
+			for ( String ua: uaList ) {
+				if ( ua.matches(".*Googlebot.*") ) {
+					log.debug("returning NO_CONTENT to googlebot");
+					response.sendError(HttpServletResponse.SC_NO_CONTENT);
+					return;
+				}
+			}
+		}
+		
 		// first, see if there are any testing requests to dispatch 
 		
 		// show request info?
@@ -185,16 +201,6 @@ public class UriResolver extends HttpServlet {
 	throws ServletException, IOException {
 		
 		final String fullRequestedUri = request.getRequestURL().toString();
-		
-		if ( log.isDebugEnabled() ) {
-			List<String> uaList = Util.getHeader(request, "user-agent");
-			log.debug("___ _resolveUri ___ \n" +
-					 "     fullRequestedUri: " + fullRequestedUri+ "\n" +
-					 "          Remote host: " +request.getRemoteHost() + "\n" +
-					 "           user-agent: " +uaList
-			);
-		}
-		
 		
 		// dispatch metadata?
 		if ( Util.yes(request, "_md")  ) {
