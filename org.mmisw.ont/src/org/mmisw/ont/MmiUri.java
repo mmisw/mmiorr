@@ -108,9 +108,9 @@ public class MmiUri {
 		// check version, if given:
 		if ( version != null ) {
 			// TODO: check version against ISO format
-			// for now, simply checking it's a decimal number
+			// for now, simply checking it's a floaf number
 			try {
-				Long.parseLong(version); 
+				Float.parseFloat(version); 
 				// version OK.
 			}
 			catch (NumberFormatException ignore) {				
