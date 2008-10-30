@@ -14,6 +14,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratorPanel;
+import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -53,6 +54,10 @@ public class MainPanel extends VerticalPanel {
 
 	private PushButton uploadButton = new PushButton("Upload", new ClickListener() {
 		public void onClick(Widget sender) {
+			if ( reviewResult == null || reviewResult.getError() != null ) {
+				Window.alert("Please, do the review action first.");
+				return;
+			}
 			upload(true);
 		}
 	});
@@ -177,6 +182,10 @@ public class MainPanel extends VerticalPanel {
 		resetAllButton.setTitle("Resets the fields in all sections");
 		panel.add(resetAllButton);
 		
+//		// TODO gif is not animated, why?
+//		Image progImage = Main.images.mozilla_blu().createImage();
+//		panel.add(progImage);
+		
 		return panel;
 	}
 
@@ -231,6 +240,16 @@ public class MainPanel extends VerticalPanel {
 			values.put(uri, value);
 		}
 		
+		
+		
+		final MyDialog popup = new MyDialog(null);
+		popup.addTextArea(null).setText("please wait ...");
+		Main.log("Reviewing ...");
+		reenableButton(reviewButton, "Review", false);
+		popup.setText("Reviewing...");
+		popup.center();
+		popup.show();
+
 		AsyncCallback<ReviewResult> callback = new AsyncCallback<ReviewResult>() {
 			public void onFailure(Throwable thr) {
 				reenableButton(reviewButton, "Review", true);
@@ -240,16 +259,14 @@ public class MainPanel extends VerticalPanel {
 
 			public void onSuccess(ReviewResult result) {
 				reenableButton(reviewButton, "Review", true);
-				reviewCompleted(result);
+				reviewCompleted(popup, result);
 			}
 		};
 
-		Main.log("Reviewing ...");
-		reenableButton(reviewButton, "Review", false);
 		Main.ontmdService.review(ontologyInfo, loginResult, callback);
 	}
 
-	private void reviewCompleted(ReviewResult reviewResult) {
+	private void reviewCompleted(MyDialog popup , ReviewResult reviewResult) {
 		String error = reviewResult.getError();
 		
 		StringBuffer sb = new StringBuffer();
@@ -270,18 +287,13 @@ public class MainPanel extends VerticalPanel {
 		
 		String msg = sb.toString();
 		
-		TextArea ta = new TextArea();
-		ta.setSize("700", "320");
-		ta.setReadOnly(true);
-		ta.setText(msg );
-		vp.add(ta);
-		final MyDialog popup = new MyDialog(vp);
-		popup.setText(error == null ? "Updated ontology" : "Error");
 		
-		Main.log("Review result: " +msg);
-		
+		popup.getTextArea().setText(msg);
+		popup.getDockPanel().add(vp, DockPanel.NORTH);
+		popup.setText(error == null ? "Updated ontology contents" : "Error");
 		popup.center();
-		popup.show();
+
+		Main.log("Review result: " +msg);
 
 		this.reviewResult = reviewResult;
 	}
@@ -311,6 +323,12 @@ public class MainPanel extends VerticalPanel {
 			return;
 		}
 		
+		if ( reviewResult == null ) {
+			Window.alert("Please, do the review action first.");
+			return;
+		}
+
+
 		if ( loginResult == null ) {
 			Window.alert("Please, login");
 			return;
@@ -334,6 +352,15 @@ public class MainPanel extends VerticalPanel {
 			values.put(uri, value);
 		}
 		
+		final MyDialog popup = new MyDialog(null);
+		popup.addTextArea(null).setText("please wait ...");
+		Main.log("Uploading ...");
+		reenableButton(uploadButton, "Upload", false);
+		popup.setText("Uploading...");
+		popup.center();
+		popup.show();
+
+
 		AsyncCallback<UploadResult> callback = new AsyncCallback<UploadResult>() {
 			public void onFailure(Throwable thr) {
 				ontologyInfo = null;
@@ -344,17 +371,15 @@ public class MainPanel extends VerticalPanel {
 
 			public void onSuccess(UploadResult result) {
 				reenableButton(uploadButton, "Upload", true);
-				uploadCompleted(result);
+				uploadCompleted(popup, result);
 			}
 		};
 
-		Main.log("Uploading ...");
-		reenableButton(uploadButton, "Upload", false);
 		Main.ontmdService.upload(reviewResult, loginResult, callback);
 	}
 
 	
-	private void uploadCompleted(UploadResult result) {
+	private void uploadCompleted(MyDialog popup, UploadResult result) {
 		String error = result.getError();
 		
 		StringBuffer sb = new StringBuffer();
@@ -362,7 +387,7 @@ public class MainPanel extends VerticalPanel {
 		VerticalPanel vp = new VerticalPanel();
 		
 		if ( error == null ) {
-			metadataPanel.setOntologyInfo(ontologyInfo, null, false);
+			metadataPanel.setOntologyInfo(ontologyInfo, reviewResult, false);
 
 			vp.add(new Label("Ontology URI: " +result.getUri()));
 			vp.add(new Label("Response from Registry back-end:"));
@@ -380,19 +405,13 @@ public class MainPanel extends VerticalPanel {
 		}
 		
 		String msg = sb.toString();
-		
-		TextArea ta = new TextArea();
-		ta.setSize("600", "220");
-		ta.setReadOnly(true);
-		ta.setText(msg );
-		vp.add(ta);
-		final MyDialog popup = new MyDialog(vp);
+
+		popup.getTextArea().setText(msg);
+		popup.getDockPanel().add(vp, DockPanel.NORTH);
 		popup.setText(error == null ? "Upload completed sucessfully" : "Error");
-		
-		Main.log("Uploading result: " +msg);
-		
 		popup.center();
-		popup.show();
+
+		Main.log("Uploading result: " +msg);
 	}
 	
 	private void enable(boolean enabled) {

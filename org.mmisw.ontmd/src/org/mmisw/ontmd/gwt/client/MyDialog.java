@@ -6,8 +6,8 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PushButton;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -17,22 +17,47 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class MyDialog extends DialogBox {
 	
-	MyDialog(Panel contents) {
+	private DockPanel dockPanel = new DockPanel();
+	private CellPanel buttons = createButtons();
+	private HorizontalPanel hp = new HorizontalPanel();
+	
+	private TextArea ta;
+
+	
+	MyDialog(Widget contents) {
 		super(false, true);
 		setAnimationEnabled(true);
+		setWidget(dockPanel);
 		
-		DockPanel panel = new DockPanel();
-		setWidget(panel);
-
-		panel.add(contents, DockPanel.CENTER);
-		
-		CellPanel buttons = createButtons();
-		HorizontalPanel hp = new HorizontalPanel();
 		hp.setCellHorizontalAlignment(buttons, HasHorizontalAlignment.ALIGN_RIGHT);
 		hp.add(buttons);
-		panel.add(hp, DockPanel.SOUTH);
+
+		if ( contents != null ) {
+			dockPanel.add(contents, DockPanel.CENTER);
+		}
+		dockPanel.add(hp, DockPanel.SOUTH);
 	}
 	
+	DockPanel getDockPanel() {
+		return dockPanel;
+	}
+	
+	/** convenience method */
+	TextArea addTextArea(TextArea ta) {
+		if ( ta == null ) {
+			ta = new TextArea();
+		}
+		this.ta = ta;
+		ta.setSize("600", "220");
+		ta.setReadOnly(true);
+		dockPanel.add(ta, DockPanel.CENTER);
+		return ta;
+	}
+	
+	TextArea getTextArea() {
+		return ta;
+	}
+
 	
 	private CellPanel createButtons() {
 		CellPanel panel = new HorizontalPanel();
@@ -47,5 +72,5 @@ public class MyDialog extends DialogBox {
 
 		return panel;
 	}
-
 }
+
