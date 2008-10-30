@@ -66,19 +66,7 @@ public class HtmlDispatcher {
 		
 		final String fullRequestedUri = request.getRequestURL().toString();
 		
-		String ontologyUri = mmiUri.getOntologyUri();
-		Ontology ontology = db.getOntology(ontologyUri);
-		if ( ontology == null ) {
-    		// if topic has extension different from ".owl", try with ".owl":
-    		if ( ! ".owl".equalsIgnoreCase(mmiUri.getTopicExtension()) ) {
-    			String withExt = mmiUri.getOntologyUriWithTopicExtension(".owl");
-    			ontology = db.getOntology(withExt);
-    			if ( ontology != null ) {
-    				ontologyUri = withExt;
-    			}
-    		}
-		}
-		
+		Ontology ontology = db.getOntologyWithExts(mmiUri, null);
 		if ( ontology == null ) {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND, 
 					request.getRequestURI()+ ": not found");

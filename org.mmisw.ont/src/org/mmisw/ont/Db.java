@@ -75,6 +75,10 @@ public class Db {
 	
 	/**
 	 * Obtains the ontology by the given URI.
+	 * 
+	 * This uses the onotologyUri given. To try other file extensions,
+	 * use {@link #getOntologyWithExts(MmiUri, String[])}.
+	 * 
 	 * @param ontologyUri
 	 * @return
 	 * @throws ServletException
@@ -146,6 +150,49 @@ public class Db {
 		
 		return null;
 	}
+	
+	
+	/**
+	 * Gets an ontology by trying the original ontology URI,
+	 * and the file extensions "", ".owl", and ".rdf" in sequence until successful
+	 * or returning null if none of these tries works.
+	 * 
+	 * @param mmiUri
+	 * @param foundUri If not null, the URI that was success is stored at foundUri[0]. 
+	 * 
+	 * @throws ServletException 
+	 */
+	Ontology getOntologyWithExts(MmiUri mmiUri, String[] foundUri) throws ServletException {
+		// try with given URI:
+		String ontologyUri = mmiUri.getOntologyUri();
+		Ontology ontology = this.getOntology(ontologyUri);
+		if ( ontology != null ) {
+			if ( foundUri != null ) {
+				foundUri[0] = ontologyUri;
+			}
+			return ontology;
+		}
+		
+		// try with a different extension, including no extension:
+		String[] exts = { "", ".owl", ".rdf" };
+		String topicExt = mmiUri.getTopicExtension();
+		for (String ext : exts ) {
+			if ( ! ext.equalsIgnoreCase(topicExt) ) {
+				String withNewExt = mmiUri.getOntologyUriWithTopicExtension(ext);
+				ontology = this.getOntology(withNewExt);
+				if ( ontology != null ) {
+					if ( foundUri != null ) {
+						foundUri[0] = withNewExt;
+					}
+					return ontology;
+				}
+			}
+		}
+
+		return ontology;
+	}	
+	
+
 
 	
 	List<Ontology> getOntologies() throws ServletException {
