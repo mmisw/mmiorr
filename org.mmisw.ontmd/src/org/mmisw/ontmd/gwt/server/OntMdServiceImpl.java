@@ -45,7 +45,7 @@ import edu.drexel.util.rdf.OwlModel;
 
 
 /**
- * Implementation of Voc2RdfService. 
+ * Implementation of OntMdService. 
  * 
  * @author Carlos Rueda
  * @version $Id$
@@ -324,6 +324,10 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		ont.addProperty(Omv.uri, base_);
 		ont.addProperty(Omv.version, version);
 
+		// those internal attributes also updated in the values map:
+		values.put(Omv.uri.getURI(), base_);
+		values.put(Omv.version.getURI(), version);
+		
 		
 		reviewResult.setUri(base_);
 		
@@ -373,11 +377,17 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		
 		getBaseInfo();
 		
+		UploadResult uploadResult = new UploadResult();
+		
+		if ( reviewResult == null ) {
+			uploadResult.setError("Please, do the review action first.");
+			return uploadResult;
+		}
+
 		// the values from the ontologyInfo are used to fill in some of the
 		// fields required by the bioportal back-end
 		Map<String, String> values = reviewResult.getOntologyInfo().getValues();
 		
-		UploadResult uploadResult = new UploadResult();
 		uploadResult.setUri(reviewResult.getUri());
 		
 
