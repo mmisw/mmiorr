@@ -8,6 +8,7 @@ ChangeLog
 		basic steps implemented: load-edit-review-upload
 
 TODOS:
+	- load a registered ontology
 	- Assign DC from the Omv and OmvMmi props
 	
 2008-10-28 (started; based on voc2rdf)
