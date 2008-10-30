@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -183,6 +184,18 @@ public class UriResolver extends HttpServlet {
 	private boolean _resolveUri(HttpServletRequest request, HttpServletResponse response) 
 	throws ServletException, IOException {
 		
+		final String fullRequestedUri = request.getRequestURL().toString();
+		
+		if ( log.isDebugEnabled() ) {
+			List<String> uaList = Util.getHeader(request, "user-agent");
+			log.debug("___ _resolveUri ___ \n" +
+					 "     fullRequestedUri: " + fullRequestedUri+ "\n" +
+					 "          Remote host: " +request.getRemoteHost() + "\n" +
+					 "           user-agent: " +uaList
+			);
+		}
+		
+		
 		// dispatch metadata?
 		if ( Util.yes(request, "_md")  ) {
 			//
@@ -207,9 +220,6 @@ public class UriResolver extends HttpServlet {
 			_resolveUriDebug(request, response);
 			return true;
 		}
-		
-		final String fullRequestedUri = request.getRequestURL().toString();
-		
 		
 		// parse the given URI:
 		final String requestedUri = request.getRequestURI();
