@@ -871,8 +871,9 @@ public class UriResolver extends HttpServlet {
 
 	
 	private void _doListOntologies(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Connection _con = null;
 		try {
-			Connection _con = db.getConnection();
+			_con = db.getConnection();
 			Statement _stmt = _con.createStatement();
 			String table = "v_ncbo_ontology";
 			int limit = Integer.parseInt(Util.getParam(request, "limit", "500"));
@@ -930,6 +931,16 @@ public class UriResolver extends HttpServlet {
 		} 
 		catch (SQLException e) {
 			throw new ServletException(e);
+		}
+		finally {
+			if ( _con != null ) {
+				try {
+					_con.close();
+				}
+				catch (SQLException e) {
+					throw new ServletException(e);
+				}
+			}
 		}
 	}
 

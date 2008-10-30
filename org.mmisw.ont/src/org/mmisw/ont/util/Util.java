@@ -149,8 +149,9 @@ public class Util {
 	 * Developer option.
 	 */
 	public static void doDbQuery(HttpServletRequest request, HttpServletResponse response, Db db) throws ServletException, IOException {
+		Connection _con = null;
 		try {
-			Connection _con = db.getConnection();
+			_con = db.getConnection();
 			Statement _stmt = _con.createStatement();
 			String table = Util.getParam(request, "table", "ncbo_ontology");
 			int limit = Integer.parseInt(Util.getParam(request, "limit", "500"));
@@ -194,6 +195,16 @@ public class Util {
 		} 
 		catch (SQLException e) {
 			throw new ServletException(e);
+		}
+		finally {
+			if ( _con != null ) {
+				try {
+					_con.close();
+				}
+				catch (SQLException e) {
+					throw new ServletException(e);
+				}
+			}
 		}
 	}
 	

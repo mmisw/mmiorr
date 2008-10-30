@@ -78,10 +78,12 @@ public class Db {
 	 * @param ontologyUri
 	 * @return
 	 * @throws ServletException
+	 * @throws SQLException 
 	 */
 	Ontology getOntology(String ontologyUri) throws ServletException {
+		Connection _con = null;
 		try {
-			Connection _con = getConnection();
+			_con = getConnection();
 			Statement _stmt = _con.createStatement();
 
 			if ( true ) {
@@ -131,6 +133,16 @@ public class Db {
 		catch (SQLException e) {
 			throw new ServletException(e);
 		}
+		finally {
+			if ( _con != null ) {
+				try {
+					_con.close();
+				}
+				catch (SQLException e) {
+					throw new ServletException(e);
+				}
+			}
+		}
 		
 		return null;
 	}
@@ -138,8 +150,9 @@ public class Db {
 	
 	List<Ontology> getOntologies() throws ServletException {
 		List<Ontology> onts = new ArrayList<Ontology>();
+		Connection _con = null;
 		try {
-			Connection _con = getConnection();
+			_con = getConnection();
 			Statement _stmt = _con.createStatement();
 
 			// NOTE:
@@ -164,7 +177,17 @@ public class Db {
 		catch (SQLException e) {
 			throw new ServletException(e);
 		}
-		
+		finally {
+			if ( _con != null ) {
+				try {
+					_con.close();
+				}
+				catch (SQLException e) {
+					throw new ServletException(e);
+				}
+			}
+		}
+	
 		return onts;
 	}
 }

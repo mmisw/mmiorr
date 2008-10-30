@@ -11,6 +11,8 @@ ChangeLog
 	   Ref: http://www.ibm.com/developerworks/websphere/library/bestpractices/using_httpservlet_method.html
 	   TODO: still need to see if this helps solve the issue.
 	   
+	   Also, closing all connections after they are used.
+	   
 	 
 2008-10-29
 	- show requested URI, remote host, and user-agent 
