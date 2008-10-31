@@ -2,6 +2,7 @@ package org.mmisw.ont;
 
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 /**
  * Represents a decomposition of a given requested URI.
@@ -24,6 +25,29 @@ import java.util.Arrays;
  */
 public class MmiUri {
 
+	private static Pattern VERSION_PATTERN = 
+		Pattern.compile("^\\d{4}(\\d{2}(\\d{2})?)?(T\\d{2})?(\\d{2}(\\d{2})?)?$");
+	
+	
+	/**
+	 * Syntantically validates a string according a pattern that can be written as:
+	 *    <code> ^yyyy[mm[dd][Thh[mm[ss]]]$ </code>,
+	 * where each y, m, d, h, and s is a decimal digit.
+	 * 
+	 * <p>
+	 * Note that this checks for the general appearance of a version; 
+	 * TODO full checking that is a valid ISO date.   
+	 * 
+	 * @throws URISyntaxException if the string is invalid as version 
+	 */
+	static void checkVersion(String version) throws URISyntaxException {
+		boolean ok = VERSION_PATTERN.matcher(version).find();
+		if ( ! ok ) {				
+			throw new URISyntaxException(version, "Invalid version string: " +version);
+		}
+
+	}
+	
 	private final String authority;
 	private final String version;
 	private final String topic;
@@ -107,15 +131,7 @@ public class MmiUri {
 		
 		// check version, if given:
 		if ( version != null ) {
-			// TODO: check version against ISO format
-			// for now, simply checking it's a floaf number
-			try {
-				Float.parseFloat(version); 
-				// version OK.
-			}
-			catch (NumberFormatException ignore) {				
-				throw new URISyntaxException(fullRequestedUri, "Invalid version string: " +version);
-			}
+			checkVersion(version);
 		}
 		
 		// ontologyUri is everything but the term and without trailing slashes

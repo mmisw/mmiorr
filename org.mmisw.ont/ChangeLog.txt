@@ -16,6 +16,9 @@ ChangeLog
 	 - Not resolving request with extension (eg., .../topic.html) when the original URI
 	   in the db is with no extension (eg, .../topic). -- Fixed.
 	   
+	 - Now using pattern: ^yyyy[mm[dd][Thh[mm[ss]]]$ to validate a non-null version string
+	   in the ontology URI.
+	   
 	 
 2008-10-29
 	- show requested URI, remote host, and user-agent 

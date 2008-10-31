@@ -74,6 +74,14 @@ public class MmiUriTest extends TestCase {
     
     	assertEquals(null, mmiUri.getVersion());
     }
+    public void testVersions() throws URISyntaxException {
+    	MmiUri.checkVersion("2008");
+    	MmiUri.checkVersion("200810");
+    	MmiUri.checkVersion("20081030");
+    	MmiUri.checkVersion("20081030T21");
+    	MmiUri.checkVersion("20081030T2130");
+    	MmiUri.checkVersion("20081030T213059");
+    }
     public void testVersion1() throws URISyntaxException {
     	String fullRequestedUri = "http://mmisw.org/ont/mmi/20081021/someVocab/someTerm";
     	String requestedUri = "/ont/mmi/20081021/someVocab/someTerm";
@@ -103,20 +111,20 @@ public class MmiUriTest extends TestCase {
     }
 
     public void testChangeExt1() throws URISyntaxException {
-    	String fullRequestedUri = "http://mmisw.org/ont/a/0/v/t";
-    	String requestedUri = "/ont/a/0/v/t";
+    	String fullRequestedUri = "http://mmisw.org/ont/a/20081021/v/t";
+    	String requestedUri = "/ont/a/20081021/v/t";
     	MmiUri mmiUri = new MmiUri(fullRequestedUri, requestedUri, contextPath);
     
     	assertEquals("", mmiUri.getTopicExtension());
-    	assertEquals("http://mmisw.org/ont/a/0/v.owl", mmiUri.getOntologyUriWithTopicExtension(".owl"));
+    	assertEquals("http://mmisw.org/ont/a/20081021/v.owl", mmiUri.getOntologyUriWithTopicExtension(".owl"));
     }
     public void testChangeExt2() throws URISyntaxException {
-    	String fullRequestedUri = "http://mmisw.org/ont/a/0/v.owl/t";
-    	String requestedUri = "/ont/a/0/v.owl/t";
+    	String fullRequestedUri = "http://mmisw.org/ont/a/20081021/v.owl/t";
+    	String requestedUri = "/ont/a/20081021/v.owl/t";
     	MmiUri mmiUri = new MmiUri(fullRequestedUri, requestedUri, contextPath);
     
     	assertEquals(".owl", mmiUri.getTopicExtension());
-    	assertEquals("http://mmisw.org/ont/a/0/v", mmiUri.getOntologyUriWithTopicExtension(""));
+    	assertEquals("http://mmisw.org/ont/a/20081021/v", mmiUri.getOntologyUriWithTopicExtension(""));
     }
 
 }
