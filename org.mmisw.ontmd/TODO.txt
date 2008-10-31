@@ -1,0 +1,54 @@
+org.mmisw.ontmd Ontology Metadata Manager
+Carlos Rueda - MMI / MBARI
+
+
+* from Paul:
+- It's unclear how to submit a new version of an existing ontology. It didn't seem
+ to detect when I submitted the device ontology again (not sure how it would - URI I'm guessing). 
+
+- I can submit the same ontology twice and it doesn't detect or offer the opportunity to 
+create a new version. Will we eventually use a process as we discussed yesterday? 
+IE Step 1 => new or update, Step 2 => check metadata, Step 3 => check with backend for errors.
+
+- The Show view with the iframe is clocking in at 1.5MB per load. The front-end
+already runs about 500KB, and ontmd looks like it's ~1000KB. It's kind of slow
+for me on my connection from home. Takes ~15 secs to load the whole view.
+
+- Could the Review pop-up window have an upload button if the review passes?
+
+- Can't hit enter to login after typing username/password
+
+- It looks like the boxes are missing the outsides on Firefox.
+
+
+
+* from JG:
+- Eventually we'll want the main theme to be a selection from a number of
+vocabularies. Not sure if we'll want every term in each vocabulary though, or if
+we'll want the name to match the vocabulary's term. Probably "all of the above",
+knowing how these things work. For now, we just need to populate this from an
+easily edited table that has 'menu selection', 'term name', 'uri', and
+'description'. The third and fourth make up the tool tip for each selection. The
+URI goes into the URI field, and the menu selection and description go into the
+drop down). Or something along those lines.
+
+- Roll-over tips on fields are a little confusing; hot-links or icons will be better
+
+- default the timestamp component to just YYYYMMDD? otherwise too long (add the 
+other when YYYYMMDD isn't sufficient) version can be the longer name if you want
+
+- is the shortName in the URI always the same as the Topic?  this will be confusing, 
+many ontologies are named very differently than their nominal topic (say OntoSensor.owl,
+ for example)
+ 
+- What is relationship of: (a) Original source -> URI of original ontology (b)
+Original URI (upper left of metadata tab),, (c) General -> Link to original
+ontology, (d) the unnamed xmlns (e) the xml:base
+
+- The ontology in Ontology tab should be clearly identified as the original
+ontology. Then there should be a window (maybe under that one?) that shows the
+uploaded ontology. So the two can be inspected together.
+
+- We'll need an undo for that (Example, Reset)  someday. Not now.
+
+ 
