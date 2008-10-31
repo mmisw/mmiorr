@@ -3,6 +3,14 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2008-10-30
+	- UploadServlet: use File.createTempFile with sessionId; the previous scheme
+	  was buggy!
+	- Fixed: 15: preview operation not idempotent
+	- Also fixed: multiple owl:Ontology sections: now the esiting one is used
+	  to add/updated the metadata attributes.
+
+
 2008-10-29 
 	- submit new ontology starting from local file:
 		basic steps implemented: load-edit-review-upload

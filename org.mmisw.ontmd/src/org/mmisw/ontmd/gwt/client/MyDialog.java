@@ -48,7 +48,7 @@ public class MyDialog extends DialogBox {
 			ta = new TextArea();
 		}
 		this.ta = ta;
-		ta.setSize("600", "220");
+		ta.setSize("720", "450");
 		ta.setReadOnly(true);
 		dockPanel.add(ta, DockPanel.CENTER);
 		return ta;

@@ -35,9 +35,7 @@ public class UploadServlet extends HttpServlet {
 //	private final Log log = LogFactory.getLog(UploadServlet.class);
 	
 	
-	// there the pre-loaded files are stored:
-	private static final String PRE_UPLOADS_DIR = "/Users/Shared/mmiregistry/preuploads/"; 
-	private static final File preUploadsDir = new File(PRE_UPLOADS_DIR);
+	private static final File preUploadsDir = new File(Config.ONTMD_PRE_UPLOADS_DIR);
 
 	
 	/**

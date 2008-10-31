@@ -54,6 +54,9 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	private static final long serialVersionUID = 1L;
 
 	
+	private static final File previewDir = new File(Config.ONTMD_PREVIEW_DIR);
+
+	
 	private static class MyLog { void info(String m) { System.out.println("LOG: " +m); } }
 	private final MyLog log = new MyLog();
 //	private final Log log = LogFactory.getLog(OntMdServiceImpl.class);
@@ -151,15 +154,17 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		Map<String, Property> uriPropMap = MdHelper.getUriPropMap();
 		Map<String,String> values = new HashMap<String, String>();
 		
-		for ( AttrGroup attrGroup : baseInfo.getAttrGroups() ) {
-			for ( AttrDef attrDef : attrGroup.getAttrDefs() ) {
-				Property dcProp = uriPropMap.get(attrDef.getUri());
-				String value = JenaUtil.getValue(ontRes, dcProp);
-				if (value == null) {
-					continue;
+		if ( ontRes != null ) {
+			for ( AttrGroup attrGroup : baseInfo.getAttrGroups() ) {
+				for ( AttrDef attrDef : attrGroup.getAttrDefs() ) {
+					Property dcProp = uriPropMap.get(attrDef.getUri());
+					String value = JenaUtil.getValue(ontRes, dcProp);
+					if (value == null) {
+						continue;
+					}
+					log.info("Assigning: " +attrDef.getUri()+ " = " + value);
+					values.put(attrDef.getUri(), value);
 				}
-				log.info("Assigning: " +attrDef.getUri()+ " = " + value);
-				values.put(attrDef.getUri(), value);
 			}
 		}
 		
@@ -209,7 +214,6 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		getBaseInfo();
 		
 		ReviewResult reviewResult = new ReviewResult();
-		reviewResult.setFullPath(ontologyInfo.getFullPath());
 		reviewResult.setOntologyInfo(ontologyInfo);
 		
 		
@@ -267,7 +271,26 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		String uriFile = file.toURI().toString();
 		OntModel model = JenaUtil.loadModel(uriFile, false);
 		
-		OwlModel newOntModel = new OwlModel(model);
+		/////////////////////////////////////////////////////////////////
+		// Use the existing Owl.Ontology element in the file, if any.
+		//
+		Resource ontRes = JenaUtil.getFirstIndividual(model, OWL.Ontology);
+		
+		OwlModel newOntModel = null;    // only used if ontRes == null
+		Ontology ont = null;            // only used if ontRes == null
+		
+		
+		if ( ontRes == null ) {
+			newOntModel = new OwlModel(model);
+		}
+//		else {
+//			StmtIterator xx = ontRes.listProperties();
+//			while ( xx.hasNext() ) {
+//				Statement st = xx.nextStatement();
+//				log.info(st.getClass().getName()+ " : " +st.getSubject()+
+//						" :: " +st.getPredicate()+ " :: " +st.getObject());
+//			}			
+//		}
 
 		///////////////////////////////////////////////////////
 		// Update attributes in model:
@@ -280,7 +303,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		
 		// version:
 		Date date = new Date(System.currentTimeMillis());
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		final String version = sdf.format(date);
 		
@@ -295,16 +318,17 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		String ns_ = JenaUtil.getURIForNS(finalUri);
 		String base_ = JenaUtil.getURIForBase(finalUri);
 		
-		newOntModel.setNsPrefix("", ns_);
-		Map<String, String> preferredPrefixMap = MdHelper.getPreferredPrefixMap();
-		for ( String uri : preferredPrefixMap.keySet() ) {
-			String prefix = preferredPrefixMap.get(uri);
-			newOntModel.setNsPrefix(prefix, uri);
+		if ( ontRes == null ) {
+			newOntModel.setNsPrefix("", ns_);
+			Map<String, String> preferredPrefixMap = MdHelper.getPreferredPrefixMap();
+			for ( String uri : preferredPrefixMap.keySet() ) {
+				String prefix = preferredPrefixMap.get(uri);
+				newOntModel.setNsPrefix(prefix, uri);
+			}
+
+			ont = newOntModel.createOntology(base_);
+			log.info("New ontology created with namespace " + ns_ + " base " + base_);
 		}
-		
-		Ontology ont = newOntModel.createOntology(base_);
-		log.info("New ontology created with namespace " + ns_ + " base " + base_);
-		
 		
 		Map<String, Property> uriPropMap = MdHelper.getUriPropMap();
 		for ( String uri : values.keySet() ) {
@@ -316,13 +340,26 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 					continue;
 				}
 				log.info("assigning: " +uri+ " = " +value);
-				ont.addProperty(prop, value);
+				
+				if ( ontRes != null ) {
+					ontRes.addProperty(prop, value);
+				}
+				else {
+					ont.addProperty(prop, value);
+				}
 			}
 		}
 		
-		// set Omv.uri from final
-		ont.addProperty(Omv.uri, base_);
-		ont.addProperty(Omv.version, version);
+		// set some internal attributes (ie, internally computed)
+		
+		if ( ontRes != null ) {
+			ontRes.addProperty(Omv.uri, base_);
+			ontRes.addProperty(Omv.version, version);
+		}
+		else {
+			ont.addProperty(Omv.uri, base_);
+			ont.addProperty(Omv.version, version);
+		}
 
 		// those internal attributes also updated in the values map:
 		values.put(Omv.uri.getURI(), base_);
@@ -333,22 +370,20 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		
 
 		// Get resulting model:
-		String rdf = JenaUtil.getOntModelAsString(newOntModel);
+		String rdf = JenaUtil.getOntModelAsString(model) ;  // XXX newOntModel);
 		
-		// update the temporary file:
-		if ( ! file.canWrite() ) {
-			log.info("Unexpected: cannot write: " +full_path);
-			reviewResult.setError("Unexpected: cannot write: " +full_path);
-			return reviewResult;
-		}
+		// write new contents to a new file under previwDir:
 		
+		File reviewedFile = new File(previewDir, file.getName());
+		reviewResult.setFullPath(reviewedFile.getAbsolutePath());
+
 		PrintWriter os;
 		try {
-			os = new PrintWriter(file);
+			os = new PrintWriter(reviewedFile);
 		}
 		catch (FileNotFoundException e) {
-			log.info("Unexpected: file not found: " +full_path);
-			reviewResult.setError("Unexpected: file not found: " +full_path);
+			log.info("Unexpected: file not found: " +reviewedFile);
+			reviewResult.setError("Unexpected: file not found: " +reviewedFile);
 			return reviewResult;
 		}
 		StringReader is = new StringReader(rdf);
@@ -357,8 +392,8 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			os.flush();
 		}
 		catch (IOException e) {
-			log.info("Unexpected: IO error while writing to: " +full_path);
-			reviewResult.setError("Unexpected: IO error while writing to: " +full_path);
+			log.info("Unexpected: IO error while writing to: " +reviewedFile);
+			reviewResult.setError("Unexpected: IO error while writing to: " +reviewedFile);
 			return reviewResult;
 		}
 
@@ -370,7 +405,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	
 	
 	/**
-	 * Does the final upload of the temporary file (which is assumed to be already updated)
+	 * Does the final upload of the previewed file.
 	 * to the registry.
 	 */
 	public UploadResult upload(ReviewResult reviewResult, LoginResult loginResult) {
