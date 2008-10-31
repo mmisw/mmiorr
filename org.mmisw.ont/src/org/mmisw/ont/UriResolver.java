@@ -598,7 +598,8 @@ public class UriResolver extends HttpServlet {
 		String full_path = ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY) 
 			+ "/" +ontology.file_path + "/" + ontology.filename;
 		
-		out.println("OK: " +full_path);
+		// return just the full path
+		out.println(full_path);
 	}
 	
 
