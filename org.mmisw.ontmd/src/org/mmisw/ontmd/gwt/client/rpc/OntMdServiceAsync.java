@@ -14,7 +14,9 @@ public interface OntMdServiceAsync {
 	
 	void login(String userName, String userPassword, AsyncCallback<LoginResult> callback);
 	
-	void getOntologyInfo(String uploadResults, AsyncCallback<OntologyInfo> callback);
+	void getOntologyInfoFromRegistry(String ontologyUri, AsyncCallback<OntologyInfo> callback);
+	
+	void getOntologyInfoFromPreLoaded(String uploadResults, AsyncCallback<OntologyInfo> callback);
 	
 	void review(OntologyInfo ontologyInfo, LoginResult loginResult, AsyncCallback<ReviewResult> callback);
 	

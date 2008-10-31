@@ -9,6 +9,15 @@ ChangeLog
 	- Fixed: 15: preview operation not idempotent
 	- Also fixed: multiple owl:Ontology sections: now the esiting one is used
 	  to add/updated the metadata attributes.
+	  
+	- ontologyUri= parameter: it is handled by just displaying the metadataPanel
+	  in no-editing mode:
+	  	- no buttons
+	  	- no required marks (*)
+	  	- no listBoxes, just plain textboxes
+	  this functionality can be used in:
+	  	- the aquaportal front-end (already called from there)
+	  	- HTML output in the Ont URI resolver (TODO)
 
 
 2008-10-29 

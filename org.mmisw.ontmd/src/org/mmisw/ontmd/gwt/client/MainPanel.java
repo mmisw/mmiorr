@@ -23,7 +23,6 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.TabPanel;
-import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -38,8 +37,10 @@ public class MainPanel extends VerticalPanel {
 	private CellPanel container = new VerticalPanel();
 	private TabPanel tabPanel = new TabPanel();
 	
-	private MetadataPanel metadataPanel = new MetadataPanel(this);
 	private OntologyPanel ontologyPanel = new OntologyPanel(this);
+
+	// created depending on type of interface: editing or viewwing
+	private MetadataPanel metadataPanel;
 	
 	
 	private UserPanel userInfoPanel = new UserPanel(this);
@@ -69,6 +70,9 @@ public class MainPanel extends VerticalPanel {
 	});
 
 	
+	/** The requested ontology, if any. */
+	private String requestedOntologyUri;
+	
 	private LoginResult loginResult;
 	private OntologyInfo ontologyInfo;
 	
@@ -84,6 +88,16 @@ public class MainPanel extends VerticalPanel {
 	MainPanel(final Map<String, String> params) {
 		super();
 		
+		requestedOntologyUri = null;
+		
+		if ( params.get("ontologyUri") != null ) {
+			requestedOntologyUri = params.get("ontologyUri");
+		}
+	    else if ( false && ! GWT.isScript() ) {
+	    	// NOTE: Using an ad hoc ontology uri under my hosted environment.");
+	    	requestedOntologyUri = "http://localhost:8080/ont/mmi/map-cicore-cf";
+	    }
+		
 	    if ( params.get("sessionId") != null && params.get("userId") != null ) {
 	    	loginResult = new LoginResult();
 	    	loginResult.setSessionId(params.get("sessionId"));
@@ -96,8 +110,8 @@ public class MainPanel extends VerticalPanel {
 	    	
 	    	container.add(prepareInterface());
 	    }
-	    else if ( ! GWT.isScript() ) {
-	    	Main.log("NOTE: Using an ad hoc session under hosted environment.");
+	    else if ( false && ! GWT.isScript() ) {
+	    	// NOTE: Using an ad hoc session under my hosted environment.");
 	    	loginResult = new LoginResult();
 	    	loginResult.setSessionId("22222222222222222");
 	    	loginResult.setUserId("1002");
@@ -119,18 +133,62 @@ public class MainPanel extends VerticalPanel {
 	    add(decPanel);
 
 	    enable(false);
+	    
+	    if ( requestedOntologyUri != null ) {
+	    	getOntologyInfoFromRegistry(requestedOntologyUri);
+	    }
 	}
 	
 	
 	void loginOk(LoginResult loginResult) {
 		this.loginResult = loginResult;
 		container.clear();
-		container.add(prepareInterface());
+		container.add(prepareEditingInterface());
+	}
+
+
+	private Widget prepareInterface() {
+		if ( requestedOntologyUri != null ) {
+			return prepareViewingInterface();
+		}
+		else {
+			return prepareEditingInterface();
+		}
+	}
+	
+	
+	private Widget prepareViewingInterface() {
+		// create metadata panel for vieweing:
+		metadataPanel = new MetadataPanel(this, false);
+
+	    return metadataPanel;
+	}
+	
+	private void getOntologyInfoFromRegistry(String ontologyUri) {
+		AsyncCallback<OntologyInfo> callback = new AsyncCallback<OntologyInfo>() {
+			public void onFailure(Throwable thr) {
+				String error = thr.getClass().getName()+ ": " +thr.getMessage();
+				while ( (thr = thr.getCause()) != null ) {
+					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
+				}
+				Window.alert(error);
+			}
+
+			public void onSuccess(OntologyInfo ontologyInfo) {
+				metadataPanel.setOntologyInfo(ontologyInfo, null, false);
+			}
+		};
+
+		Main.log("getOntologyInfoFromRegistry: ontologyUri = " +ontologyUri);
+		Main.ontmdService.getOntologyInfoFromRegistry(ontologyUri, callback);
 	}
 
 
 	
-	private FlexTable prepareInterface() {
+	private Widget prepareEditingInterface() {
+		// create metadata panel for editing:
+		metadataPanel = new MetadataPanel(this, true);
+
 		FlexTable flexPanel = new FlexTable();
 		flexPanel.setWidth("800px");
 		
@@ -153,8 +211,6 @@ public class MainPanel extends VerticalPanel {
 	    tabPanel.add(ontologyPanel, "Ontology");
 	    
 	    tabPanel.add(metadataPanel, "Metadata");
-	    
-//	    tabPanel.add(conversionPanel, "Conversion");
 	    
 	    tabPanel.selectTab(0);
 	    
@@ -418,7 +474,9 @@ public class MainPanel extends VerticalPanel {
 		reviewButton.setEnabled(enabled);
 		uploadButton.setEnabled(enabled);
 		resetAllButton.setEnabled(enabled);
-		metadataPanel.enable(enabled);
+		if ( metadataPanel != null ) {
+			metadataPanel.enable(enabled);
+		}
 	}
 
 	void setOntologyInfo(OntologyInfo ontologyInfo, boolean confirm) {

@@ -7,6 +7,7 @@ import org.mmisw.ontmd.gwt.client.rpc.ReviewResult;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrGroup;
 
 import com.google.gwt.user.client.ui.CellPanel;
+import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -15,18 +16,17 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * The main panel.
+ * The main metadata panel.
  * 
  * @author Carlos Rueda
  */
-public class MetadataPanel extends VerticalPanel {
+public class MetadataPanel extends FlexTable {
 
 //	private MainPanel mainPanel;
-	private CellPanel container = new VerticalPanel();
+	private DockPanel container = new DockPanel();
 	private TabPanel tabPanel = new TabPanel();
 	
 	private boolean enabled = true;
@@ -35,54 +35,70 @@ public class MetadataPanel extends VerticalPanel {
 	private TextBox newUri_tb = new TextBox();
 	
 
-	MetadataPanel(MainPanel mainPanel) {
+	/**
+	 * Creates the metadata panel
+	 * @param mainPanel
+	 * @param editing true for the editing interface; false for the vieweing interface.
+	 */
+	MetadataPanel(MainPanel mainPanel, boolean editing) {
 		super();
 //		this.mainPanel = mainPanel;
 		
-//		setBorderWidth(3);
-		setWidth("850");
-		setSize("850", "500");
+		int row = 0;
+		
+//		setBorderWidth(1);
+//		setWidth("850");
+//		setSize("850", "500");
+		
+		container.setSize("700", "350");
 		
 		HorizontalPanel hp = new HorizontalPanel();
-		hp.setSpacing(4);
-		add(hp);
-		hp.add(new Label("Original URI:"));
-		hp.add(originalUri_tb);
-		originalUri_tb.setWidth("300");
-		originalUri_tb.setReadOnly(true);
-		
-//		hp = new HorizontalPanel();
 //		hp.setSpacing(4);
-//		add(hp);
-		hp.add(new Label("New URI:"));
-		hp.add(newUri_tb);
-		newUri_tb.setWidth("300");
-		newUri_tb.setReadOnly(true);
+//		hp.setHeight("20");
+		this.setWidget(row, 0, hp);
+		this.getFlexCellFormatter().setAlignment(row, 0, 
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP
+		);
+
+		originalUri_tb.setWidth("700");
+		originalUri_tb.setReadOnly(true);
+		if ( editing ) {
+			hp.add(new Label("Original URI:"));
+			originalUri_tb.setWidth("300");
+		}
+		hp.add(originalUri_tb);
 		
-		add(new HTML(
-				"Fields marked * are required. " +
-				"Use commas to separate values in multi-valued fields."));
-	    add(container);
+		row++;
+		
+		if ( editing ) {
+			hp.add(new Label("New URI:"));
+			hp.add(newUri_tb);
+			newUri_tb.setWidth("300");
+			newUri_tb.setReadOnly(true);
+
+			this.setWidget(row, 0, new HTML(
+					"Fields marked * are required. " +
+					"Use commas to separate values in multi-valued fields."));
+			row++;
+		}
+
+//		container.setBorderWidth(1);
+		this.setWidget(row, 0, container);
+		this.getFlexCellFormatter().setAlignment(row, 0, 
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP
+		);
 
 //	    tabPanel.setAnimationEnabled(true);
 	    
-		FlexTable flexPanel = new FlexTable();
-		int row = 0;
+		DockPanel dockPanel = new DockPanel();
+//		dockPanel.setBorderWidth(1);
 
-		CellPanel buttons = createButtons();
-		flexPanel.getFlexCellFormatter().setColSpan(0, 0, 2);
-		flexPanel.setWidget(row, 0, buttons);
-		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
-				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
-		);
-		row++;
-	    
 		
-		flexPanel.setWidget(row, 0, tabPanel);
-	    container.add(flexPanel); // tabPanel);
+		dockPanel.add(tabPanel, DockPanel.NORTH);
+	    container.add(dockPanel, DockPanel.CENTER);
 	    
 		for ( AttrGroup attrGroup: Main.baseInfo.getAttrGroups() ) {
-			CellPanel groupPanel = new MetadataGroupPanel(mainPanel, attrGroup);
+			CellPanel groupPanel = new MetadataGroupPanel(mainPanel, attrGroup, editing);
 			tabPanel.add(groupPanel, attrGroup.getName());
 		}
 		
@@ -90,13 +106,6 @@ public class MetadataPanel extends VerticalPanel {
 	    enable(false);
 	}
 	
-	
-	private CellPanel createButtons() {
-		CellPanel panel = new HorizontalPanel();
-		panel.setSpacing(2);
-		
-		return panel;
-	}
 	
 	/** Puts test values */
 	void putTestValues(Map<String, String> values) {
@@ -179,5 +188,5 @@ public class MetadataPanel extends VerticalPanel {
 			}
 		}
 	}
-
+	
 }

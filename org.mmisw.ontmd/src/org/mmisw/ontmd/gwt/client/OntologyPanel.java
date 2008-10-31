@@ -210,7 +210,7 @@ public class OntologyPanel extends VerticalPanel {
 				Main.log("onSubmitComplete: " +results);
 				if ( results != null ) {
 					textArea.setText(results);
-					getOntologyInfo(results);
+					getOntologyInfoFromPreLoaded(results);
 				}
 			}
 			
@@ -220,7 +220,7 @@ public class OntologyPanel extends VerticalPanel {
 	}
 	
 	
-	private void getOntologyInfo(String uploadResults) {
+	private void getOntologyInfoFromPreLoaded(String uploadResults) {
 		AsyncCallback<OntologyInfo> callback = new AsyncCallback<OntologyInfo>() {
 			public void onFailure(Throwable thr) {
 				statusField.setText("Error loading");
@@ -242,7 +242,7 @@ public class OntologyPanel extends VerticalPanel {
 		};
 
 		Main.log("getOntologyInfo: uploadResults = " +uploadResults);
-		Main.ontmdService.getOntologyInfo(uploadResults, callback);
+		Main.ontmdService.getOntologyInfoFromPreLoaded(uploadResults, callback);
 
 	}
 	

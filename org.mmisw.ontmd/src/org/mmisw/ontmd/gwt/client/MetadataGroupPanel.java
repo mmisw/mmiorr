@@ -68,25 +68,27 @@ public class MetadataGroupPanel extends VerticalPanel {
 	});
 
 	
-	MetadataGroupPanel(MainPanel mainPanel, AttrGroup attrGroup) {
+	MetadataGroupPanel(MainPanel mainPanel, AttrGroup attrGroup, boolean editing) {
 		this.mainPanel = mainPanel;
 		this.attrGroup = attrGroup;
 		
-		add(createForm());
+		add(createForm(editing));
 	}
 
-	private Widget createForm() {
+	private Widget createForm(boolean editing) {
 		FlexTable panel = new FlexTable();
 		
 		int row = 0;
 		
-		CellPanel buttons = createButtons();
-		panel.getFlexCellFormatter().setColSpan(0, 0, 2);
-		panel.setWidget(row, 0, buttons);
-		panel.getFlexCellFormatter().setAlignment(row, 0, 
-				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
-		);
-		row++;
+		if ( editing ) {
+			CellPanel buttons = createButtons();
+			panel.getFlexCellFormatter().setColSpan(0, 0, 2);
+			panel.setWidget(row, 0, buttons);
+			panel.getFlexCellFormatter().setAlignment(row, 0, 
+					HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
+			);
+			row++;
+		}
 		
 
 		AttrDef[] attrDefs = attrGroup.getAttrDefs();
@@ -100,7 +102,9 @@ public class MetadataGroupPanel extends VerticalPanel {
 			String attrName = attr.getLocalName();
 			
 			final List<Option> options = attr.getOptions();
-			if ( options != null ) {
+			
+			if ( editing &&  // not listBoxes is we are just viewing 
+					options != null ) {
 				final ListBox lb = new ListBox();
 				lb.setName(attrName);
 				for ( Option option : options ) {
@@ -137,7 +141,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 			widgets.put(attrName, new Elem(attr, widget));
 			
 			String label = attr.getLabel() + ":";
-			if ( attr.isRequired() ) {
+			if ( editing && attr.isRequired() ) {
 				label += "*";
 			}
 			Label lbl = new Label(label);

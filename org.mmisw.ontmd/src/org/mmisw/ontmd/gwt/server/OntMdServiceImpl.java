@@ -5,10 +5,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -97,7 +99,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	
 
 	
-	public OntologyInfo getOntologyInfo(String uploadResults) {
+	public OntologyInfo getOntologyInfoFromPreLoaded(String uploadResults) {
 		OntologyInfo ontologyInfo = new OntologyInfo();
 		
 		uploadResults = uploadResults.replaceAll("&lt;", "<").replaceAll("&gt;", ">");
@@ -143,10 +145,26 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			return ontologyInfo;
 		}
 
+		// prepare the rest of the ontology info:
+		prepareOntologyInfo(file, ontologyInfo);
+	
+		return ontologyInfo;
+	}
+
+	
+	/**
+	 * Completes the ontology info object by assigning some of the members
+	 * except the Rdf string.
+	 * @param file  The ontology file.
+	 * @param ontologyInfo  The onject to be completed
+	 */
+	private void prepareOntologyInfo(File file, OntologyInfo ontologyInfo) {
 		String uriFile = file.toURI().toString();
 		log.info("Loading model: " +uriFile);
 		Model model = JenaUtil.loadModel(uriFile, false);
 
+		String full_path = file.getAbsolutePath();
+		
 		Resource ontRes = JenaUtil.getFirstIndividual(model, OWL.Ontology);
 		
 		getBaseInfo();
@@ -177,9 +195,9 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			String base_ = JenaUtil.getURIForBase(uri);
 			ontologyInfo.setUri(base_);
 		}
-	
-		return ontologyInfo;
+
 	}
+	
 	
 	/**
 	 * Reads a file.
@@ -512,4 +530,58 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		return uploadResult;
 	}
 
+	
+	public OntologyInfo getOntologyInfoFromRegistry(String ontologyUri) {
+		OntologyInfo ontologyInfo = new OntologyInfo();
+		
+		String ontologyUri_lpath = ontologyUri+ "?_lpath";
+		
+		URL url;
+		try {
+			url = new URL(ontologyUri_lpath);
+		}
+		catch (MalformedURLException ex) {
+			String error = ex.getClass().getName()+ " : " +ex.getMessage();
+			log.info(error);
+			ontologyInfo.setError(error);
+			return ontologyInfo;
+		}
+		
+		String full_path ;
+		try {
+			InputStream is = url.openStream();
+			BufferedReader br = new BufferedReader(new InputStreamReader(is));
+			full_path = br.readLine();
+		}
+		catch (IOException ex) {
+			String error = ex.getClass().getName()+ " : " +ex.getMessage();
+			log.info(error);
+			ontologyInfo.setError(error);
+			return ontologyInfo;
+		}
+
+		if ( full_path == null ) {
+			String error = "Could not get local path of ontology";
+			log.info(error);
+			ontologyInfo.setError(error);
+			return ontologyInfo;
+		}
+
+		if ( full_path.startsWith("ERROR") ) {
+			String error = "Getting local path returned: " +full_path;
+			log.info(error);
+			ontologyInfo.setError(error);
+			return ontologyInfo;
+		}
+		
+		// full_path should be ok here.
+		
+		log.info("getOntologyInfoFromRegistry: local path: " +full_path);
+		
+		// now, complete the ontology object, except the Rdf string:
+		File file = new File(full_path);
+		prepareOntologyInfo(file, ontologyInfo);
+		
+		return ontologyInfo;
+	}
 }
