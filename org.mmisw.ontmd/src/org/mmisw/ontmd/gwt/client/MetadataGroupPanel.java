@@ -59,10 +59,10 @@ public class MetadataGroupPanel extends VerticalPanel {
 		public void onClick(Widget sender) {
 			OntologyInfo ontologyInfo = mainPanel.getOntologyInfo();
 			if ( ontologyInfo != null && ontologyInfo.getError() == null ) {
-				setOntologyInfo(ontologyInfo,true);
+				resetToOriginalOrNewValues(ontologyInfo,true, true);
 			}
 			else {
-				reset(true);
+				Window.alert("No ontology information available for this operation");
 			}
 		}
 	});
@@ -250,10 +250,10 @@ public class MetadataGroupPanel extends VerticalPanel {
 		resetButton.setEnabled(enabled);
 	}
 
-	void reset(boolean confirm) {
-		if ( confirm && ! Window.confirm("This action will replace the current values in this section") ) {
-			return;
-		}
+	/**
+	 * Sets all widget values to empty (textbox) and first option (listbox). 
+	 */
+	private void resetToEmpty() {
 		for ( Elem elem : widgets.values() ) {
 			String value = "";
 			if ( elem.widget instanceof TextBoxBase ) {
@@ -290,17 +290,18 @@ public class MetadataGroupPanel extends VerticalPanel {
 			}
 		}
 	}
-
-	void setOntologyInfo(OntologyInfo ontologyInfo, boolean confirm) {
+	
+	void resetToOriginalOrNewValues(OntologyInfo ontologyInfo, boolean originalVals, boolean confirm) {
 		if ( confirm && ! Window.confirm("This action will replace the current values in this section") ) {
 			return;
 		}
-		reset(false);
-		Map<String, String> values = ontologyInfo.getValues();
+		resetToEmpty();
+		Map<String, String> originalValues = 
+			originalVals ? ontologyInfo.getOriginalValues() :  ontologyInfo.getNewValues();
 		
 		for ( Elem elem : widgets.values() ) {
 			String uri = elem.attr.getUri();
-			String value = values.get(uri);
+			String value = originalValues.get(uri);
 			if ( value == null ) {
 				continue;
 			}

@@ -65,7 +65,7 @@ public class MainPanel extends VerticalPanel {
 
 	private PushButton resetAllButton = new PushButton("Reset all", new ClickListener() {
 		public void onClick(Widget sender) {
-			setOntologyInfo(ontologyInfo, true);
+			resetAllToOriginalValues(true);
 		}
 	});
 
@@ -74,6 +74,7 @@ public class MainPanel extends VerticalPanel {
 	private String requestedOntologyUri;
 	
 	private LoginResult loginResult;
+
 	private OntologyInfo ontologyInfo;
 	
 	private ReviewResult reviewResult;
@@ -110,7 +111,8 @@ public class MainPanel extends VerticalPanel {
 	    	
 	    	container.add(prepareInterface());
 	    }
-	    else if ( false && ! GWT.isScript() ) {
+	    else if ( //false && 
+	    		! GWT.isScript() ) {
 	    	// NOTE: Using an ad hoc session under my hosted environment.");
 	    	loginResult = new LoginResult();
 	    	loginResult.setSessionId("22222222222222222");
@@ -175,7 +177,7 @@ public class MainPanel extends VerticalPanel {
 			}
 
 			public void onSuccess(OntologyInfo ontologyInfo) {
-				metadataPanel.setOntologyInfo(ontologyInfo, null, false);
+				metadataPanel.resetToOriginalValues(ontologyInfo, null, false);
 			}
 		};
 
@@ -282,18 +284,18 @@ public class MainPanel extends VerticalPanel {
 			return;
 		}
 		
-		Map<String, String> tmpValues = new HashMap<String, String>();
-		String error = metadataPanel.putValues(tmpValues);
+		Map<String, String> newValues = new HashMap<String, String>();
+		String error = metadataPanel.putValues(newValues);
 		if ( error != null ) {
 			Window.alert(error);
 			return;
 		}
 		
-		// Ok, put the values in the ontologyInfo object:
-		Map<String, String> values = ontologyInfo.getValues();
-		for ( String uri : tmpValues.keySet() ) {
-			String value = tmpValues.get(uri);
-			values.put(uri, value);
+		// Ok, put the new values in the ontologyInfo object:
+		ontologyInfo.setNewValues(newValues);
+		for ( String uri : newValues.keySet() ) {
+			String value = newValues.get(uri);
+			newValues.put(uri, value);
 		}
 		
 		
@@ -333,7 +335,7 @@ public class MainPanel extends VerticalPanel {
 			vp.add(new Label("Ontology URI: " +reviewResult.getUri()));
 			vp.add(new Label("Contents:"));
 			
-			metadataPanel.setOntologyInfo(ontologyInfo, reviewResult, false);
+			metadataPanel.resetToNewValues(ontologyInfo, reviewResult, false);
 			
 			sb.append(reviewResult.getRdf());
 		}
@@ -394,18 +396,18 @@ public class MainPanel extends VerticalPanel {
 			return;
 		}
 		
-		Map<String, String> tmpValues = new HashMap<String, String>();
-		String error = metadataPanel.putValues(tmpValues);
+		Map<String, String> newValues = new HashMap<String, String>();
+		String error = metadataPanel.putValues(newValues);
 		if ( error != null ) {
 			Window.alert(error);
 			return;
 		}
 		
 		// Ok, put the values in the ontologyInfo object:
-		Map<String, String> values = ontologyInfo.getValues();
-		for ( String uri : tmpValues.keySet() ) {
-			String value = tmpValues.get(uri);
-			values.put(uri, value);
+		ontologyInfo.setNewValues(newValues);
+		for ( String uri : newValues.keySet() ) {
+			String value = newValues.get(uri);
+			newValues.put(uri, value);
 		}
 		
 		final MyDialog popup = new MyDialog(null);
@@ -443,7 +445,7 @@ public class MainPanel extends VerticalPanel {
 		VerticalPanel vp = new VerticalPanel();
 		
 		if ( error == null ) {
-			metadataPanel.setOntologyInfo(ontologyInfo, reviewResult, false);
+			metadataPanel.resetToNewValues(ontologyInfo, reviewResult, false);
 
 			vp.add(new Label("Ontology URI: " +result.getUri()));
 			vp.add(new Label("Response from Registry back-end:"));
@@ -479,7 +481,23 @@ public class MainPanel extends VerticalPanel {
 		}
 	}
 
-	void setOntologyInfo(OntologyInfo ontologyInfo, boolean confirm) {
+	private void resetAllToOriginalValues(boolean confirm) {
+		if ( confirm && ! Window.confirm("This action will replace the current values in all sections") ) {
+			return;
+		}
+		String error = ontologyInfo.getError();
+		if ( error != null ) {
+			enable(false);
+			Window.alert(error);
+		}
+		else {
+			enable(true);
+			metadataPanel.resetToOriginalValues(ontologyInfo, reviewResult, false);
+		}
+	}
+	
+
+	void setPreloadedOntologyInfo(OntologyInfo ontologyInfo, boolean confirm) {
 		if ( confirm && ! Window.confirm("This action will replace the current values in all sections") ) {
 			return;
 		}
@@ -491,9 +509,10 @@ public class MainPanel extends VerticalPanel {
 		else {
 			this.ontologyInfo = ontologyInfo;
 			enable(true);
-			metadataPanel.setOntologyInfo(ontologyInfo, reviewResult, false);
+			metadataPanel.resetToOriginalValues(ontologyInfo, reviewResult, false);
 		}
 	}
+	
 
 	private void reenableButton(PushButton button, String text, boolean enabled) {
 		button.setText(text);

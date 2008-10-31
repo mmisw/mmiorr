@@ -233,7 +233,7 @@ public class OntologyPanel extends VerticalPanel {
 
 			public void onSuccess(OntologyInfo ontologyInfo) {
 				statusField.setText("Ontology loaded. Original base URI: " +ontologyInfo.getUri());
-				mainPanel.setOntologyInfo(ontologyInfo, false);
+				mainPanel.setPreloadedOntologyInfo(ontologyInfo, false);
 				String rdf = ontologyInfo.getRdf();
 				if ( rdf != null ) {
 					textArea.setText(rdf);

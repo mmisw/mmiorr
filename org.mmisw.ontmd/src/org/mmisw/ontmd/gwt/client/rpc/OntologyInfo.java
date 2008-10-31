@@ -5,31 +5,49 @@ import java.util.Map;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Info about the result of a conversion.
+ * Info about an original ontology.
  * @author Carlos Rueda
  */
 public class OntologyInfo implements IsSerializable {
 
 	private String error = null;
 	private String fullPath;
-	private Map<String,String> values;
-
 	private String uri;
 	private String rdf;
 	
-	public Map<String, String> getValues() {
-		return values;
-	}
+	
+	/** original values -- once assigned, shouldn't be changed */
+	private Map<String,String> originalValues;
 
-
-	public void setValues(Map<String, String> values) {
-		this.values = values;
-	}
-
+	
+	/** New values assigned during editing; these are values
+	 * used by the review process
+	 */
+	private Map<String,String> newValues;
+	
 	
 	public OntologyInfo () {
 	}
 	
+	public Map<String, String> getOriginalValues() {
+		return originalValues;
+	}
+
+
+	public void setOriginalValues(Map<String, String> values) {
+		this.originalValues = values;
+	}
+
+	
+	public Map<String, String> getNewValues() {
+		return newValues;
+	}
+
+
+	public void setNewValues(Map<String, String> values) {
+		this.newValues = values;
+	}
+
 	
 	public void setUri(String uri) {
 		this.uri = uri;

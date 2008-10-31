@@ -156,24 +156,24 @@ public class MetadataPanel extends FlexTable {
 		return enabled;
 	}
 
-	void reset(boolean confirm) {
+
+	void resetToOriginalValues(OntologyInfo ontologyInfo, ReviewResult reviewResult, boolean confirm) {
+		resetToOriginalOrNewValues(ontologyInfo, true, reviewResult, confirm);
+	}
+	
+	void resetToNewValues(OntologyInfo ontologyInfo, ReviewResult reviewResult, boolean confirm) {
+		resetToOriginalOrNewValues(ontologyInfo, false, reviewResult, confirm);
+	}
+	
+	private void resetToOriginalOrNewValues(OntologyInfo ontologyInfo, boolean originalVals, 
+			ReviewResult reviewResult, boolean confirm) 
+	{
 		originalUri_tb.setText("");
 		newUri_tb.setText("");
 		for ( int i = 0, c = tabPanel.getWidgetCount(); i < c; i++ ) {
 			Widget w = tabPanel.getWidget(i);
 			if ( w instanceof MetadataGroupPanel ) {
-				((MetadataGroupPanel) w).reset(confirm);
-			}
-		}
-	}
-
-
-	void setOntologyInfo(OntologyInfo ontologyInfo, ReviewResult reviewResult, boolean confirm) {
-		reset(false);
-		for ( int i = 0, c = tabPanel.getWidgetCount(); i < c; i++ ) {
-			Widget w = tabPanel.getWidget(i);
-			if ( w instanceof MetadataGroupPanel ) {
-				((MetadataGroupPanel) w).setOntologyInfo(ontologyInfo, confirm);
+				((MetadataGroupPanel) w).resetToOriginalOrNewValues(ontologyInfo, originalVals, confirm);
 			}
 		}
 		String origUri = ontologyInfo.getUri();

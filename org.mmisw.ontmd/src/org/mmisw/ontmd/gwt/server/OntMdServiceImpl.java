@@ -154,9 +154,9 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	
 	/**
 	 * Completes the ontology info object by assigning some of the members
-	 * except the Rdf string.
+	 * except the Rdf string and the new values map.
 	 * @param file  The ontology file.
-	 * @param ontologyInfo  The onject to be completed
+	 * @param ontologyInfo  The object to be completed
 	 */
 	private void prepareOntologyInfo(File file, OntologyInfo ontologyInfo) {
 		String uriFile = file.toURI().toString();
@@ -170,7 +170,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		getBaseInfo();
 		
 		Map<String, Property> uriPropMap = MdHelper.getUriPropMap();
-		Map<String,String> values = new HashMap<String, String>();
+		Map<String,String> originalValues = new HashMap<String, String>();
 		
 		if ( ontRes != null ) {
 			for ( AttrGroup attrGroup : baseInfo.getAttrGroups() ) {
@@ -181,12 +181,12 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 						continue;
 					}
 					log.info("Assigning: " +attrDef.getUri()+ " = " + value);
-					values.put(attrDef.getUri(), value);
+					originalValues.put(attrDef.getUri(), value);
 				}
 			}
 		}
 		
-		ontologyInfo.setValues(values);
+		ontologyInfo.setOriginalValues(originalValues);
 		ontologyInfo.setFullPath(full_path);
 		
 		// associate the original base URI:
@@ -235,7 +235,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		reviewResult.setOntologyInfo(ontologyInfo);
 		
 		
-		Map<String, String> values = ontologyInfo.getValues();
+		Map<String, String> newValues = ontologyInfo.getNewValues();
 		
 		////////////////////////////////////////////
 		// check for errors
@@ -253,13 +253,21 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		}
 		
 		if ( ontologyInfo.getError() != null ) {
-			reviewResult.setError("there was an error while loading the ontology: " +ontologyInfo.getError());
-			log.info(": there was an error while loading the ontology: " +ontologyInfo.getError());
+			String error = "there was an error while loading the ontology: " +ontologyInfo.getError();
+			reviewResult.setError(error );
+			log.info(error);
 			return reviewResult;
 		}
 		
-		String orgAbbreviation = values.get(OmvMmi.origMaintainerCode.getURI());
-		String primaryClass = values.get(Omv.acronym.getURI());
+		if ( newValues == null ) {
+			String error = "Unexpected: no new values assigned for review. Please report this bug";
+			reviewResult.setError(error );
+			log.info(error);
+			return reviewResult;
+		}
+		
+		String orgAbbreviation = newValues.get(OmvMmi.origMaintainerCode.getURI());
+		String primaryClass = newValues.get(Omv.acronym.getURI());
 
 		if ( orgAbbreviation == null ) {
 			log.info("missing origMaintainerCode");
@@ -349,8 +357,8 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		}
 		
 		Map<String, Property> uriPropMap = MdHelper.getUriPropMap();
-		for ( String uri : values.keySet() ) {
-			String value = values.get(uri).trim();
+		for ( String uri : newValues.keySet() ) {
+			String value = newValues.get(uri).trim();
 			if ( value.length() > 0 ) {
 				Property prop = uriPropMap.get(uri);
 				if ( prop == null ) {
@@ -380,8 +388,8 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		}
 
 		// those internal attributes also updated in the values map:
-		values.put(Omv.uri.getURI(), base_);
-		values.put(Omv.version.getURI(), version);
+		newValues.put(Omv.uri.getURI(), base_);
+		newValues.put(Omv.version.getURI(), version);
 		
 		
 		reviewResult.setUri(base_);
@@ -437,9 +445,9 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			return uploadResult;
 		}
 
-		// the values from the ontologyInfo are used to fill in some of the
+		// the "new" values in the ontologyInfo are used to fill in some of the
 		// fields required by the bioportal back-end
-		Map<String, String> values = reviewResult.getOntologyInfo().getValues();
+		Map<String, String> newValues = reviewResult.getOntologyInfo().getNewValues();
 		
 		uploadResult.setUri(reviewResult.getUri());
 		
@@ -510,7 +518,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			String fileName;
 			fileName = new URL(uri).getPath();
 			
-			OntologyUploader createOnt = new OntologyUploader(uri, fileName, rdf, userId, sessionId, values);
+			OntologyUploader createOnt = new OntologyUploader(uri, fileName, rdf, userId, sessionId, newValues);
 			String res = createOnt.create();
 			
 			if ( res.startsWith("OK") ) {
