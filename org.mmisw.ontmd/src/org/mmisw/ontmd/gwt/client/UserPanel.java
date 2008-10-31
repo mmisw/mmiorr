@@ -95,6 +95,17 @@ public class UserPanel extends VerticalPanel {
 		);
 		row++;
 		
+		HTML info = new HTML();
+		info.setHTML("Not registered? Forgot your password? " +
+				"Please click <a href=\"/or/login\" target=\"_blank\">here</a>"
+		);
+		panel.getFlexCellFormatter().setColSpan(row, 0, 2);
+		panel.setWidget(row, 0, info);
+		panel.getFlexCellFormatter().setAlignment(row, 0, 
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		row++;
+		
 		return panel;
 	}
 	

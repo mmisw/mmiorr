@@ -25,7 +25,16 @@ public class AttrDef implements Serializable {
 	private boolean internal;
 
 	private String example = "";
+
+	private int numberOfLines;
+
+	private boolean allowUserDefinedOption;
 	
+
+	public int getNumberOfLines() {
+		return numberOfLines;
+	}
+
 
 	// no-arg constructor
 	public AttrDef() {
@@ -104,6 +113,23 @@ public class AttrDef implements Serializable {
 	public AttrDef setExample(String example) {
 		this.example = example;
 		return this;
+	}
+
+
+	public AttrDef setNumberOfLines(int numberOfLines) {
+		this.numberOfLines = numberOfLines;
+		return this;
+	}
+
+
+	public AttrDef setAllowUserDefinedOption(boolean allowUserDefinedOption) {
+		this.allowUserDefinedOption = allowUserDefinedOption;
+		return this;
+	}
+
+
+	public boolean isAllowUserDefinedOption() {
+		return allowUserDefinedOption;
 	}
 
 

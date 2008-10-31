@@ -10,6 +10,7 @@ ChangeLog
 	  other for new values (assignied during the editing session, either manually
 	  or by running the "example" actions).
 
+	- several improvements.
 
 2008-10-30
 	- UploadServlet: use File.createTempFile with sessionId; the previous scheme

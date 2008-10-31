@@ -67,15 +67,24 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	
 	
 	public BaseInfo getBaseInfo() {
-		if ( baseInfo == null ) {
-			prepareBaseInfo();
-		}
+		// from the client, always re-create the base info:
+		prepareBaseInfo();
 		return baseInfo;
 	}
 	
+	
+	/** prepares the baseInfo only if not already prepared */
+	private void _getBaseInfoIfNull() {
+		if ( baseInfo == null ) {
+			prepareBaseInfo();
+		}
+	}
+	
+	/** always re-creates the baseInfo */
 	private void prepareBaseInfo() {
 		log.info("preparing base info ...");
 		baseInfo = new BaseInfo();
+		MdHelper.prepareGroups();
 		AttrGroup[] attrGroups = MdHelper.getAttrGroups();
 		baseInfo.setAttrGroups(attrGroups);
 		log.info("preparing base info ... DONE");
@@ -167,7 +176,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		
 		Resource ontRes = JenaUtil.getFirstIndividual(model, OWL.Ontology);
 		
-		getBaseInfo();
+		_getBaseInfoIfNull();
 		
 		Map<String, Property> uriPropMap = MdHelper.getUriPropMap();
 		Map<String,String> originalValues = new HashMap<String, String>();
@@ -229,7 +238,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 
 	public ReviewResult review(OntologyInfo ontologyInfo, LoginResult loginResult) {
 		
-		getBaseInfo();
+		_getBaseInfoIfNull();
 		
 		ReviewResult reviewResult = new ReviewResult();
 		reviewResult.setOntologyInfo(ontologyInfo);
@@ -436,7 +445,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	 */
 	public UploadResult upload(ReviewResult reviewResult, LoginResult loginResult) {
 		
-		getBaseInfo();
+		_getBaseInfoIfNull();
 		
 		UploadResult uploadResult = new UploadResult();
 		

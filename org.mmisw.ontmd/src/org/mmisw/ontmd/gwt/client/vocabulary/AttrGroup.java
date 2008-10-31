@@ -12,6 +12,8 @@ public class AttrGroup implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String name;
+	private String description;
+	
 	private AttrDef[] attrDefs;
 	
 	
@@ -20,9 +22,10 @@ public class AttrGroup implements Serializable {
 	}
 	
 	
-	public AttrGroup(String name, AttrDef[] attrs) {
+	public AttrGroup(String name, String description, AttrDef[] attrs) {
 		super();
 		this.name = name;
+		this.setDescription(description);
 		this.attrDefs = attrs;
 	}
 
@@ -32,6 +35,16 @@ public class AttrGroup implements Serializable {
 
 	public AttrDef[] getAttrDefs() {
 		return attrDefs;
+	}
+
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+
+	public String getDescription() {
+		return description;
 	}
 
 

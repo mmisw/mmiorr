@@ -20,6 +20,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PushButton;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -79,10 +80,32 @@ public class MetadataGroupPanel extends VerticalPanel {
 		FlexTable panel = new FlexTable();
 		
 		int row = 0;
+
+		String grpDescription = attrGroup.getDescription();
+		if ( grpDescription != null && grpDescription.length() > 0 ) {
+			Widget w = new Label(grpDescription);
+			panel.getFlexCellFormatter().setColSpan(row, 0, 2);
+			panel.setWidget(row, 0, w);
+			panel.getFlexCellFormatter().setAlignment(row, 0, 
+					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+			);
+			row++;
+		}
+
+		
+		
+		
+		ChangeListener cl = null;
 		
 		if ( editing ) {
+			cl = new ChangeListener () {
+				public void onChange(Widget sender) {
+					formChanged();
+				}
+			};
+			
 			CellPanel buttons = createButtons();
-			panel.getFlexCellFormatter().setColSpan(0, 0, 2);
+			panel.getFlexCellFormatter().setColSpan(row, 0, 2);
 			panel.setWidget(row, 0, buttons);
 			panel.getFlexCellFormatter().setAlignment(row, 0, 
 					HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
@@ -103,38 +126,21 @@ public class MetadataGroupPanel extends VerticalPanel {
 			
 			final List<Option> options = attr.getOptions();
 			
-			if ( editing &&  // not listBoxes is we are just viewing 
+			if ( editing &&  // not listBoxes if we are just viewing 
 					options != null ) {
-				final ListBox lb = new ListBox();
-				lb.setName(attrName);
-				for ( Option option : options ) {
-					String lab = option.getLabel();
-					if ( lab != null && lab.length() > 0 ) {
-						lb.addItem(option.getLabel(), option.getName());
-					}
-					else {
-						lb.addItem(option.getName());
-					}
+				
+				boolean allowUserOption = attr.isAllowUserDefinedOption();
+				if ( allowUserOption ) {
+					widget = new FieldWithChoose(attr, cl);
 				}
-				lb.addChangeListener(new ChangeListener () {
-					public void onChange(Widget sender) {
-//						int idx = lb.getSelectedIndex();
-						formChanged();
-					}
-
-				});
-				widget = lb;
+				else {
+					ListBox lb = createListBox(attr, cl);
+					widget = lb;
+				}
 			}
 			else {
-				final TextBox tb = new TextBox();
-				tb.setName(attrName);
-				tb.setWidth("500");
-				tb.addChangeListener(new ChangeListener () {
-					public void onChange(Widget sender) {
-//						String text = tb.getText();
-						formChanged();
-					}
-				});
+				int nl = attr.getNumberOfLines();
+				TextBoxBase tb = createTextBoxBase(nl, "500", attrName, cl);
 				widget = tb;
 			}
 			
@@ -163,10 +169,103 @@ public class MetadataGroupPanel extends VerticalPanel {
 		return panel;
 	}
 	
+	private static ListBox createListBox(AttrDef attr, ChangeListener cl) {
+		String attrName = attr.getLocalName();
+		List<Option> options = attr.getOptions();
+		final ListBox lb = new ListBox();
+		lb.setName(attrName);
+		for ( Option option : options ) {
+			String lab = option.getLabel();
+			if ( lab != null && lab.length() > 0 ) {
+				lb.addItem(option.getLabel(), option.getName());
+			}
+			else {
+				lb.addItem(option.getName());
+			}
+		}
+		if ( cl != null ) {
+			lb.addChangeListener(cl);
+		}
+		return lb;
+	}
+	
+	
+	private static class FieldWithChoose extends HorizontalPanel {
+		AttrDef attr;
+		TextBoxBase tb;
+		ListBox lb;
+		PushButton chooseButton;
+	
+		FieldWithChoose(AttrDef attr, ChangeListener cl) {
+			this.attr = attr;
+			int nl = 1;    /// attr.getNumberOfLines() is ignored
+			String attrName = attr.getLocalName();
+			tb = createTextBoxBase(nl, "400", attrName, cl );
+
+			add(tb);
+			lb = createListBox(attr, cl);
+			
+			chooseButton = new PushButton("Choose", new ClickListener() {
+				public void onClick(Widget sender) {
+					choose();
+				}
+			});
+			
+			add(chooseButton);
+		}
+
+		private void choose() {
+			final MyDialog popup = new MyDialog(lb);
+			lb.addChangeListener(new ChangeListener () {
+				public void onChange(Widget sender) {
+					tb.setText(lb.getValue(lb.getSelectedIndex()));
+					popup.hide();
+				}
+			});
+			popup.setText("Select " +attr.getLabel());
+			popup.center();
+			popup.show();
+
+		}
+
+		void enable(boolean enabled) {
+			tb.setEnabled(enabled);
+//			lb.setEnabled(enabled);
+			chooseButton.setEnabled(enabled);
+		}
+
+		public void setValue(String value) {
+			tb.setText(value);
+//			lb.setSelectedIndex(0);
+		}
+	}
+	
+	private static TextBoxBase createTextBoxBase(int nl, String width, String attrName,
+			ChangeListener cl) {
+		final TextBoxBase tb;
+		if ( nl <=1 ) {
+			tb = new TextBox();
+			tb.setWidth(width);
+		}
+		else {
+			// avoid huge textareas (TODO max 20 line is arbitrary)
+			if ( nl > 20 ) {
+				nl = 20;
+			}
+			tb = new TextArea();
+			// TODO 16 is just a rough scaling factor
+			tb.setSize(width, "" +(nl *16));
+		}
+		tb.setName(attrName);
+		if ( cl != null ) {
+			tb.addChangeListener(cl);
+		}
+		return tb;
+	}
 	private CellPanel createButtons() {
 		CellPanel panel = new HorizontalPanel();
 		panel.setSpacing(2);
-		exampleButton.setTitle("Fills in example values in this section");
+		exampleButton.setTitle("Fills in fields in this section with example values");
 		panel.add(exampleButton);
 		
 		resetButton.setTitle("Resets the fields in this section");
@@ -211,6 +310,9 @@ public class MetadataGroupPanel extends VerticalPanel {
 				ListBox lb = (ListBox) elem.widget;
 				value = lb.getValue(lb.getSelectedIndex());
 			}
+			else if ( elem.widget instanceof FieldWithChoose ) {
+				value = ((FieldWithChoose) elem.widget).tb.getText();
+			}
 			
 			value = value.trim();
 			
@@ -245,6 +347,9 @@ public class MetadataGroupPanel extends VerticalPanel {
 				ListBox lb = (ListBox) elem.widget;
 				lb.setEnabled(enabled);
 			}
+			else if ( elem.widget instanceof FieldWithChoose ) {
+				((FieldWithChoose) elem.widget).enable(enabled);
+			}
 		}
 		exampleButton.setEnabled(enabled);
 		resetButton.setEnabled(enabled);
@@ -263,6 +368,9 @@ public class MetadataGroupPanel extends VerticalPanel {
 				ListBox lb = (ListBox) elem.widget;
 				int idx = 0;
 				lb.setSelectedIndex(idx);
+			}
+			else if ( elem.widget instanceof FieldWithChoose ) {
+				((FieldWithChoose) elem.widget).setValue(value);
 			}
 		}
 		
@@ -287,6 +395,9 @@ public class MetadataGroupPanel extends VerticalPanel {
 					}
 				}
 				lb.setSelectedIndex(idx);
+			}
+			else if ( elem.widget instanceof FieldWithChoose ) {
+				((FieldWithChoose) elem.widget).setValue(value);
 			}
 		}
 	}
@@ -318,6 +429,9 @@ public class MetadataGroupPanel extends VerticalPanel {
 					}
 				}
 				lb.setSelectedIndex(idx);
+			}
+			else if ( elem.widget instanceof FieldWithChoose ) {
+				((FieldWithChoose) elem.widget).setValue(value);
 			}
 		}
 		

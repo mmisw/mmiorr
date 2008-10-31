@@ -63,6 +63,12 @@ public class MainPanel extends VerticalPanel {
 		}
 	});
 
+	private PushButton exampleButton = new PushButton("Example", new ClickListener() {
+		public void onClick(Widget sender) {
+			exampleForAll(true);
+		}
+	});
+
 	private PushButton resetAllButton = new PushButton("Reset all", new ClickListener() {
 		public void onClick(Widget sender) {
 			resetAllToOriginalValues(true);
@@ -111,7 +117,7 @@ public class MainPanel extends VerticalPanel {
 	    	
 	    	container.add(prepareInterface());
 	    }
-	    else if ( //false && 
+	    else if ( // false && 
 	    		! GWT.isScript() ) {
 	    	// NOTE: Using an ad hoc session under my hosted environment.");
 	    	loginResult = new LoginResult();
@@ -236,6 +242,9 @@ public class MainPanel extends VerticalPanel {
 		
 		uploadButton.setTitle("Uploads the new version of the ontology");
 		panel.add(uploadButton);
+		
+		exampleButton.setTitle("Fills in fields in all sections with example values");
+		panel.add(exampleButton);
 		
 		resetAllButton.setTitle("Resets the fields in all sections");
 		panel.add(resetAllButton);
@@ -475,12 +484,28 @@ public class MainPanel extends VerticalPanel {
 	private void enable(boolean enabled) {
 		reviewButton.setEnabled(enabled);
 		uploadButton.setEnabled(enabled);
+		exampleButton.setEnabled(enabled);
 		resetAllButton.setEnabled(enabled);
 		if ( metadataPanel != null ) {
 			metadataPanel.enable(enabled);
 		}
 	}
 
+	private void exampleForAll(boolean confirm) {
+		if ( confirm && ! Window.confirm("This action will replace the current values in all sections") ) {
+			return;
+		}
+		String error = ontologyInfo.getError();
+		if ( error != null ) {
+			enable(false);
+			Window.alert(error);
+		}
+		else {
+			enable(true);
+			metadataPanel.example(false);
+		}
+	}
+	
 	private void resetAllToOriginalValues(boolean confirm) {
 		if ( confirm && ! Window.confirm("This action will replace the current values in all sections") ) {
 			return;

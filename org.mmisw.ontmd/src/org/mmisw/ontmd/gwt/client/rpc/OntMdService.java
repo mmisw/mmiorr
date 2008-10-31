@@ -10,6 +10,9 @@ import com.google.gwt.user.client.rpc.RemoteService;
  */
 public interface OntMdService extends RemoteService {
 
+	/**
+	 * Gets the base information (metadata attribute definitions).
+	 */
 	BaseInfo getBaseInfo();
 	
 	/**

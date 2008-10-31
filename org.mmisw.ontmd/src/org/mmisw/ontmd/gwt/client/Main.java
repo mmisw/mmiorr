@@ -9,6 +9,8 @@ import org.mmisw.ontmd.gwt.client.rpc.OntMdServiceAsync;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.HistoryListener;
 import com.google.gwt.user.client.Window;
@@ -76,7 +78,7 @@ public class Main implements EntryPoint {
 		}
 
 		getOntMdService();
-		getPrimaryConcepts(params);
+		getBaseInfo(params);
 	}
 
 	private void prepareHistory() {
@@ -102,6 +104,11 @@ public class Main implements EntryPoint {
 	private void startGui(final Map<String, String> params) {
 		MainPanel mainPanel = new MainPanel(params);
 
+		Element loadingElement = DOM.getElementById("loading");
+		if ( loadingElement != null ) {
+			DOM.removeChild(RootPanel.getBodyElement(), loadingElement);
+		}
+		
 		Panel panel = new VerticalPanel();
 		RootPanel.get().add(panel);
 		Grid hpanel = new Grid(1, 1);
@@ -150,7 +157,7 @@ public class Main implements EntryPoint {
 	}
 
 	
-	private void getPrimaryConcepts(final Map<String, String> params) {
+	private void getBaseInfo(final Map<String, String> params) {
 		AsyncCallback<BaseInfo> callback = new AsyncCallback<BaseInfo>() {
 			public void onFailure(Throwable thr) {
 				RootPanel.get().add(new HTML(thr.toString()));
