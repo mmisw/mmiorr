@@ -4,8 +4,10 @@ import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
@@ -27,7 +29,10 @@ public class MyDialog extends DialogBox {
 	MyDialog(Widget contents) {
 		super(false, true);
 		setAnimationEnabled(true);
-		setWidget(dockPanel);
+		Grid grid = new Grid(1,1);
+		grid.setWidget(0, 0, dockPanel);
+		grid.setBorderWidth(1);  // just to improve appearance in firefox
+		setWidget(grid);
 		
 		hp.setCellHorizontalAlignment(buttons, HasHorizontalAlignment.ALIGN_RIGHT);
 		hp.add(buttons);
@@ -58,6 +63,13 @@ public class MyDialog extends DialogBox {
 		return ta;
 	}
 
+	public boolean onKeyUpPreview(char key, int modifiers) {
+		if ( key == KeyboardListener.KEY_ESCAPE ) {
+			hide();
+			return false;
+		}
+	    return true;
+	  }
 	
 	private CellPanel createButtons() {
 		CellPanel panel = new HorizontalPanel();
