@@ -8,7 +8,9 @@ import java.util.regex.Pattern;
  * Represents a decomposition of a given requested URI.
  * 
  * <p>
- * TODO: NOTE: <i>version</i> component not yet handled.
+ * TODO: NOTE: Constructor is rather ackward (based on full requested URI because that was
+ * the main mechanism when this class was created).  Need to make the contructor more friedly,
+ * ie., specifically with the fields involved in the contruction!!.
  * 
  * <p>
  * The following requested URI is used as example to illustrate the various
@@ -142,6 +144,83 @@ public class MmiUri {
 		else {
 			ontologyUri = fullRequestedUri.replaceAll("/+$", "");
 		}
+	}
+	
+	
+	private MmiUri(String untilRoot, 
+			String authority,
+			String version,
+			String topic,
+			String term
+	) {
+		super();
+		this.untilRoot = untilRoot;
+		this.authority = authority;
+		this.version = version;
+		this.topic = topic;
+		this.term = term;
+		
+		this.ontologyUri = untilRoot 
+			+ authority 
+			+ (version == null ? "" : "/" +version)
+			+ "/" +topic
+			+ (term == null || term.length() == 0 ? "" : "/" +term)
+		;
+	}
+
+	
+	public MmiUri clone() {
+		return new MmiUri(untilRoot, authority, version, topic, term);
+	}
+	
+	/**
+	 * Makes a clone except for the given version, which can be null.
+	 * 
+	 * @param version the new version.
+	 * 
+	 * @throws URISyntaxException if version is not null and is invalid. 
+	 */
+	public MmiUri copyWithVersion(String version) throws URISyntaxException {
+		if ( version != null ) {
+			checkVersion(version);
+		}
+		return new MmiUri(untilRoot, authority, version, topic, term);
+	}
+	
+	/**
+	 * Makes a clone except for the given version, which can be null.
+	 * The regular validation check is skipped: insteasd, if the version if not null,
+	 * t's only checked that it does not contain any slashes.
+	 * 
+	 * @param version the new version.
+	 * 
+	 * @throws URISyntaxException if version is not null and contains a slash.
+	 */
+	public MmiUri copyWithVersionNoCheck(String version) throws URISyntaxException {
+		if ( version != null && version.indexOf('/') >= 0 ) {
+			throw new URISyntaxException(version, "version contains a slash");
+		}
+		return new MmiUri(untilRoot, authority, version, topic, term);
+	}
+	
+	public boolean equals(Object other) {
+		if ( ! (other instanceof MmiUri) ) {
+			return false;
+		}
+		MmiUri o = (MmiUri) other;
+		if ( !untilRoot.equals(o.untilRoot) 
+		||   !authority.equals(o.authority)
+		||   !topic.equals(o.topic)
+		||   !term.equals(o.term)
+		) {
+			return false;
+		}
+		
+		if ( version == null ) {
+			return o.version == null;
+		}
+		
+		return version.equals(o.version);
 	}
 
 	/** 

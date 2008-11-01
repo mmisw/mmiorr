@@ -23,7 +23,7 @@ public class MmiUriTest extends TestCase {
         assertEquals("someTerm", mmiUri.getTerm());
         assertEquals(".owl", mmiUri.getTopicExtension());
     }
-
+    
     public void testTermUris() throws URISyntaxException {
     	MmiUri mmiUri = new MmiUri(fullRequestedUri, requestedUri, contextPath);
     
@@ -127,4 +127,24 @@ public class MmiUriTest extends TestCase {
     	assertEquals("http://mmisw.org/ont/a/20081021/v", mmiUri.getOntologyUriWithTopicExtension(""));
     }
 
+    public void testCloneCopy() throws URISyntaxException {
+    	String fullRequestedUri = "http://mmisw.org/ont/a/20081021/v.owl/t";
+    	String requestedUri = "/ont/a/20081021/v.owl/t";
+    	MmiUri mmiUri = new MmiUri(fullRequestedUri, requestedUri, contextPath);
+    
+    	MmiUri clone = mmiUri.clone();
+		assertEquals(mmiUri, clone);
+		
+		MmiUri copyVer;
+		
+		copyVer = mmiUri.copyWithVersion(null);
+		assertEquals("http://mmisw.org/ont/a/v.owl/t", copyVer.getOntologyUri());
+		
+		copyVer = mmiUri.copyWithVersion("20210121");
+		assertEquals("http://mmisw.org/ont/a/20210121/v.owl/t", copyVer.getOntologyUri());
+		
+		copyVer = mmiUri.copyWithVersionNoCheck("%myversion%");
+		assertEquals("http://mmisw.org/ont/a/%myversion%/v.owl/t", copyVer.getOntologyUri());
+    }
+    
 }

@@ -2,6 +2,7 @@ package org.mmisw.ont;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -76,15 +77,15 @@ public class Db {
 	/**
 	 * Obtains the ontology by the given URI.
 	 * 
-	 * This uses the onotologyUri given. To try other file extensions,
+	 * This uses the ontologyUri given. To try other file extensions,
 	 * use {@link #getOntologyWithExts(MmiUri, String[])}.
 	 * 
-	 * @param ontologyUri
+	 * @param ontologyUri The ontology URI as exactly stored in the database.
 	 * @return
 	 * @throws ServletException
 	 * @throws SQLException 
 	 */
-	Ontology getOntology(String ontologyUri) throws ServletException {
+	private Ontology getOntology(String ontologyUri) throws ServletException {
 		Connection _con = null;
 		try {
 			_con = getConnection();
@@ -153,8 +154,8 @@ public class Db {
 	
 	
 	/**
-	 * Gets an ontology by trying the original ontology URI,
-	 * and the file extensions "", ".owl", and ".rdf" in sequence until successful
+	 * Gets an ontology by trying the original ontology URI, and then, if that fails,
+	 * with the file extensions "", ".owl", and ".rdf" in sequence until successful
 	 * or returning null if none of these tries works.
 	 * 
 	 * @param mmiUri
@@ -193,6 +194,87 @@ public class Db {
 	}	
 	
 
+	/**
+	 * Gets the list of version of a given ontology according to the corresponding
+	 * mmiUri identification, which is used to create the query wildcard, 
+	 * ie, the version part (mmiUri.getVersion) is ignored.
+	 * 
+	 * @param mmiUri the nae URI tp create the version wilcard.
+	 * 
+	 * @return list of ontologies with exactly the same given mmiUri except for the
+	 *          version component.
+	 *          
+	 * @throws ServletException
+	 */
+	List<Ontology> getOntologyVersions(MmiUri mmiUri) throws ServletException {
+		List<Ontology> onts = new ArrayList<Ontology>();
+		
+		String origVersion = mmiUri.getVersion();
+		if ( origVersion != null ) {
+			log.debug("getOntologyVersions: " +origVersion+ 
+					": version component will be ignored.");
+		}
+		
+		// get ontologyUriPattern to do the "like" query:
+		String ontologyUriPattern = "";
+		try {
+			MmiUri mmiUriPatt = mmiUri.copyWithVersionNoCheck("%");
+			ontologyUriPattern = mmiUriPatt.getOntologyUri();
+		}
+		catch (URISyntaxException e1) {
+			// should not occur.
+			log.debug("should not occur.", e1);
+			return onts;
+		}
+		
+		// ok, now run the "like" query
+		Connection _con = null;
+		try {
+			_con = getConnection();
+			Statement _stmt = _con.createStatement();
+
+			String query = 
+				"select v.id, v.ontology_id, v.file_path, v.urn " +
+				"from v_ncbo_ontology v " +
+				"where v.urn like '" +ontologyUriPattern+ "'";
+
+			ResultSet rs = _stmt.executeQuery(query);
+
+			while ( rs.next() ) {
+				Ontology ontology = new Ontology();
+				ontology.id = rs.getString(1);
+				ontology.ontology_id = rs.getString(2);
+				ontology.file_path = rs.getString(3);
+				
+				ontology.setUri(rs.getString(4));
+
+				try {
+					URL uri_ = new URL(ontologyUriPattern);
+					ontology.filename = new File(uri_.getPath()).getName();
+					onts.add(ontology);
+				}
+				catch (MalformedURLException e) {
+					// should not occur.
+					log.debug("should not occur.", e);
+				}
+			}
+		}
+		catch (SQLException e) {
+			throw new ServletException(e);
+		}
+		finally {
+			if ( _con != null ) {
+				try {
+					_con.close();
+				}
+				catch (SQLException e) {
+					throw new ServletException(e);
+				}
+			}
+		}
+		
+		return onts;
+	}
 
 	
 	List<Ontology> getOntologies() throws ServletException {

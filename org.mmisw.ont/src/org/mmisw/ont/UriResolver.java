@@ -227,6 +227,13 @@ public class UriResolver extends HttpServlet {
 			return true;
 		}
 		
+		// if the "_lpath" parameter is included, reply with full local path of ontology file
+		// (this is just a quick way to help ontmd to so some of its stuff ;)
+		if ( Util.yes(request, "_versions") ) {
+			_resolveGetVersions(request, response);
+			return true;
+		}
+		
 		// if the "_debug" parameter is included, show some info about the URI parse
 		// and the ontology from the database (but do not serve the contents)
 		if ( Util.yes(request, "_debug") ) {
@@ -551,7 +558,7 @@ public class UriResolver extends HttpServlet {
 
 	
 	/**
-	 * Helper method to dispatch a "_debug" request.
+	 * Helper method to dispatch a "_lpath" request.
 	 * The dispatch is always completed here.
 	 */
 	private void _resolveGetLocalPath(HttpServletRequest request, HttpServletResponse response) 
@@ -600,6 +607,53 @@ public class UriResolver extends HttpServlet {
 		
 		// return just the full path
 		out.println(full_path);
+	}
+	
+
+	/**
+	 * Helper method to dispatch a "_versions" request.
+	 * The dispatch is always completed here.
+	 */
+	private void _resolveGetVersions(HttpServletRequest request, HttpServletResponse response) 
+	throws ServletException, IOException {
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug("_resolveGetVersions: starting '_versions' response.");
+		}
+		
+		final String fullRequestedUri = request.getRequestURL().toString();
+		
+		PrintWriter out = null; 
+		
+
+		// start the response page:
+		response.setContentType("text/plain");
+		out = response.getWriter();
+		
+		// parse the given URI:
+		final String requestedUri = request.getRequestURI();
+		final String contextPath = request.getContextPath();
+		MmiUri mmiUri = null;
+		try {
+			mmiUri = new MmiUri(fullRequestedUri, requestedUri, contextPath);
+		}
+		catch (URISyntaxException e) {
+			out.println("ERROR: " +e.getReason());
+			return;
+		}
+		
+		List<Ontology> onts = db.getOntologyVersions(mmiUri);
+		
+		for ( Ontology ontology : onts ) {
+			
+			// report the URI:
+			out.println(ontology.getUri());
+			
+//			// full path to the file:
+//			String full_path = ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY) 
+//					+ "/" +ontology.file_path + "/" + ontology.filename;
+//			out.println(full_path);
+		}
 	}
 	
 
