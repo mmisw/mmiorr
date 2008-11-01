@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
 
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -14,6 +13,8 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.KeyboardListener;
+import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.PushButton;
@@ -37,6 +38,7 @@ public class UserPanel extends VerticalPanel {
 	private PushButton loginButton;
 	private PushButton logoutButton;
 	private PushButton uploadButton;
+	private HTML statusLabel = new HTML("");
 	
 	
 	UserPanel(MainPanel mainPanel) {
@@ -47,6 +49,20 @@ public class UserPanel extends VerticalPanel {
 	    add(decPanel);
 
 	    container.add(createForm());
+	    
+	    KeyboardListener kl = new KeyboardListenerAdapter() {
+	    	@Override
+			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+	    		statusLabel.setText("");
+	    		if ( keyCode == KeyboardListener.KEY_ENTER ) {
+	    			userName.cancelKey();
+	    			userPassword.cancelKey();
+	    			login();
+	    		}
+			}
+	    };
+	    userName.addKeyboardListener(kl);
+	    userPassword.addKeyboardListener(kl);
 	}
 
 	private Widget createForm() {
@@ -106,12 +122,15 @@ public class UserPanel extends VerticalPanel {
 		);
 		row++;
 		
+		userName.setFocus(true);
 		return panel;
 	}
 	
 	private CellPanel createButtons() {
 		CellPanel panel = new HorizontalPanel();
 		panel.setSpacing(2);
+		
+		panel.add(statusLabel);
 		
 		loginButton = new PushButton("Log in", new ClickListener() {
 			public void onClick(Widget sender) {
@@ -120,21 +139,21 @@ public class UserPanel extends VerticalPanel {
 		});
 		panel.add(loginButton);
 
-		logoutButton = new PushButton("Log out", new ClickListener() {
-			public void onClick(Widget sender) {
-				logout();
-			}
-		});
-		panel.add(logoutButton);
-		logoutButton.setEnabled(false);
-
-		uploadButton = new PushButton("Upload", new ClickListener() {
-			public void onClick(Widget sender) {
-				upload();
-			}
-		});
-		panel.add(uploadButton);
-		uploadButton.setEnabled(false);
+//		logoutButton = new PushButton("Log out", new ClickListener() {
+//			public void onClick(Widget sender) {
+//				logout();
+//			}
+//		});
+//		panel.add(logoutButton);
+//		logoutButton.setEnabled(false);
+//
+//		uploadButton = new PushButton("Upload", new ClickListener() {
+//			public void onClick(Widget sender) {
+//				upload();
+//			}
+//		});
+//		panel.add(uploadButton);
+//		uploadButton.setEnabled(false);
 
 		return panel;
 	}
@@ -142,15 +161,31 @@ public class UserPanel extends VerticalPanel {
 	String putValues(Map<String, String> values) {
 		return null;
 	}
+	
+	private void statusMessage(String msg) {
+		statusLabel.setHTML("<font color=\"green\">" +msg+ "</font>");
+	}
+
+	private void statusError(String error) {
+		statusLabel.setHTML("<font color=\"red\">" +error+ "</font>");
+		userName.setFocus(true);
+		userName.selectAll();
+	}
 
 	private void login() {
 		String username = userName.getText();
 		String password = userPassword.getText();
-		if ( username.trim().length() == 0 || password.trim().length() == 0 ) {
-			Window.alert("Please provide your account information");
+		if ( username.trim().length() == 0 ) {
+			statusError("Missing username");
+			userName.setFocus(true);
 			return;
 		}
-//		mainPanel.
+		else if ( password.trim().length() == 0 ) {
+			statusError("Missing password");
+			userPassword.setFocus(true);
+			return;
+		}
+		
 		doLogin(username, password);
 	}
 	
@@ -161,35 +196,40 @@ public class UserPanel extends VerticalPanel {
 			public void onFailure(Throwable ex) {
 				String error = ex.getMessage();
 				Main.log("login error: " +error);
-				Window.alert("Error validating credentials: " +error);
+				statusError("Error validating credentials: " +error);
+				loginButton.setEnabled(true);
 			}
 
 			public void onSuccess(LoginResult loginResult) {
 				if ( loginResult.getError() != null ) {
 					Main.log("login error: " +loginResult);
-					Window.alert(loginResult.getError());
+					statusError(loginResult.getError());
 				}
 				else {
-					mainPanel.loginOk(loginResult);
 					Main.log("login ok: " +loginResult);
+					statusMessage("OK");
+					mainPanel.loginOk(loginResult);
 				}
+				loginButton.setEnabled(true);
 //				loginPanel.setLoginResult(loginResult);
 			}
 			
 		};
 		Main.log("login ...");
+		statusMessage("Verifying...");
+		loginButton.setEnabled(false);
 		Main.ontmdService.login(userName, userPassword, callback);
 
 	}
 
 	
-	private void upload() {
-		mainPanel.doUpload();
-	}
-	
-	private void logout() {
-		mainPanel.logout();
-	}
+//	private void upload() {
+//		mainPanel.doUpload();
+//	}
+//	
+//	private void logout() {
+//		mainPanel.logout();
+//	}
 
 
 	public void setLoginResult(LoginResult loginResult) {
