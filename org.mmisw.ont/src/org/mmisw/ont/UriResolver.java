@@ -102,15 +102,19 @@ public class UriResolver extends HttpServlet {
 		if ( log.isDebugEnabled() ) {
 			String fullRequestedUri = request.getRequestURL().toString();
 			List<String> uaList = Util.getHeader(request, "user-agent");
-			log.debug("___ doGet ___");
-			log.debug("     fullRequestedUri: " + fullRequestedUri);
-			log.debug("          Remote host: " +request.getRemoteHost());
-			log.debug("           user-agent: " +uaList);
-			for ( String ua: uaList ) {
-				if ( ua.matches(".*Googlebot.*") ) {
-					log.debug("returning NO_CONTENT to googlebot");
-					response.sendError(HttpServletResponse.SC_NO_CONTENT);
-					return;
+			List<String> pcList = Util.getHeader(request, "PC-Remote-Addr");
+			log.debug("___ doGet: fullRequestedUri: " +fullRequestedUri);
+			log.debug("                 user-agent: " +uaList);
+			log.debug("             PC-Remote-Addr: " +pcList);
+			
+			// filter out Googlebot?
+			if ( false ) {   // Disabled as the robots.txt is now active.
+				for ( String ua: uaList ) {
+					if ( ua.matches(".*Googlebot.*") ) {
+						log.debug("returning NO_CONTENT to googlebot");
+						response.sendError(HttpServletResponse.SC_NO_CONTENT);
+						return;
+					}
 				}
 			}
 		}
