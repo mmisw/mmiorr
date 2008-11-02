@@ -243,8 +243,12 @@ public class Db {
 				"select v.id, v.ontology_id, v.file_path, v.urn " +
 				"from v_ncbo_ontology v " +
 				"where v.urn like '" +ontologyUriPattern+ "' " +
-				"sort by v.urn desc";
+				"order by v.urn desc";
 
+			if ( log.isDebugEnabled() ) {
+				log.debug("Versions query: " +query);
+			}
+			
 			ResultSet rs = _stmt.executeQuery(query);
 
 			while ( rs.next() ) {
