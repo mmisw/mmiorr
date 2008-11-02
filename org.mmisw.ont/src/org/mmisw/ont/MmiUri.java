@@ -261,6 +261,13 @@ public class MmiUri {
 	}
 
 	/** 
+	 * @returns the same as {@link #getOntologyUri()}.
+	 */
+	public String toString() {
+		return ontologyUri;
+	}
+
+	/** 
 	 * @returns the authority, e.g, "mmi" 
 	 *          (<code>mmi</code>)
 	 */
