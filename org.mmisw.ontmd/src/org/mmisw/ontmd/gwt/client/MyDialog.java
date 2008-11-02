@@ -64,7 +64,8 @@ public class MyDialog extends DialogBox {
 	}
 
 	public boolean onKeyUpPreview(char key, int modifiers) {
-		if ( key == KeyboardListener.KEY_ESCAPE ) {
+		if ( key == KeyboardListener.KEY_ESCAPE
+		||  key == KeyboardListener.KEY_ENTER ) {
 			hide();
 			return false;
 		}
