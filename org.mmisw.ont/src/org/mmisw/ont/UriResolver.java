@@ -273,19 +273,21 @@ public class UriResolver extends HttpServlet {
 			if ( mostRecentOntology != null ) {
 				try {
 					MmiUri foundMmiUri = MmiUri.create(mostRecentOntology.getUri());
+					if ( log.isDebugEnabled() ) {
+						log.debug("Found version: " +foundMmiUri);
+					}
 					
 					// but restore the requested file extension:
-					if ( ! rememberExt.equals(mmiUri.getTopicExtension()) ) {
+					if ( ! rememberExt.equals(foundMmiUri.getTopicExtension()) ) {
 						mmiUri = MmiUri.create(foundMmiUri.getOntologyUriWithTopicExtension(rememberExt));
 
 						if ( log.isDebugEnabled() ) {
-							log.debug("Found version: " +foundMmiUri+ "  " +
-									"Restored requested extension to: " +mmiUri);
+							log.debug("Restored requested extension to: " +mmiUri);
 						}
 					}
 				}
 				catch (URISyntaxException e) {
-					// Shoudn't happen!
+					log.error("shouldnt happen", e);
 					return false;   
 				}
 				
@@ -293,6 +295,9 @@ public class UriResolver extends HttpServlet {
 			}
 			else {
 				// No versions available!
+				if ( log.isDebugEnabled() ) {
+					log.debug("No versions found.");
+				}
 				// TODO: Since we assume NO un-versioned ontologies are stored, then we could
 				// safely return 404 here; but let the dispatch continue for now.
 			}
