@@ -31,7 +31,6 @@ public class MetadataPanel extends FlexTable {
 	
 	private boolean enabled = true;
 	
-	private TextBox originalUri_tb = new TextBox();
 	private TextBox newUri_tb = new TextBox();
 	
 
@@ -46,36 +45,26 @@ public class MetadataPanel extends FlexTable {
 		
 		int row = 0;
 		
-//		setBorderWidth(1);
-//		setWidth("850");
-//		setSize("850", "500");
-		
 		container.setSize("700", "350");
 		
 		HorizontalPanel hp = new HorizontalPanel();
-//		hp.setSpacing(4);
-//		hp.setHeight("20");
 		this.setWidget(row, 0, hp);
 		this.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP
 		);
-
-		originalUri_tb.setWidth("700");
-		originalUri_tb.setReadOnly(true);
-		if ( editing ) {
-			hp.add(new Label("Original URI:"));
-			originalUri_tb.setWidth("300");
-		}
-		hp.add(originalUri_tb);
 		
+		String tooltip = "Will show the new base URI for the generated ontology";
+		Label lbl = new Label("New base URI:");
+		lbl.setTitle(tooltip );
+		newUri_tb.setTitle(tooltip );
+		newUri_tb.setWidth("600");
+		newUri_tb.setReadOnly(true);
+		hp.add(lbl);
+		hp.add(newUri_tb);
 		row++;
 		
+		
 		if ( editing ) {
-			hp.add(new Label("New URI:"));
-			hp.add(newUri_tb);
-			newUri_tb.setWidth("300");
-			newUri_tb.setReadOnly(true);
-
 			this.setWidget(row, 0, new HTML(
 					"Fields marked * are required. " +
 					"Use commas to separate values in multi-valued fields."));
@@ -168,22 +157,17 @@ public class MetadataPanel extends FlexTable {
 	private void resetToOriginalOrNewValues(OntologyInfo ontologyInfo, boolean originalVals, 
 			ReviewResult reviewResult, boolean confirm) 
 	{
-		originalUri_tb.setText("");
-		newUri_tb.setText("");
 		for ( int i = 0, c = tabPanel.getWidgetCount(); i < c; i++ ) {
 			Widget w = tabPanel.getWidget(i);
 			if ( w instanceof MetadataGroupPanel ) {
 				((MetadataGroupPanel) w).resetToOriginalOrNewValues(ontologyInfo, originalVals, confirm);
 			}
 		}
-		String origUri = ontologyInfo.getUri();
-		if ( origUri != null ) {
-			originalUri_tb.setText(origUri);
-		}
 		
+		newUri_tb.setText("");
 		if ( reviewResult != null ) {
 			String newUri = reviewResult.getUri();
-			if ( origUri != null ) {
+			if ( newUri_tb != null ) {
 				newUri_tb.setText(newUri);
 			}
 		}
