@@ -267,7 +267,6 @@ public class UriResolver extends HttpServlet {
 			// No version explicitly given.
 			// Then, get latest version with all possible topic extensions:
 			
-			String rememberExt = mmiUri.getTopicExtension();
 			
 			Ontology mostRecentOntology = db.getMostRecentOntologyVersion(mmiUri);
 			if ( mostRecentOntology != null ) {
@@ -277,13 +276,17 @@ public class UriResolver extends HttpServlet {
 						log.debug("Found version: " +foundMmiUri);
 					}
 					
-					// but restore the requested file extension:
+					String rememberExt = mmiUri.getTopicExtension();
+					// but restore the requested file extension if different
 					if ( ! rememberExt.equals(foundMmiUri.getTopicExtension()) ) {
 						mmiUri = MmiUri.create(foundMmiUri.getOntologyUriWithTopicExtension(rememberExt));
 
 						if ( log.isDebugEnabled() ) {
 							log.debug("Restored requested extension to: " +mmiUri);
 						}
+					}
+					else {
+						mmiUri = foundMmiUri;
 					}
 				}
 				catch (URISyntaxException e) {
