@@ -269,11 +269,10 @@ public class UriResolver extends HttpServlet {
 			
 			String rememberExt = mmiUri.getTopicExtension();
 			
-			List<Ontology> onts = db.getOntologyVersions(mmiUri, true);
-			if ( onts.size() > 0 ) {
-				String mostRecentUri = onts.get(0).getUri(); 
+			Ontology mostRecentOntology = db.getMostRecentOntologyVersion(mmiUri);
+			if ( mostRecentOntology != null ) {
 				try {
-					MmiUri foundMmiUri = MmiUri.create(mostRecentUri);
+					MmiUri foundMmiUri = MmiUri.create(mostRecentOntology.getUri());
 					
 					// but restore the requested file extension:
 					if ( ! rememberExt.equals(mmiUri.getTopicExtension()) ) {
@@ -763,6 +762,17 @@ public class UriResolver extends HttpServlet {
 		out.println("               Term: " + term);
 		out.println("</pre>");
 
+		
+		// report something about the available versions:
+		out.println("Available versions:");
+		out.println("<pre>");
+		for ( Ontology ont : db.getOntologyVersions(mmiUri, true) ) {
+			out.println("   " +ont.getUri());
+		}
+		out.println("</pre>");
+		
+		
+		
 		// obtain info about the ontology:
 		String[] foundUri = { null };
     	Ontology ontology = db.getOntologyWithExts(mmiUri, foundUri);

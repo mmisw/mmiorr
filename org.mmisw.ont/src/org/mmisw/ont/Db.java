@@ -315,6 +315,17 @@ public class Db {
 		
 		return onts;
 	}
+	
+	
+	
+	Ontology getMostRecentOntologyVersion(MmiUri mmiUri) throws ServletException {
+		List<Ontology> onts = getOntologyVersions(mmiUri, true);
+		if ( onts.size() == 0 ) {
+			return null;
+		}
+		Ontology ont = onts.get(0);
+		return ont;
+	}
 
 	
 	List<Ontology> getOntologies() throws ServletException {
