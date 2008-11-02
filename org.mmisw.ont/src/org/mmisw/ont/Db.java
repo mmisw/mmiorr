@@ -235,7 +235,7 @@ public class Db {
 		}
 		
 		String origVersion = mmiUri.getVersion();
-		if ( origVersion != null ) {
+		if ( origVersion != null && log.isDebugEnabled() ) {
 			log.debug("getOntologyVersions: " +origVersion+ ": version component will be ignored.");
 		}
 		
