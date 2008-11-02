@@ -50,7 +50,7 @@ public class UriResolver extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	
-	private static final String VERSION = "0.1.4 (20081030)";
+	private static final String VERSION = "0.1.5 (20081101)";
 	static final String TITLE = "MMI Ontology URI resolver. Version " +VERSION;
 
 	private final Log log = LogFactory.getLog(UriResolver.class);
@@ -256,6 +256,41 @@ public class UriResolver extends HttpServlet {
 			}
 			return false;   
 		}
+		
+		
+		////////////////////////////////////////////////////////////////////////////////
+		//    Version component?
+		////////////////////////////////////////////////////////////////////////////////
+		
+		String version = mmiUri.getVersion();
+		if ( version == null ) {
+			// No version explicitly given.
+			// Then, get latest version:
+			
+			List<Ontology> onts = db.getOntologyVersions(mmiUri);
+			if ( onts.size() > 0 ) {
+				String mostRecentUri = onts.get(0).getUri(); 
+				try {
+					mmiUri = MmiUri.create(mostRecentUri);
+				}
+				catch (URISyntaxException e) {
+					// Shoudn't happen!
+					return false;   
+				}
+				
+				//ok, continue with this latest version.
+			}
+			else {
+				// No versions available!
+				// TODO: Since we assume NO un-versioned ontologies are stored, then we could
+				// safely return 404 here; but let the dispatch continue for now.
+			}
+		}
+		else {
+			// Version explicitly given: let the dispatch continue.
+		}
+		
+		
 		
 		////////////////////////////////////////////////////////////////////////////////
 		//    Dereferencing rules

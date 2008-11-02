@@ -1,5 +1,6 @@
 package org.mmisw.ont;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.regex.Pattern;
@@ -127,8 +128,14 @@ public class MmiUri {
 		if ( authority.length() == 0 ) {
 			throw new URISyntaxException(fullRequestedUri, "Missing authority in URI");
 		}
+		if ( Character.isDigit(authority.charAt(0)) ) {
+			throw new URISyntaxException(fullRequestedUri, "Authority cannot start with digit");
+		}
 		if ( topic.length() == 0 ) {
 			throw new URISyntaxException(fullRequestedUri, "Missing topic in URI");
+		}
+		if ( Character.isDigit(topic.charAt(0)) ) {
+			throw new URISyntaxException(fullRequestedUri, "Topic cannot start with digit");
 		}
 		
 		// check version, if given:
@@ -146,6 +153,28 @@ public class MmiUri {
 		}
 	}
 	
+	
+	public static MmiUri create(String ontologyUri) throws URISyntaxException {
+		URI juri = URI.create(ontologyUri);
+		
+		String path = juri.getPath();
+		if ( !path.startsWith("/") ) {
+			throw new URISyntaxException(ontologyUri, "not absolute path");
+		}
+		int idx = path.indexOf('/', 1);
+		if ( idx < 0 ) {
+			throw new URISyntaxException(ontologyUri, "No root");
+		}
+		String root = path.substring(0, idx); // include leading slash  
+		
+		String reqUri = path;
+		String contextPath = root;
+		MmiUri mmiUri = new MmiUri(ontologyUri, reqUri, contextPath);
+		
+		return mmiUri;
+	}
+
+
 	
 	private MmiUri(String untilRoot, 
 			String authority,

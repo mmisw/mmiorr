@@ -14,6 +14,17 @@ public class MmiUriTest extends TestCase {
 	String contextPath = "/ont";
 	
 	
+    public void testBasic0() throws URISyntaxException {
+    	MmiUri mmiUri = MmiUri.create("http://mmisw.org/ont/mmi/20081101/someVocab.owl/someTerm");
+    
+		assertEquals("http://mmisw.org/ont/mmi/20081101/someVocab.owl", mmiUri.getOntologyUri());
+        assertEquals("mmi", mmiUri.getAuthority());
+        assertEquals("20081101", mmiUri.getVersion());
+        assertEquals("someVocab.owl", mmiUri.getTopic());
+        assertEquals("someTerm", mmiUri.getTerm());
+        assertEquals(".owl", mmiUri.getTopicExtension());
+    }
+    
     public void testBasic() throws URISyntaxException {
     	MmiUri mmiUri = new MmiUri(fullRequestedUri, requestedUri, contextPath);
     

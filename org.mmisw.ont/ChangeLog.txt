@@ -4,7 +4,19 @@ Carlos Rueda - MMI / MBARI
 ChangeLog
 
 2008-11-01
-	- New param _versions to report versions of a requested mmiUri, ex:
+	- New Db.getOntologyVersions(MmiUri mmiUri) to get the versions of a given
+	  ontology. The given mmiUri is used to create the query wildcard, ie, the 
+	  version part (mmiUri.getVersion()) is ignored.
+	  
+	- Issue 23: Resolve latest version
+	  See UriResolver._resolveUri:
+	  	If version is not explicitly requested, find the latest version of the
+	  	corresponding ontology (using "%" for version wildcard and the other components
+	  	in the URI), and continue regular processing with the URI found.
+	  	Note: topic extension is handled with a trailing "%" wildcard as well.
+	  	
+	  
+	- Convenience parameter "_versions" to report the versions of a requested mmiUri, ex:
 	    http://mmisw.org/ont/mmi/parameter/?_versions
 	
 	

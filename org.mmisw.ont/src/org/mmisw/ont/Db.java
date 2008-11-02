@@ -196,10 +196,13 @@ public class Db {
 
 	/**
 	 * Gets the list of version of a given ontology according to the corresponding
-	 * mmiUri identification, which is used to create the query wildcard, 
-	 * ie, the version part (mmiUri.getVersion) is ignored.
+	 * mmiUri identification, which is used to create the query wildcard:
+	 *    - Use wildcard "%" for the version 
+	 *    - Append widcard "%" to ge all possible topic extensions.
+	 * The elements are sorted such that the first element is the most recent version
+	 * available.
 	 * 
-	 * @param mmiUri the nae URI tp create the version wilcard.
+	 * @param mmiUri the base URI to create the version wilcard.
 	 * 
 	 * @return list of ontologies with exactly the same given mmiUri except for the
 	 *          version component.
@@ -218,8 +221,11 @@ public class Db {
 		// get ontologyUriPattern to do the "like" query:
 		String ontologyUriPattern = "";
 		try {
+			// use "%" for the version:
 			MmiUri mmiUriPatt = mmiUri.copyWithVersionNoCheck("%");
-			ontologyUriPattern = mmiUriPatt.getOntologyUri();
+			
+			// Append "%" to request all possible extensions:
+			ontologyUriPattern = mmiUriPatt.getOntologyUri() + "%";
 		}
 		catch (URISyntaxException e1) {
 			// should not occur.
@@ -236,7 +242,8 @@ public class Db {
 			String query = 
 				"select v.id, v.ontology_id, v.file_path, v.urn " +
 				"from v_ncbo_ontology v " +
-				"where v.urn like '" +ontologyUriPattern+ "'";
+				"where v.urn like '" +ontologyUriPattern+ "' " +
+				"sort by v.urn desc";
 
 			ResultSet rs = _stmt.executeQuery(query);
 
@@ -246,10 +253,11 @@ public class Db {
 				ontology.ontology_id = rs.getString(2);
 				ontology.file_path = rs.getString(3);
 				
-				ontology.setUri(rs.getString(4));
+				String ontologyUri = rs.getString(4);
+				ontology.setUri(ontologyUri);
 
 				try {
-					URL uri_ = new URL(ontologyUriPattern);
+					URL uri_ = new URL(ontologyUri);
 					ontology.filename = new File(uri_.getPath()).getName();
 					onts.add(ontology);
 				}
