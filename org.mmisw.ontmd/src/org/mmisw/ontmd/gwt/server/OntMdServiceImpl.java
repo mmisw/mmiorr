@@ -13,8 +13,10 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
@@ -36,10 +38,13 @@ import org.mmisw.ontmd.gwt.client.vocabulary.AttrGroup;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.Ontology;
-import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 import edu.drexel.util.rdf.JenaUtil;
 import edu.drexel.util.rdf.OwlModel;
@@ -170,7 +175,9 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	private void prepareOntologyInfo(File file, OntologyInfo ontologyInfo) {
 		String uriFile = file.toURI().toString();
 		log.info("Loading model: " +uriFile);
-		Model model = JenaUtil.loadModel(uriFile, false);
+		OntModel model = JenaUtil.loadModel(uriFile, false);
+		
+		debugOntModel(model);
 
 		String full_path = file.getAbsolutePath();
 		
@@ -208,6 +215,78 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	}
 	
 	
+	private void debugOntModel(OntModel model) {
+		StmtIterator stmts = model.listStatements();
+		while ( stmts.hasNext() ) {
+			Statement stmt = stmts.nextStatement();
+			log.info(" #### " +stmt);
+		}
+	}
+
+
+	/**
+	 * Replaces any statement having an element in the given oldNameSpace with a
+	 * correponding statement in the new namespace.
+	 * <p>
+	 * (Doesn't jena have a utility for doing this?)
+	 * 
+	 * @param model
+	 * @param oldNameSpace
+	 * @param newNameSpace
+	 */
+	private void _replaceNameSpace(OntModel model, String oldNameSpace, String newNameSpace) {
+		
+		log.info(" REPLACING NS " +oldNameSpace+ " WITH " +newNameSpace);
+		
+		// old statements to be removed:
+		List<Statement> o_stmts = new ArrayList<Statement>(); 
+		
+		// new statements to be added:
+		List<Statement> n_stmts = new ArrayList<Statement>(); 
+		
+		StmtIterator existingStmts = model.listStatements();
+		while ( existingStmts.hasNext() ) {
+			Statement o_stmt = existingStmts.nextStatement();
+			Resource sbj = o_stmt.getSubject();
+			Property prd = o_stmt.getPredicate();
+			RDFNode obj = o_stmt.getObject();
+			
+			boolean any_change = false;
+			Resource n_sbj = sbj;
+			Property n_prd = prd;
+			RDFNode  n_obj = obj;
+
+			if ( sbj.getNameSpace().equals(oldNameSpace) ) {
+				n_sbj = model.createResource(newNameSpace + sbj.getLocalName());
+				any_change = true;
+			}
+			if ( prd.getNameSpace().equals(oldNameSpace) ) {
+				n_prd = model.createProperty(newNameSpace + prd.getLocalName());
+				any_change = true;
+			}
+			if ( (obj instanceof Resource) && ((Resource) obj).getNameSpace().equals(oldNameSpace) ) {
+				n_obj = model.createResource(newNameSpace + ((Resource) obj).getLocalName());
+				any_change = true;
+			}
+
+			if ( any_change ) {
+				o_stmts.add(o_stmt);
+				Statement n_stmt = model.createStatement(n_sbj, n_prd, n_obj);
+				n_stmts.add(n_stmt);
+				log.info(" #### " +o_stmt);
+			}
+		}
+		
+		for ( Statement n_stmt : n_stmts ) {
+			model.add(n_stmt);
+		}
+		
+		for ( Statement o_stmt : o_stmts ) {
+			model.remove(o_stmt);
+		}
+	}
+
+
 	/**
 	 * Reads a file.
 	 * @param file the file to read in
@@ -236,6 +315,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		}
 	}
 
+	
 	public ReviewResult review(OntologyInfo ontologyInfo, LoginResult loginResult) {
 		
 		_getBaseInfoIfNull();
@@ -303,35 +383,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			return reviewResult;
 		}
 		
-		String uriFile = file.toURI().toString();
-		OntModel model = JenaUtil.loadModel(uriFile, false);
 		
-		/////////////////////////////////////////////////////////////////
-		// Use the existing Owl.Ontology element in the file, if any.
-		//
-		Resource ontRes = JenaUtil.getFirstIndividual(model, OWL.Ontology);
-		
-		OwlModel newOntModel = null;    // only used if ontRes == null
-		Ontology ont = null;            // only used if ontRes == null
-		
-		
-		if ( ontRes == null ) {
-			newOntModel = new OwlModel(model);
-		}
-//		else {
-//			StmtIterator xx = ontRes.listProperties();
-//			while ( xx.hasNext() ) {
-//				Statement st = xx.nextStatement();
-//				log.info(st.getClass().getName()+ " : " +st.getSubject()+
-//						" :: " +st.getPredicate()+ " :: " +st.getObject());
-//			}			
-//		}
-
-		///////////////////////////////////////////////////////
-		// Update attributes in model:
-
-		log.info("Updating metadata attributes ...");
-
 		
 		// ontology root:
 		final String namespaceRoot = "http://mmisw.org/ont";
@@ -343,28 +395,91 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		final String version = sdf.format(date);
 		
 //		String finalUri = model.getNsPrefixURI("");
-		String finalUri = namespaceRoot + "/" +
+		final String finalUri = namespaceRoot + "/" +
 		                        orgAbbreviation + "/" +
 		                        version + "/" +
 		                        primaryClass;
+		
+		final String ns_ = JenaUtil.getURIForNS(finalUri);
+		final String base_ = JenaUtil.getURIForBase(finalUri);
+		
 
 		
 		
-		String ns_ = JenaUtil.getURIForNS(finalUri);
-		String base_ = JenaUtil.getURIForBase(finalUri);
 		
-		if ( ontRes == null ) {
-			newOntModel.setNsPrefix("", ns_);
-			Map<String, String> preferredPrefixMap = MdHelper.getPreferredPrefixMap();
-			for ( String uri : preferredPrefixMap.keySet() ) {
-				String prefix = preferredPrefixMap.get(uri);
-				newOntModel.setNsPrefix(prefix, uri);
-			}
-
-			ont = newOntModel.createOntology(base_);
-			log.info("New ontology created with namespace " + ns_ + " base " + base_);
+		String uriFile = file.toURI().toString();
+		OntModel model = null;
+		try {
+			model = JenaUtil.loadModel(uriFile, false);
+		}
+		catch ( Throwable ex ) {
+			String error = "Unexpected error: " +ex.getClass().getName()+ " : " +ex.getMessage();
+			log.info(error);
+			reviewResult.setError(error);
+			return reviewResult;
 		}
 		
+		final String original_ns_ = JenaUtil.getURIForNS(model.getNsPrefixURI(""));
+		log.info("original namespace: " +original_ns_);
+		log.info("Setting prefix \"\" for URI " + ns_);
+		model.setNsPrefix("", ns_);
+		log.info("     new namespace: " +ns_);
+
+		
+		// Update statements  according to the new namespace:
+		_replaceNameSpace(model, original_ns_, ns_);
+
+		
+		/////////////////////////////////////////////////////////////////
+		// Is there an existing OWL.Ontology individual?
+		// TODO Note that ONLY the first OWL.Ontology individual is considered.
+		Resource ontRes = JenaUtil.getFirstIndividual(model, OWL.Ontology);
+		List<Statement> prexistStatements = null; 
+		if ( ontRes != null ) {
+			prexistStatements = new ArrayList<Statement>();
+			log.info("Getting pre-existing properties for OWL.Ontology individual: " +ontRes.getURI());
+			StmtIterator iter = ontRes.listProperties();
+			while ( iter.hasNext() ) {
+				Statement st = iter.nextStatement();
+				prexistStatements.add(st);
+			}	
+		}
+
+		
+		// The new OntModel that will contain the pre-existing attributes (if any),
+		// plus the new and updated attributes:
+		final OwlModel newOntModel = new OwlModel(model);
+		final Ontology ont_ = newOntModel.createOntology(base_);
+		log.info("New ontology created with namespace " + ns_ + " base " + base_);
+		newOntModel.setNsPrefix("", ns_);
+		
+		// set preferred prefixes:
+		Map<String, String> preferredPrefixMap = MdHelper.getPreferredPrefixMap();
+		for ( String uri : preferredPrefixMap.keySet() ) {
+			String prefix = preferredPrefixMap.get(uri);
+			newOntModel.setNsPrefix(prefix, uri);
+		}
+		
+		//////////////////////////////////////////////////
+		// transfer any preexisting attributes, and then remove all properties from
+		// pre-existing ontRes so just the new OntModel gets added.
+		if ( ontRes != null ) {
+			for ( Statement st : prexistStatements ) {
+				log.info("  Transferring: " +st.getSubject()+ " :: " +st.getPredicate()+ " :: " +st.getObject());
+				newOntModel.add(ont_, st.getPredicate(), st.getObject());
+			}	
+			
+			log.info("Removing original OWL.Ontology individual");
+			ontRes.removeProperties();
+			// TODO the following may be unnecesary but doesn't hurt:
+			model.remove(ontRes, RDF.type, OWL.Ontology); 
+		}
+
+		
+		
+		///////////////////////////////////////////////////////
+		// Update attributes in model:
+
 		Map<String, Property> uriPropMap = MdHelper.getUriPropMap();
 		for ( String uri : newValues.keySet() ) {
 			String value = newValues.get(uri).trim();
@@ -374,40 +489,35 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 					log.info("No property found for uri='" +uri+ "'");
 					continue;
 				}
-				log.info("assigning: " +uri+ " = " +value);
+				log.info(" Assigning: " +uri+ " = " +value);
 				
-				if ( ontRes != null ) {
-					ontRes.addProperty(prop, value);
-				}
-				else {
-					ont.addProperty(prop, value);
-				}
+				ont_.addProperty(prop, value);
 			}
 		}
 		
 		// set some internal attributes (ie, internally computed)
 		
-		if ( ontRes != null ) {
-			ontRes.addProperty(Omv.uri, base_);
-			ontRes.addProperty(Omv.version, version);
-		}
-		else {
-			ont.addProperty(Omv.uri, base_);
-			ont.addProperty(Omv.version, version);
-		}
+		ont_.addProperty(Omv.uri, base_);
+		ont_.addProperty(Omv.version, version);
 
 		// those internal attributes also updated in the values map:
 		newValues.put(Omv.uri.getURI(), base_);
 		newValues.put(Omv.version.getURI(), version);
+
+		
+		
+		////////////////////////////////////////////////////////////////////////
+		// Done with the model. 
+		////////////////////////////////////////////////////////////////////////
+		
+		// Get resulting string:
+		String rdf = JenaUtil.getOntModelAsString(model) ;  // XXX newOntModel);
 		
 		
 		reviewResult.setUri(base_);
 		
 
-		// Get resulting model:
-		String rdf = JenaUtil.getOntModelAsString(model) ;  // XXX newOntModel);
-		
-		// write new contents to a new file under previwDir:
+		// write new contents to a new file under previewDir:
 		
 		File reviewedFile = new File(previewDir, file.getName());
 		reviewResult.setFullPath(reviewedFile.getAbsolutePath());
