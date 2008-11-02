@@ -195,27 +195,48 @@ public class Db {
 	
 
 	/**
-	 * Gets the list of version of a given ontology according to the corresponding
-	 * mmiUri identification, which is used to create the query wildcard:
-	 *    - Use wildcard "%" for the version 
-	 *    - Append widcard "%" to ge all possible topic extensions.
+	 * Gets the list of versions of a given ontology according to the corresponding
+	 * mmiUri identification, which is used to create the query:
+	 * <ul>
+	 *    <ul> Use wildcard "%" for the version 
+	 *    
+	 *    <ul> If allExts is true, search for topic with NO extension, but also allow
+	 *       the same topic with any extension ".%" (Note: the dot is important to
+	 *       avoid getting topics that have the topic in question as suffix).
+	 * </ul>   
 	 * The elements are sorted such that the first element is the most recent version
 	 * available.
 	 * 
 	 * @param mmiUri the base URI to create the version wilcard.
+	 * @param  allExts  false to use the topic as given (with its extension);
+	 *                  true to ignore the extension and use a wildcard.
 	 * 
 	 * @return list of ontologies with exactly the same given mmiUri except for the
 	 *          version component.
 	 *          
 	 * @throws ServletException
 	 */
-	List<Ontology> getOntologyVersions(MmiUri mmiUri) throws ServletException {
+	List<Ontology> getOntologyVersions(MmiUri mmiUri, boolean allExts) throws ServletException {
 		List<Ontology> onts = new ArrayList<Ontology>();
+		
+		if ( allExts ) {
+			// remove original topic extension, if any:
+			if ( mmiUri.getTopicExtension().length() > 0 ) {
+				String uriNoExt = mmiUri.getOntologyUriWithTopicExtension("");
+				try {
+					mmiUri = MmiUri.create(uriNoExt);
+				}
+				catch (URISyntaxException e) {
+					// should not occur.
+					log.debug("should not occur.", e);
+					return onts;
+				}
+			}
+		}
 		
 		String origVersion = mmiUri.getVersion();
 		if ( origVersion != null ) {
-			log.debug("getOntologyVersions: " +origVersion+ 
-					": version component will be ignored.");
+			log.debug("getOntologyVersions: " +origVersion+ ": version component will be ignored.");
 		}
 		
 		// get ontologyUriPattern to do the "like" query:
@@ -223,14 +244,20 @@ public class Db {
 		try {
 			// use "%" for the version:
 			MmiUri mmiUriPatt = mmiUri.copyWithVersionNoCheck("%");
-			
-			// Append "%" to request all possible extensions:
-			ontologyUriPattern = mmiUriPatt.getOntologyUri() + "%";
+			ontologyUriPattern = mmiUriPatt.getOntologyUri();
 		}
-		catch (URISyntaxException e1) {
+		catch (URISyntaxException e) {
 			// should not occur.
-			log.debug("should not occur.", e1);
+			log.debug("should not occur.", e);
 			return onts;
+		}
+		
+		// to be added to the condition is the query string below:
+		String or_with_dot_ext = "";
+		
+		if ( allExts ) {
+			// Add an "or" condition to allow extensions, ".%":
+			or_with_dot_ext = "or v.urn like '" +ontologyUriPattern+ ".%' ";
 		}
 		
 		// ok, now run the "like" query
@@ -243,6 +270,7 @@ public class Db {
 				"select v.id, v.ontology_id, v.file_path, v.urn " +
 				"from v_ncbo_ontology v " +
 				"where v.urn like '" +ontologyUriPattern+ "' " +
+				or_with_dot_ext +
 				"order by v.urn desc";
 
 			if ( log.isDebugEnabled() ) {

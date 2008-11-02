@@ -265,9 +265,9 @@ public class UriResolver extends HttpServlet {
 		String version = mmiUri.getVersion();
 		if ( version == null ) {
 			// No version explicitly given.
-			// Then, get latest version:
+			// Then, get latest version with all possible topic extensions:
 			
-			List<Ontology> onts = db.getOntologyVersions(mmiUri);
+			List<Ontology> onts = db.getOntologyVersions(mmiUri, true);
 			if ( onts.size() > 0 ) {
 				String mostRecentUri = onts.get(0).getUri(); 
 				try {
@@ -677,7 +677,7 @@ public class UriResolver extends HttpServlet {
 			return;
 		}
 		
-		List<Ontology> onts = db.getOntologyVersions(mmiUri);
+		List<Ontology> onts = db.getOntologyVersions(mmiUri, true);
 		
 		for ( Ontology ontology : onts ) {
 			
