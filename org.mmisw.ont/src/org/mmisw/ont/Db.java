@@ -144,7 +144,7 @@ public class Db {
 					_con.close();
 				}
 				catch (SQLException e) {
-					throw new ServletException(e);
+					log.warn("Error closing connection", e);
 				}
 			}
 		}
@@ -308,7 +308,7 @@ public class Db {
 					_con.close();
 				}
 				catch (SQLException e) {
-					throw new ServletException(e);
+					log.warn("Error closing connection", e);
 				}
 			}
 		}
@@ -363,7 +363,7 @@ public class Db {
 					_con.close();
 				}
 				catch (SQLException e) {
-					throw new ServletException(e);
+					log.warn("Error closing connection", e);
 				}
 			}
 		}
