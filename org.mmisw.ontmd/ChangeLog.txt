@@ -3,6 +3,10 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2008-11-02
+	- some code clean-up:
+		-MdHelper: removed unused stuff (AttributeValue class, title).
+		
 2008-11-01
 	- MetadataPanel doesn't show the original base URI anymore; this info is already
 	  provided in the Ontology panel.

@@ -1,9 +1,7 @@
 package org.mmisw.ont.vocabulary.util;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.mmisw.ont.vocabulary.Omv;
@@ -12,16 +10,8 @@ import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.ontmd.gwt.client.vocabulary.Option;
 
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.Ontology;
-import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.DC;
-import com.hp.hpl.jena.vocabulary.OWL;
-
-import edu.drexel.util.rdf.JenaUtil;
-import edu.drexel.util.rdf.OwlModel;
 
 /**
  * Handles the metadata attributes for the ontologies stored in the
@@ -30,7 +20,6 @@ import edu.drexel.util.rdf.OwlModel;
  * @author Carlos Rueda
  */
 public class MdHelper {
-	private static String title = "Metadata";
 	
 	// Examples: preferredPrefix(Omv.NS) == "omv";
 	private static Map<String,String> preferredPrefix = new HashMap<String,String>();
@@ -295,145 +284,10 @@ public class MdHelper {
 	}
 	
 	
-	private static AttrDef[] attrDefs = {
-		
-	};
-	
-	private static Map<String,AttributeValue> _initAttributes(Map<String,AttributeValue> attributes) {
-		for ( AttrDef attrDef : attrDefs ) {
-			attributes.put(attrDef.getLocalName(), new AttributeValue(attrDef));
-		}
-		return attributes;	
-	}
-	
-	/**
-	 * attributes that can/should be associated
-	 */
-	private Map<String,AttributeValue> attributes;
-	
-	
 	/** 
 	 * Creates an ontology metadata helper.
 	 */
 	public MdHelper() {
-		attributes = _initAttributes(new LinkedHashMap<String,AttributeValue>());	
 	}
 	
-	public String getTitle() {
-		return title;
-	}
-
-	/** 
-	 * Gets all the attributes
-	 * @return All the attributes
-	 */
-	public Collection<AttributeValue> getAttributes() {
-		return attributes.values();
-	}
-	
-	
-	/**
-	 * Updates the given model with the non-empty-valued attributes in this
-	 * object.
-	 * 
-	 * @param ontModel The model to be updated.
-	 */
-	public void updateModel(OntModel ontModel) {
-
-		// see that at least one attribute has a value associated
-		boolean hasValues = false;
-		for ( AttributeValue attr : getAttributes() ) {
-			String values = attr.getValue();
-			if ( values.length() > 0 ) {
-				hasValues = true;
-				break;
-			}
-		}
-		
-		if ( !hasValues ) {
-			System.out.println(this.getClass().getName()+ ": no metadata to update in model...");
-			return;
-		}
-		
-		System.out.println(this.getClass().getName()+ ": updating metadata in model ...");
-		OwlModel newOntModel = new OwlModel(ontModel);
-		Ontology ontolgy = newOntModel.createOntology(JenaUtil.getURIForBase(""));
-		
-		for ( AttributeValue attr : getAttributes() ) {
-			String value = attr.getValue();
-			if ( value.length() > 0 ) {
-				ontolgy.addProperty(uriPropMap.get(attr.attrDef.getUri()), value);
-			}
-		}
-	}
-
-	
-	/**
-	 * Updates the attributes in this object using the metadata in the 
-	 * given model.
-	 * 
-	 * @param model The model to read metadata from.
-	 */
-	public void updateAttributesFromModel(Model ontModel) {
-
-		System.out.println(this.getClass().getName()+ ": updating attributes with model metadata ...");
-		
-		Resource ontRes = JenaUtil.getFirstIndividual(ontModel, OWL.Ontology);
-		
-		if ( ontRes == null ) {
-			return;
-		}
-		
-		for ( AttrDef attrDef : attrDefs ) {
-			Property dcProp = uriPropMap.get(attrDef.getUri());
-			String value = JenaUtil.getValue(ontRes, dcProp);
-			if (value == null) {
-				continue;
-			}
-			//	value = JenaUtil.getBaseURI(ontModel);
-			
-			AttributeValue attr = attributes.get(dcProp.getLocalName());
-			if ( attr != null ) {
-				attr.setValue(value);
-			}
-			
-		}
-		System.out.println();
-	}
-
-	
-	/**
-	 * A metadata attribute with associated value. 
-	 */
-	public static class AttributeValue {
-		private AttrDef attrDef;
-
-		private String value = "";
-		
-		public AttributeValue(AttrDef attrDef) {
-			this.attrDef = attrDef;
-		}
-
-		public String getNamespace() {
-			return attrDef.getNameSpace();
-		}
-		
-		public String getLabel() {
-			return attrDef.getLocalName();
-		}
-		
-		public String getValue() {
-			return value;
-		}
-		
-		public void setValue(String value) {
-			this.value = value.trim();
-		}
-		
-		public Property getProperty() {
-			return uriPropMap.get(attrDef.getUri());
-		}
-	}
-	
-
 }
