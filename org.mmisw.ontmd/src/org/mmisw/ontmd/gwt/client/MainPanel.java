@@ -110,7 +110,7 @@ public class MainPanel extends VerticalPanel {
 			requestedOntologyUri = params.get("ontologyUri");
 			editRequestedOntology = ! "n".equalsIgnoreCase(params.get("_edit"));
 		}
-	    else if ( //false && 
+	    else if ( false && 
 	    		! GWT.isScript() ) {
 	    	// NOTE: Using an ad hoc ontology uri under my hosted environment.");
 	    	requestedOntologyUri = "http://localhost:8080/ont/mmi/map-cicore-cf";
@@ -382,7 +382,9 @@ public class MainPanel extends VerticalPanel {
 		
 		popup.getTextArea().setText(msg);
 		popup.getDockPanel().add(vp, DockPanel.NORTH);
-		popup.setText(error == null ? "Updated ontology contents" : "Error");
+		popup.setText(error == null 
+				? "Your ontology is ready to be uploaded" 
+				: "Error");
 		popup.center();
 
 		Main.log("Review result: " +msg);
