@@ -53,26 +53,36 @@ public class OntologyPanel extends VerticalPanel {
 	
 	protected MainPanel mainPanel;
 
-	
-	OntologyPanel(MainPanel mainPanel) {
+	/**
+	 * Creates the ontology panel where the initial ontology can be loaded
+	 * and its original contents displayed.
+	 * @param mainPanel
+	 * @param allowLoadOptions  true to include buttons to load an ontology;
+	 */
+	OntologyPanel(MainPanel mainPanel, boolean allowLoadOptions) {
 		this.mainPanel = mainPanel;
 		setWidth("850");
 		
-		createLoadButton();
-		
-		recreate();
-	}
-	
-	
-	private void recreate() {
-		upload = new FileUpload();
-		upload.setTitle("The path to the ontology in your local system");
-		upload.setWidth("300");
-		upload.setName("ontologyFile");
-
+		createDetailsButton();
 		statusLoad.setText("");
 		statusField2.setText("");
 		textArea.setText("");
+
+		if ( allowLoadOptions ) {
+			createLoadButton();
+		}
+		recreate(allowLoadOptions);
+	}
+	
+	
+	private void recreate(boolean allowLoadOptions) {
+		if ( allowLoadOptions ) {
+			upload = new FileUpload();
+			upload.setTitle("The path to the ontology in your local system");
+			upload.setWidth("300");
+			upload.setName("ontologyFile");
+		}
+		
 		clear();
 		
 		FlexTable panel = new FlexTable();
@@ -80,14 +90,26 @@ public class OntologyPanel extends VerticalPanel {
 //		panel.setBorderWidth(1);
 		int row = 0;
 		
-		panel.setWidget(row, 0, new HTML("Please specify your ontology file."));
+		String info;
+		if ( allowLoadOptions ) {
+			info = "Please specify your ontology file.";
+		}
+		else {
+			info = "This panel shows the contents of the loaded ontology.";
+		}
+		panel.setWidget(row, 0, new HTML(info));
 		panel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
+		
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.setSpacing(3);
 		hp.add(statusLoad);
-		hp.add(loadButton);
+		
+		if ( allowLoadOptions ) {
+			hp.add(loadButton);
+		}
+		
 		panel.setWidget(row, 1, hp);
 		panel.getFlexCellFormatter().setAlignment(row, 1, 
 				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
@@ -95,26 +117,25 @@ public class OntologyPanel extends VerticalPanel {
 		row++;
 
 		add(panel);
-		add(createWidget());
+		add(createWidget(allowLoadOptions));
 	}
 
 	
 	
-	private Widget createWidget() {
+	private Widget createWidget(boolean allowLoadOptions) {
 		
-		createLoadButton();
-
 		FlexTable panel = new FlexTable();
 		
 		int row = 0;
 		
-		panel.getFlexCellFormatter().setColSpan(row, 0, 2);
-		panel.setWidget(row, 0, prepareUploadPanel());
-		panel.getFlexCellFormatter().setAlignment(row, 1, 
-				HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE
-		);
-		row++;
-
+		if ( allowLoadOptions ) {
+			panel.getFlexCellFormatter().setColSpan(row, 0, 2);
+			panel.setWidget(row, 0, prepareUploadPanel());
+			panel.getFlexCellFormatter().setAlignment(row, 1, 
+					HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE
+			);
+			row++;
+		}
 		
 		statusField2.setWidth("600");
 		statusField2.setReadOnly(true);
@@ -251,17 +272,11 @@ public class OntologyPanel extends VerticalPanel {
 	private void getOntologyInfoFromPreLoaded(String uploadResults) {
 		AsyncCallback<OntologyInfo> callback = new AsyncCallback<OntologyInfo>() {
 			public void onFailure(Throwable thr) {
-				statusLoad.setHTML("<font color=\"red\">Error</font>");
-				String error = thr.getClass().getName()+ ": " +thr.getMessage();
-				while ( (thr = thr.getCause()) != null ) {
-					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
-				}
-				statusField2.setText(error);
-				Window.alert(error);
+				OntologyPanel.this.onFailure(thr);
 			}
 
 			public void onSuccess(OntologyInfo ontologyInfo) {
-				ontologyInfoObtained(ontologyInfo);
+				OntologyPanel.this.onSuccess(ontologyInfo);
 			}
 		};
 
@@ -269,6 +284,23 @@ public class OntologyPanel extends VerticalPanel {
 		Main.ontmdService.getOntologyInfoFromPreLoaded(uploadResults, callback);
 
 	}
+	
+	
+	
+	void onFailure(Throwable thr) {
+		statusLoad.setHTML("<font color=\"red\">Error</font>");
+		String error = thr.getClass().getName()+ ": " +thr.getMessage();
+		while ( (thr = thr.getCause()) != null ) {
+			error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
+		}
+		statusField2.setText(error);
+		Window.alert(error);
+	}
+
+	void onSuccess(OntologyInfo ontologyInfo) {
+		ontologyInfoObtained(ontologyInfo);
+	}
+
 	
 	private void createLoadButton() {
 		loadButton = new PushButton("Load ontology", new ClickListener() {
@@ -289,6 +321,9 @@ public class OntologyPanel extends VerticalPanel {
 		});
 		loadButton.setTitle("Uploads the specified file");
 		
+	}
+	
+	private void createDetailsButton() {
 		detailsButton = new PushButton("Details", new ClickListener() {
 			public void onClick(Widget sender) {
 				mainPanel.showDetails();

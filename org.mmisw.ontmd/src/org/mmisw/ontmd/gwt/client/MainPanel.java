@@ -37,7 +37,9 @@ public class MainPanel extends VerticalPanel {
 	private CellPanel container = new VerticalPanel();
 	private TabPanel tabPanel = new TabPanel();
 	
-	private OntologyPanel ontologyPanel = new OntologyPanel(this);
+	// created depending on whether a given ontology from registry has been
+	// passed
+	private OntologyPanel ontologyPanel;
 
 	// created depending on type of interface: editing or viewwing
 	private MetadataPanel metadataPanel;
@@ -79,7 +81,13 @@ public class MainPanel extends VerticalPanel {
 	/** The requested ontology, if any. */
 	private String requestedOntologyUri;
 	
+	/** Edit the requested ontology? */
+	private boolean editRequestedOntology;
+	
 	private LoginResult loginResult;
+	
+	// true iff login session given from parameters
+	private boolean loginFromParams;
 
 	private OntologyInfo ontologyInfo;
 	
@@ -96,14 +104,17 @@ public class MainPanel extends VerticalPanel {
 		super();
 		
 		requestedOntologyUri = null;
+		editRequestedOntology = false;
 		
 		if ( params.get("ontologyUri") != null ) {
 			requestedOntologyUri = params.get("ontologyUri");
+			editRequestedOntology = ! "n".equalsIgnoreCase(params.get("_edit"));
 		}
-	    else if ( false && 
+	    else if ( //false && 
 	    		! GWT.isScript() ) {
 	    	// NOTE: Using an ad hoc ontology uri under my hosted environment.");
 	    	requestedOntologyUri = "http://localhost:8080/ont/mmi/map-cicore-cf";
+	    	editRequestedOntology = true;
 	    }
 		
 	    if ( params.get("sessionId") != null && params.get("userId") != null ) {
@@ -115,6 +126,7 @@ public class MainPanel extends VerticalPanel {
 	    		userName = "?";
 	    	}
 	    	loginResult.setUserName(userName);
+	    	loginFromParams = true;
 	    	
 	    	container.add(prepareInterface());
 	    }
@@ -125,6 +137,7 @@ public class MainPanel extends VerticalPanel {
 	    	loginResult.setSessionId("22222222222222222");
 	    	loginResult.setUserId("1002");
 	    	loginResult.setUserName("carueda");
+	    	loginFromParams = true;
 	    	
 	    	container.add(prepareInterface());
 	    }
@@ -157,7 +170,7 @@ public class MainPanel extends VerticalPanel {
 
 
 	private Widget prepareInterface() {
-		if ( requestedOntologyUri != null ) {
+		if ( requestedOntologyUri != null && ! editRequestedOntology ) {
 			return prepareViewingInterface();
 		}
 		else {
@@ -176,15 +189,17 @@ public class MainPanel extends VerticalPanel {
 	private void getOntologyInfoFromRegistry(String ontologyUri) {
 		AsyncCallback<OntologyInfo> callback = new AsyncCallback<OntologyInfo>() {
 			public void onFailure(Throwable thr) {
-				String error = thr.getClass().getName()+ ": " +thr.getMessage();
-				while ( (thr = thr.getCause()) != null ) {
-					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
-				}
-				Window.alert(error);
+				ontologyPanel.onFailure(thr);
+//				String error = thr.getClass().getName()+ ": " +thr.getMessage();
+//				while ( (thr = thr.getCause()) != null ) {
+//					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
+//				}
+//				Window.alert(error);
 			}
 
 			public void onSuccess(OntologyInfo ontologyInfo) {
-				metadataPanel.resetToOriginalValues(ontologyInfo, null, false);
+				ontologyPanel.onSuccess(ontologyInfo);
+//				metadataPanel.resetToOriginalValues(ontologyInfo, null, false);
 			}
 		};
 
@@ -195,6 +210,12 @@ public class MainPanel extends VerticalPanel {
 
 	
 	private Widget prepareEditingInterface() {
+		
+		// create ontologyPanel
+		boolean allowLoadOptions = requestedOntologyUri == null;
+		ontologyPanel = new OntologyPanel(this, allowLoadOptions);
+		
+		
 		// create metadata panel for editing:
 		metadataPanel = new MetadataPanel(this, true);
 
@@ -231,11 +252,14 @@ public class MainPanel extends VerticalPanel {
 		CellPanel panel = new HorizontalPanel();
 		panel.setSpacing(2);
 		
-		String userName = loginResult.getUserName();
-		if ( userName == null ) {
-			userName = "?";
+		// do not show username if loginFromParams
+		if ( ! loginFromParams && loginResult != null ) {
+			String userName = loginResult.getUserName();
+			if ( userName == null ) {
+				userName = "?";
+			}
+			panel.add(new Label(userName));
 		}
-		panel.add(new Label(userName));
 
 		reviewButton.setTitle("Checks the metadata associated with the ontology " +
 				"and prepares for its subsequent upload to the MMI Registry");

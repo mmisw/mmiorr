@@ -4,6 +4,21 @@ Carlos Rueda - MMI / MBARI
 ChangeLog
 
 2008-11-02
+
+	- Fixed Issue 10: load a registered ontology
+		- This is now completed for the case when the URI is passed as a parameter
+		  ontologyUri=uuuu along with the new parameter "_edit" which should be
+		  set to "_edit=y" to allow the edition of a new version of the ontology.
+		  
+		  (Note: the button to "load a registered ontology" is not yet implemented
+		  and perhaps it shouldn't at least initially, the reasons being:
+		  	- Main entry point to create a new version is the Aquaportal front-end;
+		  	- This way, the user is already logged-in and in fact she can only launch
+		  	  the edition of her own ontologies, so this control is already in place.
+		  	  
+	- Username is not shown if ontmd is launched with the userId and sessionId params.
+			
+		
 	- some code clean-up:
 		-MdHelper: removed unused stuff (AttributeValue class, title).
 		

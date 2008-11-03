@@ -832,6 +832,17 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		
 		// now, complete the ontology object, except the Rdf string:
 		File file = new File(full_path);
+		
+		try {
+			ontologyInfo.setRdf(readRdf(file));
+		}
+		catch (Throwable e) {
+			String error = "Cannot read RDF model: " +full_path+ " : " +e.getMessage();
+			log.info(error);
+			ontologyInfo.setError(error);
+			return ontologyInfo;
+		}
+
 		String error = prepareOntologyInfo(file, ontologyInfo);
 		if ( error != null ) {
 			ontologyInfo.setError(error);
