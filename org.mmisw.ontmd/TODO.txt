@@ -1,7 +1,12 @@
 org.mmisw.ontmd Ontology Metadata Manager
 Carlos Rueda - MMI / MBARI
 
-(p: Paul;  j: John)
+(p: Paul;  j: John;  c: carlos)
+
+
+c: Get the original ns when model.getNsPrefixURI("") returns null			
+This case was manifested with the platform.owl ontology.
+
 
 p: I can submit the same ontology twice and it doesn't detect or offer the opportunity to 
 create a new version. Will we eventually use a process as we discussed yesterday? 

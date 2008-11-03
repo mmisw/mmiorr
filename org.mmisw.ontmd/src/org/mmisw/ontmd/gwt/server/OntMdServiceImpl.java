@@ -517,7 +517,21 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			return reviewResult;
 		}
 		
-		final String original_ns_ = JenaUtil.getURIForNS(model.getNsPrefixURI(""));
+		String uriForEmpty = model.getNsPrefixURI("");
+		if ( uriForEmpty == null ) {
+			// FIXME Get the original ns when model.getNsPrefixURI("") returns null
+			// For now, returning error:
+			String error = "Unexpected error: No namespace for prefix \"\"";
+			log.info(error);
+			reviewResult.setError(error);
+			return reviewResult;
+			
+			// This case was manifested with the platform.owl ontology.
+		}
+		
+		final String original_ns_ = JenaUtil.getURIForNS(uriForEmpty);
+		
+		
 		log.info("original namespace: " +original_ns_);
 		log.info("Setting prefix \"\" for URI " + ns_);
 		model.setNsPrefix("", ns_);
