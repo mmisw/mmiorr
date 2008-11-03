@@ -1,5 +1,6 @@
 package org.mmisw.ont.vocabulary.util;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -294,15 +295,22 @@ public class MdHelper {
 	// map: mmiPropUri -> dcProperty
 	private static Map<String,Property> equivalentDc = new HashMap<String,Property>();
 	
+	// map: mmiPropUri -> dcProperty
+	private static Map<String,Property> equivalentMmi = new HashMap<String,Property>();
+	
+	private static void _addEquivalence(Property mmiProp, Property dcProp) {
+		equivalentDc.put(mmiProp.getURI(), dcProp);
+		equivalentMmi.put(dcProp.getURI(), mmiProp);
+	}
 	static {
-		equivalentDc.put(Omv.hasCreator.getURI(), DC.creator);
-		equivalentDc.put(Omv.description.getURI(), DC.description);
-		equivalentDc.put(Omv.creationDate.getURI(), DC.date);
-		equivalentDc.put(Omv.hasContributor.getURI(), DC.contributor);
-		equivalentDc.put(OmvMmi.origVocUri.getURI(), DC.source);
+		_addEquivalence(Omv.hasCreator, DC.creator);
+		_addEquivalence(Omv.description, DC.description);
+		_addEquivalence(Omv.creationDate, DC.date);
+		_addEquivalence(Omv.hasContributor, DC.contributor);
+		_addEquivalence(OmvMmi.origVocUri, DC.source);
 		
-		// Note: Omv,uri is internally assigned; we cannot use DC.identifier
-		// NO --> equivalentDc.put(Omv.uri.getURI(), DC.identifier);
+		// Note: Omv.uri is internally assigned; we cannot use DC.identifier
+		// NO --> _addEquivalence(Omv.uri, DC.identifier);
 		
 		// TODO more DC equivalences?
 	}
@@ -315,6 +323,23 @@ public class MdHelper {
 	 */
 	public static Property getEquivalentDcProperty(Property mmiProp) {
 		return equivalentDc.get(mmiProp.getURI());
+	}
+
+	
+	/**
+	 * Gets the MMI property that is equivalent to the given DC property.
+	 * @param dcProp the DC property
+	 * @return the equivalent MMI property; null if there is no such object.
+	 */
+	public static Property getEquivalentMmiProperty(Property dcProp) {
+		return equivalentMmi.get(dcProp.getURI());
+	}
+
+	/**
+	 * Gets the DC attributes that have MMI equivalent attributes.
+	 */
+	public static Collection<Property> getDcPropertiesWithMmiEquivalences() {
+		return equivalentDc.values();
 	}
 
 	/**

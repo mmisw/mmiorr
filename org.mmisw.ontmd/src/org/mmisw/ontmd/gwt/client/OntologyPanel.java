@@ -40,7 +40,8 @@ public class OntologyPanel extends VerticalPanel {
 
 	private FormPanel formPanel = new FormPanel();
 	private FileUpload upload;
-	private TextBox statusField = new TextBox();
+	private HTML statusLoad = new HTML();
+	private TextBox statusField2 = new TextBox();
 	
 	private final TextArea textArea = new TextArea();
 	
@@ -69,7 +70,8 @@ public class OntologyPanel extends VerticalPanel {
 		upload.setWidth("300");
 		upload.setName("ontologyFile");
 
-		statusField.setText("");
+		statusLoad.setText("");
+		statusField2.setText("");
 		textArea.setText("");
 		clear();
 		
@@ -83,6 +85,8 @@ public class OntologyPanel extends VerticalPanel {
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		HorizontalPanel hp = new HorizontalPanel();
+		hp.setSpacing(3);
+		hp.add(statusLoad);
 		hp.add(loadButton);
 		panel.setWidget(row, 1, hp);
 		panel.getFlexCellFormatter().setAlignment(row, 1, 
@@ -112,9 +116,9 @@ public class OntologyPanel extends VerticalPanel {
 		row++;
 
 		
-		statusField.setWidth("600");
-		statusField.setReadOnly(true);
-		panel.setWidget(row, 0, statusField);
+		statusField2.setWidth("600");
+		statusField2.setReadOnly(true);
+		panel.setWidget(row, 0, statusField2);
 		panel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
@@ -170,7 +174,8 @@ public class OntologyPanel extends VerticalPanel {
 		ClickListener clickListener = new ClickListener() {
 			private TextBox chooseLabel;
 			public void onClick(Widget sender) {
-				statusField.setText("");
+				statusLoad.setText("");
+				statusField2.setText("");
 //				upload.setEnabled(rb0.isChecked());  // --> this method is not available 
 				uploadContainer.clear();
 				if ( rb0.isChecked() ) {
@@ -222,12 +227,13 @@ public class OntologyPanel extends VerticalPanel {
 		formPanel.addFormHandler(new FormHandler() {
 
 			public void onSubmit(FormSubmitEvent event) {
-				statusField.setText("Loading ...");
+				statusLoad.setHTML("<font color=\"blue\">Loading ...</font>");
+				statusField2.setText("");
 				Main.log("onSubmit.");
 			}
 
 			public void onSubmitComplete(FormSubmitCompleteEvent event) {
-				statusField.setText("Examining ontology ...");
+				statusLoad.setHTML("<font color=\"blue\">Examining ontology ...</font>");
 				String results = event.getResults();
 				Main.log("onSubmitComplete: " +results);
 				if ( results != null ) {
@@ -245,11 +251,12 @@ public class OntologyPanel extends VerticalPanel {
 	private void getOntologyInfoFromPreLoaded(String uploadResults) {
 		AsyncCallback<OntologyInfo> callback = new AsyncCallback<OntologyInfo>() {
 			public void onFailure(Throwable thr) {
-				statusField.setText("Error loading");
+				statusLoad.setHTML("<font color=\"red\">Error</font>");
 				String error = thr.getClass().getName()+ ": " +thr.getMessage();
 				while ( (thr = thr.getCause()) != null ) {
 					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
 				}
+				statusField2.setText(error);
 				Window.alert(error);
 			}
 
@@ -272,7 +279,7 @@ public class OntologyPanel extends VerticalPanel {
 						formPanel.submit();
 					}
 					else {
-						statusField.setText("Please, select the local ontology file");
+						statusLoad.setHTML("<font color=\"red\">No file selected</font>");
 					}
 				}
 				else {
@@ -295,7 +302,7 @@ public class OntologyPanel extends VerticalPanel {
 	
 	private void loadRegistryOntology() {
 		if ( registryOntologyUri == null ) {
-			statusField.setText("Please, select the registry ontology");
+			statusLoad.setHTML("<font color=\"red\">No file selected</font>");
 			return;
 		}
 		// TODO: load selected remote ontology
@@ -304,7 +311,16 @@ public class OntologyPanel extends VerticalPanel {
 
 	
 	private void ontologyInfoObtained(OntologyInfo ontologyInfo) {
-		statusField.setText("Ontology loaded. Original base URI: " +ontologyInfo.getUri());
+		String error = ontologyInfo.getError();
+		if ( error != null ) {
+			statusLoad.setHTML("<font color=\"red\">Error</font>");
+			textArea.setText("Error reading file. Make sure it is an RDF file.\n" +
+					"Server reports:\n\n" +error);
+			Window.alert(error);
+			return;
+		}
+		statusLoad.setHTML("<font color=\"green\">Ontology loaded</font>");
+		statusField2.setText("Original base URI: " +ontologyInfo.getUri());
 		mainPanel.setPreloadedOntologyInfo(ontologyInfo, false);
 		String rdf = ontologyInfo.getRdf();
 		if ( rdf != null ) {

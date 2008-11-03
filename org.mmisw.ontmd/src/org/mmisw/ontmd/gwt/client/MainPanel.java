@@ -576,8 +576,10 @@ public class MainPanel extends VerticalPanel {
 		}
 		VerticalPanel vp = new VerticalPanel();
 		vp.setWidth("400");
-		vp.add(new HTML("This table shows an evaluation of the loaded ontology. " +
-				"It shows any included and missing but required MMI metadata attributes."));
+		vp.add(new HTML("This table shows an initial evaluation of the loaded ontology in relation " +
+				"to the required MMI attributes. " +
+				"It shows any included MMI attribute as well as those that are missing but " +
+				"required. Use the Metadata section to edit all attributes as necessary."));
 		vp.add(table);
 		final MyDialog popup = new MyDialog(vp);
 		popup.setText("Diagnostics on original metadata");

@@ -7,6 +7,16 @@ ChangeLog
 	- some code clean-up:
 		-MdHelper: removed unused stuff (AttributeValue class, title).
 		
+	- Fixed Issue 11: Assign DC from the Omv and OmvMmi props -- and vice versa!
+	  This happens at two moments:
+	  	- When an ontology is loaded: Existing DC attributes are used to fill in
+	  	  missing MMI attributes.
+	  	- When the "review" process is executed: Existing MMI attributes are used 
+	  	  to fill in missing DC attributes.
+	  Equivalences were defined in MdHelper.
+	  
+	- Improved error checking and diagnostics upon initial loading of an ontology. 
+		
 2008-11-01
 	- MetadataPanel doesn't show the original base URI anymore; this info is already
 	  provided in the Ontology panel.

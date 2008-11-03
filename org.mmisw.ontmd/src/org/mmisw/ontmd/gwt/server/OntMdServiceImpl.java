@@ -153,14 +153,18 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		try {
 			ontologyInfo.setRdf(readRdf(file));
 		}
-		catch (IOException e) {
-			log.info("Unexpected: cannot read: " +full_path);
-			ontologyInfo.setError("Unexpected: cannot read: " +full_path);
+		catch (Throwable e) {
+			String error = "Cannot read RDF model: " +full_path+ " : " +e.getMessage();
+			log.info(error);
+			ontologyInfo.setError(error);
 			return ontologyInfo;
 		}
 
 		// prepare the rest of the ontology info:
-		prepareOntologyInfo(file, ontologyInfo);
+		String error = prepareOntologyInfo(file, ontologyInfo);
+		if ( error != null ) {
+			ontologyInfo.setError(error);
+		}
 	
 		return ontologyInfo;
 	}
@@ -178,10 +182,19 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	 * @param file  The ontology file.
 	 * @param ontologyInfo  The object to be completed
 	 */
-	private void prepareOntologyInfo(File file, OntologyInfo ontologyInfo) {
+	private String prepareOntologyInfo(File file, OntologyInfo ontologyInfo) {
 		String uriFile = file.toURI().toString();
 		log.info("Loading model: " +uriFile);
-		OntModel model = JenaUtil.loadModel(uriFile, false);
+		OntModel model;
+		
+		try {
+			model = JenaUtil.loadModel(uriFile, false);
+		}
+		catch (Throwable ex) {
+			String error = "Unexpected error: " +ex.getClass().getName()+ " : " +ex.getMessage();
+			log.info(error);
+			return error;
+		}
 		
 		debugOntModel(model);
 
@@ -282,6 +295,8 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			ontologyInfo.setUri(base_);
 		}
 
+		// OK:
+		return null;
 	}
 	
 
@@ -358,12 +373,25 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 
 
 	/**
-	 * Reads a file.
+	 * Reads an RDF file.
 	 * @param file the file to read in
 	 * @return the contents of the text file.
 	 * @throws IOException 
 	 */
 	private String readRdf(File file) throws IOException {
+		
+		// make sure the file can be loaded as a model:
+		String uriFile = file.toURI().toString();
+		try {
+			JenaUtil.loadModel(uriFile, false);
+		}
+		catch (Throwable ex) {
+			String error = ex.getClass().getName()+ " : " +ex.getMessage();
+			throw new IOException(error);
+		}
+		
+
+		
 		BufferedReader is = null;
 		try {
 			is = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
@@ -574,7 +602,8 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		newValues.put(Omv.uri.getURI(), base_);
 		newValues.put(Omv.version.getURI(), version);
 
-		
+		// Set the missing DC attrs that have defined e	equivalent MMI attrs: 
+		_setDcAttributes(ont_);
 		
 		////////////////////////////////////////////////////////////////////////
 		// Done with the model. 
@@ -619,6 +648,31 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	}
 	
 	
+	/**
+	 * Sets the missing DC attrs that have defined equivalent MMI attrs: 
+	 */
+	private void _setDcAttributes(Ontology ont_) {
+		for ( Property dcProp : MdHelper.getDcPropertiesWithMmiEquivalences() ) {
+			
+			// does dcProp already have an associated value?
+			String value = JenaUtil.getValue(ont_, dcProp); 
+			
+			if ( value == null || value.trim().length() == 0 ) {
+				// No.  
+				// Then, take the value from the equivalent MMI attribute if defined:
+				Property mmiProp = MdHelper.getEquivalentMmiProperty(dcProp);
+				value = JenaUtil.getValue(ont_, mmiProp);
+				
+				if ( value != null && value.trim().length() > 0 ) {
+					// we have a value for DC from the equivalente MMI attr.
+					log.info(" Assigning DC attr " +dcProp+ " with " +mmiProp+ " = " +value);
+					ont_.addProperty(dcProp, value.trim());
+				}
+			}
+		}
+	}
+
+
 	/**
 	 * Does the final upload of the previewed file.
 	 * to the registry.
@@ -681,8 +735,9 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			rdf = readRdf(file);
 		}
 		catch (IOException e) {
-			log.info("Unexpected: IO error while reading from: " +full_path);
-			reviewResult.setError("Unexpected: IO error while reading from: " +full_path);
+			String error = "Unexpected: IO error while reading from: " +full_path+ " : " +e.getMessage();
+			log.info(error);
+			reviewResult.setError(error);
 			return uploadResult;
 		}
 		
@@ -777,7 +832,10 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		
 		// now, complete the ontology object, except the Rdf string:
 		File file = new File(full_path);
-		prepareOntologyInfo(file, ontologyInfo);
+		String error = prepareOntologyInfo(file, ontologyInfo);
+		if ( error != null ) {
+			ontologyInfo.setError(error);
+		}
 		
 		return ontologyInfo;
 	}
