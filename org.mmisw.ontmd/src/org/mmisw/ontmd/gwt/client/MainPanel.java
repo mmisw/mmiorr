@@ -216,6 +216,9 @@ public class MainPanel extends VerticalPanel {
 			}
 		};
 
+		if ( ! editRequestedOntology ) {
+			metadataPanel.showProgressMessage("Loading metadata. Please wait...");
+		}
 		Main.log("getOntologyInfoFromRegistry: ontologyUri = " +ontologyUri);
 		Main.ontmdService.getOntologyInfoFromRegistry(ontologyUri, callback);
 	}

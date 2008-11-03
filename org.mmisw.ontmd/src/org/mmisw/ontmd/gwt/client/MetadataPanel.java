@@ -107,6 +107,11 @@ public class MetadataPanel extends FlexTable {
 	}
 	
 	
+	/** Basically for viewing-only mode */
+	void showProgressMessage(String msg) {
+		newUri_tb.setText(msg);
+	}
+	
 	/** Puts test values */
 	void putTestValues(Map<String, String> values) {
 		for ( int i = 0, c = tabPanel.getWidgetCount(); i < c; i++ ) {
