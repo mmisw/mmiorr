@@ -108,13 +108,14 @@ public class MainPanel extends VerticalPanel {
 		
 		if ( params.get("ontologyUri") != null ) {
 			requestedOntologyUri = params.get("ontologyUri");
-			editRequestedOntology = ! "n".equalsIgnoreCase(params.get("_edit"));
+			editRequestedOntology = "y".equalsIgnoreCase(params.get("_edit"));
 		}
-	    else if ( false && 
+	    else if ( //false && 
 	    		! GWT.isScript() ) {
 	    	// NOTE: Using an ad hoc ontology uri under my hosted environment.");
 	    	requestedOntologyUri = "http://localhost:8080/ont/mmi/map-cicore-cf";
-	    	editRequestedOntology = true;
+	    	// but I have to add "_edit=y" if I want editing mode:
+	    	editRequestedOntology = "y".equalsIgnoreCase(params.get("_edit"));
 	    }
 		
 	    if ( params.get("sessionId") != null && params.get("userId") != null ) {
@@ -189,17 +190,29 @@ public class MainPanel extends VerticalPanel {
 	private void getOntologyInfoFromRegistry(String ontologyUri) {
 		AsyncCallback<OntologyInfo> callback = new AsyncCallback<OntologyInfo>() {
 			public void onFailure(Throwable thr) {
-				ontologyPanel.onFailure(thr);
-//				String error = thr.getClass().getName()+ ": " +thr.getMessage();
-//				while ( (thr = thr.getCause()) != null ) {
-//					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
-//				}
-//				Window.alert(error);
+				if  (ontologyPanel != null ) {
+					ontologyPanel.onFailure(thr);
+				}
+				else {
+					String error = thr.getClass().getName()+ ": " +thr.getMessage();
+					while ( (thr = thr.getCause()) != null ) {
+						error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
+					}
+					Window.alert(error);
+				}
 			}
 
 			public void onSuccess(OntologyInfo ontologyInfo) {
-				ontologyPanel.onSuccess(ontologyInfo);
-//				metadataPanel.resetToOriginalValues(ontologyInfo, null, false);
+				if  (ontologyPanel != null ) {
+					ontologyPanel.onSuccess(ontologyInfo);
+				}
+				String error = ontologyInfo.getError();
+				if ( error != null ) {
+					Window.alert(error);
+				}
+				else {
+					metadataPanel.resetToOriginalValues(ontologyInfo, null, false);
+				}
 			}
 		};
 
