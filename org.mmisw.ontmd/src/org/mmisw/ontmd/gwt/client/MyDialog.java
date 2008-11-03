@@ -23,6 +23,7 @@ public class MyDialog extends DialogBox {
 	private CellPanel buttons = createButtons();
 	private HorizontalPanel hp = new HorizontalPanel();
 	
+	private PushButton closeButton;
 	private TextArea ta;
 
 	
@@ -78,7 +79,7 @@ public class MyDialog extends DialogBox {
 		CellPanel panel = new HorizontalPanel();
 		panel.setSpacing(2);
 
-		PushButton closeButton = new PushButton("Close", new ClickListener() {
+		closeButton = new PushButton("Close", new ClickListener() {
 			public void onClick(Widget sender) {
 				MyDialog.this.hide();
 			}
@@ -86,6 +87,17 @@ public class MyDialog extends DialogBox {
 		panel.add(closeButton);
 
 		return panel;
+	}
+	
+	@Override
+	public void show() {
+		if ( closeButton != null ) {
+			closeButton.setFocus(true);
+		}
+		else if ( ta != null ) {
+			ta.setFocus(true);
+		}
+		super.show();
 	}
 }
 
