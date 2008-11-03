@@ -14,6 +14,7 @@ public class OntologyInfo implements IsSerializable {
 	private String fullPath;
 	private String uri;
 	private String rdf;
+	private String details;
 	
 	
 	/** original values -- once assigned, shouldn't be changed */
@@ -80,6 +81,14 @@ public class OntologyInfo implements IsSerializable {
 
 	public void setRdf(String rdf) {
 		this.rdf = rdf;
+	}
+
+	public void setDetails(String details) {
+		this.details = details;
+	}
+
+	public String getDetails() {
+		return details;
 	}
 
 

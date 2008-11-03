@@ -100,7 +100,8 @@ public class MainPanel extends VerticalPanel {
 		if ( params.get("ontologyUri") != null ) {
 			requestedOntologyUri = params.get("ontologyUri");
 		}
-	    else if ( false && ! GWT.isScript() ) {
+	    else if ( false && 
+	    		! GWT.isScript() ) {
 	    	// NOTE: Using an ad hoc ontology uri under my hosted environment.");
 	    	requestedOntologyUri = "http://localhost:8080/ont/mmi/map-cicore-cf";
 	    }
@@ -117,7 +118,7 @@ public class MainPanel extends VerticalPanel {
 	    	
 	    	container.add(prepareInterface());
 	    }
-	    else if ( // false && 
+	    else if ( //false && 
 	    		! GWT.isScript() ) {
 	    	// NOTE: Using an ad hoc session under my hosted environment.");
 	    	loginResult = new LoginResult();
@@ -542,6 +543,46 @@ public class MainPanel extends VerticalPanel {
 	private void reenableButton(PushButton button, String text, boolean enabled) {
 		button.setText(text);
 		button.setEnabled(enabled);
+	}
+
+
+	public void showDetails() {
+		String details = ontologyInfo.getDetails();
+		String[] lines = details == null ? null : details.split("\n|\r\n|\r");
+		if ( lines == null || lines.length == 0 ) {
+			Window.alert("No details are available");
+			return;
+		}
+		
+		FlexTable table = new FlexTable();
+		table.setStylePrimaryName("inline");
+		
+		table.getFlexCellFormatter().setColSpan(0, 0, 2);
+		table.getFlexCellFormatter().setAlignment(0, 0, 
+				HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
+		table.setWidget(0, 0, new Label("MMI attribute"));
+		
+		table.getFlexCellFormatter().setAlignment(0, 1, 
+				HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
+		table.setWidget(0, 1, new Label("Note"));
+		
+		
+		for ( int lin = 0; lin < lines.length; lin++ ) {
+			String[] vals = lines[lin].split("\\|");
+			for ( int col = 0; col < vals.length; col++ ) {
+				table.setWidget(lin+1, col, new Label(vals[col]));
+			}
+	
+		}
+		VerticalPanel vp = new VerticalPanel();
+		vp.setWidth("400");
+		vp.add(new HTML("This table shows an evaluation of the loaded ontology. " +
+				"It shows any included and missing but required MMI metadata attributes."));
+		vp.add(table);
+		final MyDialog popup = new MyDialog(vp);
+		popup.setText("Diagnostics on original metadata");
+		popup.center();
+		popup.show();
 	}
 
 }

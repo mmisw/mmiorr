@@ -166,6 +166,12 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	}
 
 	
+	private void _addDetail(StringBuilder details, String a1, String a2, String a3) {
+		String str = a1 + "|" + a2 + "|" + a3; 
+		log.info(str);
+		details.append(str + "\n");
+	}
+	
 	/**
 	 * Completes the ontology info object by assigning some of the members
 	 * except the Rdf string and the new values map.
@@ -185,20 +191,84 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		
 		_getBaseInfoIfNull();
 		
+		StringBuilder moreDetails = new StringBuilder();
+		
 		Map<String, Property> uriPropMap = MdHelper.getUriPropMap();
 		Map<String,String> originalValues = new HashMap<String, String>();
 		
 		if ( ontRes != null ) {
+			//
+			// Get values from the existing ontology resource
+			//
 			for ( AttrGroup attrGroup : baseInfo.getAttrGroups() ) {
 				for ( AttrDef attrDef : attrGroup.getAttrDefs() ) {
-					Property dcProp = uriPropMap.get(attrDef.getUri());
-					String value = JenaUtil.getValue(ontRes, dcProp);
+					
+					// get value of MMI property:
+					Property mmiProp = uriPropMap.get(attrDef.getUri());
+					String prefixedMmi = MdHelper.prefixedName(mmiProp);
+					String value = JenaUtil.getValue(ontRes, mmiProp);
+					
+					// DC equivalent, which is obtained if necessary
+					Property dcProp = null;
+					
 					if (value == null) {
-						continue;
+						// try a DC equivalent to use:
+						dcProp = MdHelper.getEquivalentDcProperty(mmiProp);
+						if ( dcProp != null ) {
+							value = JenaUtil.getValue(ontRes, dcProp);
+						}
 					}
-					log.info("Assigning: " +attrDef.getUri()+ " = " + value);
-					originalValues.put(attrDef.getUri(), value);
+					
+					if ( value != null ) {
+						// get value:
+						log.info("Assigning: " +attrDef.getUri()+ " = " + value);
+						originalValues.put(attrDef.getUri(), value);
+
+						if ( dcProp != null ) {
+							String prefixedDc = MdHelper.prefixedName(dcProp);
+							_addDetail(moreDetails, prefixedMmi, "not present", "Will use " +prefixedDc);
+						}
+						else {
+							_addDetail(moreDetails, prefixedMmi, "present", " ");
+						}
+					}
+					else {
+						if ( attrDef.isRequired() && ! attrDef.isInternal() ) {
+							if ( dcProp != null ) {
+								String prefixedDc = MdHelper.prefixedName(dcProp);
+								_addDetail(moreDetails, prefixedMmi, "not present", "and " +prefixedDc+ " not present either");
+							}	
+							else {
+								_addDetail(moreDetails, prefixedMmi, "not present", " not equivalent DC");
+							}
+						}
+					}
 				}
+			}
+		}
+		else {
+			//
+			// No ontology resource. Check required attributes to report in the details:
+			//
+			for ( AttrGroup attrGroup : baseInfo.getAttrGroups() ) {
+				for ( AttrDef attrDef : attrGroup.getAttrDefs() ) {
+					if ( attrDef.isRequired() && ! attrDef.isInternal() ) {
+						Property mmiProp = uriPropMap.get(attrDef.getUri());
+						String prefixedMmi = MdHelper.prefixedName(mmiProp);
+						_addDetail(moreDetails, prefixedMmi, "not present", "required");
+					}
+				}
+			}
+		}
+		
+		// add the new details if any:
+		if ( moreDetails.length() > 0 ) {
+			String details = ontologyInfo.getDetails();
+			if ( details == null ) {
+				ontologyInfo.setDetails(moreDetails.toString());
+			}
+			else {
+				ontologyInfo.setDetails(details + "\n" +moreDetails.toString());
 			}
 		}
 		
@@ -214,7 +284,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 
 	}
 	
-	
+
 	private void debugOntModel(OntModel model) {
 		StmtIterator stmts = model.listStatements();
 		while ( stmts.hasNext() ) {

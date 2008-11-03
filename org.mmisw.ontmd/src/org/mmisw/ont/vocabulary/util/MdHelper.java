@@ -21,6 +21,9 @@ import com.hp.hpl.jena.vocabulary.DC;
  */
 public class MdHelper {
 	
+	private MdHelper() { }
+
+	
 	// Examples: preferredPrefix(Omv.NS) == "omv";
 	private static Map<String,String> preferredPrefix = new HashMap<String,String>();
 	
@@ -284,10 +287,47 @@ public class MdHelper {
 	}
 	
 	
-	/** 
-	 * Creates an ontology metadata helper.
+	
+	////////////////////////////////////////
+	/////// equivalences
+	
+	// map: mmiPropUri -> dcProperty
+	private static Map<String,Property> equivalentDc = new HashMap<String,Property>();
+	
+	static {
+		equivalentDc.put(Omv.hasCreator.getURI(), DC.creator);
+		equivalentDc.put(Omv.description.getURI(), DC.description);
+		equivalentDc.put(Omv.creationDate.getURI(), DC.date);
+		equivalentDc.put(Omv.hasContributor.getURI(), DC.contributor);
+		equivalentDc.put(OmvMmi.origVocUri.getURI(), DC.source);
+		
+		// Note: Omv,uri is internally assigned; we cannot use DC.identifier
+		// NO --> equivalentDc.put(Omv.uri.getURI(), DC.identifier);
+		
+		// TODO more DC equivalences?
+	}
+
+	
+	/**
+	 * Gets the DC property that is equivalent to the given MMI property.
+	 * @param mmiProp the MMI property
+	 * @return the equivalent DC property; null if there is no such object.
 	 */
-	public MdHelper() {
+	public static Property getEquivalentDcProperty(Property mmiProp) {
+		return equivalentDc.get(mmiProp.getURI());
+	}
+
+	/**
+	 * Gets the prefixed name of a property according to the preferred prefixes. 
+	 * @param prop
+	 * @return
+	 */
+	public static String prefixedName(Property prop) {
+		String ns = preferredPrefix.get(prop.getNameSpace());
+		if ( ns == null ) {
+			ns = "??";
+		}
+		return ns+ ":" +prop.getLocalName();
 	}
 	
 }

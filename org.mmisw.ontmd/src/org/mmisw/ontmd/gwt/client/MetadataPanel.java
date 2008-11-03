@@ -33,6 +33,9 @@ public class MetadataPanel extends FlexTable {
 	
 	private TextBox newUri_tb = new TextBox();
 	
+	private boolean editing;
+	
+	
 
 	/**
 	 * Creates the metadata panel
@@ -41,6 +44,8 @@ public class MetadataPanel extends FlexTable {
 	 */
 	MetadataPanel(MainPanel mainPanel, boolean editing) {
 		super();
+		this.editing = editing;
+		
 //		this.mainPanel = mainPanel;
 		
 		int row = 0;
@@ -48,18 +53,22 @@ public class MetadataPanel extends FlexTable {
 		container.setSize("700", "350");
 		
 		HorizontalPanel hp = new HorizontalPanel();
+		this.getFlexCellFormatter().setColSpan(row,0, 2);
 		this.setWidget(row, 0, hp);
 		this.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP
 		);
 		
-		String tooltip = "Will show the new base URI for the generated ontology";
-		Label lbl = new Label("New base URI:");
-		lbl.setTitle(tooltip );
+		String tooltip = "The ontology base URI";
+		if ( editing ) {
+			tooltip = "Will show the new base URI for the generated ontology";
+			Label lbl = new Label("New base URI:");
+			lbl.setTitle(tooltip );
+			hp.add(lbl);
+		}
 		newUri_tb.setTitle(tooltip );
 		newUri_tb.setWidth("600");
 		newUri_tb.setReadOnly(true);
-		hp.add(lbl);
 		hp.add(newUri_tb);
 		row++;
 		
@@ -68,10 +77,12 @@ public class MetadataPanel extends FlexTable {
 			this.setWidget(row, 0, new HTML(
 					"Fields marked * are required. " +
 					"Use commas to separate values in multi-valued fields."));
+
 			row++;
 		}
 
 //		container.setBorderWidth(1);
+		this.getFlexCellFormatter().setColSpan(row,0, 2);
 		this.setWidget(row, 0, container);
 		this.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP
@@ -170,6 +181,9 @@ public class MetadataPanel extends FlexTable {
 			if ( newUri_tb != null ) {
 				newUri_tb.setText(newUri);
 			}
+		}
+		else if ( ! editing ) {
+			newUri_tb.setText(ontologyInfo.getUri());
 		}
 	}
 	
