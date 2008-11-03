@@ -600,6 +600,7 @@ public class MainPanel extends VerticalPanel {
 		}
 		VerticalPanel vp = new VerticalPanel();
 		vp.setWidth("400");
+		vp.setSpacing(10);
 		vp.add(new HTML("This table shows an initial evaluation of the loaded ontology in relation " +
 				"to the required MMI attributes. " +
 				"It shows any included MMI attribute as well as those that are missing but " +

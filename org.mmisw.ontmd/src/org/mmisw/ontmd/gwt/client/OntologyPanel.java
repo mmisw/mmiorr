@@ -362,6 +362,21 @@ public class OntologyPanel extends VerticalPanel {
 			textArea.setText(rdf);
 		}
 		detailsButton.setEnabled(true);
+		
+		// Notify the user
+		VerticalPanel vp = new VerticalPanel();
+		vp.setWidth("400");
+		vp.setSpacing(10);
+		vp.add(new HTML(
+				"The ontology has been loaded.\n" +
+				"Use the Metadata panel to proceed with editing and reviewing " +
+				"the metadata attributes. " +
+				"Use the Details button to see an initial evaluation of the " +
+				"current metadata."));
+		final MyDialog popup = new MyDialog(vp);
+		popup.setText(ontologyInfo.getUri());
+		popup.center();
+		popup.show();
 	}
 
 }

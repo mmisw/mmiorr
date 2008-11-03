@@ -41,6 +41,8 @@ public class MyDialog extends DialogBox {
 			dockPanel.add(contents, DockPanel.CENTER);
 		}
 		dockPanel.add(hp, DockPanel.SOUTH);
+		
+		dockPanel.setCellHorizontalAlignment(hp, HasHorizontalAlignment.ALIGN_RIGHT);
 	}
 	
 	DockPanel getDockPanel() {
