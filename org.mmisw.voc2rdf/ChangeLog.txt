@@ -3,6 +3,14 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2008-11-04 (2.0.alpha3)
+	- Integration with ontmd
+	
+	- Everything working pretty nicely! :-)
+	
+	TODO: Unify replicated code with ontmd !!
+	
+
 2008-10-27 (2.0.alpha1)
 
 	- Complete new layout based on tabs:

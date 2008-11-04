@@ -12,6 +12,7 @@ public class ConversionResult implements IsSerializable {
 	private String rdf = "";
 	
 	private String finalUri;
+	private String pathOnServer;
 	
 	public ConversionResult () {
 	}
@@ -39,6 +40,16 @@ public class ConversionResult implements IsSerializable {
 
 	public void setRdf(String rdf) {
 		this.rdf = rdf;
+	}
+
+
+	public void setPathOnServer(String pathOnServer) {
+		this.pathOnServer = pathOnServer;
+	}
+
+
+	public String getPathOnServer() {
+		return pathOnServer;
 	}
 
 }

@@ -1,19 +1,13 @@
 package org.mmisw.voc2rdf.gwt.server;
 
-import java.net.URL;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
-import org.mmisw.ont.vocabulary.Omv;
-import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.ont.vocabulary.util.MdHelper;
 import org.mmisw.voc2rdf.gwt.client.rpc.BaseInfo;
 import org.mmisw.voc2rdf.gwt.client.rpc.ConversionResult;
-import org.mmisw.voc2rdf.gwt.client.rpc.LoginResult;
-import org.mmisw.voc2rdf.gwt.client.rpc.UploadResult;
 import org.mmisw.voc2rdf.gwt.client.rpc.Voc2RdfService;
-import org.mmisw.voc2rdf.gwt.client.vocabulary.AttrGroup;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -44,8 +38,7 @@ public class Voc2RdfServiceImpl extends RemoteServiceServlet implements Voc2RdfS
 	private void prepareBaseInfo() {
 		log.info("preparing base info ...");
 		baseInfo = new BaseInfo();
-		AttrGroup[] attrGroups = MdHelper.getAttrGroups();
-		baseInfo.setAttrGroups(attrGroups);
+		baseInfo.setMainClassAttrDef(MdHelper.getMainClassAttrDef());
 	}
 	
 	
@@ -58,7 +51,7 @@ public class Voc2RdfServiceImpl extends RemoteServiceServlet implements Voc2RdfS
 			}
 		}
 		
-		ConversionResult result = new ConversionResult();
+		ConversionResult conversionResult = new ConversionResult();
 
 		String namespaceRoot = values.get("namespaceRoot");
 		values.remove("namespaceRoot");
@@ -68,30 +61,32 @@ public class Voc2RdfServiceImpl extends RemoteServiceServlet implements Voc2RdfS
 		values.remove("fieldSeparator");
 
 		if ( namespaceRoot == null ) {
-			result.setError("missing namespaceRoot");
+			conversionResult.setError("missing namespaceRoot");
+			return conversionResult;
 		}
 		if ( ascii == null ) {
-			result.setError("missing ascii");
+			conversionResult.setError("missing ascii");
+			return conversionResult;
 		}
 		if ( fieldSeparator == null ) {
-			result.setError("missing fieldSeparator");
+			conversionResult.setError("missing fieldSeparator");
+			return conversionResult;
 		}
 		
-		String orgAbbreviation = values.get(OmvMmi.origMaintainerCode.getURI());
-		String primaryClass = values.get(Omv.acronym.getURI());
+		String orgAbbreviation = "_tmp_"; //values.get(OmvMmi.origMaintainerCode.getURI());
 
 		if ( orgAbbreviation == null ) {
-			result.setError("missing origMaintainerCode");
+			conversionResult.setError("missing origMaintainerCode");
+			return conversionResult;
 		}
+		
+		String primaryClass = values.get("primaryClass");   //  Omv.acronym.getURI());
 		if ( primaryClass == null ) {
-			result.setError("missing acronym");
+			conversionResult.setError("missing acronym");
+			return conversionResult;
 		}
 
 		
-		if ( result.getError() != null ) {
-			return result;
-		}
-
 		
 		Converter ontConverter = new Converter(
 				namespaceRoot,
@@ -104,97 +99,30 @@ public class Voc2RdfServiceImpl extends RemoteServiceServlet implements Voc2RdfS
 		log.info("converter created.");
 		
 		
-		String res;
+		String error;
 		try {
-			res = ontConverter.createOntology();
+			error = ontConverter.createOntology();
 		}
 		catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			result.setError(e1.getClass().getName()+ " : " +e1.getMessage());
-			return result;
+			log.error(e1);
+			conversionResult.setError(e1.getClass().getName()+ " : " +e1.getMessage());
+			return conversionResult;
 		}
 		
-		log.info("createOntology returned: " +res);
 		
-		if ( res.equals("failure") ) {
-			result.setError(res);
+		if ( error != null ) {
+			conversionResult.setError(error);
+			log.info("createOntology returned: " +error);
 		}
 		else {
 			String finalUri = ontConverter.getFinalUri();
-			result.setFinalUri(finalUri);
+			conversionResult.setFinalUri(finalUri);
+			conversionResult.setPathOnServer(ontConverter.getPathOnServer());
 			String rdf = ontConverter.getOntologyStringXml();
-			result.setRdf(rdf);
+			conversionResult.setRdf(rdf);
 		}
 
-		return result;
+		return conversionResult;
 	}
 	
-	
-	public LoginResult login(String userName, String userPassword) {
-		LoginResult loginResult = new LoginResult();
-		
-		log.info(": authenticating user " +userName+ " ...");
-		try {
-			Login login = new Login(userName, userPassword);
-			login.getSession(loginResult);
-		}
-		catch (Exception ex) {
-			loginResult.setError(ex.getMessage());
-		}
-
-		return loginResult;
-	}
-	
-	public UploadResult upload(ConversionResult conversionResult, LoginResult loginResult) {
-		
-		UploadResult uploadResult = new UploadResult();
-
-		String userId = null;
-		String sessionId = null;
-
-		if ( loginResult == null ) {
-			uploadResult.setError("No login information");
-		}
-		else if ( loginResult.getError() != null ) {
-			uploadResult.setError("Authentication has errors ");
-		}
-		else {
-			userId = loginResult.getUserId();
-			sessionId = loginResult.getSessionId();
-		}
-		
-		if ( uploadResult.getError() != null ) {
-			log.info(": error: " +uploadResult.getError());
-			return uploadResult;
-		}
-		
-		log.info(": uploading ...");
-		try {
-			String uri = conversionResult.getFinalUri();
-			String fileName;
-			fileName = new URL(uri).getPath();
-			String rdf = conversionResult.getRdf();
-			
-			// TODO: use some of the metadata in values map to set some of the aquaportal attributes
-			OntologyUploader createOnt = new OntologyUploader(uri, fileName, rdf, userId, sessionId);
-			String res = createOnt.create();
-			
-			if ( res.startsWith("OK") ) {
-				uploadResult.setInfo(res);
-			}
-			else {
-				uploadResult.setError(res);
-			}
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-			uploadResult.setError(ex.getClass().getName()+ ": " +ex.getMessage());
-		}
-		
-		log.info("uploadResult = " +uploadResult);
-		
-		return uploadResult;
-	}
-
 }

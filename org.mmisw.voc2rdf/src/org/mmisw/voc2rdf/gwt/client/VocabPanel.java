@@ -1,6 +1,10 @@
 package org.mmisw.voc2rdf.gwt.client;
 
+import java.util.List;
 import java.util.Map;
+
+import org.mmisw.voc2rdf.gwt.client.vocabulary.AttrDef;
+import org.mmisw.voc2rdf.gwt.client.vocabulary.Option;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CellPanel;
@@ -27,19 +31,21 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class VocabPanel extends VerticalPanel {
 
+	private static final String NAMESPACE_ROOT = "http://mmisw.org/ont";
+
 	private CellPanel contentsContainer = new VerticalPanel();
+	
+	private ListBox primaryClass_lb;
 	
 	private TextArea ascii_ta = new TextArea();
 	private ListBox fieldSeparator_lb;
 	
-	private final CheckBox tabular_cb = new CheckBox("Tabular view");
+	private final CheckBox tabular_cb = new CheckBox("Tabular view (check this for easier inspection)");
 	
 	private ScrollPanel table = new ScrollPanel();
 	
 	private PushButton exampleButton;
 	
-	private PushButton convertButton;
-
 	protected MainPanel mainPanel;
 
 	
@@ -47,21 +53,52 @@ public class VocabPanel extends VerticalPanel {
 		this.mainPanel = mainPanel;
 		setWidth("850");
 		
-		add(new HTML("Use this panel to provide the contents of your vocabulary in text format"));
+//		add(new HTML("Use this panel to provide the contents of your vocabulary in text format"));
 		add(createForm());
 	}
 
 	private Widget createForm() {
 		contentsContainer.setBorderWidth(1);
-		ascii_ta.setSize("600", "200");
-		table.setSize("600", "200");
-
-		FlexTable panel = new FlexTable();
 		
+		
+		primaryClass_lb = new ListBox();
+
+		AttrDef mainClassAttrDef = Main.baseInfo.getMainClassAttrDef();
+		List<Option> options = mainClassAttrDef.getOptions();
+		for ( Option option : options ) {
+			String name = option.getName();
+			String label = option.getLabel();
+			primaryClass_lb.addItem(label, name);
+		}
+
+		ascii_ta.setSize("700", "300");
+		table.setSize("700", "300");
+
+		
+		FlexTable panel = new FlexTable();
+		panel.setWidth("850");
 		int row = 0;
 		
+		
+		// general information 
+		HTML infoLabel = new HTML("The class refers to the main theme associated with your vocabulary. " +
+				"You can manually type in the contents of your vocabulary or paste it from " +
+				"your original text file. Use the check box at the bottom for a convenient " +
+				"(read-only) tabular view of the contents. Uncheck it to continue " +
+				"editing. The Example button will fill in the vocabulary contents with an " +
+				"example."
+		);
+		panel.getFlexCellFormatter().setColSpan(row, 0, 2);
+		panel.setWidget(row, 0, infoLabel);
+		panel.getFlexCellFormatter().setAlignment(row, 0, 
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		row++;
+		
+		
+		
 		CellPanel buttons = createButtons();
-		panel.getFlexCellFormatter().setColSpan(0, 0, 2);
+		panel.getFlexCellFormatter().setColSpan(row, 0, 2);
 		panel.setWidget(row, 0, buttons);
 		panel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
@@ -69,7 +106,24 @@ public class VocabPanel extends VerticalPanel {
 		row++;
 		
 		
-		Label lbl = new Label("Contents of your vocabulary:");
+		Widget class_lbl = new HTML("Class:");
+		class_lbl.setTitle("The class for the terms defined in this vocabulary");
+		panel.setWidget(row, 0, class_lbl);
+		panel.getFlexCellFormatter().setAlignment(row, 0, 
+				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+
+		panel.setWidget(row, 1, primaryClass_lb);
+		panel.getFlexCellFormatter().setAlignment(row, 1, 
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		row++;
+
+
+		
+		
+		
+		Widget lbl = new HTML("Terms:");
 		lbl.setTitle("Contents of your vocabulary");
 		panel.setWidget(row, 0, lbl);
 		panel.getFlexCellFormatter().setAlignment(row, 0, 
@@ -138,21 +192,13 @@ public class VocabPanel extends VerticalPanel {
 		exampleButton.setTitle("Fills in example values in this section");
 		panel.add(exampleButton);
 		
-		convertButton = new PushButton("Test", new ClickListener() {
-			public void onClick(Widget sender) {
-				mainPanel.convertTest();
-			}
-		});
-		convertButton.setTitle(
-				"Tests the conversion of the current vocabulary contents into RDF format. " +
-				"Example values are automatically provided for the required metadata attributes.");
-		panel.add(convertButton);
-		
 		return panel;
 	}
 	
 
 	String putValues(Map<String, String> values) {
+		values.put("namespaceRoot", NAMESPACE_ROOT);
+
 		String ascii = ascii_ta.getText().trim();
 		if ( ascii.length() > 0 ) {
 			values.put("ascii", ascii_ta.getText());
@@ -163,9 +209,14 @@ public class VocabPanel extends VerticalPanel {
 		
 		values.put("fieldSeparator", fieldSeparator_lb.getValue(fieldSeparator_lb.getSelectedIndex()));
 		
+		
+		values.put("primaryClass", primaryClass_lb.getValue(primaryClass_lb.getSelectedIndex()));
+		
 		return null;
 	}
 
+	
+	
 	
 	private void updateContents(CellPanel container, boolean tabular) {
 

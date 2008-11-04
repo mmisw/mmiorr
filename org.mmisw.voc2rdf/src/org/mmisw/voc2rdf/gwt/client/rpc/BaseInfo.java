@@ -1,33 +1,31 @@
 package org.mmisw.voc2rdf.gwt.client.rpc;
 
-import org.mmisw.voc2rdf.gwt.client.vocabulary.AttrGroup;
+import org.mmisw.voc2rdf.gwt.client.vocabulary.AttrDef;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Provides the main elements used to create the attributes to
- * be captured.
+ * Some base information.
  * 
  * @author Carlos Rueda
  */
 public class BaseInfo implements IsSerializable {
 	
-	private AttrGroup[] attrGroups = {};
+	private AttrDef mainClass;
 	
 	
 	public BaseInfo() {
 	}
-	
-	/**
-	 * Gets the metadata groups.
-	 * @return the metadata groups.
-	 */
-	public AttrGroup[] getAttrGroups() {
-		return attrGroups;
+
+
+	public void setMainClassAttrDef(AttrDef mainClass) {
+		this.mainClass = mainClass;
+	}
+
+
+	public AttrDef getMainClassAttrDef() {
+		return mainClass;
 	}
 	
-	public void setAttrGroups(AttrGroup[] attrGroups) {
-		this.attrGroups = attrGroups;
-	}
 	
 }

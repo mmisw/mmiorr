@@ -80,6 +80,8 @@ class Converter {
 	
 	private StringManipulationInterface stringManipulation = new StringManipulationUtil();
 
+	private String pathOnServer;
+
 	
 	
 	Converter(
@@ -102,24 +104,39 @@ class Converter {
 		
 	}
 
-	public String createOntology() throws Exception {
+	String createOntology() throws Exception {
 		logger.info("!!!!!!!!!!!!!!!! Converter.createOntology");
 		
 		setFinalUri();
 		processCreateOntology();
 
+		// save the converted ontology in the server to enable subsequent
+		// metadata edition by ontmd if the user so wishes:
+		String rdf = getOntologyStringXml();
 		
-		return "success";
+		// just the simple name:
+		setPathOnServer(createUniqueBaseName() + ".owl");
+		
+		String full_path = Config.ONTMD_VOC2RDF_DIR + getPathOnServer();
+		
+		try {
+			FileWriter os = new FileWriter(full_path);
+			os.write(rdf);
+			os.close();
+		}
+		catch (IOException ex) {
+			throw new Exception("Error writing generated file: " +full_path, ex);
+		}
+
+		return null;   // OK
 	}
 	
 	
 	
 	private void processCreateOntology() throws Exception {
 
-		String fileInText = tmp + createUniqueName() + ".txt";
+		String fileInText = tmp + createUniqueBaseName() + ".txt";
 		saveInFile(fileInText);
-
-		
 		
 		newOntModel = new OwlModel(JenaUtil.createDefaultOntModel());
 		ns_ = JenaUtil.getURIForNS(finalUri);
@@ -153,14 +170,8 @@ class Converter {
 		// set Omv.uri from final
 		ont.addProperty(Omv.uri, finalUri);
 		
-		// TODO remove the following temporary direct association of DC.date
-//		Date date = new Date(System.currentTimeMillis());
-//		SimpleDateFormat sdf = new SimpleDateFormat(
-//				"yyyy-MM-dd'T'HH:mm:ssZ");
-//		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-//		String formatted = sdf.format(date);
-//		ont.addProperty(DC.date, formatted);
-		
+		// set Omv.uri from final
+		ont.addProperty(Omv.name, setFirstUpperCase(cleanStringforID(primaryClass)));
 		
 		createOntologIndividuals(fileInText);
 	}
@@ -408,14 +419,26 @@ class Converter {
 
 	public String getOntologyStringXml() {
 		return JenaUtil.getOntModelAsString(newOntModel);
-//		return trans.getOntologyAsString();
 	}
 
 
 
-	private String createUniqueName() {
+	/**
+	 * TODO createUniqueBaseName(): need a more robust way to get a unique name. Also, use
+	 * the same base name for the various derivations of the same conversion task, instead 
+	 * of creating a new name for each.
+	 */
+	private String createUniqueBaseName() {
 		return "" +System.currentTimeMillis();
 
+	}
+
+	private void setPathOnServer(String pathOnServer) {
+		this.pathOnServer = pathOnServer;
+	}
+
+	String getPathOnServer() {
+		return pathOnServer;
 	}
 
 }

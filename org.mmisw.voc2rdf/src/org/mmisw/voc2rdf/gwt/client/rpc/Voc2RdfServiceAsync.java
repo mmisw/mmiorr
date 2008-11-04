@@ -16,8 +16,4 @@ public interface Voc2RdfServiceAsync {
 	
 	void convert(Map<String,String> values, AsyncCallback<ConversionResult> callback);
 	
-	void login(String userName, String userPassword, AsyncCallback<LoginResult> callback);
-	
-	void upload(ConversionResult result, LoginResult loginResult, AsyncCallback<UploadResult> callback);
-	
 }
