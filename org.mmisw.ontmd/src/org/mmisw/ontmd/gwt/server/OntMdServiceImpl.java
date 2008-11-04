@@ -776,6 +776,15 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			String fileName;
 			fileName = new URL(uri).getPath();
 			
+			//
+			// make sure the fileName ends with ".owl" as the aquaportal back-end seems
+			// to add that fixed extension in some operations (at least in the parse operation)
+			//
+			if ( ! fileName.toLowerCase().endsWith(".owl") ) {
+				log.info("upload: setting file extension to .owl per aquaportal requirement.");
+				fileName += ".owl";
+			}
+			
 			OntologyUploader createOnt = new OntologyUploader(uri, fileName, rdf, userId, sessionId, newValues);
 			String res = createOnt.create();
 			
