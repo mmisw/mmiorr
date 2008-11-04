@@ -110,12 +110,12 @@ public class MainPanel extends VerticalPanel {
 			requestedOntologyUri = params.get("ontologyUri");
 			editRequestedOntology = "y".equalsIgnoreCase(params.get("_edit"));
 		}
-	    else if ( false && 
+	    else if ( //false && 
 	    		! GWT.isScript() ) {
 	    	// NOTE: Using an ad hoc ontology uri under my hosted environment.");
 	    	requestedOntologyUri = "http://localhost:8080/ont/mmi/map-cicore-cf";
 	    	// but I have to add "_edit=y" if I want editing mode:
-	    	editRequestedOntology = "y".equalsIgnoreCase(params.get("_edit"));
+	    	editRequestedOntology = true;//"y".equalsIgnoreCase(params.get("_edit"));
 	    }
 		
 	    if ( params.get("sessionId") != null && params.get("userId") != null ) {

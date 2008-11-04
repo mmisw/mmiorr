@@ -12,11 +12,13 @@ import org.mmisw.ontmd.gwt.client.vocabulary.Option;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PushButton;
@@ -67,6 +69,14 @@ public class MetadataGroupPanel extends VerticalPanel {
 			}
 		}
 	});
+	
+	
+	// special case
+	private AttrDef shortNameAttrDef;
+	private FieldWithChoose shortNameFieldWithChoose;
+	private CheckBox shortNameIsMap;
+//	private TextBox shortNameId;   // TODO not for now
+
 
 	
 	MetadataGroupPanel(MainPanel mainPanel, AttrGroup attrGroup, boolean editing) {
@@ -122,29 +132,40 @@ public class MetadataGroupPanel extends VerticalPanel {
 			}
 			
 			Widget widget;
-			String attrName = attr.getLocalName();
 			
 			final List<Option> options = attr.getOptions();
 			
 			if ( editing &&  // not listBoxes if we are just viewing 
 					options != null ) {
 				
-				boolean allowUserOption = attr.isAllowUserDefinedOption();
-				if ( allowUserOption ) {
-					widget = new FieldWithChoose(attr, cl);
+				if ( Main.baseInfo.getShortNameUri().equals(attr.getUri()) ) {
+					// the special case for the "short name"
+					widget = createShortNameWidget(attr, cl);
 				}
 				else {
-					ListBox lb = createListBox(attr, cl);
-					widget = lb;
+					boolean allowUserOption = attr.isAllowUserDefinedOption();
+					if ( allowUserOption ) {
+						widget = new FieldWithChoose(attr, cl);
+					}
+					else {
+						ListBox lb = createListBox(attr, cl);
+						widget = lb;
+					}
 				}
 			}
+			
 			else {
 				int nl = attr.getNumberOfLines();
-				TextBoxBase tb = createTextBoxBase(nl, "500", attrName, cl);
+				TextBoxBase tb = createTextBoxBase(nl, "500", cl);
 				widget = tb;
 			}
 			
-			widgets.put(attrName, new Elem(attr, widget));
+			if ( shortNameAttrDef == attr ) {
+				// we handle this as a special case.
+			}
+			else {
+				widgets.put(attr.getUri(), new Elem(attr, widget));
+			}
 			
 			String label = attr.getLabel() + ":";
 			if ( editing && attr.isRequired() ) {
@@ -169,11 +190,69 @@ public class MetadataGroupPanel extends VerticalPanel {
 		return panel;
 	}
 	
+	// NOTE: this has a special handling in the GUI
+	// (not very elegant by time contrains are unavoidable!)
+	private Widget createShortNameWidget(AttrDef attr, ChangeListener cl) {
+		shortNameAttrDef = attr;
+
+		Widget widget;
+		
+		VerticalPanel vp0 = new VerticalPanel();
+		vp0.setBorderWidth(1);
+		VerticalPanel vp = new VerticalPanel();
+		vp0.add(vp);
+		vp.setSpacing(5);
+		widget = vp0;
+		
+		// see MdHelper:
+		assert attr.isAllowUserDefinedOption() ;
+		assert attr.isRequired() ;
+		
+		shortNameFieldWithChoose = new FieldWithChoose(attr, cl);
+		shortNameIsMap = new CheckBox("Mapping");
+
+		shortNameFieldWithChoose.tb.addKeyboardListener(new KeyboardListenerAdapter() {
+			  public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+				  String value = shortNameFieldWithChoose.tb.getText();
+				  if ( shortNameIsMap.isChecked() && ! value.toLowerCase().endsWith("_map") ) {
+					  shortNameIsMap.setChecked(false);
+				  }
+				  else if ( !shortNameIsMap.isChecked() && value.toLowerCase().endsWith("_map") ) {
+					  shortNameIsMap.setChecked(true);
+				  }
+			  }
+		});
+		vp.add(shortNameFieldWithChoose);
+
+		HorizontalPanel hp = new HorizontalPanel();
+		vp.add(hp);
+
+		hp.setSpacing(4);
+		shortNameIsMap.addClickListener(new ClickListener() {
+			public void onClick(Widget sender) {
+				String value = shortNameFieldWithChoose.tb.getText();
+				if ( shortNameIsMap.isChecked() && ! value.toLowerCase().endsWith("_map") ) {
+					shortNameFieldWithChoose.setValue(value+ "_map");
+				}
+				else if ( !shortNameIsMap.isChecked() && value.toLowerCase().endsWith("_map") ) {
+					shortNameFieldWithChoose.setValue(value.substring(0, value.length()-4));
+				}
+			}
+			
+		});
+		
+//		hp.add(new Label("ID:"));
+//		shortNameId = new TextBox();
+//		hp.add(shortNameId);
+		
+		hp.add(shortNameIsMap);
+		
+		return widget;
+	}
+
 	private static ListBox createListBox(AttrDef attr, ChangeListener cl) {
-		String attrName = attr.getLocalName();
 		List<Option> options = attr.getOptions();
 		final ListBox lb = new ListBox();
-		lb.setName(attrName);
 		for ( Option option : options ) {
 			String lab = option.getLabel();
 			if ( lab != null && lab.length() > 0 ) {
@@ -199,8 +278,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 		FieldWithChoose(AttrDef attr, ChangeListener cl) {
 			this.attr = attr;
 			int nl = 1;    /// attr.getNumberOfLines() is ignored
-			String attrName = attr.getLocalName();
-			tb = createTextBoxBase(nl, "400", attrName, cl );
+			tb = createTextBoxBase(nl, "400", cl);
 
 			add(tb);
 			lb = createListBox(attr, cl);
@@ -240,7 +318,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 		}
 	}
 	
-	private static TextBoxBase createTextBoxBase(int nl, String width, String attrName,
+	private static TextBoxBase createTextBoxBase(int nl, String width, 
 			ChangeListener cl) {
 		final TextBoxBase tb;
 		if ( nl <=1 ) {
@@ -256,7 +334,6 @@ public class MetadataGroupPanel extends VerticalPanel {
 			// TODO 16 is just a rough scaling factor
 			tb.setSize(width, "" +(nl *16));
 		}
-		tb.setName(attrName);
 		if ( cl != null ) {
 			tb.addChangeListener(cl);
 		}
@@ -301,8 +378,28 @@ public class MetadataGroupPanel extends VerticalPanel {
 	 * @return null if OK; otherwise a message about the missing required attribute.
 	 */
 	String putValues(Map<String, String> values) {
+		
+		// special case:
+		if ( shortNameAttrDef != null ) {
+			String value = shortNameFieldWithChoose.tb.getText().trim();
+			if ( value.length() == 0 ) {
+				String error = "Please provide a value for the field with label: " +
+							shortNameAttrDef.getLabel();
+				return error;
+			}
+			
+			if ( values != null ) {
+				// do actual assignment
+				String uri = shortNameAttrDef.getUri();
+				values.put(uri, value);
+				Main.log("assigned: " +uri+ " = " +value);
+			}
+		}
+		
+		
 		for ( Elem elem : widgets.values() ) {
 			String value = "";
+			
 			if ( elem.widget instanceof TextBoxBase ) {
 				value = ((TextBoxBase) elem.widget).getText();
 			}
@@ -331,8 +428,8 @@ public class MetadataGroupPanel extends VerticalPanel {
 				if ( values != null ) {
 					// do actual assignment
 					values.put(uri, value);
+					Main.log("assigned: " +uri+ " = " +value);
 				}
-				Main.log("assigned: " +uri+ " = " +value);
 			}
 		}
 		return null;
@@ -353,14 +450,19 @@ public class MetadataGroupPanel extends VerticalPanel {
 		}
 		exampleButton.setEnabled(enabled);
 		resetButton.setEnabled(enabled);
+		
+		if ( shortNameAttrDef != null ) {
+			shortNameFieldWithChoose.enable(enabled);
+			shortNameIsMap.setEnabled(enabled);
+		}
 	}
 
 	/**
 	 * Sets all widget values to empty (textbox) and first option (listbox). 
 	 */
 	private void resetToEmpty() {
+		String value = "";
 		for ( Elem elem : widgets.values() ) {
-			String value = "";
 			if ( elem.widget instanceof TextBoxBase ) {
 				((TextBoxBase) elem.widget).setText(value);
 			}
@@ -372,6 +474,11 @@ public class MetadataGroupPanel extends VerticalPanel {
 			else if ( elem.widget instanceof FieldWithChoose ) {
 				((FieldWithChoose) elem.widget).setValue(value);
 			}
+		}
+		
+		if ( shortNameAttrDef != null ) {
+			shortNameFieldWithChoose.setValue(value);
+			shortNameIsMap.setChecked(false);
 		}
 		
 	}
@@ -400,6 +507,16 @@ public class MetadataGroupPanel extends VerticalPanel {
 				((FieldWithChoose) elem.widget).setValue(value);
 			}
 		}
+		
+		if ( shortNameAttrDef != null ) {
+			String example = shortNameAttrDef.getExample();
+			if ( example == null ) {
+				example = "";
+			}
+			shortNameFieldWithChoose.setValue(example);
+			shortNameIsMap.setChecked(example.endsWith("_map"));
+		}
+
 	}
 	
 	void resetToOriginalOrNewValues(OntologyInfo ontologyInfo, boolean originalVals, boolean confirm) {
@@ -435,6 +552,15 @@ public class MetadataGroupPanel extends VerticalPanel {
 			}
 		}
 		
+		if ( shortNameAttrDef != null ) {
+			String value = originalValues.get(shortNameAttrDef.getUri());
+			if ( value == null ) {
+				value = "";
+			}
+			shortNameFieldWithChoose.setValue(value);
+			shortNameIsMap.setChecked(value.endsWith("_map"));
+		}
+
 	}
 	
 }

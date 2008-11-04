@@ -4,6 +4,14 @@ Carlos Rueda - MMI / MBARI
 ChangeLog
 
 2008-11-03
+	- Fixed the following: repeated attributes will come out in the resulting ontology
+	(eg, multiple omv:uri entries) when the original resource already contains those
+	attributes. Now, any pre-exisiting attributes that are given new values are
+	not tranferred from the original source, of course.
+	
+	- shortName attribute handled as a special case (time contrains force to take
+	  quick, not-so-elegant solutions :( 
+	
 	- upload: setting file extension to .owl per aquaportal requirement
 	
 	- hot link to uploaded ontology upon succesful submission.

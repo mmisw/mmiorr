@@ -14,6 +14,7 @@ public class BaseInfo implements IsSerializable {
 	
 	private AttrGroup[] attrGroups = {};
 	
+	private String shortNameUri;
 	
 	public BaseInfo() {
 	}
@@ -30,4 +31,17 @@ public class BaseInfo implements IsSerializable {
 		this.attrGroups = attrGroups;
 	}
 	
+	
+	/**
+	 *  NOTE: this attribute has a special handling in the GUI
+	 * (not very elegant by time contrains force quick solutions!)
+	 */
+	public String getShortNameUri() {
+		return shortNameUri;
+	}
+	public void setShortNameUri(String shortNameUri) {
+		this.shortNameUri = shortNameUri;
+	}
+	
+
 }

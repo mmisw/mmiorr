@@ -89,6 +89,9 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	private void prepareBaseInfo() {
 		log.info("preparing base info ...");
 		baseInfo = new BaseInfo();
+		
+		baseInfo.setShortNameUri(Omv.acronym.getURI());
+		
 		MdHelper.prepareGroups();
 		AttrGroup[] attrGroups = MdHelper.getAttrGroups();
 		baseInfo.setAttrGroups(attrGroups);
@@ -454,14 +457,14 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		}
 		
 		String orgAbbreviation = newValues.get(OmvMmi.origMaintainerCode.getURI());
-		String primaryClass = newValues.get(Omv.acronym.getURI());
+		String shortName = newValues.get(Omv.acronym.getURI());
 
 		if ( orgAbbreviation == null ) {
 			log.info("missing origMaintainerCode");
 			reviewResult.setError("missing origMaintainerCode");
 			return reviewResult;
 		}
-		if ( primaryClass == null ) {
+		if ( shortName == null ) {
 			log.info("missing acronym");
 			reviewResult.setError("missing acronym");
 			return reviewResult;
@@ -496,7 +499,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		final String finalUri = namespaceRoot + "/" +
 		                        orgAbbreviation + "/" +
 		                        version + "/" +
-		                        primaryClass;
+		                        shortName;
 		
 		final String ns_ = JenaUtil.getURIForNS(finalUri);
 		final String base_ = JenaUtil.getURIForBase(finalUri);
@@ -572,13 +575,31 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			newOntModel.setNsPrefix(prefix, uri);
 		}
 		
+		
+		// Set interval attributes, which are updated in the newValues map itself
+		// so we facilite the processing below:
+		newValues.put(Omv.uri.getURI(), base_);
+		newValues.put(Omv.version.getURI(), version);
+
+
 		//////////////////////////////////////////////////
 		// transfer any preexisting attributes, and then remove all properties from
 		// pre-existing ontRes so just the new OntModel gets added.
 		if ( ontRes != null ) {
 			for ( Statement st : prexistStatements ) {
-				log.info("  Transferring: " +st.getSubject()+ " :: " +st.getPredicate()+ " :: " +st.getObject());
-				newOntModel.add(ont_, st.getPredicate(), st.getObject());
+				Property prd = st.getPredicate();
+
+				//
+				// Do not tranfer pre-existing/pre-assigned-above attributes
+				//
+				String newValue = newValues.get(prd.getURI());
+				if ( newValue == null || newValue.trim().length() == 0 ) {
+					log.info("  Transferring: " +st.getSubject()+ " :: " +prd+ " :: " +st.getObject());
+					newOntModel.add(ont_, st.getPredicate(), st.getObject());
+				}
+				else {
+					log.info(" Not Transferring: " +prd+ " from previous version because new value " +newValue);
+				}
 			}	
 			
 			log.info("Removing original OWL.Ontology individual");
@@ -601,20 +622,13 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 					log.info("No property found for uri='" +uri+ "'");
 					continue;
 				}
+
 				log.info(" Assigning: " +uri+ " = " +value);
-				
 				ont_.addProperty(prop, value);
 			}
 		}
 		
-		// set some internal attributes (ie, internally computed)
-		
-		ont_.addProperty(Omv.uri, base_);
-		ont_.addProperty(Omv.version, version);
 
-		// those internal attributes also updated in the values map:
-		newValues.put(Omv.uri.getURI(), base_);
-		newValues.put(Omv.version.getURI(), version);
 
 		// Set the missing DC attrs that have defined e	equivalent MMI attrs: 
 		_setDcAttributes(ont_);
