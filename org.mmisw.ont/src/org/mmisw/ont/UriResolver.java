@@ -445,6 +445,29 @@ public class UriResolver extends HttpServlet {
 		return false;   // not dispatched here.
 	}
 	
+	
+	/**
+	 * Gets the full path to get to the uploaded ontology file.
+	 * @param ontology
+	 * @return
+	 */
+	private File _getFullPath(Ontology ontology) {
+		String full_path = ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY) 
+			+ "/" +ontology.file_path + "/" + ontology.filename;
+		
+		File file = new File(full_path);
+		
+		// Note: the following is a quick workaround for submissions whose URI don't have
+		// the .owl extension (the general rule, btw), but whose uploaded files do. 
+		// I had to add the .owl extension in ontmd for the aquaportal parsing jobs to work.
+		if ( ! file.canRead() && ! full_path.toLowerCase().endsWith(".owl") ) {
+			// try with ".owl":
+			full_path += ".owl";
+			file = new File(full_path);
+		}
+
+		return file;
+	}
 
 	/**
 	 * Helper method to dispatch a request with response in the givenontology format.
@@ -467,23 +490,9 @@ public class UriResolver extends HttpServlet {
 			return false;   // not dispatched here.
 		}
 		
-		// prepare info about the path to the file on disk:
-		String full_path = ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY) 
-			+ "/" +ontology.file_path + "/" + ontology.filename;
-		File file = new File(full_path);
 		
-		/////////////////////////////////////////////////////////////////////////////////////
-		// Note: the following is a quick workaround for submissions whose URI don't have
-		// the .owl extension (the general rule, btw), but whose uploaded files do. 
-		// I had to add the .owl extension in ontmd for the aquaportal parsing jobs to work (argh!)
-		if ( ! file.canRead() && ! full_path.toLowerCase().endsWith(".owl") ) {
-			// try with ".owl":
-			full_path += ".owl";
-			file = new File(full_path);
-		}
-		/////////////////////////////////////////////////////////////////////////////////////
+		File file = _getFullPath(ontology);
 		
-
 		if ( file.canRead() ) {
 			String term = mmiUri.getTerm();
 			
@@ -534,7 +543,7 @@ public class UriResolver extends HttpServlet {
 		else {
 			// This should not happen.
 			// Log the error and respond with a NotFound error:
-			String msg = full_path+ ": internal error: uploaded file ";
+			String msg = file.getAbsolutePath()+ ": internal error: uploaded file ";
 			msg += file.exists() ? "exists but cannot be read." : "not found.";
 			msg += "Please, report this bug.";
 			log.error(msg, null);
@@ -583,10 +592,8 @@ public class UriResolver extends HttpServlet {
 			return true;
 		}
 
-		String full_path = ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY) 
-						+ "/" +ontology.file_path + "/" + ontology.filename;
-		
-		File file = new File(full_path);
+		File file = _getFullPath(ontology);
+
 		if ( ! file.canRead() ) {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND, 
 					request.getRequestURI()+ ": not found");
@@ -672,11 +679,9 @@ public class UriResolver extends HttpServlet {
 
 		
 		// just return the path, without any further checks:
-		String full_path = ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY) 
-			+ "/" +ontology.file_path + "/" + ontology.filename;
-		
-		// return just the full path
-		out.println(full_path);
+    	File file = _getFullPath(ontology);
+
+    	out.println(file.getAbsolutePath());
 	}
 	
 
@@ -719,10 +724,6 @@ public class UriResolver extends HttpServlet {
 			// report the URI:
 			out.println(ontology.getUri());
 			
-//			// full path to the file:
-//			String full_path = ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY) 
-//					+ "/" +ontology.file_path + "/" + ontology.filename;
-//			out.println(full_path);
 		}
 	}
 	
@@ -815,9 +816,7 @@ public class UriResolver extends HttpServlet {
 
 		
 		// prepare info about the path to the file on disk:
-		String full_path = ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY) 
-			+ "/" +ontology.file_path + "/" + ontology.filename;
-		File file = new File(full_path);
+    	File file = _getFullPath(ontology);
 
 		// report the db info and whether the file can be read or not:
 		out.println(" Ontology entry FOUND: <br/>");
@@ -827,7 +826,7 @@ public class UriResolver extends HttpServlet {
 		out.println("          file_path: " + ontology.file_path);
 		out.println("           filename: " + ontology.filename);
 		out.println("</pre>");
-		out.println(" Full path: <code>" + full_path + "</code> ");
+		out.println(" Full path: <code>" + file.getAbsolutePath() + "</code> ");
 		out.println(" Can read it: <code>" + file.canRead() + "</code> <br/>");
 
 		if ( file.canRead() ) {
