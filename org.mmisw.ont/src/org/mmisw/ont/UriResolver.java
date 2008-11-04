@@ -457,12 +457,18 @@ public class UriResolver extends HttpServlet {
 		
 		File file = new File(full_path);
 		
-		// Note: the following is a quick workaround for submissions whose URI don't have
-		// the .owl extension (the general rule, btw), but whose uploaded files do. 
-		// I had to add the .owl extension in ontmd for the aquaportal parsing jobs to work.
-		if ( ! file.canRead() && ! full_path.toLowerCase().endsWith(".owl") ) {
-			// try with ".owl":
-			full_path += ".owl";
+		if ( ! file.canRead() ) {
+			if ( full_path.toLowerCase().endsWith(".owl") ) {
+				// try without ".owl":
+				full_path = full_path.substring(0, full_path.length() - 4);
+			}
+			else {
+				// Note: the following is a quick workaround for submissions whose URI don't have
+				// the .owl extension (the general rule, btw), but whose uploaded files do. 
+				// I had to add the .owl extension in ontmd for the aquaportal parsing jobs to work.
+				// try with ".owl":
+				full_path += ".owl";
+			}
 			file = new File(full_path);
 		}
 
