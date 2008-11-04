@@ -471,6 +471,18 @@ public class UriResolver extends HttpServlet {
 		String full_path = ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY) 
 			+ "/" +ontology.file_path + "/" + ontology.filename;
 		File file = new File(full_path);
+		
+		/////////////////////////////////////////////////////////////////////////////////////
+		// Note: the following is a quick workaround for submissions whose URI don't have
+		// the .owl extension (the general rule, btw), but whose uploaded files do. 
+		// I had to add the .owl extension in ontmd for the aquaportal parsing jobs to work (argh!)
+		if ( ! file.canRead() && ! full_path.toLowerCase().endsWith(".owl") ) {
+			// try with ".owl":
+			full_path += ".owl";
+			file = new File(full_path);
+		}
+		/////////////////////////////////////////////////////////////////////////////////////
+		
 
 		if ( file.canRead() ) {
 			String term = mmiUri.getTerm();
