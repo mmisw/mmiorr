@@ -505,6 +505,9 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		final String base_ = JenaUtil.getURIForBase(finalUri);
 		
 
+		sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+		final String creationDate = sdf.format(date);
 		
 		
 		
@@ -576,10 +579,12 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		}
 		
 		
-		// Set interval attributes, which are updated in the newValues map itself
+		// Set internal attributes, which are updated in the newValues map itself
 		// so we facilite the processing below:
 		newValues.put(Omv.uri.getURI(), base_);
 		newValues.put(Omv.version.getURI(), version);
+		
+		newValues.put(Omv.creationDate.getURI(), creationDate);
 
 
 		//////////////////////////////////////////////////

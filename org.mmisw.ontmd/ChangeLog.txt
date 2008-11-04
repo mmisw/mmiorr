@@ -4,6 +4,9 @@ Carlos Rueda - MMI / MBARI
 ChangeLog
 
 2008-11-03
+
+	- Assign omv:creationDate with format yyyy-MM-dd'T'HH:mm:ssZ
+	
 	- Fixed the following: repeated attributes will come out in the resulting ontology
 	(eg, multiple omv:uri entries) when the original resource already contains those
 	attributes. Now, any pre-exisiting attributes that are given new values are
