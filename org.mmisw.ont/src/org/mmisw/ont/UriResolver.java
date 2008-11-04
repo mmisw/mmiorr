@@ -451,7 +451,7 @@ public class UriResolver extends HttpServlet {
 	 * @param ontology
 	 * @return
 	 */
-	private File _getFullPath(Ontology ontology) {
+	static File _getFullPath(Ontology ontology, OntConfig ontConfig, Log log) {
 		String full_path = ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY) 
 			+ "/" +ontology.file_path + "/" + ontology.filename;
 		
@@ -468,6 +468,9 @@ public class UriResolver extends HttpServlet {
 				// I had to add the .owl extension in ontmd for the aquaportal parsing jobs to work.
 				// try with ".owl":
 				full_path += ".owl";
+			}
+			if ( log.isDebugEnabled() ) {
+				log.debug("TRYING: " +full_path);
 			}
 			file = new File(full_path);
 		}
@@ -497,7 +500,7 @@ public class UriResolver extends HttpServlet {
 		}
 		
 		
-		File file = _getFullPath(ontology);
+		File file = UriResolver._getFullPath(ontology, ontConfig, log);
 		
 		if ( file.canRead() ) {
 			String term = mmiUri.getTerm();
@@ -598,7 +601,7 @@ public class UriResolver extends HttpServlet {
 			return true;
 		}
 
-		File file = _getFullPath(ontology);
+		File file = UriResolver._getFullPath(ontology, ontConfig, log);
 
 		if ( ! file.canRead() ) {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND, 
@@ -685,7 +688,7 @@ public class UriResolver extends HttpServlet {
 
 		
 		// just return the path, without any further checks:
-    	File file = _getFullPath(ontology);
+    	File file = UriResolver._getFullPath(ontology, ontConfig, log);
 
     	out.println(file.getAbsolutePath());
 	}
@@ -822,7 +825,7 @@ public class UriResolver extends HttpServlet {
 
 		
 		// prepare info about the path to the file on disk:
-    	File file = _getFullPath(ontology);
+    	File file = UriResolver._getFullPath(ontology, ontConfig, log);
 
 		// report the db info and whether the file can be read or not:
 		out.println(" Ontology entry FOUND: <br/>");

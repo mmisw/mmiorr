@@ -81,10 +81,7 @@ public class MdDispatcher {
 			return;
 		}
 
-		String full_path = ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY) 
-						+ "/" +ontology.file_path + "/" + ontology.filename;
-		
-		File file = new File(full_path);
+		File file = UriResolver._getFullPath(ontology, ontConfig, log);
 		if ( ! file.canRead() ) {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND, 
 					request.getRequestURI()+ ": not found");

@@ -73,10 +73,8 @@ public class HtmlDispatcher {
 			return true;
 		}
 
-		String full_path = ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY) 
-						+ "/" +ontology.file_path + "/" + ontology.filename;
+		File file = UriResolver._getFullPath(ontology, ontConfig, log);
 		
-		File file = new File(full_path);
 		if ( ! file.canRead() ) {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND, 
 					request.getRequestURI()+ ": not found");
