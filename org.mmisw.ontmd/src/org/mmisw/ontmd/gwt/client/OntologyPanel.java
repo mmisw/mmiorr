@@ -354,7 +354,7 @@ public class OntologyPanel extends VerticalPanel {
 			Window.alert(error);
 			return;
 		}
-		statusLoad.setHTML("<font color=\"green\">Ontology loaded</font>");
+		statusLoad.setHTML("<font color=\"green\">Ontology loaded into editor</font>");
 		statusField2.setText("Original base URI: " +ontologyInfo.getUri());
 		mainPanel.setPreloadedOntologyInfo(ontologyInfo, false);
 		String rdf = ontologyInfo.getRdf();
@@ -368,7 +368,7 @@ public class OntologyPanel extends VerticalPanel {
 		vp.setWidth("400");
 		vp.setSpacing(10);
 		vp.add(new HTML(
-				"The ontology has been loaded.\n" +
+				"Your ontology is available for review and documentation.\n" +
 				"Use the Metadata panel to proceed with editing and reviewing " +
 				"the metadata attributes. " +
 				"Use the Details button to see an initial evaluation of the " +

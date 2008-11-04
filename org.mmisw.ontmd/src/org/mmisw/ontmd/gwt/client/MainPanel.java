@@ -78,8 +78,11 @@ public class MainPanel extends VerticalPanel {
 	});
 
 	
-	/** The requested ontology, if any. */
+	/** URI of requested ontology from a parameter, if any. */
 	private String requestedOntologyUri;
+	
+	/** Path of requested ontology on server, if any. */
+	private String requestedOntologyOnServer;
 	
 	/** Edit the requested ontology? */
 	private boolean editRequestedOntology;
@@ -104,19 +107,36 @@ public class MainPanel extends VerticalPanel {
 		super();
 		
 		requestedOntologyUri = null;
+		
+		requestedOntologyOnServer = null;
+		
 		editRequestedOntology = false;
 		
 		if ( params.get("ontologyUri") != null ) {
 			requestedOntologyUri = params.get("ontologyUri");
 			editRequestedOntology = "y".equalsIgnoreCase(params.get("_edit"));
 		}
-	    else if ( //false && 
+		
+		else if ( params.get("_voc2rdf") != null ) {
+			requestedOntologyOnServer = params.get("_voc2rdf");
+			editRequestedOntology = "y".equalsIgnoreCase(params.get("_edit"));
+		}
+		
+		///////////////////////////////////////////////////////////////////////////
+		// conveniences for testing in development environment
+	    else if ( false && 
 	    		! GWT.isScript() ) {
 	    	// NOTE: Using an ad hoc ontology uri under my hosted environment.");
 	    	requestedOntologyUri = "http://localhost:8080/ont/mmi/map-cicore-cf";
 	    	// but I have to add "_edit=y" if I want editing mode:
 	    	editRequestedOntology = true;//"y".equalsIgnoreCase(params.get("_edit"));
 	    }
+	    else if ( //false && 
+	    		! GWT.isScript() ) {
+	    	requestedOntologyOnServer = "/Users/Shared/bioportal/resources/uploads/1000/1/map-cicore-cf.owl";
+	    	editRequestedOntology = true;//"y".equalsIgnoreCase(params.get("_edit"));
+	    }
+		//////////////////////////////////////////////////////////////////////////////
 		
 	    if ( params.get("sessionId") != null && params.get("userId") != null ) {
 	    	loginResult = new LoginResult();
@@ -131,7 +151,9 @@ public class MainPanel extends VerticalPanel {
 	    	
 	    	container.add(prepareInterface());
 	    }
-	    else if ( //false && 
+	    
+	    /////////////////////////////////////////////////////////////////////////////
+	    else if ( false && 
 	    		! GWT.isScript() ) {
 	    	// NOTE: Using an ad hoc session under my hosted environment.");
 	    	loginResult = new LoginResult();
@@ -142,8 +164,13 @@ public class MainPanel extends VerticalPanel {
 	    	
 	    	container.add(prepareInterface());
 	    }
-	    else {
+	    //////////////////////////////////////////////////////////////////////////////
+	    
+	    else if ( editRequestedOntology ) {
 	    	container.add(userInfoPanel);
+	    }
+	    else {
+	    	container.add(prepareInterface());
 	    }
 	    
 	    if ( ! "n".equalsIgnoreCase(params.get("_logo")) ) {
@@ -157,8 +184,12 @@ public class MainPanel extends VerticalPanel {
 
 	    enable(false);
 	    
+	    // TODO this here?  what if user first need to log in?
 	    if ( requestedOntologyUri != null ) {
 	    	getOntologyInfoFromRegistry(requestedOntologyUri);
+	    }
+	    else if ( requestedOntologyOnServer != null ) {
+	    	getOntologyInfoFromFileOnServer(requestedOntologyOnServer);
 	    }
 	}
 	
@@ -167,11 +198,16 @@ public class MainPanel extends VerticalPanel {
 		this.loginResult = loginResult;
 		container.clear();
 		container.add(prepareEditingInterface());
+		
+		if ( requestedOntologyOnServer != null ) {
+	    	getOntologyInfoFromFileOnServer(requestedOntologyOnServer);
+	    }
 	}
 
 
 	private Widget prepareInterface() {
-		if ( requestedOntologyUri != null && ! editRequestedOntology ) {
+		if ( ( requestedOntologyUri != null || requestedOntologyOnServer != null) 
+		&& ! editRequestedOntology ) {
 			return prepareViewingInterface();
 		}
 		else {
@@ -224,11 +260,51 @@ public class MainPanel extends VerticalPanel {
 	}
 
 
+	private void getOntologyInfoFromFileOnServer(String full_path) {
+		AsyncCallback<OntologyInfo> callback = new AsyncCallback<OntologyInfo>() {
+			public void onFailure(Throwable thr) {
+				if  (ontologyPanel != null ) {
+					ontologyPanel.onFailure(thr);
+				}
+				else {
+					String error = thr.getClass().getName()+ ": " +thr.getMessage();
+					while ( (thr = thr.getCause()) != null ) {
+						error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
+					}
+					Window.alert(error);
+				}
+			}
+
+			public void onSuccess(OntologyInfo ontologyInfo) {
+				if  (ontologyPanel != null ) {
+					ontologyPanel.onSuccess(ontologyInfo);
+				}
+				String error = ontologyInfo.getError();
+				if ( error != null ) {
+					Window.alert(error);
+				}
+				else {
+					metadataPanel.resetToOriginalValues(ontologyInfo, null, false);
+				}
+			}
+		};
+
+		if ( ! editRequestedOntology ) {
+			metadataPanel.showProgressMessage("Loading metadata. Please wait...");
+		}
+		Main.log("getOntologyInfoFromFileOnServer: ontologyUri = " +full_path);
+		Main.ontmdService.getOntologyInfoFromFileOnServer(full_path, callback);
+	}
+
+
 	
 	private Widget prepareEditingInterface() {
 		
 		// create ontologyPanel
-		boolean allowLoadOptions = requestedOntologyUri == null;
+		boolean allowLoadOptions = requestedOntologyUri == null &&
+		                           requestedOntologyOnServer == null
+		                           ;
+		
 		ontologyPanel = new OntologyPanel(this, allowLoadOptions);
 		
 		
@@ -501,8 +577,17 @@ public class MainPanel extends VerticalPanel {
 			metadataPanel.resetToNewValues(ontologyInfo, reviewResult, false);
 
 			String uri = result.getUri();
-			vp.add(new HTML("<a href=\"" +"http://mmisw.org/or/"+ "\">" +"MMI Registry and Repository Home Page"+ "</a>"));
-			vp.add(new HTML("<br/>URI of uploaded ontology: <a href=\"" +uri+ "\">" +uri+ "</a>"));
+
+			vp.add(new HTML("<br/><font color=\"green\">Congratulations!</font> " +
+					"Your ontology is now registered in the " +
+					"<a href=\"" +"http://mmisw.org/or/"+ "\">" +"MMI Registry and Repository"+ "</a>"));
+			
+			
+			vp.add(new HTML("<br/>The URI of the ontology is: <a href=\"" +uri+ "\">" +uri+ "</a>"));
+			
+			vp.add(new HTML("<br/>Note that you may continue viewing the ontology but not editing its " +
+					"contents anymore."
+			));
 			
 			vp.add(new HTML("<br/>For diagnostics, " +
 					"the following is the response from the back-end server:"));
@@ -521,6 +606,7 @@ public class MainPanel extends VerticalPanel {
 		
 		String msg = sb.toString();
 
+		popup.getTextArea().setSize("700", "300");
 		popup.getTextArea().setText(msg);
 		popup.getDockPanel().add(vp, DockPanel.NORTH);
 		popup.setText(error == null ? "Upload completed sucessfully" : "Error");

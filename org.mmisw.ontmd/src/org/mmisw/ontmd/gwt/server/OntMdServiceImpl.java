@@ -892,4 +892,41 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		
 		return ontologyInfo;
 	}
+	
+	
+	
+	public OntologyInfo getOntologyInfoFromFileOnServer(String path) {
+		log.info("getOntologyInfoFromFileOnServer: local path: " +path);
+		File file = new File(path);
+		
+		if ( !file.isAbsolute() ) {
+			
+			// then, the the full path is to be completed here.
+			// TODO Note: Currently, this is only handled for the Voc2Rdf case:
+			
+			file = new File(Config.ONTMD_VOC2RDF_DIR + path);
+		}
+
+		String full_path = file.getAbsolutePath();
+		
+		OntologyInfo ontologyInfo = new OntologyInfo();
+		
+		try {
+			ontologyInfo.setRdf(readRdf(file));
+		}
+		catch (Throwable e) {
+			String error = "Cannot read RDF model: " +full_path+ " : " +e.getMessage();
+			log.info(error);
+			ontologyInfo.setError(error);
+			return ontologyInfo;
+		}
+
+		String error = prepareOntologyInfo(file, ontologyInfo);
+		if ( error != null ) {
+			ontologyInfo.setError(error);
+		}
+		
+		return ontologyInfo;
+	}
+
 }

@@ -33,6 +33,12 @@ public interface OntMdService extends RemoteService {
 	OntologyInfo getOntologyInfoFromPreLoaded(String uploadResults);
 
 	/**
+	 * Gets ontology info from a file located in the server.
+	 * The main "client" for this service is Voc2Rdf
+	 */
+	OntologyInfo getOntologyInfoFromFileOnServer(String fullPath);
+
+	/**
 	 * Reviews the pre-loaded model with the associated new values.
 	 */
 	ReviewResult review(OntologyInfo ontologyInfo, LoginResult loginResult);

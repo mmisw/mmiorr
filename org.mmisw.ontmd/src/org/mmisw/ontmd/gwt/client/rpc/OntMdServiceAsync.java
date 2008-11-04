@@ -18,6 +18,8 @@ public interface OntMdServiceAsync {
 	
 	void getOntologyInfoFromPreLoaded(String uploadResults, AsyncCallback<OntologyInfo> callback);
 	
+	void getOntologyInfoFromFileOnServer(String fullPath, AsyncCallback<OntologyInfo> callback);
+	
 	void review(OntologyInfo ontologyInfo, LoginResult loginResult, AsyncCallback<ReviewResult> callback);
 	
 	void upload(ReviewResult reviewResult, LoginResult loginResult, AsyncCallback<UploadResult> callback);
