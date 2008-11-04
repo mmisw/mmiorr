@@ -6,6 +6,8 @@ ChangeLog
 2008-11-03
 	- upload: setting file extension to .owl per aquaportal requirement
 	
+	- hot link to uploaded ontology upon succesful submission.
+	
 	
 2008-11-02
 

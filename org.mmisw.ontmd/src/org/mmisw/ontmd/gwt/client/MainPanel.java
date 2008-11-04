@@ -110,7 +110,7 @@ public class MainPanel extends VerticalPanel {
 			requestedOntologyUri = params.get("ontologyUri");
 			editRequestedOntology = "y".equalsIgnoreCase(params.get("_edit"));
 		}
-	    else if ( //false && 
+	    else if ( false && 
 	    		! GWT.isScript() ) {
 	    	// NOTE: Using an ad hoc ontology uri under my hosted environment.");
 	    	requestedOntologyUri = "http://localhost:8080/ont/mmi/map-cicore-cf";
@@ -495,12 +495,17 @@ public class MainPanel extends VerticalPanel {
 		StringBuffer sb = new StringBuffer();
 		
 		VerticalPanel vp = new VerticalPanel();
+		vp.setSpacing(4);
 		
 		if ( error == null ) {
 			metadataPanel.resetToNewValues(ontologyInfo, reviewResult, false);
 
-			vp.add(new Label("Ontology URI: " +result.getUri()));
-			vp.add(new Label("Response from Registry back-end:"));
+			String uri = result.getUri();
+			vp.add(new HTML("<a href=\"" +"http://mmisw.org/or/"+ "\">" +"MMI Registry and Repository Home Page"+ "</a>"));
+			vp.add(new HTML("<br/>URI of uploaded ontology: <a href=\"" +uri+ "\">" +uri+ "</a>"));
+			
+			vp.add(new HTML("<br/>For diagnostics, " +
+					"the following is the response from the back-end server:"));
 
 			sb.append(result.getInfo());
 			
