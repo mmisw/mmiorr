@@ -3,7 +3,7 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
-2008-11-03
+2008-11-03 (0.1.alpha4)
 
 	- Assign omv:creationDate with format yyyy-MM-dd'T'HH:mm:ssZ
 	

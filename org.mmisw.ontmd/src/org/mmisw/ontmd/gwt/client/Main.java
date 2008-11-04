@@ -36,7 +36,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class Main implements EntryPoint {
 
 	public static final String APP_NAME = "ontmd";
-	public static final String VERSION = "0.1.alpha3";
+	public static final String VERSION = "0.1.alpha4";
 	public static final String VERSION_COMMENT = "";
 
 	static String baseUrl;
