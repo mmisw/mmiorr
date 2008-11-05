@@ -50,7 +50,7 @@ public class UriResolver extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	
-	private static final String VERSION = "0.1.5 (20081101)";
+	private static final String VERSION = "0.1.6 (20081104)";
 	static final String TITLE = "MMI Ontology URI resolver. Version " +VERSION;
 
 	private final Log log = LogFactory.getLog(UriResolver.class);
@@ -231,8 +231,8 @@ public class UriResolver extends HttpServlet {
 			return true;
 		}
 		
-		// if the "_lpath" parameter is included, reply with full local path of ontology file
-		// (this is just a quick way to help ontmd to so some of its stuff ;)
+		// if the "_versions" parameter is included, reply with a list of the available
+		// version associated with the request
 		if ( Util.yes(request, "_versions") ) {
 			_resolveGetVersions(request, response);
 			return true;
@@ -267,9 +267,13 @@ public class UriResolver extends HttpServlet {
 		////////////////////////////////////////////////////////////////////////////////
 		
 		String version = mmiUri.getVersion();
-		if ( version == null ) {
-			// No version explicitly given.
-			// Then, get latest version with all possible topic extensions:
+		if ( version == null || version.equals("-") ) {
+			
+			//
+			// handling of unversioned and latest-version requests.
+			//
+			
+			// Get latest version with all possible topic extensions:
 			
 			
 			Ontology mostRecentOntology = db.getMostRecentOntologyVersion(mmiUri);
@@ -298,7 +302,26 @@ public class UriResolver extends HttpServlet {
 					return false;   
 				}
 				
-				//ok, continue with this latest version.
+				// OK: here, mmiUri refers to the latest version.
+				
+				// If the request was with version = '-', then redirect to versioned
+				// URI:   (see Issue 24)
+				if ( version == null ) {
+					// Let the dispatch continue.
+					
+					// TODO: Actually there is still the need to convert the latest
+					// version into an "unversioned" one...  Not yet implemented; for now,
+					// just let the process continue with the dereferencing rules as usual.
+				}
+				else {
+					// Use a redirect so the user gets the actual latest version:
+					String latestUri = mmiUri.getOntologyUri();
+					log.debug("Redirecting to latest version: " + latestUri);
+					latestUri = response.encodeRedirectURL(latestUri);
+					response.sendRedirect(latestUri);
+					
+					return true;  // Done here.
+				}
 			}
 			else {
 				// No versions available!
