@@ -87,6 +87,9 @@ public class MainPanel extends VerticalPanel {
 	/** Edit the requested ontology? */
 	private boolean editRequestedOntology;
 	
+	/** Was "newversion" given? */
+	private boolean editNewVersion;
+	
 	private LoginResult loginResult;
 	
 	// true iff login session given from parameters
@@ -146,9 +149,11 @@ public class MainPanel extends VerticalPanel {
 		
 		if ( requestedOntologyUri == null && params.get("ontologyUri") != null ) {
 			requestedOntologyUri = params.get("ontologyUri");
-			editRequestedOntology = "y".equalsIgnoreCase(params.get("_edit")) ||
-			              "newversion".equalsIgnoreCase(params.get("_edit"));
-			;
+			
+			editNewVersion = "newversion".equalsIgnoreCase(params.get("_edit"));
+			
+			editRequestedOntology = "y".equalsIgnoreCase(params.get("_edit")) 
+			                      || editNewVersion;
 			
 			ontologyId = params.get("ontologyId");
 		}
@@ -192,8 +197,7 @@ public class MainPanel extends VerticalPanel {
 	    if ( loginResult != null ) {
 
 	    	if ( ontologyId != null ) {
-	    		// ie., newversion was given:
-	    		container.add(prepareEditingInterface(true));
+	    		container.add(prepareEditingInterface(editNewVersion));
 	    	}
 	    	else if ( editRequestedOntology ) {
 				container.add(prepareEditingInterface(requestedOntologyUri == null && requestedOntologyOnServer == null));
