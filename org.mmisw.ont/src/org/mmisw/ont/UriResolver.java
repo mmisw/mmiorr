@@ -357,9 +357,9 @@ public class UriResolver extends HttpServlet {
 		if ( log.isDebugEnabled() ) {
 			log.debug("===Starting dereferencing ====== ");
 			log.debug("===Accept entries: " +accept.getEntries());
-			log.debug("===Dominating entry: " +dominating);
-			log.debug("===topicExt = " +topicExt);
-			log.debug("===form = " +outFormat);
+			log.debug("===Dominating entry: \"" +dominating+ "\"");
+			log.debug("===topicExt = \"" +topicExt+ "\"");
+			log.debug("===form = \"" +outFormat+ "\"");
 		}
 
 		// prepare 'outFormat' according to "form" parameter (if given) and file extension:
