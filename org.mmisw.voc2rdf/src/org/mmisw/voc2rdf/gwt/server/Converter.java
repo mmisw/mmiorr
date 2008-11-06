@@ -179,8 +179,12 @@ class Converter {
 		// set Omv.uri from final
 		ont.addProperty(Omv.uri, finalUri);
 		
-		// set Omv.uri from final
-		ont.addProperty(Omv.name, setFirstUpperCase(cleanStringforID(primaryClass)));
+		// set Omv.name from primaryClass
+		ont.addProperty(Omv.name, 
+				setFirstUpperCase(cleanStringforID(primaryClass)) + " Vocabulary");
+		
+		// set Omv.acronym from primaryClass
+		ont.addProperty(Omv.acronym, primaryClass);
 		
 		createOntologIndividuals(fileInText);
 	}
