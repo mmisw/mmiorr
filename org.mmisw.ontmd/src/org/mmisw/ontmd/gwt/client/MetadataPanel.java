@@ -15,7 +15,6 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -31,11 +30,53 @@ public class MetadataPanel extends FlexTable {
 	
 	private boolean enabled = true;
 	
-	private TextBox newUri_tb = new TextBox();
 	
 	private boolean editing;
 	
-	
+	/** Little helper to show the ontology URI in two formats: the original
+	 * and the "HTML" one (to be resolved by "Ont").
+	 */
+	private static class NewUri extends HorizontalPanel {
+		private HTML html = new HTML();
+		NewUri() {
+			setSpacing(5);
+			setVerticalAlignment(ALIGN_MIDDLE);
+			setWidth("600");
+//			setBorderWidth(1);
+			add(html);
+		}
+		void updateText(String text) {
+			html.setText(text);
+		}
+		void setUri(String uri, boolean link) {
+			String str;
+			if ( link ) {
+				str = "<a href=\"" +uri+ "\">" +uri+ "</a>";
+				int dot = uri.lastIndexOf('.');
+				String htmlLink = null;
+				if ( dot >= 0 ) {
+					String ext = uri.substring(dot, uri.length());
+					if ( !ext.toLowerCase().startsWith(".htm") ) {
+						htmlLink = uri.substring(0, dot) + ".html";
+					}
+				}
+				else {
+					htmlLink = uri + ".html";
+				}
+
+				if ( htmlLink != null ) {
+					str += " (<a href=\"" +htmlLink+ "\">HTML</a>)";
+				}
+			}
+			else {
+				str = "<font color=\"" +"gray"+ "\">" +uri+ "</font>";
+			}
+			html.setHTML(str);
+		}
+	}
+
+	private NewUri newUri = new NewUri();
+
 
 	/**
 	 * Creates the metadata panel
@@ -53,6 +94,7 @@ public class MetadataPanel extends FlexTable {
 		container.setSize("700", "350");
 		
 		HorizontalPanel hp = new HorizontalPanel();
+		hp.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		this.getFlexCellFormatter().setColSpan(row,0, 2);
 		this.setWidget(row, 0, hp);
 		this.getFlexCellFormatter().setAlignment(row, 0, 
@@ -63,13 +105,11 @@ public class MetadataPanel extends FlexTable {
 		if ( editing ) {
 			tooltip = "Will show the new base URI for the generated ontology";
 			Label lbl = new Label("New base URI:");
-			lbl.setTitle(tooltip );
+			lbl.setTitle(tooltip);
 			hp.add(lbl);
 		}
-		newUri_tb.setTitle(tooltip );
-		newUri_tb.setWidth("600");
-		newUri_tb.setReadOnly(true);
-		hp.add(newUri_tb);
+		newUri.setTitle(tooltip);
+		hp.add(newUri);
 		row++;
 		
 		
@@ -109,7 +149,7 @@ public class MetadataPanel extends FlexTable {
 	
 	/** Basically for viewing-only mode */
 	void showProgressMessage(String msg) {
-		newUri_tb.setText(msg);
+		newUri.updateText(msg);
 	}
 	
 	/** Puts test values */
@@ -162,16 +202,16 @@ public class MetadataPanel extends FlexTable {
 	}
 
 
-	void resetToOriginalValues(OntologyInfo ontologyInfo, ReviewResult reviewResult, boolean confirm) {
-		resetToOriginalOrNewValues(ontologyInfo, true, reviewResult, confirm);
+	void resetToOriginalValues(OntologyInfo ontologyInfo, ReviewResult reviewResult, boolean confirm, boolean link) {
+		resetToOriginalOrNewValues(ontologyInfo, true, reviewResult, confirm, link);
 	}
 	
-	void resetToNewValues(OntologyInfo ontologyInfo, ReviewResult reviewResult, boolean confirm) {
-		resetToOriginalOrNewValues(ontologyInfo, false, reviewResult, confirm);
+	void resetToNewValues(OntologyInfo ontologyInfo, ReviewResult reviewResult, boolean confirm, boolean link) {
+		resetToOriginalOrNewValues(ontologyInfo, false, reviewResult, confirm, link);
 	}
 	
 	private void resetToOriginalOrNewValues(OntologyInfo ontologyInfo, boolean originalVals, 
-			ReviewResult reviewResult, boolean confirm) 
+			ReviewResult reviewResult, boolean confirm, boolean link) 
 	{
 		for ( int i = 0, c = tabPanel.getWidgetCount(); i < c; i++ ) {
 			Widget w = tabPanel.getWidget(i);
@@ -180,15 +220,15 @@ public class MetadataPanel extends FlexTable {
 			}
 		}
 		
-		newUri_tb.setText("");
+		newUri.updateText("");
 		if ( reviewResult != null ) {
-			String newUri = reviewResult.getUri();
-			if ( newUri_tb != null ) {
-				newUri_tb.setText(newUri);
+			String new_uri = reviewResult.getUri();
+			if ( new_uri != null ) {
+				newUri.setUri(new_uri, link);
 			}
 		}
 		else if ( ! editing ) {
-			newUri_tb.setText(ontologyInfo.getUri());
+			newUri.setUri(ontologyInfo.getUri(), link);
 		}
 	}
 	

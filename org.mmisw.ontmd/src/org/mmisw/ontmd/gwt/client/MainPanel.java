@@ -106,13 +106,39 @@ public class MainPanel extends VerticalPanel {
 	MainPanel(final Map<String, String> params) {
 		super();
 		
+		loginResult = null;
+		loginFromParams = false;
 		requestedOntologyUri = null;
-		
 		requestedOntologyOnServer = null;
-		
 		editRequestedOntology = false;
 		
-		if ( params.get("ontologyUri") != null ) {
+		
+		///////////////////////////////////////////////////////////////////////////
+		// conveniences for testing in development environment
+		if ( ! GWT.isScript() ) {
+			
+			if ( false ) {    // true for auto-login
+				loginResult = new LoginResult();
+				loginResult.setSessionId("22222222222222222");
+				loginResult.setUserId("1002");
+				loginResult.setUserName("carueda");
+				loginFromParams = true;
+			}
+			
+			if ( false ) {
+				requestedOntologyUri = "http://localhost:8080/ont/mmi/map-cicore-cf";
+				editRequestedOntology = true;
+			}
+			if ( false ) {
+				requestedOntologyOnServer = "/Users/Shared/bioportal/resources/uploads/1000/1/map-cicore-cf.owl";
+				editRequestedOntology = true;
+			}
+	    }
+		//////////////////////////////////////////////////////////////////////////////
+
+		
+		
+		if ( requestedOntologyUri == null && params.get("ontologyUri") != null ) {
 			requestedOntologyUri = params.get("ontologyUri");
 			editRequestedOntology = "y".equalsIgnoreCase(params.get("_edit"));
 		}
@@ -122,23 +148,8 @@ public class MainPanel extends VerticalPanel {
 			editRequestedOntology = "y".equalsIgnoreCase(params.get("_edit"));
 		}
 		
-		///////////////////////////////////////////////////////////////////////////
-		// conveniences for testing in development environment
-	    else if ( false && 
-	    		! GWT.isScript() ) {
-	    	// NOTE: Using an ad hoc ontology uri under my hosted environment.");
-	    	requestedOntologyUri = "http://localhost:8080/ont/mmi/map-cicore-cf";
-	    	// but I have to add "_edit=y" if I want editing mode:
-	    	editRequestedOntology = true;//"y".equalsIgnoreCase(params.get("_edit"));
-	    }
-	    else if ( //false && 
-	    		! GWT.isScript() ) {
-	    	requestedOntologyOnServer = "/Users/Shared/bioportal/resources/uploads/1000/1/map-cicore-cf.owl";
-	    	editRequestedOntology = true;//"y".equalsIgnoreCase(params.get("_edit"));
-	    }
-		//////////////////////////////////////////////////////////////////////////////
 		
-	    if ( params.get("sessionId") != null && params.get("userId") != null ) {
+	    if ( loginResult == null && params.get("sessionId") != null && params.get("userId") != null ) {
 	    	loginResult = new LoginResult();
 	    	loginResult.setSessionId(params.get("sessionId"));
 	    	loginResult.setUserId(params.get("userId"));
@@ -148,34 +159,14 @@ public class MainPanel extends VerticalPanel {
 	    	}
 	    	loginResult.setUserName(userName);
 	    	loginFromParams = true;
-	    	
-	    	container.add(prepareInterface());
 	    }
 	    
-	    /////////////////////////////////////////////////////////////////////////////
-	    else if ( false && 
-	    		! GWT.isScript() ) {
-	    	// NOTE: Using an ad hoc session under my hosted environment.");
-	    	loginResult = new LoginResult();
-	    	loginResult.setSessionId("22222222222222222");
-	    	loginResult.setUserId("1002");
-	    	loginResult.setUserName("carueda");
-	    	loginFromParams = true;
-	    	
-	    	container.add(prepareInterface());
-	    }
-	    //////////////////////////////////////////////////////////////////////////////
 	    
-	    else if ( editRequestedOntology ) {
-	    	container.add(userInfoPanel);
-	    }
-	    else {
-	    	container.add(prepareInterface());
-	    }
 	    
 	    if ( ! "n".equalsIgnoreCase(params.get("_logo")) ) {
 	    	add(Main.images.mmior().createImage());
 	    }
+	    
 	    
 //		container.setSize("800px", "450px");
 		DecoratorPanel decPanel = new DecoratorPanel();
@@ -184,7 +175,46 @@ public class MainPanel extends VerticalPanel {
 
 	    enable(false);
 	    
-	    // TODO this here?  what if user first need to log in?
+
+	    // Now, dispatch:
+	    
+	    // already logged in?
+	    if ( loginResult != null ) {
+	    	
+	    	if ( editRequestedOntology ) {
+	    		container.add(prepareEditingInterface());
+	    	}
+	    	else {
+	    		container.add(prepareViewingInterface());
+	    	}
+	    	
+	    }
+	    
+	    // not logged in but request to edit?
+	    else if ( editRequestedOntology ) {
+	    	container.add(userInfoPanel);
+	    	return;   // loginOk will dispatch any initial request.
+	    }
+	    
+	    // not logged in but something to visualize?
+	    else if ( requestedOntologyUri != null || requestedOntologyOnServer != null ) {
+	    	container.add(prepareViewingInterface());
+
+	    }
+	    // no basic initialization params at all?.
+	    else {
+	    	// then, start with the user panel:
+	    	container.add(userInfoPanel);
+	    	return;   // loginOk will dispatch any initial request.
+	    }
+	    
+	    // we get here when the regular panels are prepared (not the user panel):
+	    // so. just dispatch any initial requested ontology:
+	    dispatchInitialRequest();
+	}
+	
+	
+	private void dispatchInitialRequest() {
 	    if ( requestedOntologyUri != null ) {
 	    	getOntologyInfoFromRegistry(requestedOntologyUri);
 	    }
@@ -193,28 +223,15 @@ public class MainPanel extends VerticalPanel {
 	    }
 	}
 	
-	
 	void loginOk(LoginResult loginResult) {
 		this.loginResult = loginResult;
 		container.clear();
 		container.add(prepareEditingInterface());
 		
-		if ( requestedOntologyOnServer != null ) {
-	    	getOntologyInfoFromFileOnServer(requestedOntologyOnServer);
-	    }
+		dispatchInitialRequest();
 	}
 
 
-	private Widget prepareInterface() {
-		if ( ( requestedOntologyUri != null || requestedOntologyOnServer != null) 
-		&& ! editRequestedOntology ) {
-			return prepareViewingInterface();
-		}
-		else {
-			return prepareEditingInterface();
-		}
-	}
-	
 	
 	private Widget prepareViewingInterface() {
 		// create metadata panel for vieweing:
@@ -247,7 +264,7 @@ public class MainPanel extends VerticalPanel {
 					Window.alert(error);
 				}
 				else {
-					metadataPanel.resetToOriginalValues(ontologyInfo, null, false);
+					metadataPanel.resetToOriginalValues(ontologyInfo, null, false, false);
 				}
 			}
 		};
@@ -284,7 +301,7 @@ public class MainPanel extends VerticalPanel {
 					Window.alert(error);
 				}
 				else {
-					metadataPanel.resetToOriginalValues(ontologyInfo, null, false);
+					metadataPanel.resetToOriginalValues(ontologyInfo, null, false, false);
 				}
 			}
 		};
@@ -461,7 +478,7 @@ public class MainPanel extends VerticalPanel {
 			vp.add(new Label("Ontology URI: " +reviewResult.getUri()));
 			vp.add(new Label("Contents:"));
 			
-			metadataPanel.resetToNewValues(ontologyInfo, reviewResult, false);
+			metadataPanel.resetToNewValues(ontologyInfo, reviewResult, false, false);
 			
 			sb.append(reviewResult.getRdf());
 		}
@@ -574,7 +591,7 @@ public class MainPanel extends VerticalPanel {
 		vp.setSpacing(4);
 		
 		if ( error == null ) {
-			metadataPanel.resetToNewValues(ontologyInfo, reviewResult, false);
+			metadataPanel.resetToNewValues(ontologyInfo, reviewResult, false, true);
 
 			String uri = result.getUri();
 
@@ -651,7 +668,7 @@ public class MainPanel extends VerticalPanel {
 		}
 		else {
 			enable(true);
-			metadataPanel.resetToOriginalValues(ontologyInfo, reviewResult, false);
+			metadataPanel.resetToOriginalValues(ontologyInfo, reviewResult, false, false);
 		}
 	}
 	
@@ -668,7 +685,7 @@ public class MainPanel extends VerticalPanel {
 		else {
 			this.ontologyInfo = ontologyInfo;
 			enable(true);
-			metadataPanel.resetToOriginalValues(ontologyInfo, reviewResult, false);
+			metadataPanel.resetToOriginalValues(ontologyInfo, reviewResult, false, false);
 		}
 	}
 	

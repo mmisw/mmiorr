@@ -3,6 +3,13 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2008-11-05 (0.1.alpha6)
+	- Fixed Issue 25: Visiting ontology=>new without logging in does not require login.
+	  In general, the logic to handle initialization is much clear now. 
+	  See MainPanel() constructor.
+	  
+	- various GUI improvements.
+	
 2008-11-04 (0.1.alpha5)
 	- Message improvements
 	- Better integration with voc2rdf

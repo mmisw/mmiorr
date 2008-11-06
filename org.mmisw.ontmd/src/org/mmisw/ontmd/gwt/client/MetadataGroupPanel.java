@@ -209,7 +209,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 		assert attr.isRequired() ;
 		
 		shortNameFieldWithChoose = new FieldWithChoose(attr, cl);
-		shortNameIsMap = new CheckBox("Mapping");
+		shortNameIsMap = new CheckBox("Check here if this is a mapping ontology");
 
 		shortNameFieldWithChoose.tb.addKeyboardListener(new KeyboardListenerAdapter() {
 			  public void onKeyUp(Widget sender, char keyCode, int modifiers) {
