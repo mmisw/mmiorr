@@ -60,6 +60,10 @@ public class MetadataPanel extends FlexTable {
 			}
 			html.setHTML(str);
 		}
+		
+		void showProgressMessage(String msg) {
+			html.setHTML("<font color=\"" +"blue"+ "\">" +msg+ "</font>");
+		}
 	}
 
 	private NewUri newUri = new NewUri();
@@ -136,7 +140,7 @@ public class MetadataPanel extends FlexTable {
 	
 	/** Basically for viewing-only mode */
 	void showProgressMessage(String msg) {
-		newUri.updateText(msg);
+		newUri.showProgressMessage(msg);
 	}
 	
 	/** Puts test values */
