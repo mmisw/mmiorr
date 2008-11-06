@@ -394,12 +394,20 @@ public class VocabPanel extends VerticalPanel {
 		
 		statusLabel.setText("");
 
+// Nonong's suggestion (remove "see also" column):
+//		ascii_ta.setText(
+//				"name,description,see also,comment\n" +
+//				"sea surface salinity, sea water salinity, salinity at the sea surface (above 3m.), an example comment\n" +
+//				"sst, water temperature, ocean temperature, temperature at the sea surface (above 3m.)\n" +
+//				"depth, measurement depth, , derived from pressure\n"
+//		);
 		ascii_ta.setText(
-				"name,description,see also,comment\n" +
-				"sea surface salinity, sea water salinity, salinity at the sea surface (above 3m.), an example comment\n" +
-				"sst, water temperature, ocean temperature, temperature at the sea surface (above 3m.)\n" +
-				"depth, measurement depth, , derived from pressure\n"
+				"name,description,comment\n" +
+				"sea surface salinity, sea water salinity, salinity at the sea surface (above 3m.)\n" +
+				"sst, water temperature, temperature at the sea surface (above 3m.)\n" +
+				"depth, measurement depth, derived from pressure\n"
 		);
+
 		fieldSeparator_lb.setSelectedIndex(0);
 		boolean tabular = tabular_cb.isChecked();
 		if ( tabular ) {
