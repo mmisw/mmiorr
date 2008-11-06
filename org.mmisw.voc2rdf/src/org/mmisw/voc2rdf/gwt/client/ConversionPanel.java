@@ -110,10 +110,26 @@ public class ConversionPanel extends VerticalPanel {
 					+ "&" 
 					+ "_edit=y"
 				;
-				str = "<form action=\"" +action+ "\" method=\"post\" >\n" +
-					"<input type=\"submit\" value=\"" +"Register ontology"+ "\" />\n" +
-					"</form>\n" +
-					"This button will open the Ontology Metadata Editor page, which you can use " +
+				str = 
+					"<b>Congratulations!</b> Your vocabulary is now in RDF/XML format. " +
+					"You can now copy and paste the resulting contents in a file on your " +
+					"computer." +
+					"<br/>" +
+					"<br/>" +
+					"<br/>" +
+					"<b>" +
+					"<font color=\"green\">Do you want to upload your vocabulary in the MMI Registry right away?</font>" +
+					"</b>" +
+					"<br/>" +
+					"<br/>" +
+					"<div align=\"center\">" +
+					"<form action=\"" +action+ "\" method=\"post\" >\n" +
+					"<input type=\"submit\" value=\"" +"Yes, register my vocabulary"+ "\" />\n" +
+					"</form>" +
+					"</div>\n" +
+					"This button will open the " +
+					"<font color=\"green\">MMI Ontology Metadata Editor</font> " +
+					"tool, which you can use " +
 					"to proceed with preparing your ontology for registration in " +
 					"the MMI Registry and Repository. " +
 					"You will need to log in. " 

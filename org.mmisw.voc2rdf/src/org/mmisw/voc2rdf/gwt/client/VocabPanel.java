@@ -432,6 +432,7 @@ public class VocabPanel extends VerticalPanel {
 		}
 		
 		statusLabel.setHTML("<font color=\"blue\">" + "Converting ..." + "</font>");
+		enable(false);
 		mainPanel.converting();
 		
 		Main.log("convert2Rdf: values = " +values);
@@ -446,6 +447,7 @@ public class VocabPanel extends VerticalPanel {
 				Main.log("convertTest: error: " +error);
 				mainPanel.conversionError(error);
 				statusLabel.setHTML("<font color=\"red\">" +"Error"+ "</font>");
+				enable(true);
 			}
 
 			public void onSuccess(ConversionResult conversionResult) {
@@ -460,6 +462,7 @@ public class VocabPanel extends VerticalPanel {
 					statusLabel.setHTML("<font color=\"green\">" + "Conversion complete" + "</font>");
 					mainPanel.conversionOk(conversionResult);
 				}
+				enable(true);
 			}
 		};
 
@@ -467,6 +470,13 @@ public class VocabPanel extends VerticalPanel {
 		
 		Main.voc2rdfService.convert(values, callback);
 
+	}
+
+	private void enable(boolean enabled) {
+		convertButton.setEnabled(enabled);
+		exampleButton.setEnabled(enabled);
+		tabular_cb.setEnabled(enabled);
+		fieldSeparator_lb.setEnabled(enabled);
 	}
 
 }

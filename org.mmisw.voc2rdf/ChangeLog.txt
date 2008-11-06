@@ -3,7 +3,12 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
-2008-11-05 (2.0.alpha5)
+2008-11-06 (2.0.alpha5)
+	- Disable GUI input elements while converting.
+	- Better "conversion OK" message
+	
+	
+2008-11-05
 	- Some GUI improvements.
 	
 	- Fixed 26: URIs in voc2rdf owl files still have _tmp_ in them:
