@@ -14,6 +14,9 @@ public class ReviewResult implements IsSerializable {
 	private String fullPath;
 	private String rdf = null;
 	
+	// aquaportal ontology ID used, if not null, to create a new version
+	private String ontologyId = null;
+	
 	private OntologyInfo ontologyInfo;
 
 	public ReviewResult() {
@@ -62,6 +65,16 @@ public class ReviewResult implements IsSerializable {
 
 	public void setFullPath(String fullPath) {
 		this.fullPath = fullPath;
+	}
+
+
+	public String getOntologyId() {
+		return ontologyId;
+	}
+
+
+	public void setOntologyId(String ontologyId) {
+		this.ontologyId = ontologyId;
 	}
 
 }
