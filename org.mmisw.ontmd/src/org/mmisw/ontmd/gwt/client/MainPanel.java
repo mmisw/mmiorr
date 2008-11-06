@@ -117,7 +117,7 @@ public class MainPanel extends VerticalPanel {
 		// conveniences for testing in development environment
 		if ( ! GWT.isScript() ) {
 			
-			if ( false ) {    // true for auto-login
+			if ( true ) {    // true for auto-login
 				loginResult = new LoginResult();
 				loginResult.setSessionId("22222222222222222");
 				loginResult.setUserId("1002");
@@ -129,7 +129,7 @@ public class MainPanel extends VerticalPanel {
 				requestedOntologyUri = "http://localhost:8080/ont/mmi/map-cicore-cf";
 				editRequestedOntology = true;
 			}
-			if ( false ) {
+			if ( true ) {
 				requestedOntologyOnServer = "/Users/Shared/bioportal/resources/uploads/1000/1/map-cicore-cf.owl";
 				editRequestedOntology = true;
 			}
@@ -588,26 +588,33 @@ public class MainPanel extends VerticalPanel {
 		StringBuffer sb = new StringBuffer();
 		
 		VerticalPanel vp = new VerticalPanel();
-		vp.setSpacing(4);
+		vp.setSpacing(6);
 		
 		if ( error == null ) {
 			metadataPanel.resetToNewValues(ontologyInfo, reviewResult, false, true);
 
 			String uri = result.getUri();
 
-			vp.add(new HTML("<br/><font color=\"green\">Congratulations!</font> " +
-					"Your ontology is now registered in the " +
-					"<a href=\"" +"http://mmisw.org/or/"+ "\">" +"MMI Registry and Repository"+ "</a>"));
+			vp.add(new HTML("<font color=\"green\">Congratulations!</font> "
+					+ "Your ontology is now registered in the "
+//					+ "<a href=\"" +"http://mmisw.org/or/"+ "\">"
+					+ "MMI Registry and Repository."
+//					+ "</a>"
+			));
 			
 			
-			vp.add(new HTML("<br/>The URI of the ontology is: <a href=\"" +uri+ "\">" +uri+ "</a>"));
+			vp.add(new HTML("<br/>The URI of the ontology is: "
+//					+ "<a href=\"" +uri+ "\">"
+					+ uri
+//					+ "</a>"
+			));
 			
 			vp.add(new HTML("<br/>Note that you may continue viewing the ontology but not editing its " +
 					"contents anymore."
 			));
 			
-			vp.add(new HTML("<br/>For diagnostics, " +
-					"the following is the response from the back-end server:"));
+			
+			vp.add(new HTML("<br/>For diagnostics, this is the response from the back-end server:"));
 
 			sb.append(result.getInfo());
 			
@@ -623,7 +630,7 @@ public class MainPanel extends VerticalPanel {
 		
 		String msg = sb.toString();
 
-		popup.getTextArea().setSize("700", "300");
+		popup.getTextArea().setSize("700", "160");
 		popup.getTextArea().setText(msg);
 		popup.getDockPanel().add(vp, DockPanel.NORTH);
 		popup.setText(error == null ? "Upload completed sucessfully" : "Error");

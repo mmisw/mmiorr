@@ -7,6 +7,8 @@ ChangeLog
 	- Added authority: mvco: Martha's Vineyard Coastal Observatory
 	- Main and BaseInfo: better handling of possible error while getting BaseInfo.
 	
+	- Fixed link to HTML version after upload. (it uses "?form=html" mechanism).
+	
 	
 2008-11-05
 	- Fixed Issue 25: Visiting ontology=>new without logging in does not require login.

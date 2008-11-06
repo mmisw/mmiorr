@@ -52,21 +52,8 @@ public class MetadataPanel extends FlexTable {
 			String str;
 			if ( link ) {
 				str = "<a href=\"" +uri+ "\">" +uri+ "</a>";
-				int dot = uri.lastIndexOf('.');
-				String htmlLink = null;
-				if ( dot >= 0 ) {
-					String ext = uri.substring(dot, uri.length());
-					if ( !ext.toLowerCase().startsWith(".htm") ) {
-						htmlLink = uri.substring(0, dot) + ".html";
-					}
-				}
-				else {
-					htmlLink = uri + ".html";
-				}
-
-				if ( htmlLink != null ) {
-					str += " (<a href=\"" +htmlLink+ "\">HTML</a>)";
-				}
+				String htmlLink = uri+ "?form=html";
+				str += " (<a href=\"" +htmlLink+ "\">Resolve in HTML</a>)";
 			}
 			else {
 				str = "<font color=\"" +"gray"+ "\">" +uri+ "</font>";
