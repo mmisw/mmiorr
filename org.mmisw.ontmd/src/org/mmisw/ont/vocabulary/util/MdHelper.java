@@ -195,6 +195,7 @@ public class MdHelper {
 						.addOption(new Option("cencoos", "cencoos: Central California Ocean Observing System"))
 						.addOption(new Option("gcoos", "gcoos: Gulf of Mexico Ocean Observing System"))
 						.addOption(new Option("mmi", "mmi: Marine Metadata Interoperability"))
+						.addOption(new Option("mvco", "mvco: Martha's Vineyard Coastal Observatory"))
 						.addOption(new Option("oi2008demo", "oi2008demo: Oceans Innovations 2008 Demonstration"))
 						.addOption(new Option("q2o", "q2o: QARTOD-to-OGC Project"))
 	//					.addOption(new Option("argo", "argo: Argo Project"))

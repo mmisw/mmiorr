@@ -73,7 +73,13 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	
 	public BaseInfo getBaseInfo() {
 		// from the client, always re-create the base info:
-		prepareBaseInfo();
+		try {
+			prepareBaseInfo();
+		}
+		catch (Throwable thr) {
+			thr.printStackTrace();
+			baseInfo.setError(thr.toString());
+		}
 		return baseInfo;
 	}
 	

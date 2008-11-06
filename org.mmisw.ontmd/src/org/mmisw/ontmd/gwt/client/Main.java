@@ -22,6 +22,7 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -160,12 +161,22 @@ public class Main implements EntryPoint {
 	private void getBaseInfo(final Map<String, String> params) {
 		AsyncCallback<BaseInfo> callback = new AsyncCallback<BaseInfo>() {
 			public void onFailure(Throwable thr) {
-				RootPanel.get().add(new HTML(thr.toString()));
+				String error = thr.toString();
+				while ( ( thr = thr.getCause()) != null ) {
+					error += "\n" + thr.toString();
+				}
+				RootPanel.get().add(new Label(error));
 			}
 
 			public void onSuccess(BaseInfo bInfo) {
-				baseInfo = bInfo;
-				startGui(params);
+				String error = bInfo.getError();
+				if ( error != null ) {
+					RootPanel.get().add(new Label(error));
+				}
+				else {
+					baseInfo = bInfo;
+					startGui(params);
+				}
 			}
 		};
 

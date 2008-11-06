@@ -16,6 +16,9 @@ public class BaseInfo implements IsSerializable {
 	
 	private String shortNameUri;
 	
+	private String error;
+	
+	
 	public BaseInfo() {
 	}
 	
@@ -41,6 +44,14 @@ public class BaseInfo implements IsSerializable {
 	}
 	public void setShortNameUri(String shortNameUri) {
 		this.shortNameUri = shortNameUri;
+	}
+
+	public void setError(String error) {
+		this.error = error;
+	}
+
+	public String getError() {
+		return error;
 	}
 	
 
