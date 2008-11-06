@@ -4,6 +4,20 @@ Carlos Rueda - MMI / MBARI
 ChangeLog
 
 2008-11-06 (0.1.alpha6)
+
+	- OntologyPanel:  Since "load registry file" is not implemented directly,
+	  I removed the related GUI elements (via a flag, so I can return to that later
+	  if necessary). Note: the user would use the main front-end to choose a
+	  registered ontology, and then ontmd will be called to proceed 
+	  with the creation of the new version.
+	
+	- Passing call parameters to the initialization (getBaseInfo) to better logging
+	  on the server side.
+	  
+	- Now handling aquaportal versions: a parameter "ontologyId", if given, will be
+	  used to perform the final REST upload call, so the new version gets linked with
+	  the same family of versions for the given ontology.
+	
 	- Added authority: mvco: Martha's Vineyard Coastal Observatory
 	- Main and BaseInfo: better handling of possible error while getting BaseInfo.
 	

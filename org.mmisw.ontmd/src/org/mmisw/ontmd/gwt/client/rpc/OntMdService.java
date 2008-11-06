@@ -1,5 +1,7 @@
 package org.mmisw.ontmd.gwt.client.rpc;
 
+import java.util.Map;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 
 /**
@@ -13,7 +15,7 @@ public interface OntMdService extends RemoteService {
 	/**
 	 * Gets the base information (metadata attribute definitions).
 	 */
-	BaseInfo getBaseInfo();
+	BaseInfo getBaseInfo(Map<String, String> params);
 	
 	/**
 	 * Authenticates a user.

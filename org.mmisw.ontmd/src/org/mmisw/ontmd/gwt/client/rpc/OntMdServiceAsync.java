@@ -1,5 +1,7 @@
 package org.mmisw.ontmd.gwt.client.rpc;
 
+import java.util.Map;
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
@@ -10,7 +12,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public interface OntMdServiceAsync {
 
-	void getBaseInfo(AsyncCallback<BaseInfo> callback);
+	void getBaseInfo(Map<String, String> params, AsyncCallback<BaseInfo> callback);
 	
 	void login(String userName, String userPassword, AsyncCallback<LoginResult> callback);
 	

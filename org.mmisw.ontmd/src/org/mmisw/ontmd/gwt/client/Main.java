@@ -37,7 +37,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class Main implements EntryPoint {
 
 	public static final String APP_NAME = "ontmd";
-	public static final String VERSION = "0.1.alpha5";
+	public static final String VERSION = "0.1.alpha6";
 	public static final String VERSION_COMMENT = "";
 
 	static String baseUrl;
@@ -181,7 +181,7 @@ public class Main implements EntryPoint {
 		};
 
 		log("Getting base info ...");
-		ontmdService.getBaseInfo(callback);
+		ontmdService.getBaseInfo(params, callback);
 	}
 
 	// always write to this buffer, but show contents if includeLog is true

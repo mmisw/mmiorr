@@ -37,7 +37,11 @@ class OntologyUploader {
 	private String uri;
 	private String userId;
 	private String sessionId;
+	private String ontologyId;
+
 	private Map<String, String> values;
+	
+
 	
 	/**
 	 * Constructor.
@@ -46,17 +50,23 @@ class OntologyUploader {
 	 * @param RDF Contents of the ontology
 	 * @param userId
 	 * @param sessionId
+	 * @param ontologyId Aquaportal ontology ID when creating a new version.
+	 * 
 	 * @param values   Used to fill in some of the fields in the aquaportal request
 	 * @throws Exception
 	 */
-	OntologyUploader(String uri, String fileName, String RDF, String userId, String sessionId, Map<String, String> values)
-	throws Exception {
+	OntologyUploader(String uri, String fileName, String RDF, 
+			String userId, String sessionId,
+			String ontologyId,
+			Map<String, String> values
+	) throws Exception {
 		PartSource partSource = new ByteArrayPartSource(fileName, RDF.getBytes());
 		
 		this.partSource = partSource;
 		this.uri = uri;
 		this.userId = userId;
 		this.sessionId = sessionId;
+		this.ontologyId = ontologyId;
 		this.values = values;
 	}
 	
@@ -80,6 +90,12 @@ class OntologyUploader {
 			partList.add(new FilePart("filePath", partSource));
 			partList.add(new StringPart("sessionid", sessionId));
 			partList.add(new StringPart("userId", userId));
+			
+			
+			// aquaportal version handling:
+			if (  ontologyId != null ) {
+				partList.add(new StringPart("ontologyId", ontologyId));
+			}
 			
 			partList.add(new StringPart("urn", uri));
 			

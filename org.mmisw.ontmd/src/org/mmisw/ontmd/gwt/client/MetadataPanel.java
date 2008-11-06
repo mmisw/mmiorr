@@ -51,9 +51,9 @@ public class MetadataPanel extends FlexTable {
 		void setUri(String uri, boolean link) {
 			String str;
 			if ( link ) {
-				str = "<a href=\"" +uri+ "\">" +uri+ "</a>";
+				str = "<a href=\"" +uri+ "\" target=\"_blank\" >" +uri+ "</a>";
 				String htmlLink = uri+ "?form=html";
-				str += " (<a href=\"" +htmlLink+ "\">Resolve in HTML</a>)";
+				str += " (<a href=\"" +htmlLink+ "\" target=\"_blank\" >Resolve in HTML</a>)";
 			}
 			else {
 				str = "<font color=\"" +"gray"+ "\">" +uri+ "</font>";

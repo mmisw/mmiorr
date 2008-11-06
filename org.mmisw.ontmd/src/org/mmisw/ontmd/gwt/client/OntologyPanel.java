@@ -31,12 +31,19 @@ import com.google.gwt.user.client.ui.Widget;
  * @author Carlos Rueda
  */
 public class OntologyPanel extends VerticalPanel {
+	
+	// "load registry file" is not yet implemented here directly.
+	// Instead, the user would use the main front-end to choose a
+	// registered ontology, and then ontmd will be called to proceed 
+	// with the creation of the new version.
+	// So, this is "false" to disable the corresponding GUI elements:
+	private static final boolean INCLUDE_SELECT_REGISTRY_FILE = false;
 
 	private static final String UPLOAD_ACTION = 
 		GWT.isScript() ? "/ontmd/upload" : "/upload";
 	
-	private RadioButton rb0 = new RadioButton("grp", "Local file:");
-	private RadioButton rb1 = new RadioButton("grp", "Registry file:");
+	private RadioButton rb0;
+	private RadioButton rb1;
 
 	private FormPanel formPanel = new FormPanel();
 	private FileUpload upload;
@@ -179,19 +186,26 @@ public class OntologyPanel extends VerticalPanel {
 		FlexTable panel = new FlexTable();
 		formPanel.setWidget(panel);
 		
-		selectButton = new PushButton("Select registered ontology", new ClickListener() {
-			public void onClick(Widget sender) {
-				Window.alert("Sorry, not yet implemented");
-				registryOntologyUri = null;  // TODO
-			}
-		});
-		selectButton.setTitle("Selects an ontology from the MMI Registry");
+		
+		
+		rb0 = new RadioButton("grp", "Local file:");
 
+		if ( INCLUDE_SELECT_REGISTRY_FILE ) {
+			selectButton = new PushButton("Select registered ontology", new ClickListener() {
+				public void onClick(Widget sender) {
+					Window.alert("Sorry, not yet implemented");
+					registryOntologyUri = null;  // TODO
+				}
+			});
+			selectButton.setTitle("Selects an ontology from the MMI Registry");
+			selectButton.setEnabled(false);
+			rb1 = new RadioButton("grp", "Registry file:");
+		}
+		
 		final HorizontalPanel uploadContainer = new HorizontalPanel();
 		uploadContainer.add(upload);
 		rb0.setChecked(true);
 //		upload.setEnabled(true);   // --> this method is not available
-		selectButton.setEnabled(false);
 		ClickListener clickListener = new ClickListener() {
 			private TextBox chooseLabel;
 			public void onClick(Widget sender) {
@@ -210,11 +224,17 @@ public class OntologyPanel extends VerticalPanel {
 					}
 					uploadContainer.add(chooseLabel);
 				}
-				selectButton.setEnabled(rb1.isChecked());
+				
+				if ( selectButton != null ) {
+					selectButton.setEnabled(rb1.isChecked());
+				}
 			}
 		};
 		rb0.addClickListener(clickListener);
-		rb1.addClickListener(clickListener);
+		
+		if ( rb1 != null ) {
+			rb1.addClickListener(clickListener);
+		}
 
 		int row = 0;
 
@@ -230,20 +250,22 @@ public class OntologyPanel extends VerticalPanel {
 		row++;
 
 
-		
-		panel.setWidget(row, 0, rb1);
-		panel.getFlexCellFormatter().setAlignment(row, 0, 
-				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
-		);
-		HorizontalPanel hp = new HorizontalPanel();
-		hp.add(selectButton);
-		panel.setWidget(row, 1, hp);
-		panel.getFlexCellFormatter().setAlignment(row, 1, 
-				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
-		);
-//		panel.setWidget(row, 2, new Label("To prepare a new version of an existing ontology"));
+		if ( INCLUDE_SELECT_REGISTRY_FILE ) {
+			panel.setWidget(row, 0, rb1);
+			panel.getFlexCellFormatter().setAlignment(row, 0, 
+					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+			);
+			HorizontalPanel hp = new HorizontalPanel();
+			hp.add(selectButton);
+			panel.setWidget(row, 1, hp);
+			panel.getFlexCellFormatter().setAlignment(row, 1, 
+					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+			);
+//			panel.setWidget(row, 2, new Label("To prepare a new version of an existing ontology"));
 
-		row++;
+			row++;
+		}
+		
 		
 		formPanel.addFormHandler(new FormHandler() {
 

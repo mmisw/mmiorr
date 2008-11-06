@@ -97,6 +97,10 @@ public class MainPanel extends VerticalPanel {
 	private ReviewResult reviewResult;
 	
 	
+	// aquaportal ontology id used to create a new version
+	private String ontologyId;
+	
+	
 	
 	OntologyInfo getOntologyInfo() {
 		return ontologyInfo;
@@ -111,6 +115,8 @@ public class MainPanel extends VerticalPanel {
 		requestedOntologyUri = null;
 		requestedOntologyOnServer = null;
 		editRequestedOntology = false;
+		
+		ontologyId = null;
 		
 		
 		///////////////////////////////////////////////////////////////////////////
@@ -129,7 +135,7 @@ public class MainPanel extends VerticalPanel {
 				requestedOntologyUri = "http://localhost:8080/ont/mmi/map-cicore-cf";
 				editRequestedOntology = true;
 			}
-			if ( true ) {
+			if ( false ) {
 				requestedOntologyOnServer = "/Users/Shared/bioportal/resources/uploads/1000/1/map-cicore-cf.owl";
 				editRequestedOntology = true;
 			}
@@ -140,7 +146,11 @@ public class MainPanel extends VerticalPanel {
 		
 		if ( requestedOntologyUri == null && params.get("ontologyUri") != null ) {
 			requestedOntologyUri = params.get("ontologyUri");
-			editRequestedOntology = "y".equalsIgnoreCase(params.get("_edit"));
+			editRequestedOntology = "y".equalsIgnoreCase(params.get("_edit")) ||
+			              "newversion".equalsIgnoreCase(params.get("_edit"));
+			;
+			
+			ontologyId = params.get("ontologyId");
 		}
 		
 		else if ( params.get("_voc2rdf") != null ) {
@@ -180,9 +190,16 @@ public class MainPanel extends VerticalPanel {
 	    
 	    // already logged in?
 	    if ( loginResult != null ) {
-	    	
-	    	if ( editRequestedOntology ) {
-	    		container.add(prepareEditingInterface());
+
+	    	if ( ontologyId != null ) {
+	    		// ie., newversion was given:
+	    		container.add(prepareEditingInterface(true));
+	    	}
+	    	else if ( editRequestedOntology ) {
+				container.add(prepareEditingInterface(requestedOntologyUri == null && requestedOntologyOnServer == null));
+	    	}
+	    	else if ( requestedOntologyUri == null && requestedOntologyOnServer == null ) {
+	    		container.add(prepareEditingInterface(true));
 	    	}
 	    	else {
 	    		container.add(prepareViewingInterface());
@@ -209,7 +226,7 @@ public class MainPanel extends VerticalPanel {
 	    }
 	    
 	    // we get here when the regular panels are prepared (not the user panel):
-	    // so. just dispatch any initial requested ontology:
+	    // so, just dispatch any initial requested ontology:
 	    dispatchInitialRequest();
 	}
 	
@@ -226,7 +243,7 @@ public class MainPanel extends VerticalPanel {
 	void loginOk(LoginResult loginResult) {
 		this.loginResult = loginResult;
 		container.clear();
-		container.add(prepareEditingInterface());
+		container.add(prepareEditingInterface(requestedOntologyUri == null && requestedOntologyOnServer == null));
 		
 		dispatchInitialRequest();
 	}
@@ -315,13 +332,9 @@ public class MainPanel extends VerticalPanel {
 
 
 	
-	private Widget prepareEditingInterface() {
+	private Widget prepareEditingInterface(boolean allowLoadOptions) {
 		
 		// create ontologyPanel
-		boolean allowLoadOptions = requestedOntologyUri == null &&
-		                           requestedOntologyOnServer == null
-		                           ;
-		
 		ontologyPanel = new OntologyPanel(this, allowLoadOptions);
 		
 		
@@ -577,6 +590,9 @@ public class MainPanel extends VerticalPanel {
 				uploadCompleted(popup, result);
 			}
 		};
+
+		// set the ontologyId in case a new version has been requested:
+		reviewResult.setOntologyId(ontologyId);
 
 		Main.ontmdService.upload(reviewResult, loginResult, callback);
 	}

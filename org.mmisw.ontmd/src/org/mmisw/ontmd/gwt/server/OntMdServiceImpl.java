@@ -71,7 +71,9 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	private BaseInfo baseInfo = null;
 	
 	
-	public BaseInfo getBaseInfo() {
+	public BaseInfo getBaseInfo(Map<String, String> params) {
+		log.info("getBaseInfo: params=" + params);
+		
 		// from the client, always re-create the base info:
 		try {
 			prepareBaseInfo();
@@ -796,6 +798,11 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		assert userId != null;
 		assert sessionId != null;
 		
+		String ontologyId = reviewResult.getOntologyId();
+		if ( ontologyId != null ) {
+			log.info("Will create a new version for ontologyId = " +ontologyId);
+		}
+		
 		try {
 			
 			String fileName;
@@ -810,7 +817,11 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 				fileName += ".owl";
 			}
 			
-			OntologyUploader createOnt = new OntologyUploader(uri, fileName, rdf, userId, sessionId, newValues);
+			OntologyUploader createOnt = new OntologyUploader(uri, fileName, rdf, 
+					userId, sessionId,
+					ontologyId,
+					newValues
+			);
 			String res = createOnt.create();
 			
 			if ( res.startsWith("OK") ) {
