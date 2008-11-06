@@ -1,12 +1,15 @@
 package org.mmisw.voc2rdf.gwt.client;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.mmisw.voc2rdf.gwt.client.rpc.ConversionResult;
 import org.mmisw.voc2rdf.gwt.client.vocabulary.AttrDef;
 import org.mmisw.voc2rdf.gwt.client.vocabulary.Option;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -16,6 +19,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PushButton;
@@ -33,6 +37,15 @@ public class VocabPanel extends VerticalPanel {
 
 	private static final String NAMESPACE_ROOT = "http://mmisw.org/ont";
 
+	private static final String CONTENTS_TOOTIP =
+		"It should contain a one line header, in singular " +
+		"with the descriptive titles for each column. Each line (or row) should " +
+		"contain the unique label for each term and a set of values (e.g. description, " +
+		"time of creation). The first column should contain the unique label for each term. " +
+		"It will be used to create a unique identifier. Column values should " +
+		"be separated either by comma or tab characters. Each record (row) should be " +
+		"separated by a return or end of line character.";
+
 	private CellPanel contentsContainer = new VerticalPanel();
 	
 	private ListBox primaryClass_lb;
@@ -44,6 +57,10 @@ public class VocabPanel extends VerticalPanel {
 	
 	private ScrollPanel table = new ScrollPanel();
 	
+	private HTML statusLabel = new HTML();
+	private PushButton convertButton;
+
+
 	private PushButton exampleButton;
 	
 	protected MainPanel mainPanel;
@@ -62,6 +79,11 @@ public class VocabPanel extends VerticalPanel {
 		
 		
 		primaryClass_lb = new ListBox();
+		primaryClass_lb.addChangeListener(new ChangeListener() {
+			public void onChange(Widget sender) {
+				  statusLabel.setText("");
+			}
+		});
 
 		AttrDef mainClassAttrDef = Main.baseInfo.getMainClassAttrDef();
 		List<Option> options = mainClassAttrDef.getOptions();
@@ -71,12 +93,18 @@ public class VocabPanel extends VerticalPanel {
 			primaryClass_lb.addItem(label, name);
 		}
 
-		ascii_ta.setSize("700", "300");
-		table.setSize("700", "300");
-
+		ascii_ta.setSize("800", "300");
+		table.setSize("800", "300");
 		
-		FlexTable panel = new FlexTable();
-		panel.setWidth("850");
+		ascii_ta.addKeyboardListener(new KeyboardListenerAdapter(){
+			  public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+				  statusLabel.setText("");
+			  }
+		});
+		
+		FlexTable flexPanel = new FlexTable();
+//		flexPanel.setBorderWidth(1);
+		flexPanel.setWidth("850");
 		int row = 0;
 		
 		
@@ -88,19 +116,19 @@ public class VocabPanel extends VerticalPanel {
 				"editing. The Example button will fill in the vocabulary contents with an " +
 				"example."
 		);
-		panel.getFlexCellFormatter().setColSpan(row, 0, 2);
-		panel.setWidget(row, 0, infoLabel);
-		panel.getFlexCellFormatter().setAlignment(row, 0, 
+		flexPanel.getFlexCellFormatter().setColSpan(row, 0, 3);
+		flexPanel.setWidget(row, 0, infoLabel);
+		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		row++;
 		
 		
 		
-		CellPanel buttons = createButtons();
-		panel.getFlexCellFormatter().setColSpan(row, 0, 2);
-		panel.setWidget(row, 0, buttons);
-		panel.getFlexCellFormatter().setAlignment(row, 0, 
+		CellPanel buttons = createConvertButton();
+		flexPanel.getFlexCellFormatter().setColSpan(row, 0, 3);
+		flexPanel.setWidget(row, 0, buttons);
+		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		row++;
@@ -108,13 +136,14 @@ public class VocabPanel extends VerticalPanel {
 		
 		Widget class_lbl = new HTML("Class:");
 		class_lbl.setTitle("The class for the terms defined in this vocabulary");
-		panel.setWidget(row, 0, class_lbl);
-		panel.getFlexCellFormatter().setAlignment(row, 0, 
+		flexPanel.setWidget(row, 0, class_lbl);
+		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 
-		panel.setWidget(row, 1, primaryClass_lb);
-		panel.getFlexCellFormatter().setAlignment(row, 1, 
+		flexPanel.getFlexCellFormatter().setColSpan(row, 1, 2);
+		flexPanel.setWidget(row, 1, primaryClass_lb);
+		flexPanel.getFlexCellFormatter().setAlignment(row, 1, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		row++;
@@ -125,15 +154,18 @@ public class VocabPanel extends VerticalPanel {
 		
 		Widget lbl = new HTML("Terms:");
 		lbl.setTitle("Contents of your vocabulary");
-		panel.setWidget(row, 0, lbl);
-		panel.getFlexCellFormatter().setAlignment(row, 0, 
+		flexPanel.setWidget(row, 0, lbl);
+		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 
 		contentsContainer.setSize("600", "200");
+		contentsContainer.setTitle(CONTENTS_TOOTIP);
+		
 		contentsContainer.add(ascii_ta);
-		panel.setWidget(row, 1, contentsContainer);
-		panel.getFlexCellFormatter().setAlignment(row, 1, 
+		flexPanel.getFlexCellFormatter().setColSpan(row, 1, 2);
+		flexPanel.setWidget(row, 1, contentsContainer);
+		flexPanel.getFlexCellFormatter().setAlignment(row, 1, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		row++;
@@ -171,17 +203,28 @@ public class VocabPanel extends VerticalPanel {
 				updateContents(contentsContainer, tabular);
 			}
 		});
+		
 			
-		panel.setWidget(row, 1, hp);
-		panel.getFlexCellFormatter().setAlignment(row, 1, 
+//		flexPanel.getFlexCellFormatter().setColSpan(row, 1, 2);
+		flexPanel.setWidget(row, 1, hp);
+		flexPanel.getFlexCellFormatter().setAlignment(row, 1, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
+		
+		
+		HorizontalPanel exPanel = new HorizontalPanel();
+		exPanel.add(createExampleButton());
+		flexPanel.setWidget(row, 2, exPanel);
+		flexPanel.getFlexCellFormatter().setAlignment(row, 1, 
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		
 		row++;
 
-		return panel;
+		return flexPanel;
 	}
 	
-	private CellPanel createButtons() {
+	private CellPanel createExampleButton() {
 		CellPanel panel = new HorizontalPanel();
 		panel.setSpacing(2);
 		exampleButton = new PushButton("Example", new ClickListener() {
@@ -195,12 +238,31 @@ public class VocabPanel extends VerticalPanel {
 		return panel;
 	}
 	
+	private CellPanel createConvertButton() {
+		CellPanel panel = new HorizontalPanel();
+		panel.setSpacing(2);
+		panel.add(statusLabel);
+		convertButton = new PushButton("Convert to RDF", new ClickListener() {
+			public void onClick(Widget sender) {
+				convert2Rdf();
+			}
+		});
+		convertButton.setTitle("Converts the current vocabulary contents into RDF format.");
+		panel.add(convertButton);
+		
+		return panel;
+	}
+	
 
 	String putValues(Map<String, String> values) {
 		values.put("namespaceRoot", NAMESPACE_ROOT);
 
 		String ascii = ascii_ta.getText().trim();
 		if ( ascii.length() > 0 ) {
+			String[] lines = ascii.split("\n|\r\n|\r");
+			if ( lines.length  == 1 ) {
+				return "Only a header line is included";
+			}
 			values.put("ascii", ascii_ta.getText());
 		}
 		else {
@@ -329,6 +391,9 @@ public class VocabPanel extends VerticalPanel {
 		&&  ! Window.confirm("This action will replace the current values") ) {
 			return;
 		}
+		
+		statusLabel.setText("");
+
 		ascii_ta.setText(
 				"name,description,see also,comment\n" +
 				"sea surface salinity, sea water salinity, salinity at the sea surface (above 3m.), an example comment\n" +
@@ -341,4 +406,59 @@ public class VocabPanel extends VerticalPanel {
 			updateContents(contentsContainer, tabular);
 		}
 	}
+	
+	
+	/**
+	 * Runs the "test conversion" on the vocabulary contents and with
+	 * ad hoc metadata atttributes.
+	 */
+	void convert2Rdf() {
+		Map<String, String> values = new HashMap<String, String>();
+
+		// error only possibly from the vocabPanel:
+		String error;
+		if ( (error = putValues(values)) != null ) {
+			statusLabel.setHTML("<font color=\"red\">" + error+ "</font>");
+			mainPanel.conversionError(error);
+			return;
+		}
+		
+		statusLabel.setHTML("<font color=\"blue\">" + "Converting ..." + "</font>");
+		mainPanel.converting();
+		
+		Main.log("convert2Rdf: values = " +values);
+
+		// do test conversion
+		AsyncCallback<ConversionResult> callback = new AsyncCallback<ConversionResult>() {
+			public void onFailure(Throwable thr) {
+				String error = thr.getClass().getName()+ ": " +thr.getMessage();
+				while ( (thr = thr.getCause()) != null ) {
+					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
+				}
+				Main.log("convertTest: error: " +error);
+				mainPanel.conversionError(error);
+				statusLabel.setHTML("<font color=\"red\">" +"Error"+ "</font>");
+			}
+
+			public void onSuccess(ConversionResult conversionResult) {
+				String error = conversionResult.getError();
+				if ( error != null ) {
+					Main.log("convertTest: error: " +error);
+					statusLabel.setHTML("<font color=\"red\">" +"Error"+ "</font>");
+					mainPanel.conversionError(error);
+				}
+				else {
+					Main.log("convertTest: OK: " +conversionResult.getRdf());
+					statusLabel.setHTML("<font color=\"green\">" + "Conversion complete" + "</font>");
+					mainPanel.conversionOk(conversionResult);
+				}
+			}
+		};
+
+		Main.log("convertTest: converting ... ");
+		
+		Main.voc2rdfService.convert(values, callback);
+
+	}
+
 }

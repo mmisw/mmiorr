@@ -54,7 +54,7 @@ class Converter {
 	}
 
 
-	private String primaryClass = "FIXME-primaryClass";
+	private String primaryClass;
 
 
 //	private static final String ONE_CLASS_ALL_INSTANCES = OwlCreatorComplex.ONE_CLASS_ALL_INSTANCES;
@@ -82,6 +82,15 @@ class Converter {
 
 	private String pathOnServer;
 
+	
+	/**
+	 * TODO createUniqueBaseName(): need a more robust way to get a unique name. 
+	 */
+	private static String _createUniqueBaseName() {
+		return String.valueOf(System.currentTimeMillis());
+
+	}
+	private final String uniqueBaseName = _createUniqueBaseName();
 	
 	
 	Converter(
@@ -115,7 +124,7 @@ class Converter {
 		String rdf = getOntologyStringXml();
 		
 		// just the simple name:
-		setPathOnServer(createUniqueBaseName() + ".owl");
+		setPathOnServer(uniqueBaseName); 
 		
 		String full_path = Config.ONTMD_VOC2RDF_DIR + getPathOnServer();
 		
@@ -135,7 +144,7 @@ class Converter {
 	
 	private void processCreateOntology() throws Exception {
 
-		String fileInText = tmp + createUniqueBaseName() + ".txt";
+		String fileInText = tmp + uniqueBaseName + ".txt";
 		saveInFile(fileInText);
 		
 		newOntModel = new OwlModel(JenaUtil.createDefaultOntModel());
@@ -378,7 +387,9 @@ class Converter {
 			finalUri +=  "/" + version;
 		}
 		
-		finalUri += "/" + getPrimaryClass() + ".owl";
+		finalUri += "/" + getPrimaryClass().toLowerCase() ;
+		// NO ".owl" extension!!
+		// because it messes up the base URI of the elements
 		
 		// see createProperties()
 		
@@ -423,15 +434,6 @@ class Converter {
 
 
 
-	/**
-	 * TODO createUniqueBaseName(): need a more robust way to get a unique name. Also, use
-	 * the same base name for the various derivations of the same conversion task, instead 
-	 * of creating a new name for each.
-	 */
-	private String createUniqueBaseName() {
-		return "" +System.currentTimeMillis();
-
-	}
 
 	private void setPathOnServer(String pathOnServer) {
 		this.pathOnServer = pathOnServer;
