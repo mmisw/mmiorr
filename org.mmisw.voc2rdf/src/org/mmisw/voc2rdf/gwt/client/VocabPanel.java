@@ -38,6 +38,7 @@ public class VocabPanel extends VerticalPanel {
 	private static final String NAMESPACE_ROOT = "http://mmisw.org/ont";
 
 	private static final String CONTENTS_TOOTIP =
+		"The contents of your vocabulary:<br/>" +
 		"It should contain a one line header, in singular " +
 		"with the descriptive titles for each column. Each line (or row) should " +
 		"contain the unique label for each term and a set of values (e.g. description, " +
@@ -134,9 +135,8 @@ public class VocabPanel extends VerticalPanel {
 		row++;
 		
 		
-		Widget class_lbl = new HTML("Class:");
-		class_lbl.setTitle("The class for the terms defined in this vocabulary");
-		flexPanel.setWidget(row, 0, class_lbl);
+		flexPanel.setWidget(row, 0, 
+				new TLabel("Class:", "The class for the terms defined in this vocabulary"));
 		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
@@ -152,15 +152,13 @@ public class VocabPanel extends VerticalPanel {
 		
 		
 		
-		Widget lbl = new HTML("Terms:");
-		lbl.setTitle("Contents of your vocabulary");
-		flexPanel.setWidget(row, 0, lbl);
+		flexPanel.setWidget(row, 0, 
+				new TLabel("Terms:", CONTENTS_TOOTIP));
 		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 
 		contentsContainer.setSize("600", "200");
-		contentsContainer.setTitle(CONTENTS_TOOTIP);
 		
 		contentsContainer.add(ascii_ta);
 		flexPanel.getFlexCellFormatter().setColSpan(row, 1, 2);
@@ -171,11 +169,10 @@ public class VocabPanel extends VerticalPanel {
 		row++;
 
 		CellPanel hp = new HorizontalPanel();
-		lbl = new Label("Column separator:");
 		fieldSeparator_lb = new ListBox();
 		fieldSeparator_lb.addItem("Comma", "csv");
 		fieldSeparator_lb.addItem("Tab", "tab");
-		hp.add(lbl);
+		hp.add(new Label("Column separator:"));
 		hp.add(fieldSeparator_lb);
 		fieldSeparator_lb.addChangeListener(new ChangeListener() {
 			public void onChange(Widget sender) {

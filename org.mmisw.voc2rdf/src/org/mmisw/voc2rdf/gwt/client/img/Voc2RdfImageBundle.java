@@ -14,6 +14,9 @@ public interface Voc2RdfImageBundle extends ImageBundle {
 	 public AbstractImagePrototype voc2rdf();
 	 public AbstractImagePrototype xmlvoc();
 
+	 /** Reduced version of http://photos.icollector.com/photos/question_icon.gif */
+	 public AbstractImagePrototype question12();
+
 	 public AbstractImagePrototype search();
 	 
 
