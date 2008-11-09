@@ -167,16 +167,10 @@ public class MetadataGroupPanel extends VerticalPanel {
 				widgets.put(attr.getUri(), new Elem(attr, widget));
 			}
 			
-			String label = attr.getLabel() + ":";
-			if ( editing && attr.isRequired() ) {
-				label += "*";
-			}
-			Label lbl = new Label(label);
-			lbl.setTitle(attr.getUri());
-			widget.setTitle(attr.getUri());
-			
-			panel.setWidget(row, 0, lbl);
+			panel.setWidget(row, 0, new TLabel(attr.getLabel(), editing && attr.isRequired(), attr.getTooltip()));
+
 			panel.setWidget(row, 1, widget);
+			panel.getFlexCellFormatter().setWidth(row, 0, "250");
 			panel.getFlexCellFormatter().setAlignment(row, 0, 
 					HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
 			);
@@ -282,6 +276,8 @@ public class MetadataGroupPanel extends VerticalPanel {
 
 			add(tb);
 			lb = createListBox(attr, cl);
+			List<Option> options = attr.getOptions();
+			lb.setVisibleItemCount(Math.min(options.size(), 20));
 			
 			chooseButton = new PushButton("Choose", new ClickListener() {
 				public void onClick(Widget sender) {

@@ -88,6 +88,8 @@ public class MdHelper {
 		AttrDef mainClassAttrDef =
 			createAttrDef(Omv.acronym, true) 
 		    .setLabel("Resource type")
+			.setTooltip("The two attributes \"Resource type\" and \"Authority abbreviation\" are used to construct the URIs " +
+					"for the vocabulary and terms.")
 			.setExample("parameter")
 			.setAllowUserDefinedOption(true)
 			.addOption(new Option("Discipline", "ISO MD_Keyword: Discipline"))
@@ -147,7 +149,10 @@ public class MdHelper {
 			
 		attrGroups = new AttrGroup[] {
 			new AttrGroup("General",
-				"These fields capture general information about this ontology, who created it, and where it came from.",
+				"These fields capture general information about this ontology, who created it, and where it came from. " +
+				"The two attributes \"Resource type\" and \"Authority abbreviation\" are used to construct the URIs " +
+				"for the vocabulary and terms. In our system, they can contain only letters, " +
+				"numbers, underscores, and (not recommended) hyphens, and begin with a letter.",
 				new AttrDef[] {
 					
 					mainClassAttrDef,
@@ -190,6 +195,8 @@ public class MdHelper {
 			
 					createAttrDef(OmvMmi.origMaintainerCode, true)
 						.setLabel("Authority abbreviation")
+						.setTooltip("The two attributes \"Resource type\" and \"Authority abbreviation\" are used to construct the URIs " +
+								"for the vocabulary and terms.")
 						.setExample("mmi")
 						.setAllowUserDefinedOption(true)
 						.addOption(new Option("cencoos", "cencoos: Central California Ocean Observing System"))

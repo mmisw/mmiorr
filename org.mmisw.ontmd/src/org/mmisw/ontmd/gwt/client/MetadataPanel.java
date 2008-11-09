@@ -24,6 +24,10 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class MetadataPanel extends FlexTable {
 
+private static final String INFO = 
+					"Fields marked " +TLabel.requiredHtml+ " are required. " +
+					"Use commas to separate values in multi-valued fields.";
+
 //	private MainPanel mainPanel;
 	private DockPanel container = new DockPanel();
 	private TabPanel tabPanel = new TabPanel();
@@ -76,13 +80,14 @@ public class MetadataPanel extends FlexTable {
 	 */
 	MetadataPanel(MainPanel mainPanel, boolean editing) {
 		super();
+		setWidth("800");
 		this.editing = editing;
 		
 //		this.mainPanel = mainPanel;
 		
 		int row = 0;
 		
-		container.setSize("700", "350");
+		container.setSize("850", "350");
 		
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
@@ -105,9 +110,7 @@ public class MetadataPanel extends FlexTable {
 		
 		
 		if ( editing ) {
-			this.setWidget(row, 0, new HTML(
-					"Fields marked * are required. " +
-					"Use commas to separate values in multi-valued fields."));
+			this.setWidget(row, 0, new HTML(INFO));
 
 			row++;
 		}

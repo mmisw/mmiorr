@@ -18,6 +18,7 @@ public class AttrDef implements Serializable {
 	private String localName;
 	
 	private String label;
+	private String tooltip;
 	
 
 	private boolean required;
@@ -130,6 +131,17 @@ public class AttrDef implements Serializable {
 
 	public boolean isAllowUserDefinedOption() {
 		return allowUserDefinedOption;
+	}
+
+
+	public AttrDef setTooltip(String tooltip) {
+		this.tooltip = tooltip;
+		return this;
+	}
+
+
+	public String getTooltip() {
+		return tooltip;
 	}
 
 
