@@ -9,6 +9,18 @@ ChangeLog
 
 	- New tooltip handling via an "?" icon.
 	
+	- JenaUtil2: with some of the methods in JenaUtil but with some adjustments.
+	  Initially intended to handle the fragment separator, which is '#' always in
+	  the original version. Currently, JenaUtil2 still uses '#' but already
+	  factors out this element so it's easier to test for a different fragment
+	  separator, especifically, '/'.
+	  Preliminary tests, show that the Jena library handles the '/' separator
+	  differently than with '#'. For example, elements in the base namaspace are
+	  nicely identified with relative references when '#' is used, but not
+	  with '/'.  This may be just a cosmetic difference but I haven't tested
+	  this thoroughly yet (especially in terms of transferring elements from a
+	  given ontology to the new to be uploaded in the repository).
+	  
 
 
 2008-11-06 (0.1.alpha6)
