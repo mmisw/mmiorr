@@ -285,7 +285,8 @@ public class MainPanel extends VerticalPanel {
 					Window.alert(error);
 				}
 				else {
-					metadataPanel.resetToOriginalValues(ontologyInfo, null, false, false);
+					boolean link = !editRequestedOntology;
+					metadataPanel.resetToOriginalValues(ontologyInfo, null, false, link);
 				}
 			}
 		};
