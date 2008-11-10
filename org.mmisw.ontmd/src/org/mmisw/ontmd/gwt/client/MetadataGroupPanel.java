@@ -211,13 +211,9 @@ public class MetadataGroupPanel extends VerticalPanel {
 
 		shortNameFieldWithChoose.tb.addKeyboardListener(new KeyboardListenerAdapter() {
 			  public void onKeyUp(Widget sender, char keyCode, int modifiers) {
-				  String value = shortNameFieldWithChoose.tb.getText();
-				  if ( shortNameIsMap.isChecked() && ! value.toLowerCase().endsWith("_map") ) {
-					  shortNameIsMap.setChecked(false);
-				  }
-				  else if ( !shortNameIsMap.isChecked() && value.toLowerCase().endsWith("_map") ) {
-					  shortNameIsMap.setChecked(true);
-				  }
+				  String value = shortNameFieldWithChoose.tb.getText().toLowerCase();
+				  boolean isMap = value.matches(".*_[mM][aA][pP]($|_.*)");
+				  shortNameIsMap.setChecked(isMap);
 			  }
 		});
 		vp.add(shortNameFieldWithChoose);
@@ -228,12 +224,16 @@ public class MetadataGroupPanel extends VerticalPanel {
 		hp.setSpacing(4);
 		shortNameIsMap.addClickListener(new ClickListener() {
 			public void onClick(Widget sender) {
-				String value = shortNameFieldWithChoose.tb.getText();
-				if ( shortNameIsMap.isChecked() && ! value.toLowerCase().endsWith("_map") ) {
-					shortNameFieldWithChoose.setValue(value+ "_map");
+				boolean checked = shortNameIsMap.isChecked();
+				String value = shortNameFieldWithChoose.tb.getText().toLowerCase();
+				boolean isMap = value.matches(".*_[mM][aA][pP]($|_.*)");
+				if ( shortNameIsMap.isChecked() && ! isMap ) {
+					shortNameFieldWithChoose.setValue(value.replaceAll("_+$", "")+ "_map");
 				}
-				else if ( !shortNameIsMap.isChecked() && value.toLowerCase().endsWith("_map") ) {
-					shortNameFieldWithChoose.setValue(value.substring(0, value.length()-4));
+				else if ( !checked && isMap ) {
+					value = value.replaceAll("_+[mM][aA][pP]_+", "_");
+					value = value.replaceAll("_+[mM][aA][pP]$", "");
+					shortNameFieldWithChoose.setValue(value);
 				}
 			}
 			

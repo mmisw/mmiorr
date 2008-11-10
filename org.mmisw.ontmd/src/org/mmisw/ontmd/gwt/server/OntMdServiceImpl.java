@@ -352,15 +352,15 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			Property n_prd = prd;
 			RDFNode  n_obj = obj;
 
-			if ( sbj.getNameSpace().equals(oldNameSpace) ) {
+			if ( oldNameSpace.equals(sbj.getNameSpace()) ) {
 				n_sbj = model.createResource(newNameSpace + sbj.getLocalName());
 				any_change = true;
 			}
-			if ( prd.getNameSpace().equals(oldNameSpace) ) {
+			if ( oldNameSpace.equals(prd.getNameSpace()) ) {
 				n_prd = model.createProperty(newNameSpace + prd.getLocalName());
 				any_change = true;
 			}
-			if ( (obj instanceof Resource) && ((Resource) obj).getNameSpace().equals(oldNameSpace) ) {
+			if ( (obj instanceof Resource) && oldNameSpace.equals(((Resource) obj).getNameSpace()) ) {
 				n_obj = model.createResource(newNameSpace + ((Resource) obj).getLocalName());
 				any_change = true;
 			}

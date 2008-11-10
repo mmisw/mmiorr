@@ -3,7 +3,7 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
-2008-11-09 (0.1.alpha7)
+2008-11-09 (1.0.0.alpha7)
 
 	- Voc2RDF functionality re-merged in this project.
 
@@ -21,7 +21,8 @@ ChangeLog
 	  this thoroughly yet (especially in terms of transferring elements from a
 	  given ontology to the new to be uploaded in the repository).
 	  
-
+	- Improved handling of the "_map" suffix in the shortName.
+	
 
 2008-11-06 (0.1.alpha6)
 
