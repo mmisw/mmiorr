@@ -8,15 +8,6 @@ c: Get the original ns when model.getNsPrefixURI("") returns null
 This case was manifested with the platform.owl ontology.
 
 
-p: I can submit the same ontology twice and it doesn't detect or offer the opportunity to 
-create a new version. Will we eventually use a process as we discussed yesterday? 
-IE Step 1 => new or update, Step 2 => check metadata, Step 3 => check with backend for errors.
- 
-
-j: What is relationship of: (a) Original source -> URI of original ontology (b)
-Original URI (upper left of metadata tab),, (c) General -> Link to original
-ontology, (d) the unnamed xmlns (e) the xml:base
-
 j: The ontology in Ontology tab should be clearly identified as the original
 ontology. Then there should be a window (maybe under that one?) that shows the
 uploaded ontology. So the two can be inspected together.
