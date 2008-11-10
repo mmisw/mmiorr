@@ -50,7 +50,7 @@ public class UriResolver extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	
-	private static final String VERSION = "0.1.6 (20081104)";
+	private static final String VERSION = "0.1.7 (20081110)";
 	static final String TITLE = "MMI Ontology URI resolver. Version " +VERSION;
 
 	private final Log log = LogFactory.getLog(UriResolver.class);
@@ -404,6 +404,13 @@ public class UriResolver extends HttpServlet {
 			// Since the extension is not ".html", I would consider the following case:
 			//
 			else if ( accept.contains("application/xml") ) {
+				return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML);
+			}
+			
+			// (a.2) an OWL document if outForm="owl" or "rdf"
+			else if ( outFormat.equalsIgnoreCase("owl") 
+				 ||   outFormat.equalsIgnoreCase("rdf") ) {
+				
 				return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML);
 			}
 			
