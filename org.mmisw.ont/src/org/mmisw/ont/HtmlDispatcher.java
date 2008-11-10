@@ -26,7 +26,8 @@ import edu.drexel.util.rdf.JenaUtil;
 
 
 /**
- * Dispatches the metadata output.
+ * Dispatches the HTML output.
+ * 
  * @author Carlos Rueda
  */
 public class HtmlDispatcher {
