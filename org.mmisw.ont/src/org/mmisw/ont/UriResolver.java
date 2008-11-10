@@ -68,6 +68,10 @@ public class UriResolver extends HttpServlet {
 
 	
 	private enum OntFormat { RDFXML, N3 };
+	
+	
+	private List<String> userAgentList;
+	
 
 	public void init() throws ServletException {
 		log.info(TITLE+ ": initializing");
@@ -99,17 +103,18 @@ public class UriResolver extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
+		userAgentList = Util.getHeader(request, "user-agent");
+
 		if ( log.isDebugEnabled() ) {
 			String fullRequestedUri = request.getRequestURL().toString();
-			List<String> uaList = Util.getHeader(request, "user-agent");
 			List<String> pcList = Util.getHeader(request, "PC-Remote-Addr");
 			log.debug("___ doGet: fullRequestedUri: " +fullRequestedUri);
-			log.debug("                 user-agent: " +uaList);
+			log.debug("                 user-agent: " +userAgentList);
 			log.debug("             PC-Remote-Addr: " +pcList);
 			
 			// filter out Googlebot?
 			if ( false ) {   // Disabled as the robots.txt is now active.
-				for ( String ua: uaList ) {
+				for ( String ua: userAgentList ) {
 					if ( ua.matches(".*Googlebot.*") ) {
 						log.debug("returning NO_CONTENT to googlebot");
 						response.sendError(HttpServletResponse.SC_NO_CONTENT);
@@ -344,7 +349,7 @@ public class UriResolver extends HttpServlet {
 		
 		// Dereferencing is done according to the "accept" header and the topic extension.
 
-		// The response type depends of the following elements:
+		// The response type depends (initially) on the following elements:
 		String topicExt = mmiUri.getTopicExtension();
 		Accept accept = new Accept(request);
 		String outFormat = Util.getParam(request, "form", "");
@@ -407,9 +412,14 @@ public class UriResolver extends HttpServlet {
 				return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML);
 			}
 			
-			// (a.2) an OWL document if outForm="owl" or "rdf"
-			else if ( outFormat.equalsIgnoreCase("owl") 
-				 ||   outFormat.equalsIgnoreCase("rdf") ) {
+			// (a.2) an OWL document if is the user-agent is "Java/*"
+			// This is a workaround for the following situation in VINE:
+			// The underlying Jena library should include the accept element:
+			// "application/rdf+xml" but it's not doing so, see bug:
+			//   Wrong Accept-Header in HTTP-Connections - ID: 1424091
+			//   http://sourceforge.net/tracker2/?func=detail&aid=1424091&group_id=40417&atid=430288
+			//
+			else if ( userAgentList.size() > 0 && userAgentList.get(0).startsWith("Java/") ) {
 				
 				return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML);
 			}
