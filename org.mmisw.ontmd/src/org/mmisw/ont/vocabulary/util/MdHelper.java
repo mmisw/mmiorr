@@ -24,9 +24,39 @@ import com.hp.hpl.jena.vocabulary.DC;
  * @author Carlos Rueda
  */
 public class MdHelper {
-	
 	private MdHelper() { }
 
+	
+	private static final String RESOURCE_TYPE_TOOLTIP =
+		"The kind of resource represented by the ontology. Typically made up of a Topic or Class name, an " +
+		"optional indication of a mapping ontology ('_map' if this is a term mapping ontology), and if " +
+		"necessary a unique identifier (a numeric appendix or subcategory, like '_002' or '_team1'. " +
+		"So while most Resource Types are simple terms like 'parameter' or 'datum', they can be more complex, " +
+		"like temporal_map_ageClassifier'. The two attributes \"Resource type\" and \"Authority abbreviation\" " +
+		"are used to construct the URIs for the vocabulary and terms. So Resource Type must be constrained to " +
+		"alphnumerics, underscore, and (discouraged) hyphen. Underscores are recommended only between the components. " +
+		"MMI converts all resource types to lower case. " +
+		"For more tips on selecting Resource Type, see the " +
+		"<a href=\"http://marinemetadata.org/apguides/ontprovidersguide/ontguideconstructinguris\" target=\"_blank\"" +
+		">MMI Ontology Providers Guide</a>.";
+
+
+
+	private static final String AUTHORITY_TOOLTIP = 
+		"This is an MMI-controlled vocabulary of abbreviations that indicate the controlling authority of the vocabulary. " +
+		"You can choose from any of the existing terms in the list, or specify a new one; MMI reserves the right to correct " +
+		"your choice if that is appropriate. (For example, using a government organization as the authority should only be " +
+		"made if you are in an authoritative position for that organization.) " +
+		"The two attributes \"Resource type\" and \"Authority abbreviation\" are used to construct the URIs for the " +
+		"vocabulary and terms. The authority abbreviation should be short but descriptive; it is possible for one " +
+		"organization to have multiple authority names (e.g., mmi, mmitest, mmidev), but a profusion of authority " +
+		"names is discouraged (familiarity is more important than uniqueness). Organizations that will be submitting " +
+		"a lot of overlapping ontologies should consider using authority names to provide namespace separation. " +
+		"For more tips on selecting Resource Type, see the " +
+		"<a href=\"http://marinemetadata.org/apguides/ontprovidersguide/ontguideconstructinguris\" target=\"_blank\"" +
+		">MMI Ontology Providers Guide</a>.";
+	
+	
 	
 	// Examples: preferredPrefix(Omv.NS) == "omv";
 	private static Map<String,String> preferredPrefix = new HashMap<String,String>();
@@ -79,74 +109,95 @@ public class MdHelper {
 		return attrDef;
 	}
 	
+	private static AttrDef mainClassAttrDef =
+		createAttrDef(Omv.acronym, true) 
+	    .setLabel("Resource type")
+		.setTooltip(RESOURCE_TYPE_TOOLTIP)
+		.setExample("parameter")
+		.setAllowUserDefinedOption(true)
+		.addOption(new Option("Discipline", "ISO MD_Keyword: Discipline"))
+		.addOption(new Option("Place", "ISO MD_Keyword: Place"))
+		.addOption(new Option("Stratum", "ISO MD_Keyword: Stratum"))
+		.addOption(new Option("Temporal", "ISO MD_Keyword: Temporal"))
+		.addOption(new Option("Theme", "ISO MD_Keyword: Theme"))
+		
+		.addOption(new Option("axis", "OGC Object Type: axis"))
+		.addOption(new Option("axisDirection", "OGC Object Type: axisDirection"))
+		.addOption(new Option("coordinateOperation", "OGC Object Type: coordinateOperation"))
+		.addOption(new Option("crs", "OGC Object Type: crs"))
+		.addOption(new Option("cs", "OGC Object Type: cs"))
+		.addOption(new Option("datum", "OGC Object Type: datum"))
+		.addOption(new Option("dataType", "OGC Object Type: dataType"))
+		.addOption(new Option("derivedCRSType", "OGC Object Type: derivedCRSType"))
+		.addOption(new Option("documentType", "OGC Object Type: documentType"))
+		.addOption(new Option("ellipsoid", "OGC Object Type: ellipsoid"))
+		.addOption(new Option("featureType", "OGC Object Type: featureType"))
+		.addOption(new Option("group", "OGC Object Type: group"))
+		.addOption(new Option("meaning", "OGC Object Type: meaning"))
+		.addOption(new Option("meridian", "OGC Object Type: meridian"))
+		.addOption(new Option("method", "OGC Object Type: method"))
+		.addOption(new Option("nil", "OGC Object Type: nil"))
+		.addOption(new Option("parameter", "OGC Object Type: parameter"))
+		.addOption(new Option("phenomenon", "OGC Object Type: phenomenon"))
+		.addOption(new Option("pixelInCell", "OGC Object Type: pixelInCell"))
+		.addOption(new Option("rangeMeaning", "OGC Object Type: rangeMeaning"))
+		.addOption(new Option("referenceSystem", "OGC Object Type: referenceSystem"))
+		.addOption(new Option("uom", "OGC Object Type: uom"))
+		.addOption(new Option("verticalDatumType", "OGC Object Type: verticalDatumType"))
+		
+		.addOption(new Option("keyword", "MMI: keyword"))
+		.addOption(new Option("parameter", "MMI: parameter"))
+		.addOption(new Option("unit", "MMI: unit"))
+		.addOption(new Option("organization", "MMI: organization"))
+		.addOption(new Option("platform", "MMI: platform"))
+		.addOption(new Option("sensor", "MMI: sensor"))
+		.addOption(new Option("process", "MMI: process"))
+		.addOption(new Option("missingFlag", "MMI: missingFlag"))
+		.addOption(new Option("qualityFlag", "MMI: qualityFlag"))
+		.addOption(new Option("qcCategory", "MMI: qcCategory"))
+		.addOption(new Option("coordinateReference", "MMI: coordinateReference"))
+		.addOption(new Option("datum", "MMI: datum"))
+		.addOption(new Option("protocol", "MMI: protocol"))
+		.addOption(new Option("metadataStandard", "MMI: metadataStandard"))
+		.addOption(new Option("featureType", "MMI: featureType"))
+		.addOption(new Option("featureName", "MMI: featureName"))
+		.addOption(new Option("speciesType", "MMI: speciesType"))
+		.addOption(new Option("speciesName", "MMI: speciesName"))
+		.addOption(new Option("discipline", "MMI: discipline"))
+		.addOption(new Option("place", "MMI: place"))
+		.addOption(new Option("theme", "MMI: theme"))
+		.addOption(new Option("roleOfContact", "MMI: roleOfContact"))
+		.addOption(new Option("general", "MMI: general metadata attribute"))
+	;
+	
+//  OLD list
+//			createAttrDef(Omv.acronym, true) 
+//			.setLabel("Main theme")
+//			.setExample("parameter")
+//			.addOption(new Option("parameter", "Parameters (It will include terms like 'sea surface salinity')"))
+//			.addOption(new Option("sensorType", "Sensor types (It will include terms like 'Thermometer')"))
+//			.addOption(new Option("platformType", "Platform types (It will include terms like 'Mooring')"))
+//			.addOption(new Option("unit", "Units  (It will include terms like 'meter')"))
+//			.addOption(new Option("keyword", "Keywords  (It will include terms like 'climate', 'oceans')"))
+//			.addOption(new Option("organization", "Organizations  (It will include terms like 'MBARI' or 'MMI')"))
+//			.addOption(new Option("process", "Processes  (It will include terms like 'data quality control')"))
+//			.addOption(new Option("missingflag", "Missing flags  (It will include terms like '-999')"))
+//			.addOption(new Option("qualityflag", "Quality flags  (It will include terms like '10')"))
+//			.addOption(new Option("featureType", "Feature types  (It will include terms like 'body of water')"))
+//			.addOption(new Option("GeographicFeature", "Geographic features  (It will include terms like 'Monterey Bay')"))
+//			;
+	
+	
+	public static AttrDef getMainClassAttrDef() {
+		return mainClassAttrDef;
+	}
+	
 	///////////////////////////////////////////////////////////////////////
 	// The metadata groups
 	private static AttrGroup[] attrGroups;
 	
 	public static void prepareGroups() {
 		
-		AttrDef mainClassAttrDef =
-			createAttrDef(Omv.acronym, true) 
-		    .setLabel("Resource type")
-			.setTooltip("The two attributes \"Resource type\" and \"Authority abbreviation\" are used to construct the URIs " +
-					"for the vocabulary and terms.")
-			.setExample("parameter")
-			.setAllowUserDefinedOption(true)
-			.addOption(new Option("Discipline", "ISO MD_Keyword: Discipline"))
-			.addOption(new Option("Place", "ISO MD_Keyword: Place"))
-			.addOption(new Option("Stratum", "ISO MD_Keyword: Stratum"))
-			.addOption(new Option("Temporal", "ISO MD_Keyword: Temporal"))
-			.addOption(new Option("Theme", "ISO MD_Keyword: Theme"))
-			
-			.addOption(new Option("axis", "OGC Object Type: axis"))
-			.addOption(new Option("axisDirection", "OGC Object Type: axisDirection"))
-			.addOption(new Option("coordinateOperation", "OGC Object Type: coordinateOperation"))
-			.addOption(new Option("crs", "OGC Object Type: crs"))
-			.addOption(new Option("cs", "OGC Object Type: cs"))
-			.addOption(new Option("datum", "OGC Object Type: datum"))
-			.addOption(new Option("dataType", "OGC Object Type: dataType"))
-			.addOption(new Option("derivedCRSType", "OGC Object Type: derivedCRSType"))
-			.addOption(new Option("documentType", "OGC Object Type: documentType"))
-			.addOption(new Option("ellipsoid", "OGC Object Type: ellipsoid"))
-			.addOption(new Option("featureType", "OGC Object Type: featureType"))
-			.addOption(new Option("group", "OGC Object Type: group"))
-			.addOption(new Option("meaning", "OGC Object Type: meaning"))
-			.addOption(new Option("meridian", "OGC Object Type: meridian"))
-			.addOption(new Option("method", "OGC Object Type: method"))
-			.addOption(new Option("nil", "OGC Object Type: nil"))
-			.addOption(new Option("parameter", "OGC Object Type: parameter"))
-			.addOption(new Option("phenomenon", "OGC Object Type: phenomenon"))
-			.addOption(new Option("pixelInCell", "OGC Object Type: pixelInCell"))
-			.addOption(new Option("rangeMeaning", "OGC Object Type: rangeMeaning"))
-			.addOption(new Option("referenceSystem", "OGC Object Type: referenceSystem"))
-			.addOption(new Option("uom", "OGC Object Type: uom"))
-			.addOption(new Option("verticalDatumType", "OGC Object Type: verticalDatumType"))
-			
-			.addOption(new Option("keyword", "MMI: keyword"))
-			.addOption(new Option("parameter", "MMI: parameter"))
-			.addOption(new Option("unit", "MMI: unit"))
-			.addOption(new Option("organization", "MMI: organization"))
-			.addOption(new Option("platform", "MMI: platform"))
-			.addOption(new Option("sensor", "MMI: sensor"))
-			.addOption(new Option("process", "MMI: process"))
-			.addOption(new Option("missingFlag", "MMI: missingFlag"))
-			.addOption(new Option("qualityFlag", "MMI: qualityFlag"))
-			.addOption(new Option("qcCategory", "MMI: qcCategory"))
-			.addOption(new Option("coordinateReference", "MMI: coordinateReference"))
-			.addOption(new Option("datum", "MMI: datum"))
-			.addOption(new Option("protocol", "MMI: protocol"))
-			.addOption(new Option("metadataStandard", "MMI: metadataStandard"))
-			.addOption(new Option("featureType", "MMI: featureType"))
-			.addOption(new Option("featureName", "MMI: featureName"))
-			.addOption(new Option("speciesType", "MMI: speciesType"))
-			.addOption(new Option("speciesName", "MMI: speciesName"))
-			.addOption(new Option("discipline", "MMI: discipline"))
-			.addOption(new Option("place", "MMI: place"))
-			.addOption(new Option("theme", "MMI: theme"))
-			.addOption(new Option("roleOfContact", "MMI: roleOfContact"))
-			.addOption(new Option("general", "MMI: general metadata attribute"))
-		;
-			
 		attrGroups = new AttrGroup[] {
 			new AttrGroup("General",
 				"These fields capture general information about this ontology, who created it, and where it came from. " +
@@ -159,6 +210,10 @@ public class MdHelper {
 					
 					createAttrDef(OmvMmi.shortNameUri)
 						.setLabel("URI of resource type")
+						.setTooltip("Ideally the resource type is selected from, and described in, a controlled " +
+								"vocabulary with URIs defined. If so, enter the URI naming the term in this field. " +
+								"If the term is in a controlled vocabulary but does not have its own URI, enter the " +
+								"controlled vocabulary URI. Otherwise, leave this field blank.")
 						.setExample("http://mmisw.org/ont/mmi/topicTheme/parameter")
 					,
 					
@@ -166,37 +221,43 @@ public class MdHelper {
 	
 					createAttrDef(Omv.name, true)
 						.setLabel("Full title")
+						.setTooltip("A one-line descriptive title (title case) for the ontology.")
 						.setExample("Project Athena Parameters")
 					,
 					createAttrDef(Omv.hasCreator, true)
 						.setLabel("Creator")
+						.setTooltip("The name of the person submitting the ontology.")
 						.setExample("Athena Project")
 					,
 					createAttrDef(Omv.description, true)
 						.setLabel("Brief description")
+						.setTooltip("A textual description of ontology. Completeness is welcome. HTML characters are less than ideal.")
 						.setNumberOfLines(4)
 						.setExample("Parameters used in Project Athena")
 					,
 					
 					createAttrDef(Omv.keywords, false)
 						.setLabel("Keywords")
+						.setTooltip("Enter a list of keywords (ideally by their URI, but can also be free text) separated by commas. " +
+								"These keywords should characterize the nature of the ontology, not mention every term in it.")
 						.setExample("ocean, physical oceanography, environmental science, climate change")
 					,
 				
 					createAttrDef(OmvMmi.origVocUri)
 						.setLabel("Link to original vocabulary")
+						.setTooltip("If the original vocabulary is published on-line, put its URL here.")
 						.setExample("http://marinemetadata.org/community/teams/athena/parameters.html")
 					,
 	
 					createAttrDef(Omv.documentation, false)
-						.setExample("http://marinemetadata.org/community/teams/athena")
 						.setLabel("Link to documentation")
+						.setTooltip("If there is a page or site describing the vocabulary, put its URL here.")
+						.setExample("http://marinemetadata.org/community/teams/athena")
 					,
 			
 					createAttrDef(OmvMmi.origMaintainerCode, true)
 						.setLabel("Authority abbreviation")
-						.setTooltip("The two attributes \"Resource type\" and \"Authority abbreviation\" are used to construct the URIs " +
-								"for the vocabulary and terms.")
+						.setTooltip(AUTHORITY_TOOLTIP)
 						.setExample("mmi")
 						.setAllowUserDefinedOption(true)
 						.addOption(new Option("cencoos", "cencoos: Central California Ocean Observing System"))
@@ -223,6 +284,10 @@ public class MdHelper {
 					
 					createAttrDef(Omv.hasContributor)
 						.setLabel("Contributor(s)")
+						.setTooltip("List all the individuals and/or organizations that contributed materially " +
+								"to this vocabulary/ontology. You may use comma- or semicolon-separated names " +
+								"or URIs for individuals or organizations, or URIs that point to additional " +
+								"information. This is a free text field.")
 						.setNumberOfLines(3)
 						.setExample("Jane Collaborator, Joe Ontology Manager, Fido the Mascot")
 					,
@@ -252,15 +317,35 @@ public class MdHelper {
 					
 					createAttrDef(OmvMmi.origVocManager)
 						.setLabel("Manager of source vocabulary")
+						.setTooltip("Who actively maintains the source vocabulary (used to build the ontology) and " +
+								"the changes to it. Specify an individual or very specific organization, by name or " +
+								"as a URI. Include phone, mail, and URL in parentheses after the specification, " +
+								"if available: First Last (831-nnn-nnnn, name@domain.com, http://domain.com/myHomePage). " +
+								"If the vocabulary is not actively maintained, put \"None\" in this field.")
 						.setExample("Athena Project")
 					,
 					
 					createAttrDef(OmvMmi.contact)
 						.setLabel("Contact/Responsible Party")
+						.setTooltip("Who is responsible for distribution of the vocabulary, particularly to MMI. " +
+								"(In other words, who MMI and the public should contact for more information, or to " +
+								"negotiate changes.) This should be a specific person or authorized department. " +
+								"Include phone, mail, and URL in parentheses after the name, " +
+								"if available: First Last (831-nnn-nnnn, name@domain.com, http://domain.com/myHomePage). " +
+								"Note also the next field shows possible roles this person plays with respect to this product.")
 						.setExample("Joe Ontology Manager")
 					,
 					createAttrDef(OmvMmi.contactRole)
 						.setLabel("Contact role")
+						.setTooltip("What is the role played by the Contact/Responsible Party named above?  " +
+								"Choose the most senior authority that applies of: <br/> " +
+								"Content Manager: the person/organization that manages the content of the vocabulary <br/>" +
+								"Ontology Producer: the person/organization that creates (and possibly serves) this information in an ontology <br/>" +
+								"Organizational Manager: the person/organization manager that is responsible overall for " +
+								"producing this data product (but does not necessarily produce it themselves) <br/>" +
+								"IP Negotiator: the person/organization that handles intellectual property, " +
+								"including this vocabulary or ontology <br/>" +
+								"Other: specify if none of these fit.")
 						.setExample("content manager")
 						.addOption(new Option("--choose one--"))
 						.addOption(new Option("content manager"))
@@ -280,6 +365,11 @@ public class MdHelper {
 					
 					createAttrDef(OmvMmi.temporaryMmiRole)
 						.setLabel("Temporary MMI role")
+						.setTooltip("Until an agreement is reached on MMI's role, what role is MMI currently playing: <br/>" +
+								"Content Manager: MMI actively manages this vocabulary content and is responsible (with the community) for its creation <br/>" +
+								"Ontology Producer: MMI accepts vocabulary content from the community and turns it into a served ontology <br/>" +
+								"Ontology Republisher: MMI accepts an ontology, caches it, and produces its own copy of the ontology " +
+								"in order to provide additional services (URI generation, revision history maintenance and tracking, and so on).")
 						.setExample("ontology producer")
 						.addOption(new Option("--choose one--"))
 						.addOption(new Option("content manager"))
@@ -291,8 +381,11 @@ public class MdHelper {
 					// TODO createAttrDef(OmvMmi.agreedMmiRole),
 					
 					createAttrDef(OmvMmi.creditRequired)
-						.setExample("yes")
 						.setLabel("Author credit required")
+						.setTooltip("Specifies whether users of the ontology have to provide credit to its creator. " +
+								"Please choose whatever applies ('no' is a very helpful selection), and enter the next " +
+								"field if the select here is 'yes' or 'conditional'. Leave blank if you aren't sure.")
+						.setExample("yes")
 						.addOption(new Option("not specified"))
 						.addOption(new Option("yes"))
 						.addOption(new Option("no"))
@@ -303,6 +396,7 @@ public class MdHelper {
 					
 					createAttrDef(OmvMmi.creditCitation)
 						.setLabel("Citation string")
+						.setTooltip("Free text containing the credit language that should be included in works based on this ontology.")
 						.setNumberOfLines(3)
 						.setExample("Ontology provided by Athena Project")
 					,
@@ -316,22 +410,28 @@ public class MdHelper {
 					
 					createAttrDef(OmvMmi.origVocDocumentationUri)
 						.setLabel("URI of original vocabulary")
+						.setTooltip("If the original vocabulary is formally served in an easily parseable way at a URI " +
+								"(e.g., using RDF, OWL, or comma- or tab-delimited text entries), please specify the URI here.")
 					,
 					
 					createAttrDef(OmvMmi.origVocDescriptiveName)
 						.setLabel("Descriptive name")
+						.setTooltip("Descriptive name for the original vocabulary (typically in Dublin Core or Ontology Metadata Vocabulary entries).")
 					,
 					
 					createAttrDef(OmvMmi.origVocVersionId)
 						.setLabel("Version")
+						.setTooltip("Version identification string associated with original vocabulary (typically in Dublin Core or Ontology Metadata Vocabulary entries).")
 					,
 					
 					createAttrDef(OmvMmi.origVocKeywords)
 						.setLabel("Keywords")
+						.setTooltip("Keywords specified for original vocabulary (typically in Dublin Core or Ontology Metadata Vocabulary entries).")
 					,
 					
 					createAttrDef(OmvMmi.origVocSyntaxFormat)
 						.setLabel("Syntax format")
+						.setTooltip("Format/syntax in which vocabulary is provided (one of: RDF, OWL, 'other XML', CSV, tab-delimited, HTML, or other).")
 					,
 				}
 			),

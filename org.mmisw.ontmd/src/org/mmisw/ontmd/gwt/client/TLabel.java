@@ -16,10 +16,10 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author Carlos Rueda
  */
-class TLabel extends HorizontalPanel {
+public class TLabel extends HorizontalPanel {
 	
 	/** HTML snipped for the required indicator */
-	static final String requiredHtml = "<font color=\"red\">*</font>";
+	public static final String requiredHtml = "<font color=\"red\">*</font>";
 	
 	private HTML label = new HTML();
 	
@@ -34,7 +34,7 @@ class TLabel extends HorizontalPanel {
 	 * Creates a TLabel with the given text and no tool tip.
 	 * @param text
 	 */
-	TLabel(String text) {
+	public TLabel(String text) {
 		this(text, null);
 	}
 	
@@ -43,7 +43,7 @@ class TLabel extends HorizontalPanel {
 	 * @param text
 	 * @param tooltip
 	 */
-	TLabel(String text, String tooltip) {
+	public TLabel(String text, String tooltip) {
 		this(text, false, tooltip);
 	}
 	
@@ -54,7 +54,7 @@ class TLabel extends HorizontalPanel {
 	 * @param required true to add an indicator tha the associated field is required.
 	 * @param tooltip
 	 */
-	TLabel(String text, boolean required, String tooltip) {
+	public TLabel(String text, boolean required, String tooltip) {
 		setSpacing(4);
 		if ( !text.endsWith(":") ) {
 			text += ":";
@@ -74,7 +74,7 @@ class TLabel extends HorizontalPanel {
 	 * @param tooltip The tool tip.
 	 * @return this object.
 	 */
-	TLabel setTooltip(String tooltip) {
+	public TLabel setTooltip(String tooltip) {
 		if ( ttIcon == null ) {
 			ttIcon = Main.images.question12().createImage();
 		}

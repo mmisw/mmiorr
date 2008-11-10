@@ -26,5 +26,19 @@
 		<servlet-name>upload</servlet-name>
 		<url-pattern>/upload</url-pattern>
 	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>voc2rdfService</servlet-name>
+		<servlet-class>org.mmisw.ontmd.gwt.server.voc2rdf.Voc2RdfServiceImpl</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>voc2rdfService</servlet-name>
+		<url-pattern>/voc2rdfService</url-pattern>
+	</servlet-mapping>
+
+	
 
 </web-app>

@@ -167,7 +167,11 @@ public class MetadataGroupPanel extends VerticalPanel {
 				widgets.put(attr.getUri(), new Elem(attr, widget));
 			}
 			
-			panel.setWidget(row, 0, new TLabel(attr.getLabel(), editing && attr.isRequired(), attr.getTooltip()));
+			String label = attr.getLabel();
+			String tooltip = "<b>" +label+ "</b>:<br/>" + 
+			                  attr.getTooltip() +
+			                  "<br/><br/><div align=\"right\">(" +attr.getUri()+ ")</div>";
+			panel.setWidget(row, 0, new TLabel(label, editing && attr.isRequired(), tooltip ));
 
 			panel.setWidget(row, 1, widget);
 			panel.getFlexCellFormatter().setWidth(row, 0, "250");

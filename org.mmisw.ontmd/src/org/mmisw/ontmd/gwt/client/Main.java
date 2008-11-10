@@ -6,14 +6,12 @@ import org.mmisw.ontmd.gwt.client.img.OntMdImageBundle;
 import org.mmisw.ontmd.gwt.client.rpc.BaseInfo;
 import org.mmisw.ontmd.gwt.client.rpc.OntMdService;
 import org.mmisw.ontmd.gwt.client.rpc.OntMdServiceAsync;
+import org.mmisw.ontmd.gwt.client.voc2rdf.Voc2Rdf;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.HistoryListener;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.ButtonBase;
@@ -36,13 +34,16 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class Main implements EntryPoint {
 
-	public static final String APP_NAME = "ontmd";
-	public static final String VERSION = "0.1.alpha6";
-	public static final String VERSION_COMMENT = "";
+	public static final String ONTMD_APP_NAME = "ontmd";
+	public static final String ONTMD_VERSION = "0.1.alpha7";
+	public static final String ONTMD_VERSION_COMMENT = "";
+	
+	private static String footer = 
+		ONTMD_APP_NAME + " " + ONTMD_VERSION + " " + ONTMD_VERSION_COMMENT;
 
 	static String baseUrl;
 
-	static OntMdImageBundle images = (OntMdImageBundle) GWT
+	public static OntMdImageBundle images = (OntMdImageBundle) GWT
 			.create(OntMdImageBundle.class);
 	
 	static BaseInfo baseInfo;
@@ -55,9 +56,6 @@ public class Main implements EntryPoint {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-		if ( false ) { // disabled for now.
-			prepareHistory(); // TODO: proper history handling
-		}
 		
 		log("Util.getLocationProtocol() = " + Util.getLocationProtocol());
 		log("Util.getLocationHost()     = " + Util.getLocationHost());
@@ -68,6 +66,9 @@ public class Main implements EntryPoint {
 		baseUrl = baseUrl.replace("/+$", ""); // remove trailing slashes
 		log("baseUrl = " + baseUrl);
 
+		// launch Voc2RDF?
+		boolean launchVoc2rdf = GWT.getHostPageBaseURL().endsWith("/voc2rdf/");
+		
 		Map<String, String> params = Util.getParams();
 
 		if (params != null) {
@@ -76,34 +77,28 @@ public class Main implements EntryPoint {
 				includeLog = true;
 				params.remove("_log");
 			}
-		}
-
-		getOntMdService();
-		getBaseInfo(params);
-	}
-
-	private void prepareHistory() {
-		History.newItem("");
-		History.newItem("app");
-		History.addHistoryListener(new HistoryListener() {
-			public void onHistoryChanged(String historyToken) {
-				// get to the initial token?
-				if ( "".equals(historyToken) ) {
-					if ( Window.confirm("Do you want to leave this OntMd session?") ) {
-						History.back();
-					}
-					else {
-						History.forward();				
-					}
+			
+			if ( ! launchVoc2rdf ) {
+				String voc2rdf = (String) params.get("voc2rdf");
+				if (voc2rdf != null) {
+					launchVoc2rdf = true;
+					params.remove("voc2rdf");
 				}
-				log("onHistoryChanged: " +historyToken);
 			}
-		});
-
+		}
+		
+		if ( launchVoc2rdf ) {
+			footer = Voc2Rdf.footer;
+			Voc2Rdf voc2Rdf = new Voc2Rdf();
+			voc2Rdf.launch(this, params);
+		}
+		else {
+			getOntMdService();
+			getBaseInfo(params);
+		}
 	}
 
-	private void startGui(final Map<String, String> params) {
-		MainPanel mainPanel = new MainPanel(params);
+	public void startGui(final Map<String, String> params, Widget mainPanel) {
 
 		Element loadingElement = DOM.getElementById("loading");
 		if ( loadingElement != null ) {
@@ -143,8 +138,7 @@ public class Main implements EntryPoint {
 		}
 		
 		panel.add(
-				Util.createHtml(APP_NAME + " " + VERSION + " "
-						+ VERSION_COMMENT + "<br/><br/>", 10));
+				Util.createHtml(footer+ "<br/><br/>", 10));
 
 	}
 
@@ -175,7 +169,8 @@ public class Main implements EntryPoint {
 				}
 				else {
 					baseInfo = bInfo;
-					startGui(params);
+					Widget mainPanel = new MainPanel(params);
+					startGui(params, mainPanel);
 				}
 			}
 		};
