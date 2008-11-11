@@ -92,7 +92,7 @@ public class MmiUriTest extends TestCase {
     	MmiUri.checkVersion("20081030T21");
     	MmiUri.checkVersion("20081030T2130");
     	MmiUri.checkVersion("20081030T213059");
-    	MmiUri.checkVersion("-");
+    	MmiUri.checkVersion(MmiUri.LATEST_VERSION_INDICATOR);
     }
     public void testVersion1() throws URISyntaxException {
     	String fullRequestedUri = "http://mmisw.org/ont/mmi/20081021/someVocab/someTerm";

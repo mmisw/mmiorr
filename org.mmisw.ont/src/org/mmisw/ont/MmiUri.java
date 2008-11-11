@@ -31,12 +31,15 @@ public class MmiUri {
 	private static Pattern VERSION_PATTERN = 
 		Pattern.compile("^\\d{4}(\\d{2}(\\d{2})?)?(T\\d{2})?(\\d{2}(\\d{2})?)?$");
 	
+	// TODO put LATEST_VERSION_INDICATOR as a configuration parameter
+	public static final String LATEST_VERSION_INDICATOR = "$";
 	
+
 	/**
 	 * Syntantically validates a string to be an instance of the pattern:
 	 *    <code> ^yyyy[mm[dd][Thh[mm[ss]]]$ </code> 
 	 * (where each y, m, d, h, and s is a decimal digit),
-	 * or equal to a dash ('-').
+	 * or equal to {@link #LATEST_VERSION_INDICATOR}.
 	 * 
 	 * <p>
 	 * Note that this checks for the general appearance of a version; 
@@ -45,7 +48,7 @@ public class MmiUri {
 	 * @throws URISyntaxException if the string is invalid as version 
 	 */
 	static void checkVersion(String version) throws URISyntaxException {
-		boolean ok = version.equals("-") ||
+		boolean ok = version.equals(LATEST_VERSION_INDICATOR) ||
 			VERSION_PATTERN.matcher(version).find();
 		
 		if ( ! ok ) {				
@@ -112,9 +115,10 @@ public class MmiUri {
 		}
 		else {
 			int idx_topic = 1;
-			// if parts[1] starts with a digit or a dash, take that part as the version:
+			// if parts[1] starts with a digit or is LATEST_VERSION_INDICATOR, take that part as the version:
 			if ( parts[1].length() > 0 
-			&& (Character.isDigit(parts[1].charAt(0)) || parts[1].charAt(0) == '-') 
+			&& ( Character.isDigit(parts[1].charAt(0)) 
+			     || parts[1].equals(LATEST_VERSION_INDICATOR) ) 
 			) {
 				// Ok, so take the version and update index for topic
 				_version = parts[1];
