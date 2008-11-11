@@ -118,16 +118,20 @@ public class HtmlDispatcher {
 	}
 
 
-	/** Generated a table with all the terms */
+	/** 
+	 * Generates a table with all the terms. 
+	 */
 	private void _showAllTerms(MmiUri mmiUri, Model model, PrintWriter out, boolean debug) {
+		
+		String ontologyUri = mmiUri.getOntologyUri();
+		
+		out.printf("<div align=\"center\">%n"); 
 		out.printf(" All subjects in the ontology:<br/>%n"); 
-		out.println("<table class=\"inline\" width=\"100%\">");
+		out.println("<table class=\"inline\">");
 		out.printf("<tr>%n");
+		
 		out.printf("<th>URI</th>");
-		out.printf("<th>Resolve</th>");
-		if ( debug ) {
-			out.printf("<th>_debug</th>");
-		}
+		
 		//out.printf("<th>Name</th>%n");
 		out.printf("</tr>%n");
 
@@ -135,28 +139,32 @@ public class HtmlDispatcher {
 		while (iter.hasNext()) {
 			Resource elem = iter.nextResource();
 			String elemUri = elem.getURI();
-			if ( elemUri != null ) {
+			if ( elemUri == null ) {
+				continue;
+			}
+			
+			// generate anchor for the term using "id" in the row: 
+			out.printf("<tr id=\"%s\">%n", elem.getLocalName());
+
+			if ( elemUri.startsWith(ontologyUri) ) {
+				// if the elements "belongs" to the ontology, then replace any hash (#) separator
+				// with slash (/):
 				String elemUriSlash = elemUri.replace('#' , '/');
-				
-				// generate anchor for the term using "id" in the row: 
-				out.printf("<tr id=\"%s\">%n", elem.getLocalName());
-				
+				out.printf("<td> <a href=\"%s\">%s</a> </td> %n", elemUriSlash, elemUriSlash);
+			}
+			else {
+				// keep the element URI as it comes:
 				// Original URI (may be with # separator):
 				out.printf("<td> <a href=\"%s\">%s</a> </td> %n", elemUri, elemUri);
-				
-				// resolve value with any # replaced with /
-				out.printf("<td> <a href=\"%s\">resolve</a> </td> %n", elemUriSlash);
-				
-				if ( debug ) {
-					out.printf("<td> <a href=\"%s?_debug\">_debug</a> </td> %n", elemUriSlash);
-				}
-				
-				//out.printf("<td> %s </td> %n", elem.getLocalName());
-				
-				out.printf("</tr>%n");
 			}
+			
+
+			//out.printf("<td> %s </td> %n", elem.getLocalName());
+
+			out.printf("</tr>%n");
 		}
 		out.println("</table>");
+		out.printf("</div>%n");
 	}
 	
 	
