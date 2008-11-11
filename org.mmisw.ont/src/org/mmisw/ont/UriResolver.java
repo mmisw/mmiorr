@@ -428,7 +428,7 @@ public class UriResolver extends HttpServlet {
 			// (b) an HTML document (if Accept: text/html but not application/rdf+xml)
 			else if ( accept.contains("text/html") ) {
 				
-				return _resolveUriHtml(request, response, mmiUri);
+				return htmlDispatcher.dispatch(request, response, mmiUri);
 			}
 			
 			// (c) an HTML document (if Accept: text/html, application/rdf+xml or Accept: */*)
@@ -441,7 +441,7 @@ public class UriResolver extends HttpServlet {
 					return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML);
 				}
 				else {
-					return _resolveUriHtml(request, response, mmiUri);
+					return htmlDispatcher.dispatch(request, response, mmiUri);
 				}
 			}
 			
@@ -453,14 +453,14 @@ public class UriResolver extends HttpServlet {
 						"'OWL document with referenced style sheet' Not implemented yet." +
 						" Returning HTML temporarily.");
 				
-				return _resolveUriHtml(request, response, mmiUri);
+				return htmlDispatcher.dispatch(request, response, mmiUri);
 			}
 			
 			
 			// Else: arbitrarely returning in HTML:
 			else {
 				log.warn("Default case: Returning HTML.");
-				return _resolveUriHtml(request, response, mmiUri);
+				return htmlDispatcher.dispatch(request, response, mmiUri);
 			}
 		}
 		
@@ -468,7 +468,7 @@ public class UriResolver extends HttpServlet {
 		
 		// "html":
 		else if ( outFormat.equalsIgnoreCase("html") ) {
-			return _resolveUriHtml(request, response, mmiUri);
+			return htmlDispatcher.dispatch(request, response, mmiUri);
 		}
 			
 		// "n3":
@@ -615,73 +615,6 @@ public class UriResolver extends HttpServlet {
 		return reader;
 	}
 
-	/**
-	 * Helper method to dispatch an "HTML" request.
-	 * 
-	 * @return true for dispatch completed here; false otherwise.
-	 */
-	private boolean _resolveUriHtml(HttpServletRequest request, HttpServletResponse response, MmiUri mmiUri) 
-	throws ServletException, IOException {
-
-		if ( true ) {
-			return htmlDispatcher.dispatch(request, response, mmiUri);
-		}
-		
-		// TODO remove the rest of this
-		
-		if ( log.isDebugEnabled() ) {
-			log.debug("_resolveUriHtml: starting response.");
-		}
-		
-		final String fullRequestedUri = request.getRequestURL().toString();
-		
-    	Ontology ontology = db.getOntologyWithExts(mmiUri, null);
-		if ( ontology == null ) {
-			response.sendError(HttpServletResponse.SC_NOT_FOUND, 
-					request.getRequestURI()+ ": not found");
-			return true;
-		}
-
-		File file = UriResolver._getFullPath(ontology, ontConfig, log);
-
-		if ( ! file.canRead() ) {
-			response.sendError(HttpServletResponse.SC_NOT_FOUND, 
-					request.getRequestURI()+ ": not found");
-			return true;
-		}
-		
-		
-		
-		PrintWriter out = response.getWriter();
-		
-
-		// start the response page:
-		response.setContentType("text/html");
-		out.println("<html>");
-		out.println("<head>");
-		out.println("<title>" +fullRequestedUri+ "</title>");
-		out.println("<link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\">");
-		out.println("</head>");
-		out.println("<body>");
-		
-		String tableClass = "inline";
-		// start with the metadata:
-		mdDispatcher.execute(request, response, mmiUri, false, tableClass, "Metadata");
-		
-		
-		out.println("<br/>");
-
-		String uriFile = file.toURI().toString();
-		Model model = JenaUtil.loadModel(uriFile, false);
-
-		if ( mmiUri.getTerm().length() > 0 ) {
-			_showTermInfo(mmiUri, model, out);
-		}
-		else {
-			_showAllTerms(mmiUri, model, out, false);
-		}
-		return true;
-	}
 
 	
 	/**

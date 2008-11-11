@@ -63,7 +63,7 @@ public class HtmlDispatcher {
 			log.debug("HtmlDispatcher: starting 'HTML' response.");
 		}
 		
-		boolean debug = Util.yes(request, "_debug");
+		boolean debug = Util.yes(request, "_htmldebug");
 		
 		final String fullRequestedUri = request.getRequestURL().toString();
 		
