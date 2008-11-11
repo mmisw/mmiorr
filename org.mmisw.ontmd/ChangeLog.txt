@@ -3,6 +3,10 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2008-11-11 (1.0.0.beta)    (Happy B-day Ini!)
+	- Declaring beta status!
+
+
 2008-11-10 (1.0.0.alpha7)
 	- Fixed 38: show the "owl" and "html" links
 	  --> include hot links in the read-only view of a registered ontology

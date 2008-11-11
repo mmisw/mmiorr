@@ -15,14 +15,14 @@ import com.google.gwt.user.client.ui.RootPanel;
 
 
 /**
- * The entry point.
+ * The Voc2RDF application. 
  * 
  * @author Carlos Rueda
  */
 public class Voc2Rdf {
 
 	public static final String VOC2RDF_APP_NAME = "Voc2RDF";
-	public static final String VOC2RDF_VERSION = "2.0.0.alpha7";
+	public static final String VOC2RDF_VERSION = "2.0.0.beta";
 	public static final String VOC2RDF_VERSION_COMMENT = "";
 
 	public static final String footer = 
