@@ -118,6 +118,28 @@ public class HtmlDispatcher {
 		out.println("<body>");
 	}
 
+	
+	/**
+	 * "Slashes" an element's URI if it belongs to an ontology in the MMI Registry and Repository,
+	 * meaning it starts with <code>http://mmisw.org/ont/</code>.
+	 * 
+	 * <p>
+	 * TODO This prefix is hard-coded here;  needs to be a configuration parameter, for example.
+	 * 
+	 * @param uri The element's URI
+	 * @return A slashed version on the element's URI if it belongs to an ontology in the MMI Registry and Repository.
+	 *         Otherwise, it returs the given URI unmodified.
+	 */
+	private static String slashMmiUri(String uri) {
+		
+		// TODO This is hard-coded here:  http://mmisw.org/ont/
+		if ( uri.toLowerCase().startsWith("http://mmisw.org/ont/") ) {
+			return uri.replace('#', '/');
+		}
+		else {
+			return uri;
+		}
+	}
 
 	/** 
 	 * Generates a table with all the terms. 
@@ -156,15 +178,11 @@ public class HtmlDispatcher {
 			}
 
 			// does the elements belong to the ontology?
-			if ( elemUri.startsWith(foundUri + "#") ) {
-				// then replace hash (#) separator with slash (/):
-				String elemUriSlash = elemUri.replace('#' , '/');
-				out.printf("<td> <a href=\"%s\">%s</a> </td> %n", elemUriSlash, elemUriSlash);
-			}
-			else {
-				// keep the element URI as it comes:
-				out.printf("<td> <a href=\"%s\">%s</a> </td> %n", elemUri, elemUri);
-			}
+			
+			elemUri = slashMmiUri(elemUri);
+
+			out.printf("<td> <a href=\"%s\">%s</a> </td> %n", elemUri, elemUri);
+
 			
 			//out.printf("<td> %s </td> %n", elem.getLocalName());
 
@@ -241,6 +259,7 @@ public class HtmlDispatcher {
 					Property prd = sta.getPredicate();
 					String prdUri = prd.getURI();
 					if ( prdUri != null ) {
+						prdUri = slashMmiUri(prdUri);
 						out.printf("<td><a href=\"%s\">%s</a></td>", prdUri, prdUri);
 					}
 					else {
@@ -254,6 +273,7 @@ public class HtmlDispatcher {
 						objUri = objRes.getURI();
 					}
 					if ( objUri != null ) {
+						objUri = slashMmiUri(objUri);
 						out.printf("<td><a href=\"%s\">%s</a></td>", objUri, objUri);
 					}
 					else {
@@ -284,6 +304,7 @@ public class HtmlDispatcher {
 					String sjtUri = sjt.getURI();
 
 					if ( sjtUri != null ) {
+						sjtUri = slashMmiUri(sjtUri);
 						out.printf("<td><a href=\"%s\">%s</a></td>", sjtUri, sjtUri);
 					}
 					else {
@@ -314,6 +335,7 @@ public class HtmlDispatcher {
 					String idvUri = idv.getURI();
 					
 					if ( idvUri != null ) {
+						idvUri = slashMmiUri(idvUri);
 						out.printf("<td><a href=\"%s\">%s</a></td>", idvUri, idvUri);
 					}
 					else {
