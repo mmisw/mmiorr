@@ -67,7 +67,8 @@ public class HtmlDispatcher {
 		
 		final String fullRequestedUri = request.getRequestURL().toString();
 		
-		Ontology ontology = db.getOntologyWithExts(mmiUri, null);
+		String[] foundUri = { null };
+		Ontology ontology = db.getOntologyWithExts(mmiUri, foundUri);
 		if ( ontology == null ) {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND, 
 					request.getRequestURI()+ ": not found");
@@ -98,7 +99,7 @@ public class HtmlDispatcher {
 			// start with the metadata:
 			mdDispatcher.execute(request, response, mmiUri, false, "inline", "Metadata");
 			
-			_showAllTerms(mmiUri, model, out, debug);
+			_showAllTerms(mmiUri, foundUri[0], model, out, debug);
 		}
 		
 		return true;
@@ -120,13 +121,12 @@ public class HtmlDispatcher {
 
 	/** 
 	 * Generates a table with all the terms. 
+	 * @param foundUri 
 	 */
-	private void _showAllTerms(MmiUri mmiUri, Model model, PrintWriter out, boolean debug) {
-		
-		String ontologyUri = mmiUri.getOntologyUri();
+	private void _showAllTerms(MmiUri mmiUri, String foundUri, Model model, PrintWriter out, boolean debug) {
 		
 		out.printf("<div align=\"center\">%n"); 
-		out.printf(" All subjects in ontology: " +ontologyUri+ "<br/>%n"); 
+		out.printf(" All subjects in ontology: " +foundUri+ "<br/>%n"); 
 		out.println("<table class=\"inline\">");
 		out.printf("<tr>%n");
 		
@@ -155,15 +155,14 @@ public class HtmlDispatcher {
 				out.printf("<td> <a href=\"%s\">%s</a> </td> %n", elemUri, elemUri);
 			}
 
-			if ( elemUri.startsWith(ontologyUri) ) {
-				// if the elements "belongs" to the ontology, then replace any hash (#) separator
-				// with slash (/):
+			// does the elements belong to the ontology?
+			if ( elemUri.startsWith(foundUri + "#") ) {
+				// then replace hash (#) separator with slash (/):
 				String elemUriSlash = elemUri.replace('#' , '/');
 				out.printf("<td> <a href=\"%s\">%s</a> </td> %n", elemUriSlash, elemUriSlash);
 			}
 			else {
 				// keep the element URI as it comes:
-				// Original URI (may be with # separator):
 				out.printf("<td> <a href=\"%s\">%s</a> </td> %n", elemUri, elemUri);
 			}
 			
