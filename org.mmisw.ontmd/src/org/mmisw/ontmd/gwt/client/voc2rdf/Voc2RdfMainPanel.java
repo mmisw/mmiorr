@@ -38,7 +38,7 @@ public class Voc2RdfMainPanel extends VerticalPanel {
 	Voc2RdfMainPanel(final Map<String, String> params) {
 		super();
 		
-		add(Main.images.voc2rdf().createImage());
+		add(Main.images.voc2rdf2().createImage());
 		
 //		container.setSize("800px", "450px");
 		DecoratorPanel decPanel = new DecoratorPanel();
