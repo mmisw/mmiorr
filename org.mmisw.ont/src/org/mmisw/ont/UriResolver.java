@@ -54,10 +54,6 @@ public class UriResolver extends HttpServlet {
 	static final String TITLE = "MMI Ontology URI resolver. Version " +VERSION;
 
 
-	// TODO put LATEST_VERSION_INDICATOR as a configuration parameter
-	private static final String LATEST_VERSION_INDICATOR = "$";
-	
-
 	private final Log log = LogFactory.getLog(UriResolver.class);
 
 	private final OntConfig ontConfig = new OntConfig();
@@ -277,7 +273,7 @@ public class UriResolver extends HttpServlet {
 		////////////////////////////////////////////////////////////////////////////////
 		
 		String version = mmiUri.getVersion();
-		if ( version == null || version.equals(LATEST_VERSION_INDICATOR) ) {
+		if ( version == null || version.equals(MmiUri.LATEST_VERSION_INDICATOR) ) {
 			
 			//
 			// handling of unversioned and latest-version requests.
@@ -314,7 +310,7 @@ public class UriResolver extends HttpServlet {
 				
 				// OK: here, mmiUri refers to the latest version.
 				
-				// If the request was with version = LATEST_VERSION_INDICATOR, then redirect to versioned
+				// If the request was with version = MmiUri.LATEST_VERSION_INDICATOR, then redirect to versioned
 				// URI:   (see Issue 24)
 				if ( version == null ) {
 					// Let the dispatch continue.
