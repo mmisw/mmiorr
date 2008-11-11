@@ -126,10 +126,14 @@ public class HtmlDispatcher {
 		String ontologyUri = mmiUri.getOntologyUri();
 		
 		out.printf("<div align=\"center\">%n"); 
-		out.printf(" All subjects in the ontology:<br/>%n"); 
+		out.printf(" All subjects in ontology: " +ontologyUri+ "<br/>%n"); 
 		out.println("<table class=\"inline\">");
 		out.printf("<tr>%n");
 		
+		if ( debug ) {
+			out.printf("<th>original element's URI</th>");
+		}
+
 		out.printf("<th>URI</th>");
 		
 		//out.printf("<th>Name</th>%n");
@@ -146,6 +150,11 @@ public class HtmlDispatcher {
 			// generate anchor for the term using "id" in the row: 
 			out.printf("<tr id=\"%s\">%n", elem.getLocalName());
 
+			if ( debug ) {
+				// original element's URI:
+				out.printf("<td> <a href=\"%s\">%s</a> </td> %n", elemUri, elemUri);
+			}
+
 			if ( elemUri.startsWith(ontologyUri) ) {
 				// if the elements "belongs" to the ontology, then replace any hash (#) separator
 				// with slash (/):
@@ -158,7 +167,6 @@ public class HtmlDispatcher {
 				out.printf("<td> <a href=\"%s\">%s</a> </td> %n", elemUri, elemUri);
 			}
 			
-
 			//out.printf("<td> %s </td> %n", elem.getLocalName());
 
 			out.printf("</tr>%n");
