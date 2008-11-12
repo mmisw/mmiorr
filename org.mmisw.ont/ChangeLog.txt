@@ -6,6 +6,12 @@ ChangeLog
 2008-11-11   (Happy B-day Ini!)
 	- MmiUri.LATEST_VERSION_INDICATOR = "$"
 	
+	- Issue 27: URIs have # signs instead of / before terms:
+		All URIs starting with http://mmisw.org/ont/ will get the "#" (if any) 
+		replaced by "/".   I think this works pretty well, I mean, not only as a 
+		temporary solution, but also that it won't hurt once the submitted ontologies
+		get the namespace with the "/" fragment separator.
+	
 
 2008-11-10
 	- Rule added: (a.2) an OWL document if is the user-agent is "Java/*"

@@ -50,7 +50,7 @@ public class UriResolver extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	
-	private static final String VERSION = "0.1.7 (20081110)";
+	private static final String VERSION = "0.1.8 (20081111)";
 	static final String TITLE = "MMI Ontology URI resolver. Version " +VERSION;
 
 

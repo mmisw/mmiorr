@@ -284,7 +284,8 @@ public class HtmlDispatcher {
 						out.printf("<td><a href=\"%s\">%s</a></td>", objUri, objUri);
 					}
 					else {
-						out.printf("<td>%s</td>", obj.toString() + (obj instanceof Literal ? " (literal) " : ""));
+						assert obj instanceof Literal ;
+						out.printf("<td>%s</td>", obj.toString());
 					}
 					
 					out.printf("</tr>%n");
