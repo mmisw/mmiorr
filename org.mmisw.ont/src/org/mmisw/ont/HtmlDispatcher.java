@@ -13,6 +13,7 @@ import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.util.Util;
 
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -233,15 +234,21 @@ public class HtmlDispatcher {
 			_startPage(request, response, fullRequestedUri);
 		}
 		
-		out.println("<table class=\"inline\" width=\"100%\">");
-		out.printf("<tr><th>%s</th></tr> %n", termRes);
+		// but slash the term URI for display purposes:
+		termUri = slashMmiUri(termRes.getURI());
+		
+		out.printf("<div align=\"center\">%n");
+		out.println("<table class=\"inline\">");
+		out.printf("<tr><th>%s</th></tr> %n", termUri);
 		out.println("</table>");
+		out.printf("</div>%n");
 
 		if ( true ) { // get all statements about the term
 			StmtIterator iter = model.listStatements(termRes, (Property) null, (Property) null);
 			if (iter.hasNext()) {
 				out.println("<br/>");
-				out.println("<table class=\"inline\" width=\"100%\">");
+				out.printf("<div align=\"center\">%n");
+				out.println("<table class=\"inline\" >");
 				out.printf("<tr><th colspan=\"2\">%s</th></tr> %n", "Statements");
 
 				out.printf("<tr>%n");
@@ -277,13 +284,14 @@ public class HtmlDispatcher {
 						out.printf("<td><a href=\"%s\">%s</a></td>", objUri, objUri);
 					}
 					else {
-						out.printf("<td>%s</td>", obj.toString());
+						out.printf("<td>%s</td>", obj.toString() + (obj instanceof Literal ? " (literal) " : ""));
 					}
 					
 					out.printf("</tr>%n");
 				}
 				
 				out.println("</table>");
+				out.printf("</div>%n");
 			}
 		}
 		
@@ -291,7 +299,8 @@ public class HtmlDispatcher {
 			StmtIterator iter = model.listStatements(null, RDFS.subClassOf, termRes);
 			if  ( iter.hasNext() ) {
 				out.println("<br/>");
-				out.println("<table class=\"inline\" width=\"100%\">");
+				out.printf("<div align=\"center\">%n");
+				out.println("<table class=\"inline\">");
 				out.printf("<tr>%n");
 				out.printf("<th>Subclasses</th>");
 				out.printf("</tr>%n");
@@ -314,6 +323,7 @@ public class HtmlDispatcher {
 					out.printf("</tr>%n");
 				}
 				out.println("</table>");
+				out.printf("</div>%n");
 			}
 		}
 		
@@ -323,7 +333,8 @@ public class HtmlDispatcher {
 			ExtendedIterator iter = ontModel.listIndividuals(termRes);
 			if ( iter.hasNext() ) {
 				out.println("<br/>");
-				out.println("<table class=\"inline\" width=\"100%\">");
+				out.printf("<div align=\"center\">%n");
+				out.println("<table class=\"inline\">");
 				out.printf("<tr>%n");
 				out.printf("<th>Individuals</th>");
 				out.printf("</tr>%n");
@@ -344,6 +355,8 @@ public class HtmlDispatcher {
 					
 					out.printf("</tr>%n");
 				}
+				out.println("</table>");
+				out.printf("</div>%n");
 			}
 		}
 		
