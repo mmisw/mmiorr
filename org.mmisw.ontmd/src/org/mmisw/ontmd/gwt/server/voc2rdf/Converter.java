@@ -3,6 +3,7 @@ package org.mmisw.ontmd.gwt.server.voc2rdf;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -106,7 +107,7 @@ class Converter {
 		this.namespaceRoot = namespaceRoot;
 		this.orgAbbreviation = orgAbbreviation;
 		this.primaryClass = primaryClass;
-		this.ascii = ascii;
+		this.ascii = _convertToUtf8(ascii);
 		this.fieldSeparator = fieldSeparator;
 		this.values = values;
 		
@@ -114,6 +115,30 @@ class Converter {
 		logger.info("setting primary class " + primaryClass);
 		
 	}
+	
+	/**
+	 * Converts the string to UTF-8 encoding.
+	 * FIXME implementation is rather simplistic, just
+	 * <code>return new String(str.getBytes(), "UTF-8"))</code>.
+	 * A better approach is to determine the actual original charset and
+	 * then do the conversion to UTF-8.
+	 */
+	private static String _convertToUtf8(String str) {
+		logger.info("CONVERTING TO UTF-8");
+		try {
+			byte[] bytes = str.getBytes();
+			String utf8_str = new String(bytes, "UTF-8");
+			return utf8_str;
+		}
+		catch (UnsupportedEncodingException e) {
+			logger.warning("Cannot convert to UTF-8. " +e.toString());
+			e.printStackTrace();
+		}
+
+		return str;
+	}
+
+
 
 	String createOntology() throws Exception {
 		logger.info("!!!!!!!!!!!!!!!! Converter.createOntology");

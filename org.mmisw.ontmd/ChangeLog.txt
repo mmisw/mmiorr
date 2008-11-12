@@ -3,6 +3,17 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2008-11-12
+
+	Voc2RDF (2.0.0.beta2)
+	Re. 43: Handle non-UTF8 inputs 
+	- Voc2RDF: New _convertToUtf8(String str) utility in Converter.
+	  FIXME implementation is rather simplistic:
+	     return new String(str.getBytes(), "UTF-8"))
+	  A better approach is to determine the actual original charset and
+	  then do the conversion to UTF-8.
+
+	  
 2008-11-11 (1.0.0.beta)    (Happy B-day Ini!)
 
 	- Declaring beta status!
