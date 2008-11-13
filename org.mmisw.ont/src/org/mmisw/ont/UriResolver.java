@@ -32,6 +32,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.RDFWriter;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
@@ -645,12 +646,21 @@ public class UriResolver extends HttpServlet {
 	
 
 	/** 
-	 * Gets the serialization of a model in the given language. 
+	 * Gets the serialization of a model in the given language.
+	 * <p>
+	 * (Similar to JenaUtil.getOntModelAsString(OntModel model).) 
 	 */
 	private StringReader _serializeModel(Model model, String lang) {
-		StringWriter writer = new StringWriter();
-		model.getWriter(lang).write(model, writer, null);
-		StringReader reader = new StringReader(writer.toString());
+		StringWriter sw = new StringWriter();
+		String base = JenaUtil.getURIForBase(model.getNsPrefixURI(""));
+		RDFWriter writer = model.getWriter(lang);
+		writer.setProperty("xmlbase", base);
+		writer.setProperty("showXmlDeclaration", "true");
+		writer.setProperty("relativeURIs", "same-document");
+		writer.setProperty("tab", "4");
+		writer.write(model, sw, base);
+
+		StringReader reader = new StringReader(sw.toString());
 		return reader;
 	}
 
