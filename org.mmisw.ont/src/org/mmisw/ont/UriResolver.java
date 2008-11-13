@@ -272,17 +272,19 @@ public class UriResolver extends HttpServlet {
 		//    Version component?
 		////////////////////////////////////////////////////////////////////////////////
 		
+		// will be true if we have an unversioned request, see Issue 24.
+		boolean unversionedRequest = false;
+		
 		String version = mmiUri.getVersion();
 		if ( version == null || version.equals(MmiUri.LATEST_VERSION_INDICATOR) ) {
 			
 			//
-			// handling of unversioned and latest-version requests.
+			// handling of unversioned and latest-version requests.  (see Issue 24)
 			//
 			
-			// Get latest version with all possible topic extensions:
-			
-			
+			// Get latest version trying all possible topic extensions:
 			Ontology mostRecentOntology = db.getMostRecentOntologyVersion(mmiUri);
+
 			if ( mostRecentOntology != null ) {
 				try {
 					MmiUri foundMmiUri = MmiUri.create(mostRecentOntology.getUri());
@@ -310,17 +312,15 @@ public class UriResolver extends HttpServlet {
 				
 				// OK: here, mmiUri refers to the latest version.
 				
-				// If the request was with version = MmiUri.LATEST_VERSION_INDICATOR, then redirect to versioned
-				// URI:   (see Issue 24)
 				if ( version == null ) {
-					// Let the dispatch continue.
-					
-					// TODO: Actually there is still the need to convert the latest
-					// version into an "unversioned" one...  Not yet implemented; for now,
-					// just let the process continue with the dereferencing rules as usual.
+					// unversioned request.
+					unversionedRequest = true;
+					// and let the dispatch continue.
 				}
 				else {
+					// request was with version = MmiUri.LATEST_VERSION_INDICATOR.
 					// Use a redirect so the user gets the actual latest version:
+					//
 					String latestUri = mmiUri.getOntologyUri();
 					log.debug("Redirecting to latest version: " + latestUri);
 					latestUri = response.encodeRedirectURL(latestUri);
@@ -398,19 +398,13 @@ public class UriResolver extends HttpServlet {
 			
 			// (a) an OWL document (if Accept: application/rdf+xml dominates)
 			if ( "application/rdf+xml".equalsIgnoreCase(dominating) ) {
-				return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML);
+				return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML, unversionedRequest);
 			}
 			
-			// (a.1) firefox doesn't explicitly say "application/rdf+xml" and I guess this
-			// is also the case with other standard browsers. In particular, my firefox sends:
-			//     text/html
-			//     application/xhtml+xml	
-			//     application/xml; q = 0.9
-			//      */*; q = 0.8
-			// Since the extension is not ".html", I would consider the following case:
+			// (a.1) Since the extension is not ".html", I'm considering the following case:
 			//
 			else if ( accept.contains("application/xml") ) {
-				return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML);
+				return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML, unversionedRequest);
 			}
 			
 			// (a.2) an OWL document if is the user-agent is "Java/*"
@@ -422,7 +416,7 @@ public class UriResolver extends HttpServlet {
 			//
 			else if ( userAgentList.size() > 0 && userAgentList.get(0).startsWith("Java/") ) {
 				
-				return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML);
+				return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML, unversionedRequest);
 			}
 			
 			// (b) an HTML document (if Accept: text/html but not application/rdf+xml)
@@ -438,7 +432,7 @@ public class UriResolver extends HttpServlet {
 			) {
 				
 				if ( outFormat.equalsIgnoreCase("owl") ) {
-					return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML);
+					return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML, unversionedRequest);
 				}
 				else {
 					return htmlDispatcher.dispatch(request, response, mmiUri);
@@ -473,7 +467,7 @@ public class UriResolver extends HttpServlet {
 			
 		// "n3":
 		else if ( outFormat.equalsIgnoreCase("n3") ) {
-			return _resolveUriOntFormat(request, response, mmiUri, OntFormat.N3);
+			return _resolveUriOntFormat(request, response, mmiUri, OntFormat.N3, unversionedRequest);
 		}
 			
 		// "pdf":
@@ -520,12 +514,14 @@ public class UriResolver extends HttpServlet {
 	}
 
 	/**
-	 * Helper method to dispatch a request with response in the givenontology format.
+	 * Helper method to dispatch a request with response in the given ontology format.
+	 * 
+	 * @param unversionedRequest If the original request was for the "unversioned" version.
 	 * 
 	 * @return true for dispatch completed here; false otherwise.
 	 */
 	private boolean _resolveUriOntFormat(HttpServletRequest request, HttpServletResponse response, 
-			MmiUri mmiUri, OntFormat ontFormat) 
+			MmiUri mmiUri, OntFormat ontFormat, boolean unversionedRequest) 
 	throws ServletException, IOException {
 		
 		if ( log.isDebugEnabled() ) {
@@ -543,78 +539,133 @@ public class UriResolver extends HttpServlet {
 		
 		File file = UriResolver._getFullPath(ontology, ontConfig, log);
 		
-		if ( file.canRead() ) {
-			String term = mmiUri.getTerm();
-			
-			// Term included?
-			if ( term.length() > 0 ) {
-				
-				String uriFile = file.toURI().toString();
-				Model model = JenaUtil.loadModel(uriFile, false);
-
-				// TODO Handle requested ontology format for this term.
-				// This would be probably in a form similar to a response from
-				// a sparql query about the term.
-				// For now, replying with the HTML format:
-				htmlDispatcher.dispatchTerm(request, response, mmiUri, model, true);
-
-//				String termContents = _resolveTerm(request, mmiUri, model);
-//				StringReader is = new StringReader(termContents);
-//				response.setContentType("text/html");
-//				ServletOutputStream os = response.getOutputStream();
-//				IOUtils.copy(is, os);
-//				os.close();
-			}
-			
-			// No term included:
-			else {
-				ServletOutputStream os = response.getOutputStream();
-				switch ( ontFormat ) {
-				case RDFXML: {
-					// TODO this assumes ALL ontologies are stored in RDF/XML format!!
-					response.setContentType("Application/rdf+xml");
-					FileInputStream is = new FileInputStream(file);
-					IOUtils.copy(is, os);
-					break;
-				}
-				case N3 : {
-					String contentType = "text/plain";  // NOTE: "text/rdf+n3" is not registered.
-					response.setContentType(contentType);
-					StringReader is = _getN3(file);
-					IOUtils.copy(is, os);
-					break;
-				}
-				default:
-					throw new AssertionError(ontFormat+ " unexpected case");
-				}
-				os.close();
-			}
-		}
-		else {
+		
+		if ( !file.canRead() ) {
 			// This should not happen.
 			// Log the error and respond with a NotFound error:
 			String msg = file.getAbsolutePath()+ ": internal error: uploaded file ";
 			msg += file.exists() ? "exists but cannot be read." : "not found.";
 			msg += "Please, report this bug.";
 			log.error(msg, null);
-			response.sendError(HttpServletResponse.SC_NOT_FOUND, msg); 
+			response.sendError(HttpServletResponse.SC_NOT_FOUND, msg);
+			
+			return true;
+		}
+
+		// original model:
+		OntModel model = null;
+		
+		// corresponding unversioned model in case is requested: 
+		OntModel unversionedModel = null;
+		
+		if ( unversionedRequest ) {
+			String uriFile = file.toURI().toString();
+			
+			model = JenaUtil.loadModel(uriFile, false);
+
+			unversionedModel = UnversionedConverter.getUnversionedModel(model, mmiUri);
+			
+			if ( unversionedModel != null ) {
+				// but put both variables to the same unversioned model
+				model = unversionedModel;
+			}
+			else {
+				// error in conversion to unversioned version.
+				// this is unexpected. 
+				// Continue with original model, if necessary; see below.
+			}
+		}
+
+		String term = mmiUri.getTerm();
+
+		// Term included?
+		if ( term.length() > 0 ) {
+
+			String uriFile = file.toURI().toString();
+			if ( model == null ) {
+				model = JenaUtil.loadModel(uriFile, false);
+			}
+
+			// TODO Handle requested ontology format for this term.
+			// This would be probably in a form similar to a response from
+			// a sparql query about the term.
+			// For now, replying with the HTML format:
+			htmlDispatcher.dispatchTerm(request, response, mmiUri, model, true);
+
+			//				String termContents = _resolveTerm(request, mmiUri, model);
+			//				StringReader is = new StringReader(termContents);
+			//				response.setContentType("text/html");
+			//				ServletOutputStream os = response.getOutputStream();
+			//				IOUtils.copy(is, os);
+			//				os.close();
+		}
+
+		// No term included:
+		else {
+			ServletOutputStream os = response.getOutputStream();
+			
+			switch ( ontFormat ) {
+			case RDFXML: {
+
+				response.setContentType("Application/rdf+xml");
+				
+				if ( unversionedRequest ) {
+					StringReader is = _serializeModel(unversionedModel, "RDF/XML-ABBREV");
+					IOUtils.copy(is, os);
+				}
+				else {
+					FileInputStream is = new FileInputStream(file);
+					IOUtils.copy(is, os);
+				}
+				break;
+			}
+			case N3 : {
+				String contentType = "text/plain";  // NOTE: "text/rdf+n3" is not registered.
+				response.setContentType(contentType);
+				
+				if ( unversionedRequest ) {
+					StringReader is = _serializeModel(unversionedModel, "N3");
+					IOUtils.copy(is, os);
+				}
+				else {
+					StringReader is = _getN3(file);
+					IOUtils.copy(is, os);
+				}
+				break;
+			}
+			default:
+				throw new AssertionError(ontFormat+ " unexpected case");
+			}
+			os.close();
 		}
 		
 		return true;   // dispatched here.
 	}
+	
+	
 
-	/** Creates the N3 version of the model */
+	/** 
+	 * Gets the serialization of a model in the given language. 
+	 */
+	private StringReader _serializeModel(Model model, String lang) {
+		StringWriter writer = new StringWriter();
+		model.getWriter(lang).write(model, writer, null);
+		StringReader reader = new StringReader(writer.toString());
+		return reader;
+	}
+
+
+	/** 
+	 * Creates the N3 version of the model stored in the given file. 
+	 */
 	private StringReader _getN3(File file) {
 		log.debug("_getN3: " +file);
 		Model model = ModelFactory.createDefaultModel();
 		String absPath = "file:" + file.getAbsolutePath();
 		model.read(absPath, "", null);
-		StringWriter writer = new StringWriter();
-		model.getWriter("N3").write(model, writer, null);
-		StringReader reader = new StringReader(writer.toString());
-		return reader;
+		
+		return _serializeModel(model, "N3");
 	}
-
 
 	
 	/**
