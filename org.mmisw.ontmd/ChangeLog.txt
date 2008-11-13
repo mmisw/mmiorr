@@ -5,6 +5,16 @@ ChangeLog
 
 2008-11-12
 
+	- Done Request 46: allow to manually specify version of submitted ontology (internal)
+
+	- Done 41: add cdip namespace, and others.
+	  Ok, ontmd is using the following text file as external resources to get the authorities
+	  and the resources types:
+		    authorities.csv
+		    resourcetypes.csv
+	  See Config.java
+	   
+	
 	Voc2RDF (2.0.0.beta2)
 	Re. 43: Handle non-UTF8 inputs 
 	- Voc2RDF: New _convertToUtf8(String str) utility in Converter.
@@ -12,12 +22,13 @@ ChangeLog
 	     return new String(str.getBytes(), "UTF-8"))
 	  A better approach is to determine the actual original charset and
 	  then do the conversion to UTF-8.
-
+	  
 	  
 2008-11-11 (1.0.0.beta)    (Happy B-day Ini!)
 
 	- Declaring beta status!
-	- Using new logo created by Paul (thanks!).
+	
+	- Using new Voc2RDF logo created by Paul (thanks!).
 
 
 2008-11-10 (1.0.0.alpha7)

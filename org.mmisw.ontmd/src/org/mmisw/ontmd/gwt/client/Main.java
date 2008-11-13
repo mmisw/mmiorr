@@ -71,6 +71,18 @@ public class Main implements EntryPoint {
 		
 		Map<String, String> params = Util.getParams();
 
+		
+		///////////////////////////////////////////////////////////////////////////
+		// conveniences for testing in development environment
+		if ( ! GWT.isScript() ) {
+			
+			if ( false ) {
+				// test the "include version" option:
+				params.put("_xv", "y");
+			}
+		}
+		
+		
 		if (params != null) {
 			String _log = (String) params.get("_log");
 			if (_log != null) {

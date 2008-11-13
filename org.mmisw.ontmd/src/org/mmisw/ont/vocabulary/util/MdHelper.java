@@ -1,15 +1,21 @@
 package org.mmisw.ont.vocabulary.util;
 
+import java.io.File;
+import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.ontmd.gwt.client.vocabulary.Option;
+import org.mmisw.ontmd.gwt.server.Config;
 
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.vocabulary.DC;
@@ -109,94 +115,366 @@ public class MdHelper {
 		return attrDef;
 	}
 	
-	private static AttrDef mainClassAttrDef =
-		createAttrDef(Omv.acronym, true) 
-	    .setLabel("Resource type")
-		.setTooltip(RESOURCE_TYPE_TOOLTIP)
-		.setExample("parameter")
-		.setAllowUserDefinedOption(true)
-		.addOption(new Option("Discipline", "ISO MD_Keyword: Discipline"))
-		.addOption(new Option("Place", "ISO MD_Keyword: Place"))
-		.addOption(new Option("Stratum", "ISO MD_Keyword: Stratum"))
-		.addOption(new Option("Temporal", "ISO MD_Keyword: Temporal"))
-		.addOption(new Option("Theme", "ISO MD_Keyword: Theme"))
-		
-		.addOption(new Option("axis", "OGC Object Type: axis"))
-		.addOption(new Option("axisDirection", "OGC Object Type: axisDirection"))
-		.addOption(new Option("coordinateOperation", "OGC Object Type: coordinateOperation"))
-		.addOption(new Option("crs", "OGC Object Type: crs"))
-		.addOption(new Option("cs", "OGC Object Type: cs"))
-		.addOption(new Option("datum", "OGC Object Type: datum"))
-		.addOption(new Option("dataType", "OGC Object Type: dataType"))
-		.addOption(new Option("derivedCRSType", "OGC Object Type: derivedCRSType"))
-		.addOption(new Option("documentType", "OGC Object Type: documentType"))
-		.addOption(new Option("ellipsoid", "OGC Object Type: ellipsoid"))
-		.addOption(new Option("featureType", "OGC Object Type: featureType"))
-		.addOption(new Option("group", "OGC Object Type: group"))
-		.addOption(new Option("meaning", "OGC Object Type: meaning"))
-		.addOption(new Option("meridian", "OGC Object Type: meridian"))
-		.addOption(new Option("method", "OGC Object Type: method"))
-		.addOption(new Option("nil", "OGC Object Type: nil"))
-		.addOption(new Option("parameter", "OGC Object Type: parameter"))
-		.addOption(new Option("phenomenon", "OGC Object Type: phenomenon"))
-		.addOption(new Option("pixelInCell", "OGC Object Type: pixelInCell"))
-		.addOption(new Option("rangeMeaning", "OGC Object Type: rangeMeaning"))
-		.addOption(new Option("referenceSystem", "OGC Object Type: referenceSystem"))
-		.addOption(new Option("uom", "OGC Object Type: uom"))
-		.addOption(new Option("verticalDatumType", "OGC Object Type: verticalDatumType"))
-		
-		.addOption(new Option("keyword", "MMI: keyword"))
-		.addOption(new Option("parameter", "MMI: parameter"))
-		.addOption(new Option("unit", "MMI: unit"))
-		.addOption(new Option("organization", "MMI: organization"))
-		.addOption(new Option("platform", "MMI: platform"))
-		.addOption(new Option("sensor", "MMI: sensor"))
-		.addOption(new Option("process", "MMI: process"))
-		.addOption(new Option("missingFlag", "MMI: missingFlag"))
-		.addOption(new Option("qualityFlag", "MMI: qualityFlag"))
-		.addOption(new Option("qcCategory", "MMI: qcCategory"))
-		.addOption(new Option("coordinateReference", "MMI: coordinateReference"))
-		.addOption(new Option("datum", "MMI: datum"))
-		.addOption(new Option("protocol", "MMI: protocol"))
-		.addOption(new Option("metadataStandard", "MMI: metadataStandard"))
-		.addOption(new Option("featureType", "MMI: featureType"))
-		.addOption(new Option("featureName", "MMI: featureName"))
-		.addOption(new Option("speciesType", "MMI: speciesType"))
-		.addOption(new Option("speciesName", "MMI: speciesName"))
-		.addOption(new Option("discipline", "MMI: discipline"))
-		.addOption(new Option("place", "MMI: place"))
-		.addOption(new Option("theme", "MMI: theme"))
-		.addOption(new Option("roleOfContact", "MMI: roleOfContact"))
-		.addOption(new Option("general", "MMI: general metadata attribute"))
-	;
 	
-//  OLD list
-//			createAttrDef(Omv.acronym, true) 
-//			.setLabel("Main theme")
-//			.setExample("parameter")
-//			.addOption(new Option("parameter", "Parameters (It will include terms like 'sea surface salinity')"))
-//			.addOption(new Option("sensorType", "Sensor types (It will include terms like 'Thermometer')"))
-//			.addOption(new Option("platformType", "Platform types (It will include terms like 'Mooring')"))
-//			.addOption(new Option("unit", "Units  (It will include terms like 'meter')"))
-//			.addOption(new Option("keyword", "Keywords  (It will include terms like 'climate', 'oceans')"))
-//			.addOption(new Option("organization", "Organizations  (It will include terms like 'MBARI' or 'MMI')"))
-//			.addOption(new Option("process", "Processes  (It will include terms like 'data quality control')"))
-//			.addOption(new Option("missingflag", "Missing flags  (It will include terms like '-999')"))
-//			.addOption(new Option("qualityflag", "Quality flags  (It will include terms like '10')"))
-//			.addOption(new Option("featureType", "Feature types  (It will include terms like 'body of water')"))
-//			.addOption(new Option("GeographicFeature", "Geographic features  (It will include terms like 'Monterey Bay')"))
-//			;
+	private static AttrDef mainClassAttrDef = null;
+	
+
+	
+	/**
+	 * @returns null iff Ok;  otherwise an error message
+	 */
+	private static String _readResourceTypes() {
+	
+		File file = new File(Config.RESOURCE_TYPES_CSV_FILE);
+		if ( !file.canRead() ) {
+			return "Cannot read file: " +file;
+		}
+		
+		List<?> lines;
+		try {
+			lines = IOUtils.readLines(new FileReader(file));
+		}
+		catch (Exception e) {
+			return "Error reading file: " +e.getMessage();
+		}
+		
+		if ( lines.size() == 0 ) {
+			return "Empty file: " +file;
+		}
+		
+		// first line is the header: type, name [, perhaps some more columns -- ignored]
+
+		for ( int lineno = 1, no_lines = lines.size(); lineno <= no_lines; lineno++ ) {
+			String line = (String) lines.get(lineno -1);
+			String[] toks = line.split("\\s*,\\s*");
+			if ( toks.length < 2 ) {
+				return file+ ":" +lineno+": expecting at least 2 columns";
+			}
+			
+			if ( lineno == 1 ) {
+				if ( ! toks[0].equalsIgnoreCase("type")
+						||   ! toks[1].equalsIgnoreCase("name")
+				) {
+					return "Header line invalid: " +line;
+				}
+				
+				// OK
+				continue;
+			}
+			
+			String optName = toks[0];
+			String optLabel = optName+ ": " +toks[1];
+			
+			mainClassAttrDef.addOption(new Option(optName, optLabel));
+		}
+
+		return null;   // ok
+	}
+
+	
+	
+	
+	/**
+	 * Creates the "resource type" attribute definition.
+	 */
+	private static AttrDef createResourceTypesAttrDef() {
+		if ( mainClassAttrDef == null ) {
+			mainClassAttrDef =
+				createAttrDef(Omv.acronym, true) 
+			    .setLabel("Resource type")
+				.setTooltip(RESOURCE_TYPE_TOOLTIP)
+				.setExample("parameter")
+				.setAllowUserDefinedOption(true)
+			;
+			
+			String error = _readResourceTypes();
+			
+			if ( error != null ) {
+				// resort to a previous hard-coded list
+				mainClassAttrDef
+					.addOption(new Option("Discipline", "ISO MD_Keyword: Discipline"))
+					.addOption(new Option("Place", "ISO MD_Keyword: Place"))
+					.addOption(new Option("Stratum", "ISO MD_Keyword: Stratum"))
+					.addOption(new Option("Temporal", "ISO MD_Keyword: Temporal"))
+					.addOption(new Option("Theme", "ISO MD_Keyword: Theme"))
+					
+					.addOption(new Option("axis", "OGC Object Type: axis"))
+					.addOption(new Option("axisDirection", "OGC Object Type: axisDirection"))
+					.addOption(new Option("coordinateOperation", "OGC Object Type: coordinateOperation"))
+					.addOption(new Option("crs", "OGC Object Type: crs"))
+					.addOption(new Option("cs", "OGC Object Type: cs"))
+					.addOption(new Option("datum", "OGC Object Type: datum"))
+					.addOption(new Option("dataType", "OGC Object Type: dataType"))
+					.addOption(new Option("derivedCRSType", "OGC Object Type: derivedCRSType"))
+					.addOption(new Option("documentType", "OGC Object Type: documentType"))
+					.addOption(new Option("ellipsoid", "OGC Object Type: ellipsoid"))
+					.addOption(new Option("featureType", "OGC Object Type: featureType"))
+					.addOption(new Option("group", "OGC Object Type: group"))
+					.addOption(new Option("meaning", "OGC Object Type: meaning"))
+					.addOption(new Option("meridian", "OGC Object Type: meridian"))
+					.addOption(new Option("method", "OGC Object Type: method"))
+					.addOption(new Option("nil", "OGC Object Type: nil"))
+					.addOption(new Option("parameter", "OGC Object Type: parameter"))
+					.addOption(new Option("phenomenon", "OGC Object Type: phenomenon"))
+					.addOption(new Option("pixelInCell", "OGC Object Type: pixelInCell"))
+					.addOption(new Option("rangeMeaning", "OGC Object Type: rangeMeaning"))
+					.addOption(new Option("referenceSystem", "OGC Object Type: referenceSystem"))
+					.addOption(new Option("uom", "OGC Object Type: uom"))
+					.addOption(new Option("verticalDatumType", "OGC Object Type: verticalDatumType"))
+					
+					.addOption(new Option("keyword", "MMI: keyword"))
+					.addOption(new Option("parameter", "MMI: parameter"))
+					.addOption(new Option("unit", "MMI: unit"))
+					.addOption(new Option("organization", "MMI: organization"))
+					.addOption(new Option("platform", "MMI: platform"))
+					.addOption(new Option("sensor", "MMI: sensor"))
+					.addOption(new Option("process", "MMI: process"))
+					.addOption(new Option("missingFlag", "MMI: missingFlag"))
+					.addOption(new Option("qualityFlag", "MMI: qualityFlag"))
+					.addOption(new Option("qcCategory", "MMI: qcCategory"))
+					.addOption(new Option("coordinateReference", "MMI: coordinateReference"))
+					.addOption(new Option("datum", "MMI: datum"))
+					.addOption(new Option("protocol", "MMI: protocol"))
+					.addOption(new Option("metadataStandard", "MMI: metadataStandard"))
+					.addOption(new Option("featureType", "MMI: featureType"))
+					.addOption(new Option("featureName", "MMI: featureName"))
+					.addOption(new Option("speciesType", "MMI: speciesType"))
+					.addOption(new Option("speciesName", "MMI: speciesName"))
+					.addOption(new Option("discipline", "MMI: discipline"))
+					.addOption(new Option("place", "MMI: place"))
+					.addOption(new Option("theme", "MMI: theme"))
+					.addOption(new Option("roleOfContact", "MMI: roleOfContact"))
+					.addOption(new Option("general", "MMI: general metadata attribute"))
+				;
+				//  OLD list
+//					createAttrDef(Omv.acronym, true) 
+//					.setLabel("Main theme")
+//					.setExample("parameter")
+//					.addOption(new Option("parameter", "Parameters (It will include terms like 'sea surface salinity')"))
+//					.addOption(new Option("sensorType", "Sensor types (It will include terms like 'Thermometer')"))
+//					.addOption(new Option("platformType", "Platform types (It will include terms like 'Mooring')"))
+//					.addOption(new Option("unit", "Units  (It will include terms like 'meter')"))
+//					.addOption(new Option("keyword", "Keywords  (It will include terms like 'climate', 'oceans')"))
+//					.addOption(new Option("organization", "Organizations  (It will include terms like 'MBARI' or 'MMI')"))
+//					.addOption(new Option("process", "Processes  (It will include terms like 'data quality control')"))
+//					.addOption(new Option("missingflag", "Missing flags  (It will include terms like '-999')"))
+//					.addOption(new Option("qualityflag", "Quality flags  (It will include terms like '10')"))
+//					.addOption(new Option("featureType", "Feature types  (It will include terms like 'body of water')"))
+//					.addOption(new Option("GeographicFeature", "Geographic features  (It will include terms like 'Monterey Bay')"))
+//					;
+			}
+		}
+		
+		return mainClassAttrDef;
+	}
+	
+	
 	
 	
 	public static AttrDef getMainClassAttrDef() {
 		return mainClassAttrDef;
 	}
 	
+	
+	
+	private static AttrDef authorityAttrDef = null;
+	
+	
+	
+	/**
+	 * @returns null iff Ok;  otherwise an error message
+	 */
+	private static String _readAuthorities() {
+	
+		File file = new File(Config.AUTHORITIES_CSV_FILE);
+		if ( !file.canRead() ) {
+			return "Cannot read file: " +file;
+		}
+		
+		List<?> lines;
+		try {
+			lines = IOUtils.readLines(new FileReader(file));
+		}
+		catch (Exception e) {
+			return "Error reading file: " +e.getMessage();
+		}
+		
+		if ( lines.size() == 0 ) {
+			return "Empty file: " +file;
+		}
+		
+		// first line is the header: abbreviation, name [, perhaps some more columns -- ignored]
+
+		for ( int lineno = 1, no_lines = lines.size(); lineno <= no_lines; lineno++ ) {
+			String line = (String) lines.get(lineno -1);
+			String[] toks = line.split("\\s*,\\s*");
+			if ( toks.length < 2 ) {
+				return file+ ":" +lineno+": expecting at least 2 columns";
+			}
+			
+			if ( lineno == 1 ) {
+				if ( ! toks[0].equalsIgnoreCase("abbreviation")
+						||   ! toks[1].equalsIgnoreCase("name")
+				) {
+					return "Header line invalid: " +line;
+				}
+				
+				// OK
+				continue;
+			}
+			
+			String optName = toks[0];
+			String optLabel = optName+ ": " +toks[1];
+			
+			authorityAttrDef.addOption(new Option(optName, optLabel));
+		}
+
+		return null;   // ok
+	}
+	
+	
+	/**
+	 * Creates the "authority" attribute definition.
+	 */
+	private static AttrDef createAuthorityAttrDef() {
+		if ( authorityAttrDef == null ) {
+			authorityAttrDef = createAttrDef(OmvMmi.origMaintainerCode, true)
+				.setLabel("Authority abbreviation")
+				.setTooltip(AUTHORITY_TOOLTIP)
+				.setExample("mmitest")
+				.setAllowUserDefinedOption(true)
+			;
+			
+			String error = _readAuthorities();
+			
+			if ( error != null ) {
+				// resort to a previous hard-coded list
+				authorityAttrDef
+					.addOption(new Option("cencoos",     "cencoos: Central and Northern California Ocean Observing System"))
+					.addOption(new Option("gcoos",       "gcoos: Gulf of Mexico Ocean Observing System"))
+					.addOption(new Option("mmi",         "mmi: Marine Metadata Interoperability"))
+					.addOption(new Option("mmitest",     "mmitest: MMI Test"))
+					.addOption(new Option("mvco",        "mvco: Martha's Vineyard Coastal Observatory"))
+					.addOption(new Option("oi2008demo",  "oi2008demo: Oceans Innovations 2008 Demonstration"))
+					.addOption(new Option("q2o",         "q2o: QARTOD-to-OGC Project"))
+					
+//					.addOption(new Option("argo", "argo: Argo Project"))
+//					.addOption(new Option("gcmd", "gcmd: Global Change Master Directory"))
+//					.addOption(new Option("cf", "cf: Climate and Forecast Conventions Standards Names"))
+//					.addOption(new Option("*", "--other, please specify"))
+				;
+			}
+		}
+		
+		return authorityAttrDef;
+	}
+	
 	///////////////////////////////////////////////////////////////////////
 	// The metadata groups
 	private static AttrGroup[] attrGroups;
 	
-	public static void prepareGroups() {
+	/**
+	 * @param includeVersion true to include omv:version so the user can specify it directly.
+	 */
+	public static void prepareGroups(boolean includeVersion) {
+		
+		List<AttrDef> general_attr_list = new ArrayList<AttrDef>();
+		general_attr_list.add(createResourceTypesAttrDef());
+		general_attr_list.add(
+				createAttrDef(OmvMmi.shortNameUri)
+				.setLabel("URI of resource type")
+				.setTooltip("Ideally the resource type is selected from, and described in, a controlled " +
+						"vocabulary with URIs defined. If so, enter the URI naming the term in this field. " +
+						"If the term is in a controlled vocabulary but does not have its own URI, enter the " +
+						"controlled vocabulary URI. Otherwise, leave this field blank.")
+				.setExample("http://mmisw.org/ont/mmi/topicTheme/parameter")
+		);
+		general_attr_list.add(
+				createAttrDef(Omv.name, true)
+				.setLabel("Full title")
+				.setTooltip("A one-line descriptive title (title case) for the ontology.")
+				.setExample("Project Athena Parameters")
+		);
+		
+		general_attr_list.add(
+				createAttrDef(Omv.hasCreator, true)
+				.setLabel("Creator")
+				.setTooltip("The name of the person submitting the ontology.")
+				.setExample("Athena Project")
+		);
+		
+		if ( includeVersion ) {
+			general_attr_list.add(
+					createAttrDef(Omv.version, true)
+					.setLabel("Version")
+					.setTooltip("The version to be used for the submitted ontology.")
+					.setExample("20050101")
+			);
+		}
+		
+		general_attr_list.add(
+				createAttrDef(Omv.description, true)
+				.setLabel("Brief description")
+				.setTooltip("A textual description of ontology. Completeness is welcome. HTML characters are less than ideal.")
+				.setNumberOfLines(4)
+				.setExample("Parameters used in Project Athena")
+		);
+		
+		general_attr_list.add(
+				createAttrDef(Omv.keywords, false)
+				.setLabel("Keywords")
+				.setTooltip("Enter a list of keywords (ideally by their URI, but can also be free text) separated by commas. " +
+						"These keywords should characterize the nature of the ontology, not mention every term in it.")
+				.setExample("ocean, physical oceanography, environmental science, climate change")
+		);
+		
+		general_attr_list.add(
+				createAttrDef(OmvMmi.origVocUri)
+				.setLabel("Link to original vocabulary")
+				.setTooltip("If the original vocabulary is published on-line, put its URL here.")
+				.setExample("http://marinemetadata.org/community/teams/athena/parameters.html")
+		);
+		
+		general_attr_list.add(
+				createAttrDef(Omv.documentation, false)
+				.setLabel("Link to documentation")
+				.setTooltip("If there is a page or site describing the vocabulary, put its URL here.")
+				.setExample("http://marinemetadata.org/community/teams/athena")
+		);
+		
+		general_attr_list.add(
+				createAuthorityAttrDef()
+		);
+		
+		general_attr_list.add(
+				createAttrDef(Omv.creationDate)
+				.setLabel("Creation date")
+				.setInternal(true)
+				.setExample(org.mmi.util.ISO8601Date.getCurrentDateBasicFormat())
+		);
+		
+//		general_attr_list.add(
+//				createAttrDef(DC.publisher)
+//		);
+		
+		general_attr_list.add(
+				createAttrDef(Omv.hasContributor)
+				.setLabel("Contributor(s)")
+				.setTooltip("List all the individuals and/or organizations that contributed materially " +
+						"to this vocabulary/ontology. You may use comma- or semicolon-separated names " +
+						"or URIs for individuals or organizations, or URIs that point to additional " +
+						"information. This is a free text field.")
+				.setNumberOfLines(3)
+				.setExample("Jane Collaborator, Joe Ontology Manager, Fido the Mascot")
+		);
+		
+		general_attr_list.add(
+				createAttrDef(Omv.uri)
+				.setInternal(true)
+		);
+		
+		
+		AttrDef[] general_attrs = general_attr_list.toArray(new AttrDef[general_attr_list.size()]);
 		
 		attrGroups = new AttrGroup[] {
 			new AttrGroup("General",
@@ -204,111 +482,7 @@ public class MdHelper {
 				"The two attributes \"Resource type\" and \"Authority abbreviation\" are used to construct the URIs " +
 				"for the vocabulary and terms. In our system, they can contain only letters, " +
 				"numbers, underscores, and (not recommended) hyphens, and begin with a letter.",
-				new AttrDef[] {
-					
-					mainClassAttrDef,
-					
-					createAttrDef(OmvMmi.shortNameUri)
-						.setLabel("URI of resource type")
-						.setTooltip("Ideally the resource type is selected from, and described in, a controlled " +
-								"vocabulary with URIs defined. If so, enter the URI naming the term in this field. " +
-								"If the term is in a controlled vocabulary but does not have its own URI, enter the " +
-								"controlled vocabulary URI. Otherwise, leave this field blank.")
-						.setExample("http://mmisw.org/ont/mmi/topicTheme/parameter")
-					,
-					
-					
-	
-					createAttrDef(Omv.name, true)
-						.setLabel("Full title")
-						.setTooltip("A one-line descriptive title (title case) for the ontology.")
-						.setExample("Project Athena Parameters")
-					,
-					createAttrDef(Omv.hasCreator, true)
-						.setLabel("Creator")
-						.setTooltip("The name of the person submitting the ontology.")
-						.setExample("Athena Project")
-					,
-					createAttrDef(Omv.description, true)
-						.setLabel("Brief description")
-						.setTooltip("A textual description of ontology. Completeness is welcome. HTML characters are less than ideal.")
-						.setNumberOfLines(4)
-						.setExample("Parameters used in Project Athena")
-					,
-					
-					createAttrDef(Omv.keywords, false)
-						.setLabel("Keywords")
-						.setTooltip("Enter a list of keywords (ideally by their URI, but can also be free text) separated by commas. " +
-								"These keywords should characterize the nature of the ontology, not mention every term in it.")
-						.setExample("ocean, physical oceanography, environmental science, climate change")
-					,
-				
-					createAttrDef(OmvMmi.origVocUri)
-						.setLabel("Link to original vocabulary")
-						.setTooltip("If the original vocabulary is published on-line, put its URL here.")
-						.setExample("http://marinemetadata.org/community/teams/athena/parameters.html")
-					,
-	
-					createAttrDef(Omv.documentation, false)
-						.setLabel("Link to documentation")
-						.setTooltip("If there is a page or site describing the vocabulary, put its URL here.")
-						.setExample("http://marinemetadata.org/community/teams/athena")
-					,
-			
-					createAttrDef(OmvMmi.origMaintainerCode, true)
-						.setLabel("Authority abbreviation")
-						.setTooltip(AUTHORITY_TOOLTIP)
-						.setExample("mmi")
-						.setAllowUserDefinedOption(true)
-						.addOption(new Option("cencoos", "cencoos: Central California Ocean Observing System"))
-						.addOption(new Option("gcoos", "gcoos: Gulf of Mexico Ocean Observing System"))
-						.addOption(new Option("mmi", "mmi: Marine Metadata Interoperability"))
-						.addOption(new Option("mvco", "mvco: Martha's Vineyard Coastal Observatory"))
-						.addOption(new Option("oi2008demo", "oi2008demo: Oceans Innovations 2008 Demonstration"))
-						.addOption(new Option("q2o", "q2o: QARTOD-to-OGC Project"))
-	//					.addOption(new Option("argo", "argo: Argo Project"))
-	//					.addOption(new Option("gcmd", "gcmd: Global Change Master Directory"))
-	//					.addOption(new Option("cf", "cf: Climate and Forecast Conventions Standards Names"))
-//						.addOption(new Option("*", "--other, please specify"))
-					, 
-					
-					
-					createAttrDef(Omv.creationDate)
-						.setLabel("Creation date")
-						.setInternal(true)
-						.setExample(org.mmi.util.ISO8601Date.getCurrentDateBasicFormat())
-					,
-					
-					
-					//createAttrDef(DC.publisher),
-					
-					createAttrDef(Omv.hasContributor)
-						.setLabel("Contributor(s)")
-						.setTooltip("List all the individuals and/or organizations that contributed materially " +
-								"to this vocabulary/ontology. You may use comma- or semicolon-separated names " +
-								"or URIs for individuals or organizations, or URIs that point to additional " +
-								"information. This is a free text field.")
-						.setNumberOfLines(3)
-						.setExample("Jane Collaborator, Joe Ontology Manager, Fido the Mascot")
-					,
-					
-					createAttrDef(Omv.uri)
-						.setInternal(true)
-					,
-					
-					
-					// TODO createAttrDef(Omv.hasPriorVersion),
-					
-					
-					
-	//				createAttrDef(DC.coverage),
-	//				createAttrDef(DC.format),
-	//				createAttrDef(DC.language),
-	//				createAttrDef(DC.relation),
-	//				createAttrDef(DC.rights),
-	//				createAttrDef(DC.type),
-	
-				}
+				general_attrs
 			),
 			new AttrGroup("Usage/License/Permissions",
 				"The Usage, License, and Permissions fields help keep track of how we obtained this vocabulary " +

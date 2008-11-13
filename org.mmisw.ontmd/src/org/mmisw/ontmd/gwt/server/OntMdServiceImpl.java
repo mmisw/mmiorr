@@ -63,6 +63,11 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	
 	private static final File previewDir = new File(Config.ONTMD_PREVIEW_DIR);
 
+
+	// TODO this mechanism copied from MmiUri (in ont project).
+	private static final Pattern VERSION_PATTERN = 
+				Pattern.compile("^\\d{4}(\\d{2}(\\d{2})?)?(T\\d{2})?(\\d{2}(\\d{2})?)?$");
+
 	
 	private static class MyLog { void info(String m) { System.out.println("LOG: " +m); } }
 	private final MyLog log = new MyLog();
@@ -75,8 +80,11 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		log.info("getBaseInfo: params=" + params);
 		
 		// from the client, always re-create the base info:
+		
+		// include version if parameter/value "_xv=y" is given:
+		boolean includeVersion = "y".equals(params.get("_xv"));
 		try {
-			prepareBaseInfo();
+			prepareBaseInfo(includeVersion);
 		}
 		catch (Throwable thr) {
 			thr.printStackTrace();
@@ -89,18 +97,18 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	/** prepares the baseInfo only if not already prepared */
 	private void _getBaseInfoIfNull() {
 		if ( baseInfo == null ) {
-			prepareBaseInfo();
+			prepareBaseInfo(false);
 		}
 	}
 	
 	/** always re-creates the baseInfo */
-	private void prepareBaseInfo() {
+	private void prepareBaseInfo(boolean includeVersion) {
 		log.info("preparing base info ...");
 		baseInfo = new BaseInfo();
 		
 		baseInfo.setShortNameUri(Omv.acronym.getURI());
 		
-		MdHelper.prepareGroups();
+		MdHelper.prepareGroups(includeVersion);
 		AttrGroup[] attrGroups = MdHelper.getAttrGroups();
 		baseInfo.setAttrGroups(attrGroups);
 		log.info("preparing base info ... DONE");
@@ -492,16 +500,40 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			return reviewResult;
 		}
 		
+		// current date:
+		final Date date = new Date(System.currentTimeMillis());
 		
+		///////////////////////////////////////////////////////////////////
+		// creation date:
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+		final String creationDate = sdf.format(date);
 		
+
 		// ontology root:
 		final String namespaceRoot = "http://mmisw.org/ont";
 		
+		///////////////////////////////////////////////////////////////////
 		// version:
-		Date date = new Date(System.currentTimeMillis());
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
-		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-		final String version = sdf.format(date);
+		// Note, if the version is given from the client, then use it
+		String version = newValues.get(Omv.version.getURI());
+		if ( version != null && version.trim().length() > 0 ) {
+			// check that the given version is OK:
+			boolean ok = VERSION_PATTERN.matcher(version).find();
+			if ( ! ok ) {
+				String error = "Given version is invalid: " +version;
+				log.info(error);
+				reviewResult.setError(error);
+				return reviewResult;
+			}
+		}
+		else {
+			// otherwise: assign it here:
+			sdf = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
+			sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+			version = sdf.format(date);
+		}
+		
 		
 //		String finalUri = model.getNsPrefixURI("");
 		final String finalUri = namespaceRoot + "/" +
@@ -513,10 +545,6 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		final String base_ = JenaUtil.getURIForBase(finalUri);
 		
 
-		sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-		final String creationDate = sdf.format(date);
-		
 		
 		
 		String uriFile = file.toURI().toString();
