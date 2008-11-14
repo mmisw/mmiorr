@@ -1,6 +1,7 @@
 package org.mmisw.ontmd.gwt.client.voc2rdf;
 
 import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.DecoratorPanel;
@@ -84,8 +85,8 @@ public class ConversionPanel extends VerticalPanel {
 	}
 	
 	
-	void updateForm(String path) {
-		ontMdForm.updateForm(path);
+	void updateForm(String path, LoginResult loginResult) {
+		ontMdForm.updateForm(path, loginResult);
 	}
 	
 	
@@ -103,15 +104,25 @@ public class ConversionPanel extends VerticalPanel {
 			add(html);
 		}
 		
-		void updateForm(String path) {
+		void updateForm(String path, LoginResult loginResult) {
 			String str = "";
 			if ( path != null ) {
-				String action = UPLOAD_ACTION 
+				
+				StringBuffer action = new StringBuffer();
+				action.append(UPLOAD_ACTION 
 					+ "?" 
 					+ "_voc2rdf=" +path
 					+ "&" 
 					+ "_edit=y"
-				;
+				);
+				
+				// add session information, if any:
+				if ( loginResult != null ) {
+					action.append("&sessionId=" +loginResult.getSessionId());
+					action.append("&userId=" +loginResult.getUserId());
+				}
+				
+				
 				str = 
 					"<b>Congratulations!</b> Your vocabulary is now in RDF/XML format. " +
 					"You can now copy and paste the resulting contents in a file on your " +

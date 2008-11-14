@@ -39,6 +39,7 @@ public class Voc2RdfServiceImpl extends RemoteServiceServlet implements Voc2RdfS
 		log.info("preparing base info ...");
 		baseInfo = new Voc2RdfBaseInfo();
 		baseInfo.setMainClassAttrDef(MdHelper.getMainClassAttrDef());
+		log.info("preparing base info ... Done.");
 	}
 	
 	

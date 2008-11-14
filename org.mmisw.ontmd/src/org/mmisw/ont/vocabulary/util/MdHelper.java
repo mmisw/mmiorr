@@ -272,6 +272,7 @@ public class MdHelper {
 	
 	
 	public static AttrDef getMainClassAttrDef() {
+		createResourceTypesAttrDef();
 		return mainClassAttrDef;
 	}
 	

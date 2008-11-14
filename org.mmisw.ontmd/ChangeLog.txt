@@ -3,6 +3,16 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2008-11-14
+	- weird behavior on my station: couldn't "load" a local file in the ontmd editor;
+	  seemed like a cache issue with my browser.  (no problem now).
+	  
+	 
+	- Voc2RDF: now transfers the sessionId/userId information from the given parameters
+	  (eg, from ORR front-end) to the ontmd tool so the user won't have to log in again.
+	  Fixes issue 30: http://code.google.com/p/mmisw/issues/detail?id=30
+	  
+	  
 2008-11-12
 
 	- Done Request 46: allow to manually specify version of submitted ontology (internal)
