@@ -49,10 +49,16 @@ private static final String INFO =
 //			setBorderWidth(1);
 			add(html);
 		}
+		
 		void updateText(String text) {
 			html.setText(text);
 		}
+		
 		void setUri(String uri, boolean link) {
+			
+			// remove any trailing fragments:
+			uri = uri.replaceAll("(#|/)+$", "");
+			
 			String str;
 			if ( link ) {
 				str = "<a href=\"" +uri+ "\" target=\"_blank\" >" +uri+ "</a>";

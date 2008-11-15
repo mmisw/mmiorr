@@ -22,7 +22,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 public class Voc2Rdf {
 
 	public static final String VOC2RDF_APP_NAME = "Voc2RDF";
-	public static final String VOC2RDF_VERSION = "2.0.0.beta3";
+	public static final String VOC2RDF_VERSION = "2.0.0.beta4";
 	public static final String VOC2RDF_VERSION_COMMENT = "";
 
 	public static final String footer = 

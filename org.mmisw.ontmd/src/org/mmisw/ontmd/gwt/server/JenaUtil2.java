@@ -13,12 +13,24 @@ public class JenaUtil2 {
 	private JenaUtil2() {}
 
 
-	/** Fragment separator */
-	private static final String FRAG_SEPARATOR = "#";
+	/** Fragment separator.
+	 * 
+	 * This is related with Issue 27: URIs have # signs instead of / before terms:
+	 *    http://code.google.com/p/mmisw/issues/detail?id=27
+	 *    
+	 * 2008-11-14: re-setting to slash (/) to do more tests.
+	 */
+	private static final String FRAG_SEPARATOR = "/" ;   // "#";
 	
 	/**
 	 * Adds a fragment separator to the given URI if it doesn't end already with a fragment separator.
-	 * (This is a replacement for JenaUtil.getURIForNS(String uri), which uses hash, #).
+	 * 
+	 * <p>
+	 * (This is a replacement for JenaUtil.getURIForNS(String uri), which always uses hash, #.
+	 * I keep the name of the method to facilitate the connection, but ... 
+	 * TODO a better name would be simply: appendFragment).
+	 * 
+	 * 
 	 * @param uri  A URI
 	 * @return The URI with a trailing fragment separator.
 	 */
@@ -31,7 +43,13 @@ public class JenaUtil2 {
 	
 	/**
 	 * Removes any trailing fragment separators from the given URI.
-	 * (This is a replacement for JenaUtil.getURIForBase(String uri), which uses hash, #).
+	 * 
+	 * <p>
+	 * (This is a replacement for JenaUtil.getURIForBase(String uri), which always uses hash, #.
+	 * I keep the name of the method to facilitate the connection, but ... 
+	 * TODO a better name would be simply: removeTrailingFragment).
+	 * 
+	 * 
 	 * @param uri  A URI
 	 * @return The URI without any trailing fragment separators.
 	 */
