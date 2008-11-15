@@ -10,6 +10,13 @@ ChangeLog
 	(TODO JenaUtil2.java is a copy of the same file on ontmd -> unify in a libray)
 	
 	
+	- resolve term in html:  First, try with / separator; then with #
+	  Note: jena resolves a request with #, even if everything in the ontology
+	  is defined in terms of the slash. Then, since the tries were #-then-/ before,
+	  the # resolution was OK but made the rest of the dispatch unable to find
+	  statametes associated with the term.  With the new order /-then-#, this
+	  is now correct.
+	
 	- Deprecating MdDispatcher - MD display no longer done here (use ontmd instead)
 	TODO: See if MdHelper can also be deprecated/removed when doing code clean-up
 	

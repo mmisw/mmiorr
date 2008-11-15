@@ -211,13 +211,13 @@ public class HtmlDispatcher {
 		assert term.length() > 0 ;
 		
 		// construct URI of term.
-		// First, try with "#" separator:
-		String termUri = mmiUri.getTermUri(true, "#");
+		// First, try with "/" separator:
+		String termUri = mmiUri.getTermUri(true, "/");
 		Resource termRes = model.getResource(termUri);
 
 		if ( termRes == null ) {
-			// then, try with "/" separator
-			termUri = mmiUri.getTermUri(true, "/");
+			// then, try with "#" separator
+			termUri = mmiUri.getTermUri(true, "#");
 			termRes = model.getResource(termUri);
 		}
 		
