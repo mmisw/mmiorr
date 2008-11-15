@@ -77,8 +77,8 @@ class UnversionedConverter {
 			return null;
 		}
 
-		final String ns_ = JenaUtil.getURIForNS(finalUri);
-		final String base_ = JenaUtil.getURIForBase(finalUri);
+		final String ns_ = JenaUtil2.getURIForNS(finalUri);
+		final String base_ = JenaUtil2.getURIForBase(finalUri);
 
 
 		String uriForEmpty = model.getNsPrefixURI("");
@@ -92,7 +92,16 @@ class UnversionedConverter {
 			// This case was manifested with the platform.owl ontology.
 		}
 		
-		final String original_ns_ = JenaUtil.getURIForNS(uriForEmpty);
+		log.info("review: model.getNsPrefixURI(\"\") = " +uriForEmpty);
+		
+		// Why using JenaUtil.getURIForNS(uriForEmpty) to get the namespace?
+		// model.getNsPrefixURI("") should provide the base namespace, in fact,
+		// I verified that this call gives the right URI associated with "" in two
+		// cases, one with xxxx/ (slash) and xxxxx# (pound) at the end.
+		// So, instead of:
+		//    final String original_ns_ = JenaUtil.getURIForNS(uriForEmpty);
+		// I just take the reported URI as given by model.getNsPrefixURI(""):
+		final String original_ns_ = uriForEmpty;
 
 		
 		log.info("original namespace: " +original_ns_);
