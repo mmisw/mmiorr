@@ -652,7 +652,7 @@ public class UriResolver extends HttpServlet {
 	 */
 	private StringReader _serializeModel(Model model, String lang) {
 		StringWriter sw = new StringWriter();
-		String base = JenaUtil.getURIForBase(model.getNsPrefixURI(""));
+		String base = JenaUtil2.getURIForBase(model.getNsPrefixURI(""));
 		RDFWriter writer = model.getWriter(lang);
 		writer.setProperty("xmlbase", base);
 		writer.setProperty("showXmlDeclaration", "true");
