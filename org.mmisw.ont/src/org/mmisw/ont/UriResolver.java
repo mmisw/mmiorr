@@ -63,10 +63,10 @@ public class UriResolver extends HttpServlet {
 	
 	private final SparqlDispatcher sparqlDispatcher = new SparqlDispatcher(ontGraph);
 	
+	// MD no longer done here
+//	private final MdDispatcher mdDispatcher = new MdDispatcher(ontConfig, db);
 	
-	private final MdDispatcher mdDispatcher = new MdDispatcher(ontConfig, db);
-	
-	private final HtmlDispatcher htmlDispatcher = new HtmlDispatcher(ontConfig, db, mdDispatcher);
+	private final HtmlDispatcher htmlDispatcher = new HtmlDispatcher(ontConfig, db);
 
 	
 	private enum OntFormat { RDFXML, N3 };
@@ -213,23 +213,25 @@ public class UriResolver extends HttpServlet {
 		
 		final String fullRequestedUri = request.getRequestURL().toString();
 		
-		// dispatch metadata?
-		if ( Util.yes(request, "_md")  ) {
-			//
-			// This option is mainly to support metadata display in the RoR front-end.
-			// In general, this parameter is used without any value, so only the
-			// table component is generated.
-			// For convenience, the following are also accepted:
-			//    _md=completepage         -> to generate a complete HTML page
-			//    _mdtableclass=somestyle  -> to specify the style for the table; by default, 
-			//                                "metadata", the one used in the RoR front-end.
-			//
-			String _md = Util.getParam(request, "_md", "");
-			boolean completePage = "completepage".equalsIgnoreCase(_md);
-			String tableClass = Util.getParam(request, "_mdtableclass", null);   
-			mdDispatcher.execute(request, response, null, completePage, tableClass, null);
-			return true;
-		}
+		
+// metadata no longer dispatched here.
+//		// dispatch metadata?
+//		if ( Util.yes(request, "_md")  ) {
+//			//
+//			// This option is mainly to support metadata display in the RoR front-end.
+//			// In general, this parameter is used without any value, so only the
+//			// table component is generated.
+//			// For convenience, the following are also accepted:
+//			//    _md=completepage         -> to generate a complete HTML page
+//			//    _mdtableclass=somestyle  -> to specify the style for the table; by default, 
+//			//                                "metadata", the one used in the RoR front-end.
+//			//
+//			String _md = Util.getParam(request, "_md", "");
+//			boolean completePage = "completepage".equalsIgnoreCase(_md);
+//			String tableClass = Util.getParam(request, "_mdtableclass", null);   
+//			mdDispatcher.execute(request, response, null, completePage, tableClass, null);
+//			return true;
+//		}
 		
 		// if the "_lpath" parameter is included, reply with full local path of ontology file
 		// (this is just a quick way to help ontmd to so some of its stuff ;)
@@ -946,14 +948,19 @@ public class UriResolver extends HttpServlet {
 		Resource termRes = model.getResource(termUri);
 
 		if ( termRes == null ) {
+			out.println("<br/>Term URI: " +termUri+ " Not found");
 			// then, try with "/" separator
 			termUri = mmiUri.getTermUri(true, "/");
 			termRes = model.getResource(termUri);
 		}
 		
 		if ( termRes == null ) {
+			out.println("<br/>Term URI: " +termUri+ " Not found");
 			out.println("   No resource found for URI: " +termUri);
 			return;
+		}
+		else {
+			out.println("<br/>Term URI: " +termUri+ " FOUND");
 		}
 		
 //		com.hp.hpl.jena.rdf.model.Statement labelRes = termRes.getProperty(RDFS.label);

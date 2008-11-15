@@ -37,13 +37,15 @@ public class HtmlDispatcher {
 	
 	private OntConfig ontConfig;
 	private Db db;
-	private MdDispatcher mdDispatcher;
+	
+	// TODO remove
+//	private MdDispatcher mdDispatcher;
 	
 	
-	HtmlDispatcher(OntConfig ontConfig, Db db, MdDispatcher mdDispatcher) {
+	HtmlDispatcher(OntConfig ontConfig, Db db) { // TODO Remove, MdDispatcher mdDispatcher) {
 		this.ontConfig = ontConfig;
 		this.db = db;
-		this.mdDispatcher = mdDispatcher;
+//		this.mdDispatcher = mdDispatcher;
 	}
 
 
@@ -97,8 +99,8 @@ public class HtmlDispatcher {
 			dispatchTerm(request, response, mmiUri, model, false);
 		}
 		else {
-			// start with the metadata:
-			mdDispatcher.execute(request, response, mmiUri, false, "inline", "Metadata");
+//			// TODO remove MD -- no longer done here
+//			mdDispatcher.execute(request, response, mmiUri, false, "inline", "Metadata");
 			
 			_showAllTerms(mmiUri, foundUri[0], model, out, debug);
 		}

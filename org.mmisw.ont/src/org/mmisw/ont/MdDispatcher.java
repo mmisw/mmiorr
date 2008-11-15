@@ -27,8 +27,10 @@ import edu.drexel.util.rdf.JenaUtil;
 
 /**
  * Dispatches the metadata output.
+ * @deprecated No longer done in Ont
  * @author Carlos Rueda
  */
+@Deprecated
 public class MdDispatcher {
 	
 	private final Log log = LogFactory.getLog(MdDispatcher.class);
