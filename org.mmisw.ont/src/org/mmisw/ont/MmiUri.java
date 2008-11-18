@@ -376,4 +376,15 @@ public class MmiUri {
 		return uri;
 	}
 
+	/**
+	 * Makes a clone except for the given term, which can be null.
+	 */
+	public MmiUri copyWithTerm(String term) {
+		if ( term == null ) {
+			term = "";
+		}
+		return new MmiUri(untilRoot, authority, version, topic, term);
+	}
+	
+
 }

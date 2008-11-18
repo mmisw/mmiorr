@@ -203,7 +203,12 @@ public class Db {
 	 *    <ul> If allExts is true, search for topic with NO extension, but also allow
 	 *       the same topic with any extension ".%" (Note: the dot is important to
 	 *       avoid getting topics that have the topic in question as suffix).
-	 * </ul>   
+	 * </ul>
+	 * 
+	 * <p>
+	 * Note that the term component in the given URI is ignored.
+	 * 
+	 * <p>
 	 * The elements are sorted such that the first element is the most recent version
 	 * available.
 	 * 
@@ -217,6 +222,14 @@ public class Db {
 	 * @throws ServletException
 	 */
 	List<Ontology> getOntologyVersions(MmiUri mmiUri, boolean allExts) throws ServletException {
+		
+		// ignore the term component, if given in the mmiUri
+		String term = mmiUri.getTerm();
+		if ( term != null && term.trim().length() > 0 ) {
+			mmiUri = mmiUri.copyWithTerm("");
+			log.debug("getOntologyVersions: " +term+ ": term ignored.");
+		}
+		
 		List<Ontology> onts = new ArrayList<Ontology>();
 		
 		if ( allExts ) {
