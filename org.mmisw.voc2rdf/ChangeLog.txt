@@ -1,6 +1,11 @@
 org.mmisw.voc2rdf II 
 Carlos Rueda - MMI / MBARI
 
+***** NOTE: Obsolete ****************************
+   On 2008-11-09, the Voc2RDF functionality was 
+   re-merged into the org.mmisw.ontmd project
+*************************************************
+
 ChangeLog
 
 2008-11-09 (0.1.alpha7)
