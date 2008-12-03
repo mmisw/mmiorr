@@ -14,10 +14,21 @@ public class MainPanel extends VerticalPanel {
 	    
 	    add(decPanel);
 
+	    
+		// TODO: GUI to select working ontologies.
+		// for now, choose the first 2:
+		int num = Math.min(2, Main.allUris.size());
+		for ( int i = 0;  i < num; i++ ) {
+			Main.workingUris.add(Main.allUris.get(i));
+		}
+
 		
-	    layout.add(new OntologySelection());
+		OntologySelection ontSel = new OntologySelection();
+		ontSel.setBorderWidth(1);
+	    layout.add(ontSel);
 	    layout.add(new MultiPageEditor());
 
+	    layout.setCellHorizontalAlignment(ontSel, ALIGN_RIGHT);
 	}
 
 }

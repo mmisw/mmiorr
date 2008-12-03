@@ -9,6 +9,10 @@ ChangeLog
 	- Current set of relations is fixed but of course the new design should
 	  allow a more flexible mechanism to specify the relations and associated
 	  information (icons, rules, tooltips, etc).
+	  
+	- First section: selection of working ontologies, identified by A, B, ...
+	  Then, in search section, user can select which ontologies to be searched
+	  in each side of the mapping editor.
 	
 	
 2008-11-26  

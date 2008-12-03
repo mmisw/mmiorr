@@ -19,7 +19,7 @@ public class ResourceViewer extends VerticalPanel {
 
 	    CellPanel p2 = new VerticalPanel();
 		ScrollPanel scroller = new ScrollPanel(p2);
-	    scroller.setSize("400px", "100px");
+	    scroller.setSize("450px", "120px");
 		p.add(scroller);
 
 		p2.add(new HTML("<b>http://marinemetadata.org/cf#air_temperature</b>"));

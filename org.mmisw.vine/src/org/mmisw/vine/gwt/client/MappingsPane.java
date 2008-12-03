@@ -21,7 +21,7 @@ public class MappingsPane extends VerticalPanel {
 		
 	    CellPanel p2 = new VerticalPanel();
 		ScrollPanel scroller = new ScrollPanel(p2);
-	    scroller.setSize("400px", "100px");
+	    scroller.setSize("450px", "100px");
 		p.add(scroller);
 
 		

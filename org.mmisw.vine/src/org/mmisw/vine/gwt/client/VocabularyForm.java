@@ -21,10 +21,12 @@ public class VocabularyForm extends VerticalPanel {
 	    ResultsForm resultsForm = new ResultsForm();
 	    
 	    layout.add(new SearchGroup(resultsForm));
+	    
 		layout.add(resultsForm);
 	    
-	    layout.add(new MappingsPane());
-	    layout.add(new ResourceViewer());
+		layout.add(new ResourceViewer());
+
+		layout.add(new MappingsPane());
 	}
 
 }

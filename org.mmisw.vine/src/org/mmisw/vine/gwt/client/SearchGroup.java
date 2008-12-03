@@ -31,13 +31,16 @@ public class SearchGroup extends VerticalPanel {
 		add(hp0);
 		hp0.setSpacing(10);
 		hp0.add(new HTML("Search for:"));
-		cb = new CheckBox("Use REGEX");
+		cb = new CheckBox("REGEX");
+		cb.setTitle("Check this to apply a regular expression search");
 //-		hp0.add(cb);
 		
 //-		HorizontalPanel hp = new HorizontalPanel();
 //-		add(hp);
 		
 		oracle = new MultiWordSuggestOracle();  
+		
+		// TODO: update the oracle as the user enters new search strings	
 		oracle.add("Cat");
 		oracle.add("Dog");
 		oracle.add("Horse");

@@ -33,7 +33,7 @@ public class ResultsForm extends VerticalPanel {
 
 	    p2 = new VerticalPanel();
 		ScrollPanel scroller = new ScrollPanel(p2);
-	    scroller.setSize("400px", "100px");
+	    scroller.setSize("450px", "150px");
 		p.add(scroller);
 		
 	}
