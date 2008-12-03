@@ -51,8 +51,9 @@ public class UriResolver extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	
-	private static final String VERSION = "0.2.0.beta2 (20081118)";
-	static final String TITLE = "MMI Ontology URI resolver. Version " +VERSION;
+	private static final String VERSION = "0.2.0.beta2 (20081203)";
+	private static final String TITLE = "MMI Ontology URI Resolver";
+	private static final String FULL_TITLE = TITLE + ". Version " +VERSION;
 
 
 	private final Log log = LogFactory.getLog(UriResolver.class);
@@ -76,7 +77,7 @@ public class UriResolver extends HttpServlet {
 	
 
 	public void init() throws ServletException {
-		log.info(TITLE+ ": initializing");
+		log.info(FULL_TITLE+ ": initializing");
 		
 		try {
 			ontConfig.init(getServletConfig());
@@ -90,7 +91,7 @@ public class UriResolver extends HttpServlet {
 	}
 	
 	public void destroy() {
-		log.info(TITLE+ ": destroy called.\n\n");
+		log.info(FULL_TITLE+ ": destroy called.\n\n");
 	}
 	
 	/**
@@ -163,6 +164,25 @@ public class UriResolver extends HttpServlet {
 		// Note, since I'm using <url-pattern>/*</url-pattern> in web.xml, *everything* 
 		// gets dispatched through this servlet, so I have to resolve other possible resources.
 		else {
+
+			final String requestedUri = request.getRequestURI();
+			final String contextPath = request.getContextPath();
+
+			
+			// but first, check if it is the "root" request, for example, in the mmisw.org deployment
+			// with "ont" as the context, the root request is basically:
+			//    http://mmisw.org/ont    or   http://mmisw.org/ont/
+			// The "root" request is recognized when the requestedUri without any trailing
+			// slashes is equal to the contextPath. For the 2nd request above, we have:
+			//       request.getRequestURI()         = /ont/
+			//       request.getContextPath()        = /ont
+			if ( requestedUri.replaceAll("/*$", "").equals(contextPath) ) {
+				// this is a "root" request. responf with onformation about this service:
+				_showServiceInfo(request, response);
+				return;
+			}
+			
+
 			String path = request.getPathTranslated();
 			File file = new File(path);
 			if ( !file.canRead() || file.isDirectory() ) {
@@ -193,6 +213,61 @@ public class UriResolver extends HttpServlet {
 			os.close();
 		}
 	}
+
+	
+	
+	/**
+	 * Helper method to dispatch a "root" request.
+	 * The dispatch is always completed here.
+	 */
+	private void _showServiceInfo(HttpServletRequest request, HttpServletResponse response) 
+	throws ServletException, IOException {
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug("_showServiceInfo: starting response.");
+		}
+		
+		String contextPath = request.getContextPath();
+		PrintWriter out = null; 
+		
+		// start the response page:
+		response.setContentType("text/html");
+		out = response.getWriter();
+		out.println("<html>");
+		out.println("<head>");
+		out.println("<title>" +FULL_TITLE+ "</title>");
+		out.println("<link rel=stylesheet href=\"" +contextPath + "/main.css\" type=\"text/css\">");
+		out.println("</head>");
+		out.println("<body>");
+		out.println("<br/>");
+		out.println(
+				"<div align=\"center\">" +
+				"<table>" +
+				"<tr valign=\"center\">" +
+				"<td align=\"center\">" +
+				"<a href=\"http://marinemetadata.org/semanticframework\">" +
+				"<img src=\"" +contextPath + "/img/" +"semantic_framework.jpg" + "\" border=\"0\"" +
+						"alt=\"MMI Semantic Framework\"/>" +
+				"</a>" +
+				"<br/>" +
+				"<br/>" +
+				"<b>" +TITLE+ "</b>" +
+				"</br>This service is part of the " +
+				"<a href=\"http://marinemetadata.org/semanticframework\">" +
+				"MMI Semantic Framework</a>" +
+				"<br/>" +
+				"<br/>" +
+				"<font color=\"gray\" size=\"-2\">" +FULL_TITLE+ "</font>" +
+				"</td>" +
+				"</tr>" +
+				"</table>" +
+				"</div>"
+		);
+		
+		out.println("</body>");
+		out.println("</html>");
+	}
+	
 
 	/**
 	 * Resolves the ontology identified by its URI as indicated by <code>request.getRequestURL()</code>.
@@ -796,11 +871,11 @@ public class UriResolver extends HttpServlet {
 		out = response.getWriter();
 		out.println("<html>");
 		out.println("<head>");
-		out.println("<title>" +TITLE+ "</title>");
+		out.println("<title>" +FULL_TITLE+ "</title>");
 		out.println("<link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\">");
 		out.println("</head>");
 		out.println("<body>");
-		out.println("<b>" +TITLE+ "</b><br/><br/>");
+		out.println("<b>" +FULL_TITLE+ "</b><br/><br/>");
 		out.println(" Full requested URI: <code>" + fullRequestedUri + "</code> <br/><br/>");
 		
 		// parse the given URI:

@@ -3,6 +3,19 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2008-12-03   0.2.0.beta2 (20081203)
+	- Dispatch the "root" request to report information about this service, ie.
+	      http://mmisw.org/ont/
+	  now reports something like:
+	  
+				  MMI Ontology URI Resolver
+			This service is part of the MMI Semantic Framework
+			
+			MMI Ontology URI Resolver. Version 0.2.0.beta2 (20081203)
+
+	  instead of returning 404.
+	
+	
 2008-11-18   0.2.0.beta2 (20081118)
 	- 62: default URL not resolving 
 	Db.getOntologyVersions: the term component in the given URI is ignored.
