@@ -6,6 +6,9 @@ ChangeLog
 2008-12-02
 	- Included GWT code from a preliminary exercise to emulate standalone GUI.
 	  I will use this as a basis to define the core functionality.
+	- Current set of relations is fixed but of course the new design should
+	  allow a more flexible mechanism to specify the relations and associated
+	  information (icons, rules, tooltips, etc).
 	
 	
 2008-11-26  

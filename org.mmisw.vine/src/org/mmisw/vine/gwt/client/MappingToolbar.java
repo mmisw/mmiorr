@@ -19,11 +19,11 @@ public class MappingToolbar extends VerticalPanel {
 	    layout.setSpacing(2);
 		//setWidth("10%");
 		
-		PushButton b1 = new PushButton(Main.images.narrowerThan().createImage());
-		PushButton b2 = new PushButton(Main.images.broaderThan().createImage());
-		PushButton b3 = new PushButton(Main.images.sameAs().createImage());
-		PushButton b4 = new PushButton(Main.images.subClassOf().createImage());
-		PushButton b5 = new PushButton(Main.images.superClassOf().createImage());
+		PushButton b1 = new PushButton(Main.images.exactMatch28().createImage());
+		PushButton b2 = new PushButton(Main.images.closeMatch28().createImage());
+		PushButton b3 = new PushButton(Main.images.broadMatch28().createImage());
+		PushButton b4 = new PushButton(Main.images.narrowMatch28().createImage());
+		PushButton b5 = new PushButton(Main.images.relatedMatch28().createImage());
 		
 		layout.add(b1);
 		layout.add(b2);
