@@ -1248,7 +1248,7 @@ public class UriResolver extends HttpServlet {
 	 */
 	private void _doListVocabularies(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		boolean unverAndVer = Boolean.valueOf(Util.getParam(request, "uv", "true"));
+		boolean unverAndVer = Boolean.valueOf(Util.getParam(request, "uv", "false"));
 		String limit = Util.getParam(request, "limit", "");
 		if ( limit.length() > 0 ) {
 			limit = " limit " +limit;
@@ -1328,7 +1328,7 @@ public class UriResolver extends HttpServlet {
 	 */
 	private void _doListMappings(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		boolean unverAndVer = Boolean.valueOf(Util.getParam(request, "uv", "true"));
+		boolean unverAndVer = Boolean.valueOf(Util.getParam(request, "uv", "false"));
 		String limit = Util.getParam(request, "limit", "");
 		if ( limit.length() > 0 ) {
 			limit = " limit " +limit;
