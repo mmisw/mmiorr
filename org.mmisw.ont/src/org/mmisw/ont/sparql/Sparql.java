@@ -75,6 +75,10 @@ public class Sparql {
 					queryResult.setContentType("text/html");
 					queryResult.setResult(_htmlSelectResults(results));
 				}
+				else if ( form.equalsIgnoreCase("csv") ) {
+					queryResult.setContentType("text/plain");
+					queryResult.setResult(_csvSelectResults(results));
+				}
 				else {
 					queryResult.setContentType("text/plain");
 					ByteArrayOutputStream os = new ByteArrayOutputStream();
