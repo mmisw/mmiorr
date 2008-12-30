@@ -5,14 +5,14 @@
   <link rel=stylesheet href="/ont/main.css" type="text/css" />
 </head>
 <body>
-   <img src="http://mmisw.org/or/images/ncbo_logo_portal.gif" />Alpha
+   <img src="http://mmisw.org/or/images/ncbo_logo_portal.gif" />
    <div class="indented">
   
   <table >
   <tbody>
     <tr> 
 	    <td>
-	    <form name="testForm" method="get" action="/ont/?sparql">
+	    <form name="testForm" method="post" action="/ont/?sparql">
 	    	Your SPARQL query:<br>
 		<textarea rows="6" cols="60" name="sparql"></textarea>
 	    	<input value="Submit" type="submit">
@@ -29,7 +29,9 @@
 	<br/>
 	Use this form to submit your SPARQL query against the 
 	<a href="http://mmisw.org/or">MMI Ontology Registry and Respository</a>. 
-	Note that both GET and POST methods are dispatched.
+	
+	<br/>
+	Both GET and POST methods are accepted.
 	
 	</td>
   </tr>
@@ -108,8 +110,7 @@ WHERE { ?class rdf:type owl:Class. } LIMIT 20</textarea>
 <tr>
     <td>
     <form name="testForm" method="get" action="/ont/?sparql">
-        <textarea rows="3" cols="60" name="sparql" readonly="yes">PREFIX dev: &lt;http://mmisw.org/ont/mmi/device#&gt;
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        <textarea rows="5" cols="60" name="sparql" readonly="yes">PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 CONSTRUCT {?instance <INSTANCEOF> ?class } 
 WHERE { ?class rdf:type owl:Class .
@@ -120,8 +121,7 @@ WHERE { ?class rdf:type owl:Class .
     </td>
     <td>
     <form name="testForm" method="get" action="/ont/?sparql">
-        <textarea rows="3" cols="60" name="sparql" readonly="yes">PREFIX dev: &lt;http://mmisw.org/ont/mmi/device#&gt;
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        <textarea rows="5" cols="60" name="sparql" readonly="yes">PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 SELECT ?instance ?class 
 WHERE { ?class rdf:type owl:Class .
@@ -137,8 +137,8 @@ WHERE { ?class rdf:type owl:Class .
 
 <br/>
 Note: The default output format for SELECT queries is HTML. 
-To obtain a CSV output format, add the "form" parameter with value "csv" in your request,
-for example: <br/>
+To obtain a CSV output format, add the "form" parameter with value "csv" in your GET or
+POST request, for example: <br/>
 <a href="http://mmisw.org/ont/?form=csv&sparql=SELECT++%3Fs+%3Fp+%3Fo+WHERE+{%3Fs+%3Fp+%3Fo.+}+LIMIT+20%0D%0A">http://mmisw.org/ont/?form=csv&sparql=SELECT ?s ?p ?o WHERE {?s ?p ?o. } LIMIT 20</a>.
 
 
