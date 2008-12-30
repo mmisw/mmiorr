@@ -149,7 +149,7 @@ public class Sparql {
 					if ( value.indexOf(',') >= 0 ) {
 						value = "\"" +value+ "\"";
 					}
-					out.printf("%s%s", value, comma);
+					out.printf("%s%s", comma, value);
 					comma = ",";
 				}
 				out.printf("%n");
