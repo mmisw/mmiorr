@@ -46,7 +46,10 @@ public class SparqlDispatcher {
 		if ( query.length() == 0 ) {
 			query = SPARQL_EXAMPLE;
 		}
-		Sparql.QueryResult queryResult = _execute(query);
+		
+		String form = Util.getParam(request, "form", null);
+		
+		Sparql.QueryResult queryResult = _execute(query, form);
 		
 		String result = queryResult.getResult();
 		
@@ -104,13 +107,13 @@ public class SparqlDispatcher {
 		os.close();
 	}
 
-	private Sparql.QueryResult _execute(String sparqlQuery) {
+	private Sparql.QueryResult _execute(String sparqlQuery, String form) {
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("execute: query string = [" +sparqlQuery+ "]");
 		}
 		
-		Sparql.QueryResult queryResult = Sparql.executeQuery(ontGraph.getModel(), sparqlQuery);
+		Sparql.QueryResult queryResult = Sparql.executeQuery(ontGraph.getModel(), sparqlQuery, form);
 
 		if ( log.isDebugEnabled() ) {
 			log.debug("execute: result = [" +queryResult.getResult()+ "]");

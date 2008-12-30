@@ -46,7 +46,15 @@ public class Sparql {
 		}
 	}
 
-	public static QueryResult executeQuery(Model model, String sparqlQuery) {
+	/**
+	 * Executes a SPARQL query agais the given model.
+	 * 
+	 * @param model
+	 * @param sparqlQuery
+	 * @param form Only used for a "select" query.
+	 * @return
+	 */
+	public static QueryResult executeQuery(Model model, String sparqlQuery, String form) {
 		QueryResult queryResult = new QueryResult();
 		
 		Query query = QueryFactory.create(sparqlQuery);
@@ -63,7 +71,7 @@ public class Sparql {
 			else if ( query.isSelectType() ) {
 				ResultSet results = qe.execSelect();
 				
-				if ( true ) {
+				if ( form == null || form.equalsIgnoreCase("html") ) {
 					queryResult.setContentType("text/html");
 					queryResult.setResult(_htmlSelectResults(results));
 				}
@@ -115,6 +123,34 @@ public class Sparql {
 			}
 		}
 		out.printf("</table>%n");
+		
+		return sw.toString();
+	}
+
+	/** Formats the results in CSV */
+	private static String _csvSelectResults(ResultSet results) {
+		
+		StringWriter sw = new StringWriter();
+		PrintWriter out = new PrintWriter(sw);
+		
+		if ( results.hasNext() ) {
+			while ( results.hasNext() ) {
+				QuerySolution sol = results.nextSolution();
+				String comma = "";
+				Iterator<?> varNames = sol.varNames();
+				while ( varNames.hasNext() ) {
+					String varName = varNames.next().toString();
+					String value = sol.get(varName).toString();
+					value = value.replaceAll("\"", "\\\"");
+					if ( value.indexOf(',') >= 0 ) {
+						value = "\"" +value+ "\"";
+					}
+					out.printf("%s%s", value, comma);
+					comma = ",";
+				}
+				out.printf("%n");
+			}
+		}
 		
 		return sw.toString();
 	}
