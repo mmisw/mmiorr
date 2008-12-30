@@ -14,8 +14,7 @@
 	    <td>
 	    <form name="testForm" method="get" action="/ont/?sparql">
 	    	SPARQL query:<br>
-		<textarea rows="6" cols="60" name="sparql">
-	        </textarea>
+		<textarea rows="6" cols="60" name="sparql"></textarea>
 	    	<input value="Submit" type="submit">
 	    </form>
 	</td>
@@ -30,8 +29,6 @@
 	Use this form to submit your SPARQL query against the 
 	<a href="http://mmisw.org/or">MMI Ontology Registry and Respository</a>. 
 	
-	<br/><br/>
-	Note: The registry system is under development. Do not use for production.
 	</td>
   </tr>
  </tbody>
@@ -88,8 +85,8 @@ WHERE { ?s dc:creator ?creator. }
     <form name="testForm" method="get" action="/ont/?sparql">
 	<textarea rows="4" cols="60" name="sparql" readonly="yes">PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; 
 PREFIX owl: &lt;http://www.w3.org/2002/07/owl#&gt; 
-CONSTRUCT { ?cls rdf:type owl:Class. } 
-WHERE { ?cls rdf:type owl:Class. } LIMIT 20</textarea>
+CONSTRUCT { ?class rdf:type owl:Class. } 
+WHERE { ?class rdf:type owl:Class. } LIMIT 20</textarea>
     	<input value="Submit" type="submit">
     </form>
     </td>
@@ -97,8 +94,8 @@ WHERE { ?cls rdf:type owl:Class. } LIMIT 20</textarea>
     <form name="testForm" method="get" action="/ont/?sparql">
         <textarea rows="4" cols="60" name="sparql" readonly="yes">PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
 PREFIX owl: &lt;http://www.w3.org/2002/07/owl#&gt;
-SELECT ?cls 
-WHERE { ?cls rdf:type owl:Class. } LIMIT 20</textarea>
+SELECT ?class 
+WHERE { ?class rdf:type owl:Class. } LIMIT 20</textarea>
         <input value="Submit" type="submit">
     </form>
     </td>
@@ -110,8 +107,11 @@ WHERE { ?cls rdf:type owl:Class. } LIMIT 20</textarea>
     <td>
     <form name="testForm" method="get" action="/ont/?sparql">
         <textarea rows="3" cols="60" name="sparql" readonly="yes">PREFIX dev: &lt;http://mmisw.org/ont/mmi/device#&gt;
-CONSTRUCT  { dev:System ?p ?o } 
-WHERE { dev:System ?p ?o. }
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+CONSTRUCT {?instance <INSTANCEOF> ?class } 
+WHERE { ?class rdf:type owl:Class .
+        ?instance rdf:type ?class . } LIMIT 200
 </textarea>
         <input value="Submit" type="submit">
     </form>
@@ -119,8 +119,11 @@ WHERE { dev:System ?p ?o. }
     <td>
     <form name="testForm" method="get" action="/ont/?sparql">
         <textarea rows="3" cols="60" name="sparql" readonly="yes">PREFIX dev: &lt;http://mmisw.org/ont/mmi/device#&gt;
-SELECT   ?p ?o
-WHERE { dev:System ?p ?o. }
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+SELECT ?instance ?class 
+WHERE { ?class rdf:type owl:Class .
+        ?instance rdf:type ?class . } LIMIT 200
 </textarea>
         <input value="Submit" type="submit">
     </form>
@@ -129,6 +132,10 @@ WHERE { dev:System ?p ?o. }
 </tr>
 
 </tbody></table>
+
+Note: HTML is the default output format for SELECT queries. Add the "form" parameter with value "csv" in your request to obtain a CSV output format,
+for example: 
+<a href="http://mmisw.org/ont/?form=csv&sparql=SELECT++%3Fs+%3Fp+%3Fo+WHERE+{%3Fs+%3Fp+%3Fo.+}+LIMIT+20%0D%0A">http://mmisw.org/ont/?form=csv&sparql=SELECT ?s ?p ?o WHERE {?s ?p ?o. } LIMIT 20</a>.
 
 
   </div>
