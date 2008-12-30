@@ -1261,7 +1261,7 @@ public class UriResolver extends HttpServlet {
 			Statement _stmt = _con.createStatement();
 
 			String query = 
-				"select urn " +
+				"select urn, display_label " +
 				"from " +table+ limit;
 			
 			ResultSet rs = _stmt.executeQuery(query);
@@ -1271,6 +1271,7 @@ public class UriResolver extends HttpServlet {
 
 	        while ( rs.next() ) {
 	        	String ontologyUri = rs.getString(1);
+	        	String display_label = rs.getString(2);
 	        	
 	        	try {
 	        		MmiUri mmiUri = MmiUri.create(ontologyUri);
@@ -1285,14 +1286,12 @@ public class UriResolver extends HttpServlet {
 
 	        		String unversionedOntologyUri = mmiUri.copyWithVersion(null).toString();
 
+	        		// always add unversioned one:
+	        		out.println(unversionedOntologyUri+ " , " +display_label);
+	        		
 	        		if ( unverAndVer ) {    
-	        			// add both the versioned and the unversioned:
-	        			out.println(ontologyUri);
-	        			out.println(unversionedOntologyUri);
-	        		}
-	        		else {
-	        			// add only the "unversioned" form of the URI:
-	        			out.println(unversionedOntologyUri);
+	        			// add also the versioned one:
+	        			out.println(ontologyUri+ " , " +display_label);
 	        		}
 	        	}
 	    		catch (URISyntaxException e) {
@@ -1341,7 +1340,7 @@ public class UriResolver extends HttpServlet {
 			Statement _stmt = _con.createStatement();
 
 			String query = 
-				"select urn " +
+				"select urn, display_label " +
 				"from " +table+ limit;
 			
 			ResultSet rs = _stmt.executeQuery(query);
@@ -1351,6 +1350,7 @@ public class UriResolver extends HttpServlet {
 
 	        while ( rs.next() ) {
 	        	String ontologyUri = rs.getString(1);
+	        	String display_label = rs.getString(2);
 	        	
 	        	try {
 	        		MmiUri mmiUri = MmiUri.create(ontologyUri);
@@ -1365,14 +1365,12 @@ public class UriResolver extends HttpServlet {
 
 	        		String unversionedOntologyUri = mmiUri.copyWithVersion(null).toString();
 
+	        		// always add unversioned one:
+	        		out.println(unversionedOntologyUri+ " , " +display_label);
+	        		
 	        		if ( unverAndVer ) {    
-	        			// add both the versioned and the unversioned:
-	        			out.println(ontologyUri);
-	        			out.println(unversionedOntologyUri);
-	        		}
-	        		else {
-	        			// add only the "unversioned" form of the URI:
-	        			out.println(unversionedOntologyUri);
+	        			// add also the versioned one:
+	        			out.println(ontologyUri+ " , " +display_label);
 	        		}
 	        	}
 	    		catch (URISyntaxException e) {

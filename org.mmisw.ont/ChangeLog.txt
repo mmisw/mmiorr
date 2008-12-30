@@ -11,6 +11,7 @@ ChangeLog
 	- dispatch new commands: vocabs, mappings.  
 	  Parameter "uv" can be used to get both unversioned and versioned URIs: uv=true.  
 	  By default, only unversioned URIs are returned.
+	  display_label included in output
 
 2008-12-03   0.2.0.beta2 (20081203)
 	- Dispatch the "root" request to report information about this service, ie.
