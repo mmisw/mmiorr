@@ -1255,8 +1255,8 @@ public class UriResolver extends HttpServlet {
 			_con = db.getConnection();
 			Statement _stmt = _con.createStatement();
 			String table = "v_ncbo_ontology";
-			String limit = Util.getParam(request, "limit", null);
-			if ( limit != null ) {
+			String limit = Util.getParam(request, "limit", "");
+			if ( limit.length() > 0 ) {
 				limit = " limit " +limit;
 			}
 
@@ -1335,8 +1335,8 @@ public class UriResolver extends HttpServlet {
 			_con = db.getConnection();
 			Statement _stmt = _con.createStatement();
 			String table = "v_ncbo_ontology";
-			String limit = Util.getParam(request, "limit", null);
-			if ( limit != null ) {
+			String limit = Util.getParam(request, "limit", "");
+			if ( limit.length() > 0 ) {
 				limit = " limit " +limit;
 			}
 
