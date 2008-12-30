@@ -137,23 +137,34 @@ public class Sparql {
 		StringWriter sw = new StringWriter();
 		PrintWriter out = new PrintWriter(sw);
 		
-		if ( results.hasNext() ) {
-			while ( results.hasNext() ) {
-				QuerySolution sol = results.nextSolution();
-				String comma = "";
-				Iterator<?> varNames = sol.varNames();
-				while ( varNames.hasNext() ) {
-					String varName = varNames.next().toString();
-					String value = sol.get(varName).toString();
-					value = value.replaceAll("\"", "\\\"");
-					if ( value.indexOf(',') >= 0 ) {
-						value = "\"" +value+ "\"";
-					}
-					out.printf("%s%s", comma, value);
-					comma = ",";
-				}
-				out.printf("%n");
+		// header line:
+		String comma = "";
+		List<?> vars = results.getResultVars();
+		for ( Object var: vars ) {
+			String value = var.toString();
+			if ( value.indexOf(',') >= 0 ) {
+				value = "\"" +value+ "\"";
 			}
+			out.printf("%s%s", comma, value);
+			comma = ",";
+		}
+		out.printf("%n");
+
+		// contents:
+		while ( results.hasNext() ) {
+			QuerySolution sol = results.nextSolution();
+			comma = "";
+			Iterator<?> varNames = sol.varNames();
+			while ( varNames.hasNext() ) {
+				String varName = varNames.next().toString();
+				String value = sol.get(varName).toString();
+				if ( value.indexOf(',') >= 0 ) {
+					value = "\"" +value+ "\"";
+				}
+				out.printf("%s%s", comma, value);
+				comma = ",";
+			}
+			out.printf("%n");
 		}
 		
 		return sw.toString();
