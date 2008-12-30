@@ -139,6 +139,16 @@ public class UriResolver extends HttpServlet {
 			_doListOntologies(request, response);
 		}
 		
+		// dispatch list of vocabularies?
+		else if ( Util.yes(request, "vocabs")  ) {
+			_doListVocabularies(request, response);
+		}
+		
+		// dispatch list of mappings?
+		else if ( Util.yes(request, "mappings")  ) {
+			_doListMappings(request, response);
+		}
+		
 		// dispatch a sparql-query?
 		else if ( Util.yes(request, "sparql")  ) {
 			sparqlDispatcher.execute(request, response);
@@ -1228,4 +1238,164 @@ public class UriResolver extends HttpServlet {
 		}
 	}
 
+	
+	/**
+	 * List all vocabularies (not mappings)
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	private void _doListVocabularies(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		final boolean ONLY_UNVERSIONED_URIS = true;
+		
+		Connection _con = null;
+		try {
+			_con = db.getConnection();
+			Statement _stmt = _con.createStatement();
+			String table = "v_ncbo_ontology";
+			String limit = Util.getParam(request, "limit", null);
+			if ( limit != null ) {
+				limit = " limit " +limit;
+			}
+
+			String query = 
+				"select urn " +
+				"from " +table+ limit;
+			
+			ResultSet rs = _stmt.executeQuery(query);
+			
+			response.setContentType("text/plain");
+	        PrintWriter out = response.getWriter();
+
+	        while ( rs.next() ) {
+	        	String ontologyUri = rs.getString(1);
+	        	
+	        	try {
+	        		MmiUri mmiUri = MmiUri.create(ontologyUri);
+
+	        		// discard mapping ontologies:
+	        		String topic = mmiUri.getTopic().toLowerCase();
+	        		if ( topic.matches(".*_map($|_.*)") ) {
+	        			// discard mapping ontology
+	        			System.out.println("_doListVocabularies: mapping ontology discarded");
+	        			continue;
+	        		}
+
+	        		String unversionedOntologyUri = mmiUri.copyWithVersion(null).toString();
+
+	        		if ( ONLY_UNVERSIONED_URIS ) {    
+	        			// add only the "unversioned" form of the URI:
+	        			out.println(unversionedOntologyUri);
+	        		}
+	        		else {
+	        			// add both the versioned and the unversioned:
+	        			out.println(ontologyUri);
+	        			out.println(unversionedOntologyUri);
+	        		}
+	        	}
+	    		catch (URISyntaxException e) {
+	    			// Shouldn't happen.
+	    			// TODO Auto-generated catch block
+	    			e.printStackTrace();
+	    			continue;
+	    		}
+	        }
+
+		} 
+		catch (SQLException e) {
+			throw new ServletException(e);
+		}
+		finally {
+			if ( _con != null ) {
+				try {
+					_con.close();
+				}
+				catch (SQLException e) {
+					throw new ServletException(e);
+				}
+			}
+		}
+	}
+
+	/**
+	 * List all mappings.
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	private void _doListMappings(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		final boolean ONLY_UNVERSIONED_URIS = true;
+		
+		Connection _con = null;
+		try {
+			_con = db.getConnection();
+			Statement _stmt = _con.createStatement();
+			String table = "v_ncbo_ontology";
+			String limit = Util.getParam(request, "limit", null);
+			if ( limit != null ) {
+				limit = " limit " +limit;
+			}
+
+			String query = 
+				"select urn " +
+				"from " +table+ limit;
+			
+			ResultSet rs = _stmt.executeQuery(query);
+			
+			response.setContentType("text/plain");
+	        PrintWriter out = response.getWriter();
+
+	        while ( rs.next() ) {
+	        	String ontologyUri = rs.getString(1);
+	        	
+	        	try {
+	        		MmiUri mmiUri = MmiUri.create(ontologyUri);
+
+	        		// only mapping ontologies:
+	        		String topic = mmiUri.getTopic().toLowerCase();
+	        		if ( ! topic.matches(".*_map($|_.*)") ) {
+	        			// discard non-mapping ontology
+	        			System.out.println("_doListMappings: non-mapping ontology discarded");
+	        			continue;
+	        		}
+
+	        		String unversionedOntologyUri = mmiUri.copyWithVersion(null).toString();
+
+	        		if ( ONLY_UNVERSIONED_URIS ) {    
+	        			// add only the "unversioned" form of the URI:
+	        			out.println(unversionedOntologyUri);
+	        		}
+	        		else {
+	        			// add both the versioned and the unversioned:
+	        			out.println(ontologyUri);
+	        			out.println(unversionedOntologyUri);
+	        		}
+	        	}
+	    		catch (URISyntaxException e) {
+	    			// Shouldn't happen.
+	    			// TODO Auto-generated catch block
+	    			e.printStackTrace();
+	    			continue;
+	    		}
+	        }
+
+		} 
+		catch (SQLException e) {
+			throw new ServletException(e);
+		}
+		finally {
+			if ( _con != null ) {
+				try {
+					_con.close();
+				}
+				catch (SQLException e) {
+					throw new ServletException(e);
+				}
+			}
+		}
+	}
 }

@@ -7,6 +7,8 @@ ChangeLog
 	- sparql: "select" query now also process new "form" parameter, which can be
 	  "html" (the default) or csv.
 	- updated sparql.html page.
+	
+	- dispatch new commands: vocabs, mappings
 
 2008-12-03   0.2.0.beta2 (20081203)
 	- Dispatch the "root" request to report information about this service, ie.
