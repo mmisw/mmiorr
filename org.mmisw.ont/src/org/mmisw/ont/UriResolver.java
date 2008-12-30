@@ -1248,17 +1248,17 @@ public class UriResolver extends HttpServlet {
 	 */
 	private void _doListVocabularies(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		final boolean ONLY_UNVERSIONED_URIS = true;
+		boolean unverAndVer = Boolean.valueOf(Util.getParam(request, "uv", "true"));
+		String limit = Util.getParam(request, "limit", "");
+		if ( limit.length() > 0 ) {
+			limit = " limit " +limit;
+		}
+		String table = "v_ncbo_ontology";
 		
 		Connection _con = null;
 		try {
 			_con = db.getConnection();
 			Statement _stmt = _con.createStatement();
-			String table = "v_ncbo_ontology";
-			String limit = Util.getParam(request, "limit", "");
-			if ( limit.length() > 0 ) {
-				limit = " limit " +limit;
-			}
 
 			String query = 
 				"select urn " +
@@ -1285,13 +1285,13 @@ public class UriResolver extends HttpServlet {
 
 	        		String unversionedOntologyUri = mmiUri.copyWithVersion(null).toString();
 
-	        		if ( ONLY_UNVERSIONED_URIS ) {    
-	        			// add only the "unversioned" form of the URI:
+	        		if ( unverAndVer ) {    
+	        			// add both the versioned and the unversioned:
+	        			out.println(ontologyUri);
 	        			out.println(unversionedOntologyUri);
 	        		}
 	        		else {
-	        			// add both the versioned and the unversioned:
-	        			out.println(ontologyUri);
+	        			// add only the "unversioned" form of the URI:
 	        			out.println(unversionedOntologyUri);
 	        		}
 	        	}
@@ -1328,17 +1328,17 @@ public class UriResolver extends HttpServlet {
 	 */
 	private void _doListMappings(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		final boolean ONLY_UNVERSIONED_URIS = true;
+		boolean unverAndVer = Boolean.valueOf(Util.getParam(request, "uv", "true"));
+		String limit = Util.getParam(request, "limit", "");
+		if ( limit.length() > 0 ) {
+			limit = " limit " +limit;
+		}
+		String table = "v_ncbo_ontology";
 		
 		Connection _con = null;
 		try {
 			_con = db.getConnection();
 			Statement _stmt = _con.createStatement();
-			String table = "v_ncbo_ontology";
-			String limit = Util.getParam(request, "limit", "");
-			if ( limit.length() > 0 ) {
-				limit = " limit " +limit;
-			}
 
 			String query = 
 				"select urn " +
@@ -1365,13 +1365,13 @@ public class UriResolver extends HttpServlet {
 
 	        		String unversionedOntologyUri = mmiUri.copyWithVersion(null).toString();
 
-	        		if ( ONLY_UNVERSIONED_URIS ) {    
-	        			// add only the "unversioned" form of the URI:
+	        		if ( unverAndVer ) {    
+	        			// add both the versioned and the unversioned:
+	        			out.println(ontologyUri);
 	        			out.println(unversionedOntologyUri);
 	        		}
 	        		else {
-	        			// add both the versioned and the unversioned:
-	        			out.println(ontologyUri);
+	        			// add only the "unversioned" form of the URI:
 	        			out.println(unversionedOntologyUri);
 	        		}
 	        	}
