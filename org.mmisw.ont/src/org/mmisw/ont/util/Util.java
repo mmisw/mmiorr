@@ -153,7 +153,7 @@ public class Util {
 		try {
 			_con = db.getConnection();
 			Statement _stmt = _con.createStatement();
-			String table = Util.getParam(request, "table", "ncbo_ontology");
+			String table = Util.getParam(request, "table", "v_ncbo_ontology");
 			int limit = Integer.parseInt(Util.getParam(request, "limit", "500"));
 
 			String query = "select * from " +table+ "  limit " +limit;
