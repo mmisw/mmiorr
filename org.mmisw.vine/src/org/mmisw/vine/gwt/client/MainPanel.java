@@ -1,9 +1,13 @@
 package org.mmisw.vine.gwt.client;
 
+import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
+
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class MainPanel extends VerticalPanel {
+	
+	private MultiPageEditor multiPageEditor;
 	
 	MainPanel() {
 		super();
@@ -14,21 +18,16 @@ public class MainPanel extends VerticalPanel {
 	    
 	    add(decPanel);
 
-	    
-		// TODO: GUI to select working ontologies.
-		// for now, choose the first 2:
-		int num = Math.min(2, Main.allUris.size());
-		for ( int i = 0;  i < num; i++ ) {
-			Main.workingUris.add(Main.allUris.get(i));
-		}
-
-		
-		OntologySelection ontSel = new OntologySelection();
+		OntologySelection ontSel = new OntologySelection(this);
 		ontSel.setBorderWidth(1);
 	    layout.add(ontSel);
-	    layout.add(new MultiPageEditor());
+	    layout.add(multiPageEditor = new MultiPageEditor());
 
-	    layout.setCellHorizontalAlignment(ontSel, ALIGN_RIGHT);
+	    layout.setCellHorizontalAlignment(ontSel, ALIGN_CENTER);
 	}
 
+	void notifyWorkingOntologyAdded(OntologyInfo ontologyInfo) {
+		Main.workingUris.add(ontologyInfo);
+		multiPageEditor.notifyWorkingOntologyAdded(ontologyInfo);
+	}
 }

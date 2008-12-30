@@ -3,6 +3,18 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2008-12-29
+	- List of vocabularies now obtained from the registry (via the Ont service).
+	- User can now select the working vocabularies.  Prefixes A, B, etc. are
+	  incrementally assigned to the working ontologies. Note that 2 or more
+	  vocabularies can be specified.
+	- Toggle buttons (identified with those prefixes) are to be used in the 
+	  search section of each side.
+	  
+	Next:
+		- start populating the "term" sections according to the selected vocabs
+		  on each side and the search string.
+
 2008-12-02
 	- Included GWT code from a preliminary exercise to emulate standalone GUI.
 	  I will use this as a basis to define the core functionality.

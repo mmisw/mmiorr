@@ -14,12 +14,12 @@ public interface VineService extends RemoteService {
 
 	// TODO
 	
-	List<String> getAllOntologies();
+	List<OntologyInfo> getAllOntologies();
 	
 	String getOntology(String uri);
 
 	
-	List<String> search(String text, List<String> uris);
+	List<String> search(String text, List<OntologyInfo> uris);
 	
 	String performMapping(List<String> leftTerms, int relationCode, List<String> rightTerms);
 }

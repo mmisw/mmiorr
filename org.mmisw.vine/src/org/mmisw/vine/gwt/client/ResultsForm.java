@@ -20,10 +20,11 @@ public class ResultsForm extends VerticalPanel {
 		
 		CellPanel hp = new HorizontalPanel();
 		add(hp);
-		hp.setSpacing(10);
-		CheckBox cba = new CheckBox("All");
-		hp.add(cba);
-		hp.add(new HTML("Found: ?   Selected: ?"));
+		hp.setSpacing(10);		
+		
+//		CheckBox cba = new CheckBox("All");
+//		hp.add(cba);
+//		hp.add(new HTML("Found: ?   Selected: ?"));
 		
 		CellPanel p = new VerticalPanel();
 		

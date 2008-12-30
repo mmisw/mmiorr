@@ -2,9 +2,10 @@ package org.mmisw.vine.gwt.client;
 
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 public class VocabularyForm extends VerticalPanel {
+	
+	private VocabularySelection vocabularySelection;
 	
 	VocabularyForm(int searchIndex) {
 		super();
@@ -16,7 +17,7 @@ public class VocabularyForm extends VerticalPanel {
 	    add(decPanel);
 		
 	    layout.setSpacing(5);
-	    layout.add(new VocabularySelection(searchIndex));
+	    layout.add(vocabularySelection = new VocabularySelection(searchIndex));
 	    
 	    ResultsForm resultsForm = new ResultsForm();
 	    
@@ -28,5 +29,10 @@ public class VocabularyForm extends VerticalPanel {
 
 		layout.add(new MappingsPane());
 	}
+	
+	void notifyWorkingOntologyAdded(int searchIndex) {
+		vocabularySelection.setToggleButtons(searchIndex);
+	}
+
 
 }

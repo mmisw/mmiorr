@@ -47,7 +47,7 @@ public class SearchGroup extends VerticalPanel {
 		oracle.add("Canary");
 		   
 		box = new SuggestBox(oracle);
-		   
+		box.setWidth("250px");
 //-		hp.add(box);
 		hp0.add(box);
 		
@@ -71,9 +71,6 @@ public class SearchGroup extends VerticalPanel {
 
 	private void search() {
 		final String text = box.getText().trim();
-		if ( text.length() == 0 ) {
-			return;
-		}
 		
 		AsyncCallback<List<String>> callback = new AsyncCallback<List<String>>() {
 			public void onFailure(Throwable thr) {
@@ -82,8 +79,9 @@ public class SearchGroup extends VerticalPanel {
 
 			public void onSuccess(List<String> terms) {
 				Main.log("search: retrieved " +terms.size()+ " terms");
-				oracle.add(text);
-				
+				if ( text.length() > 0 ) {
+					oracle.add(text);
+				}
 				// TODO Auto-generated method stub
 				
 				resultsForm.updateTerms(terms);

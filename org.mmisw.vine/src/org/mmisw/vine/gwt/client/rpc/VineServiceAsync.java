@@ -14,11 +14,11 @@ public interface VineServiceAsync {
 
 	// TODO
 
-	void getAllOntologies(AsyncCallback<List<String>> callback);
+	void getAllOntologies(AsyncCallback<List<OntologyInfo>> callback);
 	
 	void getOntology(String uri, AsyncCallback<String> callback);
 	
-	void search(String text, List<String> uris, AsyncCallback<List<String>> callback);
+	void search(String text, List<OntologyInfo> uris, AsyncCallback<List<String>> callback);
 	
 	void performMapping(List<String> leftTerms, int relationCode, List<String> rightTerms,
 			AsyncCallback<String> callback);

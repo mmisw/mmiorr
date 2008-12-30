@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mmisw.vine.gwt.client.img.VineImageBundle;
+import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
 import org.mmisw.vine.gwt.client.rpc.VineService;
 import org.mmisw.vine.gwt.client.rpc.VineServiceAsync;
 
@@ -42,10 +43,10 @@ public class Main implements EntryPoint {
 	static VineServiceAsync vineService;
 	
 	// cached list of all ontologies
-	static List<String> allUris = new ArrayList<String>();
+	static List<OntologyInfo> allUris = new ArrayList<OntologyInfo>();
 	
 	// selected ontologies to work on:
-	static List<String> workingUris = new ArrayList<String>();
+	static List<OntologyInfo> workingUris = new ArrayList<OntologyInfo>();
 	
 
   /**
@@ -71,27 +72,16 @@ public class Main implements EntryPoint {
           
       }
       
-      if ( true || 
-    		  GWT.isScript() ) {
-    	  // ie, actually running on the server.
-    	  getVineService();
-    	  getAllOntologies(params);
-      }
-      else { 
-    	  // running in hosted mode. Skip the vineService for now.
-    	  allUris = new ArrayList<String>();
-    	  allUris.add("http://marinemetadata.org/cf");
-    	  allUris.add("http://marinemetadata.org/gcmd");
-    	  startGui(params); 
-      }
+      getVineService();
+      getAllOntologies(params);
   }
   
   
   private void startGui(final Map<String,String> params) {
 
-	  RootPanel.get().add(Util.createHtml(APP_NAME+ " " +VERSION+ " " +VERSION_COMMENT+ "<br/><br/>", 10));
 	  MainPanel mainPanel = new MainPanel();
 	  RootPanel.get().add(mainPanel);
+	  RootPanel.get().add(Util.createHtml(APP_NAME+ " " +VERSION+ " " +VERSION_COMMENT+ "<br/><br/>", 10));
 
       if ( includeLog ) {
           final HTML logLabel = Util.createHtml("", 10);
@@ -127,12 +117,12 @@ public class Main implements EntryPoint {
   }
   
   private void getAllOntologies(final Map<String,String> params) {
-      AsyncCallback<List<String>> callback = new AsyncCallback<List<String>>() {
+      AsyncCallback<List<OntologyInfo>> callback = new AsyncCallback<List<OntologyInfo>>() {
           public void onFailure(Throwable thr) {
               RootPanel.get().add(new HTML(thr.toString()));
           }
 
-		public void onSuccess(List<String> ontUris) {
+		public void onSuccess(List<OntologyInfo> ontUris) {
 			Main.allUris = ontUris;
 			log("getAllOntologies: retrieved " +ontUris.size()+ " ontologies");
 			startGui(params);

@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
 import org.mmisw.vine.gwt.client.rpc.VineService;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -18,10 +22,36 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
  */
 public class VineServiceImpl extends RemoteServiceServlet implements VineService {
 	private static final long serialVersionUID = 1L;
+	
+	private static final String ONT = "http://mmisw.org/ont";
+	private static final String VOCABS = ONT + "?vocabs";
+//	private static final String MAPPINGS = ONT + "?mappings";
 
 	
-	public List<String> getAllOntologies() {
-		return onts;
+	public List<OntologyInfo> getAllOntologies() {
+		List<OntologyInfo> vocabs = new ArrayList<OntologyInfo>();
+		
+		String uri = VOCABS;
+		System.out.println("getAsString. uri= " +uri);
+		String response;
+		try {
+			response = getAsString(uri, Integer.MAX_VALUE);
+		}
+		catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return vocabs;
+		}
+		String[] lines = response.split("\n|\r\n|\r");
+		for ( String line : lines ) {
+			String[] toks = line.split("\\s*,\\s*");
+			OntologyInfo ontologyInfo = new OntologyInfo();
+			ontologyInfo.setUri(toks[0]);
+			ontologyInfo.setDisplayLabel(toks[1]);
+			vocabs.add(ontologyInfo);
+		}
+		
+		return vocabs;
 	}
 	
 	public String getOntology(String uri)  {
@@ -31,13 +61,13 @@ public class VineServiceImpl extends RemoteServiceServlet implements VineService
 
 
 	static List<String> onts = Arrays.asList(new String[] {
-			"http://marinemetadata.org/cf",
+			"http://mmisw.org/ont/cf/20081116T050933/parameter",
 			"http://marinemetadata.org/gcmd",
 			"http://marinemetadata.org/agu.owl",
 	});
 
 
-	public List<String> search(String text, List<String> uris) {
+	public List<String> search(String text, List<OntologyInfo> uris) {
 		// TODO 
 		List<String> terms = new ArrayList<String>();
 		for (String ont : onts ) {
@@ -55,4 +85,23 @@ public class VineServiceImpl extends RemoteServiceServlet implements VineService
 		return null;
 	}
 
+	
+	
+	private static String getAsString(String uri, int maxlen) throws Exception {
+		HttpClient client = new HttpClient();
+	    GetMethod meth = new GetMethod(uri);
+	    try {
+	        client.executeMethod(meth);
+
+	        if (meth.getStatusCode() == HttpStatus.SC_OK) {
+	            return meth.getResponseBodyAsString(maxlen);
+	        }
+	        else {
+	          throw new Exception("Unexpected failure: " + meth.getStatusLine().toString());
+	        }
+	    }
+	    finally {
+	        meth.releaseConnection();
+	    }
+	}
 }

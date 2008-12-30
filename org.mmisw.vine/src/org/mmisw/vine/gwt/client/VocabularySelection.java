@@ -1,5 +1,7 @@
 package org.mmisw.vine.gwt.client;
 
+import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
+
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
@@ -10,30 +12,43 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class VocabularySelection extends VerticalPanel {
 	
+	private CellPanel buttons = new HorizontalPanel();
+	
 	VocabularySelection(int searchIndex) {
 		super();
-		
 		CellPanel hp = new HorizontalPanel();
 		add(hp);
 
 		hp.add(new HTML("Search the following ontologies:"));
+		hp.add(buttons);
 		
+		setToggleButtons(searchIndex);
+		
+	}
+	
+	void setToggleButtons(int searchIndex) {
+		buttons.clear();
 		char id = 'A';
 		int idx = 0;
-		for ( String s : Main.workingUris ) {
+		for ( OntologyInfo s : Main.workingUris ) {
 			final ToggleButton sel = new ToggleButton("" +id);
+			sel.setTitle(s.getDisplayLabel());
 			sel.addClickListener(new ClickListener() {
 				public void onClick(Widget sender) {
 					// TODO
 				}
 			});
-			hp.add(sel);
+			buttons.add(sel);
 			if ( searchIndex == idx ) {
 				sel.setDown(true);
 			}
 			
 			id++;
 			idx++;
+		}
+		
+		if ( idx == 0 ) {
+			buttons.add(new HTML(" <i>(no working ontologies)</i>"));
 		}
 		
 	}
