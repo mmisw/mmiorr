@@ -13,7 +13,7 @@
     <tr> 
 	    <td>
 	    <form name="testForm" method="get" action="/ont/?sparql">
-	    	SPARQL query:<br>
+	    	Your SPARQL query:<br>
 		<textarea rows="6" cols="60" name="sparql"></textarea>
 	    	<input value="Submit" type="submit">
 	    </form>
@@ -26,8 +26,10 @@
 	<a href="http://www.w3.org/RDF">RDF</a> (Resource Description Framework). 
 	More information <a href="http://en.wikipedia.org/wiki/SPARQL">here</a>.
 
+	<br/>
 	Use this form to submit your SPARQL query against the 
 	<a href="http://mmisw.org/or">MMI Ontology Registry and Respository</a>. 
+	Note that both GET and POST methods are dispatched.
 	
 	</td>
   </tr>
@@ -133,8 +135,10 @@ WHERE { ?class rdf:type owl:Class .
 
 </tbody></table>
 
-Note: HTML is the default output format for SELECT queries. Add the "form" parameter with value "csv" in your request to obtain a CSV output format,
-for example: 
+<br/>
+Note: The default output format for SELECT queries is HTML. 
+To obtain a CSV output format, add the "form" parameter with value "csv" in your request,
+for example: <br/>
 <a href="http://mmisw.org/ont/?form=csv&sparql=SELECT++%3Fs+%3Fp+%3Fo+WHERE+{%3Fs+%3Fp+%3Fo.+}+LIMIT+20%0D%0A">http://mmisw.org/ont/?form=csv&sparql=SELECT ?s ?p ?o WHERE {?s ?p ?o. } LIMIT 20</a>.
 
 
