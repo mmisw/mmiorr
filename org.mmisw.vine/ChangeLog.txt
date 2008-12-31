@@ -3,6 +3,14 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2008-12-30
+	- Started populating the "term" sections according to the selected vocabs
+	  on each side and the search string. There is a preliminary core.Util class
+	  with some Jena-based stuff to obtain information about a selected ontology.
+	- Search operation is now performed on the client side: required info about
+	  each selected (working) ontology is obtained from the server and stored in
+	  the corresponding OntologyInfo object.
+	
 2008-12-29
 	- List of vocabularies now obtained from the registry (via the Ont service).
 	- User can now select the working vocabularies.  Prefixes A, B, etc. are
@@ -11,10 +19,7 @@ ChangeLog
 	- Toggle buttons (identified with those prefixes) are to be used in the 
 	  search section of each side.
 	  
-	Next:
-		- start populating the "term" sections according to the selected vocabs
-		  on each side and the search string.
-
+		
 2008-12-02
 	- Included GWT code from a preliminary exercise to emulate standalone GUI.
 	  I will use this as a basis to define the core functionality.
