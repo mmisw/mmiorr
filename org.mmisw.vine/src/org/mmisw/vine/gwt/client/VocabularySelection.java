@@ -35,7 +35,7 @@ public class VocabularySelection extends VerticalPanel {
 			sel.setTitle(s.getDisplayLabel());
 			sel.addClickListener(new ClickListener() {
 				public void onClick(Widget sender) {
-					// TODO
+					// TODO update some variable indicating the selected ontologies for search
 				}
 			});
 			buttons.add(sel);

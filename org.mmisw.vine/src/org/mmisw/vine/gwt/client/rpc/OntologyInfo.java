@@ -1,9 +1,10 @@
 package org.mmisw.vine.gwt.client.rpc;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
- * Basic info about a registered ontology.
+ * Info about a registered ontology.
  * 
  * @author Carlos Rueda
  */
@@ -13,6 +14,9 @@ public class OntologyInfo implements Serializable {
 	
 	private String uri;
 	private String displayLabel;
+	
+	private List<EntityInfo> entities;
+	
 
 	public String getUri() {
 		return uri;
@@ -26,4 +30,11 @@ public class OntologyInfo implements Serializable {
 	public void setDisplayLabel(String displayLabel) {
 		this.displayLabel = displayLabel;
 	}
+	public List<EntityInfo> getEntities() {
+		return entities;
+	}
+	public void setEntities(List<EntityInfo> entities) {
+		this.entities = entities;
+	}
+	
 }

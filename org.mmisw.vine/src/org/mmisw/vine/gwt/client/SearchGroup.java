@@ -1,8 +1,11 @@
 package org.mmisw.vine.gwt.client;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import org.mmisw.vine.gwt.client.rpc.EntityInfo;
+import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
+
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -10,7 +13,6 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.PushButton;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -38,7 +40,7 @@ public class SearchGroup extends VerticalPanel {
 //-		HorizontalPanel hp = new HorizontalPanel();
 //-		add(hp);
 		
-		oracle = new MultiWordSuggestOracle();  
+		oracle = new MultiWordSuggestOracle("/");  
 		
 		// TODO: update the oracle as the user enters new search strings	
 		oracle.add("Cat");
@@ -72,24 +74,65 @@ public class SearchGroup extends VerticalPanel {
 	private void search() {
 		final String text = box.getText().trim();
 		
-		AsyncCallback<List<String>> callback = new AsyncCallback<List<String>>() {
-			public void onFailure(Throwable thr) {
-				RootPanel.get().add(new HTML(thr.toString()));
-			}
-
-			public void onSuccess(List<String> terms) {
-				Main.log("search: retrieved " +terms.size()+ " terms");
-				if ( text.length() > 0 ) {
-					oracle.add(text);
-				}
-				// TODO Auto-generated method stub
-				
-				resultsForm.updateTerms(terms);
-			}
-		};
+		
+		resultsForm.searching();
 		
 		// FIXME: not on workingUris but on my selected URIs
-		Main.vineService.search(text, Main.workingUris, callback);
+		List<String> terms = search(text, Main.workingUris);
+
+		Main.log("search: retrieved " +terms.size()+ " terms");
+		if ( text.length() > 0 ) {
+			oracle.add(text);
+		}
+		resultsForm.updateTerms(terms);
 		
 	}
+	
+	private List<String> search(String text, List<OntologyInfo> uris) {
+		
+		// TODO get this flags from parameters
+		boolean useLocalName = true;
+		boolean useLabel = true;
+		boolean useComment = true;
+		
+		
+		List<String> terms = new ArrayList<String>();
+		char code = 'A';
+		for (OntologyInfo ont : uris ) {
+			List<EntityInfo> entities = ont.getEntities();
+			if ( entities == null || entities.size() == 0 ) {
+				code++;
+				continue;
+			}
+			
+			for ( EntityInfo entityInfo : entities ) {
+				boolean add = false;
+				
+				// check localName
+				if ( (useLocalName && entityInfo.getLocalName().indexOf(text) >= 0) ) {
+					add = true;
+				}
+				
+				// check label
+				if ( !add && useLabel ) {
+					String str = entityInfo.getDisplayLabel();
+					add = str != null && str.indexOf(text) >= 0;
+				}
+				
+				// check comment
+				if ( !add && useComment ) {
+					String str = entityInfo.getComment();
+					add = str != null && str.indexOf(text) >= 0;
+				}
+				
+				if ( add ) {
+					terms.add(code+ ":" +entityInfo.getLocalName());
+				}
+			}
+			code++;
+		}
+		return terms;
+	}
+
+
 }

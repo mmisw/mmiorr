@@ -1,12 +1,12 @@
 package org.mmisw.vine.gwt.server;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.mmisw.vine.core.Util;
 import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
 import org.mmisw.vine.gwt.client.rpc.VineService;
 
@@ -28,8 +28,11 @@ public class VineServiceImpl extends RemoteServiceServlet implements VineService
 //	private static final String MAPPINGS = ONT + "?mappings";
 
 	
+	private static List<OntologyInfo> onts;
+
+
 	public List<OntologyInfo> getAllOntologies() {
-		List<OntologyInfo> vocabs = new ArrayList<OntologyInfo>();
+		onts = new ArrayList<OntologyInfo>();
 		
 		String uri = VOCABS;
 		System.out.println("getAsString. uri= " +uri);
@@ -38,9 +41,9 @@ public class VineServiceImpl extends RemoteServiceServlet implements VineService
 			response = getAsString(uri, Integer.MAX_VALUE);
 		}
 		catch (Exception e) {
-			// TODO Auto-generated catch block
+			// TODO A notification mechanism (like in ontmd) for exceptions
 			e.printStackTrace();
-			return vocabs;
+			return onts;
 		}
 		String[] lines = response.split("\n|\r\n|\r");
 		for ( String line : lines ) {
@@ -48,40 +51,23 @@ public class VineServiceImpl extends RemoteServiceServlet implements VineService
 			OntologyInfo ontologyInfo = new OntologyInfo();
 			ontologyInfo.setUri(toks[0]);
 			ontologyInfo.setDisplayLabel(toks[1]);
-			vocabs.add(ontologyInfo);
+			onts.add(ontologyInfo);
 		}
 		
-		return vocabs;
+		return onts;
 	}
 	
-	public String getOntology(String uri)  {
-		// TODO
-		return null;
-	}
-
-
-	static List<String> onts = Arrays.asList(new String[] {
-			"http://mmisw.org/ont/cf/20081116T050933/parameter",
-			"http://marinemetadata.org/gcmd",
-			"http://marinemetadata.org/agu.owl",
-	});
-
-
-	public List<String> search(String text, List<OntologyInfo> uris) {
-		// TODO 
-		List<String> terms = new ArrayList<String>();
-		for (String ont : onts ) {
-			if ( ont.indexOf(text) >= 0 ) {
-				terms.add(ont);
-			}
-		}
-		return terms;
+	public OntologyInfo getEntities(OntologyInfo ontologyInfo) {
+		System.out.println("getEntities starting");
+		Util.getEntities(ontologyInfo);
+		System.out.println("getEntities done");
+		return ontologyInfo;
 	}
 
 
 	public String performMapping(List<String> leftTerms, int relationCode,
 			List<String> rightTerms) {
-		// TODO Auto-generated method stub
+		// TODO performMapping not implemented yet
 		return null;
 	}
 

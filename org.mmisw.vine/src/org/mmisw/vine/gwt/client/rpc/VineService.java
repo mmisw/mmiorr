@@ -11,15 +11,23 @@ import com.google.gwt.user.client.rpc.RemoteService;
  * @version $Id$
  */
 public interface VineService extends RemoteService {
-
-	// TODO
 	
+	/**
+	 * Gets the vocabularies.
+	 * Only the basic information about each ontology is obtained.
+	 * Call {@link #getEntities(OntologyInfo)} to obtain the entities of an ontology.
+	 */
 	List<OntologyInfo> getAllOntologies();
 	
-	String getOntology(String uri);
+	
+	/**
+	 * Obtains the entities of an ontology.
+	 * @param ontologyInfo
+	 * @return ontologyInfo
+	 */
+	OntologyInfo getEntities(OntologyInfo ontologyInfo);
 
 	
-	List<String> search(String text, List<OntologyInfo> uris);
-	
+	// TODO Not used; the scheme for the mappings still to be determined
 	String performMapping(List<String> leftTerms, int relationCode, List<String> rightTerms);
 }

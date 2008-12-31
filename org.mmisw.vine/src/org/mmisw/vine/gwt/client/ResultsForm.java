@@ -39,8 +39,13 @@ public class ResultsForm extends VerticalPanel {
 		
 	}
 
+	public void searching() {
+		p2.clear();
+		p2.add(new HTML("<i>searching...</i>"));	
+	}
+
 	public void updateTerms(List<String> terms) {
-		// TODO Auto-generated method stub
+		// TODO dispatch checkBox for the terms
 		p2.clear();
 		for ( String term : terms ) {
 			CheckBox cb = new CheckBox("" +term);

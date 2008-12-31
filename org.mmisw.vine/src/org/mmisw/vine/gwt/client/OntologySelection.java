@@ -47,8 +47,6 @@ public class OntologySelection extends VerticalPanel {
 	}
 	
 	private void addVocabulary() {
-		// TODO Auto-generated method stub
-		
 		final ListBox lb = createListBox();
 		lb.setVisibleItemCount(Math.min(lb.getItemCount(), 20));
 		
