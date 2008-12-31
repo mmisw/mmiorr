@@ -37,4 +37,12 @@ public class OntologyInfo implements Serializable {
 		this.entities = entities;
 	}
 	
+	
+	public boolean equals(Object other) {
+		return other instanceof OntologyInfo && uri.equals(((OntologyInfo) other).uri);
+	}
+	public int hashCode() {
+		return uri.hashCode();
+	}
+	
 }

@@ -4,15 +4,31 @@ import java.util.List;
 
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class ResultsForm extends VerticalPanel {
 	
+	private int numElements;
+	private int numSelected;
+	
+	private HTML status = new HTML("Selected: " +numSelected+ " out of " +numElements+ " element(s)");
+	
 	private CellPanel p2;
+	private ClickListener cl = new ClickListener() {
+		public void onClick(Widget sender) {
+			CheckBox cb = (CheckBox) sender;
+			boolean selected = cb.isChecked();
+			numSelected += selected ? +1 : -1;
+			updateStatus();
+		}
+	};
 	
 	ResultsForm() {
 		super();
@@ -22,9 +38,20 @@ public class ResultsForm extends VerticalPanel {
 		add(hp);
 		hp.setSpacing(10);		
 		
-//		CheckBox cba = new CheckBox("All");
-//		hp.add(cba);
-//		hp.add(new HTML("Found: ?   Selected: ?"));
+		PushButton all = new PushButton("All", new ClickListener() {
+			public void onClick(Widget sender) {
+				updateAllNone(true);
+			}
+		});
+		hp.add(all);
+		PushButton none = new PushButton("None", new ClickListener() {
+			public void onClick(Widget sender) {
+				updateAllNone(false);
+			}
+		});
+		hp.add(none);
+
+		hp.add(status);
 		
 		CellPanel p = new VerticalPanel();
 		
@@ -38,6 +65,19 @@ public class ResultsForm extends VerticalPanel {
 		p.add(scroller);
 		
 	}
+	
+	void updateAllNone(boolean selected) {
+		for ( int i = 0, c = p2.getWidgetCount(); i < c; i++ ) {
+			CheckBox cb = (CheckBox) p2.getWidget(i);
+			cb.setChecked(selected);
+		}
+		numSelected = selected ? p2.getWidgetCount() : 0;
+		updateStatus();
+	}
+	
+	void updateStatus() {
+		status.setText("Selected: " +numSelected+ " out of " +numElements+ " element(s)");
+	}
 
 	public void searching() {
 		p2.clear();
@@ -48,9 +88,12 @@ public class ResultsForm extends VerticalPanel {
 		// TODO dispatch checkBox for the terms
 		p2.clear();
 		for ( String term : terms ) {
-			CheckBox cb = new CheckBox("" +term);
+			CheckBox cb = new CheckBox(term);
+			cb.addClickListener(cl );
 			p2.add(cb);			
 		}
+		numElements = terms.size();
+		updateStatus();
 	}
 
 }

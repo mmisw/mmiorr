@@ -34,7 +34,11 @@ public class SearchGroup extends VerticalPanel {
 		hp0.setSpacing(10);
 		hp0.add(new HTML("Search for:"));
 		cb = new CheckBox("REGEX");
-		cb.setTitle("Check this to apply a regular expression search");
+		cb.setTitle("Check this to apply a regular expression search - NOT IMPLEMENTED YET");
+		
+		// TODO implement REGEX search
+		cb.setEnabled(false);
+		
 //-		hp0.add(cb);
 		
 //-		HorizontalPanel hp = new HorizontalPanel();
@@ -42,12 +46,6 @@ public class SearchGroup extends VerticalPanel {
 		
 		oracle = new MultiWordSuggestOracle("/");  
 		
-		// TODO: update the oracle as the user enters new search strings	
-		oracle.add("Cat");
-		oracle.add("Dog");
-		oracle.add("Horse");
-		oracle.add("Canary");
-		   
 		box = new SuggestBox(oracle);
 		box.setWidth("250px");
 //-		hp.add(box);
@@ -74,7 +72,7 @@ public class SearchGroup extends VerticalPanel {
 	private void search() {
 		final String text = box.getText().trim();
 		
-		
+		Main.log("searching: " +text);
 		resultsForm.searching();
 		
 		// FIXME: not on workingUris but on my selected URIs

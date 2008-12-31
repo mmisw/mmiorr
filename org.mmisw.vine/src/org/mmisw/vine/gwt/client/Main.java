@@ -24,11 +24,11 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class Main implements EntryPoint {
 	
-	public static final String APP_NAME = "Vine";
+	public static final String APP_NAME = "VINE";
 	public static final String VERSION = "0.1.pre1";
-	public static final String VERSION_COMMENT = "- Please note: this is just a preliminary, " +
-			"non-operational Web user interface. <a href=http://marinemetadata.org/vine>Click here</a> " +
-			"for current information about Vine.";
+	public static final String VERSION_COMMENT = 
+		"- NOTE: This is preliminary, not yet operational prototype of a Web version for VINE. " +
+		"<a href=http://marinemetadata.org/vine>Click here</a> for current information about Vine.";
 	
 	public static final String GET_USERS = "bioportal/rest/users";
 	

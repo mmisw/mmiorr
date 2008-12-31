@@ -3,6 +3,10 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2008-12-31
+	- Various additions
+	
+	
 2008-12-30
 	- Started populating the "term" sections according to the selected vocabs
 	  on each side and the search string. There is a preliminary core.Util class

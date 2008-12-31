@@ -22,9 +22,10 @@ public class MainPanel extends VerticalPanel {
 	    add(decPanel);
 
 		OntologySelection ontSel = new OntologySelection(this);
-		ontSel.setBorderWidth(1);
+//		ontSel.setBorderWidth(1);
 	    layout.add(ontSel);
-	    layout.add(multiPageEditor = new MultiPageEditor());
+	    multiPageEditor = new MultiPageEditor();
+	    layout.add(multiPageEditor.getWidget());
 
 	    layout.setCellHorizontalAlignment(ontSel, ALIGN_CENTER);
 	}

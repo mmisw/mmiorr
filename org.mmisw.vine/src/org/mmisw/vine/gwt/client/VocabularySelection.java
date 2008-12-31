@@ -19,7 +19,10 @@ public class VocabularySelection extends VerticalPanel {
 		CellPanel hp = new HorizontalPanel();
 		add(hp);
 
-		hp.add(new HTML("Search the following ontologies:"));
+		HTML label = new HTML("Search the following ontologies:");
+		hp.add(label);
+		label.setTitle("Select the working ontologies to search");
+		
 		hp.add(buttons);
 		
 		setToggleButtons(searchIndex);

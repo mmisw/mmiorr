@@ -14,6 +14,12 @@
 	<pathelement path="${GWT_HOME}/gwt-dev-linux.jar"/>
 	<pathelement path="${GWT_HOME}/gwt-dev-mac.jar"/>
 	<pathelement path="${GWT_HOME}/gwt-dev-win.jar"/>
+  	
+	<pathelement path="base_war/WEB-INF/lib/commons-httpclient-3.1.jar"/>
+	<pathelement path="base_war/WEB-INF/lib/commons-codec-1.3.jar"/>
+	<pathelement path="base_war/WEB-INF/lib/jena.jar"/>
+  	<pathelement path="base_war/WEB-INF/lib/arq.jar"/>
+
   </path>
 
   <target name="gwt-compiler-help">

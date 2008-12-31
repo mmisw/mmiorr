@@ -14,5 +14,6 @@
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jenatest.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/icu4j_3_4.jar"/>
+	<classpathentry kind="lib" path="base_war/WEB-INF/lib/commons-logging.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
