@@ -2,6 +2,8 @@ package org.mmisw.vine.gwt.client;
 
 import java.util.List;
 
+import org.mmisw.vine.gwt.client.rpc.EntityInfo;
+
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -86,15 +88,24 @@ public class ResultsForm extends VerticalPanel {
 		));
 	}
 
-	public void updateTerms(List<String> terms) {
+	public void updateEntities(List<EntityInfo> entities) {
 		// TODO dispatch checkBox for the terms
 		p2.clear();
-		for ( String term : terms ) {
-			CheckBox cb = new CheckBox(term);
+		for ( EntityInfo entity : entities ) {
+			String str = entity.getCode()+ ":" +entity.getLocalName();
+			
+			HorizontalPanel hp = new HorizontalPanel();
+			hp.setTitle(entity.getLocalName());
+			p2.add(hp);
+			
+			CheckBox cb = new CheckBox();
+			hp.add(cb);
+			hp.add(new HTML(str));
+
 			cb.addClickListener(cl);
-			p2.add(cb);			
+			
 		}
-		numElements = terms.size();
+		numElements = entities.size();
 		updateStatus();
 		
 		if ( numElements == 0 ) {

@@ -12,12 +12,23 @@ import java.io.Serializable;
 public abstract class EntityInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	// used only on the client side
+	private transient char code;
+	
 	
 	private String localName;
 	private String displayLabel;
 	private String comment;
 	
 	
+	public char getCode() {
+		return code;
+	}
+	public void setCode(char code) {
+		this.code = code;
+	}
+	
+
 	public String getLocalName() {
 		return localName;
 	}

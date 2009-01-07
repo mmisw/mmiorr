@@ -92,16 +92,16 @@ public class SearchGroup extends VerticalPanel {
 	}
 	
 	private void executeSearch(String text) {
-		List<String> terms = search(text, vocabularySelection.getSelectedVocabularies());
+		List<EntityInfo> entities = search(text, vocabularySelection.getSelectedVocabularies());
 		
-		Main.log("search: retrieved " +terms.size()+ " terms");
+		Main.log("search: retrieved " +entities.size()+ " terms");
 		if ( text.length() > 0 ) {
 			oracle.add(text);
 		}
-		resultsForm.updateTerms(terms);
+		resultsForm.updateEntities(entities);
 	}
 	
-	private List<String> search(String text, List<OntologyInfo> uris) {
+	private List<EntityInfo> search(String text, List<OntologyInfo> uris) {
 		
 		// TODO get this flags from parameters
 		boolean useLocalName = true;
@@ -109,9 +109,8 @@ public class SearchGroup extends VerticalPanel {
 		boolean useComment = true;
 		
 		
-		List<String> terms = new ArrayList<String>();
+		List<EntityInfo> foundEntities = new ArrayList<EntityInfo>();
 		for (OntologyInfo ont : uris ) {
-			char code = ont.getCode();
 			List<EntityInfo> entities = ont.getEntities();
 			if ( entities == null || entities.size() == 0 ) {
 				continue;
@@ -138,11 +137,12 @@ public class SearchGroup extends VerticalPanel {
 				}
 				
 				if ( add ) {
-					terms.add(code+ ":" +entityInfo.getLocalName());
+					entityInfo.setCode(ont.getCode());
+					foundEntities.add(entityInfo);
 				}
 			}
 		}
-		return terms;
+		return foundEntities;
 	}
 
 

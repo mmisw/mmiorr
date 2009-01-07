@@ -10,6 +10,9 @@ ChangeLog
 	- OntologyInfo: transient code to identify the vocab only on the client side
 	- Search now done on selected vocabs; also the loading.gif image is shown as a progress
 	  notification while searching.
+	- Search: Using List<EntityInfo> as preparation for showing associated information for
+	  found entities.
+	  TODO: allow selection of entities to show the info.
 	
 2008-12-31
 	- Various additions
