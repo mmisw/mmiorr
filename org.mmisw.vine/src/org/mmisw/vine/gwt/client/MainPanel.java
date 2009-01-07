@@ -5,6 +5,7 @@ import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -33,11 +34,26 @@ public class MainPanel extends VerticalPanel {
 	
 	/**
 	 * Gets the entities and then notifies the event to dependent components.
+	 * @param ontologySelection 
 	 * @param ontologyInfo
 	 */
-	void notifyWorkingOntologyAdded(OntologyInfo ontologyInfo, final MyDialog popup) {
+	void notifyWorkingOntologyAdded(final OntologySelection ontologySelection, OntologyInfo ontologyInfo, final MyDialog popup) {
 		
-		popup.setWidget(new HTML("<i>Loading ...</i>"));
+		HorizontalPanel hp = new HorizontalPanel();
+		hp.setSpacing(10);
+		
+		// TODO: why preloaded animated images don't animate? ...
+		// (see http://groups.google.com/group/Google-Web-Toolkit-Contributors/browse_thread/thread/c6bc51da338262af)
+//		hp.add(Main.images.loading().createImage());
+		hp.add(new HTML(
+			// ... workaround: insert it with img tag -- which does work, but that's not the idea
+			"<img src=\"images/loading.gif\">" +
+			" Loading " +ontologyInfo.getUri()+ 
+			" : <i>" +ontologyInfo.getDisplayLabel()+ "</i>" +
+			"<br/>Please wait..."
+		));
+		popup.setWidget(hp);
+		popup.setText("Loading vocabulary...");
 		
 		AsyncCallback<OntologyInfo> callback = new AsyncCallback<OntologyInfo>() {
 			public void onFailure(Throwable thr) {
@@ -49,6 +65,7 @@ public class MainPanel extends VerticalPanel {
 				popup.setWidget(new HTML("Load complete"));
 				Main.log("getEntities: " +ontologyInfo.getUri()+ " completed.");
 				
+				ontologySelection.ontologySucessfullyLoaded(ontologyInfo);
 				Main.workingUris.add(ontologyInfo);
 				multiPageEditor.notifyWorkingOntologyAdded(ontologyInfo);
 				

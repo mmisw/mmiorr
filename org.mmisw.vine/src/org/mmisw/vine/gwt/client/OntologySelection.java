@@ -6,12 +6,15 @@ import java.util.Map;
 import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
 
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.SuggestionEvent;
@@ -42,7 +45,7 @@ public class OntologySelection extends VerticalPanel {
 		
 		hp.add(new HTML("Working ontologies:"));
 		
-		PushButton addButton = new PushButton("Add...");
+		final PushButton addButton = new PushButton("Add...");
 		addButton.setTitle("Allows to add a working ontology");
 		hp.add(addButton);
 		
@@ -57,13 +60,14 @@ public class OntologySelection extends VerticalPanel {
 		
 		addButton.addClickListener(new ClickListener() {
 			public void onClick(Widget sender) {
-				addVocabulary();
+				int x = addButton.getAbsoluteLeft();
+				int y = addButton.getAbsoluteTop();
+				addVocabulary(x, y + 20);
 			}
-
 		});
 	}
 	
-	private void ontologySelected(OntologyInfo ontologyInfo, MyDialog popup) {
+	void ontologySucessfullyLoaded(OntologyInfo ontologyInfo) {
 		char id = (char) ((int) 'A' + Main.workingUris.size());
 		String uri = ontologyInfo.getUri();
 		
@@ -72,16 +76,16 @@ public class OntologySelection extends VerticalPanel {
 				+ " -- "
 				+ "<i>" +ontologyInfo.getDisplayLabel()+ "</i>"
 		));
-		
-		mainPanel.notifyWorkingOntologyAdded(ontologyInfo, popup);
 	}
 
 	
 	/**
 	 * Allows the user to choose a vocabulary that is not yet a working one, and
 	 * the loads it as a working vocabulary.
+	 * @param x Position for the popup
+	 * @param y Position for the popup 
 	 */
-	private void addVocabulary() {
+	private void addVocabulary(final int x, final int y) {
 		//
 		// Use a SuggestBox wirh a MultiWordSuggestOracle.
 		//
@@ -112,20 +116,42 @@ public class OntologySelection extends VerticalPanel {
 		box.setWidth("500px");
 		
 		
-		HorizontalPanel hp = new HorizontalPanel();
-		final MyDialog popup = new MyDialog(hp);
+		CellPanel hp = new VerticalPanel();
+		final MyDialog popup = new MyDialog(hp) {
+			// Mydialog closes when ENTER is pressed-- avoid that:
+			public boolean onKeyUpPreview(char key, int modifiers) {
+				if ( key == KeyboardListener.KEY_ESCAPE ) {
+					hide();
+					return false;
+				}
+			    return true;
+			  }
+		};
 		hp.add(box);
 		
 		box.addEventHandler(new SuggestionHandler() {
 			public void onSuggestionSelected(SuggestionEvent event) {
 				String suggestion = event.getSelectedSuggestion().getReplacementString();
 				OntologyInfo ontologyInfo = suggestions.get(suggestion);
-				ontologySelected(ontologyInfo, popup);
+				mainPanel.notifyWorkingOntologyAdded(OntologySelection.this, ontologyInfo, popup);
 			}
 		});
+		
+		// we use the star (*) to show the whole list of vocabs. If the user enters something
+		// different, then remove the star:
+		box.addKeyboardListener(new KeyboardListener() {
+			public void onKeyDown(Widget sender, char keyCode, int modifiers) {
+				if ( keyCode != '*' && box.getText().trim().equals("*") ) {
+					box.setText("");
+				}
+			}
 
-		popup.setText("Select vocabulary to load");
-		popup.center();
+			public void onKeyPress(Widget sender, char keyCode, int modifiers) {}
+			public void onKeyUp(Widget sender, char keyCode, int modifiers) {}
+		});
+
+		popup.setText("Select a vocabulary");
+		hp.add(new HTML("Elements are displayed as you type. Enter * to see the full list."));
 
 		// use a timer to request for focus in the suggest-box:
 		new Timer() {
@@ -134,7 +160,14 @@ public class OntologySelection extends VerticalPanel {
 			}
 		}.schedule(500);
 		    
-		popup.show();
+		
+		popup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
+			public void setPosition(int offsetWidth, int offsetHeight) {
+				int left = (Window.getClientWidth() - offsetWidth) / 2;
+				int top = Math.min(y, (Window.getClientHeight() - offsetHeight) / 2);
+				popup.setPopupPosition(left, top);
+			}
+		});
 	}
 
 }
