@@ -5,6 +5,8 @@ import com.google.gwt.user.client.ui.ImageBundle;
 
 public interface VineImageBundle extends ImageBundle {
 	
+	public AbstractImagePrototype vine();
+	
 	public AbstractImagePrototype exactMatch28();
 	public AbstractImagePrototype closeMatch28();
 	public AbstractImagePrototype broadMatch28();

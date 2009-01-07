@@ -16,6 +16,7 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.ButtonBase;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -27,8 +28,9 @@ public class Main implements EntryPoint {
 	public static final String APP_NAME = "VINE";
 	public static final String VERSION = "0.1.pre1";
 	public static final String VERSION_COMMENT = 
-		"- NOTE: This is preliminary, not yet operational prototype of a Web version for VINE. " +
-		"<a href=http://marinemetadata.org/vine>Click here</a> for current information about Vine.";
+		"NOTE: This is preliminary, not yet operational prototype of a Web version for VINE. " +
+		"<a target=_blank href=http://marinemetadata.org/vine>Click here</a> for current " +
+		"information about VINE.";
 	
 	public static final String GET_USERS = "bioportal/rest/users";
 	
@@ -80,8 +82,11 @@ public class Main implements EntryPoint {
   private void startGui(final Map<String,String> params) {
 
 	  MainPanel mainPanel = new MainPanel();
+	  HorizontalPanel hp = new HorizontalPanel();
+	  RootPanel.get().add(hp);
+	  hp.add(Main.images.vine().createImage());
+	  hp.add(Util.createHtml(APP_NAME+ " " +VERSION+ "<br/>\n" +VERSION_COMMENT, 10));
 	  RootPanel.get().add(mainPanel);
-	  RootPanel.get().add(Util.createHtml(APP_NAME+ " " +VERSION+ " " +VERSION_COMMENT+ "<br/><br/>", 10));
 
       if ( includeLog ) {
           final HTML logLabel = Util.createHtml("", 10);

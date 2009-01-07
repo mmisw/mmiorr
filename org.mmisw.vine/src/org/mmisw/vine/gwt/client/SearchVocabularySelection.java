@@ -10,11 +10,16 @@ import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class VocabularySelection extends VerticalPanel {
+/**
+ * Panel to select the vocabularies to be used in the search.
+ * 
+ * @author Carlos Rueda
+ */
+public class SearchVocabularySelection extends VerticalPanel {
 	
 	private CellPanel buttons = new HorizontalPanel();
 	
-	VocabularySelection(int searchIndex) {
+	SearchVocabularySelection(int searchIndex) {
 		super();
 		CellPanel hp = new HorizontalPanel();
 		add(hp);

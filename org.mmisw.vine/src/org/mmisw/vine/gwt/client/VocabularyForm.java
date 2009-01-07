@@ -5,7 +5,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class VocabularyForm extends VerticalPanel {
 	
-	private VocabularySelection vocabularySelection;
+	private SearchVocabularySelection vocabularySelection;
 	
 	VocabularyForm(int searchIndex) {
 		super();
@@ -17,7 +17,7 @@ public class VocabularyForm extends VerticalPanel {
 	    add(decPanel);
 		
 	    layout.setSpacing(5);
-	    layout.add(vocabularySelection = new VocabularySelection(searchIndex));
+	    layout.add(vocabularySelection = new SearchVocabularySelection(searchIndex));
 	    
 	    ResultsForm resultsForm = new ResultsForm();
 	    

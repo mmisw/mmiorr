@@ -35,18 +35,24 @@ public class MainPanel extends VerticalPanel {
 	 * Gets the entities and then notifies the event to dependent components.
 	 * @param ontologyInfo
 	 */
-	void notifyWorkingOntologyAdded(OntologyInfo ontologyInfo) {
+	void notifyWorkingOntologyAdded(OntologyInfo ontologyInfo, final MyDialog popup) {
+		
+		popup.setWidget(new HTML("<i>Loading ...</i>"));
 		
 		AsyncCallback<OntologyInfo> callback = new AsyncCallback<OntologyInfo>() {
 			public void onFailure(Throwable thr) {
 				RootPanel.get().add(new HTML(thr.toString()));
+				popup.hide();
 			}
 
 			public void onSuccess(OntologyInfo ontologyInfo) {
+				popup.setWidget(new HTML("Load complete"));
 				Main.log("getEntities: " +ontologyInfo.getUri()+ " completed.");
 				
 				Main.workingUris.add(ontologyInfo);
 				multiPageEditor.notifyWorkingOntologyAdded(ontologyInfo);
+				
+				popup.hide();
 			}
 		};
 		

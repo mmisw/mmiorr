@@ -81,7 +81,7 @@ public class ResultsForm extends VerticalPanel {
 
 	public void searching() {
 		p2.clear();
-		p2.add(new HTML("<i>searching...</i>"));	
+		p2.add(new HTML("<i>Searching...</i>"));	
 	}
 
 	public void updateTerms(List<String> terms) {
@@ -89,11 +89,15 @@ public class ResultsForm extends VerticalPanel {
 		p2.clear();
 		for ( String term : terms ) {
 			CheckBox cb = new CheckBox(term);
-			cb.addClickListener(cl );
+			cb.addClickListener(cl);
 			p2.add(cb);			
 		}
 		numElements = terms.size();
 		updateStatus();
+		
+		if ( numElements == 0 ) {
+			p2.add(new HTML("<i>No entities found</i>"));
+		}
 	}
 
 }

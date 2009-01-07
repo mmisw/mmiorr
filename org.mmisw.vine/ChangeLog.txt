@@ -3,6 +3,10 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2009-01-06
+	- Added new logo.
+	- Using SuggestBox to select a vocabulary into the working list.
+	
 2008-12-31
 	- Various additions
 	
