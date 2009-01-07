@@ -65,8 +65,8 @@ public class MainPanel extends VerticalPanel {
 				popup.setWidget(new HTML("Load complete"));
 				Main.log("getEntities: " +ontologyInfo.getUri()+ " completed.");
 				
+				Main.addWorkingUri(ontologyInfo);
 				ontologySelection.ontologySucessfullyLoaded(ontologyInfo);
-				Main.workingUris.add(ontologyInfo);
 				multiPageEditor.notifyWorkingOntologyAdded(ontologyInfo);
 				
 				popup.hide();

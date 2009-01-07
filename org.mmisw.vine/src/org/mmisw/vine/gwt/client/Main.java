@@ -45,16 +45,39 @@ public class Main implements EntryPoint {
 	static VineServiceAsync vineService;
 	
 	// cached list of all ontologies
-	static List<OntologyInfo> allUris = new ArrayList<OntologyInfo>();
+	private static List<OntologyInfo> allUris = new ArrayList<OntologyInfo>();
 	
 	// selected ontologies to work on:
-	static List<OntologyInfo> workingUris = new ArrayList<OntologyInfo>();
+	private static List<OntologyInfo> workingUris = new ArrayList<OntologyInfo>();
 	
+	
+	public static List<OntologyInfo> getAllUris() {
+		return allUris;
+	}
 
-  /**
-   * This is the entry point method.
-   */
-  public void onModuleLoad() {
+	public static void setAllUris(List<OntologyInfo> allUris) {
+		Main.allUris = allUris;
+	}
+
+	public static List<OntologyInfo> getWorkingUris() {
+		return workingUris;
+	}
+
+	public static void addWorkingUri(OntologyInfo uri) {
+		char code = (char) ((int) 'A' + Main.workingUris.size());
+		uri.setCode(code);
+		Main.workingUris.add(uri);
+	}
+
+	public static boolean containsWorkingUri(OntologyInfo uri) {
+		return workingUris.contains(uri);
+	}
+
+
+	/**
+	 * This is the entry point method.
+	 */
+	public void onModuleLoad() {
       log("Util.getLocationProtocol() = " +Util.getLocationProtocol());
       log("Util.getLocationHost()     = " +Util.getLocationHost());
       log("GWT.getHostPageBaseURL()   = " +GWT.getHostPageBaseURL());

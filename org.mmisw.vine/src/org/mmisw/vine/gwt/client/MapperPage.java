@@ -15,7 +15,7 @@ public class MapperPage extends DockPanel {
 		setSpacing(5);
 		setVerticalAlignment(ALIGN_MIDDLE);
 		
-		int workingOntsSize = Main.workingUris.size();
+		int workingOntsSize = Main.getWorkingUris().size();
 		int chooseLeft = workingOntsSize > 0 ? 0 : -1;
 		int chooseRight = workingOntsSize > 1 ? 1 : chooseLeft;
 		add(vocabularyFormLeft = new VocabularyForm(chooseLeft), WEST);
@@ -25,7 +25,7 @@ public class MapperPage extends DockPanel {
 
 	
 	void notifyWorkingOntologyAdded(OntologyInfo ontologyInfo) {
-		int workingOntsSize = Main.workingUris.size();
+		int workingOntsSize = Main.getWorkingUris().size();
 		int chooseLeft = workingOntsSize > 0 ? 0 : -1;
 		int chooseRight = workingOntsSize > 1 ? 1 : chooseLeft;
 		vocabularyFormLeft.notifyWorkingOntologyAdded(chooseLeft);

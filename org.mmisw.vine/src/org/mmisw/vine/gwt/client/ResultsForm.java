@@ -81,7 +81,9 @@ public class ResultsForm extends VerticalPanel {
 
 	public void searching() {
 		p2.clear();
-		p2.add(new HTML("<i>Searching...</i>"));	
+		p2.add(new HTML(
+				"<img src=\"images/loading.gif\"> <i>Searching...</i>"
+		));
 	}
 
 	public void updateTerms(List<String> terms) {

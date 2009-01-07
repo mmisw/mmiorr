@@ -6,6 +6,7 @@ import java.util.List;
 import org.mmisw.vine.gwt.client.rpc.EntityInfo;
 import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
 
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -17,16 +18,24 @@ import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * Dispatches the search of entities.
+ * It uses an oracle to remember the strings of sucessful searches.
+ * 
+ * @author Carlos Rueda
+ */
 public class SearchGroup extends VerticalPanel {
 	
+	private SearchVocabularySelection vocabularySelection;
 	private ResultsForm resultsForm;
 	
 	private MultiWordSuggestOracle oracle;
 	private CheckBox cb;
 	private SuggestBox box;
 
-	SearchGroup(ResultsForm resultsForm) {
+	SearchGroup(SearchVocabularySelection vocabularySelection, ResultsForm resultsForm) {
 		super();
+		this.vocabularySelection = vocabularySelection;
 		this.resultsForm = resultsForm;
 		
 		HorizontalPanel hp0 = new HorizontalPanel();
@@ -39,16 +48,11 @@ public class SearchGroup extends VerticalPanel {
 		// TODO implement REGEX search
 		cb.setEnabled(false);
 		
-//-		hp0.add(cb);
-		
-//-		HorizontalPanel hp = new HorizontalPanel();
-//-		add(hp);
 		
 		oracle = new MultiWordSuggestOracle("/");  
 		
 		box = new SuggestBox(oracle);
 		box.setWidth("250px");
-//-		hp.add(box);
 		hp0.add(box);
 		
 		PushButton b = new PushButton(Main.images.search().createImage());
@@ -63,7 +67,6 @@ public class SearchGroup extends VerticalPanel {
 			}
 		});
 		
-//-		hp.add(b);
 		hp0.add(b);
 
 		hp0.add(cb);
@@ -75,15 +78,27 @@ public class SearchGroup extends VerticalPanel {
 		Main.log("searching: " +text);
 		resultsForm.searching();
 		
-		// FIXME: not on workingUris but on my selected URIs
-		List<String> terms = search(text, Main.workingUris);
+		new Timer() {
+			public void run() {
+				executeSearch(text);
+			}
+		}.schedule(300);
 
+//		DeferredCommand.addCommand(new Command() {
+//			public void execute() {
+//				executeSearch(text);
+//			}
+//		});
+	}
+	
+	private void executeSearch(String text) {
+		List<String> terms = search(text, vocabularySelection.getSelectedVocabularies());
+		
 		Main.log("search: retrieved " +terms.size()+ " terms");
 		if ( text.length() > 0 ) {
 			oracle.add(text);
 		}
 		resultsForm.updateTerms(terms);
-		
 	}
 	
 	private List<String> search(String text, List<OntologyInfo> uris) {
@@ -95,11 +110,10 @@ public class SearchGroup extends VerticalPanel {
 		
 		
 		List<String> terms = new ArrayList<String>();
-		char code = 'A';
 		for (OntologyInfo ont : uris ) {
+			char code = ont.getCode();
 			List<EntityInfo> entities = ont.getEntities();
 			if ( entities == null || entities.size() == 0 ) {
-				code++;
 				continue;
 			}
 			
@@ -127,7 +141,6 @@ public class SearchGroup extends VerticalPanel {
 					terms.add(code+ ":" +entityInfo.getLocalName());
 				}
 			}
-			code++;
 		}
 		return terms;
 	}

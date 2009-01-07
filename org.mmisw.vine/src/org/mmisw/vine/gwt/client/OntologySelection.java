@@ -1,6 +1,7 @@
 package org.mmisw.vine.gwt.client;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
@@ -52,10 +53,8 @@ public class OntologySelection extends VerticalPanel {
 		layout.add(vp);
 		
 		
-		char id = 'A';
-		for ( OntologyInfo s : Main.workingUris ) {
-			vp.add(new HTML("<b>" +id+ "</b>: " + s.getUri()));
-			id++;
+		for ( OntologyInfo s : Main.getWorkingUris() ) {
+			vp.add(new HTML("<b>" +s.getCode()+ "</b>: " + s.getUri()));
 		}
 		
 		addButton.addClickListener(new ClickListener() {
@@ -68,10 +67,10 @@ public class OntologySelection extends VerticalPanel {
 	}
 	
 	void ontologySucessfullyLoaded(OntologyInfo ontologyInfo) {
-		char id = (char) ((int) 'A' + Main.workingUris.size());
+		char code = ontologyInfo.getCode();
 		String uri = ontologyInfo.getUri();
 		
-		vp.add(new HTML("<b>" +id+ "</b>: " 
+		vp.add(new HTML("<b>" +code+ "</b>: " 
 				+ "<a target=\"_blank\" href=\"" +uri+ "\">" +uri+ "</a>" 
 				+ " -- "
 				+ "<i>" +ontologyInfo.getDisplayLabel()+ "</i>"
@@ -95,9 +94,10 @@ public class OntologySelection extends VerticalPanel {
 		// A map from a suggestion to its corresponding OntologyInfo:
 		final Map<String,OntologyInfo> suggestions = new HashMap<String,OntologyInfo>();
 		
-		for ( int index = 0, count = Main.allUris.size(); index < count; index++ ) {
-			OntologyInfo ontologyInfo = Main.allUris.get(index);
-			if ( Main.workingUris.contains(ontologyInfo) ) {
+		List<OntologyInfo> allUris = Main.getAllUris();
+		for ( int index = 0, count = allUris.size(); index < count; index++ ) {
+			OntologyInfo ontologyInfo = allUris.get(index);
+			if ( Main.containsWorkingUri(ontologyInfo) ) {
 				// do not add any suggestion for an entry that is already in the workingUris
 				continue;
 			}

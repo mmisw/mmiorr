@@ -7,6 +7,9 @@ ChangeLog
 	- Added new logo.
 	- Using SuggestBox to select a vocabulary into the working list.
 	- Improved dialog dispatch for selecting and loading a vocabulary into the working list.
+	- OntologyInfo: transient code to identify the vocab only on the client side
+	- Search now done on selected vocabs; also the loading.gif image is shown as a progress
+	  notification while searching.
 	
 2008-12-31
 	- Various additions

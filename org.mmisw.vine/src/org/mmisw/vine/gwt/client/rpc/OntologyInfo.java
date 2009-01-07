@@ -11,6 +11,8 @@ import java.util.List;
 public class OntologyInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	// used only on the client side
+	private transient char code;
 	
 	private String uri;
 	private String displayLabel;
@@ -18,6 +20,14 @@ public class OntologyInfo implements Serializable {
 	private List<EntityInfo> entities;
 	
 
+	
+	public char getCode() {
+		return code;
+	}
+	public void setCode(char code) {
+		this.code = code;
+	}
+	
 	public String getUri() {
 		return uri;
 	}

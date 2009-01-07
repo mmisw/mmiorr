@@ -21,7 +21,7 @@ public class VocabularyForm extends VerticalPanel {
 	    
 	    ResultsForm resultsForm = new ResultsForm();
 	    
-	    layout.add(new SearchGroup(resultsForm));
+	    layout.add(new SearchGroup(vocabularySelection, resultsForm));
 	    
 		layout.add(resultsForm);
 	    
