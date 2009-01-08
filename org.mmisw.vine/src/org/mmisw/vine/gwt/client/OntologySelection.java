@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
 
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CellPanel;
@@ -48,6 +49,8 @@ public class OntologySelection extends VerticalPanel {
 		
 		final PushButton addButton = new PushButton("Add...");
 		addButton.setTitle("Allows to add a working ontology");
+		DOM.setElementAttribute(addButton.getElement(), "id", "my-button-id");
+
 		hp.add(addButton);
 		
 		layout.add(vp);
@@ -140,13 +143,14 @@ public class OntologySelection extends VerticalPanel {
 		// we use the star (*) to show the whole list of vocabs. If the user enters something
 		// different, then remove the star:
 		box.addKeyboardListener(new KeyboardListener() {
-			public void onKeyDown(Widget sender, char keyCode, int modifiers) {
+			public void onKeyPress(Widget sender, char keyCode, int modifiers) {
+				// FIXME: if the user wants to use the down arrow to pick a suggestion after
+				// entering *, it cannot do it!
 				if ( keyCode != '*' && box.getText().trim().equals("*") ) {
 					box.setText("");
 				}
 			}
-
-			public void onKeyPress(Widget sender, char keyCode, int modifiers) {}
+			public void onKeyDown(Widget sender, char keyCode, int modifiers) {}
 			public void onKeyUp(Widget sender, char keyCode, int modifiers) {}
 		});
 

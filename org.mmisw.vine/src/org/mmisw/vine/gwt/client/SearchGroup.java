@@ -6,7 +6,9 @@ import java.util.List;
 import org.mmisw.vine.gwt.client.rpc.EntityInfo;
 import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
 
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -55,12 +57,13 @@ public class SearchGroup extends VerticalPanel {
 		box.setWidth("250px");
 		hp0.add(box);
 		
-		PushButton b = new PushButton(Main.images.search().createImage());
 		box.addChangeListener(new ChangeListener() {
 			public void onChange(Widget sender) {
 				search();
 			}
 		});
+		
+		PushButton b = new PushButton(Main.images.search().createImage());
 		b.addClickListener(new ClickListener() {
 			public void onClick(Widget sender) {
 				search();
@@ -73,6 +76,11 @@ public class SearchGroup extends VerticalPanel {
 	}
 
 	private void search() {
+		if ( Main.getWorkingUris() == null || Main.getWorkingUris().size() == 0 )  {
+			Window.alert("No selected vocabularies to search");
+			return;
+		}
+		
 		final String text = box.getText().trim();
 		
 		Main.log("searching: " +text);

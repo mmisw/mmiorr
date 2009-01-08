@@ -10,3 +10,10 @@
 #pc-template-img {
   margin-top: 20px;
 }
+
+
+.gwt-Button hover {
+   background-color: #ff0000;
+}
+
+#my-button-id { font-size: 70%; }

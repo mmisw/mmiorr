@@ -91,12 +91,17 @@ public class ResultsForm extends VerticalPanel {
 	public void updateEntities(List<EntityInfo> entities) {
 		// TODO dispatch checkBox for the terms
 		p2.clear();
+		
+//		final FlexTable flexTable = new FlexTable();
+//		FlexCellFormatter cellFormatter = flexTable.getFlexCellFormatter();
+//		cellFormatter.s
+		
 		for ( EntityInfo entity : entities ) {
 			String str = entity.getCode()+ ":" +entity.getLocalName();
 			
 			HorizontalPanel hp = new HorizontalPanel();
-			hp.setTitle(entity.getLocalName());
 			p2.add(hp);
+			hp.setTitle(entity.getLocalName());
 			
 			CheckBox cb = new CheckBox();
 			hp.add(cb);
