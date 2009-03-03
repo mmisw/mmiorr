@@ -17,13 +17,12 @@ The central functionality is that any URI that starts with "http://mmisw.org/ont
 is resolved by this service, for example: http://mmisw.org/ont/mmi/someVocab.owl.
 Resolution means that the given URI is used to search for the corresponding
 ontology in the database. If found, the contents of the ontology is returned to
-the client in the appropriate format (currently, only the original format typically
-RDF/XML).
+the client in the appropriate format.
 
 As a convenience, the parameter "info" can be added to the URI to retrieve general
 information about the requested URI, in particular, it shows the parse result 
-according to the MMI recommendation (not fully implemented yet), as well as some 
-attributes in the database that are relevant to locate the uploaded ontology file. 
+according to the MMI recommendation, as well as some attributes in the database 
+that are relevant to locate the uploaded ontology file. 
 
 For example, the request:
 
