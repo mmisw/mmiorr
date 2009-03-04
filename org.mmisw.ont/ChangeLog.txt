@@ -3,6 +3,13 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2009-03-03
+	Resuming work on issue 62: unversioned terms not resolving 
+	http://code.google.com/p/mmisw/issues/detail?id=62&sort=priority
+	
+	- adding some more log information
+	
+	
 2008-12-29   0.2.0.beta3 (20081229)
 	- sparql: "select" query now also process new "form" parameter, which can be
 	  "html" (the default) or csv.

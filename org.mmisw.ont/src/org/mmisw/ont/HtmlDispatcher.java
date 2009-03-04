@@ -207,6 +207,10 @@ public class HtmlDispatcher {
 	void dispatchTerm(HttpServletRequest request, HttpServletResponse response, 
 			MmiUri mmiUri, Model model, boolean completePage) throws IOException {
 		
+		if ( log.isDebugEnabled() ) {
+			log.debug("dispatchTerm: mmiUri: " +mmiUri);
+		}
+
 		String term = mmiUri.getTerm();
 		assert term.length() > 0 ;
 		

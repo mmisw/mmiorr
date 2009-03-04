@@ -656,15 +656,24 @@ public class UriResolver extends HttpServlet {
 			if ( unversionedModel != null ) {
 				// but put both variables to the same unversioned model
 				model = unversionedModel;
+				if ( log.isDebugEnabled() ) {
+					log.debug("_resolveUriOntFormat: using obtained unversioned model");
+				}
 			}
 			else {
 				// error in conversion to unversioned version.
 				// this is unexpected. 
 				// Continue with original model, if necessary; see below.
+				log.error("_resolveUriOntFormat: unexpected: error in conversion to unversioned version.  But continuing with original model");
 			}
 		}
 
 		String term = mmiUri.getTerm();
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug("_resolveUriOntFormat: term=[" +term+ "].");
+		}
+
 
 		// Term included?
 		if ( term.length() > 0 ) {
@@ -690,6 +699,10 @@ public class UriResolver extends HttpServlet {
 
 		// No term included:
 		else {
+			if ( log.isDebugEnabled() ) {
+				log.debug("_resolveUriOntFormat: returning response with format=" +ontFormat);
+			}
+
 			ServletOutputStream os = response.getOutputStream();
 			
 			switch ( ontFormat ) {
