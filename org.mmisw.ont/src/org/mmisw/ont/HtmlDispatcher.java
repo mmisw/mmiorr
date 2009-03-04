@@ -207,10 +207,6 @@ public class HtmlDispatcher {
 	void dispatchTerm(HttpServletRequest request, HttpServletResponse response, 
 			MmiUri mmiUri, Model model, boolean completePage) throws IOException {
 		
-		if ( log.isDebugEnabled() ) {
-			log.debug("dispatchTerm: mmiUri: " +mmiUri);
-		}
-
 		String term = mmiUri.getTerm();
 		assert term.length() > 0 ;
 		
@@ -227,6 +223,10 @@ public class HtmlDispatcher {
 		
 		PrintWriter out = response.getWriter();
 		
+		if ( log.isDebugEnabled() ) {
+			log.debug("dispatchTerm: termUri: " +termUri);
+		}
+
 		if ( termRes == null ) {
 			out.println("   No resource found for URI: " +termUri);
 			return;

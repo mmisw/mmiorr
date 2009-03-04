@@ -342,9 +342,9 @@ public class UriResolver extends HttpServlet {
 		// parse the given URI:
 		final String requestedUri = request.getRequestURI();
 		final String contextPath = request.getContextPath();
-		MmiUri mmiUri = null;
+		MmiUri mmiUriCheck = null;
 		try {
-			mmiUri = new MmiUri(fullRequestedUri, requestedUri, contextPath);
+			mmiUriCheck = new MmiUri(fullRequestedUri, requestedUri, contextPath);
 		}
 		catch (URISyntaxException e) {
 			// Not dispatched here; allow caller to dispatch in any other convenient way:
@@ -355,12 +355,16 @@ public class UriResolver extends HttpServlet {
 			return false;   
 		}
 		
+		final MmiUri mmiUri = mmiUriCheck;
+		
 		////////////////////////////////////////////////////////////////////////////////
 		//    Version component?
 		////////////////////////////////////////////////////////////////////////////////
 		
 		// this flag will be true if we have an unversioned request, see Issue 24.
 		boolean unversionedRequest = false;
+		Ontology mostRecentOntology = null;
+		MmiUri foundMmiUri = null;
 		
 		String version = mmiUri.getVersion();
 		if ( version == null || version.equals(MmiUri.LATEST_VERSION_INDICATOR) ) {
@@ -370,7 +374,7 @@ public class UriResolver extends HttpServlet {
 			//
 			
 			// Get latest version trying all possible topic extensions:
-			Ontology mostRecentOntology = db.getMostRecentOntologyVersion(mmiUri);
+			mostRecentOntology = db.getMostRecentOntologyVersion(mmiUri);
 
 			if ( mostRecentOntology != null ) {
 				
@@ -379,7 +383,7 @@ public class UriResolver extends HttpServlet {
 					// Note that mostRecentOntology.getUri() won't have the term component.
 					// So, we have to transfer it to foundMmiUri:
 					//
-					MmiUri foundMmiUri = MmiUri.create(mostRecentOntology.getUri()).copyWithTerm(mmiUri.getTerm());
+					foundMmiUri = MmiUri.create(mostRecentOntology.getUri()).copyWithTerm(mmiUri.getTerm());
 					
 					if ( log.isDebugEnabled() ) {
 						log.debug("Found ontology version: " +foundMmiUri);
@@ -389,14 +393,16 @@ public class UriResolver extends HttpServlet {
 					String rememberExt = mmiUri.getTopicExtension();
 					// but restore the requested file extension if different
 					if ( ! rememberExt.equals(foundMmiUri.getTopicExtension()) ) {
-						mmiUri = MmiUri.create(foundMmiUri.getOntologyUriWithTopicExtension(rememberExt));
+//						mmiUri 
+						foundMmiUri
+						= MmiUri.create(foundMmiUri.getOntologyUriWithTopicExtension(rememberExt));
 
 						if ( log.isDebugEnabled() ) {
 							log.debug("Restored requested extension to: " +mmiUri);
 						}
 					}
 					else {
-						mmiUri = foundMmiUri;
+//						mmiUri = foundMmiUri;
 					}
 				}
 				catch (URISyntaxException e) {
@@ -494,13 +500,13 @@ public class UriResolver extends HttpServlet {
 			
 			// (a) an OWL document (if Accept: application/rdf+xml dominates)
 			if ( "application/rdf+xml".equalsIgnoreCase(dominating) ) {
-				return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML, unversionedRequest);
+				return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML, unversionedRequest, mostRecentOntology);
 			}
 			
 			// (a.1) Since the extension is not ".html", I'm considering the following case:
 			//
 			else if ( accept.contains("application/xml") ) {
-				return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML, unversionedRequest);
+				return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML, unversionedRequest, mostRecentOntology);
 			}
 			
 			// (a.2) an OWL document if is the user-agent is "Java/*"
@@ -512,7 +518,7 @@ public class UriResolver extends HttpServlet {
 			//
 			else if ( userAgentList.size() > 0 && userAgentList.get(0).startsWith("Java/") ) {
 				
-				return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML, unversionedRequest);
+				return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML, unversionedRequest, mostRecentOntology);
 			}
 			
 			// (b) an HTML document (if Accept: text/html but not application/rdf+xml)
@@ -528,7 +534,7 @@ public class UriResolver extends HttpServlet {
 			) {
 				
 				if ( outFormat.equalsIgnoreCase("owl") ) {
-					return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML, unversionedRequest);
+					return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML, unversionedRequest, mostRecentOntology);
 				}
 				else {
 					return htmlDispatcher.dispatch(request, response, mmiUri);
@@ -563,7 +569,7 @@ public class UriResolver extends HttpServlet {
 			
 		// "n3":
 		else if ( outFormat.equalsIgnoreCase("n3") ) {
-			return _resolveUriOntFormat(request, response, mmiUri, OntFormat.N3, unversionedRequest);
+			return _resolveUriOntFormat(request, response, mmiUri, OntFormat.N3, unversionedRequest, mostRecentOntology);
 		}
 			
 		// "pdf":
@@ -617,7 +623,7 @@ public class UriResolver extends HttpServlet {
 	 * @return true for dispatch completed here; false otherwise.
 	 */
 	private boolean _resolveUriOntFormat(HttpServletRequest request, HttpServletResponse response, 
-			MmiUri mmiUri, OntFormat ontFormat, boolean unversionedRequest) 
+			MmiUri mmiUri, OntFormat ontFormat, boolean unversionedRequest, Ontology ontology) 
 	throws ServletException, IOException {
 		
 		if ( log.isDebugEnabled() ) {
@@ -626,8 +632,11 @@ public class UriResolver extends HttpServlet {
 		
 		//String ontologyUri = mmiUri.getOntologyUri();
 	
-		// obtain info about the ontology:
-    	Ontology ontology = db.getOntologyWithExts(mmiUri, null);
+		if ( ontology == null ) {
+			// obtain info about the ontology:
+			ontology = db.getOntologyWithExts(mmiUri, null);
+		}
+		
 		if ( ontology == null ) {
 			if ( log.isDebugEnabled() ) {
 				log.debug("_resolveUriOntFormat: not dispatched here. mmiUri = " +mmiUri);
