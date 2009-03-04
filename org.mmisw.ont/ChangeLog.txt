@@ -8,6 +8,9 @@ ChangeLog
 	http://code.google.com/p/mmisw/issues/detail?id=62&sort=priority
 	
 	- adding some more log information
+	- MmiUri.getOntologyUri() was not honoring its documentation that says only the
+	  URI for the ontology is returned (not including the term, if any). However, this was
+	  not proporly guaranteed. Fixed.
 	
 	
 2008-12-29   0.2.0.beta3 (20081229)

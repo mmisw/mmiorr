@@ -202,7 +202,7 @@ public class MmiUri {
 			+ authority 
 			+ (version == null ? "" : "/" +version)
 			+ "/" +topic
-			+ (term == null || term.length() == 0 ? "" : "/" +term)
+			//+ (term == null || term.length() == 0 ? "" : "/" +term)
 		;
 	}
 

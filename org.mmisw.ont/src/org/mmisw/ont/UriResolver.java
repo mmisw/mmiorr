@@ -415,7 +415,9 @@ public class UriResolver extends HttpServlet {
 					// request was with version = MmiUri.LATEST_VERSION_INDICATOR.
 					// Use a redirect so the user gets the actual latest version:
 					//
-					String latestUri = mmiUri.getOntologyUri();
+					// NOTE: I was using mmiUri.getOntologyUri(), but this only returns the
+					// URI for the ontology, so any possible term was ignored. Now getTermUri is used:
+					String latestUri = mmiUri.getTermUri(false, "/");
 					log.debug("Redirecting to latest version: " + latestUri);
 					latestUri = response.encodeRedirectURL(latestUri);
 					response.sendRedirect(latestUri);

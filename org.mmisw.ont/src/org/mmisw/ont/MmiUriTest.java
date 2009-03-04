@@ -150,13 +150,13 @@ public class MmiUriTest extends TestCase {
 		MmiUri copyVer;
 		
 		copyVer = mmiUri.copyWithVersion(null);
-		assertEquals("http://mmisw.org/ont/a/v.owl/t", copyVer.getOntologyUri());
+		assertEquals("http://mmisw.org/ont/a/v.owl", copyVer.getOntologyUri());
 		
 		copyVer = mmiUri.copyWithVersion("20210121");
-		assertEquals("http://mmisw.org/ont/a/20210121/v.owl/t", copyVer.getOntologyUri());
+		assertEquals("http://mmisw.org/ont/a/20210121/v.owl", copyVer.getOntologyUri());
 		
 		copyVer = mmiUri.copyWithVersionNoCheck("%myversion%");
-		assertEquals("http://mmisw.org/ont/a/%myversion%/v.owl/t", copyVer.getOntologyUri());
+		assertEquals("http://mmisw.org/ont/a/%myversion%/v.owl", copyVer.getOntologyUri());
     }
     
 }
