@@ -619,7 +619,7 @@ public class UriResolver extends HttpServlet {
 	throws ServletException, IOException {
 		
 		if ( log.isDebugEnabled() ) {
-			log.debug("_resolveUriOntFormat: starting response.");
+			log.debug("_resolveUriOntFormat: starting response. mmiUri = " +mmiUri);
 		}
 		
 		//String ontologyUri = mmiUri.getOntologyUri();
@@ -627,6 +627,9 @@ public class UriResolver extends HttpServlet {
 		// obtain info about the ontology:
     	Ontology ontology = db.getOntologyWithExts(mmiUri, null);
 		if ( ontology == null ) {
+			if ( log.isDebugEnabled() ) {
+				log.debug("_resolveUriOntFormat: not dispatched here. mmiUri = " +mmiUri);
+			}
 			return false;   // not dispatched here.
 		}
 		
