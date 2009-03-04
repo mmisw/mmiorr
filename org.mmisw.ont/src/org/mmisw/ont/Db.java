@@ -166,6 +166,9 @@ public class Db {
 	Ontology getOntologyWithExts(MmiUri mmiUri, String[] foundUri) throws ServletException {
 		// try with given URI:
 		String ontologyUri = mmiUri.getOntologyUri();
+		if ( log.isDebugEnabled() ) {
+			log.debug("getOntologyWithExts: given URI=" +ontologyUri);
+		}
 		Ontology ontology = this.getOntology(ontologyUri);
 		if ( ontology != null ) {
 			if ( foundUri != null ) {
@@ -180,7 +183,9 @@ public class Db {
 		for (String ext : exts ) {
 			if ( ! ext.equalsIgnoreCase(topicExt) ) {
 				String withNewExt = mmiUri.getOntologyUriWithTopicExtension(ext);
-				log.info("getOntologyWithExts: withNewExt=" +withNewExt);
+				if ( log.isDebugEnabled() ) {
+					log.debug("getOntologyWithExts: withNewExt=" +withNewExt);
+				}
 				ontology = this.getOntology(withNewExt);
 				if ( ontology != null ) {
 					if ( foundUri != null ) {
