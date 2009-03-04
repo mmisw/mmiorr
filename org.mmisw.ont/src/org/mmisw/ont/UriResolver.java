@@ -355,12 +355,11 @@ public class UriResolver extends HttpServlet {
 			return false;   
 		}
 		
-		
 		////////////////////////////////////////////////////////////////////////////////
 		//    Version component?
 		////////////////////////////////////////////////////////////////////////////////
 		
-		// will be true if we have an unversioned request, see Issue 24.
+		// this flag will be true if we have an unversioned request, see Issue 24.
 		boolean unversionedRequest = false;
 		
 		String version = mmiUri.getVersion();
@@ -374,12 +373,19 @@ public class UriResolver extends HttpServlet {
 			Ontology mostRecentOntology = db.getMostRecentOntologyVersion(mmiUri);
 
 			if ( mostRecentOntology != null ) {
+				
 				try {
-					MmiUri foundMmiUri = MmiUri.create(mostRecentOntology.getUri());
-					if ( log.isDebugEnabled() ) {
-						log.debug("Found version: " +foundMmiUri);
-					}
+					//
+					// Note that mostRecentOntology.getUri() won't have the term component.
+					// So, we have to transfer it to foundMmiUri:
+					//
+					MmiUri foundMmiUri = MmiUri.create(mostRecentOntology.getUri()).copyWithTerm(mmiUri.getTerm());
 					
+					if ( log.isDebugEnabled() ) {
+						log.debug("Found ontology version: " +foundMmiUri);
+					}
+
+
 					String rememberExt = mmiUri.getTopicExtension();
 					// but restore the requested file extension if different
 					if ( ! rememberExt.equals(foundMmiUri.getTopicExtension()) ) {
