@@ -180,6 +180,7 @@ public class Db {
 		for (String ext : exts ) {
 			if ( ! ext.equalsIgnoreCase(topicExt) ) {
 				String withNewExt = mmiUri.getOntologyUriWithTopicExtension(ext);
+				log.info("getOntologyWithExts: withNewExt=" +withNewExt);
 				ontology = this.getOntology(withNewExt);
 				if ( ontology != null ) {
 					if ( foundUri != null ) {
