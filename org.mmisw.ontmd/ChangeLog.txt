@@ -3,6 +3,15 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2009-03-10
+
+	- Fixed http://code.google.com/p/mmisw/issues/detail?id=97: 
+	    Left and right borders are not displayed in firefox 
+	  The fix (well, workaround) was to remove ``table { empty-cells: hide; }'' in Main.css.
+	  
+
+
+
 2008-11-14   -   Voc2RDF 2.0.0.beta4
 
 	Issue 27: URIs have # signs instead of / before terms
