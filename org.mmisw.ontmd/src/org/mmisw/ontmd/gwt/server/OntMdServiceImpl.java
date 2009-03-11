@@ -78,8 +78,6 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 				Pattern.compile("^\\d{4}(\\d{2}(\\d{2})?)?(T\\d{2})?(\\d{2}(\\d{2})?)?$");
 
 	
-//	private static class MyLog { void info(String m) { System.out.println("LOG: " +m); } }
-//	private final MyLog log = new MyLog();
 	private final Log log = LogFactory.getLog(OntMdServiceImpl.class);
 	
 	private BaseInfo baseInfo = null;
