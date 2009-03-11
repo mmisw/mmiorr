@@ -22,7 +22,12 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.ServletException;
+
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.ont.vocabulary.util.MdHelper;
@@ -60,6 +65,10 @@ import edu.drexel.util.rdf.OwlModel;
 public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdService {
 	private static final long serialVersionUID = 1L;
 
+	private static final String VERSION = "1.0.2.beta (20090311)";
+	private static final String TITLE = "MMI OntMD";
+	private static final String FULL_TITLE = TITLE + ". Version " +VERSION;
+
 	
 	private static final File previewDir = new File(Config.ONTMD_PREVIEW_DIR);
 
@@ -69,11 +78,22 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 				Pattern.compile("^\\d{4}(\\d{2}(\\d{2})?)?(T\\d{2})?(\\d{2}(\\d{2})?)?$");
 
 	
-	private static class MyLog { void info(String m) { System.out.println("LOG: " +m); } }
-	private final MyLog log = new MyLog();
-//	private final Log log = LogFactory.getLog(OntMdServiceImpl.class);
+//	private static class MyLog { void info(String m) { System.out.println("LOG: " +m); } }
+//	private final MyLog log = new MyLog();
+	private final Log log = LogFactory.getLog(OntMdServiceImpl.class);
 	
 	private BaseInfo baseInfo = null;
+	
+	
+	public void init() throws ServletException {
+		log.info(FULL_TITLE+ ": initializing");
+	}
+	
+	public void destroy() {
+		log.info(FULL_TITLE+ ": destroy called.\n\n");
+	}
+	
+
 	
 	
 	public BaseInfo getBaseInfo(Map<String, String> params) {

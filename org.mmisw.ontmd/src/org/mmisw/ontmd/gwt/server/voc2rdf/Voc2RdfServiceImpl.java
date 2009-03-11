@@ -3,10 +3,11 @@ package org.mmisw.ontmd.gwt.server.voc2rdf;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.vocabulary.util.MdHelper;
-import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
+import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfService;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -23,7 +24,7 @@ public class Voc2RdfServiceImpl extends RemoteServiceServlet implements Voc2RdfS
 	private static final long serialVersionUID = 1L;
 
 	
-	private static Logger log = Logger.getLogger(Voc2RdfServiceImpl.class);
+	private final Log log = LogFactory.getLog(Voc2RdfServiceImpl.class);
 	
 	private Voc2RdfBaseInfo baseInfo = null;
 	

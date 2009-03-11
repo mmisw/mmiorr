@@ -101,7 +101,25 @@
 
     <target name="war" depends="jar, gwt-compile">
 
-            <copy todir="${build.dir}/tmp.web-inf-lib" flatten="true">
+		<copy todir="${build.dir}/tmp.WebContent">
+			<fileset dir="base_war">
+				<exclude name="WEB-INF/lib**" />
+				<exclude name="WEB-INF/classes/log4j.xml" />
+			</fileset>
+		</copy>
+
+		<copy file="base_war/WEB-INF/classes/log4j.xml" 
+			tofile="${build.dir}/tmp.WebContent/WEB-INF/classes/log4j.xml" overwrite="true">
+			<filterset>
+				<filter token="ontmd.app.logfilepath"       value="${ontmd.app.logfilepath}" />
+				<filter token="ontmd.app.maxlogfilesize"    value="${ontmd.app.maxlogfilesize}" />
+				<filter token="ontmd.app.maxlogbackupindex" value="${ontmd.app.maxlogbackupindex}" />
+				<filter token="ontmd.app.log.deflevel"      value="${ontmd.app.log.deflevel}" />
+				<filter token="ontmd.app.log.ontmdlevel"    value="${ontmd.app.log.ontmdlevel}" />
+			</filterset>
+		</copy>
+
+            <copy todir="${build.dir}/tmp.WebContent/WEB-INF/lib" flatten="true">
                     <fileset dir="base_war/WEB-INF/lib">
                             <include name="**.jar"/>
                     </fileset>
@@ -109,10 +127,11 @@
 
             <war warfile="${build.dir}/ontmd.war" webxml="base_war/WEB-INF/web.xml">
                     <fileset dir="www/org.mmisw.ontmd.gwt.Main" />
-                    <lib dir="${build.dir}/tmp.web-inf-lib" />
+            	    <fileset dir="${build.dir}/tmp.WebContent" />
+                    <lib dir="${build.dir}/tmp.WebContent/WEB-INF/lib" />
             </war>
             <delete includeEmptyDirs="true" failonerror="false">
-                    <fileset dir="${build.dir}/tmp.web-inf-lib" />
+                    <fileset dir="${build.dir}/tmp.WebContent" />
             </delete>
     </target>     	
 
