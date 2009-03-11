@@ -19,9 +19,6 @@ for me on my connection from home. Takes ~15 secs to load the whole view.
 
 p: Could the Review pop-up window have an upload button if the review passes?
 
-p: It looks like the boxes are missing the outsides on Firefox.
-
-
 
 
 j: We'll need an undo for that (Example, Reset)  someday. Not now.
