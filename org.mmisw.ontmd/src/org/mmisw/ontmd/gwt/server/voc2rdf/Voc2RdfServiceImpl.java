@@ -3,6 +3,8 @@ package org.mmisw.ontmd.gwt.server.voc2rdf;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.servlet.ServletException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.vocabulary.util.MdHelper;
@@ -28,6 +30,15 @@ public class Voc2RdfServiceImpl extends RemoteServiceServlet implements Voc2RdfS
 	
 	private Voc2RdfBaseInfo baseInfo = null;
 	
+	
+	public void init() throws ServletException {
+		log.info("initializing");
+	}
+	
+	public void destroy() {
+		log.info("destroy called.\n\n");
+	}
+
 	
 	public Voc2RdfBaseInfo getBaseInfo() {
 		if ( baseInfo == null ) {
