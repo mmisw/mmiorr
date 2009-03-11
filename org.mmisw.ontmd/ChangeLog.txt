@@ -3,7 +3,23 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2009-03-11
+	- Added sample.build.properties to be used as a template for the actual build.properties
+	  (which is now removed from the SVN repository), and so facilitate build and deployment.
+	  In particular, I'm using this approach to set up logging to an ontmd.log file under
+	  the servlet container's logs directory. This follows the same strategy as in the
+	  "ont" project for ontology and term URI resolution.
+
+		  
+
 2009-03-10
+
+	- Investigating http://code.google.com/p/mmisw/issues/detail?id=63:
+	                Matching auth+topic not detected as potential update
+	
+		-Created a base vocabulary:
+	      http://mmisw.org/ont/mmitest/20090310T221213/parametro
+
 
 	- Fixed http://code.google.com/p/mmisw/issues/detail?id=97: 
 	    Left and right borders are not displayed in firefox 
