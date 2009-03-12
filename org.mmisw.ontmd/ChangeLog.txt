@@ -9,6 +9,7 @@ ChangeLog
 	  In particular, I'm using this approach to set up logging to an ontmd.log file under
 	  the servlet container's logs directory. This follows the same strategy as in the
 	  "ont" project for ontology and term URI resolution.
+	- Using commons logging in server classes. 
 
 		  
 

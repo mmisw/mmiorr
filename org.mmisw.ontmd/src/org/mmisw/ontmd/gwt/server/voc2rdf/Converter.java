@@ -5,8 +5,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
-import java.util.logging.Logger;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.util.MdHelper;
 import org.mmisw.ontmd.gwt.server.Config;
@@ -67,7 +68,7 @@ class Converter {
 
 	private Object version;
 
-	private static Logger logger = Logger.getLogger(Converter.class.getName());
+	private final Log log = LogFactory.getLog(Converter.class);
 
 	
 	
@@ -111,8 +112,8 @@ class Converter {
 		this.fieldSeparator = fieldSeparator;
 		this.values = values;
 		
-		logger.info("!!!!!!!!!!!!!!!! Converter: values = " +values);
-		logger.info("setting primary class " + primaryClass);
+		log.info("!!!!!!!!!!!!!!!! Converter: values = " +values);
+		log.info("setting primary class " + primaryClass);
 		
 	}
 	
@@ -123,15 +124,14 @@ class Converter {
 	 * A better approach is to determine the actual original charset and
 	 * then do the conversion to UTF-8.
 	 */
-	private static String _convertToUtf8(String str) {
-		logger.info("CONVERTING TO UTF-8");
+	private String _convertToUtf8(String str) {
 		try {
 			byte[] bytes = str.getBytes();
 			String utf8_str = new String(bytes, "UTF-8");
 			return utf8_str;
 		}
 		catch (UnsupportedEncodingException e) {
-			logger.warning("Cannot convert to UTF-8. " +e.toString());
+			log.warn("Cannot convert to UTF-8. " +e.toString());
 			e.printStackTrace();
 		}
 
@@ -141,7 +141,7 @@ class Converter {
 
 
 	String createOntology() throws Exception {
-		logger.info("!!!!!!!!!!!!!!!! Converter.createOntology");
+		log.info("!!!!!!!!!!!!!!!! Converter.createOntology");
 		
 		setFinalUri();
 		processCreateOntology();
@@ -186,7 +186,7 @@ class Converter {
 		}
 		
 		Ontology ont = newOntModel.createOntology(base_);
-		logger.info("New ontology created with namespace " + ns_ + " base " + base_);
+		log.info("New ontology created with namespace " + ns_ + " base " + base_);
 
 		
 		Map<String, Property> uriPropMap = MdHelper.getUriPropMap();
@@ -195,7 +195,7 @@ class Converter {
 			if ( value.trim().length() > 0 ) {
 				Property prop = uriPropMap.get(uri);
 				if ( prop == null ) {
-					logger.warning("No property found for uri='" +uri+ "'");
+					log.warn("No property found for uri='" +uri+ "'");
 					continue;
 				}
 				ont.addProperty(prop, value.trim());
@@ -271,7 +271,7 @@ class Converter {
 
 		for (int i = 0; i < size; i++) {
 
-			logger.info("converting column header " + i
+			log.info("converting column header " + i
 					+ " to a datatype property");
 			res[i] = createDatatypeProperty(row, i);
 		}
@@ -354,7 +354,7 @@ class Converter {
 			String resourceString = getGoodName(row, id);
 			Individual ind = newOntModel.createIndividual(resourceString, cs);
 			ind.addProperty(RDFS.label, row.getString(id).trim());
-			logger.info("ind created " + ind);
+			log.info("ind created " + ind);
 			return ind;
 		}
 		return null;
@@ -364,7 +364,7 @@ class Converter {
 	
 	private DatatypeProperty createDatatypeProperty(DataRow row, int id) {
 		String resourceString = getGoodName(row, id).toLowerCase();
-		logger.info("datatype Property created " + resourceString);
+		log.info("datatype Property created " + resourceString);
 		DatatypeProperty p = newOntModel.createDatatypeProperty(resourceString);
 		p.addProperty(RDFS.label, row.getString(id).trim());
 		p.addDomain(classForTerms);
@@ -391,11 +391,11 @@ class Converter {
 
 		OntClass cls = newOntModel.createClass(resourceString);
 		
-		logger.info("KKKKKKKKKKKKKK cls.getNameSpace() = " +cls.getNameSpace());
-		logger.info("KKKKKKKKKKKKKK cls.getLocalName() = " +cls.getLocalName());
+		log.info("KKKKKKKKKKKKKK cls.getNameSpace() = " +cls.getNameSpace());
+		log.info("KKKKKKKKKKKKKK cls.getLocalName() = " +cls.getLocalName());
 		
 		cls.addProperty(RDFS.label, primaryClass);
-		logger.info("class created " + resourceString);
+		log.info("class created " + resourceString);
 		
 		return cls;
 
@@ -429,7 +429,7 @@ class Converter {
 		
 		// see createProperties()
 		
-		logger.info("setFinalUri: " +finalUri);
+		log.info("setFinalUri: " +finalUri);
 	}
 
 
