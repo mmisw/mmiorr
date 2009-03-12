@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project name="ontmd" default="compile" basedir=".">
 
-  <property name="GWT_HOME" value="/Users/carueda/Software/gwt-mac-1.5.2" />
-	
   <property file="build.properties" />	
   <property name="build.dir" value="_generated"/>
 
