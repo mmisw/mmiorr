@@ -16,6 +16,8 @@ import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.PartSource;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.vocabulary.Omv;
 
 import com.hp.hpl.jena.vocabulary.DC;
@@ -32,6 +34,9 @@ class OntologyUploader {
 	private static String REST      = SERVER+ "/bioportal/rest";
 	static final String ONTOLOGIES  = REST+ "/ontologies";
 
+	
+	private final Log log = LogFactory.getLog(OntologyUploader.class);
+	
 	
 	private PartSource partSource;
 	private String uri;
@@ -167,24 +172,19 @@ class OntologyUploader {
 			client.getHttpConnectionManager().
 			getParams().setConnectionTimeout(5000);
 
-			System.out.println(this.getClass().getName()+ ": Executing POST ...");
+			log.info("Executing POST ...");
 
 			String msg;
 			int status = client.executeMethod(post);
 			if (status == HttpStatus.SC_OK) {
 				msg = post.getResponseBodyAsString();
-				System.out.println(this.getClass().getName()+ ": "+
-						"Upload complete, response=" + msg
-				);
+				log.info("Upload complete, response=" + msg);
 				msg = "OK:" +msg;
 			} 
 			else {
 				String body = post.getResponseBodyAsString();
 				msg = HttpStatus.getStatusText(status);
-				System.out.println(this.getClass().getName()+ ": "+
-						"Upload failed, response=" + msg
-						+ "\n" +body
-				);
+				log.info("Upload failed, response=" +msg+ "\n" +body);
 				msg = "ERROR:" +msg+ "\n" +body ;
 			}
 			
