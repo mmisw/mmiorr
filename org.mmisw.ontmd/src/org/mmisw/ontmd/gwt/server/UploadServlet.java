@@ -17,9 +17,12 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
- * Does the "pre-upload" operation.
+ * This servlet does the "pre-upload" operation, that is, it stores the uploaded file from
+ * the client in the {@link Config#ONTMD_PRE_UPLOADS_DIR} directory.
  * 
  * @author Carlos Rueda
  */
@@ -30,9 +33,7 @@ public class UploadServlet extends HttpServlet {
 	private static final long MAX_FILE_SIZE = 2*1024*1024;
 	
 	
-	private static class MyLog { void info(String m) { System.out.println("LOG: " +m); } }
-	private final MyLog log = new MyLog();
-//	private final Log log = LogFactory.getLog(UploadServlet.class);
+	private final Log log = LogFactory.getLog(UploadServlet.class);
 	
 	
 	private static final File preUploadsDir = new File(Config.ONTMD_PRE_UPLOADS_DIR);
