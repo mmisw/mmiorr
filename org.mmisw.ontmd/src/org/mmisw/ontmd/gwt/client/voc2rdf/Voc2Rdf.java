@@ -8,6 +8,8 @@ import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfService;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfServiceAsync;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.HTML;
@@ -59,10 +61,12 @@ public class Voc2Rdf {
 	private void getPrimaryConcepts(final Map<String, String> params) {
 		AsyncCallback<Voc2RdfBaseInfo> callback = new AsyncCallback<Voc2RdfBaseInfo>() {
 			public void onFailure(Throwable thr) {
+				removeLoadingMessage();
 				RootPanel.get().add(new HTML(thr.toString()));
 			}
 
 			public void onSuccess(Voc2RdfBaseInfo bInfo) {
+				removeLoadingMessage();
 				baseInfo = bInfo;
 				Voc2RdfMainPanel v2rMainPanel = new Voc2RdfMainPanel(params);
 				main.startGui(params, v2rMainPanel);
@@ -74,5 +78,11 @@ public class Voc2Rdf {
 	}
 
 
-	
+	private void removeLoadingMessage() {
+    	Element loadingElement = DOM.getElementById("loading");
+		if ( loadingElement != null ) {
+			DOM.removeChild(RootPanel.getBodyElement(), loadingElement);
+		}
+    }
+
 }

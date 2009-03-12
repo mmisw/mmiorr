@@ -35,7 +35,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class Main implements EntryPoint {
 
 	public static final String ONTMD_APP_NAME = "ontmd";
-	public static final String ONTMD_VERSION = "1.0.0.beta";
+	public static final String ONTMD_VERSION = "1.0.1.beta";
 	public static final String ONTMD_VERSION_COMMENT = "";
 	
 	private static String footer = 
@@ -112,11 +112,6 @@ public class Main implements EntryPoint {
 
 	public void startGui(final Map<String, String> params, Widget mainPanel) {
 
-		Element loadingElement = DOM.getElementById("loading");
-		if ( loadingElement != null ) {
-			DOM.removeChild(RootPanel.getBodyElement(), loadingElement);
-		}
-		
 		Panel panel = new VerticalPanel();
 		RootPanel.get().add(panel);
 		Grid hpanel = new Grid(1, 1);
@@ -167,6 +162,7 @@ public class Main implements EntryPoint {
 	private void getBaseInfo(final Map<String, String> params) {
 		AsyncCallback<BaseInfo> callback = new AsyncCallback<BaseInfo>() {
 			public void onFailure(Throwable thr) {
+				removeLoadingMessage();
 				String error = thr.toString();
 				while ( ( thr = thr.getCause()) != null ) {
 					error += "\n" + thr.toString();
@@ -175,6 +171,7 @@ public class Main implements EntryPoint {
 			}
 
 			public void onSuccess(BaseInfo bInfo) {
+				removeLoadingMessage();
 				String error = bInfo.getError();
 				if ( error != null ) {
 					RootPanel.get().add(new Label(error));
@@ -199,4 +196,11 @@ public class Main implements EntryPoint {
 		GWT.log(msg, null);
 	}
 
+	private void removeLoadingMessage() {
+    	Element loadingElement = DOM.getElementById("loading");
+		if ( loadingElement != null ) {
+			DOM.removeChild(RootPanel.getBodyElement(), loadingElement);
+		}
+    }
+    
 }
