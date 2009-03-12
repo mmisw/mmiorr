@@ -9,6 +9,8 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
 
 
@@ -23,7 +25,8 @@ class Login {
 	private static final String REST     = SERVER+ "/bioportal/rest";
 	private static final String AUTH     = REST+ "/auth";
 
-
+	private final Log log = LogFactory.getLog(Login.class);
+	
 	private String userName;
 	private String userPassword;
 	
@@ -42,8 +45,8 @@ class Login {
 	/** makes the request and return the response from the server */
 	private String authenticate() throws HttpException, IOException {
 		String applicationid = "4ea81d74-8960-4525-810b-fa1baab576ff";
-		System.out.println("authenticating username=" +userName+ " password=" +userPassword);
-		System.out.println("applicationid=" +applicationid);
+		log.info("authenticating username=" +userName+ " password=" +userPassword);
+		log.info("applicationid=" +applicationid);
 		PostMethod post = new PostMethod(AUTH);
 		try {
 			NameValuePair[] data = {
@@ -56,21 +59,18 @@ class Login {
 			HttpClient client = new HttpClient();
 			client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
 
-			System.out.println(this.getClass().getName()+ ": Executing POST ...");
+			log.info("Executing POST ...");
 
 			String msg;
 			int status = client.executeMethod(post);
 			if (status == HttpStatus.SC_OK) {
 				msg = post.getResponseBodyAsString();
-				System.out.println(this.getClass().getName()+ ": "+
-						"Authentication complete, response=[" + msg + "]"
-				);
+				log.info("Authentication complete, response=[" + msg + "]");
 				msg = "OK:" +msg;
 			} 
 			else {
 				String statusText = HttpStatus.getStatusText(status);
-				System.out.println(this.getClass().getName()+ ": "+
-						"Authentication failed, status text=" + statusText);
+				log.info("Authentication failed, status text=" + statusText);
 				
 				msg = statusText;
 				String response = post.getResponseBodyAsString();
@@ -96,7 +96,7 @@ class Login {
 		String response = authenticate();
 
 		response = response.replaceAll("\\s+", " ");
-		System.out.println("----response=" +response);
+		log.info("----response=" +response);
 		
 		// parse response:
 		//
@@ -113,7 +113,7 @@ class Login {
 			return;
 		}
 		
-		// get sssionId, userId, and username
+		// get sessionId, userId, and username
 		
 		Pattern pat = Pattern.compile(
 				".*<sessionId>([^<]+)</sessionId>" +
