@@ -117,16 +117,10 @@
 			</filterset>
 		</copy>
 
-            <copy todir="${build.dir}/tmp.WebContent/WEB-INF/lib" flatten="true">
-                    <fileset dir="base_war/WEB-INF/lib">
-                            <include name="**.jar"/>
-                    </fileset>
-            </copy>
-
             <war warfile="${build.dir}/ontmd.war" webxml="base_war/WEB-INF/web.xml">
                     <fileset dir="www/org.mmisw.ontmd.gwt.Main" />
             	    <fileset dir="${build.dir}/tmp.WebContent" />
-                    <lib dir="${build.dir}/tmp.WebContent/WEB-INF/lib" />
+                    <lib dir="base_war/WEB-INF/lib" />
             </war>
             <delete includeEmptyDirs="true" failonerror="false">
                     <fileset dir="${build.dir}/tmp.WebContent" />
