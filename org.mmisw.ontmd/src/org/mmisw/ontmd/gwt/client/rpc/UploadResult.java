@@ -7,17 +7,12 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * 
  * @author Carlos Rueda
  */
-public class UploadResult implements IsSerializable {
+public class UploadResult extends BaseResult implements IsSerializable {
 
-	private String error = null;
 	private String uri = null;
 	private String info = null;
 
 	public UploadResult() {
-	}
-
-	public String getError() {
-		return error;
 	}
 
 	public String getInfo() {
@@ -26,10 +21,6 @@ public class UploadResult implements IsSerializable {
 
 	public void setInfo(String info) {
 		this.info = info;
-	}
-
-	public void setError(String error) {
-		this.error = error;		
 	}
 
 	public String toString() {

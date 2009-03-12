@@ -3,21 +3,18 @@ package org.mmisw.ontmd.gwt.client.rpc;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Info about the result of an upload operation.
+ * Info about the result of a review operation.
  * 
  * @author Carlos Rueda
  */
-public class ReviewResult implements IsSerializable {
+public class ReviewResult extends BaseResult implements IsSerializable {
 
-	private String error = null;
 	private String uri = null;
 	private String fullPath;
 	private String rdf = null;
 	
-	// aquaportal ontology ID used, if not null, to create a new version
-	private String ontologyId = null;
-	
 	private OntologyInfo ontologyInfo;
+
 
 	public ReviewResult() {
 	}
@@ -31,20 +28,12 @@ public class ReviewResult implements IsSerializable {
 		this.ontologyInfo = ontologyInfo;
 	}
 
-	public String getError() {
-		return error;
-	}
-
 	public String getRdf() {
 		return rdf;
 	}
 
 	public void setRdf(String rdf) {
 		this.rdf = rdf;
-	}
-
-	public void setError(String error) {
-		this.error = error;		
 	}
 
 	public String toString() {
@@ -65,16 +54,6 @@ public class ReviewResult implements IsSerializable {
 
 	public void setFullPath(String fullPath) {
 		this.fullPath = fullPath;
-	}
-
-
-	public String getOntologyId() {
-		return ontologyId;
-	}
-
-
-	public void setOntologyId(String ontologyId) {
-		this.ontologyId = ontologyId;
 	}
 
 }

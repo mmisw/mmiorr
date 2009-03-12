@@ -3,6 +3,19 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2009-03-12
+	- Fixed http://code.google.com/p/mmisw/issues/detail?id=63:
+	                Matching auth+topic not detected as potential update
+		- Added ontologyId attribute to the OntologyInfo class, such that the "review"
+		  operation has access to it, and thus proceed with the appropriate check in
+		  case ontologyId == null (meaning the review is for a *new* submission, not a
+		  new version).
+		  See OntMdServiceImpl._checkPreexistingOntology
+		- Note, the _checkPreexistingOntology check is repeated in the "upload" operation
+		  in case there is a new registration done by other user in the meantime (from when the
+		  "reviee" was done). Of course, we are NOT completely solving the potential concurrency 
+		  problem with this re-check; we are just reducing the chances of that event.
+
 2009-03-11
 	- Added sample.build.properties to be used as a template for the actual build.properties
 	  (which is now removed from the SVN repository), and so facilitate build and deployment.

@@ -2,19 +2,17 @@ package org.mmisw.ontmd.gwt.client.rpc;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class LoginResult implements IsSerializable {
+/**
+ * Info about the result of a log-in operation.
+ * 
+ * @author Carlos Rueda
+ */
+public class LoginResult extends BaseResult implements IsSerializable {
 	
-	private String error;
 	private String sessionId;
 	private String userId;
 	private String userName;
 
-	public String getError() {
-		return error;
-	}
-	public void setError(String error) {
-		this.error = error;
-	}
 	public String getSessionId() {
 		return sessionId;
 	}

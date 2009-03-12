@@ -34,4 +34,22 @@ public class Util {
 	    }
 	}
 
+	/** Executes an HTTP GET request.
+	 * @returns the returned status code. 
+	 */
+	public static int httpGet(String uri, String... acceptEntries) throws Exception {
+		HttpClient client = new HttpClient();
+	    GetMethod meth = new GetMethod(uri);
+	    for ( String acceptEntry : acceptEntries ) {
+	    	meth.addRequestHeader("accept", acceptEntry);
+	    }
+	    try {
+	        client.executeMethod(meth);
+	        return meth.getStatusCode();
+	    }
+	    finally {
+	        meth.releaseConnection();
+	    }
+	}
+
 }

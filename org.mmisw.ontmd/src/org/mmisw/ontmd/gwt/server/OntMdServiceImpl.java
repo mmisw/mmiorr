@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,6 +33,7 @@ import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.ont.vocabulary.util.MdHelper;
 import org.mmisw.ontmd.gwt.client.rpc.BaseInfo;
+import org.mmisw.ontmd.gwt.client.rpc.BaseResult;
 import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
 import org.mmisw.ontmd.gwt.client.rpc.OntMdService;
 import org.mmisw.ontmd.gwt.client.rpc.OntologyInfo;
@@ -65,9 +67,16 @@ import edu.drexel.util.rdf.OwlModel;
 public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdService {
 	private static final long serialVersionUID = 1L;
 
-	private static final String VERSION = "1.0.2.beta (20090311)";
+	// TODO unify version definition
+	private static final String VERSION = "1.0.2.beta (20090312)";
 	private static final String TITLE = "MMI OntMD";
 	private static final String FULL_TITLE = TITLE + ". Version " +VERSION;
+
+	
+	/** Ontology URI prefix including root: */
+	// TODO read Ontology URI prefix from a configuration parameter
+	private static final String namespaceRoot = "http://mmisw.org/ont";
+	
 
 	
 	private static final File previewDir = new File(Config.ONTMD_PREVIEW_DIR);
@@ -450,7 +459,17 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		}
 	}
 
-	
+	/**
+	 * Reviews the ontology and associated attributes for a subsequent upload (registration)
+	 * (see {@link #upload(ReviewResult, LoginResult)})
+	 * in the repository.
+	 * 
+	 * @param OntologyInfo General info about the ontology that is intended to be registered.
+	 * 
+	 * @param LoginResult Login information
+	 * 
+	 * @return the result of the review.
+	 */
 	public ReviewResult review(OntologyInfo ontologyInfo, LoginResult loginResult) {
 		
 		_getBaseInfoIfNull();
@@ -490,8 +509,8 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			return reviewResult;
 		}
 		
-		String orgAbbreviation = newValues.get(OmvMmi.origMaintainerCode.getURI());
-		String shortName = newValues.get(Omv.acronym.getURI());
+		final String orgAbbreviation = newValues.get(OmvMmi.origMaintainerCode.getURI());
+		final String shortName = newValues.get(Omv.acronym.getURI());
 
 		if ( orgAbbreviation == null ) {
 			log.info("missing origMaintainerCode");
@@ -504,6 +523,20 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			return reviewResult;
 		}
 
+		
+		// to check if this is going to be a new submission (ontologyId == null) or, 
+		// otherwise, a new version.
+		String ontologyId = ontologyInfo.getOntologyId();
+
+		if ( ontologyId == null ) {
+			// This is a new submission. We need to check for any conflict with a preexisting
+			// ontology in the repository with the same shortName+orgAbbreviation combination
+			if ( _checkPreexistingOntology(orgAbbreviation, shortName, reviewResult) ) {
+				return reviewResult;
+			}
+		}
+		// else: ok, this is explicitly for a new version; no need to any further check here.
+		
 		
 		////////////////////////////////////////////
 		// load pre-uploaded model
@@ -528,9 +561,6 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		final String creationDate = sdf.format(date);
 		
 
-		// ontology root:
-		final String namespaceRoot = "http://mmisw.org/ont";
-		
 		///////////////////////////////////////////////////////////////////
 		// version:
 		// Note, if the version is given from the client, then use it
@@ -744,6 +774,65 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	
 	
 	/**
+	 * Checks the preexistence of an ontology to determine the possible conflict with an ontology that
+	 * is about to be uploaded.
+	 * 
+	 * @param orgAbbreviation
+	 * @param shortName
+	 * 
+	 * @param result setError will be called on tis object in case of existing ontology with the given parameters.
+	 * 
+	 * @return true iff there is an existing ontology with the given parameters
+	 */
+	private boolean _checkPreexistingOntology(String orgAbbreviation, String shortName, BaseResult result) {
+		// See issue 63: http://code.google.com/p/mmisw/issues/detail?id=63
+		
+		// the (unversioned) URI to check for preexisting ontology:
+		String possibleOntologyUri = namespaceRoot + "/" +
+        							orgAbbreviation + "/" +
+        							shortName;
+
+		if ( log.isDebugEnabled() ) {
+			log.debug("New submission; checking for preexisting ontology with unversioned URI: " +possibleOntologyUri);
+		}
+		
+		// we just need to know whether this URI resolves:
+		boolean possibleOntologyExists = false;
+		try {
+			int statusCode = Util.httpGet(possibleOntologyUri, "application/rdf+xml");
+			if ( log.isDebugEnabled() ) {
+				log.debug("HTTP GET status code: " +statusCode+ ": " +HttpStatus.getStatusText(statusCode));
+			}
+			possibleOntologyExists = statusCode == HttpStatus.SC_OK;
+		}
+		catch (Exception e) {
+			// just log the error and continue
+			log.error("Exception while checking for existence of URI", e);
+		}
+		
+		if ( possibleOntologyExists ) {
+			String info = "There is already a registered ontology with the same " +
+							"authority and resource type combination:\n" +
+							"   " +possibleOntologyUri;
+			
+			if ( log.isDebugEnabled() ) {
+				log.debug(info);
+			}
+			
+			result.setError(info+ "\n\n" +
+					"You will need to change the authority and/or resource topic to be able to " +
+					"submit your ontology.\n" +
+					"\n" +
+					"Note: if you want to submit a new version for the above ontology, " +
+					"then you would need to browse to that entry in the main repository interface " +
+					"and use one of the available options to create a new version."
+			);
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Sets the missing DC attrs that have defined equivalent MMI attrs: 
 	 */
 	private void _setDcAttributes(Ontology ont_) {
@@ -769,8 +858,13 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 
 
 	/**
-	 * Does the final upload of the previewed file.
-	 * to the registry.
+	 * Does the final upload of the reviewed ontology to the registry.
+	 * 
+	 * @param reviewResult The result of the preceding review operation
+	 * 
+	 * @param loginResult Login information
+	 * 
+	 * @return the result of the upload operation.
 	 */
 	public UploadResult upload(ReviewResult reviewResult, LoginResult loginResult) {
 		
@@ -852,7 +946,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		assert userId != null;
 		assert sessionId != null;
 		
-		String ontologyId = reviewResult.getOntologyId();
+		String ontologyId = reviewResult.getOntologyInfo().getOntologyId();
 		if ( ontologyId != null ) {
 			log.info("Will create a new version for ontologyId = " +ontologyId);
 		}
@@ -871,6 +965,21 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 				fileName += ".owl";
 			}
 			
+			// We are about to do the actual upload. But first, re-check that there is NO a preexisting
+			// ontology that may conflict with this one.
+			// NOTE: this check has been done already in the review operation; however, we repeat it here
+			// in case there is a new registration done by other user in the meantime. Of course, we
+			// are NOT completely solving the potential concurrency problem with this re-check; we are just
+			// reducing the chances of that event.
+			if ( ontologyId == null ) {
+				final String orgAbbreviation = newValues.get(OmvMmi.origMaintainerCode.getURI());
+				final String shortName = newValues.get(Omv.acronym.getURI());
+				if ( _checkPreexistingOntology(orgAbbreviation, shortName, uploadResult) ) {
+					return uploadResult;
+				}
+			}
+
+			// OK, now do the actual upload:
 			OntologyUploader createOnt = new OntologyUploader(uri, fileName, rdf, 
 					userId, sessionId,
 					ontologyId,
@@ -898,6 +1007,10 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	
 	public OntologyInfo getOntologyInfoFromRegistry(String ontologyUri) {
 		OntologyInfo ontologyInfo = new OntologyInfo();
+		
+		// Note: we assume this ontmd service is located in the same server as the "ont" service.
+		// We request the local path and then directly load the ontology to obtain
+		// some of the associated attributes.
 		
 		String ontologyUri_lpath = ontologyUri+ "?_lpath";
 		
@@ -943,7 +1056,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		
 		log.info("getOntologyInfoFromRegistry: local path: " +full_path);
 		
-		// now, complete the ontology object, except the Rdf string:
+		// now, complete the ontology object:
 		File file = new File(full_path);
 		
 		try {

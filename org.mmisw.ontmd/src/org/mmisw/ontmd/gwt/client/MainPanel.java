@@ -460,6 +460,9 @@ public class MainPanel extends VerticalPanel {
 		}
 		
 		
+		// set the ontologyId in case a new version has been requested:
+		ontologyInfo.setOntologyId(ontologyId);
+
 		
 		final MyDialog popup = new MyDialog(null);
 		popup.addTextArea(null).setText("please wait ...");
@@ -595,9 +598,6 @@ public class MainPanel extends VerticalPanel {
 				uploadCompleted(popup, result);
 			}
 		};
-
-		// set the ontologyId in case a new version has been requested:
-		reviewResult.setOntologyId(ontologyId);
 
 		Main.ontmdService.upload(reviewResult, loginResult, callback);
 	}
