@@ -531,7 +531,23 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		if ( ontologyId == null ) {
 			// This is a new submission. We need to check for any conflict with a preexisting
 			// ontology in the repository with the same shortName+orgAbbreviation combination
+			//
 			if ( ! _checkNoPreexistingOntology(orgAbbreviation, shortName, reviewResult) ) {
+				return reviewResult;
+			}
+		}
+		else {
+			// This is a submission of a *new version* of an existing ontology.
+			// We need to check the shortName+orgAbbreviation combination as any changes here
+			// would imply a *new* ontology, not a new version.
+			//
+			Map<String, String> originalValues = ontologyInfo.getOriginalValues();
+			String originalOrgAbbreviation = originalValues.get(OmvMmi.origMaintainerCode.getURI());
+			String originalShortName = originalValues.get(Omv.acronym.getURI());
+			
+			if ( ! _checkUriKeyCombinationForNewVersion(
+					originalOrgAbbreviation, originalShortName, 
+					orgAbbreviation, shortName, reviewResult) ) {
 				return reviewResult;
 			}
 		}
@@ -834,6 +850,59 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		}
 		
 		// OK, no preexisting ontology:
+		return true;
+	}
+
+	/**
+	 * Checks the new ontology URI key combination for possible changes.
+	 * 
+	 * @param originalOrgAbbreviation  Part of the original key combination
+	 * @param originalShortName        Part of the original key combination
+	 * 
+	 * @param orgAbbreviation  Part of the key combination
+	 * @param shortName        Part of the key combination
+	 * 
+	 * @param result setError will be called on this object if there are any changes in the key combination.
+	 * 
+	 * @return true if OK. 
+	 *         false if there IS any error (result.getError() will be non-null).
+	 */
+	private boolean _checkUriKeyCombinationForNewVersion(
+			String originalOrgAbbreviation, String originalShortName, 
+			String orgAbbreviation, String shortName, BaseResult result) {
+		
+		// See issue 98: http://code.google.com/p/mmisw/issues/detail?id=98
+		//               "new version allows the shortName and authority to be changed"
+		
+		StringBuffer error = new StringBuffer();
+		
+		if ( ! originalOrgAbbreviation.equals(orgAbbreviation) ) {
+			error.append("\n New authority: " +orgAbbreviation+ ". Original: " +originalOrgAbbreviation);
+		}
+		
+		if ( ! originalShortName.equals(shortName) ) {
+			error.append("\n New resource type: " +shortName+ ". Original: " +originalShortName);
+		}
+
+		if ( error.length() > 0 ) {
+			String info = "URI key components have changed: " +error;
+			
+			if ( log.isDebugEnabled() ) {
+				log.debug(info);
+			}
+			
+			result.setError(info+ "\n\n" +
+					"The ontology would be submitted as a new entry in the repository " +
+					"and not as a new version of the base ontology." +
+					"Please make sure the resource type and the authority are unchanged.\n" +
+					"\n" +
+					"Note: To submit a new ontology (and not a new version of an existing ontology), " +
+					"please use the \"Submit New Ontology\" option in the main repository interface."
+			);
+			return false;
+		}
+		
+		// OK:
 		return true;
 	}
 

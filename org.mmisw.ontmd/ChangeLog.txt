@@ -3,6 +3,13 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2009-03-13
+	- Woking on http://code.google.com/p/mmisw/issues/detail?id=98:
+	                "new version allows the shortName and authority to be changed"
+	                
+		- See OntMdServiceImpl._checkUriKeyCombinationForNewVersion
+		
+	                
 2009-03-12
 	- Fixed http://code.google.com/p/mmisw/issues/detail?id=63:
 	                Matching auth+topic not detected as potential update
@@ -10,10 +17,10 @@ ChangeLog
 		  operation has access to it, and thus proceed with the appropriate check in
 		  case ontologyId == null (meaning the review is for a *new* submission, not a
 		  new version).
-		  See OntMdServiceImpl._checkPreexistingOntology
-		- Note, the _checkPreexistingOntology check is repeated in the "upload" operation
+		  See OntMdServiceImpl._checkNoPreexistingOntology
+		- Note, the _checkNoPreexistingOntology check is repeated in the "upload" operation
 		  in case there is a new registration done by other user in the meantime (from when the
-		  "reviee" was done). Of course, we are NOT completely solving the potential concurrency 
+		  "review" was done). Of course, we are NOT completely solving the potential concurrency 
 		  problem with this re-check; we are just reducing the chances of that event.
 
 2009-03-11
