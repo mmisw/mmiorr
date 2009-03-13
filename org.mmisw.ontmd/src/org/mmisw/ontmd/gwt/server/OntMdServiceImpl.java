@@ -68,7 +68,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	private static final long serialVersionUID = 1L;
 
 	// TODO unify version definition
-	private static final String VERSION = "1.0.2.beta (20090312)";
+	private static final String VERSION = "1.0.3.beta (20090313)";
 	private static final String TITLE = "MMI OntMD";
 	private static final String FULL_TITLE = TITLE + ". Version " +VERSION;
 
@@ -877,15 +877,17 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		StringBuffer error = new StringBuffer();
 		
 		if ( ! originalOrgAbbreviation.equals(orgAbbreviation) ) {
-			error.append("\n New authority: " +orgAbbreviation+ ". Original: " +originalOrgAbbreviation);
+			error.append("\n   New authority: \"" +orgAbbreviation+ "\"" +
+				     "  Original: \"" +originalOrgAbbreviation+ "\"");
 		}
 		
 		if ( ! originalShortName.equals(shortName) ) {
-			error.append("\n New resource type: " +shortName+ ". Original: " +originalShortName);
+			error.append("\n   New resource type: \"" +shortName+ "\"" +
+					     "  Original: \"" +originalShortName+ "\"");
 		}
 
 		if ( error.length() > 0 ) {
-			String info = "URI key components have changed: " +error;
+			String info = "Key component(s) for the ontology URI have changed: " +error;
 			
 			if ( log.isDebugEnabled() ) {
 				log.debug(info);
@@ -893,7 +895,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			
 			result.setError(info+ "\n\n" +
 					"The ontology would be submitted as a new entry in the repository " +
-					"and not as a new version of the base ontology." +
+					"and not as a new version of the base ontology. " +
 					"Please make sure the resource type and the authority are unchanged.\n" +
 					"\n" +
 					"Note: To submit a new ontology (and not a new version of an existing ontology), " +
@@ -1051,6 +1053,13 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 				if ( ! _checkNoPreexistingOntology(orgAbbreviation, shortName, uploadResult) ) {
 					return uploadResult;
 				}
+			}
+			else {
+				// This is a submission of a *new version* of an existing ontology.
+				// Nothing needs to be checked here.
+				// NOTE: We don't need to repeat the _checkUriKeyCombinationForNewVersion step here
+				// as any change in the contents of the metadata forces the user to explicitly
+				// do the "review" operation, which already takes care of that check.
 			}
 
 			// OK, now do the actual upload:

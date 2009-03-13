@@ -4,10 +4,12 @@ Carlos Rueda - MMI / MBARI
 ChangeLog
 
 2009-03-13
-	- Woking on http://code.google.com/p/mmisw/issues/detail?id=98:
+	- Fixed http://code.google.com/p/mmisw/issues/detail?id=98:
 	                "new version allows the shortName and authority to be changed"
 	                
 		- See OntMdServiceImpl._checkUriKeyCombinationForNewVersion
+		  Now, OntMd doesn't allow the shortName (resource type) or the organization
+		  abbreviation to be changed when a *new version* submission is attempted.
 		
 	                
 2009-03-12
