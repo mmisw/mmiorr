@@ -1,5 +1,6 @@
 package org.mmisw.ontmd.gwt.client.voc2rdf;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -319,8 +320,8 @@ public class VocabPanel extends VerticalPanel {
 		}
 		
 		String separatorName = fieldSeparator_lb.getValue(fieldSeparator_lb.getSelectedIndex());
-		String separator = "csv".equalsIgnoreCase(separatorName) ? "," : "\t";
-		
+		char separator = "csv".equalsIgnoreCase(separatorName) ? ',' : '\t';
+	
 		StringBuffer sb = new StringBuffer();
 		sb.append("<table class=\"inline\">");		
 
@@ -329,15 +330,18 @@ public class VocabPanel extends VerticalPanel {
 		
 		sb.append("<td align=\"right\"> <font color=\"gray\">" +0+ "</font> </td>");
 		
-		if ( lines[0].indexOf('\"') >= 0 || lines[0].indexOf('\'') >= 0  ) {
-			sb.append("<td> <font color=\"red\">" +"Sorry, quotes not handled yet for the tabular view"+ "</font></td>");
-			sb.append("</tr></table>\n");
-			return sb.toString();
-		}
+//		if ( lines[0].indexOf('\"') >= 0 || lines[0].indexOf('\'') >= 0  ) {
+//			sb.append("<td> <font color=\"red\">" +"Sorry, quotes not handled yet for the tabular view"+ "</font></td>");
+//			sb.append("</tr></table>\n");
+//			return sb.toString();
+//		}
+//
+//		String[] headerCols = lines[0].split(separator);
 
-		String[] headerCols = lines[0].split(separator);
-		for ( int c = 0; c < headerCols.length; c++ ) {
-			String str = headerCols[c];
+		List<String> headerCols = parseLine(lines[0], separator);
+		final int numHeaderCols = headerCols.size();
+		for ( int c = 0; c < numHeaderCols; c++ ) {
+			String str = headerCols.get(c);
 			if ( str.trim().length() == 0 ) {
 				str = "<font color=\"red\">" +"empty column header"+ "</font>";
 			}
@@ -351,21 +355,23 @@ public class VocabPanel extends VerticalPanel {
 			sb.append("<tr>\n");
 			sb.append("<td align=\"right\"> <font color=\"gray\">" +r+ "</font> </td>");
 			
-			if ( lines[r].indexOf('\"') >= 0 || lines[r].indexOf('\'') >= 0  ) {
-				sb.append("<td colspan=\"" +headerCols.length+ "\"> " +
-						"<font color=\"red\">" +"Sorry, quotes not handled yet for the tabular view"+ "</font></td>");
-				continue;
-			}
+//			if ( lines[r].indexOf('\"') >= 0 || lines[r].indexOf('\'') >= 0  ) {
+//				sb.append("<td colspan=\"" +headerCols.length+ "\"> " +
+//						"<font color=\"red\">" +"Sorry, quotes not handled yet for the tabular view"+ "</font></td>");
+//				continue;
+//			}
+//			String[] cols = lines[r].split(separator);
 
-			String[] cols = lines[r].split(separator);
-			for ( int c = 0; c < cols.length; c++ ) {
-				String str = cols[c].trim();
+			List<String> cols = parseLine(lines[r], separator);
+			final int numCols = cols.size();
+			for ( int c = 0; c < numCols; c++ ) {
+				String str = cols.get(c).trim();
 				
 //				if ( str.length() == 0 ) {
 //					str = "<font color=\"red\">" +"?"+ "</font>";
 //				}
 				
-				if ( c < headerCols.length ) {
+				if ( c < numHeaderCols ) {
 					sb.append("<td>" +str+ "</td>");
 				}
 				else {
@@ -375,7 +381,7 @@ public class VocabPanel extends VerticalPanel {
 			}
 			
 			// any missing columns? 
-			for ( int c = cols.length; c < headerCols.length; c++ ) {
+			for ( int c = numCols; c < numHeaderCols; c++ ) {
 //				sb.append("<td> <font color=\"red\">" +"?"+ "</font></td>");
 				sb.append("<td></td>");
 			}
@@ -386,6 +392,54 @@ public class VocabPanel extends VerticalPanel {
 		
 		return sb.toString();
 	}
+	
+	/**
+	 * Parses the line using the given separators and respecting quoted strings, 
+	 * which are, however, returned without the quotes. The only quote handle is the
+	 * double quote (").
+	 */
+	private static List<String> parseLine(String line, char separator) {
+		List<String> toks = new ArrayList<String>();
+		
+		StringBuffer currTok = new  StringBuffer();
+		
+		boolean inQuote = false;
+		
+		for ( int i = 0; i < line.length(); i++ ) {
+			char chr = line.charAt(i);
+			
+			if ( chr == '"' ) {
+				inQuote = !inQuote; 
+				currTok.append(chr);
+			}
+			else if ( chr == separator ) {
+				if ( inQuote ) {
+					currTok.append(chr);
+				}
+				else {
+					// token completed.
+					if ( currTok.length() > 0 ) {
+						// previous token under construction: add it
+						toks.add(currTok.toString().trim().replaceAll("^\"+|\"+$", ""));
+						currTok.setLength(0);
+					}
+				}
+			}
+			else {
+				currTok.append(chr);
+			}
+		}
+		
+		// pending token?
+		if ( currTok.length() > 0 ) {
+			// previous token under construction: added (with no quotes)
+			toks.add(currTok.toString().trim().replaceAll("^\"+|\"+$", ""));
+			currTok.setLength(0);
+		}
+
+		return toks;
+	}
+
 
 	void reset(boolean confirm) {
 		if ( confirm

@@ -10,6 +10,13 @@ ChangeLog
 		- See OntMdServiceImpl._checkUriKeyCombinationForNewVersion
 		  Now, OntMd doesn't allow the shortName (resource type) or the organization
 		  abbreviation to be changed when a *new version* submission is attempted.
+		  
+		  
+	- Implemented http://code.google.com/p/mmisw/issues/detail?id=87:
+					"Ability to have Voc2RDF handle quoted strings for table preview"
+		- See VocabPanel.parseLine(), which is used now in updateTabularView().
+		   Note: it only handles the double quote (") case.
+		- This is Voc2RDF 2.0.0.beta5
 		
 	                
 2009-03-12
