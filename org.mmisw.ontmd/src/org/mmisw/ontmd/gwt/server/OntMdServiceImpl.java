@@ -531,12 +531,10 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		if ( ontologyId == null ) {
 			// This is a new submission. We need to check for any conflict with a preexisting
 			// ontology in the repository with the same shortName+orgAbbreviation combination
-			if ( _checkPreexistingOntology(orgAbbreviation, shortName, reviewResult) ) {
+			if ( ! _checkNoPreexistingOntology(orgAbbreviation, shortName, reviewResult) ) {
 				return reviewResult;
 			}
 		}
-		// else: ok, this is explicitly for a new version; no need to any further check here.
-		
 		
 		////////////////////////////////////////////
 		// load pre-uploaded model
@@ -775,16 +773,18 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	
 	/**
 	 * Checks the preexistence of an ontology to determine the possible conflict with an ontology that
-	 * is about to be uploaded.
+	 * is about to be uploaded as *new*.
 	 * 
-	 * @param orgAbbreviation
-	 * @param shortName
+	 * @param orgAbbreviation  Part of the key combination
+	 * @param shortName        Part of the key combination
 	 * 
-	 * @param result setError will be called on tis object in case of existing ontology with the given parameters.
+	 * @param result setError will be called on this object in case an ontology exists with the given parameters
+	 *           or if any error occurred while doing the check.
 	 * 
-	 * @return true iff there is an existing ontology with the given parameters
+	 * @return true if there is NO existing ontology with the given parameters; false if there IS an existing
+	 *            ontology OR some error occurred.  If false is returned, result.getError() will be non-null.
 	 */
-	private boolean _checkPreexistingOntology(String orgAbbreviation, String shortName, BaseResult result) {
+	private boolean _checkNoPreexistingOntology(String orgAbbreviation, String shortName, BaseResult result) {
 		// See issue 63: http://code.google.com/p/mmisw/issues/detail?id=63
 		
 		// the (unversioned) URI to check for preexisting ontology:
@@ -806,8 +806,11 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			possibleOntologyExists = statusCode == HttpStatus.SC_OK;
 		}
 		catch (Exception e) {
-			// just log the error and continue
-			log.error("Exception while checking for existence of URI", e);
+			// report the error and return false (we shouldn't continue with the upload):
+			String info = "Exception while checking for existence of URI: " +possibleOntologyUri+ " : " +e.getMessage();
+			log.error(info, e);
+			result.setError(info+ "\n\n Please try later.");
+			return false;
 		}
 		
 		if ( possibleOntologyExists ) {
@@ -827,9 +830,11 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 					"then you would need to browse to that entry in the main repository interface " +
 					"and use one of the available options to create a new version."
 			);
-			return true;
+			return false;
 		}
-		return false;
+		
+		// OK, no preexisting ontology:
+		return true;
 	}
 
 	/**
@@ -974,7 +979,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			if ( ontologyId == null ) {
 				final String orgAbbreviation = newValues.get(OmvMmi.origMaintainerCode.getURI());
 				final String shortName = newValues.get(Omv.acronym.getURI());
-				if ( _checkPreexistingOntology(orgAbbreviation, shortName, uploadResult) ) {
+				if ( ! _checkNoPreexistingOntology(orgAbbreviation, shortName, uploadResult) ) {
 					return uploadResult;
 				}
 			}
