@@ -113,20 +113,31 @@ public class MmiUri {
 		if ( parts.length == 2 ) {
 			_topic = parts[1];
 		}
+		else if ( parts.length == 4 ) {
+			_version = parts[1];
+			_topic = parts[2];
+			_term = parts[3];
+		}
 		else {
-			int idx_topic = 1;
+			assert parts.length == 3 ;
+			
+			// Determine which of the two cases (a) or (b) we are dealing with:
+			//   (a) { mmi, someVocab.owl, someTerm }
+			//   (b) { mmi, someVersion, someVocab.owl}
+
 			// if parts[1] starts with a digit or is LATEST_VERSION_INDICATOR, take that part as the version:
 			if ( parts[1].length() > 0 
 			&& ( Character.isDigit(parts[1].charAt(0)) 
 			     || parts[1].equals(LATEST_VERSION_INDICATOR) ) 
 			) {
-				// Ok, so take the version and update index for topic
+				// case (b): 
 				_version = parts[1];
-				idx_topic = 2;
+				_topic = parts[2];
 			}
-			_topic = parts[idx_topic];
-			if ( idx_topic + 1 < parts.length ) {
-				_term = parts[idx_topic + 1];
+			else {
+				// case (a)
+				_topic = parts[1];
+				_term = parts[2];
 			}
 		}
 		

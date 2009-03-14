@@ -111,6 +111,18 @@ public class MmiUriTest extends TestCase {
     	catch (URISyntaxException ok) {
     	}
     }
+    public void testVersionInvalid2() throws URISyntaxException {
+    	String fullRequestedUri = "http://mmisw.org/ont/mmi/badversion/someVocab/someTerm";
+    	String requestedUri = "/ont/mmi/badversion/someVocab/someTerm";
+    	// Note: 4 parts={mmi, badversion, someVocab, someTerm} forces parts[1] to be the version,
+    	// which is malformed in this case.
+    	try {
+    		new MmiUri(fullRequestedUri, requestedUri, contextPath);
+    		fail(); // test fails!
+    	}
+    	catch (URISyntaxException ok) {
+    	}
+    }
     public void testTopicExtAndVersion() throws URISyntaxException {
     	String fullRequestedUri = "http://mmisw.org/ont/mmi/20081021/someVocab.owl/someTerm";
     	String requestedUri = "/ont/mmi/20081021/someVocab.owl/someTerm";

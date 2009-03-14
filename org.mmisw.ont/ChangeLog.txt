@@ -3,6 +3,11 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2009-03-14:
+	- The following kind URI was accepted as valid:
+	       http://mmisw.org/ont/mmi/badversion/someVocab/someTerm
+	  Fixed.  See MmiUri public constructor and MmiUriTest.testVersionInvalid2().
+	
 2009-03-13:
 	- working on issue 51: "Fix unversioned HTML to be unversioned", in concrete the problem
 	  I described in today's comment.
