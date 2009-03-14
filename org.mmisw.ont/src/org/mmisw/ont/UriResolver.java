@@ -196,9 +196,7 @@ public class UriResolver extends HttpServlet {
 				if ( log.isDebugEnabled() ) {
 					log.debug("Other resource: " +path+ ": not found or cannot be read");
 				}
-				response.sendError(HttpServletResponse.SC_NOT_FOUND, 
-						request.getRequestURI()+ ": not found");
-
+				response.sendError(HttpServletResponse.SC_NOT_FOUND, request.getRequestURI());
 				return;
 			}
 			
