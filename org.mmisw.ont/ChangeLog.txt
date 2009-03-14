@@ -1,8 +1,13 @@
-org.mmisw.ont - Ontology URI resolver 
+org.mmisw.ont - Ontology and Term URI resolver 
 Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2009-03-13:
+	- working on issue 51: "Fix unversioned HTML to be unversioned", in concrete the problem
+	  I described in today's comment.
+	
+	
 2009-03-03
 	Resuming work on issue 62: unversioned terms not resolving 
 	http://code.google.com/p/mmisw/issues/detail?id=62&sort=priority

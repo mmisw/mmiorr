@@ -54,12 +54,14 @@ public class HtmlDispatcher {
 	 * @param request
 	 * @param response
 	 * @param mmiUri
+	 * @param ontology If not null, it will be used; otherwise it will try to
+	 *           get the ontology by the given mmiUri
 	 * @return
 	 * @throws ServletException
 	 * @throws IOException
 	 */
 	boolean dispatch(HttpServletRequest request, HttpServletResponse response, 
-			MmiUri mmiUri) 
+			MmiUri mmiUri, boolean unversionedRequest, Ontology ontology) 
 	throws ServletException, IOException {
 		
 		if ( log.isDebugEnabled() ) {
@@ -70,12 +72,18 @@ public class HtmlDispatcher {
 		
 		final String fullRequestedUri = request.getRequestURL().toString();
 		
-		String[] foundUri = { null };
-		Ontology ontology = db.getOntologyWithExts(mmiUri, foundUri);
+		String foundUri = mmiUri.toString();
+		
 		if ( ontology == null ) {
-			response.sendError(HttpServletResponse.SC_NOT_FOUND, 
-					request.getRequestURI()+ ": not found");
-			return true;
+			String[] foundUri_ = { null };
+			ontology = db.getOntologyWithExts(mmiUri, foundUri_);
+			if ( ontology == null ) {
+				response.sendError(HttpServletResponse.SC_NOT_FOUND, 
+						request.getRequestURI()+ ": not found");
+				return true;
+			}
+			
+			foundUri = foundUri_[0];
 		}
 
 		File file = UriResolver._getFullPath(ontology, ontConfig, log);
@@ -92,17 +100,45 @@ public class HtmlDispatcher {
 
 		PrintWriter out = response.getWriter();
 		
+		
+		// original model:
+		OntModel model = null;
+		
+		// corresponding unversioned model in case is requested: 
+		OntModel unversionedModel = null;
+		
 		String uriFile = file.toURI().toString();
-		Model model = JenaUtil.loadModel(uriFile, false);
+
+		if ( unversionedRequest ) {
+			
+			model = JenaUtil.loadModel(uriFile, false);
+
+			unversionedModel = UnversionedConverter.getUnversionedModel(model, mmiUri);
+			
+			if ( unversionedModel != null ) {
+				// but put both variables to the same unversioned model
+				model = unversionedModel;
+				if ( log.isDebugEnabled() ) {
+					log.debug("dispatch: using obtained unversioned model");
+				}
+			}
+			else {
+				// error in conversion to unversioned version.
+				// this is unexpected. 
+				// Continue with original model, if necessary; see below.
+				log.error("dispatch: unexpected: error in conversion to unversioned version.  But continuing with original model");
+			}
+		}
+		else {
+			model = JenaUtil.loadModel(uriFile, false);
+		}
+		
 
 		if ( mmiUri.getTerm().length() > 0 ) {
 			dispatchTerm(request, response, mmiUri, model, false);
 		}
 		else {
-//			// TODO remove MD -- no longer done here
-//			mdDispatcher.execute(request, response, mmiUri, false, "inline", "Metadata");
-			
-			_showAllTerms(mmiUri, foundUri[0], model, out, debug);
+			_showAllTerms(mmiUri, foundUri, model, out, debug);
 		}
 		
 		return true;

@@ -51,8 +51,8 @@ public class UriResolver extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	
-	private static final String VERSION = "0.2.0.beta3 (20081229)";
-	private static final String TITLE = "MMI Ontology URI Resolver";
+	private static final String VERSION = "0.2.0.beta4 (20090313)";
+	private static final String TITLE = "MMI Ontology and Term URI Resolver";
 	private static final String FULL_TITLE = TITLE + ". Version " +VERSION;
 
 
@@ -63,9 +63,6 @@ public class UriResolver extends HttpServlet {
 	private final OntGraph ontGraph = new OntGraph(ontConfig, db);
 	
 	private final SparqlDispatcher sparqlDispatcher = new SparqlDispatcher(ontGraph);
-	
-	// MD no longer done here
-//	private final MdDispatcher mdDispatcher = new MdDispatcher(ontConfig, db);
 	
 	private final HtmlDispatcher htmlDispatcher = new HtmlDispatcher(ontConfig, db);
 
@@ -299,25 +296,6 @@ public class UriResolver extends HttpServlet {
 		final String fullRequestedUri = request.getRequestURL().toString();
 		
 		
-// metadata no longer dispatched here.
-//		// dispatch metadata?
-//		if ( Util.yes(request, "_md")  ) {
-//			//
-//			// This option is mainly to support metadata display in the RoR front-end.
-//			// In general, this parameter is used without any value, so only the
-//			// table component is generated.
-//			// For convenience, the following are also accepted:
-//			//    _md=completepage         -> to generate a complete HTML page
-//			//    _mdtableclass=somestyle  -> to specify the style for the table; by default, 
-//			//                                "metadata", the one used in the RoR front-end.
-//			//
-//			String _md = Util.getParam(request, "_md", "");
-//			boolean completePage = "completepage".equalsIgnoreCase(_md);
-//			String tableClass = Util.getParam(request, "_mdtableclass", null);   
-//			mdDispatcher.execute(request, response, null, completePage, tableClass, null);
-//			return true;
-//		}
-		
 		// if the "_lpath" parameter is included, reply with full local path of ontology file
 		// (this is just a quick way to help ontmd to so some of its stuff ;)
 		if ( Util.yes(request, "_lpath") ) {
@@ -348,10 +326,6 @@ public class UriResolver extends HttpServlet {
 		}
 		catch (URISyntaxException e) {
 			// Not dispatched here; allow caller to dispatch in any other convenient way:
-			if ( false &&  // to avoid too many messages, while keeping the DEBUG level I want. 
-			     log.isDebugEnabled() ) {
-				log.debug("MMI URI not well formed: " +e.getMessage());
-			}
 			return false;   
 		}
 		
@@ -393,16 +367,11 @@ public class UriResolver extends HttpServlet {
 					String rememberExt = mmiUri.getTopicExtension();
 					// but restore the requested file extension if different
 					if ( ! rememberExt.equals(foundMmiUri.getTopicExtension()) ) {
-//						mmiUri 
-						foundMmiUri
-						= MmiUri.create(foundMmiUri.getOntologyUriWithTopicExtension(rememberExt));
+						foundMmiUri = MmiUri.create(foundMmiUri.getOntologyUriWithTopicExtension(rememberExt));
 
 						if ( log.isDebugEnabled() ) {
 							log.debug("Restored requested extension to: " +mmiUri);
 						}
-					}
-					else {
-//						mmiUri = foundMmiUri;
 					}
 				}
 				catch (URISyntaxException e) {
@@ -424,7 +393,9 @@ public class UriResolver extends HttpServlet {
 					// NOTE: I was using mmiUri.getOntologyUri(), but this only returns the
 					// URI for the ontology, so any possible term was ignored. Now getTermUri is used:
 					String latestUri = mmiUri.getTermUri(false, "/");
-					log.debug("Redirecting to latest version: " + latestUri);
+					if ( log.isDebugEnabled() ) {
+						log.debug("Redirecting to latest version: " + latestUri);
+					}
 					latestUri = response.encodeRedirectURL(latestUri);
 					response.sendRedirect(latestUri);
 					
@@ -524,7 +495,7 @@ public class UriResolver extends HttpServlet {
 			// (b) an HTML document (if Accept: text/html but not application/rdf+xml)
 			else if ( accept.contains("text/html") ) {
 				
-				return htmlDispatcher.dispatch(request, response, mmiUri);
+				return htmlDispatcher.dispatch(request, response, mmiUri, unversionedRequest, mostRecentOntology);
 			}
 			
 			// (c) an HTML document (if Accept: text/html, application/rdf+xml or Accept: */*)
@@ -537,7 +508,7 @@ public class UriResolver extends HttpServlet {
 					return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML, unversionedRequest, mostRecentOntology);
 				}
 				else {
-					return htmlDispatcher.dispatch(request, response, mmiUri);
+					return htmlDispatcher.dispatch(request, response, mmiUri, unversionedRequest, mostRecentOntology);
 				}
 			}
 			
@@ -549,14 +520,14 @@ public class UriResolver extends HttpServlet {
 						"'OWL document with referenced style sheet' Not implemented yet." +
 						" Returning HTML temporarily.");
 				
-				return htmlDispatcher.dispatch(request, response, mmiUri);
+				return htmlDispatcher.dispatch(request, response, mmiUri, unversionedRequest, mostRecentOntology);
 			}
 			
 			
 			// Else: arbitrarely returning in HTML:
 			else {
 				log.warn("Default case: Returning HTML.");
-				return htmlDispatcher.dispatch(request, response, mmiUri);
+				return htmlDispatcher.dispatch(request, response, mmiUri, unversionedRequest, mostRecentOntology);
 			}
 		}
 		
@@ -564,7 +535,7 @@ public class UriResolver extends HttpServlet {
 		
 		// "html":
 		else if ( outFormat.equalsIgnoreCase("html") ) {
-			return htmlDispatcher.dispatch(request, response, mmiUri);
+			return htmlDispatcher.dispatch(request, response, mmiUri, unversionedRequest, mostRecentOntology);
 		}
 			
 		// "n3":
