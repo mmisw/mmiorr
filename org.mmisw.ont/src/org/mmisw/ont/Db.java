@@ -177,12 +177,16 @@ public class Db {
 			return ontology;
 		}
 		
+		// TODO Remove the following trials with various extensions as we are NOT storing
+		// URIs with extension in the database, AND mmiUri.getOntologyUri() above is always
+		// with NO extension.
+		
 		// try with a different extension, including no extension:
 		String[] exts = { "", ".owl", ".rdf" };
-		String topicExt = mmiUri.getTopicExtension();
+		String topicExt = mmiUri.getExtension();
 		for (String ext : exts ) {
 			if ( ! ext.equalsIgnoreCase(topicExt) ) {
-				String withNewExt = mmiUri.getOntologyUriWithTopicExtension(ext);
+				String withNewExt = mmiUri.getOntologyUriWithExtension(ext);
 				if ( log.isDebugEnabled() ) {
 					log.debug("getOntologyWithExts: withNewExt=" +withNewExt);
 				}
@@ -219,47 +223,22 @@ public class Db {
 	 * available.
 	 * 
 	 * @param mmiUri the base URI to create the version wilcard.
-	 * @param  allExts  false to use the topic as given (with its extension);
-	 *                  true to ignore the extension and use a wildcard.
 	 * 
 	 * @return list of ontologies with exactly the same given mmiUri except for the
 	 *          version component.
 	 *          
 	 * @throws ServletException
 	 */
-	List<Ontology> getOntologyVersions(MmiUri mmiUri, boolean allExts) throws ServletException {
-		
-		// ignore the term component, if given in the mmiUri
-		String term = mmiUri.getTerm();
-		if ( term != null && term.trim().length() > 0 ) {
-			mmiUri = mmiUri.copyWithTerm("");
-			log.debug("getOntologyVersions: " +term+ ": term ignored.");
-		}
+	List<Ontology> getOntologyVersions(MmiUri mmiUri) throws ServletException {
 		
 		List<Ontology> onts = new ArrayList<Ontology>();
 		
-		if ( allExts ) {
-			// remove original topic extension, if any:
-			if ( mmiUri.getTopicExtension().length() > 0 ) {
-				String uriNoExt = mmiUri.getOntologyUriWithTopicExtension("");
-				try {
-					mmiUri = MmiUri.create(uriNoExt);
-				}
-				catch (URISyntaxException e) {
-					// should not occur.
-					log.debug("should not occur.", e);
-					return onts;
-				}
-			}
-		}
-		
-		String origVersion = mmiUri.getVersion();
-		if ( origVersion != null && log.isDebugEnabled() ) {
-			log.debug("getOntologyVersions: " +origVersion+ ": version component will be ignored.");
+		if ( mmiUri.getVersion() != null && log.isDebugEnabled() ) {
+			log.debug("getOntologyVersions: " +mmiUri.getVersion()+ ": version component will be ignored.");
 		}
 		
 		// get ontologyUriPattern to do the "like" query:
-		String ontologyUriPattern = "";
+		String ontologyUriPattern;
 		try {
 			// use "%" for the version:
 			MmiUri mmiUriPatt = mmiUri.copyWithVersionNoCheck("%");
@@ -272,12 +251,9 @@ public class Db {
 		}
 		
 		// to be added to the condition is the query string below:
-		String or_with_dot_ext = "";
-		
-		if ( allExts ) {
-			// Add an "or" condition to allow extensions, ".%":
-			or_with_dot_ext = "or v.urn like '" +ontologyUriPattern+ ".%' ";
-		}
+		// Add an "or" condition to allow extensions, ".%":
+		// TODO remove this ".%" condition as we are no storing URIs with extensions in the database.
+		String or_with_dot_ext = "or v.urn like '" +ontologyUriPattern+ ".%' ";
 		
 		// ok, now run the "like" query
 		Connection _con = null;
@@ -338,7 +314,7 @@ public class Db {
 	
 	
 	Ontology getMostRecentOntologyVersion(MmiUri mmiUri) throws ServletException {
-		List<Ontology> onts = getOntologyVersions(mmiUri, true);
+		List<Ontology> onts = getOntologyVersions(mmiUri);
 		if ( onts.size() == 0 ) {
 			return null;
 		}

@@ -316,11 +316,9 @@ public class UriResolver extends HttpServlet {
 		}
 		
 		// parse the given URI:
-		final String requestedUri = request.getRequestURI();
-		final String contextPath = request.getContextPath();
-		MmiUri mmiUriCheck = null;
+		MmiUri mmiUriCheck;
 		try {
-			mmiUriCheck = new MmiUri(fullRequestedUri, requestedUri, contextPath);
+			mmiUriCheck = new MmiUri(fullRequestedUri);
 		}
 		catch (URISyntaxException e) {
 			// Not dispatched here; allow caller to dispatch in any other convenient way:
@@ -355,22 +353,18 @@ public class UriResolver extends HttpServlet {
 					// Note that mostRecentOntology.getUri() won't have the term component.
 					// So, we have to transfer it to foundMmiUri:
 					//
-					foundMmiUri = MmiUri.create(mostRecentOntology.getUri()).copyWithTerm(mmiUri.getTerm());
+					foundMmiUri = new MmiUri(mostRecentOntology.getUri()).copyWithTerm(mmiUri.getTerm());
 					
 					if ( log.isDebugEnabled() ) {
-						log.debug("Found ontology version: " +foundMmiUri);
-					}
+						log.debug("Found ontology version: " +mostRecentOntology.getUri());
 
-
-					String rememberExt = mmiUri.getTopicExtension();
-					// but restore the requested file extension if different
-					if ( ! rememberExt.equals(foundMmiUri.getTopicExtension()) ) {
-						foundMmiUri = MmiUri.create(foundMmiUri.getOntologyUriWithTopicExtension(rememberExt));
-
-						if ( log.isDebugEnabled() ) {
+						if ( ! mmiUri.getExtension().equals(foundMmiUri.getExtension()) ) {
 							log.debug("Restored requested extension to: " +mmiUri);
 						}
 					}
+					
+					// also, restore the original requested extension:
+					foundMmiUri = foundMmiUri.copyWithExtension(mmiUri.getExtension());
 				}
 				catch (URISyntaxException e) {
 					log.error("shouldnt happen", e);
@@ -390,7 +384,7 @@ public class UriResolver extends HttpServlet {
 					//
 					// NOTE: I was using mmiUri.getOntologyUri(), but this only returns the
 					// URI for the ontology, so any possible term was ignored. Now getTermUri is used:
-					String latestUri = foundMmiUri.getTermUri(false, "/");
+					String latestUri = foundMmiUri.getTermUri();
 					if ( log.isDebugEnabled() ) {
 						log.debug("Redirecting to latest version: " + latestUri);
 					}
@@ -419,10 +413,10 @@ public class UriResolver extends HttpServlet {
 		//    Dereferencing rules
 		////////////////////////////////////////////////////////////////////////////////
 		
-		// Dereferencing is done according to the "accept" header and the topic extension.
+		// Dereferencing is done according to the "accept" header and the extension.
 
 		// The response type depends (initially) on the following elements:
-		String topicExt = mmiUri.getTopicExtension();
+		String extension = mmiUri.getExtension();
 		Accept accept = new Accept(request);
 		String outFormat = Util.getParam(request, "form", "");
 		
@@ -435,7 +429,7 @@ public class UriResolver extends HttpServlet {
 			log.debug("===Starting dereferencing ====== ");
 			log.debug("===Accept entries: " +accept.getEntries());
 			log.debug("===Dominating entry: \"" +dominating+ "\"");
-			log.debug("===topicExt = \"" +topicExt+ "\"");
+			log.debug("===extension = \"" +extension+ "\"");
 			log.debug("===form = \"" +outFormat+ "\"");
 		}
 
@@ -443,12 +437,12 @@ public class UriResolver extends HttpServlet {
 		if ( outFormat.length() == 0 ) {
 			// no "form" parameter given. Ok, use the variable to hold the extension
 			// without any leading dots:
-			outFormat = topicExt.replaceAll("^\\.+", "");
+			outFormat = extension.replaceAll("^\\.+", "");
 		}
 		else {
 			// "form" parameter given. Use it regardless of file extension.
-			if ( log.isDebugEnabled() && topicExt.length() > 0 ) {
-				log.debug("form param (=" +outFormat+ ") will take precedence over file extension: " +topicExt);
+			if ( log.isDebugEnabled() && extension.length() > 0 ) {
+				log.debug("form param (=" +outFormat+ ") will take precedence over file extension: " +extension);
 			}
 		}
 		
@@ -459,7 +453,7 @@ public class UriResolver extends HttpServlet {
 		}
 
 		// OK, from here I use 'outFormat' to check the requested format for the response.
-		// 'topicExt' not used from here any more.
+		// 'extension' not used from here any more.
 		
 		if ( outFormat.length() == 0                 // No explicit outFormat 
 		||   outFormat.equalsIgnoreCase("owl")       // OR outFormat is "owl"
@@ -788,11 +782,9 @@ public class UriResolver extends HttpServlet {
 		out = response.getWriter();
 		
 		// parse the given URI:
-		final String requestedUri = request.getRequestURI();
-		final String contextPath = request.getContextPath();
 		MmiUri mmiUri = null;
 		try {
-			mmiUri = new MmiUri(fullRequestedUri, requestedUri, contextPath);
+			mmiUri = new MmiUri(fullRequestedUri);
 		}
 		catch (URISyntaxException e) {
 			out.println("ERROR: " +e.getReason());
@@ -839,18 +831,16 @@ public class UriResolver extends HttpServlet {
 		out = response.getWriter();
 		
 		// parse the given URI:
-		final String requestedUri = request.getRequestURI();
-		final String contextPath = request.getContextPath();
-		MmiUri mmiUri = null;
+		MmiUri mmiUri;
 		try {
-			mmiUri = new MmiUri(fullRequestedUri, requestedUri, contextPath);
+			mmiUri = new MmiUri(fullRequestedUri);
 		}
 		catch (URISyntaxException e) {
 			out.println("ERROR: " +e.getReason());
 			return;
 		}
 		
-		List<Ontology> onts = db.getOntologyVersions(mmiUri, true);
+		List<Ontology> onts = db.getOntologyVersions(mmiUri);
 		
 		for ( Ontology ontology : onts ) {
 			
@@ -891,11 +881,9 @@ public class UriResolver extends HttpServlet {
 		out.println(" Full requested URI: <code>" + fullRequestedUri + "</code> <br/><br/>");
 		
 		// parse the given URI:
-		final String requestedUri = request.getRequestURI();
-		final String contextPath = request.getContextPath();
-		MmiUri mmiUri = null;
+		MmiUri mmiUri;
 		try {
-			mmiUri = new MmiUri(fullRequestedUri, requestedUri, contextPath);
+			mmiUri = new MmiUri(fullRequestedUri);
 		}
 		catch (URISyntaxException e) {
 			out.println("<font color=\"red\">ERROR: " +e.getReason()+ "</font><br/>");
@@ -924,7 +912,7 @@ public class UriResolver extends HttpServlet {
 		// report something about the available versions:
 		out.println("Available versions:");
 		out.println("<pre>");
-		for ( Ontology ont : db.getOntologyVersions(mmiUri, true) ) {
+		for ( Ontology ont : db.getOntologyVersions(mmiUri) ) {
 			out.println("   " +ont.getUri());
 		}
 		out.println("</pre>");
@@ -1031,13 +1019,13 @@ public class UriResolver extends HttpServlet {
 		
 		// construct URI of term.
 		// First, try with "/" separator:
-		String termUri = mmiUri.getTermUri(true, "/");
+		String termUri = mmiUri.getTermUri("/");
 		Resource termRes = model.getResource(termUri);
 
 		if ( termRes == null ) {
 			out.println("<br/>Term URI: " +termUri+ " Not found");
 			// then, try with "#" separator
-			termUri = mmiUri.getTermUri(true, "#");
+			termUri = mmiUri.getTermUri("#");
 			termRes = model.getResource(termUri);
 		}
 		
@@ -1276,7 +1264,7 @@ public class UriResolver extends HttpServlet {
 	        	String display_label = rs.getString(2);
 	        	
 	        	try {
-	        		MmiUri mmiUri = MmiUri.create(ontologyUri);
+	        		MmiUri mmiUri = new MmiUri(ontologyUri);
 
 	        		// discard mapping ontologies:
 	        		String topic = mmiUri.getTopic().toLowerCase();
@@ -1355,7 +1343,7 @@ public class UriResolver extends HttpServlet {
 	        	String display_label = rs.getString(2);
 	        	
 	        	try {
-	        		MmiUri mmiUri = MmiUri.create(ontologyUri);
+	        		MmiUri mmiUri = new MmiUri(ontologyUri);
 
 	        		// only mapping ontologies:
 	        		String topic = mmiUri.getTopic().toLowerCase();

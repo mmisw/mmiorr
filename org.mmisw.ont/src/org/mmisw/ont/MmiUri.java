@@ -6,27 +6,50 @@ import java.util.Arrays;
 import java.util.regex.Pattern;
 
 /**
- * Represents a decomposition of a given requested URI.
+ * Represents an MMI ontology or term URI.
  * 
  * <p>
- * TODO: NOTE: Constructor is rather ackward (based on full requested URI because that was
- * the main mechanism when this class was created).  Need to make the contructor more friedly,
- * ie., specifically with the fields involved in the contruction!!.
+ * The parsing is done in a way that is independent of the actual
+ * server host:port (<code>http://mmisw.org</code> in the example) 
+ * and the "root" directory component (<code>ont</code> in the example).
  * 
  * <p>
- * The following requested URI is used as example to illustrate the various
- * operations:
+ * The following requested URI is used as example to illustrate the various operations:
  * <pre>
        http://mmisw.org/ont/mmi/someVocab.owl/someTerm
  * </pre>
  *  
- * The parsing is done in a way that is independent of the actual
- * server host:port ("http://mmisw.org" in the example) and the "root" directory component
- * ("ont" in the example).
+ * Note that the "extension" (<code>.owl</code>) can also be indicated in the term component, eg., 
+ * <pre>
+       http://mmisw.org/ont/mmi/someVocab/someTerm.owl
+ * </pre>
+ * The two strings refer to the same ontology and term.
+ * 
+ * <p>
+ * Note that the extension is NOT included in any of the report operations except
+ * {@link #getExtension()}.
+ * 
+ * <p>
+ * As a concrete example with all the main operations:
+<pre>
+	MmiUri mmiUri = new MmiUri("http://mmisw.org/ont/mmi/someVocab/someTerm.owl");
+	
+	assertEquals("http://mmisw.org/ont/mmi/someVocab",          mmiUri.getOntologyUri());
+	assertEquals("http://mmisw.org/ont/mmi/someVocab/someTerm", mmiUri.getTermUri());
+	
+	assertEquals("mmi",       mmiUri.getAuthority());
+	assertEquals(null,        mmiUri.getVersion());
+	assertEquals("someVocab", mmiUri.getTopic());
+	assertEquals("someTerm",  mmiUri.getTerm());
+	assertEquals(".owl",      mmiUri.getExtension());
+	
+	assertEquals("http://mmisw.org/ont/",  mmiUri.getUntilRoot());
+
+</pre>
  * 
  * @author Carlos Rueda
  */
-public class MmiUri {
+public final class MmiUri {
 
 	private static Pattern VERSION_PATTERN = 
 		Pattern.compile("^\\d{4}(\\d{2}(\\d{2})?)?(T\\d{2})?(\\d{2}(\\d{2})?)?$");
@@ -57,30 +80,62 @@ public class MmiUri {
 
 	}
 	
-	private final String authority;
-	private final String version;
-	private final String topic;
-	private final String term;
-	private final String ontologyUri;
+
+	///////////////////////////////////////////////////////////////////////////////////////////
+	//                      Instance:
+	///////////////////////////////////////////////////////////////////////////////////////////
 	
+	// Full URI used as an example: http://mmisw.org/ont/mmi/someVocab.owl/someTerm
+	
+	/** The prefix until the root including the trailing slash 
+	 *         (<code>http://mmisw.org/ont/</code>)
+	 */
 	private final String untilRoot;
+
+	/** The authority (<code>mmi</code>)*/
+	private final String authority;
+	
+	/** The version (<code>null</code>)*/
+	private final String version;
+	
+	/** The topic (<code>someVocab</code>)*/
+	private final String topic;
+	
+	/** The term (<code>someTerm</code>)*/
+	private final String term;
+	
+	/** The extension (<code>.owl</code>)*/
+	private final String extension;
+	
 	
 	/**
-	 * Creates an MmiUri by analysing the given request.
+	 * Creates an MmiUri by parsing the given string.
 	 * 
-	 * @param fullRequestedUri (<code>http://mmisw.org/ont/mmi/someVocab.owl/someTerm</code>)
-	 * @param requestedUri     (<code>/ont/mmi/someVocab.owl/someTerm</code>)
-	 * @param contextPath      (<code>/ont</code>)
-	 * @throws URISyntaxException
+	 * @param str (<code>http://mmisw.org/ont/mmi/someVocab.owl/someTerm</code>)
 	 * 
-	 * @throws URISyntaxException if the requested URI is invalid according to
-	 *         the MMI recommendation:
-	 *         <ul>
-	 *            <li> <i>authority</i> is missing  </li>
-	 *            <li> <i>topic</i> is missing  </li>
-	 *         </ul>
+	 * @throws URISyntaxException if the requested URI is invalid according to the MMI specification.
 	 */
-	public MmiUri(String fullRequestedUri, String requestedUri, String contextPath) throws URISyntaxException {
+	public MmiUri(String str) throws URISyntaxException {
+		URI juri = new URI(str);
+		
+		String path = juri.getPath();
+		if ( !path.startsWith("/") ) {
+			throw new URISyntaxException(str, "not absolute path");
+		}
+		int idx = path.indexOf('/', 1);
+		if ( idx < 0 ) {
+			throw new URISyntaxException(str, "No root");
+		}
+		String root = path.substring(0, idx); // include leading slash  
+		
+		String reqUri = path;
+		String contextPath = root;
+		
+		
+		
+		//MmiUri mmiUri = new MmiUri(str, reqUri, contextPath);
+		String fullRequestedUri = str;
+		String requestedUri = reqUri;
 		// parsing described with an example:
 		
 		// afterRoot = /mmi/someVocab.owl/someTerm
@@ -141,9 +196,39 @@ public class MmiUri {
 			}
 		}
 		
+		// remove any extension from _topic and _term, but remember them to assign this.extension below
+		String _topicExt = "";
+		int dotIdx = _topic.lastIndexOf('.');
+		if ( dotIdx >= 0) {
+			_topicExt = _topic.substring(dotIdx).toLowerCase();
+			_topic = _topic.substring(0, dotIdx);
+		}
+		String _termExt = "";
+		dotIdx = _term.lastIndexOf('.');
+		if ( dotIdx >= 0) {
+			_termExt = _term.substring(dotIdx).toLowerCase();
+			_term = _term.substring(0, dotIdx);
+		}
+		
+		if ( _topicExt.length() > 0 && _termExt.length() > 0 ) {
+			// Both topic and term have extensions; if different, throw exception:
+			if ( !_topicExt.equals(_termExt) ) {
+				throw new URISyntaxException(fullRequestedUri, "Both the topic and the term have been " +
+						"given extensions but they are different: " +_topicExt+ " and " +_termExt);
+			}
+		}
+
+		////////////////////////////////////////////////////////////////////////////////
+		// now, assign to my final fields and do remaining checks:
+		
 		version = _version;
 		topic =   _topic;
 		term =    _term;
+		
+		// the extension is obtained from the term (if given), or from the topic.
+		// So, note that if both are given, then, the topic extension is ignored.
+		extension = _termExt.length() > 0 ? _termExt : _topicExt;
+		
 		
 		if ( authority.length() == 0 ) {
 			throw new URISyntaxException(fullRequestedUri, "Missing authority in URI");
@@ -162,45 +247,15 @@ public class MmiUri {
 		if ( version != null ) {
 			checkVersion(version);
 		}
-		
-		// ontologyUri is everything but the term and without trailing slashes
-		if ( term.length() > 0 ) {
-			int idxTerm = fullRequestedUri.lastIndexOf(term);
-			ontologyUri = fullRequestedUri.substring(0, idxTerm).replaceAll("/+$", ""); 
-		}
-		else {
-			ontologyUri = fullRequestedUri.replaceAll("/+$", "");
-		}
 	}
-	
-	
-	public static MmiUri create(String ontologyUri) throws URISyntaxException {
-		URI juri = URI.create(ontologyUri);
-		
-		String path = juri.getPath();
-		if ( !path.startsWith("/") ) {
-			throw new URISyntaxException(ontologyUri, "not absolute path");
-		}
-		int idx = path.indexOf('/', 1);
-		if ( idx < 0 ) {
-			throw new URISyntaxException(ontologyUri, "No root");
-		}
-		String root = path.substring(0, idx); // include leading slash  
-		
-		String reqUri = path;
-		String contextPath = root;
-		MmiUri mmiUri = new MmiUri(ontologyUri, reqUri, contextPath);
-		
-		return mmiUri;
-	}
-
 
 	
 	private MmiUri(String untilRoot, 
 			String authority,
 			String version,
 			String topic,
-			String term
+			String term,
+			String extension
 	) {
 		super();
 		this.untilRoot = untilRoot;
@@ -208,18 +263,12 @@ public class MmiUri {
 		this.version = version;
 		this.topic = topic;
 		this.term = term;
-		
-		this.ontologyUri = untilRoot 
-			+ authority 
-			+ (version == null ? "" : "/" +version)
-			+ "/" +topic
-			//+ (term == null || term.length() == 0 ? "" : "/" +term)
-		;
+		this.extension = extension;
 	}
 
 	
 	public MmiUri clone() {
-		return new MmiUri(untilRoot, authority, version, topic, term);
+		return new MmiUri(untilRoot, authority, version, topic, term, extension);
 	}
 	
 	/**
@@ -233,7 +282,7 @@ public class MmiUri {
 		if ( version != null ) {
 			checkVersion(version);
 		}
-		return new MmiUri(untilRoot, authority, version, topic, term);
+		return new MmiUri(untilRoot, authority, version, topic, term, extension);
 	}
 	
 	/**
@@ -249,8 +298,24 @@ public class MmiUri {
 		if ( version != null && version.indexOf('/') >= 0 ) {
 			throw new URISyntaxException(version, "version contains a slash");
 		}
-		return new MmiUri(untilRoot, authority, version, topic, term);
+		return new MmiUri(untilRoot, authority, version, topic, term, extension);
 	}
+	
+	/**
+	 * Makes a clone except for the given extension.
+	 * 
+	 * @param newExtension the new extension.
+	 * 
+	 * @throws URISyntaxException if newExtension is null or contains a slash.
+	 */
+	public MmiUri copyWithExtension(String newExtension) throws URISyntaxException {
+		if ( newExtension == null || newExtension.indexOf('/') >= 0 ) {
+			throw new URISyntaxException(newExtension, "newExtension is null or contains a slash");
+		}
+		return new MmiUri(untilRoot, authority, version, topic, term, newExtension);
+	}
+	
+
 	
 	public boolean equals(Object other) {
 		if ( ! (other instanceof MmiUri) ) {
@@ -277,14 +342,45 @@ public class MmiUri {
 	 *          (<code>http://mmisw.org/ont/mmi/someVocab.owl</code>)
 	 */
 	public String getOntologyUri() {
-		return ontologyUri;
+		String uri = untilRoot + authority+ "/" 
+		   + (version != null ? version + "/" : "")
+		   + topic;
+		return uri;
+	}
+
+	/** 
+	 * Returns the URI corresponding to the term using a slash as separator, so
+	 * it returns the same as <code>getTermUri("/")</code>.
+	 * 
+	 * @returns the URI corresponding to the term.
+	 *          If no term is associated, then it returns the same as {@link #getOntologyUri()}.
+	 */
+	public String getTermUri() {
+		return getTermUri("/");
+	}
+
+	/** 
+	 * Returns the URI corresponding to the term with desired separator before the term.
+	 * 
+	 * @param sep The separator to use between the ontology and the term, typically "/" or "#".
+	 * 
+	 * @returns the URI corresponding to the term.
+	 *          If no term is associated, then it returns the same as {@link #getOntologyUri()}.
+	 */
+	public String getTermUri(String sep) {
+		if ( term == null || term.length() == 0 ) {
+			return getOntologyUri();
+		}
+		else {
+			return getOntologyUri() + sep + term;
+		}
 	}
 
 	/** 
 	 * @returns the same as {@link #getOntologyUri()}.
 	 */
 	public String toString() {
-		return ontologyUri;
+		return getOntologyUri();
 	}
 
 	/** 
@@ -311,19 +407,6 @@ public class MmiUri {
 		return topic;
 	}
 
-	/** 
-	 * @returns the extension of the topic.
-	 *          (<code>.owl</code>)
-	 * */
-	public String getTopicExtension() {
-		String ext = "";
-		int dotIdx = topic.lastIndexOf('.');
-		if ( dotIdx >= 0) {
-			ext = topic.substring(dotIdx);
-		}
-		return ext;
-	}
-
 	/**
 	 * @returns the term.
 	 *          (<code>someTerm</code>)
@@ -332,57 +415,27 @@ public class MmiUri {
 		return term;
 	}
 	
-	/** 
-	 * Returns the URI corresponding to the term.
-	 * 
-	 * @param removeExt true to remove ontology extension, if any; false to keep ontologyUri.
-	 *        Note that any trailing pound signs are always removed.
-	 *        
-	 * @param sep The separator to use between the ontology and the term, typically "#" or "/".
-	 * 
-	 * @returns the URI corresponding to the term.
-	 *          If removeExt is true: <code>http://mmisw.org/ont/mmi/someVocab#someTerm</code>;
-	 *          <br/>
-	 *          otherwise: <code>http://mmisw.org/ont/mmi/someVocab.owl#someTerm</code>
-	 *          (assumming sep == "#").
-	 */
-	public String getTermUri(boolean removeExt, String sep) {
-		String termUri;
-		if ( removeExt ) {
-			String ext = getTopicExtension();
-			if ( ext.length() > 0 ) {
-				// replace any dot with \\. 
-				ext = ext.replaceAll("\\.", "\\\\.");
-				// so, the replacing pattern is well formed:
-				termUri = ontologyUri.replaceAll(ext+ "(#)*$", "") + sep + term;
-			}
-			else {
-				termUri = ontologyUri.replaceAll("#+$", "") + sep + term;	
-			}
-		}
-		else {
-			termUri = ontologyUri.replaceAll("#+$", "") + sep + term;
-		}
-		return termUri;
-	}
 	
+	/** 
+	 * @returns the file extension given to this MmiUri
+	 *          (<code>.owl</code>)
+	 */
+	public String getExtension() {
+		return extension;
+	}
+
+
 	public String getUntilRoot() {
 		return untilRoot;
 	}
 
 	/** 
-	 * Gets an Ontology URI with the given topic extension, which can be empty.
+	 * Gets the ontology URI but with the the given desired extension, which can be empty.
 	 */
-	public String getOntologyUriWithTopicExtension(String topicExt) {
-		String topicNoExt = topic;
-		String ext = getTopicExtension();
-		if ( ext.length() > 0 ) {
-			int idx = topic.lastIndexOf(ext);
-			topicNoExt = topic.substring(0, idx);
-		}
+	public String getOntologyUriWithExtension(String desiredExtension) {
 		String uri = untilRoot + authority+ "/" 
 				   + (version != null ? version + "/" : "")
-				   + topicNoExt + topicExt;
+				   + topic + desiredExtension;
 		
 		return uri;
 	}
@@ -394,7 +447,7 @@ public class MmiUri {
 		if ( term == null ) {
 			term = "";
 		}
-		return new MmiUri(untilRoot, authority, version, topic, term);
+		return new MmiUri(untilRoot, authority, version, topic, term, extension);
 	}
 	
 

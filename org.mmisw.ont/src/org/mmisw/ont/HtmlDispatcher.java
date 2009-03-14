@@ -248,12 +248,12 @@ public class HtmlDispatcher {
 		
 		// construct URI of term.
 		// First, try with "/" separator:
-		String termUri = mmiUri.getTermUri(true, "/");
+		String termUri = mmiUri.getTermUri("/");
 		Resource termRes = model.getResource(termUri);
 
 		if ( termRes == null ) {
 			// then, try with "#" separator
-			termUri = mmiUri.getTermUri(true, "#");
+			termUri = mmiUri.getTermUri("#");
 			termRes = model.getResource(termUri);
 		}
 		

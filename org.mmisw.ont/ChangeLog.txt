@@ -7,6 +7,19 @@ ChangeLog
 	- The following kind URI was accepted as valid:
 	       http://mmisw.org/ont/mmi/badversion/someVocab/someTerm
 	  Fixed.  See MmiUri public constructor and MmiUriTest.testVersionInvalid2().
+	  
+	  
+	- Complete review of MmiUri and simplification of constructor and operations.
+	  In particular, the "extension" concept has been re-worked; now, the extension is
+	  provided by getExtension() (instead of getTopicExtension(), which has been removed).
+	  This extension can be specified in the topic component (as before) but also in the
+	  term component, for example:
+	      http://mmisw.org/ont/mmi/someVocab/someTerm.owl
+	  But now, the extension is NOT included in any of the query operations, except, of course
+	  getExtension() itself. In general, the extension is to be used just as a way to help determine
+	  the output format desired by the requester. 
+	  Note also that the ontology URIs are never stored in the database with any extension.
+	  
 	
 2009-03-13:
 	- working on issue 51: "Fix unversioned HTML to be unversioned", in concrete the problem

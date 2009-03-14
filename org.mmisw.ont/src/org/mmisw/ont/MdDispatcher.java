@@ -63,11 +63,9 @@ public class MdDispatcher {
 		}
 		
 		final String fullRequestedUri = request.getRequestURL().toString();
-		final String requestedUri = request.getRequestURI();
-		final String contextPath = request.getContextPath();
 		if ( mmiUri == null ) {
 			try {
-				mmiUri = new MmiUri(fullRequestedUri, requestedUri, contextPath);
+				mmiUri = new MmiUri(fullRequestedUri);
 			}
 			catch (URISyntaxException e) {
 				response.sendError(HttpServletResponse.SC_NOT_FOUND, 
