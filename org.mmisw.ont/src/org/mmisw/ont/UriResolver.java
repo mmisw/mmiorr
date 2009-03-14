@@ -377,7 +377,7 @@ public class UriResolver extends HttpServlet {
 					return false;   
 				}
 				
-				// OK: here, mmiUri refers to the latest version.
+				// OK: here, foundMmiUri refers to the latest version.
 				
 				if ( version == null ) {
 					// unversioned request.
@@ -390,7 +390,7 @@ public class UriResolver extends HttpServlet {
 					//
 					// NOTE: I was using mmiUri.getOntologyUri(), but this only returns the
 					// URI for the ontology, so any possible term was ignored. Now getTermUri is used:
-					String latestUri = mmiUri.getTermUri(false, "/");
+					String latestUri = foundMmiUri.getTermUri(false, "/");
 					if ( log.isDebugEnabled() ) {
 						log.debug("Redirecting to latest version: " + latestUri);
 					}
