@@ -4,9 +4,17 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 	<display-name>org.mmisw.ont</display-name>
 	<servlet>
-		<description>MMI Ontology URI resolver</description>
+		<description>MMI Ontology and Term URI resolver</description>
 		<servlet-name>uriResolver</servlet-name>
 		<servlet-class>org.mmisw.ont.UriResolver</servlet-class>
+		<init-param>
+			<param-name>ont.app.version</param-name>
+			<param-value>@ont.app.version@</param-value>
+		</init-param>
+		<init-param>
+			<param-name>ont.app.build</param-name>
+			<param-value>@ont.app.build@</param-value>
+		</init-param>
 		<init-param>
 			<param-name>aquaportal.uploads.directory</param-name>
 			<param-value>@aquaportal.uploads.directory@</param-value>
