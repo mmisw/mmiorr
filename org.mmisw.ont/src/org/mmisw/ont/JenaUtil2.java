@@ -61,10 +61,10 @@ public class JenaUtil2 {
 	/**
 	 * Replacement for JenaUtil.getOntModelAsString(OntModel model).
 	 */	
-	public static String getOntModelAsString(Model model) {
+	public static String getOntModelAsString(Model model, String lang) {
 		StringWriter sw = new StringWriter();
 		String base = getURIForBase(model.getNsPrefixURI(""));
-		RDFWriter writer = model.getWriter("RDF/XML-ABBREV");
+		RDFWriter writer = model.getWriter(lang);
 		writer.setProperty("xmlbase", base);
 		writer.setProperty("showXmlDeclaration", "true");
 		writer.setProperty("relativeURIs", "same-document");

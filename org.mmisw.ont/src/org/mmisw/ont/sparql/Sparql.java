@@ -6,6 +6,7 @@ import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.List;
 
+import org.mmisw.ont.JenaUtil2;
 import org.mmisw.ont.util.Unfinished;
 import org.mmisw.ont.util.Util;
 
@@ -47,7 +48,7 @@ public class Sparql {
 	}
 
 	/**
-	 * Executes a SPARQL query agais the given model.
+	 * Executes a SPARQL query against the given model.
 	 * 
 	 * @param model
 	 * @param sparqlQuery
@@ -63,9 +64,15 @@ public class Sparql {
 		try {
 			if ( query.isConstructType() ) {
 				Model model_ = qe.execConstruct();
-				StringWriter writer = new StringWriter();
-				model_.getWriter().write(model_, writer, null);
-				queryResult.setResult(writer.getBuffer().toString());
+				String str = JenaUtil2.getOntModelAsString(model_, "RDF/XML-ABBREV");
+				
+// TODO remove this used code:
+//				StringWriter writer = new StringWriter();
+//				RDFWriter modelWriter = model_.getWriter();
+//				modelWriter.write(model_, writer, null);
+//				String str = writer.getBuffer().toString();
+				
+				queryResult.setResult(str);
 				queryResult.setContentType("Application/rdf+xml");
 			}
 			else if ( query.isSelectType() ) {
