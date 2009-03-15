@@ -9,7 +9,7 @@ ChangeLog
 	  Fixed.  See MmiUri public constructor and MmiUriTest.testVersionInvalid2().
 	  
 	  
-	- Complete review of MmiUri and simplification of constructor and operations.
+	- Completed review of MmiUri and simplification of constructor and operations.
 	  In particular, the "extension" concept has been re-worked; now, the extension is
 	  provided by getExtension() (instead of getTopicExtension(), which has been removed).
 	  This extension can be specified in the topic component (as before) but also in the
@@ -20,6 +20,8 @@ ChangeLog
 	  the output format desired by the requester. 
 	  Note also that the ontology URIs are never stored in the database with any extension.
 	  
+	- Fixed issue #51: "Fix unversioned HTML to be unversioned".
+	
 	
 2009-03-13:
 	- working on issue 51: "Fix unversioned HTML to be unversioned", in concrete the problem
