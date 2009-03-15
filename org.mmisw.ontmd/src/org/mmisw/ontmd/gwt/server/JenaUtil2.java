@@ -2,7 +2,7 @@ package org.mmisw.ontmd.gwt.server;
 
 import java.io.StringWriter;
 
-import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
 
 /**
@@ -61,7 +61,7 @@ public class JenaUtil2 {
 	/**
 	 * Replacement for JenaUtil.getOntModelAsString(OntModel model).
 	 */	
-	public static String getOntModelAsString(OntModel model) {
+	public static String getOntModelAsString(Model model) {
 		StringWriter sw = new StringWriter();
 		String base = getURIForBase(model.getNsPrefixURI(""));
 		RDFWriter writer = model.getWriter("RDF/XML-ABBREV");
