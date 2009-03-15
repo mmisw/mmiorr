@@ -1,8 +1,12 @@
 package org.mmisw.ont;
 
 import java.io.StringWriter;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.NsIterator;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
 
 /**
@@ -72,6 +76,30 @@ public class JenaUtil2 {
 		writer.write(model, sw, base);
 		return sw.getBuffer().toString();
 
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	public static void removeUnusedNsPrefixes(Model model) {
+		// will containg the used prefixes:
+		Set<String> usedPrefixes = new HashSet<String>();
+		
+		for ( NsIterator ns = model.listNameSpaces(); ns.hasNext(); ) {
+			String namespace = ns.nextNs();
+			String prefix = model.getNsURIPrefix(namespace);
+			if ( prefix != null ) {
+				usedPrefixes.add(prefix);
+			}
+		}
+		
+		// now remove all prefix from the model except the ones in usedPrefixes
+		Map<String,String> pm = model.getNsPrefixMap();
+		for ( String prefix : pm.keySet() ) {
+			if ( ! usedPrefixes.contains(prefix) ) {
+				// remove ths prefix from the model
+				model.removeNsPrefix(prefix);
+			}
+		}
 	}
 
 }
