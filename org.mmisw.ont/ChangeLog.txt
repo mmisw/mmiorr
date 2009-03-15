@@ -15,6 +15,9 @@ ChangeLog
 	  This is fixed in HtmlDispatcher.dispatchTerm() which is currently the only place where
 	  term URIs are being resolved.  See issue #100: "term URI always resolved in HTML"
 	  
+	- Sparql: Unused prefixes (except "") are now removed from the CONSTRUCT output.
+	  New JenaUtil2.removeUnusedNsPrefixes(Model model);
+	  
 	  
 2009-03-14:
 	- The following kind URI was accepted as valid:

@@ -67,12 +67,6 @@ public class Sparql {
 				
 				JenaUtil2.removeUnusedNsPrefixes(model_);
 				
-// TODO remove this unused code:
-//				StringWriter writer = new StringWriter();
-//				RDFWriter modelWriter = model_.getWriter();
-//				modelWriter.write(model_, writer, null);
-//				String str = writer.getBuffer().toString();
-				
 				String str = JenaUtil2.getOntModelAsString(model_, "RDF/XML-ABBREV");				
 				queryResult.setResult(str);
 				queryResult.setContentType("Application/rdf+xml");

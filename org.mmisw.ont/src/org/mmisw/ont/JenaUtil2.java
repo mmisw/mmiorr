@@ -79,6 +79,11 @@ public class JenaUtil2 {
 	}
 	
 	
+	/**
+	 * Removes the unused prefixes (except "") from the model.
+	 * 
+	 * @param model the model to be updated.
+	 */
 	@SuppressWarnings("unchecked")
 	public static void removeUnusedNsPrefixes(Model model) {
 		// will containg the used prefixes:
