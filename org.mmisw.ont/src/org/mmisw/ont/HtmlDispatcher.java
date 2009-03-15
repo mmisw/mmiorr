@@ -19,6 +19,7 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -249,13 +250,32 @@ public class HtmlDispatcher {
 		// construct URI of term.
 		// First, try with "/" separator:
 		String termUri = mmiUri.getTermUri("/");
-		Resource termRes = model.getResource(termUri);
-
-		if ( termRes == null ) {
-			// then, try with "#" separator
-			termUri = mmiUri.getTermUri("#");
+		Resource termRes = null;
+		
+		if ( false ) { 
+			// previous, wrong mechanism. The "problem" here, is that model.getResource 
+			// *creates* a fresh resource if the resource doesn't exist!
 			termRes = model.getResource(termUri);
+	
+			if ( termRes == null ) {
+				// then, try with "#" separator
+				termUri = mmiUri.getTermUri("#");
+				termRes = model.getResource(termUri);
+			}
 		}
+		else {
+			if ( model.contains(ResourceFactory.createResource(termUri), (Property) null, (RDFNode) null) ) {
+				termRes = model.getResource(termUri);
+			}
+			else {
+				// then, try with "#" separator
+				termUri = mmiUri.getTermUri("#");
+				if ( model.contains(ResourceFactory.createResource(termUri), (Property) null, (RDFNode) null) ) {
+					termRes = model.getResource(termUri);
+				}
+			}
+		}
+
 		
 		PrintWriter out = response.getWriter();
 		
