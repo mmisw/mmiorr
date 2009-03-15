@@ -20,6 +20,9 @@ class OntConfig {
 	 * The Names of the properties that are used by the Ont service.
 	 */
 	public enum Prop {
+		
+		VERSION                       ("ont.app.version"),
+		BUILD                         ("ont.app.build"),
 		AQUAPORTAL_UPLOADS_DIRECTORY  ("aquaportal.uploads.directory"),
 		AQUAPORTAL_DATASOURCE         ("aquaportal.datasource");
 		

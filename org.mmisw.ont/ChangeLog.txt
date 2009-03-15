@@ -19,6 +19,11 @@ ChangeLog
 	  New JenaUtil2.removeUnusedNsPrefixes(Model model);
 	  
 	  
+	- New version.properties to handle version information for this service. build.xml translates
+	  this to the application via the web.xml (which is read by OntConfig). Also, a "build number",
+	  which is a timestamp, is used for the full version. 
+	  
+	  
 2009-03-14:
 	- The following kind URI was accepted as valid:
 	       http://mmisw.org/ont/mmi/badversion/someVocab/someTerm

@@ -50,10 +50,10 @@ import edu.drexel.util.rdf.JenaUtil;
 public class UriResolver extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
-	
-	private static final String VERSION = "0.2.0.beta4 (20090314)";
 	private static final String TITLE = "MMI Ontology and Term URI Resolver";
-	private static final String FULL_TITLE = TITLE + ". Version " +VERSION;
+	
+	private String VERSION = "0.2.0.beta5 (20090315)";
+	private String FULL_TITLE = TITLE + ". Version " +VERSION;
 
 
 	private final Log log = LogFactory.getLog(UriResolver.class);
@@ -74,10 +74,17 @@ public class UriResolver extends HttpServlet {
 	
 
 	public void init() throws ServletException {
-		log.info(FULL_TITLE+ ": initializing");
+		log.info(TITLE+ ": initializing");
 		
 		try {
 			ontConfig.init(getServletConfig());
+			
+			VERSION = ontConfig.getProperty(OntConfig.Prop.VERSION)+ " (" +
+			          ontConfig.getProperty(OntConfig.Prop.BUILD)  + ")";
+			FULL_TITLE = TITLE + ". Version " +VERSION;
+			
+			log.info(FULL_TITLE);
+
 			db.init();
 			ontGraph.init();
 		} 
