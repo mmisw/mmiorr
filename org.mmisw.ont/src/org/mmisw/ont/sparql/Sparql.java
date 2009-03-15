@@ -5,7 +5,10 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.JenaUtil2;
 import org.mmisw.ont.util.Unfinished;
 import org.mmisw.ont.util.Util;
@@ -18,6 +21,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.NsIterator;
 
 /**
  * Dispatcher of SPARQL queries.
@@ -26,6 +30,8 @@ import com.hp.hpl.jena.rdf.model.Model;
  */
 @Unfinished(priority=Unfinished.Priority.MEDIUM)
 public class Sparql {
+	
+	private static final Log log = LogFactory.getLog(Sparql.class);
 	
 	public static class QueryResult {
 		private String result;
@@ -64,14 +70,20 @@ public class Sparql {
 		try {
 			if ( query.isConstructType() ) {
 				Model model_ = qe.execConstruct();
-				String str = JenaUtil2.getOntModelAsString(model_, "RDF/XML-ABBREV");
 				
-// TODO remove this used code:
+				Map<?,?> pm = model_.getNsPrefixMap();
+				log.debug("NsPrefixMap = " +pm);
+				for ( NsIterator ns = model_.listNameSpaces(); ns.hasNext(); ) {
+					log.debug("  Namespace = " +ns.nextNs());
+				}
+				
+// TODO remove this unused code:
 //				StringWriter writer = new StringWriter();
 //				RDFWriter modelWriter = model_.getWriter();
 //				modelWriter.write(model_, writer, null);
 //				String str = writer.getBuffer().toString();
 				
+				String str = JenaUtil2.getOntModelAsString(model_, "RDF/XML-ABBREV");				
 				queryResult.setResult(str);
 				queryResult.setContentType("Application/rdf+xml");
 			}
