@@ -465,7 +465,7 @@ class Converter {
 
 
 	public String getOntologyStringXml() {
-		return JenaUtil2.getOntModelAsString(newOntModel);
+		return JenaUtil2.getOntModelAsString(newOntModel, "RDF/XML-ABBREV");
 	}
 
 

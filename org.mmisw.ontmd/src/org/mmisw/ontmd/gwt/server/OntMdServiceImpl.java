@@ -749,7 +749,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		////////////////////////////////////////////////////////////////////////
 		
 		// Get resulting string:
-		String rdf = JenaUtil2.getOntModelAsString(model) ;  // XXX newOntModel);
+		String rdf = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV") ;  // XXX newOntModel);
 		
 		
 		reviewResult.setUri(base_);
