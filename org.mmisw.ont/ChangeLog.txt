@@ -3,6 +3,19 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2009-03-15:
+	- Fixed issue 101: "Inexistent term is resolved"
+	  The "problem" was that model.getResource "behaves identically to createResource(String)"
+	  so it *creates* a fresh resource if the resource does NOT exist!
+	  See http://jena.sourceforge.net/javadoc/com/hp/hpl/jena/rdf/model/Model.html#getResource(java.lang.String)
+	  I was using the call ``termRes = model.getResource(termUri)'', along with a termRes != null check to 
+	  determine the existence of the term. The fix is to use an explicit "contains" check.
+	  Also removed the try with the "#" separator as we are now only using "/".
+	  A 404 is returned now as well.
+	  This is fixed in HtmlDispatcher.dispatchTerm() which is currently the only place where
+	  term URIs are being resolved.  See issue #100: "term URI always resolved in HTML"
+	  
+	  
 2009-03-14:
 	- The following kind URI was accepted as valid:
 	       http://mmisw.org/ont/mmi/badversion/someVocab/someTerm

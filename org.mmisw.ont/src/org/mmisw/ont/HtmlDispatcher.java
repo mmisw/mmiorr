@@ -235,9 +235,10 @@ public class HtmlDispatcher {
 	
 	/**
 	 * Shows information about the requested term.
-	 * @param mmiUri
-	 * @param file
-	 * @param out
+	 * @param request
+	 * @param response
+	 * @param mmiUri The URI of the requested term.
+	 * @param model
 	 * @param completePage 
 	 * @throws IOException 
 	 */
@@ -252,30 +253,17 @@ public class HtmlDispatcher {
 		String termUri = mmiUri.getTermUri("/");
 		Resource termRes = null;
 		
-		if ( false ) { 
-			// previous, wrong mechanism. The "problem" here, is that model.getResource 
-			// *creates* a fresh resource if the resource doesn't exist!
+		// Fix to Issue 101: "Inexistent term is resolved"
+		// Use an explicit "contains" check:
+		if ( model.contains(ResourceFactory.createResource(termUri), (Property) null, (RDFNode) null) ) {
 			termRes = model.getResource(termUri);
-	
-			if ( termRes == null ) {
-				// then, try with "#" separator
-				termUri = mmiUri.getTermUri("#");
-				termRes = model.getResource(termUri);
-			}
 		}
-		else {
-			if ( model.contains(ResourceFactory.createResource(termUri), (Property) null, (RDFNode) null) ) {
-				termRes = model.getResource(termUri);
-			}
-			else {
-				// then, try with "#" separator
-				termUri = mmiUri.getTermUri("#");
-				if ( model.contains(ResourceFactory.createResource(termUri), (Property) null, (RDFNode) null) ) {
-					termRes = model.getResource(termUri);
-				}
-			}
+		// Also, return 404 if not found:
+		if ( termRes == null ) {
+			log.debug("dispatchTerm: " +termUri+ ": Not Found");
+			response.sendError(HttpServletResponse.SC_NOT_FOUND, termUri);
+			return;
 		}
-
 		
 		PrintWriter out = response.getWriter();
 		
@@ -283,10 +271,6 @@ public class HtmlDispatcher {
 			log.debug("dispatchTerm: termUri: " +termUri);
 		}
 
-		if ( termRes == null ) {
-			out.println("   No resource found for URI: " +termUri);
-			return;
-		}
 		
 //		com.hp.hpl.jena.rdf.model.Statement labelRes = termRes.getProperty(RDFS.label);
 //		String label = labelRes == null ? null : ""+labelRes.getObject();
