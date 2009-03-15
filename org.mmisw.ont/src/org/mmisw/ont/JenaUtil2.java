@@ -92,10 +92,11 @@ public class JenaUtil2 {
 			}
 		}
 		
-		// now remove all prefix from the model except the ones in usedPrefixes
+		// now remove all prefix from the model except the ones in usedPrefixes;
+		// also, do not remove the empty prefix ("")
 		Map<String,String> pm = model.getNsPrefixMap();
 		for ( String prefix : pm.keySet() ) {
-			if ( ! usedPrefixes.contains(prefix) ) {
+			if ( ! prefix.equals("") && ! usedPrefixes.contains(prefix) ) {
 				// remove ths prefix from the model
 				model.removeNsPrefix(prefix);
 			}
