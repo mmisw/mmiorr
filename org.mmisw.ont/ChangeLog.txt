@@ -9,6 +9,8 @@ ChangeLog
  	  NOTE: *only* the "unversioned" latest versions are loaded into the graph so all
 	  responses will be now in unversioned form.
 	  Fix available as of 0.2.0.beta6
+	  
+	- Sparql: make links for good URLs in html response.
  	  
 
 2009-03-15:

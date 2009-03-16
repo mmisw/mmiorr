@@ -3,6 +3,8 @@ package org.mmisw.ont.sparql;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 
@@ -124,7 +126,23 @@ public class Sparql {
 				Iterator<?> varNames = sol.varNames();
 				while ( varNames.hasNext() ) {
 					String varName = varNames.next().toString();
-					out.printf("\t<td>%s</td>%n", Util.toHtml(sol.get(varName).toString()));
+					String varValue = sol.get(varName).toString();
+					
+					boolean goodUrl = false;
+					try {
+						new URL(varValue);
+						goodUrl = true;
+					}
+					catch (MalformedURLException e) {
+						// Ignore.
+					}
+						
+					if ( goodUrl ) {
+						out.printf("\t<td><a href=\"%s\">%s</a></td>%n", varValue, Util.toHtml(varValue));
+					}
+					else {
+						out.printf("\t<td>%s</td>%n", Util.toHtml(varValue));
+					}
 				}
 				out.printf("</tr>%n");
 			}
