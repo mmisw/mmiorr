@@ -4,8 +4,12 @@ Carlos Rueda - MMI / MBARI
 ChangeLog
 
 2003-03-16:
-	- OntGraph: preparation for loading latest versions in "unversioned" form.
-	  See Issue 102: "searches should be against the "unversioned" form of the latest ontologies"
+	- Fixed Issue 102: "searches should be against the "unversioned" form of the latest ontologies"
+ 	  See OntGraph.
+ 	  NOTE: *only* the "unversioned" latest versions are loaded into the graph so all
+	  responses will be now in unversioned form.
+	  Fix available as of 0.2.0.beta6
+ 	  
 
 2009-03-15:
 	- Fixed issue 101: "Inexistent term is resolved"

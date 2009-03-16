@@ -29,8 +29,7 @@ public class OntGraph {
 	private final Log log = LogFactory.getLog(OntGraph.class);
 	
 	/** Load the unversioned form of the ontologies? 
-	 * I'm using this flag to prepare/test the changes.
-	 * Set to false to get the original behavior (load "versioned" ontologies).
+	 * (Set to false to get the original behavior--load "versioned" ontologies).
 	 */
 	private static final boolean USE_UNVERSIONED = true;
 
