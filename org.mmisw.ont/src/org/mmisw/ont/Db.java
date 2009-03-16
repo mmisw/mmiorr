@@ -322,7 +322,12 @@ public class Db {
 		return ont;
 	}
 
-	
+	/**
+	 * Returns the list of the latest versions of all ontologies in the database.
+	 * 
+	 * @return
+	 * @throws ServletException
+	 */
 	List<Ontology> getOntologies() throws ServletException {
 		List<Ontology> onts = new ArrayList<Ontology>();
 		Connection _con = null;
@@ -334,7 +339,7 @@ public class Db {
 			//    v_ncbo_ontology.id  ==  ncbo_ontology_file.ontology_version_id
 			//
 			String query = 
-				"select v.id, v.ontology_id, v.file_path, f.filename " +
+				"select v.id, v.ontology_id, v.file_path, f.filename, v.urn " +
 				"from v_ncbo_ontology v, ncbo_ontology_file f " +
 				"where v.id = f.ontology_version_id";
 			
@@ -346,6 +351,7 @@ public class Db {
 	        	ontology.ontology_id = rs.getString(2);
 	        	ontology.file_path = rs.getString(3);
 	        	ontology.filename = rs.getString(4);
+	        	ontology.setUri(rs.getString(5));
 	        	onts.add(ontology);
 	        }
 		}
