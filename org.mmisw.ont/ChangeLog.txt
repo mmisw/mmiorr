@@ -3,6 +3,10 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2003-03-16:
+	- OntGraph: preparation for loading latest versions in "unversioned" form.
+	  See Issue 102: "searches should be against the "unversioned" form of the latest ontologies"
+
 2009-03-15:
 	- Fixed issue 101: "Inexistent term is resolved"
 	  The "problem" was that model.getResource "behaves identically to createResource(String)"
