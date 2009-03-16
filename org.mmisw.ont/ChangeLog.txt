@@ -10,7 +10,8 @@ ChangeLog
 	  responses will be now in unversioned form.
 	  Fix available as of 0.2.0.beta6
 	  
-	- Sparql: make links for good URLs in html response.
+	- Sparql: make links for good URLs in html response. The ones that are good MmiUri's are
+	  appended ".html" so the HTML output format is transferred for subsequent resolution.
  	  
 
 2009-03-15:

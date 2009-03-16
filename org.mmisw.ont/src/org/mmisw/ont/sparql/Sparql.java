@@ -5,10 +5,12 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.List;
 
 import org.mmisw.ont.JenaUtil2;
+import org.mmisw.ont.MmiUri;
 import org.mmisw.ont.util.Unfinished;
 import org.mmisw.ont.util.Util;
 
@@ -128,17 +130,9 @@ public class Sparql {
 					String varName = varNames.next().toString();
 					String varValue = sol.get(varName).toString();
 					
-					boolean goodUrl = false;
-					try {
-						new URL(varValue);
-						goodUrl = true;
-					}
-					catch (MalformedURLException e) {
-						// Ignore.
-					}
-						
-					if ( goodUrl ) {
-						out.printf("\t<td><a href=\"%s\">%s</a></td>%n", varValue, Util.toHtml(varValue));
+					String link = getLink(varValue);
+					if ( link != null ) {
+						out.printf("\t<td><a href=\"%s\">%s</a></td>%n", link, Util.toHtml(varValue));
 					}
 					else {
 						out.printf("\t<td>%s</td>%n", Util.toHtml(varValue));
@@ -150,6 +144,37 @@ public class Sparql {
 		out.printf("</table>%n");
 		
 		return sw.toString();
+	}
+	
+	/** 
+	 * Returns a string that can be used as a link. 
+	 * If it is an MmiUri, a ".html" is appended;
+	 * otherwise, if it is a valid URL, it is returned as it is;
+	 * otherwise, null is returned.
+	 * 
+	 * @param value a potential URL
+	 * @return the string that can be used as a link as stated above; null if value is not a URL.
+	 */
+	private static String getLink(String value) {
+		// try mmiUri:
+		try {
+			MmiUri mmiUri = new MmiUri(value);
+			return mmiUri.getTermUri() + ".html";
+		}
+		catch (URISyntaxException e1) {
+			// ignore. Try URL below.
+		}
+		
+		// try regular URL:
+		try {
+			URL url = new URL(value);
+			return url.toString();
+		}
+		catch (MalformedURLException e) {
+			// ignore.
+		}
+		
+		return null;
 	}
 
 	/** Formats the results in CSV */
