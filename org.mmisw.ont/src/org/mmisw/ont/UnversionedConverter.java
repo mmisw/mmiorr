@@ -29,9 +29,6 @@ import edu.drexel.util.rdf.OwlModel;
 /**
  * Gets the "unversioned" version of an ontology.
  * 
- * <p>
- * TODO Not actually implemented yet.
- * 
  * @author Carlos Rueda
  */
 class UnversionedConverter {
@@ -40,8 +37,8 @@ class UnversionedConverter {
 	
 	
 	/**
-	 * Gets the "unversioned" version of the model.
-	 * See Issue 24.
+	 * Gets the "unversioned" version of a model.
+	 * See issue #24.
 	 * 
 	 * @param model original model.
 	 * @param mmiUri The URI of the correspoding latest version.
@@ -70,7 +67,7 @@ class UnversionedConverter {
 		// final URI is just the mmiUri but without version:
 		String finalUri;
 		try {
-			finalUri = mmiUri.copyWithVersion(null).toString();
+			finalUri = mmiUri.copyWithVersion(null).getOntologyUri();
 		}
 		catch (URISyntaxException e) {
 			log.error("shouldn't occur", e);
@@ -213,7 +210,13 @@ class UnversionedConverter {
 	}
 	
 	
-	
+	/**
+	 * Replaces a namespace in a model.
+	 * 
+	 * @param model Model to be updated.
+	 * @param oldNameSpace 
+	 * @param newNameSpace
+	 */
 	private static void _replaceNameSpace(OntModel model, String oldNameSpace, String newNameSpace) {
 		
 		log.info(" REPLACING NS " +oldNameSpace+ " WITH " +newNameSpace);
@@ -224,6 +227,7 @@ class UnversionedConverter {
 		// new statements to be added:
 		List<Statement> n_stmts = new ArrayList<Statement>(); 
 		
+		// check all statements in the model:
 		StmtIterator existingStmts = model.listStatements();
 		while ( existingStmts.hasNext() ) {
 			Statement o_stmt = existingStmts.nextStatement();
@@ -231,36 +235,45 @@ class UnversionedConverter {
 			Property prd = o_stmt.getPredicate();
 			RDFNode obj = o_stmt.getObject();
 			
+			// will indicate that o_stmt is affected by the namespace change:
 			boolean any_change = false;
+			
+			// the new triplet, initialized with the existing statement:
 			Resource n_sbj = sbj;
 			Property n_prd = prd;
 			RDFNode  n_obj = obj;
 
 			if ( oldNameSpace.equals(sbj.getNameSpace()) ) {
+				// the subject is affected; create new subject
 				n_sbj = model.createResource(newNameSpace + sbj.getLocalName());
 				any_change = true;
 			}
 			if ( oldNameSpace.equals(prd.getNameSpace()) ) {
+				// the predicate  is affected; create new predicate
 				n_prd = model.createProperty(newNameSpace + prd.getLocalName());
 				any_change = true;
 			}
 			if ( (obj instanceof Resource) && oldNameSpace.equals(((Resource) obj).getNameSpace()) ) {
+				// the object is affected; create new object
 				n_obj = model.createResource(newNameSpace + ((Resource) obj).getLocalName());
 				any_change = true;
 			}
 
 			if ( any_change ) {
-				o_stmts.add(o_stmt);
+				// create the new statment:
 				Statement n_stmt = model.createStatement(n_sbj, n_prd, n_obj);
+				// and update the lists for final adjustments below:
+				o_stmts.add(o_stmt);
 				n_stmts.add(n_stmt);
-				log.info(" #### " +o_stmt);
 			}
 		}
 		
+		// add the new statements
 		for ( Statement n_stmt : n_stmts ) {
 			model.add(n_stmt);
 		}
 		
+		// remove the old statements
 		for ( Statement o_stmt : o_stmts ) {
 			model.remove(o_stmt);
 		}
