@@ -394,14 +394,27 @@ public class VocabPanel extends VerticalPanel {
 	}
 	
 	/**
-	 * Parses the line using the given separators and respecting quoted strings, 
-	 * which are, however, returned without the quotes. The only quote handle is the
-	 * double quote (").
+	 * Parses the line using the given separator and respecting quoted strings, 
+	 * which are, however, returned without the quotes (the only handled quoted is the
+	 * double quote (")).
+	 * 
+	 * <p>
+	 * Note that the removal of quotes step is very simplistic (no nested quoted
+	 * substring or escaped quotes handling is performed).
+	 * <br/>Examples: 
+	 * <table border=1>
+	 *   <tr> <th>input</th> <th>output</th> </tr> 
+	 *   <tr> <td>string with no quotes</td> <td>string with no quotes</td> </tr>
+	 *   <tr> <td>"a quoted string"</td> <td>a quoted string</td> </tr>
+	 *   <tr> <td>"hello "world""</td> <td>"hello "world""</td> </tr>
+	 *   <tr> <td>"unbalanced string</td> <td>"unbalanced string</td> </tr>
+	 * </table>
 	 */
 	private static List<String> parseLine(String line, char separator) {
 		List<String> toks = new ArrayList<String>();
 		
-		StringBuffer currTok = new  StringBuffer();
+		// contents of current token under analysis:
+		StringBuffer currTok = new StringBuffer();
 		
 		boolean inQuote = false;
 		
@@ -418,11 +431,8 @@ public class VocabPanel extends VerticalPanel {
 				}
 				else {
 					// token completed.
-					if ( currTok.length() > 0 ) {
-						// previous token under construction: add it
-						toks.add(currTok.toString().trim().replaceAll("^\"+|\"+$", ""));
-						currTok.setLength(0);
-					}
+					toks.add(removeMatchingQuotes(currTok.toString()));
+					currTok.setLength(0);
 				}
 			}
 			else {
@@ -432,12 +442,26 @@ public class VocabPanel extends VerticalPanel {
 		
 		// pending token?
 		if ( currTok.length() > 0 ) {
-			// previous token under construction: added (with no quotes)
-			toks.add(currTok.toString().trim().replaceAll("^\"+|\"+$", ""));
-			currTok.setLength(0);
+			toks.add(removeMatchingQuotes(currTok.toString()));
 		}
 
 		return toks;
+	}
+
+	/**
+	 * Removes the surrounding quotes in the string if they are the only ones, ie., the 
+	 * string does not have any other internal quotes. Otherwise, the string is returned
+	 * without modification. More details: {@link #parseLine(String, char)}.
+	 */
+	private static String removeMatchingQuotes(String str) {
+		String chkStr = str.trim();
+		if ( chkStr.startsWith("\"") && chkStr.endsWith("\"") ) {
+			chkStr = chkStr.substring(1, chkStr.length() -1);
+			if ( chkStr.indexOf('"') < 0 ) {
+				return chkStr;
+			}
+		}
+		return str;
 	}
 
 

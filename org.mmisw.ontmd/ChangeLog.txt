@@ -3,6 +3,17 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2009-03-17
+	- Using Voc2RDF, I just created and submitted the following vocabularies (with the
+	  current values in the authorities.csv and resourcetypes.csv, respectively):
+	       http://mmisw.org/ont/mmi/20090317T183911/authority
+	       http://mmisw.org/ont/mmi/20090317T173755/resourcetype
+	  A next step is to use these ontologies (instead of the CSV files) to drive the 
+	  corresponding drop-down menus.
+	  
+	  
+	- Fixed the ``,,'' issue in voc2rdf: issue #87	
+	
 2009-03-13
 	- Fixed http://code.google.com/p/mmisw/issues/detail?id=98:
 	                "new version allows the shortName and authority to be changed"
