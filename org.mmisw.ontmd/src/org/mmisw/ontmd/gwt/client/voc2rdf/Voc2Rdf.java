@@ -25,7 +25,7 @@ public class Voc2Rdf {
 
 	// TODO unify version definition
 	public static final String VOC2RDF_APP_NAME = "Voc2RDF";
-	public static final String VOC2RDF_VERSION = "2.0.0.beta5";
+	public static final String VOC2RDF_VERSION = "2.0.0.beta6";
 	public static final String VOC2RDF_VERSION_COMMENT = "";
 
 	public static final String footer = 
