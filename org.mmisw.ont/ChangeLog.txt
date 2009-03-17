@@ -12,6 +12,7 @@ ChangeLog
 	  
 	- Sparql: make links for good URLs in html response. The ones that are good MmiUri's are
 	  appended ".html" so the HTML output format is transferred for subsequent resolution.
+	  This fixes Issue 103: "make links for well formed URLs in HTML query reponse"
  	  
 
 2009-03-15:
