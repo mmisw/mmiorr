@@ -19,6 +19,14 @@ ChangeLog
 		- New class org.mmisw.ontmd.gwt.server/MdUtil with utilities for MdHelper.
 		- Removed org.mmisw.ont.{Omv,OmvMmi} from this project; now, the ont generated
 		  library org.mmisw.ont.vocabulary.jar is used instead.
+		  
+		  
+	- Issue #106: "Use ontologies to drive drop-down menus"
+	  Started changes to implement this. See Config, MdHelper and MdUtil.
+	  Note that Config defines the URI of the class of the vocabulary to be loaded. However,
+	  TODO perhaps in a future version multiple classes could be supported in the
+	  ontology, so this scheme would have to change. 
+	  
 	
 2009-03-13
 	- Fixed http://code.google.com/p/mmisw/issues/detail?id=98:

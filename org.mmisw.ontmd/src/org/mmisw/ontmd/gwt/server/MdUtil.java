@@ -25,56 +25,51 @@ class MdUtil {
 	private static final Log log = LogFactory.getLog(MdUtil.class);
 	
 	/**
-	 * @returns null iff Ok;  otherwise an error message
+	 * Populates the AttrDef with the list of individuals from {@link Config#AUTHORITY_CLASS}.
 	 */
-	static String readAuthorities(AttrDef authorityAttrDef) {
-		
-		// TODO remove this old way of getting this vocabulary
-		//String error = _readAuthorities(authorityAttrDef);
-
-		readAuthorityOntology(authorityAttrDef);
-
-		if ( false /* TODO some error ? */ ) {
-			// Should not happen
+	static void readAuthorities(AttrDef authorityAttrDef) {
+		String classUri = Config.AUTHORITY_CLASS;
+		try {
+			populateList(authorityAttrDef, classUri);
+		}
+		catch (Exception e) {
 			authorityAttrDef.addOption(
-					new Option("error", "Could not read " +Config.AUTHORITY_ONTOLOGY)
+					new Option("dummy", "dummy: (" +e.getMessage()+ ")")
 			);
 		}
-		
-		return null;
 	}
 
-	
-	
 	/**
-	 * TODO
+	 * Populates the AttrDef with the list of individuals from {@link Config#RESOURCE_TYPE_CLASS}.
 	 */
-	static String readResourceTypes(AttrDef mainClassAttrDef) {
-		
-		return null;
+	static void readResourceTypes(AttrDef mainClassAttrDef) {
+		String classUri = Config.RESOURCE_TYPE_CLASS;
+		try {
+			populateList(mainClassAttrDef, classUri);
+		}
+		catch (Exception e) {
+			mainClassAttrDef.addOption(
+					new Option("dummy", "dummy: (" +e.getMessage()+ ")")
+			);
+		}
 	}
 	
 	
-	private static void readAuthorityOntology(AttrDef authorityAttrDef) {
-		MmiUri mmiUri;
-		MmiUri classUri;
-		try {
-			mmiUri = new MmiUri(Config.AUTHORITY_ONTOLOGY);
-			
-			//TODO: get the name of the class in a flexible way
-			classUri = new MmiUri(mmiUri.getOntologyUri()+ "/" +"Authority");
-		}
-		catch (URISyntaxException e) {
-			log.error("should not happen", e);
-			return;
-		}
 
-		log.debug("reading: " +mmiUri.getOntologyUri());
-
-		OntModel ontModel = ModelFactory.createOntologyModel();
-		ontModel.read(Config.AUTHORITY_ONTOLOGY);
+	private static void populateList(AttrDef mainClassAttrDef,
+				String classUri) throws URISyntaxException {
 		
-		Resource classRes = ResourceFactory.createResource(classUri.getTermUri());
+		MmiUri classMmiUri = new MmiUri(classUri);
+		String ontologUri = classMmiUri.getOntologyUri();
+		String className = classMmiUri.getTerm();
+		
+		log.debug("reading: " +classMmiUri.getTermUri()+ " individuals to populate " +className+ " list");
+
+		// read the ontology:
+		OntModel ontModel = ModelFactory.createOntologyModel();
+		ontModel.read(ontologUri);
+		
+		Resource classRes = ResourceFactory.createResource(classMmiUri.getTermUri());
 		
 		ExtendedIterator iter = ontModel.listIndividuals(classRes);
 		while ( iter.hasNext() ) {
@@ -82,123 +77,11 @@ class MdUtil {
 			String idvName = idv.getLocalName();
 			String idvUri = idv.getURI();
 			
-			authorityAttrDef.addOption(new Option(idvName, idvUri));
-			
-			log.debug("  added option: " +idvName+ " : " + idvUri);
-
+			// TODO: provide more information for each option
+			mainClassAttrDef.addOption(new Option(idvName, idvUri));
 		}
-
 	}
 	
 
-	
-
-	
-//	/**
-//	 * @returns null iff Ok;  otherwise an error message
-//	 */
-//	@Deprecated
-//	private static String _readAuthorities(AttrDef authorityAttrDef) {
-//		File file = new File(Config.AUTHORITIES_CSV_FILE);
-//		if ( !file.canRead() ) {
-//			return "Cannot read file: " +file;
-//		}
-//		
-//		List<?> lines;
-//		try {
-//			lines = IOUtils.readLines(new FileReader(file));
-//		}
-//		catch (Exception e) {
-//			return "Error reading file: " +e.getMessage();
-//		}
-//		
-//		if ( lines.size() == 0 ) {
-//			return "Empty file: " +file;
-//		}
-//		
-//		// first line is the header: abbreviation, name [, perhaps some more columns -- ignored]
-//
-//		for ( int lineno = 1, no_lines = lines.size(); lineno <= no_lines; lineno++ ) {
-//			String line = (String) lines.get(lineno -1);
-//			String[] toks = line.split("\\s*,\\s*");
-//			if ( toks.length < 2 ) {
-//				return file+ ":" +lineno+": expecting at least 2 columns";
-//			}
-//			
-//			if ( lineno == 1 ) {
-//				if ( ! toks[0].equalsIgnoreCase("abbreviation")
-//						||   ! toks[1].equalsIgnoreCase("name")
-//				) {
-//					return "Header line invalid: " +line;
-//				}
-//				
-//				// OK
-//				continue;
-//			}
-//			
-//			String optName = toks[0];
-//			String optLabel = optName+ ": " +toks[1];
-//			
-//			authorityAttrDef.addOption(new Option(optName, optLabel));
-//		}
-//
-//		return null;   // ok
-//	}
-//	
-//	
-//	/**
-//	 * @returns null iff Ok;  otherwise an error message
-//	 */
-//	@Deprecated
-//	private static String _readResourceTypes(AttrDef mainClassAttrDef) {
-//		File file = new File(Config.RESOURCE_TYPES_CSV_FILE);
-//		if ( !file.canRead() ) {
-//			return "Cannot read file: " +file;
-//		}
-//		
-//		List<?> lines;
-//		try {
-//			lines = IOUtils.readLines(new FileReader(file));
-//		}
-//		catch (Exception e) {
-//			return "Error reading file: " +e.getMessage();
-//		}
-//		
-//		if ( lines.size() == 0 ) {
-//			return "Empty file: " +file;
-//		}
-//		
-//		// first line is the header: type, name [, perhaps some more columns -- ignored]
-//
-//		for ( int lineno = 1, no_lines = lines.size(); lineno <= no_lines; lineno++ ) {
-//			String line = (String) lines.get(lineno -1);
-//			String[] toks = line.split("\\s*,\\s*");
-//			if ( toks.length < 2 ) {
-//				return file+ ":" +lineno+": expecting at least 2 columns";
-//			}
-//			
-//			if ( lineno == 1 ) {
-//				if ( ! toks[0].equalsIgnoreCase("type")
-//						||   ! toks[1].equalsIgnoreCase("name")
-//				) {
-//					return "Header line invalid: " +line;
-//				}
-//				
-//				// OK
-//				continue;
-//			}
-//			
-//			String optName = toks[0];
-//			String optLabel = optName+ ": " +toks[1];
-//			
-//			mainClassAttrDef.addOption(new Option(optName, optLabel));
-//		}
-//
-//		return null;   // ok
-//	}
-
-	
-
 	private MdUtil() { }
-	
 }

@@ -27,12 +27,13 @@ public class Config {
 	public static final String ONTMD_RESOURCES_DIR = ONTMD_WORKSPACE_DIR+ "resources/";
 
 	
-	// csv file with list of resource types:
-	public static final String RESOURCE_TYPES_CSV_FILE = ONTMD_RESOURCES_DIR+ "resourcetypes.csv";
+	/** URI of the OWL class: resource type */
+	public static final String RESOURCE_TYPE_CLASS = "http://mmisw.org/ont/mmi/resourcetype/ResourceType";
 
-	// csv file with list of authorities:
-	public static final String AUTHORITIES_CSV_FILE = ONTMD_RESOURCES_DIR+ "authorities.csv";
-
+	/** URI of the OWL class: authority  */
+	public static final String AUTHORITY_CLASS = "http://mmisw.org/ont/mmi/authority/Authority";
 	
+	
+
 	private Config() {};
 }
