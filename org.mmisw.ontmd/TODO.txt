@@ -13,10 +13,6 @@ ontology. Then there should be a window (maybe under that one?) that shows the
 uploaded ontology. So the two can be inspected together.
 
 
-p: The Show view with the iframe is clocking in at 1.5MB per load. The front-end
-already runs about 500KB, and ontmd looks like it's ~1000KB. It's kind of slow
-for me on my connection from home. Takes ~15 secs to load the whole view.
-
 p: Could the Review pop-up window have an upload button if the review passes?
 
 

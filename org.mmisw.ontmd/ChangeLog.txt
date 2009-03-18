@@ -35,7 +35,7 @@ ChangeLog
 	  1.0.5.beta (20090317)
 	  See MetadataGroupPanel, Option, MdUtil, MdHelper.
 	  
-	- Using style OBF to reduce size of javascript
+	- Using style OBF to reduce size of javascript (issue #108: "ontmd client: 1.0MB per load")
 	
 	
 2009-03-13
