@@ -77,8 +77,13 @@ class MdUtil {
 			String idvName = idv.getLocalName();
 			String idvUri = idv.getURI();
 			
+			String label = idvName+ " - " +idvUri;
+			
+			Option option = new Option(idvName, label);
+			option.setUri(idvUri);
+			
 			// TODO: provide more information for each option
-			mainClassAttrDef.addOption(new Option(idvName, idvUri));
+			mainClassAttrDef.addOption(option);
 		}
 	}
 	

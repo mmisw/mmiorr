@@ -11,6 +11,7 @@ public class Option implements Serializable {
 
 	private String name;
 	private String label;
+	private String uri;
 	
 	public Option() {
 	}
@@ -32,4 +33,13 @@ public class Option implements Serializable {
 	public String getLabel() {
 		return label;
 	}
+
+	public String getUri() {
+		return uri;
+	}
+
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
+	
 }

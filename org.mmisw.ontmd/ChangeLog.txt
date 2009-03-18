@@ -27,6 +27,11 @@ ChangeLog
 	  TODO perhaps in a future version multiple classes could be supported in the
 	  ontology, so this scheme would have to change.     (1.0.4.beta (20090317))
 	  
+	  
+	- Fixed Issue #45: "include URIs for Topic in the ontmd Topic URI field"
+	  1.0.5.beta (20090317)
+	  See MetadataGroupPanel, Option, MdUtil, MdHelper.
+	  
 	
 2009-03-13
 	- Fixed http://code.google.com/p/mmisw/issues/detail?id=98:

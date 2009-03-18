@@ -32,7 +32,7 @@ public class MyDialog extends DialogBox {
 		setAnimationEnabled(true);
 		Grid grid = new Grid(1,1);
 		grid.setWidget(0, 0, dockPanel);
-		grid.setBorderWidth(1);  // just to improve appearance in firefox
+//		grid.setBorderWidth(1);  // just to improve appearance in firefox
 		setWidget(grid);
 		
 		hp.setCellHorizontalAlignment(buttons, HasHorizontalAlignment.ALIGN_RIGHT);

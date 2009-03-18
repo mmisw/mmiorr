@@ -127,9 +127,20 @@ public class MdHelper {
 				.setTooltip(RESOURCE_TYPE_TOOLTIP)
 				.setExample("parameter")
 				.setAllowUserDefinedOption(true)
+				.addRelatedAttr(
+						createAttrDef(OmvMmi.shortNameUri)
+						.setLabel("URI of resource type")
+						.setTooltip("Ideally the resource type is selected from, and described in, a controlled " +
+								"vocabulary with URIs defined. If so, enter the URI naming the term in this field. " +
+								"If the term is in a controlled vocabulary but does not have its own URI, enter the " +
+								"controlled vocabulary URI. Otherwise, leave this field blank.")
+						.setExample("http://mmisw.org/ont/mmi/topicTheme/parameter")
+				)
 			;
 			
 			MdUtil.readResourceTypes(mainClassAttrDef);
+			
+			
 		}
 		
 		return mainClassAttrDef;
@@ -177,15 +188,15 @@ public class MdHelper {
 		
 		List<AttrDef> general_attr_list = new ArrayList<AttrDef>();
 		general_attr_list.add(createResourceTypesAttrDef());
-		general_attr_list.add(
-				createAttrDef(OmvMmi.shortNameUri)
-				.setLabel("URI of resource type")
-				.setTooltip("Ideally the resource type is selected from, and described in, a controlled " +
-						"vocabulary with URIs defined. If so, enter the URI naming the term in this field. " +
-						"If the term is in a controlled vocabulary but does not have its own URI, enter the " +
-						"controlled vocabulary URI. Otherwise, leave this field blank.")
-				.setExample("http://mmisw.org/ont/mmi/topicTheme/parameter")
-		);
+//		general_attr_list.add(
+//				createAttrDef(OmvMmi.shortNameUri)
+//				.setLabel("URI of resource type")
+//				.setTooltip("Ideally the resource type is selected from, and described in, a controlled " +
+//						"vocabulary with URIs defined. If so, enter the URI naming the term in this field. " +
+//						"If the term is in a controlled vocabulary but does not have its own URI, enter the " +
+//						"controlled vocabulary URI. Otherwise, leave this field blank.")
+//				.setExample("http://mmisw.org/ont/mmi/topicTheme/parameter")
+//		);
 		general_attr_list.add(
 				createAttrDef(Omv.name, true)
 				.setLabel("Full title")

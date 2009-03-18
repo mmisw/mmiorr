@@ -31,6 +31,9 @@ public class AttrDef implements Serializable {
 
 	private boolean allowUserDefinedOption;
 	
+	
+	private List<AttrDef> relatedAttrs;
+	
 
 	public int getNumberOfLines() {
 		return numberOfLines;
@@ -144,6 +147,18 @@ public class AttrDef implements Serializable {
 		return tooltip;
 	}
 
+
+	public AttrDef addRelatedAttr(AttrDef relatedAttr) {
+		if ( relatedAttrs == null ) {
+			relatedAttrs = new ArrayList<AttrDef>();
+		}
+		relatedAttrs.add(relatedAttr);
+		return this;
+	}
+	
+	public List<AttrDef> getRelatedAttrs() {
+		return relatedAttrs;
+	}
 
 }
 
