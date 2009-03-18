@@ -31,7 +31,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
-import org.mmisw.ont.vocabulary.util.MdHelper;
 import org.mmisw.ontmd.gwt.client.rpc.BaseInfo;
 import org.mmisw.ontmd.gwt.client.rpc.BaseResult;
 import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
