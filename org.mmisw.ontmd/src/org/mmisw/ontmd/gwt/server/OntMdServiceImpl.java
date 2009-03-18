@@ -66,7 +66,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	private static final long serialVersionUID = 1L;
 
 	// TODO unify version definition
-	private static final String VERSION = "1.0.6.beta (20090318)";
+	private static final String VERSION = "1.0.7.beta (20090318)";
 	private static final String TITLE = "MMI OntMD";
 	private static final String FULL_TITLE = TITLE + ". Version " +VERSION;
 

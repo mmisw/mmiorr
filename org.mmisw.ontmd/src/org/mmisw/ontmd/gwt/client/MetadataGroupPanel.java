@@ -622,6 +622,15 @@ public class MetadataGroupPanel extends VerticalPanel {
 			}
 			shortNameFieldWithChoose.setValue(value);
 			shortNameIsMap.setChecked(value.endsWith("_map"));
+			
+			// special case: ///////////////////////////////////////////
+			List<AttrDef> relatedAttrs = shortNameAttrDef.getRelatedAttrs();
+			assert relatedAttrs != null && relatedAttrs.size() > 0 ;
+			String relatedUri = relatedAttrs.get(0).getUri();
+			String relatedValue = originalValues.get(relatedUri);
+			shortNameRelatedField.setText(relatedValue);
+			//////////////////////////////////////////////////////////////
+			
 		}
 
 	}
