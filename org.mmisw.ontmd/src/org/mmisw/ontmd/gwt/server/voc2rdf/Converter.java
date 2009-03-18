@@ -9,9 +9,9 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.vocabulary.Omv;
-import org.mmisw.ont.vocabulary.util.MdHelper;
 import org.mmisw.ontmd.gwt.server.Config;
 import org.mmisw.ontmd.gwt.server.JenaUtil2;
+import org.mmisw.ontmd.gwt.server.MdHelper;
 import org.mmisw.voc2rdf.transf.StringManipulationInterface;
 import org.mmisw.voc2rdf.transf.StringManipulationUtil;
 

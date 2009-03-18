@@ -7,10 +7,10 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mmisw.ont.vocabulary.util.MdHelper;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfService;
+import org.mmisw.ontmd.gwt.server.MdHelper;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
