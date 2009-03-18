@@ -25,7 +25,7 @@ ChangeLog
 	  Started changes to implement this. See Config, MdHelper and MdUtil.
 	  Note that Config defines the URI of the class of the vocabulary to be loaded. However,
 	  TODO perhaps in a future version multiple classes could be supported in the
-	  ontology, so this scheme would have to change. 
+	  ontology, so this scheme would have to change.     (1.0.4.beta (20090317))
 	  
 	
 2009-03-13
