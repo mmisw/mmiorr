@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<project name="ontmd" default="compile" basedir=".">
+<project name="ontmd" default="war" basedir=".">
 
   <property file="build.properties" />	
   <property name="build.dir" value="_generated"/>
@@ -23,8 +23,8 @@
   	<pathelement path="base_war/WEB-INF/lib/commons-fileupload-1.2.1.jar"/>
   	<pathelement path="base_war/WEB-INF/lib/commons-io-1.4.jar"/>
   	
-  	<!-- not yet from external -->
-  	<!-- pathelement path="base_war/WEB-INF/lib/org.mmisw.ont.vocabulary.jar"/ -->
+  	<pathelement path="base_war/WEB-INF/lib/org.mmisw.ont.mmiuri.jar"/>
+  	<pathelement path="base_war/WEB-INF/lib/org.mmisw.ont.vocabulary.jar"/>
   	
   	<pathelement path="base_war/WEB-INF/lib/concurrent.jar"/>
   	<pathelement path="base_war/WEB-INF/lib/org.mmi.util.jar"/>
