@@ -582,16 +582,17 @@ public class MetadataGroupPanel extends VerticalPanel {
 			if ( value == null ) {
 				continue;
 			}
+			
+			Main.log("resetToOriginalOrNewValues: uri: " +uri+ " = " +value);
 
-			// TODO special case: add value of associated URI: 
+			// Special case: Omv.acronym/OmvMmi.shortNameUri
 			if ( Main.baseInfo.getShortNameUri().equals(uri) ) {
 				List<AttrDef> relatedAttrs = elem.attr.getRelatedAttrs();
 				assert relatedAttrs != null && relatedAttrs.size() > 0 ;
 				String relatedUri = relatedAttrs.get(0).getUri();
-				Main.log("getting value of: " +relatedUri);
 				String relatedValue = originalValues.get(relatedUri);
 				if ( relatedValue != null ) {
-					value += " (" +relatedValue+ ")" ;
+					value += "   (" +relatedValue+ ")" ;
 				}
 			}
 			

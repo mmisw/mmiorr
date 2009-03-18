@@ -28,7 +28,6 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.ontmd.gwt.client.rpc.BaseInfo;
@@ -67,7 +66,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	private static final long serialVersionUID = 1L;
 
 	// TODO unify version definition
-	private static final String VERSION = "1.0.5.beta (20090317)";
+	private static final String VERSION = "1.0.6.beta (20090318)";
 	private static final String TITLE = "MMI OntMD";
 	private static final String FULL_TITLE = TITLE + ". Version " +VERSION;
 
@@ -241,7 +240,9 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			return error;
 		}
 		
-		debugOntModel(model);
+		if ( log.isDebugEnabled() ) {
+			debugOntModel(model);
+		}
 
 		String full_path = file.getAbsolutePath();
 		
@@ -278,10 +279,26 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 					}
 					
 					if ( value != null ) {
+						
 						// get value:
-						log.info("Assigning: " +attrDef.getUri()+ " = " + value);
+						if ( log.isDebugEnabled() ) {
+							log.debug("Assigning: " +attrDef.getUri()+ " = " + value);
+						}
 						originalValues.put(attrDef.getUri(), value);
+						
+						// Special case: Omv.acronym/OmvMmi.shortNameUri  
+						if ( Omv.acronym.getURI().equals(attrDef.getUri()) ) {
+							// add also the value of OmvMmi.shortNameUri:
+							String shortNameValue = JenaUtil.getValue(ontRes, OmvMmi.shortNameUri);
+							if ( log.isDebugEnabled() ) {
+								log.debug("Also assigning " +OmvMmi.shortNameUri.getURI()+ " = " +shortNameValue);
+							}
+							originalValues.put(OmvMmi.shortNameUri.getURI(), shortNameValue);
+						}
+						
+						
 
+						// add detail:
 						if ( dcProp != null ) {
 							String prefixedDc = MdHelper.prefixedName(dcProp);
 							_addDetail(moreDetails, prefixedMmi, "not present", "Will use " +prefixedDc);
@@ -349,7 +366,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		StmtIterator stmts = model.listStatements();
 		while ( stmts.hasNext() ) {
 			Statement stmt = stmts.nextStatement();
-			log.info(" #### " +stmt);
+			log.debug(" #### " +stmt);
 		}
 	}
 
@@ -364,9 +381,10 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	 * @param oldNameSpace
 	 * @param newNameSpace
 	 */
+	// TODO: Use function from "ont" project (the utility is replicated here for the moment)
 	private void _replaceNameSpace(OntModel model, String oldNameSpace, String newNameSpace) {
 		
-		log.info(" REPLACING NS " +oldNameSpace+ " WITH " +newNameSpace);
+		//log.info(" REPLACING NS " +oldNameSpace+ " WITH " +newNameSpace);
 		
 		// old statements to be removed:
 		List<Statement> o_stmts = new ArrayList<Statement>(); 
@@ -403,7 +421,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 				o_stmts.add(o_stmt);
 				Statement n_stmt = model.createStatement(n_sbj, n_prd, n_obj);
 				n_stmts.add(n_stmt);
-				log.info(" #### " +o_stmt);
+				//log.info(" #### " +o_stmt);
 			}
 		}
 		

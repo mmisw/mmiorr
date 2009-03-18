@@ -5,6 +5,14 @@ ChangeLog
 
 	TODO: refresh the drop-down menus in case the ontologies have new versions
 
+2009-03-18
+	- fixing Issue #45: "include URIs for Topic in the ontmd Topic URI field"  -- 1.0.6.beta (20090318)
+	  1.0.6.beta (20090318). See OndMdServiceImpl, MetadataGroupPanel, Option, MdUtil, MdHelper.
+	  - OmvMmi.shortNameUri is now associated with Omv.acronym 
+	  - OndMdServiceImpl.prepareOntologyInfo(File file, OntologyInfo ontologyInfo): 
+	  	if OmvMmi.shortNameUri is part of the list of attributes, then it also assigns OmvMmi.shortNameUri
+	  - MetadataGroupPanel
+	  
 
 2009-03-17
 	- Using Voc2RDF, I just created and submitted the following vocabularies (with the
@@ -31,7 +39,7 @@ ChangeLog
 	  ontology, so this scheme would have to change.     (1.0.4.beta (20090317))
 	  
 	  
-	- Fixed Issue #45: "include URIs for Topic in the ontmd Topic URI field"
+	- Partially fixed Issue #45: "include URIs for Topic in the ontmd Topic URI field"
 	  1.0.5.beta (20090317)
 	  See MetadataGroupPanel, Option, MdUtil, MdHelper.
 	  

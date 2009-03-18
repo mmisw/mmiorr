@@ -121,6 +121,7 @@ public class MdHelper {
 	 */
 	private static AttrDef createResourceTypesAttrDef() {
 		if ( mainClassAttrDef == null ) {
+			// Note: OmvMmi.shortNameUri is now associated with Omv.acronym:
 			mainClassAttrDef =
 				createAttrDef(Omv.acronym, true) 
 			    .setLabel("Resource type")
@@ -188,6 +189,8 @@ public class MdHelper {
 		
 		List<AttrDef> general_attr_list = new ArrayList<AttrDef>();
 		general_attr_list.add(createResourceTypesAttrDef());
+		
+// Not any more; OmvMmi.shortNameUri is now associated with Omv.acronym above.
 //		general_attr_list.add(
 //				createAttrDef(OmvMmi.shortNameUri)
 //				.setLabel("URI of resource type")
@@ -197,6 +200,8 @@ public class MdHelper {
 //						"controlled vocabulary URI. Otherwise, leave this field blank.")
 //				.setExample("http://mmisw.org/ont/mmi/topicTheme/parameter")
 //		);
+		
+		
 		general_attr_list.add(
 				createAttrDef(Omv.name, true)
 				.setLabel("Full title")
@@ -223,7 +228,7 @@ public class MdHelper {
 		general_attr_list.add(
 				createAttrDef(Omv.description, true)
 				.setLabel("Brief description")
-				.setTooltip("A textual description of ontology. Completeness is welcome. HTML characters are less than ideal.")
+				.setTooltip("A textual description of the ontology. Completeness is welcome. HTML characters are less than ideal.")
 				.setNumberOfLines(4)
 				.setExample("Parameters used in Project Athena")
 		);

@@ -36,7 +36,7 @@ public class Main implements EntryPoint {
 
 	// TODO unify version definition
 	public static final String ONTMD_APP_NAME = "ontmd";
-	public static final String ONTMD_VERSION = "1.0.5.beta";
+	public static final String ONTMD_VERSION = "1.0.6.beta";
 	public static final String ONTMD_VERSION_COMMENT = "";
 	
 	private static String footer = 
