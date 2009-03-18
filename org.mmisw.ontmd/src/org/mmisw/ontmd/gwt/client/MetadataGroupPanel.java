@@ -583,11 +583,16 @@ public class MetadataGroupPanel extends VerticalPanel {
 				continue;
 			}
 
-			// special case:
+			// TODO special case: add value of associated URI: 
 			if ( Main.baseInfo.getShortNameUri().equals(uri) ) {
 				List<AttrDef> relatedAttrs = elem.attr.getRelatedAttrs();
 				assert relatedAttrs != null && relatedAttrs.size() > 0 ;
-				value += " - " +originalValues.get(relatedAttrs.get(0).getUri());
+				String relatedUri = relatedAttrs.get(0).getUri();
+				Main.log("getting value of: " +relatedUri);
+				String relatedValue = originalValues.get(relatedUri);
+				if ( relatedValue != null ) {
+					value += " (" +relatedValue+ ")" ;
+				}
 			}
 			
 			if ( elem.widget instanceof TextBoxBase ) {
