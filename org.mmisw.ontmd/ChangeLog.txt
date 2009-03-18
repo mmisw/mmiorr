@@ -32,6 +32,8 @@ ChangeLog
 	  1.0.5.beta (20090317)
 	  See MetadataGroupPanel, Option, MdUtil, MdHelper.
 	  
+	- Using style OBF to reduce size of javascript
+	  
 	
 2009-03-13
 	- Fixed http://code.google.com/p/mmisw/issues/detail?id=98:
