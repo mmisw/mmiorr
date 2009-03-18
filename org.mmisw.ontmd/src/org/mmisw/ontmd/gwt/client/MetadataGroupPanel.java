@@ -578,9 +578,18 @@ public class MetadataGroupPanel extends VerticalPanel {
 		for ( Elem elem : widgets.values() ) {
 			String uri = elem.attr.getUri();
 			String value = originalValues.get(uri);
+			
 			if ( value == null ) {
 				continue;
 			}
+
+			// special case:
+			if ( Main.baseInfo.getShortNameUri().equals(uri) ) {
+				List<AttrDef> relatedAttrs = elem.attr.getRelatedAttrs();
+				assert relatedAttrs != null && relatedAttrs.size() > 0 ;
+				value += " - " +originalValues.get(relatedAttrs.get(0).getUri());
+			}
+			
 			if ( elem.widget instanceof TextBoxBase ) {
 				((TextBoxBase) elem.widget).setText(value);
 			}
