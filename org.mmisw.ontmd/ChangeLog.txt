@@ -3,6 +3,9 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+	TODO: refresh the drop-down menus in case the ontologies have new versions
+
+
 2009-03-17
 	- Using Voc2RDF, I just created and submitted the following vocabularies (with the
 	  current values in the authorities.csv and resourcetypes.csv, respectively):
@@ -33,7 +36,7 @@ ChangeLog
 	  See MetadataGroupPanel, Option, MdUtil, MdHelper.
 	  
 	- Using style OBF to reduce size of javascript
-	  
+	
 	
 2009-03-13
 	- Fixed http://code.google.com/p/mmisw/issues/detail?id=98:
