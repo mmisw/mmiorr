@@ -1,7 +1,5 @@
-package org.mmisw.ont.vocabulary.util;
+package org.mmisw.ontmd.gwt.server;
 
-import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -9,13 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.ontmd.gwt.client.vocabulary.Option;
-import org.mmisw.ontmd.gwt.server.Config;
 
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.vocabulary.DC;
@@ -24,8 +20,6 @@ import com.hp.hpl.jena.vocabulary.DC;
  * Handles the metadata attributes for the ontologies stored in the
  * MMI Registry.
  * 
- * <p>
- * TODO Unify similar classes in voc2rdf and ontmd !!
  * 
  * @author Carlos Rueda
  */
@@ -33,7 +27,7 @@ public class MdHelper {
 	private MdHelper() { }
 
 	
-	private static final String RESOURCE_TYPE_TOOLTIP =
+	public static final String RESOURCE_TYPE_TOOLTIP =
 		"The kind of resource represented by the ontology. Typically made up of a Topic or Class name, an " +
 		"optional indication of a mapping ontology ('_map' if this is a term mapping ontology), and if " +
 		"necessary a unique identifier (a numeric appendix or subcategory, like '_002' or '_team1'. " +
@@ -48,7 +42,7 @@ public class MdHelper {
 
 
 
-	private static final String AUTHORITY_TOOLTIP = 
+	public static final String AUTHORITY_TOOLTIP = 
 		"This is an MMI-controlled vocabulary of abbreviations that indicate the controlling authority of the vocabulary. " +
 		"You can choose from any of the existing terms in the list, or specify a new one; MMI reserves the right to correct " +
 		"your choice if that is appropriate. (For example, using a government organization as the authority should only be " +
@@ -62,7 +56,7 @@ public class MdHelper {
 		"<a href=\"http://marinemetadata.org/apguides/ontprovidersguide/ontguideconstructinguris\" target=\"_blank\"" +
 		">MMI Ontology Providers Guide</a>.";
 	
-	
+
 	
 	// Examples: preferredPrefix(Omv.NS) == "omv";
 	private static Map<String,String> preferredPrefix = new HashMap<String,String>();
@@ -120,58 +114,6 @@ public class MdHelper {
 	
 
 	
-	/**
-	 * @returns null iff Ok;  otherwise an error message
-	 */
-	private static String _readResourceTypes() {
-	
-		File file = new File(Config.RESOURCE_TYPES_CSV_FILE);
-		if ( !file.canRead() ) {
-			return "Cannot read file: " +file;
-		}
-		
-		List<?> lines;
-		try {
-			lines = IOUtils.readLines(new FileReader(file));
-		}
-		catch (Exception e) {
-			return "Error reading file: " +e.getMessage();
-		}
-		
-		if ( lines.size() == 0 ) {
-			return "Empty file: " +file;
-		}
-		
-		// first line is the header: type, name [, perhaps some more columns -- ignored]
-
-		for ( int lineno = 1, no_lines = lines.size(); lineno <= no_lines; lineno++ ) {
-			String line = (String) lines.get(lineno -1);
-			String[] toks = line.split("\\s*,\\s*");
-			if ( toks.length < 2 ) {
-				return file+ ":" +lineno+": expecting at least 2 columns";
-			}
-			
-			if ( lineno == 1 ) {
-				if ( ! toks[0].equalsIgnoreCase("type")
-						||   ! toks[1].equalsIgnoreCase("name")
-				) {
-					return "Header line invalid: " +line;
-				}
-				
-				// OK
-				continue;
-			}
-			
-			String optName = toks[0];
-			String optLabel = optName+ ": " +toks[1];
-			
-			mainClassAttrDef.addOption(new Option(optName, optLabel));
-		}
-
-		return null;   // ok
-	}
-
-	
 	
 	
 	/**
@@ -187,82 +129,7 @@ public class MdHelper {
 				.setAllowUserDefinedOption(true)
 			;
 			
-			String error = _readResourceTypes();
-			
-			if ( error != null ) {
-				// resort to a previous hard-coded list
-				mainClassAttrDef
-					.addOption(new Option("Discipline", "ISO MD_Keyword: Discipline"))
-					.addOption(new Option("Place", "ISO MD_Keyword: Place"))
-					.addOption(new Option("Stratum", "ISO MD_Keyword: Stratum"))
-					.addOption(new Option("Temporal", "ISO MD_Keyword: Temporal"))
-					.addOption(new Option("Theme", "ISO MD_Keyword: Theme"))
-					
-					.addOption(new Option("axis", "OGC Object Type: axis"))
-					.addOption(new Option("axisDirection", "OGC Object Type: axisDirection"))
-					.addOption(new Option("coordinateOperation", "OGC Object Type: coordinateOperation"))
-					.addOption(new Option("crs", "OGC Object Type: crs"))
-					.addOption(new Option("cs", "OGC Object Type: cs"))
-					.addOption(new Option("datum", "OGC Object Type: datum"))
-					.addOption(new Option("dataType", "OGC Object Type: dataType"))
-					.addOption(new Option("derivedCRSType", "OGC Object Type: derivedCRSType"))
-					.addOption(new Option("documentType", "OGC Object Type: documentType"))
-					.addOption(new Option("ellipsoid", "OGC Object Type: ellipsoid"))
-					.addOption(new Option("featureType", "OGC Object Type: featureType"))
-					.addOption(new Option("group", "OGC Object Type: group"))
-					.addOption(new Option("meaning", "OGC Object Type: meaning"))
-					.addOption(new Option("meridian", "OGC Object Type: meridian"))
-					.addOption(new Option("method", "OGC Object Type: method"))
-					.addOption(new Option("nil", "OGC Object Type: nil"))
-					.addOption(new Option("parameter", "OGC Object Type: parameter"))
-					.addOption(new Option("phenomenon", "OGC Object Type: phenomenon"))
-					.addOption(new Option("pixelInCell", "OGC Object Type: pixelInCell"))
-					.addOption(new Option("rangeMeaning", "OGC Object Type: rangeMeaning"))
-					.addOption(new Option("referenceSystem", "OGC Object Type: referenceSystem"))
-					.addOption(new Option("uom", "OGC Object Type: uom"))
-					.addOption(new Option("verticalDatumType", "OGC Object Type: verticalDatumType"))
-					
-					.addOption(new Option("keyword", "MMI: keyword"))
-					.addOption(new Option("parameter", "MMI: parameter"))
-					.addOption(new Option("unit", "MMI: unit"))
-					.addOption(new Option("organization", "MMI: organization"))
-					.addOption(new Option("platform", "MMI: platform"))
-					.addOption(new Option("sensor", "MMI: sensor"))
-					.addOption(new Option("process", "MMI: process"))
-					.addOption(new Option("missingFlag", "MMI: missingFlag"))
-					.addOption(new Option("qualityFlag", "MMI: qualityFlag"))
-					.addOption(new Option("qcCategory", "MMI: qcCategory"))
-					.addOption(new Option("coordinateReference", "MMI: coordinateReference"))
-					.addOption(new Option("datum", "MMI: datum"))
-					.addOption(new Option("protocol", "MMI: protocol"))
-					.addOption(new Option("metadataStandard", "MMI: metadataStandard"))
-					.addOption(new Option("featureType", "MMI: featureType"))
-					.addOption(new Option("featureName", "MMI: featureName"))
-					.addOption(new Option("speciesType", "MMI: speciesType"))
-					.addOption(new Option("speciesName", "MMI: speciesName"))
-					.addOption(new Option("discipline", "MMI: discipline"))
-					.addOption(new Option("place", "MMI: place"))
-					.addOption(new Option("theme", "MMI: theme"))
-					.addOption(new Option("roleOfContact", "MMI: roleOfContact"))
-					.addOption(new Option("general", "MMI: general metadata attribute"))
-				;
-				//  OLD list
-//					createAttrDef(Omv.acronym, true) 
-//					.setLabel("Main theme")
-//					.setExample("parameter")
-//					.addOption(new Option("parameter", "Parameters (It will include terms like 'sea surface salinity')"))
-//					.addOption(new Option("sensorType", "Sensor types (It will include terms like 'Thermometer')"))
-//					.addOption(new Option("platformType", "Platform types (It will include terms like 'Mooring')"))
-//					.addOption(new Option("unit", "Units  (It will include terms like 'meter')"))
-//					.addOption(new Option("keyword", "Keywords  (It will include terms like 'climate', 'oceans')"))
-//					.addOption(new Option("organization", "Organizations  (It will include terms like 'MBARI' or 'MMI')"))
-//					.addOption(new Option("process", "Processes  (It will include terms like 'data quality control')"))
-//					.addOption(new Option("missingflag", "Missing flags  (It will include terms like '-999')"))
-//					.addOption(new Option("qualityflag", "Quality flags  (It will include terms like '10')"))
-//					.addOption(new Option("featureType", "Feature types  (It will include terms like 'body of water')"))
-//					.addOption(new Option("GeographicFeature", "Geographic features  (It will include terms like 'Monterey Bay')"))
-//					;
-			}
+			MdUtil.readResourceTypes(mainClassAttrDef);
 		}
 		
 		return mainClassAttrDef;
@@ -281,59 +148,6 @@ public class MdHelper {
 	private static AttrDef authorityAttrDef = null;
 	
 	
-	
-	/**
-	 * @returns null iff Ok;  otherwise an error message
-	 */
-	private static String _readAuthorities() {
-	
-		File file = new File(Config.AUTHORITIES_CSV_FILE);
-		if ( !file.canRead() ) {
-			return "Cannot read file: " +file;
-		}
-		
-		List<?> lines;
-		try {
-			lines = IOUtils.readLines(new FileReader(file));
-		}
-		catch (Exception e) {
-			return "Error reading file: " +e.getMessage();
-		}
-		
-		if ( lines.size() == 0 ) {
-			return "Empty file: " +file;
-		}
-		
-		// first line is the header: abbreviation, name [, perhaps some more columns -- ignored]
-
-		for ( int lineno = 1, no_lines = lines.size(); lineno <= no_lines; lineno++ ) {
-			String line = (String) lines.get(lineno -1);
-			String[] toks = line.split("\\s*,\\s*");
-			if ( toks.length < 2 ) {
-				return file+ ":" +lineno+": expecting at least 2 columns";
-			}
-			
-			if ( lineno == 1 ) {
-				if ( ! toks[0].equalsIgnoreCase("abbreviation")
-						||   ! toks[1].equalsIgnoreCase("name")
-				) {
-					return "Header line invalid: " +line;
-				}
-				
-				// OK
-				continue;
-			}
-			
-			String optName = toks[0];
-			String optLabel = optName+ ": " +toks[1];
-			
-			authorityAttrDef.addOption(new Option(optName, optLabel));
-		}
-
-		return null;   // ok
-	}
-	
-	
 	/**
 	 * Creates the "authority" attribute definition.
 	 */
@@ -346,25 +160,7 @@ public class MdHelper {
 				.setAllowUserDefinedOption(true)
 			;
 			
-			String error = _readAuthorities();
-			
-			if ( error != null ) {
-				// resort to a previous hard-coded list
-				authorityAttrDef
-					.addOption(new Option("cencoos",     "cencoos: Central and Northern California Ocean Observing System"))
-					.addOption(new Option("gcoos",       "gcoos: Gulf of Mexico Ocean Observing System"))
-					.addOption(new Option("mmi",         "mmi: Marine Metadata Interoperability"))
-					.addOption(new Option("mmitest",     "mmitest: MMI Test"))
-					.addOption(new Option("mvco",        "mvco: Martha's Vineyard Coastal Observatory"))
-					.addOption(new Option("oi2008demo",  "oi2008demo: Oceans Innovations 2008 Demonstration"))
-					.addOption(new Option("q2o",         "q2o: QARTOD-to-OGC Project"))
-					
-//					.addOption(new Option("argo", "argo: Argo Project"))
-//					.addOption(new Option("gcmd", "gcmd: Global Change Master Directory"))
-//					.addOption(new Option("cf", "cf: Climate and Forecast Conventions Standards Names"))
-//					.addOption(new Option("*", "--other, please specify"))
-				;
-			}
+			MdUtil.readAuthorities(authorityAttrDef);
 		}
 		
 		return authorityAttrDef;
