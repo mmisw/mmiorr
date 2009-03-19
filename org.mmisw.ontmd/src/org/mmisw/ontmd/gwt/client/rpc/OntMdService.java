@@ -13,6 +13,11 @@ import com.google.gwt.user.client.rpc.RemoteService;
 public interface OntMdService extends RemoteService {
 
 	/**
+	 * Gets basic application info.
+	 */
+	AppInfo getAppInfo();
+	
+	/**
 	 * Gets the base information (metadata attribute definitions).
 	 */
 	BaseInfo getBaseInfo(Map<String, String> params);

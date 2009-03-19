@@ -12,6 +12,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public interface OntMdServiceAsync {
 
+	void getAppInfo(AsyncCallback<AppInfo> callback);
+	
 	void getBaseInfo(Map<String, String> params, AsyncCallback<BaseInfo> callback);
 	
 	void login(String userName, String userPassword, AsyncCallback<LoginResult> callback);
