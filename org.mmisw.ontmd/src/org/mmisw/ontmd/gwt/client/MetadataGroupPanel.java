@@ -76,7 +76,6 @@ public class MetadataGroupPanel extends VerticalPanel {
 	private FieldWithChoose shortNameFieldWithChoose;
 	private CheckBox shortNameIsMap;
 	private TextBoxBase shortNameRelatedField;
-//	private TextBox shortNameId;   // TODO not for now
 
 
 	
@@ -502,6 +501,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 		if ( shortNameAttrDef != null ) {
 			shortNameFieldWithChoose.enable(enabled);
 			shortNameIsMap.setEnabled(enabled);
+			shortNameRelatedField.setEnabled(enabled);
 		}
 	}
 
