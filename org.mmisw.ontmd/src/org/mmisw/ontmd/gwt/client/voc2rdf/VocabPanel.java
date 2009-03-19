@@ -100,7 +100,10 @@ public class VocabPanel extends VerticalPanel {
 		});
 
 		AttrDef mainClassAttrDef = Voc2Rdf.baseInfo.getMainClassAttrDef();
-		List<Option> options = mainClassAttrDef.getOptions();
+		
+		// TODO: need to handle dynamic refresh of options? (Main.refreshOptions)
+		final List<Option> options = mainClassAttrDef.getOptions();
+
 		primaryClass_lb.addItem("-- Select --");
 		for ( Option option : options ) {
 			String name = option.getName();

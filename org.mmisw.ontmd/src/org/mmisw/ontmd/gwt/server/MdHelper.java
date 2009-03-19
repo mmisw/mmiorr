@@ -128,6 +128,7 @@ public class MdHelper {
 				.setTooltip(RESOURCE_TYPE_TOOLTIP)
 				.setExample("parameter")
 				.setAllowUserDefinedOption(true)
+				.setOptionsVocabulary(Config.Prop.RESOURCE_TYPE_CLASS.getValue())
 				.addRelatedAttr(
 						createAttrDef(OmvMmi.shortNameUri)
 						.setLabel("URI of resource type")
@@ -170,6 +171,7 @@ public class MdHelper {
 				.setTooltip(AUTHORITY_TOOLTIP)
 				.setExample("mmitest")
 				.setAllowUserDefinedOption(true)
+				.setOptionsVocabulary(Config.Prop.AUTHORITY_CLASS.getValue())
 			;
 			
 			MdUtil.readAuthorities(authorityAttrDef);
@@ -430,7 +432,20 @@ public class MdHelper {
 		return attrGroups;
 	}
 	
-	
+	public static AttrDef refreshOptions(AttrDef attrDef) {
+		String attrUri = attrDef.getUri();
+		if ( attrUri.equals(mainClassAttrDef.getUri()) ) {
+			MdUtil.readResourceTypes(mainClassAttrDef);
+			return mainClassAttrDef;
+		}
+		else if ( attrUri.equals(authorityAttrDef.getUri()) ) {
+			MdUtil.readAuthorities(authorityAttrDef);
+			return authorityAttrDef;
+		}
+		return attrDef;
+	}
+
+
 	
 	////////////////////////////////////////
 	/////// equivalences

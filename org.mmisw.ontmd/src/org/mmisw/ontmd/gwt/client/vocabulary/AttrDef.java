@@ -22,7 +22,10 @@ public class AttrDef implements Serializable {
 	
 
 	private boolean required;
+	
+	private String optionsVocabulary;
 	private List<Option> options = null;
+	
 	private boolean internal;
 
 	private String example = "";
@@ -74,7 +77,22 @@ public class AttrDef implements Serializable {
 		return required;
 	}
 
-	/** @returns the list of options; null if no options */
+	/**
+	 * @returns the URI of the vocabulary the options are taken from. 
+	 */
+	public String getOptionsVocabulary() {
+		return optionsVocabulary;
+	}
+
+	/**
+	 * Sets the URI of the vocabulary the options are taken from. 
+	 */
+	public AttrDef setOptionsVocabulary(String optionsVocabulary) {
+		this.optionsVocabulary = optionsVocabulary;
+		return this;
+	}
+
+	/** @returns the list of options; null if no options have been assigned*/
 	public List<Option> getOptions() {
 		return options;
 	}

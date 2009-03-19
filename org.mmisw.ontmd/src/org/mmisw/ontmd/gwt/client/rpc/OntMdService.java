@@ -2,6 +2,8 @@ package org.mmisw.ontmd.gwt.client.rpc;
 
 import java.util.Map;
 
+import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 
 /**
@@ -21,6 +23,12 @@ public interface OntMdService extends RemoteService {
 	 * Gets the base information (metadata attribute definitions).
 	 */
 	BaseInfo getBaseInfo(Map<String, String> params);
+	
+	/**
+	 * Refreshes the options of the given attribute.
+	 * @return the given argument.
+	 */
+	AttrDef refreshOptions(AttrDef attrDef);
 	
 	/**
 	 * Authenticates a user.

@@ -156,8 +156,13 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		baseInfo.setAttrGroups(attrGroups);
 		log.info("preparing base info ... DONE");
 	}
+
 	
-	
+	public AttrDef refreshOptions(AttrDef attrDef) {
+		return MdHelper.refreshOptions(attrDef);
+	}
+
+
 	public LoginResult login(String userName, String userPassword) {
 		LoginResult loginResult = new LoginResult();
 		

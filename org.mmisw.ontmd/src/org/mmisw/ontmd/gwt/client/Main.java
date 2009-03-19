@@ -3,11 +3,12 @@ package org.mmisw.ontmd.gwt.client;
 import java.util.Map;
 
 import org.mmisw.ontmd.gwt.client.img.OntMdImageBundle;
+import org.mmisw.ontmd.gwt.client.rpc.AppInfo;
 import org.mmisw.ontmd.gwt.client.rpc.BaseInfo;
 import org.mmisw.ontmd.gwt.client.rpc.OntMdService;
 import org.mmisw.ontmd.gwt.client.rpc.OntMdServiceAsync;
-import org.mmisw.ontmd.gwt.client.rpc.AppInfo;
 import org.mmisw.ontmd.gwt.client.voc2rdf.Voc2Rdf;
+import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -208,6 +209,14 @@ public class Main implements EntryPoint {
 		ontmdService.getBaseInfo(params, callback);
 	}
 
+	public static void refreshOptions(AttrDef attr, AsyncCallback<AttrDef> callback) {
+		assert attr.getOptionsVocabulary() != null ;
+		// refresh options
+		log("Getting base info ...");
+		ontmdService.refreshOptions(attr, callback);
+	}
+    
+
 	// always write to this buffer, but show contents if includeLog is true
 	private static final StringBuffer log = new StringBuffer();
 
@@ -222,5 +231,5 @@ public class Main implements EntryPoint {
 			DOM.removeChild(RootPanel.getBodyElement(), loadingElement);
 		}
     }
-    
+
 }

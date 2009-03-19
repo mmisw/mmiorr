@@ -17,6 +17,14 @@ ChangeLog
 	  The user can either proceed with the upload operation or close the review dialog and continue 
 	  editing the metadata.
 	  
+	  
+	- Now, dynamic load of supporting vocabularies to drive drop-down menus. This way, the lists
+	  are always displayed with the most recent contents. Previously, these lists were only
+	  prepared at deployment time!
+	  Also, the options are sorted by name (ignoring case).
+	  Also, add sugestedBox to faciliate selection of option from the listBox.
+	  1.0.9.beta (20090319164948)
+	  
 	 
 2009-03-18
 	- Issue #45: "include URIs for Topic in the ontmd Topic URI field"  -- 1.0.8.beta (20090318234714)

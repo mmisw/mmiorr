@@ -1,6 +1,10 @@
 package org.mmisw.ontmd.gwt.server;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,11 +30,17 @@ class MdUtil {
 	
 	/**
 	 * Populates the AttrDef with the list of individuals from {@link Config.Prop#AUTHORITY_CLASS}.
+	 * The options are sorted by getName() (ignoring case).
 	 */
 	static void readAuthorities(AttrDef authorityAttrDef) {
 		String classUri = Config.Prop.AUTHORITY_CLASS.getValue();
 		try {
 			populateList(authorityAttrDef, classUri);
+			Collections.sort(authorityAttrDef.getOptions(), new Comparator<Option>() {
+				public int compare(Option o1, Option o2) {
+					return o1.getName().compareToIgnoreCase(o2.getName());
+				}
+			});
 		}
 		catch (Exception e) {
 			authorityAttrDef.addOption(
@@ -41,11 +51,17 @@ class MdUtil {
 
 	/**
 	 * Populates the AttrDef with the list of individuals from {@link Config.Prop#RESOURCE_TYPE_CLASS}.
+	 * The options are sorted by getName() (ignoring case).
 	 */
 	static void readResourceTypes(AttrDef mainClassAttrDef) {
 		String classUri = Config.Prop.RESOURCE_TYPE_CLASS.getValue();
 		try {
 			populateList(mainClassAttrDef, classUri);
+			Collections.sort(mainClassAttrDef.getOptions(), new Comparator<Option>() {
+				public int compare(Option o1, Option o2) {
+					return o1.getName().compareToIgnoreCase(o2.getName());
+				}
+			});
 		}
 		catch (Exception e) {
 			mainClassAttrDef.addOption(
@@ -56,8 +72,7 @@ class MdUtil {
 	
 	
 
-	private static void populateList(AttrDef mainClassAttrDef,
-				String classUri) throws URISyntaxException {
+	private static void populateList(AttrDef attrDef, String classUri) throws URISyntaxException {
 		
 		MmiUri classMmiUri = new MmiUri(classUri);
 		String ontologUri = classMmiUri.getOntologyUri();
@@ -68,6 +83,9 @@ class MdUtil {
 		// read the ontology:
 		OntModel ontModel = ModelFactory.createOntologyModel();
 		ontModel.read(ontologUri);
+		
+		// add options here termporarily
+		List<Option> list = new ArrayList<Option>();
 		
 		Resource classRes = ResourceFactory.createResource(classMmiUri.getTermUri());
 		
@@ -83,8 +101,12 @@ class MdUtil {
 			option.setUri(idvUri);
 			
 			// TODO: provide more information for each option
-			mainClassAttrDef.addOption(option);
+			list.add(option);
 		}
+		
+		// everything went fine; update the actual list of options:
+		attrDef.getOptions().clear();
+		attrDef.getOptions().addAll(list);
 	}
 	
 

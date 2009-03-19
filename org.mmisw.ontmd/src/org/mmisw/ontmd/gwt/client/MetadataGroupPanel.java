@@ -9,7 +9,9 @@ import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.ontmd.gwt.client.vocabulary.Option;
 
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -21,7 +23,11 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.PushButton;
+import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.user.client.ui.SuggestionEvent;
+import com.google.gwt.user.client.ui.SuggestionHandler;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.TextBoxBase;
@@ -133,6 +139,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 			
 			Widget widget;
 			
+			// TODO: need to handle dynamic refresh of options? (Main.refreshOptions)
 			final List<Option> options = attr.getOptions();
 			
 			if ( editing &&  // not listBoxes if we are just viewing 
@@ -154,8 +161,8 @@ public class MetadataGroupPanel extends VerticalPanel {
 						widget = new FieldWithChoose(attr, cl);
 					}
 					else {
-						ListBox lb = createListBox(attr, cl);
-						widget = lb;
+						ListBox listBox = createListBox(options, cl);
+						widget = listBox;
 					}
 				}
 			}
@@ -287,8 +294,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 		return widget;
 	}
 
-	private static ListBox createListBox(AttrDef attr, ChangeListener cl) {
-		List<Option> options = attr.getOptions();
+	private static ListBox createListBox(List<Option> options, ChangeListener cl) {
 		final ListBox lb = new ListBox();
 		for ( Option option : options ) {
 			String lab = option.getLabel();
@@ -309,18 +315,16 @@ public class MetadataGroupPanel extends VerticalPanel {
 	private static class FieldWithChoose extends HorizontalPanel {
 		AttrDef attr;
 		TextBoxBase textBox;
-		ListBox listBox;
 		PushButton chooseButton;
+		ChangeListener cl;
 		
 		FieldWithChoose(AttrDef attr, ChangeListener cl) {
 			this.attr = attr;
+			this.cl = cl;
 			int nl = 1;    /// attr.getNumberOfLines() is ignored
 			textBox = createTextBoxBase(nl, "400", cl);
 
 			add(textBox);
-			listBox = createListBox(attr, cl);
-			List<Option> options = attr.getOptions();
-			listBox.setVisibleItemCount(Math.min(options.size(), 20));
 			
 			chooseButton = new PushButton("Choose", new ClickListener() {
 				public void onClick(Widget sender) {
@@ -335,18 +339,102 @@ public class MetadataGroupPanel extends VerticalPanel {
 		protected void optionSelected(Option option) {
 		}
 
+		
+		/**
+		 * dispatches the selection of an option.
+		 */
 		private void choose() {
-			final MyDialog popup = new MyDialog(listBox);
+			
+			final MyDialog waitPopup = new MyDialog(Util.createHtml("Getting options ...", 12),
+					false);   // No "Close" button
+			waitPopup.setText("Please wait");
+			waitPopup.center();
+			waitPopup.show();
+
+			String optionsVocab = attr.getOptionsVocabulary();
+			if ( optionsVocab != null ) {
+				Main.refreshOptions(attr, new AsyncCallback<AttrDef>() {
+					public void onFailure(Throwable thr) {
+						String error = thr.toString();
+						while ( ( thr = thr.getCause()) != null ) {
+							error += "\n" + thr.toString();
+						}
+						waitPopup.hide();
+						Window.alert(error);
+					}
+	
+					public void onSuccess(AttrDef result) {
+						dispatchOptions(result.getOptions(), waitPopup);
+					}
+				});
+			}
+			else {
+				dispatchOptions(attr.getOptions(), waitPopup);
+			}
+		}
+		
+		private void dispatchOptions(final List<Option> options, final MyDialog waitPopup) {
+			Main.log("Dispatching options");
+			
+			final String width = "500px";
+			
+			final ListBox listBox = createListBox(options, cl);
+			listBox.setWidth(width);
+			
+			VerticalPanel vp = new VerticalPanel();
+			
+			final MyDialog popup = new MyDialog(vp);
+			
+			listBox.setVisibleItemCount(Math.min(options.size(), 12));
+
 			listBox.addChangeListener(new ChangeListener () {
 				public void onChange(Widget sender) {
 					String value = listBox.getValue(listBox.getSelectedIndex());
 					textBox.setText(value);
 					
-					Option option = attr.getOptions().get(listBox.getSelectedIndex());
+					Option option = options.get(listBox.getSelectedIndex());
 					optionSelected(option);
 					popup.hide();
 				}
 			});
+			
+			/////////////////////////////////////////////////////////
+			// Use a SuggestBox wirh a MultiWordSuggestOracle.
+			//
+			// A map from a suggestion to its corresponding Option:
+			final Map<String,Option> suggestions = new HashMap<String,Option>();
+			MultiWordSuggestOracle oracle = new MultiWordSuggestOracle("/ :-"); 
+			for ( Option option : options ) {
+				String suggestion = option.getName()+ " - " +option.getUri();
+				suggestions.put(suggestion, option);
+				oracle.add(suggestion);
+
+			}
+			final SuggestBox suggestBox = new SuggestBox(oracle);
+			suggestBox.setWidth(width);
+			suggestBox.addEventHandler(new SuggestionHandler() {
+				public void onSuggestionSelected(SuggestionEvent event) {
+					String suggestion = event.getSelectedSuggestion().getReplacementString();
+					Option option = suggestions.get(suggestion);
+					textBox.setText(option.getName());
+					optionSelected(option);
+					popup.hide();
+				}
+			});
+			////////////////////////////////////////////////////////////
+			
+			vp.add(suggestBox);
+			vp.add(listBox);
+			
+			waitPopup.hide();
+			
+			// use a timer to request for focus in the suggest-box:
+			new Timer() {
+				public void run() {
+					suggestBox.setFocus(true);
+				}
+			}.schedule(700);
+			    
 			popup.setText("Select " +attr.getLabel());
 			popup.center();
 			popup.show();

@@ -19,7 +19,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class MyDialog extends DialogBox {
 	
 	private DockPanel dockPanel = new DockPanel();
-	private HorizontalPanel buttonsPanel = createButtonsPanel();
+	private HorizontalPanel buttonsPanel;
 	private HorizontalPanel hp = new HorizontalPanel();
 	
 	private PushButton closeButton;
@@ -27,14 +27,21 @@ public class MyDialog extends DialogBox {
 
 	
 	MyDialog(Widget contents) {
+		this(contents, true);
+	}
+	
+	MyDialog(Widget contents, boolean buttons) {
 		super(false, true);
 		setAnimationEnabled(true);
 		Grid grid = new Grid(1,1);
 		grid.setWidget(0, 0, dockPanel);
 		setWidget(grid);
 		
-		hp.setCellHorizontalAlignment(buttonsPanel, HasHorizontalAlignment.ALIGN_RIGHT);
-		hp.add(buttonsPanel);
+		if ( buttons ) {
+			buttonsPanel = createButtonsPanel();
+			hp.setCellHorizontalAlignment(buttonsPanel, HasHorizontalAlignment.ALIGN_RIGHT);
+			hp.add(buttonsPanel);
+		}
 
 		if ( contents != null ) {
 			dockPanel.add(contents, DockPanel.CENTER);
