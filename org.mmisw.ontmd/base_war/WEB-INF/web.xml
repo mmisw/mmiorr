@@ -1,14 +1,50 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-
-<!DOCTYPE web-app
-    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
-    "http://java.sun.com/dtd/web-app_2_3.dtd">
-
-<web-app>
-
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_ID" version="2.4"
+	xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<display-name>org.mmisw.ontmd</display-name>
 	<servlet>
 		<servlet-name>ontmdService</servlet-name>
 		<servlet-class>org.mmisw.ontmd.gwt.server.OntMdServiceImpl</servlet-class>
+		<init-param>
+			<param-name>ontmd.app.version</param-name>
+			<param-value>@ontmd.app.version@</param-value>
+		</init-param>
+		<init-param>
+			<param-name>ontmd.app.build</param-name>
+			<param-value>@ontmd.app.build@</param-value>
+		</init-param>
+		
+		<init-param>
+			<param-name>ontmd.pre.uploads.dir</param-name>
+			<param-value>@ontmd.pre.uploads.dir@</param-value>
+		</init-param>
+		
+		<init-param>
+			<param-name>ontmd.voc2rdf.dir</param-name>
+			<param-value>@ontmd.voc2rdf.dir@</param-value>
+		</init-param>
+		
+		<init-param>
+			<param-name>ontmd.preview.dir</param-name>
+			<param-value>@ontmd.preview.dir@</param-value>
+		</init-param>
+		
+		<init-param>
+			<param-name>ontmd.resource.dir</param-name>
+			<param-value>@ontmd.resource.dir@</param-value>
+		</init-param>
+		
+		<init-param>
+			<param-name>ontmd.resourcetype.class</param-name>
+			<param-value>@ontmd.resourcetype.class@</param-value>
+		</init-param>
+		
+		<init-param>
+			<param-name>ontmd.authority.class</param-name>
+			<param-value>@ontmd.authority.class@</param-value>
+		</init-param>
+
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	
@@ -18,20 +54,49 @@
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>upload</servlet-name>
-		<servlet-class>org.mmisw.ontmd.gwt.server.UploadServlet</servlet-class>
-	</servlet>
-	
-	<servlet-mapping>
-		<servlet-name>upload</servlet-name>
-		<url-pattern>/upload</url-pattern>
-	</servlet-mapping>
-	
-	
-	<servlet>
 		<servlet-name>voc2rdfService</servlet-name>
 		<servlet-class>org.mmisw.ontmd.gwt.server.voc2rdf.Voc2RdfServiceImpl</servlet-class>
-		<load-on-startup>1</load-on-startup>
+		
+		<init-param>
+			<param-name>ontmd.app.version</param-name>
+			<param-value>@ontmd.app.version@</param-value>
+		</init-param>
+		<init-param>
+			<param-name>ontmd.app.build</param-name>
+			<param-value>@ontmd.app.build@</param-value>
+		</init-param>
+		
+		<init-param>
+			<param-name>ontmd.pre.uploads.dir</param-name>
+			<param-value>@ontmd.pre.uploads.dir@</param-value>
+		</init-param>
+		
+		<init-param>
+			<param-name>ontmd.voc2rdf.dir</param-name>
+			<param-value>@ontmd.voc2rdf.dir@</param-value>
+		</init-param>
+		
+		<init-param>
+			<param-name>ontmd.preview.dir</param-name>
+			<param-value>@ontmd.preview.dir@</param-value>
+		</init-param>
+		
+		<init-param>
+			<param-name>ontmd.resource.dir</param-name>
+			<param-value>@ontmd.resource.dir@</param-value>
+		</init-param>
+		
+		<init-param>
+			<param-name>ontmd.resourcetype.class</param-name>
+			<param-value>@ontmd.resourcetype.class@</param-value>
+		</init-param>
+		
+		<init-param>
+			<param-name>ontmd.authority.class</param-name>
+			<param-value>@ontmd.authority.class@</param-value>
+		</init-param>
+
+		<load-on-startup>2</load-on-startup>
 	</servlet>
 	
 	<servlet-mapping>
@@ -39,6 +104,15 @@
 		<url-pattern>/voc2rdfService</url-pattern>
 	</servlet-mapping>
 
+	<servlet>
+		<servlet-name>upload</servlet-name>
+		<servlet-class>org.mmisw.ontmd.gwt.server.UploadServlet</servlet-class>
+		<load-on-startup>3</load-on-startup>
+	</servlet>
 	
+	<servlet-mapping>
+		<servlet-name>upload</servlet-name>
+		<url-pattern>/upload</url-pattern>
+	</servlet-mapping>
 
 </web-app>

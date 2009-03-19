@@ -6,6 +6,7 @@ import org.mmisw.ontmd.gwt.client.img.OntMdImageBundle;
 import org.mmisw.ontmd.gwt.client.rpc.BaseInfo;
 import org.mmisw.ontmd.gwt.client.rpc.OntMdService;
 import org.mmisw.ontmd.gwt.client.rpc.OntMdServiceAsync;
+import org.mmisw.ontmd.gwt.client.rpc.AppInfo;
 import org.mmisw.ontmd.gwt.client.voc2rdf.Voc2Rdf;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -34,18 +35,15 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class Main implements EntryPoint {
 
-	// TODO unify version definition
-	public static final String ONTMD_APP_NAME = "ontmd";
-	public static final String ONTMD_VERSION = "1.0.7.beta";
-	public static final String ONTMD_VERSION_COMMENT = "";
-	
-	private static String footer = 
-		ONTMD_APP_NAME + " " + ONTMD_VERSION + " " + ONTMD_VERSION_COMMENT;
+	public String footer; 
 
 	static String baseUrl;
 
 	public static OntMdImageBundle images = (OntMdImageBundle) GWT
 			.create(OntMdImageBundle.class);
+	
+	
+	static AppInfo appInfo;
 	
 	static BaseInfo baseInfo;
 
@@ -101,13 +99,12 @@ public class Main implements EntryPoint {
 		}
 		
 		if ( launchVoc2rdf ) {
-			footer = Voc2Rdf.footer;
 			Voc2Rdf voc2Rdf = new Voc2Rdf();
 			voc2Rdf.launch(this, params);
 		}
 		else {
 			getOntMdService();
-			getBaseInfo(params);
+			getAppInfo(params);
 		}
 	}
 
@@ -145,8 +142,7 @@ public class Main implements EntryPoint {
 			log.setLength(0);
 		}
 		
-		panel.add(
-				Util.createHtml(footer+ "<br/><br/>", 10));
+		panel.add(Util.createHtml("<font color=\"gray\">" +footer+ "</font><br/><br/>", 10));
 
 	}
 
@@ -157,6 +153,29 @@ public class Main implements EntryPoint {
 		ServiceDefTarget endpoint = (ServiceDefTarget) ontmdService;
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
 		log("   ontmdService " + ontmdService);
+	}
+
+	
+	private void getAppInfo(final Map<String, String> params) {
+		AsyncCallback<AppInfo> callback = new AsyncCallback<AppInfo>() {
+			public void onFailure(Throwable thr) {
+				removeLoadingMessage();
+				String error = thr.toString();
+				while ( ( thr = thr.getCause()) != null ) {
+					error += "\n" + thr.toString();
+				}
+				RootPanel.get().add(new Label(error));
+			}
+
+			public void onSuccess(AppInfo aInfo) {
+				appInfo = aInfo;
+				footer = appInfo.toString();
+				getBaseInfo(params);
+			}
+		};
+
+		log("Getting application info ...");
+		ontmdService.getAppInfo(callback);
 	}
 
 	
