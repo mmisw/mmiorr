@@ -3,6 +3,7 @@ package org.mmisw.ontmd.gwt.client.voc2rdf;
 import java.util.Map;
 
 import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.rpc.AppInfo;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfService;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfServiceAsync;
@@ -23,16 +24,9 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public class Voc2Rdf {
 
-	// TODO unify version definition
-	public static final String VOC2RDF_APP_NAME = "Voc2RDF";
-	public static final String VOC2RDF_VERSION = "2.0.0.beta6";
-	public static final String VOC2RDF_VERSION_COMMENT = "";
-
-	public static final String footer = 
-		VOC2RDF_APP_NAME + " " + VOC2RDF_VERSION + " " + VOC2RDF_VERSION_COMMENT;
-
 	static String baseUrl;
 
+	static AppInfo appInfo;
 	static Voc2RdfBaseInfo baseInfo;
 
 	static Voc2RdfServiceAsync voc2rdfService;
@@ -56,7 +50,25 @@ public class Voc2Rdf {
 	public void launch(Main main, Map<String, String> params) {
 		this.main = main;
 		getVoc2RdfService();
-		getPrimaryConcepts(params);
+		getAppInfo(params);
+	}
+
+	private void getAppInfo(final Map<String, String> params) {
+		AsyncCallback<AppInfo> callback = new AsyncCallback<AppInfo>() {
+			public void onFailure(Throwable thr) {
+				removeLoadingMessage();
+				RootPanel.get().add(new HTML(thr.toString()));
+			}
+
+			public void onSuccess(AppInfo aInfo) {
+				appInfo = aInfo;
+				main.footer = appInfo.toString();
+				getPrimaryConcepts(params);
+			}
+		};
+
+		Main.log("Getting application info ...");
+		voc2rdfService.getAppInfo(callback);
 	}
 
 	private void getPrimaryConcepts(final Map<String, String> params) {

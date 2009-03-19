@@ -153,7 +153,7 @@ class Converter {
 		// just the simple name:
 		setPathOnServer(uniqueBaseName); 
 		
-		String full_path = Config.ONTMD_VOC2RDF_DIR + getPathOnServer();
+		String full_path = Config.Prop.ONTMD_VOC2RDF_DIR.getValue() + getPathOnServer();
 		
 		try {
 			FileWriter os = new FileWriter(full_path);

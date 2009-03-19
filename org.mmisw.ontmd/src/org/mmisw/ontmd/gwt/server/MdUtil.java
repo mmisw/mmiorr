@@ -25,10 +25,10 @@ class MdUtil {
 	private static final Log log = LogFactory.getLog(MdUtil.class);
 	
 	/**
-	 * Populates the AttrDef with the list of individuals from {@link Config#AUTHORITY_CLASS}.
+	 * Populates the AttrDef with the list of individuals from {@link Config.Prop#AUTHORITY_CLASS}.
 	 */
 	static void readAuthorities(AttrDef authorityAttrDef) {
-		String classUri = Config.AUTHORITY_CLASS;
+		String classUri = Config.Prop.AUTHORITY_CLASS.getValue();
 		try {
 			populateList(authorityAttrDef, classUri);
 		}
@@ -40,10 +40,10 @@ class MdUtil {
 	}
 
 	/**
-	 * Populates the AttrDef with the list of individuals from {@link Config#RESOURCE_TYPE_CLASS}.
+	 * Populates the AttrDef with the list of individuals from {@link Config.Prop#RESOURCE_TYPE_CLASS}.
 	 */
 	static void readResourceTypes(AttrDef mainClassAttrDef) {
-		String classUri = Config.RESOURCE_TYPE_CLASS;
+		String classUri = Config.Prop.RESOURCE_TYPE_CLASS.getValue();
 		try {
 			populateList(mainClassAttrDef, classUri);
 		}

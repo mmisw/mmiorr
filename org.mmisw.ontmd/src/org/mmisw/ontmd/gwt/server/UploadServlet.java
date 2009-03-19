@@ -22,7 +22,7 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * This servlet does the "pre-upload" operation, that is, it stores the uploaded file from
- * the client in the {@link Config#ONTMD_PRE_UPLOADS_DIR} directory.
+ * the client in the {@link Config.Prop#ONTMD_PRE_UPLOADS_DIR} directory.
  * 
  * @author Carlos Rueda
  */
@@ -36,9 +36,29 @@ public class UploadServlet extends HttpServlet {
 	private final Log log = LogFactory.getLog(UploadServlet.class);
 	
 	
-	private static final File preUploadsDir = new File(Config.ONTMD_PRE_UPLOADS_DIR);
+	private static File preUploadsDir;
 
 	
+	public void init() throws ServletException {
+		super.init();
+		log.info("initializing upload service ...");
+		try {
+			Config.getInstance().init(getServletConfig(), null);
+			preUploadsDir = new File(Config.Prop.ONTMD_PRE_UPLOADS_DIR.getValue());
+			log.info("preUploadsDir = " +preUploadsDir);
+		}
+		catch (Exception ex) {
+			log.error("Cannot initialize: " +ex.getMessage(), ex);
+			throw new ServletException("Cannot initialize", ex);
+		}
+	}
+	
+	public void destroy() {
+		super.destroy();
+		log.info("destroy called.\n\n");
+	}
+
+
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */

@@ -13,6 +13,14 @@ ChangeLog
 	  	if OmvMmi.shortNameUri is part of the list of attributes, then it also assigns OmvMmi.shortNameUri
 	  - MetadataGroupPanel: various adjustments.
 	    
+	- New version.properties as the single point to define the version for this application
+	  (both the back-end services and the front-ends). build.xml translates this to the 
+	  application via the web.xml (which is read by Config). Also, a "build number", which 
+	  is a timestamp, is used for the full version. An AppInfo object is used to share the
+	  application info (version) between server and client. 
+	  
+	- Now, build.properties include many of the (previously) hard-coded parameters. build.xml 
+	  updates the web.xml accordingly and then Config makes the params available to the code. 
 	  
 
 2009-03-17

@@ -7,9 +7,11 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.ontmd.gwt.client.rpc.AppInfo;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfService;
+import org.mmisw.ontmd.gwt.server.Config;
 import org.mmisw.ontmd.gwt.server.MdHelper;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -28,18 +30,40 @@ public class Voc2RdfServiceImpl extends RemoteServiceServlet implements Voc2RdfS
 	
 	private final Log log = LogFactory.getLog(Voc2RdfServiceImpl.class);
 	
+	private final AppInfo appInfo = new AppInfo("MMI Voc2RDF");
+	
 	private Voc2RdfBaseInfo baseInfo = null;
 	
 	
 	public void init() throws ServletException {
-		log.info("initializing");
+		super.init();
+		log.info("initializing " +appInfo.getAppName()+ "...");
+		try {
+			Config.getInstance().init(getServletConfig(), null);
+
+			appInfo.setVersion(
+					Config.Prop.VERSION.getValue()+ " (" +
+						Config.Prop.BUILD.getValue()  + ")"
+			);
+					
+			log.info(appInfo.toString());
+		}
+		catch (Exception ex) {
+			log.error("Cannot initialize: " +ex.getMessage(), ex);
+			throw new ServletException("Cannot initialize", ex);
+		}
 	}
 	
 	public void destroy() {
-		log.info("destroy called.\n\n");
+		super.destroy();
+		log.info(appInfo+ ": destroy called.\n\n");
 	}
 
+	public AppInfo getAppInfo() {
+		return appInfo;
+	}
 	
+
 	public Voc2RdfBaseInfo getBaseInfo() {
 		if ( baseInfo == null ) {
 			prepareBaseInfo();

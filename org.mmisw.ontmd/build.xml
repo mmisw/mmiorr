@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project name="ontmd" default="war" basedir=".">
 
+  <property file="version.properties" />
   <property file="build.properties" />	
   <property name="build.dir" value="_generated"/>
 
@@ -38,6 +39,12 @@
   	<pathelement path="base_war/WEB-INF/lib/iri.jar"/>
   	<pathelement path="base_war/WEB-INF/lib/jakarta-oro-2.0.5.jar"/>
   </path>
+
+	<target name="init">
+		<tstamp>
+		    <format property="ontmd.app.build" pattern="yyyyMMddHHmmss" />
+		</tstamp>
+	</target>
 
   <target name="gwt-compiler-help">
   	<java classname="com.google.gwt.dev.GWTCompiler" fork="false">
@@ -80,7 +87,7 @@
     </java>
   </target>
 
-  <target name="compile" description="Compile src to bin">
+  <target name="compile" depends="init">
     <mkdir dir="bin"/>
     <mkdir dir="${build.dir}/classes"/>
     <javac srcdir="src" destdir="${build.dir}/classes" 
@@ -98,12 +105,27 @@
   </target>
 
     <target name="war" depends="jar, gwt-compile">
-
+    	<!-- prepare tmp.WebContent -->
 		<copy todir="${build.dir}/tmp.WebContent">
 			<fileset dir="base_war">
+				<exclude name="WEB-INF/web.xml" />
 				<exclude name="WEB-INF/lib**" />
 				<exclude name="WEB-INF/classes/log4j.xml" />
 			</fileset>
+		</copy>
+
+		<copy file="base_war/WEB-INF/web.xml" 
+			tofile="${build.dir}/tmp.WebContent/WEB-INF/web.xml" overwrite="true">
+			<filterset>
+				<filter token="ontmd.app.version"        value="${ontmd.app.version}" />
+				<filter token="ontmd.app.build"          value="${ontmd.app.build}" />
+				<filter token="ontmd.pre.uploads.dir"    value="${ontmd.pre.uploads.dir}" />
+				<filter token="ontmd.voc2rdf.dir"        value="${ontmd.voc2rdf.dir}" />
+				<filter token="ontmd.preview.dir"        value="${ontmd.preview.dir}" />
+				<filter token="ontmd.resource.dir"       value="${ontmd.resource.dir}" />
+				<filter token="ontmd.resourcetype.class" value="${ontmd.resourcetype.class}" />
+				<filter token="ontmd.authority.class"    value="${ontmd.authority.class}" />
+			</filterset>
 		</copy>
 
 		<copy file="base_war/WEB-INF/classes/log4j.xml" 
@@ -117,14 +139,15 @@
 			</filterset>
 		</copy>
 
-            <war warfile="${build.dir}/ontmd.war" webxml="base_war/WEB-INF/web.xml">
-                    <fileset dir="www/org.mmisw.ontmd.gwt.Main" />
-            	    <fileset dir="${build.dir}/tmp.WebContent" />
-                    <lib dir="base_war/WEB-INF/lib" />
-            </war>
-            <delete includeEmptyDirs="true" failonerror="false">
-                    <fileset dir="${build.dir}/tmp.WebContent" />
-            </delete>
+        <war warfile="${build.dir}/ontmd.war" webxml="${build.dir}/tmp.WebContent/WEB-INF/web.xml">
+                <fileset dir="www/org.mmisw.ontmd.gwt.Main" />
+        	    <fileset dir="${build.dir}/tmp.WebContent" />
+                <lib dir="base_war/WEB-INF/lib" />
+        </war>
+    	
+        <delete includeEmptyDirs="true" failonerror="false">
+                <fileset dir="${build.dir}/tmp.WebContent" />
+        </delete>
     </target>     	
 
   <target name="clean">

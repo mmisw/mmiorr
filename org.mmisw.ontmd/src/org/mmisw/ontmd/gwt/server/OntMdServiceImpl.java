@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
+import org.mmisw.ontmd.gwt.client.rpc.AppInfo;
 import org.mmisw.ontmd.gwt.client.rpc.BaseInfo;
 import org.mmisw.ontmd.gwt.client.rpc.BaseResult;
 import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
@@ -65,19 +66,15 @@ import edu.drexel.util.rdf.OwlModel;
 public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdService {
 	private static final long serialVersionUID = 1L;
 
-	// TODO unify version definition
-	private static final String VERSION = "1.0.7.beta (20090318)";
-	private static final String TITLE = "MMI OntMD";
-	private static final String FULL_TITLE = TITLE + ". Version " +VERSION;
-
-	
 	/** Ontology URI prefix including root: */
-	// TODO read Ontology URI prefix from a configuration parameter
+	// TODO read namespaceRoot from a configuration parameter
 	private static final String namespaceRoot = "http://mmisw.org/ont";
 	
 
+	private final AppInfo appInfo = new AppInfo("MMI OntMd");
 	
-	private static final File previewDir = new File(Config.ONTMD_PREVIEW_DIR);
+	
+	private File previewDir;
 
 
 	// TODO this mechanism copied from MmiUri (in ont project).
@@ -91,15 +88,36 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	
 	
 	public void init() throws ServletException {
-		log.info(FULL_TITLE+ ": initializing");
+		super.init();
+		log.info("initializing " +appInfo.getAppName()+ "...");
+		try {
+			Config.getInstance().init(getServletConfig(), log);
+			
+			appInfo.setVersion(
+					Config.Prop.VERSION.getValue()+ " (" +
+						Config.Prop.BUILD.getValue()  + ")"
+			);
+					
+			log.info(appInfo.toString());
+			
+			previewDir = new File(Config.Prop.ONTMD_PREVIEW_DIR.getValue());
+			
+		}
+		catch (Exception ex) {
+			log.error("Cannot initialize: " +ex.getMessage(), ex);
+			throw new ServletException("Cannot initialize", ex);
+		}
 	}
 	
 	public void destroy() {
-		log.info(FULL_TITLE+ ": destroy called.\n\n");
+		super.destroy();
+		log.info(appInfo+ ": destroy called.\n\n");
 	}
 	
 
-	
+	public AppInfo getAppInfo() {
+		return appInfo;
+	}
 	
 	public BaseInfo getBaseInfo(Map<String, String> params) {
 		log.info("getBaseInfo: params=" + params);
@@ -1188,7 +1206,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			// then, the the full path is to be completed here.
 			// TODO Note: Currently, this is only handled for the Voc2Rdf case:
 			
-			file = new File(Config.ONTMD_VOC2RDF_DIR + path);
+			file = new File(Config.Prop.ONTMD_VOC2RDF_DIR.getValue() + path);
 		}
 
 		String full_path = file.getAbsolutePath();
