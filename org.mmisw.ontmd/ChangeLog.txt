@@ -5,8 +5,14 @@ ChangeLog
 
 	TODO: refresh the drop-down menus in case the ontologies have new versions
 
+
+2009-03-19
+	- Completed fix of issue #45: "include URIs for Topic in the ontmd Topic URI -- 
+	  Review operation was removing the topic URI field value.
+	  1.0.8.beta (20090319092940)
+	 
 2009-03-18
-	- Fixed Issue #45: "include URIs for Topic in the ontmd Topic URI field"  -- 1.0.7.beta (20090318)
+	- Issue #45: "include URIs for Topic in the ontmd Topic URI field"  -- 1.0.8.beta (20090318234714)
 	  See OndMdServiceImpl, MetadataGroupPanel, Option, MdUtil, MdHelper.
 	  - OmvMmi.shortNameUri is now associated with Omv.acronym 
 	  - OndMdServiceImpl.prepareOntologyInfo(File file, OntologyInfo ontologyInfo): 

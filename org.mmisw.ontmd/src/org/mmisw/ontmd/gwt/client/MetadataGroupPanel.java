@@ -440,6 +440,11 @@ public class MetadataGroupPanel extends VerticalPanel {
 				String uri = shortNameAttrDef.getUri();
 				values.put(uri, value);
 				Main.log("assigned: " +uri+ " = " +value);
+				
+				String relatedUri = shortNameAttrDef.getRelatedAttrs().get(0).getUri();
+				String relatedValue = shortNameRelatedField.getText();
+				values.put(relatedUri, relatedValue);
+				Main.log("assigned: " +uri+ " = " +value);
 			}
 		}
 		
@@ -527,6 +532,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 		if ( shortNameAttrDef != null ) {
 			shortNameFieldWithChoose.setValue(value);
 			shortNameIsMap.setChecked(false);
+			shortNameRelatedField.setText(value);
 		}
 		
 	}
@@ -563,6 +569,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 			}
 			shortNameFieldWithChoose.setValue(example);
 			shortNameIsMap.setChecked(example.endsWith("_map"));
+			shortNameRelatedField.setText(shortNameAttrDef.getRelatedAttrs().get(0).getExample());
 		}
 
 	}
@@ -624,10 +631,11 @@ public class MetadataGroupPanel extends VerticalPanel {
 			shortNameIsMap.setChecked(value.endsWith("_map"));
 			
 			// special case: ///////////////////////////////////////////
-			List<AttrDef> relatedAttrs = shortNameAttrDef.getRelatedAttrs();
-			assert relatedAttrs != null && relatedAttrs.size() > 0 ;
-			String relatedUri = relatedAttrs.get(0).getUri();
+			String relatedUri = shortNameAttrDef.getRelatedAttrs().get(0).getUri();
 			String relatedValue = originalValues.get(relatedUri);
+			if ( relatedValue == null ) {
+				relatedValue = "";
+			}
 			shortNameRelatedField.setText(relatedValue);
 			//////////////////////////////////////////////////////////////
 			
