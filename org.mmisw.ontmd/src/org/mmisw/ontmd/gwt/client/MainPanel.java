@@ -49,7 +49,7 @@ public class MainPanel extends VerticalPanel {
 //	private UploadPanel loginPanel = new UploadPanel(this);
 	
 	
-	private PushButton reviewButton = new PushButton("Review", new ClickListener() {
+	private PushButton reviewButton = new PushButton("Review and Upload", new ClickListener() {
 		public void onClick(Widget sender) {
 			review(true);
 		}
@@ -393,7 +393,7 @@ public class MainPanel extends VerticalPanel {
 		panel.add(reviewButton);
 		
 		uploadButton.setTitle("Uploads the new version of the ontology");
-		panel.add(uploadButton);
+//		panel.add(uploadButton);
 		
 		exampleButton.setTitle("Fills in fields in all sections with example values");
 		panel.add(exampleButton);
@@ -465,22 +465,23 @@ public class MainPanel extends VerticalPanel {
 
 		
 		final MyDialog popup = new MyDialog(null);
-		popup.addTextArea(null).setText("please wait ...");
+		popup.addTextArea(null).setSize("720", "300");
+		popup.getTextArea().setText("please wait ...");
 		Main.log("Reviewing ...");
-		reenableButton(reviewButton, "Review", false);
+		reenableButton(reviewButton, null, false);
 		popup.setText("Reviewing...");
 		popup.center();
 		popup.show();
 
 		AsyncCallback<ReviewResult> callback = new AsyncCallback<ReviewResult>() {
 			public void onFailure(Throwable thr) {
-				reenableButton(reviewButton, "Review", true);
+				reenableButton(reviewButton, null, true);
 				container.clear();				
 				container.add(new HTML(thr.toString()));
 			}
 
 			public void onSuccess(ReviewResult result) {
-				reenableButton(reviewButton, "Review", true);
+				reenableButton(reviewButton, null, true);
 				reviewCompleted(popup, result);
 			}
 		};
@@ -489,14 +490,23 @@ public class MainPanel extends VerticalPanel {
 	}
 
 	private void reviewCompleted(MyDialog popup , ReviewResult reviewResult) {
+		this.reviewResult = reviewResult;
+
 		String error = reviewResult.getError();
 		
 		StringBuffer sb = new StringBuffer();
 		
 		VerticalPanel vp = new VerticalPanel();
+		vp.setSpacing(4);
 
 		if ( error == null ) {
 			vp.add(new Label("Ontology URI: " +reviewResult.getUri()));
+			
+			vp.add(new Label("You can now upload your ontology or close this " +
+					"dialog to continue editing the ontology metadata."));
+			
+			popup.getButtonsPanel().insert(uploadButton, 0);
+			
 			vp.add(new Label("Contents:"));
 			
 			metadataPanel.resetToNewValues(ontologyInfo, reviewResult, false, false);
@@ -519,7 +529,6 @@ public class MainPanel extends VerticalPanel {
 
 		Main.log("Review result: " +msg);
 
-		this.reviewResult = reviewResult;
 	}
 	
 	
@@ -579,7 +588,7 @@ public class MainPanel extends VerticalPanel {
 		final MyDialog popup = new MyDialog(null);
 		popup.addTextArea(null).setText("please wait ...");
 		Main.log("Uploading ...");
-		reenableButton(uploadButton, "Upload", false);
+		reenableButton(uploadButton, null, false);
 		popup.setText("Uploading...");
 		popup.center();
 		popup.show();
@@ -588,13 +597,13 @@ public class MainPanel extends VerticalPanel {
 		AsyncCallback<UploadResult> callback = new AsyncCallback<UploadResult>() {
 			public void onFailure(Throwable thr) {
 				ontologyInfo = null;
-				reenableButton(uploadButton, "Upload", true);
+				reenableButton(uploadButton, null, true);
 				container.clear();				
 				container.add(new HTML(thr.toString()));
 			}
 
 			public void onSuccess(UploadResult result) {
-				reenableButton(uploadButton, "Upload", true);
+				reenableButton(uploadButton, null, true);
 				uploadCompleted(popup, result);
 			}
 		};
@@ -719,7 +728,9 @@ public class MainPanel extends VerticalPanel {
 	
 
 	private void reenableButton(PushButton button, String text, boolean enabled) {
-		button.setText(text);
+		if ( text != null ) {
+			button.setText(text);
+		}
 		button.setEnabled(enabled);
 	}
 

@@ -10,6 +10,13 @@ ChangeLog
 	- Completed fix of issue #45: "include URIs for Topic in the ontmd Topic URI -- 
 	  Review operation was removing the topic URI field value.
 	  1.0.8.beta (20090319092940)
+	  
+	- Fixed Issue 109: "second review not asked after further changes"
+	  Merged the "Review" and "Upload" actions into a single "Review and Upload" button. 
+	  Complementary to this, the dialog for the successful review result now includes a button "Upload".
+	  The user can either proceed with the upload operation or close the review dialog and continue 
+	  editing the metadata.
+	  
 	 
 2009-03-18
 	- Issue #45: "include URIs for Topic in the ontmd Topic URI field"  -- 1.0.8.beta (20090318234714)

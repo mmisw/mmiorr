@@ -1,6 +1,5 @@
 package org.mmisw.ontmd.gwt.client;
 
-import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DockPanel;
@@ -20,7 +19,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class MyDialog extends DialogBox {
 	
 	private DockPanel dockPanel = new DockPanel();
-	private CellPanel buttons = createButtons();
+	private HorizontalPanel buttonsPanel = createButtonsPanel();
 	private HorizontalPanel hp = new HorizontalPanel();
 	
 	private PushButton closeButton;
@@ -32,11 +31,10 @@ public class MyDialog extends DialogBox {
 		setAnimationEnabled(true);
 		Grid grid = new Grid(1,1);
 		grid.setWidget(0, 0, dockPanel);
-//		grid.setBorderWidth(1);  // just to improve appearance in firefox
 		setWidget(grid);
 		
-		hp.setCellHorizontalAlignment(buttons, HasHorizontalAlignment.ALIGN_RIGHT);
-		hp.add(buttons);
+		hp.setCellHorizontalAlignment(buttonsPanel, HasHorizontalAlignment.ALIGN_RIGHT);
+		hp.add(buttonsPanel);
 
 		if ( contents != null ) {
 			dockPanel.add(contents, DockPanel.CENTER);
@@ -59,6 +57,7 @@ public class MyDialog extends DialogBox {
 		ta.setSize("720", "450");
 		ta.setReadOnly(true);
 		dockPanel.add(ta, DockPanel.CENTER);
+		
 		return ta;
 	}
 	
@@ -75,9 +74,9 @@ public class MyDialog extends DialogBox {
 	    return true;
 	  }
 	
-	private CellPanel createButtons() {
-		CellPanel panel = new HorizontalPanel();
-		panel.setSpacing(2);
+	private HorizontalPanel createButtonsPanel() {
+		HorizontalPanel panel = new HorizontalPanel();
+		panel.setSpacing(4);
 
 		closeButton = new PushButton("Close", new ClickListener() {
 			public void onClick(Widget sender) {
@@ -85,8 +84,11 @@ public class MyDialog extends DialogBox {
 			}
 		});
 		panel.add(closeButton);
-
 		return panel;
+	}
+	
+	HorizontalPanel getButtonsPanel() {
+		return buttonsPanel;
 	}
 	
 	@Override
