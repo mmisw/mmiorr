@@ -1,8 +1,11 @@
-org.mmisw.ontmd Ontology Metadata Manager
-Carlos Rueda - MMI / MBARI
+org.mmisw.ontmd: Ontology Metadata Manager and Voc2RDF
+Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-03-20
+	- some documentation updates.
+	
 
 2009-03-19
 	- Completed fix of issue #45: "include URIs for Topic in the ontmd Topic URI -- 
