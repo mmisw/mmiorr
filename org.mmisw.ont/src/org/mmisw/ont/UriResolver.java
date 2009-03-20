@@ -50,10 +50,10 @@ import edu.drexel.util.rdf.JenaUtil;
 public class UriResolver extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
-	private static final String TITLE = "MMI Ontology and Term URI Resolver";
+	static final String TITLE = "MMI Ontology and Term URI Resolver";
 	
-	private String VERSION = "0.2.0.beta5 (20090315)";
-	private String FULL_TITLE = TITLE + ". Version " +VERSION;
+	private static String VERSION = "0.2.0.beta5 (20090315)";
+	static String FULL_TITLE = TITLE + ". Version " +VERSION;
 
 
 	private final Log log = LogFactory.getLog(UriResolver.class);

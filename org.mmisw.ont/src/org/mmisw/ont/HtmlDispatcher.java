@@ -39,14 +39,11 @@ public class HtmlDispatcher {
 	private OntConfig ontConfig;
 	private Db db;
 	
-	// TODO remove
-//	private MdDispatcher mdDispatcher;
 	
 	
 	HtmlDispatcher(OntConfig ontConfig, Db db) { // TODO Remove, MdDispatcher mdDispatcher) {
 		this.ontConfig = ontConfig;
 		this.db = db;
-//		this.mdDispatcher = mdDispatcher;
 	}
 
 
@@ -142,6 +139,8 @@ public class HtmlDispatcher {
 			_showAllTerms(mmiUri, foundUri, model, out, debug);
 		}
 		
+		_endPage(request, response);
+		
 		return true;
 	}
 	
@@ -153,9 +152,47 @@ public class HtmlDispatcher {
 		out.println("<html>");
 		out.println("<head>");
 		out.println("<title>" +fullRequestedUri+ "</title>");
-		out.println("<link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\">");
+		String contextPath = request.getContextPath();
+		out.println("<link rel=stylesheet href=\"" +contextPath+ "/main.css\" type=\"text/css\">");
 		out.println("</head>");
 		out.println("<body>");
+		
+		
+		out.println(
+				"<div align=\"center\">" +
+				"<table>" +
+				"<tr valign=\"center\">" +
+				"<td align=\"center\">" +
+					"<a href=\"http://marinemetadata.org/semanticframework\">" +
+					"<img src=\"" +contextPath + "/img/" +"semantic_framework.jpg" + "\" border=\"0\"" +
+							"alt=\"MMI Semantic Framework\"/>" +
+					"</a>" +
+				"</td>" +
+				"<td>" +
+					"<b>" +UriResolver.TITLE+ "</b>" +
+					"</br>This service is part of the " +
+					"<a href=\"http://marinemetadata.org/semanticframework\">" +
+					"MMI Semantic Framework</a>" +
+				"</td>" +
+				"</tr>" +
+				"</table>" +
+				"</div>"
+		);
+	}
+
+	private void _endPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		PrintWriter out = response.getWriter();
+		out.println(
+				"<div align=\"center\">" +
+				"<table>" +
+				"<tr valign=\"center\">" +
+				"<td align=\"center\">" +
+					"<font color=\"gray\" size=\"-2\">" +UriResolver.FULL_TITLE+ "</font>" +
+				"</td>" +
+				"</tr>" +
+				"</table>" +
+				"</div>"
+		);
 	}
 
 	

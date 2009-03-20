@@ -3,6 +3,10 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2003-03-19:   (1.0.0.beta)
+	- Issue 8: "Improve HTML response"
+	  Added a header with logo and links to semanticframework
+
 2003-03-17:   (0.2.0.beta7)
 	- Code clean-up:
 		- Removed unused types: MdDispatcher, MdHelper, AttrGroup, AttrDef.
