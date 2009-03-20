@@ -3,8 +3,6 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
-	TODO: refresh the drop-down menus in case the ontologies have new versions
-
 
 2009-03-19
 	- Completed fix of issue #45: "include URIs for Topic in the ontmd Topic URI -- 
