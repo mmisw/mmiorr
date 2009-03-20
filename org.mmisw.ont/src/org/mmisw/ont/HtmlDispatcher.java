@@ -138,7 +138,6 @@ public class HtmlDispatcher {
 		else {
 			_showAllTerms(mmiUri, foundUri, model, out, debug);
 		}
-		
 		_endPage(request, response);
 		
 		return true;
@@ -159,6 +158,7 @@ public class HtmlDispatcher {
 		
 		
 		out.println(
+				"<hr/>" +
 				"<div align=\"center\">" +
 				"<table>" +
 				"<tr valign=\"center\">" +
@@ -442,6 +442,10 @@ public class HtmlDispatcher {
 				out.println("</table>");
 				out.printf("</div>%n");
 			}
+		}
+		
+		if ( completePage ) {
+			_endPage(request, response);
 		}
 		
 	}		
