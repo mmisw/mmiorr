@@ -158,10 +158,10 @@ public class HtmlDispatcher {
 		
 		
 		out.println(
-				"<div align=\"center\">" +
+				"<div align=\"right\">" +
 				"<table>" +
-				"<tr valign=\"center\">" +
-				"<td align=\"center\">" +
+				"<tr valign=\"right\">" +
+				"<td align=\"right\">" +
 					"<a href=\"http://marinemetadata.org/semanticframework\">" +
 					"<img src=\"" +contextPath + "/img/" +"semantic_framework.jpg" + "\" border=\"0\"" +
 							"alt=\"MMI Semantic Framework\"/>" +
@@ -184,10 +184,10 @@ public class HtmlDispatcher {
 		PrintWriter out = response.getWriter();
 		out.println(
 				"<hr/>" +
-				"<div align=\"center\">" +
+				"<div align=\"right\">" +
 				"<table>" +
-				"<tr valign=\"center\">" +
-				"<td align=\"center\">" +
+				"<tr valign=\"right\">" +
+				"<td align=\"right\">" +
 					"<font color=\"gray\" size=\"-2\">" +UriResolver.FULL_TITLE+ "</font>" +
 				"</td>" +
 				"</tr>" +
