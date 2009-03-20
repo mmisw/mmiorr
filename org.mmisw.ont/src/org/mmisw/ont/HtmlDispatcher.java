@@ -158,7 +158,6 @@ public class HtmlDispatcher {
 		
 		
 		out.println(
-				"<hr/>" +
 				"<div align=\"center\">" +
 				"<table>" +
 				"<tr valign=\"center\">" +
@@ -176,7 +175,8 @@ public class HtmlDispatcher {
 				"</td>" +
 				"</tr>" +
 				"</table>" +
-				"</div>"
+				"</div>" +
+				"<hr/>"
 		);
 	}
 
