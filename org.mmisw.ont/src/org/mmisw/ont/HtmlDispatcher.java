@@ -162,16 +162,22 @@ public class HtmlDispatcher {
 				"<table>" +
 				"<tr valign=\"right\">" +
 				"<td align=\"right\">" +
-					"<a href=\"http://marinemetadata.org/semanticframework\">" +
+					"<a target=\"_blank\" href=\"http://marinemetadata.org/semanticframework\">" +
 					"<img src=\"" +contextPath + "/img/" +"semantic_framework.jpg" + "\" border=\"0\"" +
 							"alt=\"MMI Semantic Framework\"/>" +
 					"</a>" +
 				"</td>" +
 				"<td>" +
 					"<b>" +UriResolver.TITLE+ "</b>" +
-					"</br>This service is part of the " +
-					"<a href=\"http://marinemetadata.org/semanticframework\">" +
-					"MMI Semantic Framework</a>" +
+					"<br/>" +
+					"<font size=\"-1\">" +
+					"This service is part of the " +
+						"<a target=\"_blank\" href=\"http://marinemetadata.org/semanticframework\">" +
+						"MMI Semantic Framework</a>" +
+					"<br/>" +
+					"<a target=\"_blank\" href=\"http://mmisw.org/or\">" +
+						"MMI Ontology Registry and Repository</a>" +
+					"</font>" +
 				"</td>" +
 				"</tr>" +
 				"</table>" +
@@ -185,13 +191,7 @@ public class HtmlDispatcher {
 		out.println(
 				"<hr/>" +
 				"<div align=\"right\">" +
-				"<table>" +
-				"<tr valign=\"right\">" +
-				"<td align=\"right\">" +
 					"<font color=\"gray\" size=\"-2\">" +UriResolver.FULL_TITLE+ "</font>" +
-				"</td>" +
-				"</tr>" +
-				"</table>" +
 				"</div>"
 		);
 	}
