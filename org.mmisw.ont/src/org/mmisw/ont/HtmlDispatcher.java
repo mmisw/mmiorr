@@ -183,6 +183,7 @@ public class HtmlDispatcher {
 	private void _endPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		PrintWriter out = response.getWriter();
 		out.println(
+				"<hr/>" +
 				"<div align=\"center\">" +
 				"<table>" +
 				"<tr valign=\"center\">" +
