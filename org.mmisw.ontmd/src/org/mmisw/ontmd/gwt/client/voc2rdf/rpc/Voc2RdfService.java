@@ -12,6 +12,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
  * @author Carlos Rueda
  * @version $Id$
  */
+@Deprecated
 public interface Voc2RdfService extends RemoteService {
 
 	/**

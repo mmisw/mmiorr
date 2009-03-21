@@ -50,7 +50,7 @@ public class Main implements EntryPoint {
 
 	private static boolean includeLog;
 
-	static OntMdServiceAsync ontmdService;
+	public static OntMdServiceAsync ontmdService;
 
 	/**
 	 * This is the entry point method.
@@ -99,12 +99,13 @@ public class Main implements EntryPoint {
 			}
 		}
 		
+		getOntMdService();
+		
 		if ( launchVoc2rdf ) {
 			Voc2Rdf voc2Rdf = new Voc2Rdf();
 			voc2Rdf.launch(this, params);
 		}
 		else {
-			getOntMdService();
 			getAppInfo(params);
 		}
 	}

@@ -38,8 +38,11 @@ import org.mmisw.ontmd.gwt.client.rpc.OntMdService;
 import org.mmisw.ontmd.gwt.client.rpc.OntologyInfo;
 import org.mmisw.ontmd.gwt.client.rpc.ReviewResult;
 import org.mmisw.ontmd.gwt.client.rpc.UploadResult;
+import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
+import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrGroup;
+import org.mmisw.ontmd.gwt.server.voc2rdf.Voc2RdfImpl;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -102,6 +105,9 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			
 			previewDir = new File(Config.Prop.ONTMD_PREVIEW_DIR.getValue());
 			
+			
+			// voc2rdf initialization
+			voc2rdf = new Voc2RdfImpl();
 		}
 		catch (Exception ex) {
 			log.error("Cannot initialize: " +ex.getMessage(), ex);
@@ -1234,6 +1240,24 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		}
 		
 		return ontologyInfo;
+	}
+
+	///////////////////////////////////////////////////////////////////////
+	// Voc2RDF
+	
+	
+	private Voc2RdfImpl voc2rdf;
+	
+	public AppInfo getVoc2RdfAppInfo() {
+		return voc2rdf.getAppInfo();
+	}
+	
+	public Voc2RdfBaseInfo getVoc2RdfBaseInfo() {
+		return voc2rdf.getBaseInfo();
+	}
+	
+	public ConversionResult convert2Rdf(Map<String,String> values) {
+		return voc2rdf.convert(values);
 	}
 
 }

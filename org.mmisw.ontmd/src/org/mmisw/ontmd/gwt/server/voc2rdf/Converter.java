@@ -39,8 +39,9 @@ import edu.drexel.util.rdf.OwlModel;
  * 
  * @author Carlos Rueda
  */
-class Converter {
+public class Converter {
 
+	// TODO take this location from a config parameter:
 	private static final String tmp = "/Users/Shared/registry/tmp/";
 
 	private String orgAbbreviation;
@@ -97,7 +98,7 @@ class Converter {
 	private final String uniqueBaseName = _createUniqueBaseName();
 	
 	
-	Converter(
+	public Converter(
 			String namespaceRoot, 
 			String orgAbbreviation,
 			String primaryClass,
@@ -140,7 +141,7 @@ class Converter {
 
 
 
-	String createOntology() throws Exception {
+	public String createOntology() throws Exception {
 		log.info("!!!!!!!!!!!!!!!! Converter.createOntology");
 		
 		setFinalUri();
@@ -475,7 +476,7 @@ class Converter {
 		this.pathOnServer = pathOnServer;
 	}
 
-	String getPathOnServer() {
+	public String getPathOnServer() {
 		return pathOnServer;
 	}
 

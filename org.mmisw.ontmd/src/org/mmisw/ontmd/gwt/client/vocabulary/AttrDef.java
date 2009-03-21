@@ -55,6 +55,10 @@ public class AttrDef implements Serializable {
 	}
 	
 	
+	public String toString() {
+		return getUri();
+	}
+	
 	public String getUri() {
 		return uri;
 	}
@@ -88,12 +92,18 @@ public class AttrDef implements Serializable {
 	 * Sets the URI of the vocabulary the options are taken from. 
 	 */
 	public AttrDef setOptionsVocabulary(String optionsVocabulary) {
+		if ( optionsVocabulary == null ) {
+			throw new IllegalArgumentException();
+		}
 		this.optionsVocabulary = optionsVocabulary;
 		return this;
 	}
 
-	/** @returns the list of options; null if no options have been assigned*/
+	/** @returns the list of options; empty if no options have been assigned. */
 	public List<Option> getOptions() {
+		if ( options == null ) {
+			options = new ArrayList<Option>();
+		}
 		return options;
 	}
 

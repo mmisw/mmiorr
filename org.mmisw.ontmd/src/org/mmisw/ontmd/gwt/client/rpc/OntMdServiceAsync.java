@@ -2,6 +2,8 @@ package org.mmisw.ontmd.gwt.client.rpc;
 
 import java.util.Map;
 
+import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
+import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -32,4 +34,15 @@ public interface OntMdServiceAsync {
 	
 	void upload(ReviewResult reviewResult, LoginResult loginResult, AsyncCallback<UploadResult> callback);
 	
+	
+	///////////////////////////////////////////////////////////////////////
+	// Voc2RDF
+	
+	void getVoc2RdfAppInfo(AsyncCallback<AppInfo> callback);
+	
+	void getVoc2RdfBaseInfo(AsyncCallback<Voc2RdfBaseInfo> callback);
+	
+	void convert2Rdf(Map<String,String> values, AsyncCallback<ConversionResult> callback);
+	
+
 }

@@ -12,6 +12,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * @author Carlos Rueda
  * @version $Id$
  */
+@Deprecated
 public interface Voc2RdfServiceAsync {
 
 	void getAppInfo(AsyncCallback<AppInfo> callback);

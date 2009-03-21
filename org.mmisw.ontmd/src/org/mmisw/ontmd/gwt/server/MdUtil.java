@@ -43,6 +43,7 @@ class MdUtil {
 			});
 		}
 		catch (Exception e) {
+			log.debug("Error trying to read: " +classUri+ ": " +e.getMessage(), e);
 			authorityAttrDef.addOption(
 					new Option("dummy", "dummy: (" +e.getMessage()+ ")")
 			);
@@ -64,6 +65,7 @@ class MdUtil {
 			});
 		}
 		catch (Exception e) {
+			log.debug("Error trying to read: " +classUri+ ": " +e.getMessage(), e);
 			mainClassAttrDef.addOption(
 					new Option("dummy", "dummy: (" +e.getMessage()+ ")")
 			);
@@ -104,9 +106,10 @@ class MdUtil {
 			list.add(option);
 		}
 		
-		// everything went fine; update the actual list of options:
 		attrDef.getOptions().clear();
 		attrDef.getOptions().addAll(list);
+		
+		log.debug("read: " +attrDef.getOptions().size()+ " individuals");
 	}
 	
 

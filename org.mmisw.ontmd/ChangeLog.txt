@@ -5,6 +5,8 @@ ChangeLog
 
 2009-03-20
 	- some documentation updates.
+	- More code clean-up: deprecating Voc2RdfService* types; the voc2rdf operations are now
+	  provided through the ontmd service as well.
 	
 
 2009-03-19

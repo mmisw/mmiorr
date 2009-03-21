@@ -143,7 +143,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 			final List<Option> options = attr.getOptions();
 			
 			if ( editing &&  // not listBoxes if we are just viewing 
-					options != null ) {
+					options.size() > 0 ) {
 				
 				if ( Main.baseInfo.getShortNameUri().equals(attr.getUri()) ) {
 					// the special case for the "short name"

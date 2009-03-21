@@ -563,7 +563,8 @@ public class VocabPanel extends VerticalPanel {
 
 		Main.log("convertTest: converting ... ");
 		
-		Voc2Rdf.voc2rdfService.convert(values, callback);
+//		Voc2Rdf.voc2rdfService.convert(values, callback);
+		Main.ontmdService.convert2Rdf(values, callback);
 
 	}
 
