@@ -3,6 +3,10 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2003-03-21
+	- Just comment about Omv.acronym saying that is about "resourceType" not "shortName"
+       
+	 
 2003-03-19:   (1.0.0.beta)
 	- Issue 8: "Improve HTML response"
 	  Added a header with logo and links to semanticframework

@@ -42,7 +42,7 @@ public class Omv {
     /** OM.9 */
     public static final Property description = m_model.createProperty( NS , "description" );
     
-    /** OM.4 ; is really short name, not acronym */
+    /** OM.4 ; is really "resourceType", not acronym */
     public static final Property acronym = m_model.createProperty( NS , "acronym" );
     
     /** OM.2 */
