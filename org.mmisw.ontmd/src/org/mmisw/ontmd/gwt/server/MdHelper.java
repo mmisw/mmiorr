@@ -110,7 +110,7 @@ public class MdHelper {
 	}
 	
 	
-	private static AttrDef mainClassAttrDef = null;
+	private static AttrDef resourceTypeAttrDef = null;
 	
 
 	
@@ -119,10 +119,10 @@ public class MdHelper {
 	/**
 	 * Creates the "resource type" attribute definition.
 	 */
-	private static AttrDef createResourceTypesAttrDef() {
-		if ( mainClassAttrDef == null ) {
+	private static AttrDef createResourceTypeAttrDef() {
+		if ( resourceTypeAttrDef == null ) {
 			// Note: OmvMmi.shortNameUri is now associated with Omv.acronym:
-			mainClassAttrDef =
+			resourceTypeAttrDef =
 				createAttrDef(Omv.acronym, true) 
 			    .setLabel("Resource type")
 				.setTooltip(RESOURCE_TYPE_TOOLTIP)
@@ -140,20 +140,20 @@ public class MdHelper {
 				)
 			;
 			
-			MdUtil.readResourceTypes(mainClassAttrDef);
+			MdUtil.readResourceTypes(resourceTypeAttrDef);
 			
 			
 		}
 		
-		return mainClassAttrDef;
+		return resourceTypeAttrDef;
 	}
 	
 	
 	
 	
-	public static AttrDef getMainClassAttrDef() {
-		createResourceTypesAttrDef();
-		return mainClassAttrDef;
+	public static AttrDef getResourceTypeAttrDef() {
+		createResourceTypeAttrDef();
+		return resourceTypeAttrDef;
 	}
 	
 	
@@ -190,7 +190,7 @@ public class MdHelper {
 	public static void prepareGroups(boolean includeVersion) {
 		
 		List<AttrDef> general_attr_list = new ArrayList<AttrDef>();
-		general_attr_list.add(createResourceTypesAttrDef());
+		general_attr_list.add(createResourceTypeAttrDef());
 		
 // Not any more; OmvMmi.shortNameUri is now associated with Omv.acronym above.
 //		general_attr_list.add(
@@ -434,9 +434,9 @@ public class MdHelper {
 	
 	public static AttrDef refreshOptions(AttrDef attrDef) {
 		String attrUri = attrDef.getUri();
-		if ( attrUri.equals(mainClassAttrDef.getUri()) ) {
-			MdUtil.readResourceTypes(mainClassAttrDef);
-			return mainClassAttrDef;
+		if ( attrUri.equals(resourceTypeAttrDef.getUri()) ) {
+			MdUtil.readResourceTypes(resourceTypeAttrDef);
+			return resourceTypeAttrDef;
 		}
 		else if ( attrUri.equals(authorityAttrDef.getUri()) ) {
 			MdUtil.readAuthorities(authorityAttrDef);

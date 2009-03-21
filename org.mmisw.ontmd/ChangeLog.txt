@@ -3,6 +3,26 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-03-21
+	Issue 99: "Normalize theme/topic/class throughout interface"
+	Renamings before actual change to the function of the code:
+	- "shortName" is actually "resourceType: The current "shortName"-based names in the
+	  code actually refer to the "resourceType" concept. (But note that OmvMmi.shortNameUri
+	  refers to the URI of the resource type (captured in Omv.acronym).)
+	- "mainClass" also refers to "resourceType"
+	So the renamings were applied in these places:
+		  	BaseInfo: shortNameUri -> resourceTypeUri
+		  	MetadataGroupPanel: shortName* -> resourceType*
+		  	MdHelper: mainClassAttrDef -> resourceTypeAttrDef 
+		  	OntMdServiceImpl: shortName -> resourceType
+		  	Voc2RdfBaseInfo: mainClass -> resourceTypeAttrDef
+		  	
+	- Next:
+	  - OntMd's review operation uses shortName to do some checks; this refers to the actual shortName 
+	  concept BUT it's using the value of Omv.acronym (ie., resourceType); so, continue with adding
+	  the field for short name..
+	
+	
 2009-03-20
 	- some documentation updates.
 	- More code clean-up: deprecating Voc2RdfService* types; the voc2rdf operations are now

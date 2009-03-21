@@ -11,20 +11,20 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class Voc2RdfBaseInfo implements IsSerializable {
 	
-	private AttrDef mainClass;
+	private AttrDef resourceTypeAttrDef;
 	
 	
 	public Voc2RdfBaseInfo() {
 	}
 
 
-	public void setMainClassAttrDef(AttrDef mainClass) {
-		this.mainClass = mainClass;
+	public void setResourceTypeAttrDef(AttrDef resourceTypeAttrDef) {
+		this.resourceTypeAttrDef = resourceTypeAttrDef;
 	}
 
 
-	public AttrDef getMainClassAttrDef() {
-		return mainClass;
+	public AttrDef getResourceTypeAttrDef() {
+		return resourceTypeAttrDef;
 	}
 	
 	

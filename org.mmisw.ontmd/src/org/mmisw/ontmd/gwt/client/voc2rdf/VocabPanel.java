@@ -99,10 +99,10 @@ public class VocabPanel extends VerticalPanel {
 			}
 		});
 
-		AttrDef mainClassAttrDef = Voc2Rdf.baseInfo.getMainClassAttrDef();
+		AttrDef resourceTypeAttrDef = Voc2Rdf.baseInfo.getResourceTypeAttrDef();
 		
 		// TODO: need to handle dynamic refresh of options? (Main.refreshOptions)
-		final List<Option> options = mainClassAttrDef.getOptions();
+		final List<Option> options = resourceTypeAttrDef.getOptions();
 
 		primaryClass_lb.addItem("-- Select --");
 		for ( Option option : options ) {

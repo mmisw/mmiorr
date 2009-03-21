@@ -155,7 +155,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		log.info("preparing base info ...");
 		baseInfo = new BaseInfo();
 		
-		baseInfo.setShortNameUri(Omv.acronym.getURI());
+		baseInfo.setResourceTypeUri(Omv.acronym.getURI());
 		
 		MdHelper.prepareGroups(includeVersion);
 		AttrGroup[] attrGroups = MdHelper.getAttrGroups();
@@ -557,6 +557,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		
 		final String orgAbbreviation = newValues.get(OmvMmi.origMaintainerCode.getURI());
 		final String shortName = newValues.get(Omv.acronym.getURI());
+		// TODO: shortName taken NOT from acronym but from a new field explicitly for the shortName piece
 
 		if ( orgAbbreviation == null ) {
 			log.info("missing origMaintainerCode");

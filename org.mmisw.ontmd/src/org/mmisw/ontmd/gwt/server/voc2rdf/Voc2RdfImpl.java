@@ -53,7 +53,7 @@ public class Voc2RdfImpl  {
 	private void prepareBaseInfo() {
 		log.info("preparing base info ...");
 		baseInfo = new Voc2RdfBaseInfo();
-		baseInfo.setMainClassAttrDef(MdHelper.getMainClassAttrDef());
+		baseInfo.setResourceTypeAttrDef(MdHelper.getResourceTypeAttrDef());
 		log.info("preparing base info ... Done.");
 	}
 	

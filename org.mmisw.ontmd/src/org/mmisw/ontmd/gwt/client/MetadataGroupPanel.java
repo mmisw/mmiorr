@@ -78,10 +78,10 @@ public class MetadataGroupPanel extends VerticalPanel {
 	
 	
 	// special case
-	private AttrDef shortNameAttrDef;
-	private FieldWithChoose shortNameFieldWithChoose;
-	private CheckBox shortNameIsMap;
-	private TextBoxBase shortNameRelatedField;
+	private AttrDef resourceTypeAttrDef;
+	private FieldWithChoose resourceTypeFieldWithChoose;
+	private CheckBox resourceTypeIsMap;
+	private TextBoxBase resourceTypeRelatedField;
 
 
 	
@@ -145,9 +145,9 @@ public class MetadataGroupPanel extends VerticalPanel {
 			if ( editing &&  // not listBoxes if we are just viewing 
 					options.size() > 0 ) {
 				
-				if ( Main.baseInfo.getShortNameUri().equals(attr.getUri()) ) {
-					// the special case for the "short name"
-					widget = createShortNameWidget(attr, editing,
+				if ( Main.baseInfo.getResourceTypeUri().equals(attr.getUri()) ) {
+					// the special case for the "resourceType"
+					widget = createResourceTypeWidget(attr, editing,
 						new ChangeListener () {
 							public void onChange(Widget sender) {
 									formChanged();
@@ -173,7 +173,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 				widget = tb;
 			}
 			
-			if ( shortNameAttrDef == attr ) {
+			if ( resourceTypeAttrDef == attr ) {
 				// we handle this as a special case.
 			}
 			else {
@@ -203,8 +203,8 @@ public class MetadataGroupPanel extends VerticalPanel {
 	
 	// NOTE: this has a special handling in the GUI
 	// (not very elegant but ...)
-	private Widget createShortNameWidget(AttrDef attr, boolean editing, ChangeListener cl) {
-		shortNameAttrDef = attr;
+	private Widget createResourceTypeWidget(AttrDef attr, boolean editing, ChangeListener cl) {
+		resourceTypeAttrDef = attr;
 
 		Widget widget;
 		
@@ -222,49 +222,45 @@ public class MetadataGroupPanel extends VerticalPanel {
 		assert relatedAttrs != null && relatedAttrs.size() > 0 ; 
 		
 		
-		shortNameFieldWithChoose = new FieldWithChoose(attr, cl) {
+		resourceTypeFieldWithChoose = new FieldWithChoose(attr, cl) {
 			protected void optionSelected(Option option) {
-				shortNameRelatedField.setText(option.getUri());
+				resourceTypeRelatedField.setText(option.getUri());
 			}
 		};
 		
-		shortNameIsMap = new CheckBox("Check here if this is a mapping ontology");
+		resourceTypeIsMap = new CheckBox("Check here if this is a mapping ontology");
 
-		shortNameFieldWithChoose.textBox.addKeyboardListener(new KeyboardListenerAdapter() {
+		resourceTypeFieldWithChoose.textBox.addKeyboardListener(new KeyboardListenerAdapter() {
 			  public void onKeyUp(Widget sender, char keyCode, int modifiers) {
-				  String value = shortNameFieldWithChoose.textBox.getText().toLowerCase();
+				  String value = resourceTypeFieldWithChoose.textBox.getText().toLowerCase();
 				  boolean isMap = value.matches(".*_[mM][aA][pP]($|_.*)");
-				  shortNameIsMap.setChecked(isMap);
+				  resourceTypeIsMap.setChecked(isMap);
 			  }
 		});
-		vp.add(shortNameFieldWithChoose);
+		vp.add(resourceTypeFieldWithChoose);
 
 		HorizontalPanel hp = new HorizontalPanel();
 		vp.add(hp);
 
 		hp.setSpacing(4);
-		shortNameIsMap.addClickListener(new ClickListener() {
+		resourceTypeIsMap.addClickListener(new ClickListener() {
 			public void onClick(Widget sender) {
-				boolean checked = shortNameIsMap.isChecked();
-				String value = shortNameFieldWithChoose.textBox.getText().toLowerCase();
+				boolean checked = resourceTypeIsMap.isChecked();
+				String value = resourceTypeFieldWithChoose.textBox.getText().toLowerCase();
 				boolean isMap = value.matches(".*_[mM][aA][pP]($|_.*)");
-				if ( shortNameIsMap.isChecked() && ! isMap ) {
-					shortNameFieldWithChoose.setValue(value.replaceAll("_+$", "")+ "_map");
+				if ( resourceTypeIsMap.isChecked() && ! isMap ) {
+					resourceTypeFieldWithChoose.setValue(value.replaceAll("_+$", "")+ "_map");
 				}
 				else if ( !checked && isMap ) {
 					value = value.replaceAll("_+[mM][aA][pP]_+", "_");
 					value = value.replaceAll("_+[mM][aA][pP]$", "");
-					shortNameFieldWithChoose.setValue(value);
+					resourceTypeFieldWithChoose.setValue(value);
 				}
 			}
 			
 		});
 		
-//		hp.add(new Label("ID:"));
-//		shortNameId = new TextBox();
-//		hp.add(shortNameId);
-		
-		hp.add(shortNameIsMap);
+		hp.add(resourceTypeIsMap);
 		
 		
 		//////////////////////////////////////////////////////////////
@@ -274,12 +270,12 @@ public class MetadataGroupPanel extends VerticalPanel {
 		FlexTable panel = new FlexTable();
 		int row = 0;
 		int nl = attr2.getNumberOfLines();
-		shortNameRelatedField = createTextBoxBase(nl, "400", cl);
+		resourceTypeRelatedField = createTextBoxBase(nl, "400", cl);
 		String tooltip = "<b>" +label+ "</b>:<br/>" + 
 							attr2.getTooltip() +
 							"<br/><br/><div align=\"right\">(" +attr2.getUri()+ ")</div>";
 		panel.setWidget(row, 0, new TLabel(label, editing && attr2.isRequired(), tooltip ));
-		panel.setWidget(row, 1, shortNameRelatedField);
+		panel.setWidget(row, 1, resourceTypeRelatedField);
 		panel.getFlexCellFormatter().setWidth(row, 0, "250");
 		panel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
@@ -515,22 +511,22 @@ public class MetadataGroupPanel extends VerticalPanel {
 	String putValues(Map<String, String> values) {
 		
 		// special case:
-		if ( shortNameAttrDef != null ) {
-			String value = shortNameFieldWithChoose.textBox.getText().trim();
+		if ( resourceTypeAttrDef != null ) {
+			String value = resourceTypeFieldWithChoose.textBox.getText().trim();
 			if ( value.length() == 0 ) {
 				String error = "Please provide a value for the field with label: " +
-							shortNameAttrDef.getLabel();
+							resourceTypeAttrDef.getLabel();
 				return error;
 			}
 			
 			if ( values != null ) {
 				// do actual assignment
-				String uri = shortNameAttrDef.getUri();
+				String uri = resourceTypeAttrDef.getUri();
 				values.put(uri, value);
 				Main.log("assigned: " +uri+ " = " +value);
 				
-				String relatedUri = shortNameAttrDef.getRelatedAttrs().get(0).getUri();
-				String relatedValue = shortNameRelatedField.getText();
+				String relatedUri = resourceTypeAttrDef.getRelatedAttrs().get(0).getUri();
+				String relatedValue = resourceTypeRelatedField.getText();
 				values.put(relatedUri, relatedValue);
 				Main.log("assigned: " +uri+ " = " +value);
 			}
@@ -591,10 +587,10 @@ public class MetadataGroupPanel extends VerticalPanel {
 		exampleButton.setEnabled(enabled);
 		resetButton.setEnabled(enabled);
 		
-		if ( shortNameAttrDef != null ) {
-			shortNameFieldWithChoose.enable(enabled);
-			shortNameIsMap.setEnabled(enabled);
-			shortNameRelatedField.setEnabled(enabled);
+		if ( resourceTypeAttrDef != null ) {
+			resourceTypeFieldWithChoose.enable(enabled);
+			resourceTypeIsMap.setEnabled(enabled);
+			resourceTypeRelatedField.setEnabled(enabled);
 		}
 	}
 
@@ -617,10 +613,10 @@ public class MetadataGroupPanel extends VerticalPanel {
 			}
 		}
 		
-		if ( shortNameAttrDef != null ) {
-			shortNameFieldWithChoose.setValue(value);
-			shortNameIsMap.setChecked(false);
-			shortNameRelatedField.setText(value);
+		if ( resourceTypeAttrDef != null ) {
+			resourceTypeFieldWithChoose.setValue(value);
+			resourceTypeIsMap.setChecked(false);
+			resourceTypeRelatedField.setText(value);
 		}
 		
 	}
@@ -650,14 +646,14 @@ public class MetadataGroupPanel extends VerticalPanel {
 			}
 		}
 		
-		if ( shortNameAttrDef != null ) {
-			String example = shortNameAttrDef.getExample();
+		if ( resourceTypeAttrDef != null ) {
+			String example = resourceTypeAttrDef.getExample();
 			if ( example == null ) {
 				example = "";
 			}
-			shortNameFieldWithChoose.setValue(example);
-			shortNameIsMap.setChecked(example.endsWith("_map"));
-			shortNameRelatedField.setText(shortNameAttrDef.getRelatedAttrs().get(0).getExample());
+			resourceTypeFieldWithChoose.setValue(example);
+			resourceTypeIsMap.setChecked(example.endsWith("_map"));
+			resourceTypeRelatedField.setText(resourceTypeAttrDef.getRelatedAttrs().get(0).getExample());
 		}
 
 	}
@@ -681,7 +677,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 			Main.log("resetToOriginalOrNewValues: uri: " +uri+ " = " +value);
 
 			// Special case: Omv.acronym/OmvMmi.shortNameUri
-			if ( Main.baseInfo.getShortNameUri().equals(uri) ) {
+			if ( Main.baseInfo.getResourceTypeUri().equals(uri) ) {
 				List<AttrDef> relatedAttrs = elem.attr.getRelatedAttrs();
 				assert relatedAttrs != null && relatedAttrs.size() > 0 ;
 				String relatedUri = relatedAttrs.get(0).getUri();
@@ -710,21 +706,21 @@ public class MetadataGroupPanel extends VerticalPanel {
 			}
 		}
 		
-		if ( shortNameAttrDef != null ) {
-			String value = originalValues.get(shortNameAttrDef.getUri());
+		if ( resourceTypeAttrDef != null ) {
+			String value = originalValues.get(resourceTypeAttrDef.getUri());
 			if ( value == null ) {
 				value = "";
 			}
-			shortNameFieldWithChoose.setValue(value);
-			shortNameIsMap.setChecked(value.endsWith("_map"));
+			resourceTypeFieldWithChoose.setValue(value);
+			resourceTypeIsMap.setChecked(value.endsWith("_map"));
 			
 			// special case: ///////////////////////////////////////////
-			String relatedUri = shortNameAttrDef.getRelatedAttrs().get(0).getUri();
+			String relatedUri = resourceTypeAttrDef.getRelatedAttrs().get(0).getUri();
 			String relatedValue = originalValues.get(relatedUri);
 			if ( relatedValue == null ) {
 				relatedValue = "";
 			}
-			shortNameRelatedField.setText(relatedValue);
+			resourceTypeRelatedField.setText(relatedValue);
 			//////////////////////////////////////////////////////////////
 			
 		}

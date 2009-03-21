@@ -54,11 +54,11 @@ class MdUtil {
 	 * Populates the AttrDef with the list of individuals from {@link Config.Prop#RESOURCE_TYPE_CLASS}.
 	 * The options are sorted by getName() (ignoring case).
 	 */
-	static void readResourceTypes(AttrDef mainClassAttrDef) {
+	static void readResourceTypes(AttrDef resourceTypeAttrDef) {
 		String classUri = Config.Prop.RESOURCE_TYPE_CLASS.getValue();
 		try {
-			populateList(mainClassAttrDef, classUri);
-			Collections.sort(mainClassAttrDef.getOptions(), new Comparator<Option>() {
+			populateList(resourceTypeAttrDef, classUri);
+			Collections.sort(resourceTypeAttrDef.getOptions(), new Comparator<Option>() {
 				public int compare(Option o1, Option o2) {
 					return o1.getName().compareToIgnoreCase(o2.getName());
 				}
@@ -66,7 +66,7 @@ class MdUtil {
 		}
 		catch (Exception e) {
 			log.debug("Error trying to read: " +classUri+ ": " +e.getMessage(), e);
-			mainClassAttrDef.addOption(
+			resourceTypeAttrDef.addOption(
 					new Option("dummy", "dummy: (" +e.getMessage()+ ")")
 			);
 		}
