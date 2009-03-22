@@ -434,11 +434,11 @@ public class MdHelper {
 	
 	public static AttrDef refreshOptions(AttrDef attrDef) {
 		String attrUri = attrDef.getUri();
-		if ( attrUri.equals(resourceTypeAttrDef.getUri()) ) {
+		if ( attrUri.equals(createResourceTypeAttrDef().getUri()) ) {
 			MdUtil.readResourceTypes(resourceTypeAttrDef);
 			return resourceTypeAttrDef;
 		}
-		else if ( attrUri.equals(authorityAttrDef.getUri()) ) {
+		else if ( attrUri.equals(createAuthorityAttrDef().getUri()) ) {
 			MdUtil.readAuthorities(authorityAttrDef);
 			return authorityAttrDef;
 		}

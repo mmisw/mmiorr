@@ -5,6 +5,8 @@ ChangeLog
 
 2009-03-21
 	Issue 99: "Normalize theme/topic/class throughout interface"
+	http://code.google.com/p/mmisw/issues/detail?id=99
+	
 	Renamings before actual change to the function of the code:
 	- "shortName" is actually "resourceType: The current "shortName"-based names in the
 	  code actually refer to the "resourceType" concept. (But note that OmvMmi.shortNameUri
@@ -15,6 +17,20 @@ ChangeLog
 		  	MetadataGroupPanel: shortName* -> resourceType*
 		  	MdHelper: mainClassAttrDef -> resourceTypeAttrDef 
 		  	Voc2RdfBaseInfo: mainClass -> resourceTypeAttrDef
+		  	
+	Some refactoring and some minor adjustments:
+	- new ResourceTypeWidget to handle the resource type set of fields
+	- FieldWithChoose as a class in a separate file
+	- TLabel: now, internal click does NOT close the tooltip dialog
+
+	NOTE: Implemented my 3/21/09 proposal in issue #99: basically that the resourceType elements
+	are used to provide for the "Class" related fields. I assign the labels and 
+	tooltips accordingly. Also, there is a single field for the ontologyUri.
+	This class related info is captured in the ontology metadata with thre Omv.acronym and
+	OmvMmi.shortNameUri, as it is currently done in OntMd, so OntMd will detect those in the
+	subsequent submission.
+	
+
 		  	
 	- Next:
 	  - OntMd's review operation uses shortName to do some checks; this refers to the actual shortName 

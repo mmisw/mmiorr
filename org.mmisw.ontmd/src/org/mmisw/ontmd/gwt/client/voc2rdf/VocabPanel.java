@@ -2,14 +2,17 @@ package org.mmisw.ontmd.gwt.client.voc2rdf;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.ResourceTypeWidget;
 import org.mmisw.ontmd.gwt.client.TLabel;
+import org.mmisw.ontmd.gwt.client.Util;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
-import org.mmisw.ontmd.gwt.client.vocabulary.Option;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -28,6 +31,7 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -47,6 +51,12 @@ public class VocabPanel extends VerticalPanel {
 		"possible sources of the 'Class' for the ontology; if you want to select another term not in one " +
 		"of these vocabularies, talk to MMI folks about how to make this change. " +
 		"(It involves editing the resulting ontology.)";
+	
+	private static final String CLASS_URI_TOOTIP =
+		"Ideally the class is selected from, and described in, a controlled vocabulary with URIs " +
+		"defined. If so, enter the URI naming the term in this field. " +
+		"If the term is in a controlled vocabulary but does not have its own URI, enter the " +
+		"controlled vocabulary URI. Otherwise, leave this field blank.";
 		
 	private static final String CONTENTS_TOOTIP =
 		"The 'words' (concepts, labels, unique IDs or code, or similar unique tags) of your vocabulary. " +
@@ -60,9 +70,30 @@ public class VocabPanel extends VerticalPanel {
 		"represented by two commas or tabs in a row. Each record (row) should be separated by a " +
 		"return or end of line character. All term labels must be unique.";
 
+	private static final String ONTOLOGY_URI_TOOTIP = 
+		"The URI for the ontology to be generated. " +
+		"This URI will be used by other ontologies that wish to import this ontology. " +
+		"Typically, this URI will resemble an HTTP URL, for example, " +
+		"http://mydomain.com/myontology (without necessarily having that address to be resolvable)." +
+		"<br/>" +
+		"<br/>" +
+		"Note: If you submit the ontology to the MMI Registry and Repository, this URI will be adjusted " +
+		"according to a particular recommended structure, with the additional benefit that the assigned " +
+		"URI will be resolvable so typical browsers, semantic web applications, and other HTTP clients " +
+		"can readily access your ontology.";
+	
+
 	private CellPanel contentsContainer = new VerticalPanel();
 	
-	private ListBox primaryClass_lb;
+	// User-specified URI for the ontology
+	private TextBoxBase ontologyUriTb;
+	
+	// resourceType
+	private ResourceTypeWidget resourceTypeWidget;
+	
+	
+//	private ListBox primaryClass_lb;
+//	private TextBoxBase classNameTb;
 	
 	private TextArea ascii_ta = new TextArea();
 	private ListBox fieldSeparator_lb;
@@ -92,24 +123,36 @@ public class VocabPanel extends VerticalPanel {
 		contentsContainer.setBorderWidth(1);
 		
 		
-		primaryClass_lb = new ListBox();
-		primaryClass_lb.addChangeListener(new ChangeListener() {
-			public void onChange(Widget sender) {
-				  statusLabel.setText("");
-			}
-		});
+		ontologyUriTb = Util.createTextBoxBase(1, "500", 
+				new ChangeListener() {
+					public void onChange(Widget sender) {
+						  statusLabel.setText("");
+					}
+				}
+		);
 
-		AttrDef resourceTypeAttrDef = Voc2Rdf.baseInfo.getResourceTypeAttrDef();
-		
-		// TODO: need to handle dynamic refresh of options? (Main.refreshOptions)
-		final List<Option> options = resourceTypeAttrDef.getOptions();
 
-		primaryClass_lb.addItem("-- Select --");
-		for ( Option option : options ) {
-			String name = option.getName();
-			String label = option.getLabel();
-			primaryClass_lb.addItem(label, name);
-		}
+//		primaryClass_lb = new ListBox();
+//		primaryClass_lb.addChangeListener(
+//		classNameTb = Util.createTextBoxBase(1, "500", 
+//				new ChangeListener() {
+//					public void onChange(Widget sender) {
+//						  statusLabel.setText("");
+//					}
+//				}
+//		);
+
+//		AttrDef resourceTypeAttrDef = Voc2Rdf.baseInfo.getResourceTypeAttrDef();
+//		
+//		// TODO: need to handle dynamic refresh of options? (Main.refreshOptions)
+//		final List<Option> options = resourceTypeAttrDef.getOptions();
+//
+//		primaryClass_lb.addItem("-- Select --");
+//		for ( Option option : options ) {
+//			String name = option.getName();
+//			String label = option.getLabel();
+//			primaryClass_lb.addItem(label, name);
+//		}
 
 		ascii_ta.setSize("800", "300");
 		table.setSize("800", "300");
@@ -152,13 +195,16 @@ public class VocabPanel extends VerticalPanel {
 		row++;
 		
 		
-		flexPanel.setWidget(row, 0, new TLabel("Class:", "<b>Class</b>:<br/>" +CLASS_TOOTIP));
+		/////////////////////
+		// ontologUri
+		
+		flexPanel.setWidget(row, 0, new TLabel("Ontology URI:", true, "<b>Ontology URI</b>:<br/>" +ONTOLOGY_URI_TOOTIP));
 		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 
 		flexPanel.getFlexCellFormatter().setColSpan(row, 1, 2);
-		flexPanel.setWidget(row, 1, primaryClass_lb);
+		flexPanel.setWidget(row, 1, ontologyUriTb);
 		flexPanel.getFlexCellFormatter().setAlignment(row, 1, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
@@ -166,9 +212,74 @@ public class VocabPanel extends VerticalPanel {
 
 
 		
+
 		
 		
-		flexPanel.setWidget(row, 0, new TLabel("Terms:", "<b>Terms</b>:<br/>" +CONTENTS_TOOTIP));
+		///////////////////////
+		// resource type
+		
+		// NOTE 3/21/09:
+		// USING THIS AS THE *CLASS*  See my 3/21/09 proposal in 
+		// issue #99 http://code.google.com/p/mmisw/issues/detail?id=99
+		
+		
+		AttrDef attr = Voc2Rdf.baseInfo.getResourceTypeAttrDef();
+		
+		// NOTE 3/21/09: use my CLASS_TOOLTIP instead of the original "resourceType" one
+		attr.setTooltip(CLASS_TOOTIP);
+		attr.setLabel("Class");
+		
+		attr.getRelatedAttrs().get(0).setTooltip(CLASS_URI_TOOTIP);
+		attr.getRelatedAttrs().get(0).setLabel("URI of class");
+		
+		
+		boolean editing = true;
+		resourceTypeWidget = new ResourceTypeWidget(attr, editing, false, 
+				new ChangeListener () {
+					public void onChange(Widget sender) {
+						statusLabel.setText("");
+					}
+				}
+		);
+		
+		String label = attr.getLabel();
+		String tooltip = "<b>" +label+ "</b>:<br/>" + 
+		                  attr.getTooltip() +
+		                  "<br/><br/><div align=\"right\">(" +attr.getUri()+ ")</div>";
+		flexPanel.setWidget(row, 0, new TLabel(label, true, tooltip));
+		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
+				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+
+		flexPanel.getFlexCellFormatter().setColSpan(row, 1, 2);
+		flexPanel.setWidget(row, 1, resourceTypeWidget);
+		flexPanel.getFlexCellFormatter().setAlignment(row, 1, 
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		row++;
+
+		
+//		/////////////////////
+//		// class
+//		
+//		flexPanel.setWidget(row, 0, new TLabel("Class name:", true, "<b>Class name</b>:<br/>" +CLASS_TOOTIP));
+//		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
+//				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
+//		);
+//
+//		flexPanel.getFlexCellFormatter().setColSpan(row, 1, 2);
+////		flexPanel.setWidget(row, 1, primaryClass_lb);
+//		flexPanel.setWidget(row, 1, classNameTb);
+//		flexPanel.getFlexCellFormatter().setAlignment(row, 1, 
+//				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+//		);
+//		row++;
+
+
+		
+		
+		
+		flexPanel.setWidget(row, 0, new TLabel("Terms:", true, "<b>Terms</b>:<br/>" +CONTENTS_TOOTIP));
 		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
@@ -267,20 +378,48 @@ public class VocabPanel extends VerticalPanel {
 	
 
 	String putValues(Map<String, String> values) {
+
+		String ontologyUri = ontologyUriTb.getText().trim();
+		if ( ontologyUri.length() == 0 ) {
+			return "Please, select a URI for the ontology to be generated";
+		}
 		
-		String primaryClass = primaryClass_lb.getValue(primaryClass_lb.getSelectedIndex());
-		if ( primaryClass.startsWith("--") ) {
+		// NOTE 3/21/09: namespaceRoot will be ignored because ontologyUri takes precedence
+		// See Converter.
+		values.put("namespaceRoot", NAMESPACE_ROOT);
+		values.put("ontologyUri", ontologyUri);
+
+//		String primaryClass = primaryClass_lb.getValue(primaryClass_lb.getSelectedIndex());
+//		if ( primaryClass.startsWith("--") ) {
+//			return "Please, select a class for the terms in your vocabulary";
+//		}
+		
+
+		// NOTE 3/21/09: take class name from the resourcetype field
+//		String primaryClass = classNameTb.getText().trim();
+		String primaryClass = resourceTypeWidget.resourceTypeFieldWithChoose.getValue().trim();
+		if ( primaryClass.length() == 0 ) {
 			return "Please, select a class for the terms in your vocabulary";
 		}
 		
-		values.put("namespaceRoot", NAMESPACE_ROOT);
-
+		String classUri = resourceTypeWidget.getRelatedValue().trim();
+		if ( classUri.length() > 0 ) {
+			values.put("classUri", classUri);
+		}
+		
 		String ascii = ascii_ta.getText().trim();
 		if ( ascii.length() > 0 ) {
 			String[] lines = ascii.split("\n|\r\n|\r");
 			if ( lines.length  == 1 ) {
 				return "Only a header line is included";
 			}
+			
+			StringBuffer errorMsg = new StringBuffer();
+			updateTabularView(errorMsg);
+			if ( errorMsg.length() > 0 ) {
+				return errorMsg.toString();
+			}
+			
 			values.put("ascii", ascii_ta.getText());
 		}
 		else {
@@ -302,7 +441,7 @@ public class VocabPanel extends VerticalPanel {
 
 		contentsContainer.clear();
 		if ( tabular ) {
-			String html = updateTabularView();
+			String html = updateTabularView(new StringBuffer());
 			table.setWidget(new HTML(html));
 			contentsContainer.add(table);
 		}
@@ -312,8 +451,13 @@ public class VocabPanel extends VerticalPanel {
 		
 	}
 
-	
-	private String updateTabularView() {
+	/**
+	 * Returns the HTML for the tabular view.
+	 * 
+	 * @param errorMsg Any error is reported here.
+	 * @return
+	 */
+	private String updateTabularView(StringBuffer errorMsg) {
 		String ascii = ascii_ta.getText().trim();
 		assert ascii.length() > 0;
 
@@ -321,6 +465,8 @@ public class VocabPanel extends VerticalPanel {
 		if ( lines.length == 0 || lines[0].trim().length() == 0 ) {
 			return "";
 		}
+		
+		boolean error = false;
 		
 		String separatorName = fieldSeparator_lb.getValue(fieldSeparator_lb.getSelectedIndex());
 		char separator = "csv".equalsIgnoreCase(separatorName) ? ',' : '\t';
@@ -333,38 +479,45 @@ public class VocabPanel extends VerticalPanel {
 		
 		sb.append("<td align=\"right\"> <font color=\"gray\">" +0+ "</font> </td>");
 		
-//		if ( lines[0].indexOf('\"') >= 0 || lines[0].indexOf('\'') >= 0  ) {
-//			sb.append("<td> <font color=\"red\">" +"Sorry, quotes not handled yet for the tabular view"+ "</font></td>");
-//			sb.append("</tr></table>\n");
-//			return sb.toString();
-//		}
-//
-//		String[] headerCols = lines[0].split(separator);
-
+		// to check not repeated column headers
+		Set<String> usedColHeader = new HashSet<String>();
+		
 		List<String> headerCols = parseLine(lines[0], separator);
 		final int numHeaderCols = headerCols.size();
 		for ( int c = 0; c < numHeaderCols; c++ ) {
-			String str = headerCols.get(c);
-			if ( str.trim().length() == 0 ) {
+			String str = headerCols.get(c).trim();
+			if ( str.length() == 0 ) {
+				if ( !error ) {
+					error = true;
+					errorMsg.append("empty column header: " +(c+1));
+				}
 				str = "<font color=\"red\">" +"empty column header"+ "</font>";
+			}
+			else if ( usedColHeader.contains(str) ) {
+				if ( !error ) {
+					error = true;
+					errorMsg.append("repeated column header: " +str);
+				}
+				str = str+ "<font color=\"red\">" +"(repeated)"+ "</font>";
+			}
+			else {
+				usedColHeader.add(str);
 			}
 			sb.append("<th>" +str+ "</th>");	
 		}		
 		
 		sb.append("</tr>\n");
 		
+		
+		// to check not repeated values for first column:
+		Set<String> usedFirstColValue = new HashSet<String>();
+		
+
 		// remaining rows:
 		for ( int r = 1; r < lines.length; r++ ) {
 			sb.append("<tr>\n");
 			sb.append("<td align=\"right\"> <font color=\"gray\">" +r+ "</font> </td>");
 			
-//			if ( lines[r].indexOf('\"') >= 0 || lines[r].indexOf('\'') >= 0  ) {
-//				sb.append("<td colspan=\"" +headerCols.length+ "\"> " +
-//						"<font color=\"red\">" +"Sorry, quotes not handled yet for the tabular view"+ "</font></td>");
-//				continue;
-//			}
-//			String[] cols = lines[r].split(separator);
-
 			List<String> cols = parseLine(lines[r], separator);
 			final int numCols = cols.size();
 			for ( int c = 0; c < numCols; c++ ) {
@@ -374,19 +527,43 @@ public class VocabPanel extends VerticalPanel {
 //					str = "<font color=\"red\">" +"?"+ "</font>";
 //				}
 				
+				if ( c == 0 ) {
+					if ( usedFirstColValue.contains(str) ) {
+						if ( !error ) {
+							error = true;
+							errorMsg.append("repeated key in first column: " +str+ ", line " +r);
+						}
+						str = str+ "<font color=\"red\">" +"(repeated)"+ "</font>";
+					}
+					else {
+						usedFirstColValue.add(str);
+					}
+				}
+				
 				if ( c < numHeaderCols ) {
 					sb.append("<td>" +str+ "</td>");
 				}
 				else {
 					// more columns than expected
+					if ( !error ) {
+						error = true;
+						errorMsg.append("more columns than expected, line " +r);
+					}
 					sb.append("<td> <font color=\"red\">" +str+ "</font></td>");
 				}
 			}
 			
 			// any missing columns? 
-			for ( int c = numCols; c < numHeaderCols; c++ ) {
-//				sb.append("<td> <font color=\"red\">" +"?"+ "</font></td>");
-				sb.append("<td></td>");
+			if ( numCols < numHeaderCols ) {
+				if ( !error ) {
+					error = true;
+					errorMsg.append("missing columns according to header, line " +r);
+				}
+				
+				for ( int c = numCols; c < numHeaderCols; c++ ) {
+//					sb.append("<td> <font color=\"red\">" +"?"+ "</font></td>");
+					sb.append("<td></td>");
+				}
 			}
 			
 			sb.append("</tr>\n");
@@ -549,7 +726,8 @@ public class VocabPanel extends VerticalPanel {
 				String error = conversionResult.getError();
 				if ( error != null ) {
 					Main.log("convertTest: error: " +error);
-					statusLabel.setHTML("<font color=\"red\">" +"Error"+ "</font>");
+//					statusLabel.setHTML("<font color=\"red\">" +"Error"+ "</font>");
+					statusLabel.setHTML("<font color=\"red\">" +error+ "</font>");
 					mainPanel.conversionError(error);
 				}
 				else {

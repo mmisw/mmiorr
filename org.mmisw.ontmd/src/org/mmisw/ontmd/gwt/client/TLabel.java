@@ -18,7 +18,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class TLabel extends HorizontalPanel {
 	
-	/** HTML snipped for the required indicator */
+	/** HTML snippet for the required indicator */
 	public static final String requiredHtml = "<font color=\"red\">*</font>";
 	
 	private HTML label = new HTML();
@@ -99,15 +99,17 @@ public class TLabel extends HorizontalPanel {
 		HTML widget = new HTML(tooltip);
 		Grid grid = new Grid(1,1);
 		grid.setWidget(0, 0, widget);
-		grid.setBorderWidth(1);  // just to improve appearance in firefox
-		grid.setCellPadding(10);
+//		grid.setBorderWidth(1);  // just to improve appearance in firefox
+//		grid.setCellPadding(10);
 		grid.setWidth("100%");
 		popup.setWidget(grid);
-		widget.addClickListener(new ClickListener() {
-			public void onClick(Widget sender) {
-				popup.hide();
-			}
-		});
+		
+		// NO: let the use click inside the popup to faciliate navigation through the text
+//		widget.addClickListener(new ClickListener() {
+//			public void onClick(Widget sender) {
+//				popup.hide();
+//			}
+//		});
 		
 
 		if ( clickListener == null ) {

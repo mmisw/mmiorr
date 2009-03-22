@@ -9,27 +9,17 @@ import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.ontmd.gwt.client.vocabulary.Option;
 
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.PushButton;
-import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.user.client.ui.SuggestionEvent;
-import com.google.gwt.user.client.ui.SuggestionHandler;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -78,10 +68,11 @@ public class MetadataGroupPanel extends VerticalPanel {
 	
 	
 	// special case
-	private AttrDef resourceTypeAttrDef;
-	private FieldWithChoose resourceTypeFieldWithChoose;
-	private CheckBox resourceTypeIsMap;
-	private TextBoxBase resourceTypeRelatedField;
+	private ResourceTypeWidget resourceTypeWidget;
+//	private AttrDef resourceTypeAttrDef;
+//	private FieldWithChoose resourceTypeFieldWithChoose;
+//	private CheckBox resourceTypeIsMap;
+//	private TextBoxBase resourceTypeRelatedField;
 
 
 	
@@ -147,7 +138,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 				
 				if ( Main.baseInfo.getResourceTypeUri().equals(attr.getUri()) ) {
 					// the special case for the "resourceType"
-					widget = createResourceTypeWidget(attr, editing,
+					widget = resourceTypeWidget = new ResourceTypeWidget(attr, editing, true,
 						new ChangeListener () {
 							public void onChange(Widget sender) {
 									formChanged();
@@ -161,7 +152,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 						widget = new FieldWithChoose(attr, cl);
 					}
 					else {
-						ListBox listBox = createListBox(options, cl);
+						ListBox listBox = Util.createListBox(options, cl);
 						widget = listBox;
 					}
 				}
@@ -169,11 +160,11 @@ public class MetadataGroupPanel extends VerticalPanel {
 			
 			else {
 				int nl = attr.getNumberOfLines();
-				TextBoxBase tb = createTextBoxBase(nl, "500", cl);
+				TextBoxBase tb = Util.createTextBoxBase(nl, "500", cl);
 				widget = tb;
 			}
 			
-			if ( resourceTypeAttrDef == attr ) {
+			if ( resourceTypeWidget != null && resourceTypeWidget.resourceTypeAttrDef == attr ) {
 				// we handle this as a special case.
 			}
 			else {
@@ -201,275 +192,6 @@ public class MetadataGroupPanel extends VerticalPanel {
 		return panel;
 	}
 	
-	// NOTE: this has a special handling in the GUI
-	// (not very elegant but ...)
-	private Widget createResourceTypeWidget(AttrDef attr, boolean editing, ChangeListener cl) {
-		resourceTypeAttrDef = attr;
-
-		Widget widget;
-		
-		VerticalPanel vp0 = new VerticalPanel();
-		vp0.setBorderWidth(1);
-		VerticalPanel vp = new VerticalPanel();
-		vp0.add(vp);
-		vp.setSpacing(5);
-		widget = vp0;
-		
-		// see MdHelper:
-		assert attr.isAllowUserDefinedOption() ;
-		assert attr.isRequired() ;
-		List<AttrDef> relatedAttrs = attr.getRelatedAttrs();
-		assert relatedAttrs != null && relatedAttrs.size() > 0 ; 
-		
-		
-		resourceTypeFieldWithChoose = new FieldWithChoose(attr, cl) {
-			protected void optionSelected(Option option) {
-				resourceTypeRelatedField.setText(option.getUri());
-			}
-		};
-		
-		resourceTypeIsMap = new CheckBox("Check here if this is a mapping ontology");
-
-		resourceTypeFieldWithChoose.textBox.addKeyboardListener(new KeyboardListenerAdapter() {
-			  public void onKeyUp(Widget sender, char keyCode, int modifiers) {
-				  String value = resourceTypeFieldWithChoose.textBox.getText().toLowerCase();
-				  boolean isMap = value.matches(".*_[mM][aA][pP]($|_.*)");
-				  resourceTypeIsMap.setChecked(isMap);
-			  }
-		});
-		vp.add(resourceTypeFieldWithChoose);
-
-		HorizontalPanel hp = new HorizontalPanel();
-		vp.add(hp);
-
-		hp.setSpacing(4);
-		resourceTypeIsMap.addClickListener(new ClickListener() {
-			public void onClick(Widget sender) {
-				boolean checked = resourceTypeIsMap.isChecked();
-				String value = resourceTypeFieldWithChoose.textBox.getText().toLowerCase();
-				boolean isMap = value.matches(".*_[mM][aA][pP]($|_.*)");
-				if ( resourceTypeIsMap.isChecked() && ! isMap ) {
-					resourceTypeFieldWithChoose.setValue(value.replaceAll("_+$", "")+ "_map");
-				}
-				else if ( !checked && isMap ) {
-					value = value.replaceAll("_+[mM][aA][pP]_+", "_");
-					value = value.replaceAll("_+[mM][aA][pP]$", "");
-					resourceTypeFieldWithChoose.setValue(value);
-				}
-			}
-			
-		});
-		
-		hp.add(resourceTypeIsMap);
-		
-		
-		//////////////////////////////////////////////////////////////
-		// handle the related attribute
-		AttrDef attr2 = relatedAttrs.get(0);
-		String label = attr2.getLabel();
-		FlexTable panel = new FlexTable();
-		int row = 0;
-		int nl = attr2.getNumberOfLines();
-		resourceTypeRelatedField = createTextBoxBase(nl, "400", cl);
-		String tooltip = "<b>" +label+ "</b>:<br/>" + 
-							attr2.getTooltip() +
-							"<br/><br/><div align=\"right\">(" +attr2.getUri()+ ")</div>";
-		panel.setWidget(row, 0, new TLabel(label, editing && attr2.isRequired(), tooltip ));
-		panel.setWidget(row, 1, resourceTypeRelatedField);
-		panel.getFlexCellFormatter().setWidth(row, 0, "250");
-		panel.getFlexCellFormatter().setAlignment(row, 0, 
-				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
-		);
-		panel.getFlexCellFormatter().setAlignment(row, 1, 
-				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
-		);
-		row++;
-		vp.add(panel);
-		//////////////////////////////////////////////////////////////
-		
-		return widget;
-	}
-
-	private static ListBox createListBox(List<Option> options, ChangeListener cl) {
-		final ListBox lb = new ListBox();
-		for ( Option option : options ) {
-			String lab = option.getLabel();
-			if ( lab != null && lab.length() > 0 ) {
-				lb.addItem(option.getLabel(), option.getName());
-			}
-			else {
-				lb.addItem(option.getName());
-			}
-		}
-		if ( cl != null ) {
-			lb.addChangeListener(cl);
-		}
-		return lb;
-	}
-	
-	
-	private static class FieldWithChoose extends HorizontalPanel {
-		AttrDef attr;
-		TextBoxBase textBox;
-		PushButton chooseButton;
-		ChangeListener cl;
-		
-		FieldWithChoose(AttrDef attr, ChangeListener cl) {
-			this.attr = attr;
-			this.cl = cl;
-			int nl = 1;    /// attr.getNumberOfLines() is ignored
-			textBox = createTextBoxBase(nl, "400", cl);
-
-			add(textBox);
-			
-			chooseButton = new PushButton("Choose", new ClickListener() {
-				public void onClick(Widget sender) {
-					choose();
-				}
-			});
-			
-			add(chooseButton);
-		}
-
-		/** nothing done here */
-		protected void optionSelected(Option option) {
-		}
-
-		
-		/**
-		 * dispatches the selection of an option.
-		 */
-		private void choose() {
-			
-			final MyDialog waitPopup = new MyDialog(Util.createHtml("Getting options ...", 12),
-					false);   // No "Close" button
-			waitPopup.setText("Please wait");
-			waitPopup.center();
-			waitPopup.show();
-
-			String optionsVocab = attr.getOptionsVocabulary();
-			if ( optionsVocab != null ) {
-				Main.refreshOptions(attr, new AsyncCallback<AttrDef>() {
-					public void onFailure(Throwable thr) {
-						String error = thr.toString();
-						while ( ( thr = thr.getCause()) != null ) {
-							error += "\n" + thr.toString();
-						}
-						waitPopup.hide();
-						Window.alert(error);
-					}
-	
-					public void onSuccess(AttrDef result) {
-						dispatchOptions(result.getOptions(), waitPopup);
-					}
-				});
-			}
-			else {
-				dispatchOptions(attr.getOptions(), waitPopup);
-			}
-		}
-		
-		private void dispatchOptions(final List<Option> options, final MyDialog waitPopup) {
-			Main.log("Dispatching options");
-			
-			final String width = "500px";
-			
-			final ListBox listBox = createListBox(options, cl);
-			listBox.setWidth(width);
-			
-			VerticalPanel vp = new VerticalPanel();
-			
-			final MyDialog popup = new MyDialog(vp);
-			
-			listBox.setVisibleItemCount(Math.min(options.size(), 12));
-
-			listBox.addChangeListener(new ChangeListener () {
-				public void onChange(Widget sender) {
-					String value = listBox.getValue(listBox.getSelectedIndex());
-					textBox.setText(value);
-					
-					Option option = options.get(listBox.getSelectedIndex());
-					optionSelected(option);
-					popup.hide();
-				}
-			});
-			
-			/////////////////////////////////////////////////////////
-			// Use a SuggestBox wirh a MultiWordSuggestOracle.
-			//
-			// A map from a suggestion to its corresponding Option:
-			final Map<String,Option> suggestions = new HashMap<String,Option>();
-			MultiWordSuggestOracle oracle = new MultiWordSuggestOracle("/ :-"); 
-			for ( Option option : options ) {
-				String suggestion = option.getName()+ " - " +option.getUri();
-				suggestions.put(suggestion, option);
-				oracle.add(suggestion);
-
-			}
-			final SuggestBox suggestBox = new SuggestBox(oracle);
-			suggestBox.setWidth(width);
-			suggestBox.addEventHandler(new SuggestionHandler() {
-				public void onSuggestionSelected(SuggestionEvent event) {
-					String suggestion = event.getSelectedSuggestion().getReplacementString();
-					Option option = suggestions.get(suggestion);
-					textBox.setText(option.getName());
-					optionSelected(option);
-					popup.hide();
-				}
-			});
-			////////////////////////////////////////////////////////////
-			
-			vp.add(suggestBox);
-			vp.add(listBox);
-			
-			waitPopup.hide();
-			
-			// use a timer to request for focus in the suggest-box:
-			new Timer() {
-				public void run() {
-					suggestBox.setFocus(true);
-				}
-			}.schedule(700);
-			    
-			popup.setText("Select " +attr.getLabel());
-			popup.center();
-			popup.show();
-
-		}
-
-		void enable(boolean enabled) {
-			textBox.setEnabled(enabled);
-//			lb.setEnabled(enabled);
-			chooseButton.setEnabled(enabled);
-		}
-
-		public void setValue(String value) {
-			textBox.setText(value);
-//			lb.setSelectedIndex(0);
-		}
-	}
-	
-	private static TextBoxBase createTextBoxBase(int nl, String width, 
-			ChangeListener cl) {
-		final TextBoxBase tb;
-		if ( nl <=1 ) {
-			tb = new TextBox();
-			tb.setWidth(width);
-		}
-		else {
-			// avoid huge textareas (TODO max 20 line is arbitrary)
-			if ( nl > 20 ) {
-				nl = 20;
-			}
-			tb = new TextArea();
-			// TODO 16 is just a rough scaling factor
-			tb.setSize(width, "" +(nl *16));
-		}
-		if ( cl != null ) {
-			tb.addChangeListener(cl);
-		}
-		return tb;
-	}
 	private CellPanel createButtons() {
 		CellPanel panel = new HorizontalPanel();
 		panel.setSpacing(2);
@@ -511,22 +233,22 @@ public class MetadataGroupPanel extends VerticalPanel {
 	String putValues(Map<String, String> values) {
 		
 		// special case:
-		if ( resourceTypeAttrDef != null ) {
-			String value = resourceTypeFieldWithChoose.textBox.getText().trim();
+		if ( resourceTypeWidget != null && resourceTypeWidget.resourceTypeAttrDef != null ) {
+			String value = resourceTypeWidget.resourceTypeFieldWithChoose.textBox.getText().trim();
 			if ( value.length() == 0 ) {
 				String error = "Please provide a value for the field with label: " +
-							resourceTypeAttrDef.getLabel();
+							resourceTypeWidget.resourceTypeAttrDef.getLabel();
 				return error;
 			}
 			
 			if ( values != null ) {
 				// do actual assignment
-				String uri = resourceTypeAttrDef.getUri();
+				String uri = resourceTypeWidget.resourceTypeAttrDef.getUri();
 				values.put(uri, value);
 				Main.log("assigned: " +uri+ " = " +value);
 				
-				String relatedUri = resourceTypeAttrDef.getRelatedAttrs().get(0).getUri();
-				String relatedValue = resourceTypeRelatedField.getText();
+				String relatedUri = resourceTypeWidget.resourceTypeAttrDef.getRelatedAttrs().get(0).getUri();
+				String relatedValue = resourceTypeWidget.resourceTypeRelatedField.getText();
 				values.put(relatedUri, relatedValue);
 				Main.log("assigned: " +uri+ " = " +value);
 			}
@@ -587,10 +309,8 @@ public class MetadataGroupPanel extends VerticalPanel {
 		exampleButton.setEnabled(enabled);
 		resetButton.setEnabled(enabled);
 		
-		if ( resourceTypeAttrDef != null ) {
-			resourceTypeFieldWithChoose.enable(enabled);
-			resourceTypeIsMap.setEnabled(enabled);
-			resourceTypeRelatedField.setEnabled(enabled);
+		if ( resourceTypeWidget != null ) {
+			resourceTypeWidget.enable(enabled);
 		}
 	}
 
@@ -613,10 +333,8 @@ public class MetadataGroupPanel extends VerticalPanel {
 			}
 		}
 		
-		if ( resourceTypeAttrDef != null ) {
-			resourceTypeFieldWithChoose.setValue(value);
-			resourceTypeIsMap.setChecked(false);
-			resourceTypeRelatedField.setText(value);
+		if ( resourceTypeWidget != null ) {
+			resourceTypeWidget.setValue(value);
 		}
 		
 	}
@@ -646,14 +364,8 @@ public class MetadataGroupPanel extends VerticalPanel {
 			}
 		}
 		
-		if ( resourceTypeAttrDef != null ) {
-			String example = resourceTypeAttrDef.getExample();
-			if ( example == null ) {
-				example = "";
-			}
-			resourceTypeFieldWithChoose.setValue(example);
-			resourceTypeIsMap.setChecked(example.endsWith("_map"));
-			resourceTypeRelatedField.setText(resourceTypeAttrDef.getRelatedAttrs().get(0).getExample());
+		if ( resourceTypeWidget != null ) {
+			resourceTypeWidget.setExample();
 		}
 
 	}
@@ -706,23 +418,8 @@ public class MetadataGroupPanel extends VerticalPanel {
 			}
 		}
 		
-		if ( resourceTypeAttrDef != null ) {
-			String value = originalValues.get(resourceTypeAttrDef.getUri());
-			if ( value == null ) {
-				value = "";
-			}
-			resourceTypeFieldWithChoose.setValue(value);
-			resourceTypeIsMap.setChecked(value.endsWith("_map"));
-			
-			// special case: ///////////////////////////////////////////
-			String relatedUri = resourceTypeAttrDef.getRelatedAttrs().get(0).getUri();
-			String relatedValue = originalValues.get(relatedUri);
-			if ( relatedValue == null ) {
-				relatedValue = "";
-			}
-			resourceTypeRelatedField.setText(relatedValue);
-			//////////////////////////////////////////////////////////////
-			
+		if ( resourceTypeWidget != null ) {
+			resourceTypeWidget.resetFieldValues(originalValues);
 		}
 
 	}

@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.vocabulary.Omv;
+import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.ontmd.gwt.server.Config;
 import org.mmisw.ontmd.gwt.server.JenaUtil2;
 import org.mmisw.ontmd.gwt.server.MdHelper;
@@ -213,6 +214,11 @@ public class Converter {
 		// set Omv.acronym from primaryClass
 		ont.addProperty(Omv.acronym, primaryClass);
 		
+		String classUri = values.get("classUri");
+		if ( classUri != null ) {
+			ont.addProperty(OmvMmi.shortNameUri, classUri);
+		}
+		
 		createOntologIndividuals(fileInText);
 	}
 
@@ -364,7 +370,8 @@ public class Converter {
 
 	
 	private DatatypeProperty createDatatypeProperty(DataRow row, int id) {
-		String resourceString = getGoodName(row, id).toLowerCase();
+		//String resourceString = getGoodName(row, id).toLowerCase();
+		String resourceString = ns_ + getGoodName(row, id).toLowerCase();
 		log.info("datatype Property created " + resourceString);
 		DatatypeProperty p = newOntModel.createDatatypeProperty(resourceString);
 		p.addProperty(RDFS.label, row.getString(id).trim());
@@ -374,7 +381,8 @@ public class Converter {
 
 	private String getGoodName(DataRow row, int id) {
 //		return finalUri + cleanStringforID(row.getString(id).trim());
-		return ns_ + cleanStringforID(row.getString(id).trim());
+//		return ns_ + cleanStringforID(row.getString(id).trim());
+		return       cleanStringforID(row.getString(id).trim());
 	}
 
 	private String cleanStringforID(String s) {
@@ -413,20 +421,29 @@ public class Converter {
 	
 	private void setFinalUri() {
 
-		// remove any trailing slashes
-		namespaceRoot = namespaceRoot.replaceAll("(/|\\\\)+$", "");  
+		// If given, ontologyUri will take precedence (see VocabPanel)
+		String ontologyUri = values.get("ontologyUri");
 		
-		String orgAbbrev = orgAbbreviation.replaceAll("\\s+", "");
-		
-		finalUri = namespaceRoot + "/" + orgAbbrev;
-		
-		if ( version != null ) {
-			finalUri +=  "/" + version;
+		if ( ontologyUri != null ) {
+			log.debug("Using given ontologyUri and finalUri: " +ontologyUri);
+			finalUri = ontologyUri.replaceAll("(/|\\\\)+$", "");
 		}
-		
-		finalUri += "/" + getPrimaryClass().toLowerCase() ;
-		// NO ".owl" extension!!
-		// because it messes up the base URI of the elements
+		else {
+			// remove any trailing slashes
+			namespaceRoot = namespaceRoot.replaceAll("(/|\\\\)+$", "");  
+			
+			String orgAbbrev = orgAbbreviation.replaceAll("\\s+", "");
+			
+			finalUri = namespaceRoot + "/" + orgAbbrev;
+			
+			if ( version != null ) {
+				finalUri +=  "/" + version;
+			}
+			
+			finalUri += "/" + getPrimaryClass().toLowerCase() ;
+			// NO ".owl" extension!!
+			// because it messes up the base URI of the elements
+		}
 		
 		// see createProperties()
 		

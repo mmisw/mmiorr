@@ -1,17 +1,25 @@
 package org.mmisw.ontmd.gwt.client;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.mmisw.ontmd.gwt.client.vocabulary.Option;
 
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.ButtonBase;
+import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.UIObject;
 
 
@@ -99,5 +107,44 @@ public class Util {
 	    return decPanel;
     }
 
+    public static TextBoxBase createTextBoxBase(int nl, String width, 
+			ChangeListener cl) {
+		final TextBoxBase tb;
+		if ( nl <=1 ) {
+			tb = new TextBox();
+			tb.setWidth(width);
+		}
+		else {
+			// avoid huge textareas (TODO max 20 line is arbitrary)
+			if ( nl > 20 ) {
+				nl = 20;
+			}
+			tb = new TextArea();
+			// TODO 16 is just a rough scaling factor
+			tb.setSize(width, "" +(nl *16));
+		}
+		if ( cl != null ) {
+			tb.addChangeListener(cl);
+		}
+		return tb;
+	}
+
+    static ListBox createListBox(List<Option> options, ChangeListener cl) {
+		final ListBox lb = new ListBox();
+		for ( Option option : options ) {
+			String lab = option.getLabel();
+			if ( lab != null && lab.length() > 0 ) {
+				lb.addItem(option.getLabel(), option.getName());
+			}
+			else {
+				lb.addItem(option.getName());
+			}
+		}
+		if ( cl != null ) {
+			lb.addChangeListener(cl);
+		}
+		return lb;
+	}
+	
 
 }
