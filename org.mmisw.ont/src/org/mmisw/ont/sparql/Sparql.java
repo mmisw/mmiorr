@@ -93,6 +93,15 @@ public class Sparql {
 					queryResult.setResult(os.toString());
 				}
 			}
+			else if ( query.isDescribeType() ) {
+				Model model_ = qe.execDescribe();
+				
+				JenaUtil2.removeUnusedNsPrefixes(model_);
+				
+				String str = JenaUtil2.getOntModelAsString(model_, "RDF/XML-ABBREV");				
+				queryResult.setResult(str);
+				queryResult.setContentType("Application/rdf+xml");
+			}
 			
 			// TODO handle other types of queries.
 			else {
