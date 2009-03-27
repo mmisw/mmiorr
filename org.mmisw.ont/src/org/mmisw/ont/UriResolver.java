@@ -106,6 +106,8 @@ public class UriResolver extends HttpServlet {
 	}
 	
 	/**
+	 * The main dispatcher.
+	 * 
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -136,97 +138,101 @@ public class UriResolver extends HttpServlet {
 		// show request info?
 		if ( Util.yes(request, "showreq")  ) {
 			Util.showReq(request, response);
+			return;
 		} 
 		
 		// dispatch list of ontologies?
-		else if ( Util.yes(request, "list")  ) {
+		if ( Util.yes(request, "list")  ) {
 			_doListOntologies(request, response);
+			return;
 		}
 		
 		// dispatch list of vocabularies?
-		else if ( Util.yes(request, "vocabs")  ) {
+		if ( Util.yes(request, "vocabs")  ) {
 			_doListVocabularies(request, response);
+			return;
 		}
 		
 		// dispatch list of mappings?
-		else if ( Util.yes(request, "mappings")  ) {
+		if ( Util.yes(request, "mappings")  ) {
 			_doListMappings(request, response);
+			return;
 		}
 		
 		// dispatch a sparql-query?
-		else if ( Util.yes(request, "sparql")  ) {
+		if ( Util.yes(request, "sparql")  ) {
 			sparqlDispatcher.execute(request, response);
+			return;
 		}
 		
 		
 		// reload graph?
-		else if ( Util.yes(request, "_reload")  ) {
+		if ( Util.yes(request, "_reload")  ) {
 			ontGraph.reinit();
+			return;
 		}
 		
 		// dispatch a db-query?
-		else if ( Util.yes(request, "dbquery")  ) {
+		if ( Util.yes(request, "dbquery")  ) {
 			Util.doDbQuery(request, response, db);
+			return;
 		}
 		
 		// resolve URI?
-		else if ( _resolveUri(request, response)  ) {
+		if ( _resolveUri(request, response)  ) {
 			// OK, no more to do here.
+			return;
 		}
 		
 		// Else, try to resolve the requested resource.
-		// Note, since I'm using <url-pattern>/*</url-pattern> in web.xml, *everything* 
-		// gets dispatched through this servlet, so I have to resolve other possible resources.
-		else {
-
-			final String requestedUri = request.getRequestURI();
-			final String contextPath = request.getContextPath();
-
-			
-			// but first, check if it is the "root" request, for example, in the mmisw.org deployment
-			// with "ont" as the context, the root request is basically:
-			//    http://mmisw.org/ont    or   http://mmisw.org/ont/
-			// The "root" request is recognized when the requestedUri without any trailing
-			// slashes is equal to the contextPath. For the 2nd request above, we have:
-			//       request.getRequestURI()         = /ont/
-			//       request.getContextPath()        = /ont
-			if ( requestedUri.replaceAll("/*$", "").equals(contextPath) ) {
-				// this is a "root" request. responf with onformation about this service:
-				_showServiceInfo(request, response);
-				return;
-			}
-			
-
-			String path = request.getPathTranslated();
-			File file = new File(path);
-			if ( !file.canRead() || file.isDirectory() ) {
-				if ( log.isDebugEnabled() ) {
-					log.debug("Other resource: " +path+ ": not found or cannot be read");
-				}
-				response.sendError(HttpServletResponse.SC_NOT_FOUND, request.getRequestURI());
-				return;
-			}
-			
-			String mime = getServletContext().getMimeType(path);
-			if ( mime != null ) {
-				response.setContentType(mime);
-			}
-			
-			if ( false &&  // to avoid too many messages for now 
-				 log.isDebugEnabled() ) {
-				log.debug(path+ ": FOUND. " +
-						(mime != null ? "Mime type set to: " +mime : "No Mime type set.")
-				);
-			}
-
-			FileInputStream is = new FileInputStream(file);
-			ServletOutputStream os = response.getOutputStream();
-			IOUtils.copy(is, os);
-			os.close();
-		}
+		_resolveRegularResource(request, response);
 	}
 
-	
+	/**
+	 * Helper method to dispatch the request for a regular resource.
+	 * Note: since <code>&lt;url-pattern>/*&lt;/url-pattern></code> is used in web.xml, *everything* 
+	 * gets dispatched through this servlet, so, besides ontologies and terms, other possible resources
+	 * should be resolved by this servlet.
+	 */
+	private void _resolveRegularResource(HttpServletRequest request, HttpServletResponse response) 
+	throws ServletException, IOException {
+		final String requestedUri = request.getRequestURI();
+		final String contextPath = request.getContextPath();
+
+		// first, check if it is the "root" request, for example, in the mmisw.org deployment
+		// with "ont" as the context, the root request is basically:
+		//    http://mmisw.org/ont    or   http://mmisw.org/ont/
+		// The "root" request is recognized when the requestedUri without any trailing
+		// slashes is equal to the contextPath. For the 2nd request above, we have:
+		//       request.getRequestURI()         = /ont/
+		//       request.getContextPath()        = /ont
+		if ( requestedUri.replaceAll("/*$", "").equals(contextPath) ) {
+			// this is a "root" request. respond with information about this service:
+			_showServiceInfo(request, response);
+			return;
+		}
+
+
+		String path = request.getPathTranslated();
+		File file = new File(path);
+		if ( !file.canRead() || file.isDirectory() ) {
+			if ( log.isDebugEnabled() ) {
+				log.debug("Other resource: " +path+ ": not found or cannot be read");
+			}
+			response.sendError(HttpServletResponse.SC_NOT_FOUND, request.getRequestURI());
+			return;
+		}
+
+		String mime = getServletContext().getMimeType(path);
+		if ( mime != null ) {
+			response.setContentType(mime);
+		}
+
+		FileInputStream is = new FileInputStream(file);
+		ServletOutputStream os = response.getOutputStream();
+		IOUtils.copy(is, os);
+		os.close();
+	}
 	
 	/**
 	 * Helper method to dispatch a "root" request.
@@ -420,7 +426,7 @@ public class UriResolver extends HttpServlet {
 		//    Dereferencing rules
 		////////////////////////////////////////////////////////////////////////////////
 		
-		// Dereferencing is done according to the "accept" header and the extension.
+		// Dereferencing is done according to the "accept" header, the extension, and output format.
 
 		// The response type depends (initially) on the following elements:
 		String extension = mmiUri.getExtension();
