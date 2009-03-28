@@ -687,6 +687,7 @@ public class UriResolver extends HttpServlet {
 					response.setContentType("Application/rdf+xml");
 					StringReader is = _serializeModel(termModel, "RDF/XML-ABBREV");
 					IOUtils.copy(is, os);
+					break;
 				}
 				case N3 : {
 					String contentType = "text/plain";  // NOTE: "text/rdf+n3" is not registered.
