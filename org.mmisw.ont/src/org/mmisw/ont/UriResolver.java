@@ -771,7 +771,6 @@ public class UriResolver extends HttpServlet {
 			baseUri = JenaUtil2.removeTrailingFragment(uriForEmptyPrefix);
 			writer.setProperty("xmlbase", baseUri);
 		}
-		writer.setProperty("xmlbase", baseUri);
 		writer.setProperty("showXmlDeclaration", "true");
 		writer.setProperty("relativeURIs", "same-document");
 		writer.setProperty("tab", "4");
