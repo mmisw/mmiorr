@@ -96,16 +96,16 @@ class TermExtractor {
 		//     qualityFlag_aq
 		String ontologyUri = mmiUri.getOntologyUri();
 		String prefix = mmiUri.getTopic();
-		if ( null != termModel.getNsPrefixURI(prefix + "/") ) {
+		if ( null != termModel.getNsPrefixURI(prefix) ) {
 			// the topic is already used as a prefix. Try the topic with a number, starting from
 			// 2 until getting one not used.
 			int count = 2;
-			while ( null != termModel.getNsPrefixURI(prefix + count + "/") ) {
+			while ( null != termModel.getNsPrefixURI(prefix + count) ) {
 				count++;
 			}
 			prefix += count;
 		}
-		termModel.setNsPrefix(prefix, ontologyUri);
+		termModel.setNsPrefix(prefix, JenaUtil2.appendFragment(ontologyUri));
 
 
 		return termModel;
