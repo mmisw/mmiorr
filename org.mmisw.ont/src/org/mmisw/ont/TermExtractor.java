@@ -52,7 +52,7 @@ class TermExtractor {
 		}
 
 		OntModel termModel = ModelFactory.createOntologyModel();
-
+		
 		if ( true ) { // get all statements about the term
 			StmtIterator iter = model.listStatements(termRes, (Property) null, (Property) null);
 			if (iter.hasNext()) {
@@ -87,7 +87,23 @@ class TermExtractor {
 				}
 			}
 		}
-		
+
+		// set a prefix for the ontology URI. Use the topic as the
+		// prefix. For example, it the ontogy URI is:
+		//     http://mmisw.org/ont/seacoos/qualityFlag_aq
+		// then the prefix will be:
+		//     qualityFlag_aq
+		// Make sure the prefix does not overwrite any existing one, so use
+		// a suffix for the prefix if necessary:
+		String ontologyUri = mmiUri.getOntologyUri();
+		String prefix = mmiUri.getTopic();
+		int suffix = 2;
+		while ( null != termModel.getNsPrefixURI(prefix) ) {
+			prefix += suffix++;
+		}
+		termModel.setNsPrefix(prefix , ontologyUri);
+
+
 		return termModel;
 	}
 
