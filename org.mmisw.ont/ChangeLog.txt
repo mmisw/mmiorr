@@ -10,7 +10,11 @@ ChangeLog
 		getURIForBase --> removeTrailingFragment
 		getURIForNS   --> appendFragment
 	
-	- Sparql: enabling DESCRIBE responses
+	- Sparql: enabled DESCRIBE responses.
+	
+	- Fixed 100: "term URI always resolved in HTML"
+		- TermExtractor: extracts a model with information about the requested entity.
+		- UriResolver._resolveUriOntFormat: serialized resulting model in the requested format. 
 	
 2003-03-21
 	- Just comment about Omv.acronym saying that is about "resourceType" not "shortName"

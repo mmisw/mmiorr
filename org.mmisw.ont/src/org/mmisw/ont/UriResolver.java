@@ -670,7 +670,7 @@ public class UriResolver extends HttpServlet {
 			log.debug("_resolveUriOntFormat: term=[" +term+ "].");
 		}
 
-
+		/////////////////////////////////////////////////////////////////////
 		// Term included?
 		if ( term.length() > 0 ) {
 
@@ -678,33 +678,35 @@ public class UriResolver extends HttpServlet {
 			if ( model == null ) {
 				model = JenaUtil.loadModel(uriFile, false);
 			}
-
-			
 			
 			Model termModel = TermExtractor.getTermModel(model, mmiUri);
 			if ( termModel != null ) {
-				response.setContentType("Application/rdf+xml");
-				
-				StringReader is = _serializeModel(termModel, "RDF/XML-ABBREV");
 				ServletOutputStream os = response.getOutputStream();
-				IOUtils.copy(is, os);
-
+				switch ( ontFormat ) {
+				case RDFXML: {
+					response.setContentType("Application/rdf+xml");
+					StringReader is = _serializeModel(termModel, "RDF/XML-ABBREV");
+					IOUtils.copy(is, os);
+				}
+				case N3 : {
+					String contentType = "text/plain";  // NOTE: "text/rdf+n3" is not registered.
+					response.setContentType(contentType);
+					StringReader is = _serializeModel(termModel, "N3");
+					IOUtils.copy(is, os);
+					break;
+				}
+				default:
+					throw new AssertionError(ontFormat+ " unexpected case");
+				}
+				os.close();
+				
 				return true;
 			}
 			
-			
-			// TODO Handle requested ontology format for this term.
-			// This would be probably in a form similar to a response from
-			// a sparql query about the term.
-			// For now, replying with the HTML format:
-			htmlDispatcher.dispatchTerm(request, response, mmiUri, model, true);
+			// Else: term unexistent: return 404 to client:
+			response.sendError(HttpServletResponse.SC_NOT_FOUND, mmiUri.getTermUri());
 
-			//				String termContents = _resolveTerm(request, mmiUri, model);
-			//				StringReader is = new StringReader(termContents);
-			//				response.setContentType("text/html");
-			//				ServletOutputStream os = response.getOutputStream();
-			//				IOUtils.copy(is, os);
-			//				os.close();
+			return true;    // dispatched here.
 		}
 
 		// No term included:
