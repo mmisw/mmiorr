@@ -136,8 +136,8 @@ public class Sparql {
 				QuerySolution sol = results.nextSolution();
 				Iterator<?> varNames = sol.varNames();
 				while ( varNames.hasNext() ) {
-					String varName = varNames.next().toString();
-					String varValue = sol.get(varName).toString();
+					String varName = String.valueOf(varNames.next());
+					String varValue = String.valueOf(sol.get(varName));
 					
 					String link = getLink(varValue);
 					if ( link != null ) {
@@ -211,8 +211,8 @@ public class Sparql {
 			comma = "";
 			Iterator<?> varNames = sol.varNames();
 			while ( varNames.hasNext() ) {
-				String varName = varNames.next().toString();
-				String value = sol.get(varName).toString();
+				String varName = String.valueOf(varNames.next());
+				String value = String.valueOf(sol.get(varName));
 				if ( value.indexOf(',') >= 0 ) {
 					value = "\"" +value+ "\"";
 				}
