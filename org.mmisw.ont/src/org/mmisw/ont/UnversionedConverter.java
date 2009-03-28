@@ -74,8 +74,8 @@ class UnversionedConverter {
 			return null;
 		}
 
-		final String ns_ = JenaUtil2.getURIForNS(finalUri);
-		final String base_ = JenaUtil2.getURIForBase(finalUri);
+		final String ns_ = JenaUtil2.appendFragment(finalUri);
+		final String base_ = JenaUtil2.removeTrailingFragment(finalUri);
 
 
 		String uriForEmpty = model.getNsPrefixURI("");

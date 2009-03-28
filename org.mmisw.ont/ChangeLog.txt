@@ -6,6 +6,12 @@ ChangeLog
 2003-03-27
 	- UriResolver: some doc updates and minor code re-arrangements (no changes in logic)
 	
+	- JenaUtil2: some pending renamings done:
+		getURIForBase --> removeTrailingFragment
+		getURIForNS   --> appendFragment
+	
+	- Sparql: enabling DESCRIBE responses
+	
 2003-03-21
 	- Just comment about Omv.acronym saying that is about "resourceType" not "shortName"
        
