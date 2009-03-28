@@ -681,7 +681,7 @@ public class UriResolver extends HttpServlet {
 
 			
 			
-			OntModel termModel = TermExtractor.getTermModel(model, mmiUri);
+			Model termModel = TermExtractor.getTermModel(model, mmiUri);
 			if ( termModel != null ) {
 				response.setContentType("Application/rdf+xml");
 				
