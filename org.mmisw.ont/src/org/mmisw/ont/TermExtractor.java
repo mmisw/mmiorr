@@ -105,7 +105,7 @@ class TermExtractor {
 			}
 			prefix += count;
 		}
-		termModel.setNsPrefix(prefix + "/", ontologyUri);
+		termModel.setNsPrefix(prefix, ontologyUri);
 
 
 		return termModel;
