@@ -762,13 +762,18 @@ public class UriResolver extends HttpServlet {
 	 */
 	private StringReader _serializeModel(Model model, String lang) {
 		StringWriter sw = new StringWriter();
-		String base = JenaUtil2.removeTrailingFragment(model.getNsPrefixURI(""));
+		String uriForEmptyPrefix = model.getNsPrefixURI("");
 		RDFWriter writer = model.getWriter(lang);
-		writer.setProperty("xmlbase", base);
+		String baseUri = null;
+		if ( uriForEmptyPrefix != null ) {
+			baseUri = JenaUtil2.removeTrailingFragment(uriForEmptyPrefix);
+			writer.setProperty("xmlbase", baseUri);
+		}
+		writer.setProperty("xmlbase", baseUri);
 		writer.setProperty("showXmlDeclaration", "true");
 		writer.setProperty("relativeURIs", "same-document");
 		writer.setProperty("tab", "4");
-		writer.write(model, sw, base);
+		writer.write(model, sw, baseUri);
 
 		StringReader reader = new StringReader(sw.toString());
 		return reader;
