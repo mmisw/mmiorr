@@ -679,6 +679,20 @@ public class UriResolver extends HttpServlet {
 				model = JenaUtil.loadModel(uriFile, false);
 			}
 
+			
+			
+			OntModel termModel = TermExtractor.getTermModel(model, mmiUri);
+			if ( termModel != null ) {
+				response.setContentType("Application/rdf+xml");
+				
+				StringReader is = _serializeModel(termModel, "RDF/XML-ABBREV");
+				ServletOutputStream os = response.getOutputStream();
+				IOUtils.copy(is, os);
+
+				return true;
+			}
+			
+			
 			// TODO Handle requested ontology format for this term.
 			// This would be probably in a form similar to a response from
 			// a sparql query about the term.
