@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.util.Unfinished;
 
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -33,7 +34,7 @@ class TermExtractor {
 	 * @param mmiUri The URI of the desired term.
 	 * @return A model representing the term from the given model.
 	 */
-	static OntModel getTermModel(OntModel model, MmiUri mmiUri) {
+	static Model getTermModel(OntModel model, MmiUri mmiUri) {
 		String term = mmiUri.getTerm();
 		assert term.length() > 0 ;
 		
@@ -51,7 +52,7 @@ class TermExtractor {
 			log.debug("getTermModel: termUri: " +termUri);
 		}
 
-		OntModel termModel = ModelFactory.createOntologyModel();
+		Model termModel = ModelFactory.createDefaultModel();
 		
 		if ( true ) { // get all statements about the term
 			StmtIterator iter = model.listStatements(termRes, (Property) null, (Property) null);
@@ -93,15 +94,18 @@ class TermExtractor {
 		//     http://mmisw.org/ont/seacoos/qualityFlag_aq
 		// then the prefix will be:
 		//     qualityFlag_aq
-		// Make sure the prefix does not overwrite any existing one, so use
-		// a suffix for the prefix if necessary:
 		String ontologyUri = mmiUri.getOntologyUri();
 		String prefix = mmiUri.getTopic();
-		int suffix = 2;
-		while ( null != termModel.getNsPrefixURI(prefix) ) {
-			prefix += suffix++;
+		if ( null != termModel.getNsPrefixURI(prefix + "/") ) {
+			// the topic is already used as a prefix. Try the topic with a number, starting from
+			// 2 until getting one not used.
+			int count = 2;
+			while ( null != termModel.getNsPrefixURI(prefix + count + "/") ) {
+				count++;
+			}
+			prefix += count;
 		}
-		termModel.setNsPrefix(prefix , ontologyUri);
+		termModel.setNsPrefix(prefix + "/", ontologyUri);
 
 
 		return termModel;
