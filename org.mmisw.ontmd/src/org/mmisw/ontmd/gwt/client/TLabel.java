@@ -12,7 +12,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * A label with a manual tooltip handling: User will click an icon for the
- * tootip text to be displayed. KEY_ENTER, KEY_ESCAPE, and click make the popup disappear.
+ * tootip text to be displayed. KEY_ENTER and KEY_ESCAPE make the popup disappear.
  * 
  * @author Carlos Rueda
  */
@@ -26,6 +26,7 @@ public class TLabel extends HorizontalPanel {
 	// Used if a tooltip is actually associated:
 	
 	private Image ttIcon;
+	private Grid popupWidget = new Grid(1,1);
 	private DecoratedPopupPanel popup;
 	private ClickListener clickListener;
 
@@ -49,9 +50,9 @@ public class TLabel extends HorizontalPanel {
 	
 	
 	/**
-	 * Creates a TLabel with the given label text and associated tool tip. 
+	 * Creates a TLabel with the given label text and associated tooltip. 
 	 * @param text
-	 * @param required true to add an indicator tha the associated field is required.
+	 * @param required true to add an indicator that the associated field is required.
 	 * @param tooltip
 	 */
 	public TLabel(String text, boolean required, String tooltip) {
@@ -60,8 +61,6 @@ public class TLabel extends HorizontalPanel {
 			text += ":";
 		}
 		label.setHTML(text + (required ? requiredHtml : ""));
-//		this.setWidget(0, 1, label);
-//		this.getFlexCellFormatter().setAlignment(0, 1, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE);
 		this.add(label);
 		if ( tooltip != null && tooltip.length() > 0 ) {
 			setTooltip(tooltip);
@@ -74,7 +73,7 @@ public class TLabel extends HorizontalPanel {
 	 * @param tooltip The tool tip.
 	 * @return this object.
 	 */
-	public TLabel setTooltip(String tooltip) {
+	private TLabel setTooltip(String tooltip) {
 		if ( ttIcon == null ) {
 			ttIcon = Main.images.question12().createImage();
 		}
@@ -90,28 +89,15 @@ public class TLabel extends HorizontalPanel {
 				    return true;
 				  }
 			};
-//		    simplePopup.ensureDebugId("cwBasicPopup-simplePopup");
-//		    popup.setWidth("400px");
 		}
 		else {
 			popup.clear();
 		}
 		HTML widget = new HTML(tooltip);
-		Grid grid = new Grid(1,1);
-		grid.setWidget(0, 0, widget);
-//		grid.setBorderWidth(1);  // just to improve appearance in firefox
-//		grid.setCellPadding(10);
-		grid.setWidth("100%");
-		popup.setWidget(grid);
+		popupWidget.setWidget(0, 0, widget);
+		popupWidget.setWidth("100%");
+		popup.setWidget(popupWidget);
 		
-		// NO: let the use click inside the popup to faciliate navigation through the text
-//		widget.addClickListener(new ClickListener() {
-//			public void onClick(Widget sender) {
-//				popup.hide();
-//			}
-//		});
-		
-
 		if ( clickListener == null ) {
 			clickListener = new ClickListener() {
 				public void onClick(Widget sender) {
@@ -127,8 +113,6 @@ public class TLabel extends HorizontalPanel {
 			label.removeClickListener(clickListener);
 		}
 
-//		this.setWidget(0, 0, ttIcon);
-//		this.getFlexCellFormatter().setAlignment(0, 1, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE);
 		this.clear();
 		this.add(ttIcon);
 		this.add(label);
@@ -138,6 +122,4 @@ public class TLabel extends HorizontalPanel {
 		
 		return this;
 	}
-	
-
 }
