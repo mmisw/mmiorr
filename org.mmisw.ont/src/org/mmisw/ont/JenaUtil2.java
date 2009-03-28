@@ -67,13 +67,17 @@ public class JenaUtil2 {
 	 */	
 	public static String getOntModelAsString(Model model, String lang) {
 		StringWriter sw = new StringWriter();
-		String base = getURIForBase(model.getNsPrefixURI(""));
 		RDFWriter writer = model.getWriter(lang);
-		writer.setProperty("xmlbase", base);
+		String baseUri = null;
+		String uriForEmptyPrefix = model.getNsPrefixURI("");
+		if ( uriForEmptyPrefix != null ) {
+			baseUri = getURIForBase(uriForEmptyPrefix);
+			writer.setProperty("xmlbase", baseUri);
+		}
 		writer.setProperty("showXmlDeclaration", "true");
 		writer.setProperty("relativeURIs", "same-document");
 		writer.setProperty("tab", "4");
-		writer.write(model, sw, base);
+		writer.write(model, sw, baseUri);
 		return sw.getBuffer().toString();
 
 	}
