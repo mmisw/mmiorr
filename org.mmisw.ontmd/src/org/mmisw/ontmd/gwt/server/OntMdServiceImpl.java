@@ -382,7 +382,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		// associate the original base URI:
 		String uri = model.getNsPrefixURI("");
 		if ( uri != null ) {
-			String base_ = JenaUtil2.getURIForBase(uri);
+			String base_ = JenaUtil2.removeTrailingFragment(uri);
 			ontologyInfo.setUri(base_);
 		}
 
@@ -649,8 +649,8 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		                        version + "/" +
 		                        shortName;
 		
-		final String ns_ = JenaUtil2.getURIForNS(finalUri);
-		final String base_ = JenaUtil2.getURIForBase(finalUri);
+		final String ns_ = JenaUtil2.appendFragment(finalUri);
+		final String base_ = JenaUtil2.removeTrailingFragment(finalUri);
 		
 
 		

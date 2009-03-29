@@ -14,7 +14,7 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
- * Form elements for the contents of the vocabulary.
+ * The panel for the resulting conversion.
  * 
  * @author Carlos Rueda
  */
@@ -23,7 +23,7 @@ public class ConversionPanel extends VerticalPanel {
 	final TextArea textArea = new TextArea();
 	
 	private HTML info = new HTML(
-			"Upon successful conversion, this panel will show the resulting vocabulary in RDF/XML format. "
+			"<b>Congratulations!</b> Your vocabulary is now in RDF/XML format. " 
 			);
 	
 	protected Voc2RdfMainPanel mainPanel;
@@ -37,7 +37,7 @@ public class ConversionPanel extends VerticalPanel {
 		
 		
 		textArea.setReadOnly(true);
-	    textArea.setSize("600px", "350px");
+	    textArea.setSize("600px", "300px");
 		DecoratorPanel decPanel = new DecoratorPanel();
 	    decPanel.setWidget(textArea);
 	    textArea.setText("");
@@ -124,20 +124,14 @@ public class ConversionPanel extends VerticalPanel {
 				
 				
 				str = 
-					"<b>Congratulations!</b> Your vocabulary is now in RDF/XML format. " +
-					"You can now copy and paste the resulting contents in a file on your " +
-					"computer." +
-					"<br/>" +
-					"<br/>" +
-					"<br/>" +
 					"<b>" +
-					"<font color=\"green\">Do you want to upload your vocabulary in the MMI Registry right away?</font>" +
+					"<font color=\"green\">You can now upload your vocabulary in the MMI Repository</font>" +
 					"</b>" +
 					"<br/>" +
 					"<br/>" +
 					"<div align=\"center\">" +
 					"<form action=\"" +action+ "\" method=\"post\" >\n" +
-					"<input type=\"submit\" value=\"" +"Yes, register my vocabulary"+ "\" />\n" +
+					"<input type=\"submit\" value=\"" +"Register my vocabulary"+ "\" />\n" +
 					"</form>" +
 					"</div>\n" +
 					"This button will open the " +
@@ -145,7 +139,13 @@ public class ConversionPanel extends VerticalPanel {
 					"tool, which you can use " +
 					"to proceed with preparing your ontology for registration in " +
 					"the MMI Registry and Repository. " +
-					"You will need to log in. " 
+					"You may need to log in. " +
+					
+					"<br/>" +
+					"<br/>" +
+					"<br/>" +
+					"Note: You can also just use the resulting contents and make a copy in a file on your computer."
+
 				;
 				
 				Main.log("<pre>\n" +str.replaceAll("\\<", "&lt;")+ "</pre>");

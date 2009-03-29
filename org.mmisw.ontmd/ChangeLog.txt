@@ -3,6 +3,19 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-03-28
+	- Several updates to Voc2RDF
+		- More metadata captured (title, creator, description, authority)
+		- Button convert to RDF now opens a dialog (No tab for conversion)
+		- class & terms now in a tab (in preparation for multiple classes)
+				
+		- New editable table for the terms (to be completed)
+			- The editable table will be the main interface for capturing the terms
+			- Import button will allow to enter the CSV contents either directly
+			  in a text area (as before), or with an upload action.
+			- Next: use the actual contents in TermTable for the conversion
+			- Move the CSV related elements to the to-be-created import panel
+		
 2009-03-21
 	Issue 99: "Normalize theme/topic/class throughout interface"
 	http://code.google.com/p/mmisw/issues/detail?id=99

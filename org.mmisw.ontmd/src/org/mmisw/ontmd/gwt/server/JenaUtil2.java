@@ -26,38 +26,16 @@ public class JenaUtil2 {
 	 */
 	private static final String FRAG_SEPARATOR = "/" ;   // "#";
 	
-	/**
-	 * Adds a fragment separator to the given URI if it doesn't end already with a fragment separator.
-	 * 
-	 * <p>
-	 * (This is a replacement for JenaUtil.getURIForNS(String uri), which always uses hash, #.
-	 * I keep the name of the method to facilitate the connection, but ... 
-	 * TODO a better name would be simply: appendFragment).
-	 * 
-	 * 
-	 * @param uri  A URI
-	 * @return The URI with a trailing fragment separator.
-	 */
-	public static String getURIForNS(String uri) {
+
+	public static String appendFragment(String uri) {
 		if ( ! uri.endsWith(FRAG_SEPARATOR) ) {
 			return uri + FRAG_SEPARATOR;
 		}
 		return uri;
 	}
 	
-	/**
-	 * Removes any trailing fragment separators from the given URI.
-	 * 
-	 * <p>
-	 * (This is a replacement for JenaUtil.getURIForBase(String uri), which always uses hash, #.
-	 * I keep the name of the method to facilitate the connection, but ... 
-	 * TODO a better name would be simply: removeTrailingFragment).
-	 * 
-	 * 
-	 * @param uri  A URI
-	 * @return The URI without any trailing fragment separators.
-	 */
-	public static String getURIForBase(String uri) {
+
+	public static String removeTrailingFragment(String uri) {
 		return uri.replaceAll(FRAG_SEPARATOR + "+$", "");
 	}
 	
@@ -67,7 +45,7 @@ public class JenaUtil2 {
 	 */	
 	public static String getOntModelAsString(Model model, String lang) {
 		StringWriter sw = new StringWriter();
-		String base = getURIForBase(model.getNsPrefixURI(""));
+		String base = removeTrailingFragment(model.getNsPrefixURI(""));
 		RDFWriter writer = model.getWriter(lang);
 		writer.setProperty("xmlbase", base);
 		writer.setProperty("showXmlDeclaration", "true");

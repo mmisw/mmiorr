@@ -92,14 +92,23 @@ public class MdHelper {
 	// map: propUri -> Property
 	private static Map<String,Property> uriPropMap = new HashMap<String,Property>();
 	
+	// map: propUri -> AttrDef
+	private static Map<String,AttrDef> uriAttrDefMap = new HashMap<String,AttrDef>();
+	
+
 	public static Map<String, Property> getUriPropMap() {
 		return uriPropMap;
+	}
+
+	public static Map<String, AttrDef> getAttrDefMap() {
+		return uriAttrDefMap;
 	}
 
 	
 	private static AttrDef createAttrDef(Property prop) {
 		AttrDef attrDef = new AttrDef(prop.getURI(), prop.getNameSpace(), prop.getLocalName());
 		uriPropMap.put(prop.getURI(), prop);
+		uriAttrDefMap.put(prop.getURI(), attrDef);
 		return attrDef;
 	}
 	

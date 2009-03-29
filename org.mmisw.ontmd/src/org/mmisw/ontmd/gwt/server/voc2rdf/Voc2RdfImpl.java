@@ -1,13 +1,17 @@
 package org.mmisw.ontmd.gwt.server.voc2rdf;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.ont.vocabulary.Omv;
+import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.ontmd.gwt.client.rpc.AppInfo;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
+import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.server.Config;
 import org.mmisw.ontmd.gwt.server.MdHelper;
 
@@ -52,9 +56,22 @@ public class Voc2RdfImpl  {
 	
 	private void prepareBaseInfo() {
 		log.info("preparing base info ...");
+		
+		// prepare all the information (as in ontmd) even that voc2rdf is just going to use a few of the attributes:
+		MdHelper.prepareGroups(false);
+		
 		baseInfo = new Voc2RdfBaseInfo();
 		baseInfo.setResourceTypeAttrDef(MdHelper.getResourceTypeAttrDef());
-		log.info("preparing base info ... Done.");
+		
+		Map<String,AttrDef> attrDefMap = new HashMap<String,AttrDef>();
+		Map<String, AttrDef> uriAttrDefMap = MdHelper.getAttrDefMap();
+		attrDefMap.put("fullTitle", uriAttrDefMap.get(Omv.name.getURI()));
+		attrDefMap.put("creator", uriAttrDefMap.get(Omv.hasCreator.getURI()));
+		attrDefMap.put("description", uriAttrDefMap.get(Omv.description.getURI()));
+		attrDefMap.put("authority", uriAttrDefMap.get(OmvMmi.origMaintainerCode.getURI()));
+		baseInfo.setAttrDefMap(attrDefMap);
+		
+		log.info("preparing base info ... Done.  attrDefMap = " +attrDefMap);
 	}
 	
 	
@@ -89,10 +106,10 @@ public class Voc2RdfImpl  {
 			return conversionResult;
 		}
 		
-		String orgAbbreviation = "_tmp_"; //values.get(OmvMmi.origMaintainerCode.getURI());
+		String orgAbbreviation = values.get("authority");
 
 		if ( orgAbbreviation == null ) {
-			conversionResult.setError("missing origMaintainerCode");
+			conversionResult.setError("missing authority");
 			return conversionResult;
 		}
 		

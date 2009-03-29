@@ -26,7 +26,7 @@ public class MyDialog extends DialogBox {
 	private TextArea ta;
 
 	
-	MyDialog(Widget contents) {
+	public MyDialog(Widget contents) {
 		this(contents, true);
 	}
 	

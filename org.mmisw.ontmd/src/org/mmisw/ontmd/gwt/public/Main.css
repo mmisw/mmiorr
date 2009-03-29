@@ -35,6 +35,36 @@ table.inline td {
   border: 1px solid #8cacbb;
 }
 
+
 .gwt-DialogBox { border: 0px outset; background-color: white; }
 
-.Caption{ background-color: #dee7ec; font-weight: bold; cursor: move; text-align: left; } 
+.Caption{ background-color: #dee7ec; font-weight: bold; cursor: move; text-align: left; }
+
+
+.TermTable {
+  font-size: small;
+  background-color: #ffffff;
+  border-spacing: 0px;
+  border-collapse: collapse;
+  border: 1px solid #8cacbb;
+}
+
+.TermTable-header {
+  font-weight: bold;
+  text-align: center;
+  padding: 3px;
+  border: 1px solid #8cacbb;
+  background-color: #dee7ec;
+}
+
+.TermTable-OddRow {
+  /*background-color: #f7eefc;*/
+  border: 1px solid #8cacbb;
+}
+
+.TermTable-EvenRow {
+  /*background-color: #f7dcee;*/
+  border: 1px solid #8cacbb;
+}
+
+

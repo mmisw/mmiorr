@@ -18,6 +18,11 @@ import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * A panel for the resourceType elements.
+ * 
+ * @author Carlos Rueda
+ */
 public class ResourceTypeWidget extends VerticalPanel {
 
 	public AttrDef resourceTypeAttrDef;
@@ -25,16 +30,87 @@ public class ResourceTypeWidget extends VerticalPanel {
 	private CheckBox resourceTypeIsMap;
 	TextBoxBase resourceTypeRelatedField;
 
+	
+	/**
+	 * 
+	 * @param attr
+	 * @param editing
+	 * @param cl
+	 */
+	public ResourceTypeWidget(AttrDef attr, boolean editing, ChangeListener cl) {
+		super();
+		Main.log("Creating ResourceTypeWidget: " +attr+ ", " +editing);
+		resourceTypeAttrDef = attr;
+
+		// see MdHelper:
+		assert attr.isAllowUserDefinedOption() ;
+		assert attr.isRequired() ;
+		List<AttrDef> relatedAttrs = attr.getRelatedAttrs();
+		assert relatedAttrs != null && relatedAttrs.size() > 0 ; 
+		
+		
+		resourceTypeFieldWithChoose = new FieldWithChoose(attr, cl) {
+			protected void optionSelected(Option option) {
+				resourceTypeRelatedField.setText(option.getUri());
+			}
+		};
+		
+		this.setBorderWidth(1);
+		
+		FlexTable flexPanel = new FlexTable();
+		int row = 0;
+		this.add(flexPanel);
+
+		//////////////////////////////////////////////////////////////
+		// handle the related attribute
+		AttrDef attr2 = relatedAttrs.get(0);
+		String label = attr2.getLabel();
+		int nl = attr2.getNumberOfLines();
+		resourceTypeRelatedField = Util.createTextBoxBase(nl, "400", cl);
+		String tooltip = "<b>" +label+ "</b>:<br/>" + 
+							attr2.getTooltip() +
+							"<br/><br/><div align=\"right\">(" +attr2.getUri()+ ")</div>";
+
+		flexPanel.setWidget(row, 0, new TLabel("Name:", editing && attr2.isRequired(), tooltip ));
+		flexPanel.getFlexCellFormatter().setColSpan(row, 1, 2);
+		flexPanel.setWidget(row, 1, resourceTypeFieldWithChoose);
+		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
+				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		flexPanel.getFlexCellFormatter().setAlignment(row, 1, 
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		row++;
+
+		flexPanel.setWidget(row, 0, new TLabel(label, editing && attr2.isRequired(), tooltip ));
+		flexPanel.getFlexCellFormatter().setColSpan(row, 1, 2);
+		flexPanel.setWidget(row, 1, resourceTypeRelatedField);
+//		flexPanel.getFlexCellFormatter().setWidth(row, 0, "250");
+		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
+				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		flexPanel.getFlexCellFormatter().setAlignment(row, 1, 
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		row++;
+		//////////////////////////////////////////////////////////////
+		
+	}
+
+	
+	
+	/**
+	 * 
+	 * @param attr
+	 * @param editing
+	 * @param includeIsMapCheck
+	 * @param cl
+	 */
 	public ResourceTypeWidget(AttrDef attr, boolean editing, boolean includeIsMapCheck, ChangeListener cl) {
 		super();
 		Main.log("Creating ResourceTypeWidget: " +attr+ ", " +editing);
 		resourceTypeAttrDef = attr;
 
-		this.setBorderWidth(1);
-		VerticalPanel vp = new VerticalPanel();
-		this.add(vp);
-		vp.setSpacing(5);
-		
 		// see MdHelper:
 		assert attr.isAllowUserDefinedOption() ;
 		assert attr.isRequired() ;
@@ -51,7 +127,7 @@ public class ResourceTypeWidget extends VerticalPanel {
 		if ( includeIsMapCheck ) {
 			resourceTypeIsMap = new CheckBox("Check here if this is a mapping ontology");
 
-			// update this checkbox according to contents inthe text field:
+			// update this checkbox according to contents in the text field:
 			resourceTypeFieldWithChoose.textBox.addKeyboardListener(new KeyboardListenerAdapter() {
 				public void onKeyUp(Widget sender, char keyCode, int modifiers) {
 					String value = resourceTypeFieldWithChoose.textBox.getText().toLowerCase();
@@ -59,16 +135,7 @@ public class ResourceTypeWidget extends VerticalPanel {
 					resourceTypeIsMap.setChecked(isMap);
 				}
 			});
-		}
-		
-		vp.add(resourceTypeFieldWithChoose);
-
-		HorizontalPanel hp = new HorizontalPanel();
-		vp.add(hp);
-
-		hp.setSpacing(4);
-		
-		if ( includeIsMapCheck ) {
+			
 			resourceTypeIsMap.addClickListener(new ClickListener() {
 				public void onClick(Widget sender) {
 					boolean checked = resourceTypeIsMap.isChecked();
@@ -85,9 +152,15 @@ public class ResourceTypeWidget extends VerticalPanel {
 				}
 
 			});
-			hp.add(resourceTypeIsMap);
 		}
 		
+		this.setBorderWidth(1);
+		VerticalPanel vp = new VerticalPanel();
+		this.add(vp);
+		vp.setSpacing(5);
+		
+		vp.add(resourceTypeFieldWithChoose);
+
 		//////////////////////////////////////////////////////////////
 		// handle the related attribute
 		AttrDef attr2 = relatedAttrs.get(0);
@@ -111,6 +184,14 @@ public class ResourceTypeWidget extends VerticalPanel {
 		row++;
 		vp.add(panel);
 		//////////////////////////////////////////////////////////////
+		
+		HorizontalPanel hp = new HorizontalPanel();
+		vp.add(hp);
+		hp.setSpacing(4);
+		if ( includeIsMapCheck ) {
+			hp.add(resourceTypeIsMap);
+		}
+		
 	}
 	
 	void enable(boolean enabled) {
@@ -133,7 +214,7 @@ public class ResourceTypeWidget extends VerticalPanel {
 		}
 	}
 	
-	void setExample() {
+	public void setExample() {
 		if ( resourceTypeAttrDef != null ) {
 			String example = resourceTypeAttrDef.getExample();
 			if ( example == null ) {

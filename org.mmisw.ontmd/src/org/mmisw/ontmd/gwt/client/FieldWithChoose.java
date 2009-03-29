@@ -33,11 +33,11 @@ public class FieldWithChoose  extends HorizontalPanel {
 	PushButton chooseButton;
 	ChangeListener cl;
 	
-	FieldWithChoose(AttrDef attr, ChangeListener cl) {
+	public FieldWithChoose(AttrDef attr, ChangeListener cl) {
 		this.attr = attr;
 		this.cl = cl;
 		int nl = 1;    /// attr.getNumberOfLines() is ignored
-		textBox = Util.createTextBoxBase(nl, "400", cl);
+		textBox = Util.createTextBoxBase(nl, "200", cl);
 
 		add(textBox);
 		

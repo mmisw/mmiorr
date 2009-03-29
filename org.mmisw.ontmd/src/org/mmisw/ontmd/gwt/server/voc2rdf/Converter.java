@@ -176,8 +176,8 @@ public class Converter {
 		saveInFile(fileInText);
 		
 		newOntModel = new OwlModel(JenaUtil.createDefaultOntModel());
-		ns_ = JenaUtil2.getURIForNS(finalUri);
-		base_ = JenaUtil2.getURIForBase(finalUri);
+		ns_ = JenaUtil2.appendFragment(finalUri);
+		base_ = JenaUtil2.removeTrailingFragment(finalUri);
 		
 		// set NS prefixes:
 		newOntModel.setNsPrefix("", ns_);
@@ -217,6 +217,25 @@ public class Converter {
 		String classUri = values.get("classUri");
 		if ( classUri != null ) {
 			ont.addProperty(OmvMmi.shortNameUri, classUri);
+		}
+		
+		String fullTitle = values.get("fullTitle");
+		if ( fullTitle != null ) {
+			ont.addProperty(Omv.name, fullTitle);
+		}
+		
+		String creator = values.get("creator");
+		if ( creator != null ) {
+			ont.addProperty(Omv.hasCreator, creator);
+		}
+		
+		String briefDescription = values.get("briefDescription");
+		if ( briefDescription != null ) {
+			ont.addProperty(Omv.description, briefDescription);
+		}
+		
+		if ( orgAbbreviation != null && orgAbbreviation.trim().length() > 0 ) {
+			ont.addProperty(OmvMmi.origMaintainerCode, orgAbbreviation.trim());
 		}
 		
 		createOntologIndividuals(fileInText);
