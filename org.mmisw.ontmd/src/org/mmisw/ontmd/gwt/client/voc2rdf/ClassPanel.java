@@ -59,9 +59,10 @@ public class ClassPanel extends VerticalPanel {
 		"label for each term. It will be used to create a unique identifier. (Typical column titles " +
 		"include Description, Notes, See Also, or others -- these all add information to help " +
 		"describe your terms. These are treated as annotations in the ontology.) " +
-		"Column values should be separated either by comma or tab characters; empty fields are " +
-		"represented by two commas or tabs in a row. Each record (row) should be separated by a " +
-		"return or end of line character. All term labels must be unique.";
+//		"Column values should be separated by comma characters; empty fields are " +
+//		"represented by two commas or tabs in a row. Each record (row) should be separated by a " +
+//		"return or end of line character. " +
+		"All term labels must be unique.";
 
 	private static final String CONTENTS_DEFAULT = 
 		"name,description\n" +
@@ -73,6 +74,18 @@ public class ClassPanel extends VerticalPanel {
 		"sea surface salinity, sea water salinity, salinity at the sea surface (above 3m.)\n" +
 		"sst, water temperature, temperature at the sea surface (above 3m.)\n" +
 		"depth, measurement depth, derived from pressure\n"
+		;
+
+	private static final String INTRO = 
+		"The class refers to the main theme associated with your vocabulary. " +
+		"Each term is considered an instance of this class. " +
+		"The terms are the 'words' (concepts, labels, unique IDs or code, or similar unique tags) of your vocabulary. " +
+		"CLick the cells of the table for editing the contents. " +
+		"The CSV button display the contents of the table in CSV format allowing direct editing on the text format. " 
+//		"You can manually type in the contents of your vocabulary or paste it from " +
+//		"your original text file. Use the check box at the bottom for a convenient " +
+//		"(read-only) tabular view of the contents. Uncheck it to continue editing. " +
+//		"The Example button will fill in the vocabulary contents with an example."
 		;
 
 	private CellPanel contentsContainer = new VerticalPanel();
@@ -114,13 +127,7 @@ public class ClassPanel extends VerticalPanel {
 		int row = 0;
 		
 		// general information 
-		HTML infoLabel = new HTML("The class refers to the main theme associated with your vocabulary. " +
-				"You can manually type in the contents of your vocabulary or paste it from " +
-				"your original text file. Use the check box at the bottom for a convenient " +
-				"(read-only) tabular view of the contents. Uncheck it to continue " +
-				"editing. The Example button will fill in the vocabulary contents with an " +
-				"example."
-		);
+		HTML infoLabel = new HTML(INTRO);
 		flexPanel.getFlexCellFormatter().setColSpan(row, 0, 4);
 		flexPanel.setWidget(row, 0, infoLabel);
 		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
