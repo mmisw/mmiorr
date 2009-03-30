@@ -137,7 +137,7 @@ public class Voc2RdfImpl  {
 			error = ontConverter.createOntology();
 		}
 		catch (Exception e1) {
-			log.error(e1);
+			log.error(e1, e1);
 			conversionResult.setError(e1.getClass().getName()+ " : " +e1.getMessage());
 			return conversionResult;
 		}

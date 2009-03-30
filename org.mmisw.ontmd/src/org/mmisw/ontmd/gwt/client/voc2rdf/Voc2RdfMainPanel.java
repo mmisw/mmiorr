@@ -23,11 +23,11 @@ public class Voc2RdfMainPanel extends VerticalPanel {
 
 
 	private static final String INFO = 				
-		"Voc2RDF transforms a vocabulary in text format into a format that greatly " +
-		"facilitates the exploitation of your vocabulary by Semantic Web tools, thus " +
+		"Voc2RDF puts a vocabulary in a format that greatly " +
+		"facilitates its exploitation by Semantic Web tools, thus " +
 		"enabling semantic interoperability. " +
 		"This format is called the <a href=\"http://www.w3.org/TR/REC-rdf-syntax/\"" +
-		" target=\"_blank\" >Resource Description Framework.</a> " 	
+		" target=\"_blank\">Resource Description Framework.</a> " 	
 		;
 	
 	private CellPanel container = new VerticalPanel();
@@ -64,6 +64,7 @@ public class Voc2RdfMainPanel extends VerticalPanel {
 		
 		HorizontalPanel headerPanel = new HorizontalPanel(); 
 		add(headerPanel);
+		headerPanel.setWidth("900");
 		headerPanel.add(Main.images.voc2rdf2().createImage());
 		HTML info = new HTML(INFO);
 		headerPanel.add(info);

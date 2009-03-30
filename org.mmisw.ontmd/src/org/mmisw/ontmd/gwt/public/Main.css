@@ -49,6 +49,14 @@ table.inline td {
   border: 1px solid #8cacbb;
 }
 
+.TermTable-controlRow {
+  font-color: gray;
+  text-align: center;
+  padding: 3px;
+  border: 1px solid #8cacbb;
+  background-color: #ffffff;
+}
+
 .TermTable-header {
   font-weight: bold;
   text-align: center;
@@ -57,13 +65,20 @@ table.inline td {
   background-color: #dee7ec;
 }
 
+.TermTable-header td {
+  min-width: 40px;
+  _width: 40px;/* IE6 hack */
+  min-height: 20px;
+  _height: 20px;/* IE6 hack */
+}
+
 .TermTable-OddRow {
-  /*background-color: #f7eefc;*/
+  background-color: #f3fcff;
   border: 1px solid #8cacbb;
 }
 
 .TermTable-EvenRow {
-  /*background-color: #f7dcee;*/
+  background-color: #ffffff;
   border: 1px solid #8cacbb;
 }
 

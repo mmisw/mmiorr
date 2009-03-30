@@ -51,12 +51,12 @@ public class MyDialog extends DialogBox {
 		dockPanel.setCellHorizontalAlignment(hp, HasHorizontalAlignment.ALIGN_RIGHT);
 	}
 	
-	DockPanel getDockPanel() {
+	public DockPanel getDockPanel() {
 		return dockPanel;
 	}
 	
 	/** convenience method */
-	TextArea addTextArea(TextArea ta) {
+	public TextArea addTextArea(TextArea ta) {
 		if ( ta == null ) {
 			ta = new TextArea();
 		}
@@ -94,13 +94,16 @@ public class MyDialog extends DialogBox {
 		return panel;
 	}
 	
-	HorizontalPanel getButtonsPanel() {
+	public HorizontalPanel getButtonsPanel() {
 		return buttonsPanel;
 	}
 	
 	@Override
 	public void show() {
-		if ( closeButton != null ) {
+		if ( ta != null && ! ta.isReadOnly() ) {
+			ta.setFocus(true);
+		}
+		else if ( closeButton != null ) {
 			closeButton.setFocus(true);
 		}
 		else if ( ta != null ) {

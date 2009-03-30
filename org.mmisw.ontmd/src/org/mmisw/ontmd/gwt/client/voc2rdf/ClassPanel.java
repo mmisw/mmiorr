@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.MyDialog;
 import org.mmisw.ontmd.gwt.client.ResourceTypeWidget;
 import org.mmisw.ontmd.gwt.client.TLabel;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
@@ -13,16 +15,15 @@ import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextArea;
@@ -62,6 +63,17 @@ public class ClassPanel extends VerticalPanel {
 		"represented by two commas or tabs in a row. Each record (row) should be separated by a " +
 		"return or end of line character. All term labels must be unique.";
 
+	private static final String CONTENTS_DEFAULT = 
+		"name,description\n" +
+		" , \n"
+		;
+
+	private static final String CONTENTS_EXAMPLE = 
+		"name,description,comment\n" +
+		"sea surface salinity, sea water salinity, salinity at the sea surface (above 3m.)\n" +
+		"sst, water temperature, temperature at the sea surface (above 3m.)\n" +
+		"depth, measurement depth, derived from pressure\n"
+		;
 
 	private CellPanel contentsContainer = new VerticalPanel();
 	
@@ -70,17 +82,13 @@ public class ClassPanel extends VerticalPanel {
 	private AttrDef resourceTypeAttrDef;
 	private ResourceTypeWidget resourceTypeWidget;
 
-	private TextArea ascii_ta = new TextArea();
-	private ListBox fieldSeparator_lb;
-	
-	private final CheckBox tabular_cb = new CheckBox("Tabular view (check this for easier inspection)");
-	
-	private ScrollPanel table = new ScrollPanel();
+	private ScrollPanel tableScroll = new ScrollPanel();
 	
 	private HTML statusLabel = new HTML();
 
-
-	private PushButton importButton;
+	private TermTable termTable;
+	
+	private PushButton csvButton;
 	
 
 	
@@ -89,6 +97,7 @@ public class ClassPanel extends VerticalPanel {
 
 		resourceTypeAttrDef = Voc2Rdf.baseInfo.getResourceTypeAttrDef();
 		add(createForm());
+		updateContents(CONTENTS_DEFAULT);
 	}
 
 	/**
@@ -97,14 +106,7 @@ public class ClassPanel extends VerticalPanel {
 	private Widget createForm() {
 		contentsContainer.setBorderWidth(1);
 
-		ascii_ta.setSize("800", "200");
-		table.setSize("800", "200");
-		
-		ascii_ta.addKeyboardListener(new KeyboardListenerAdapter(){
-			  public void onKeyUp(Widget sender, char keyCode, int modifiers) {
-				  statusLabel.setText("");
-			  }
-		});
+		tableScroll.setSize("800", "180");
 		
 		FlexTable flexPanel = new FlexTable();
 //		flexPanel.setBorderWidth(1);
@@ -119,7 +121,7 @@ public class ClassPanel extends VerticalPanel {
 				"editing. The Example button will fill in the vocabulary contents with an " +
 				"example."
 		);
-		flexPanel.getFlexCellFormatter().setColSpan(row, 0, 3);
+		flexPanel.getFlexCellFormatter().setColSpan(row, 0, 4);
 		flexPanel.setWidget(row, 0, infoLabel);
 		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
@@ -159,9 +161,16 @@ public class ClassPanel extends VerticalPanel {
 		flexPanel.getFlexCellFormatter().setAlignment(row, 1, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
+//		row++;
+
+		HorizontalPanel exPanel = new HorizontalPanel();
+		exPanel.add(_createCsvButton());
+		flexPanel.setWidget(row, 2, exPanel);
+		flexPanel.getFlexCellFormatter().setAlignment(row, 2, 
+				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_BOTTOM
+		);
 		row++;
 
-		
 		
 		
 		flexPanel.setWidget(row, 0, new TLabel("Terms:", true, "<b>Terms</b>:<br/>" +CONTENTS_TOOTIP));
@@ -171,77 +180,28 @@ public class ClassPanel extends VerticalPanel {
 
 		contentsContainer.setSize("600", "200");
 		
-		contentsContainer.add(ascii_ta);
-		flexPanel.getFlexCellFormatter().setColSpan(row, 1, 2);
+		contentsContainer.add(tableScroll);
+		flexPanel.getFlexCellFormatter().setColSpan(row, 1, 3);
 		flexPanel.setWidget(row, 1, contentsContainer);
 		flexPanel.getFlexCellFormatter().setAlignment(row, 1, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		row++;
 
-		CellPanel hp = new HorizontalPanel();
-		fieldSeparator_lb = new ListBox();
-		fieldSeparator_lb.addItem("Comma", "csv");
-		fieldSeparator_lb.addItem("Tab", "tab");
-		hp.add(new Label("Column separator:"));
-		hp.add(fieldSeparator_lb);
-		fieldSeparator_lb.addChangeListener(new ChangeListener() {
-			public void onChange(Widget sender) {
-				boolean tabular = tabular_cb.isChecked();
-				if ( tabular ) {
-					updateContents(contentsContainer, tabular);
-				}
-			}
-		});
 		
-		hp.add(tabular_cb);
-		tabular_cb.setTitle("Check this to show the contents in a tabular view for easier inspection");
-		
-		tabular_cb.addClickListener(new ClickListener() {
-			public void onClick(Widget sender) {
-				boolean tabular = tabular_cb.isChecked();
-				if ( tabular ) {
-					String ascii = ascii_ta.getText().trim();
-					if ( ascii.length() == 0 ) {
-						tabular_cb.setChecked(false);
-						return;
-					}
-				}
-
-				updateContents(contentsContainer, tabular);
-			}
-		});
-		
-			
-//		flexPanel.getFlexCellFormatter().setColSpan(row, 1, 2);
-		flexPanel.setWidget(row, 1, hp);
-		flexPanel.getFlexCellFormatter().setAlignment(row, 1, 
-				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
-		);
-		
-		
-		HorizontalPanel exPanel = new HorizontalPanel();
-		exPanel.add(createImportButton());
-		flexPanel.setWidget(row, 2, exPanel);
-		flexPanel.getFlexCellFormatter().setAlignment(row, 1, 
-				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
-		);
-		
-		row++;
-
 		return flexPanel;
 	}
 	
-	private CellPanel createImportButton() {
+	private CellPanel _createCsvButton() {
 		CellPanel panel = new HorizontalPanel();
 		panel.setSpacing(2);
-		importButton = new PushButton("Import", new ClickListener() {
+		csvButton = new PushButton("CSV", new ClickListener() {
 			public void onClick(Widget sender) {
-				importContents(true);
+				importContents();
 			}
 		});
-		importButton.setTitle("Imports CSV contents into the table");
-		panel.add(importButton);
+		csvButton.setTitle("Displays contents in CSV format");
+		panel.add(csvButton);
 		
 		return panel;
 	}
@@ -262,21 +222,18 @@ public class ClassPanel extends VerticalPanel {
 			values.put("classUri", classUri);
 		}
 		
-		String ascii = ascii_ta.getText().trim();
-		if ( ascii.length() > 0 ) {
-			StringBuffer errorMsg = new StringBuffer();
-			updateTabularView(errorMsg);
-			if ( errorMsg.length() > 0 ) {
-				return errorMsg.toString();
-			}
+		String error = termTable.check();
+
+		if ( error != null ) {
+			return error;
+		}
 			
-			values.put("ascii", ascii_ta.getText());
-		}
-		else {
-			return "Empty vocabulary contents";
-		}
+		String csv = termTable.getCsv();
+		values.put("ascii", csv);
 		
-		values.put("fieldSeparator", fieldSeparator_lb.getValue(fieldSeparator_lb.getSelectedIndex()));
+		// always comma now.
+		values.put("fieldSeparator", "csv"); 
+//				fieldSeparator_lb.getValue(fieldSeparator_lb.getSelectedIndex()));
 		
 		
 		values.put("primaryClass", primaryClass);
@@ -285,28 +242,23 @@ public class ClassPanel extends VerticalPanel {
 	}
 
 	
-	
-	
-	private void updateContents(CellPanel container, boolean tabular) {
-
-		contentsContainer.clear();
-		if ( tabular ) {
-			Widget widget = null;
-			StringBuffer errorMsg = new StringBuffer();
-			if ( false ) {
-				String html = updateTabularView(errorMsg);
-				widget = new HTML(html);
-			}
-			else {
-				widget = updateMyTable(errorMsg);
-			}
-			table.setWidget(widget);
-			contentsContainer.add(table);
-		}
-		else {
-			contentsContainer.add(ascii_ta);
+	/**
+	 * 
+	 * @param contents
+	 */
+	private void updateContents(String contents) {
+		
+		StringBuffer errorMsg = new StringBuffer();
+		TermTable tt = createTermTable(',', contents, errorMsg);
+		
+		if ( errorMsg.length() > 0 ) {
+			statusLabel.setHTML("<font color=\"red\">" +errorMsg+ "</font>");
+			return;
 		}
 		
+		// OK:
+		termTable = tt;
+		tableScroll.setWidget(termTable);
 	}
 
 	/**
@@ -315,36 +267,30 @@ public class ClassPanel extends VerticalPanel {
 	 * @param errorMsg Any error is reported here.
 	 * @return
 	 */
-	private Widget updateMyTable(StringBuffer errorMsg) {
-		String ascii = ascii_ta.getText().trim();
+	private static TermTable createTermTable(char separator, String ascii, StringBuffer errorMsg) {
 		assert ascii.length() > 0;
 
-		TermTable termTable = new TermTable();
-		
 		String[] lines = ascii.split("\n|\r\n|\r");
 		if ( lines.length == 0 || lines[0].trim().length() == 0 ) {
 			errorMsg.append("Empty vocabulary contents");
-			return null;
-		}
-		
-		if ( lines.length  == 1 ) {
-			errorMsg.append("Only a header line is included");
-			return null;
+			// A 1-column table to allow the user to insert columns (make column menu will be available)
+			return new TermTable(1);
 		}
 		
 		boolean error = false;
 		
-		String separatorName = fieldSeparator_lb.getValue(fieldSeparator_lb.getSelectedIndex());
-		char separator = "csv".equalsIgnoreCase(separatorName) ? ',' : '\t';
-	
+		List<String> headerCols = parseLine(lines[0], separator);
+		final int numHeaderCols = headerCols.size();
+
+		TermTable termTable = new TermTable(numHeaderCols);
+		
+		Main.log("termTable created");
+		
 		// header:
-		termTable.setHtml(0, 0, ""); // "<font color=\"gray\">" +0+ "</font>");
 		
 		// to check not repeated column headers
 		Set<String> usedColHeader = new HashSet<String>();
 		
-		List<String> headerCols = parseLine(lines[0], separator);
-		final int numHeaderCols = headerCols.size();
 		for ( int c = 0; c < numHeaderCols; c++ ) {
 			String str = headerCols.get(c).trim();
 			if ( str.length() == 0 ) {
@@ -352,39 +298,57 @@ public class ClassPanel extends VerticalPanel {
 					error = true;
 					errorMsg.append("empty column header: " +(c+1));
 				}
-				str = "<font color=\"red\">" +"empty column header"+ "</font>";
 			}
 			else if ( usedColHeader.contains(str) ) {
 				if ( !error ) {
 					error = true;
 					errorMsg.append("repeated column header: " +str);
 				}
-				str = str+ "<font color=\"red\">" +"(repeated)"+ "</font>";
 			}
 			else {
 				usedColHeader.add(str);
 			}
-			termTable.setHtml(0, c + 1, str);
+			termTable.setHeader(c, str);
 		}		
 		
+		if ( lines.length  == 1 ) {
+			if ( !error ) {
+				error = true;
+				errorMsg.append("Only a header line is included");
+			}
+			return termTable;
+		}
 		
+
 		// to check not repeated values for first column:
 		Set<String> usedFirstColValue = new HashSet<String>();
+
 		
+		// row = row in termTable:
+		int row = -1;
 
 		// remaining rows:
 		for ( int r = 1; r < lines.length; r++ ) {
 			
-			termTable.setHtml(r, 0, "<font color=\"gray\">" +r+ "</font>");
-			
 			List<String> cols = parseLine(lines[r], separator);
 			final int numCols = cols.size();
+
+			// skip empty line
+			boolean empty = true;
+			for ( int c = 0; empty && c < numCols; c++ ) {
+				String str = cols.get(c).trim();
+				if ( str.length() > 0 ) {
+					empty = false;
+				}
+			}
+			if ( empty ) {
+				continue;
+			}
+			
+			row++;
+			termTable.addRow(numCols);
 			for ( int c = 0; c < numCols; c++ ) {
 				String str = cols.get(c).trim();
-				
-//				if ( str.length() == 0 ) {
-//					str = "<font color=\"red\">" +"?"+ "</font>";
-//				}
 				
 				if ( c == 0 ) {
 					if ( str.length() == 0 ) {
@@ -392,7 +356,6 @@ public class ClassPanel extends VerticalPanel {
 							error = true;
 							errorMsg.append("Empty key in first column, line " +r);
 						}
-						str = str+ "<font color=\"red\">" +"(empty)"+ "</font>";
 					}
 					
 					else if ( usedFirstColValue.contains(str) ) {
@@ -400,7 +363,6 @@ public class ClassPanel extends VerticalPanel {
 							error = true;
 							errorMsg.append("repeated key in first column: " +str+ ", line " +r);
 						}
-						str = str+ "<font color=\"red\">" +"(repeated)"+ "</font>";
 					}
 					else {
 						usedFirstColValue.add(str);
@@ -408,7 +370,7 @@ public class ClassPanel extends VerticalPanel {
 				}
 				
 				if ( c < numHeaderCols ) {
-					termTable.setHtml(r, c + 1, str);
+					termTable.setCell(row, c, str);
 				}
 				else {
 					// more columns than expected
@@ -416,7 +378,7 @@ public class ClassPanel extends VerticalPanel {
 						error = true;
 						errorMsg.append("more columns than expected, line " +r);
 					}
-					termTable.setHtml(r, c + 1, "<font color=\"red\">" +str+ "</font>");
+					termTable.setCell(row, c, str);
 				}
 			}
 			
@@ -428,156 +390,16 @@ public class ClassPanel extends VerticalPanel {
 				}
 				
 				for ( int c = numCols; c < numHeaderCols; c++ ) {
-					termTable.setHtml(r, c + 1, "<font color=\"red\">" +"?"+ "</font>");
+					termTable.setCell(row, c, "");
 				}
 			}
 			
 		}
 		
-		termTable.prepareStyles();
 		return termTable;
 	}
 	
 
-	
-	
-	
-	/**
-	 * Returns the HTML for the tabular view.
-	 * 
-	 * @param errorMsg Any error is reported here.
-	 * @return
-	 */
-	private String updateTabularView(StringBuffer errorMsg) {
-		String ascii = ascii_ta.getText().trim();
-		assert ascii.length() > 0;
-
-		String[] lines = ascii.split("\n|\r\n|\r");
-		if ( lines.length == 0 || lines[0].trim().length() == 0 ) {
-			errorMsg.append("Empty vocabulary contents");
-			return "";
-		}
-		
-		if ( lines.length  == 1 ) {
-			errorMsg.append("Only a header line is included");
-			return "";
-		}
-		
-		boolean error = false;
-		
-		String separatorName = fieldSeparator_lb.getValue(fieldSeparator_lb.getSelectedIndex());
-		char separator = "csv".equalsIgnoreCase(separatorName) ? ',' : '\t';
-	
-		StringBuffer sb = new StringBuffer();
-		sb.append("<table class=\"inline\">");		
-
-		// header:
-		sb.append("<tr>\n");
-		
-		sb.append("<td align=\"right\"> <font color=\"gray\">" +0+ "</font> </td>");
-		
-		// to check not repeated column headers
-		Set<String> usedColHeader = new HashSet<String>();
-		
-		List<String> headerCols = parseLine(lines[0], separator);
-		final int numHeaderCols = headerCols.size();
-		for ( int c = 0; c < numHeaderCols; c++ ) {
-			String str = headerCols.get(c).trim();
-			if ( str.length() == 0 ) {
-				if ( !error ) {
-					error = true;
-					errorMsg.append("empty column header: " +(c+1));
-				}
-				str = "<font color=\"red\">" +"empty column header"+ "</font>";
-			}
-			else if ( usedColHeader.contains(str) ) {
-				if ( !error ) {
-					error = true;
-					errorMsg.append("repeated column header: " +str);
-				}
-				str = str+ "<font color=\"red\">" +"(repeated)"+ "</font>";
-			}
-			else {
-				usedColHeader.add(str);
-			}
-			sb.append("<th>" +str+ "</th>");	
-		}		
-		
-		sb.append("</tr>\n");
-		
-		
-		// to check not repeated values for first column:
-		Set<String> usedFirstColValue = new HashSet<String>();
-		
-
-		// remaining rows:
-		for ( int r = 1; r < lines.length; r++ ) {
-			sb.append("<tr>\n");
-			sb.append("<td align=\"right\"> <font color=\"gray\">" +r+ "</font> </td>");
-			
-			List<String> cols = parseLine(lines[r], separator);
-			final int numCols = cols.size();
-			for ( int c = 0; c < numCols; c++ ) {
-				String str = cols.get(c).trim();
-				
-//				if ( str.length() == 0 ) {
-//					str = "<font color=\"red\">" +"?"+ "</font>";
-//				}
-				
-				if ( c == 0 ) {
-					if ( str.length() == 0 ) {
-						if ( !error ) {
-							error = true;
-							errorMsg.append("Empty key in first column, line " +r);
-						}
-						str = str+ "<font color=\"red\">" +"(empty)"+ "</font>";
-					}
-					
-					else if ( usedFirstColValue.contains(str) ) {
-						if ( !error ) {
-							error = true;
-							errorMsg.append("repeated key in first column: " +str+ ", line " +r);
-						}
-						str = str+ "<font color=\"red\">" +"(repeated)"+ "</font>";
-					}
-					else {
-						usedFirstColValue.add(str);
-					}
-				}
-				
-				if ( c < numHeaderCols ) {
-					sb.append("<td>" +str+ "</td>");
-				}
-				else {
-					// more columns than expected
-					if ( !error ) {
-						error = true;
-						errorMsg.append("more columns than expected, line " +r);
-					}
-					sb.append("<td> <font color=\"red\">" +str+ "</font></td>");
-				}
-			}
-			
-			// any missing columns? 
-			if ( numCols < numHeaderCols ) {
-				if ( !error ) {
-					error = true;
-					errorMsg.append("missing columns according to header, line " +r);
-				}
-				
-				for ( int c = numCols; c < numHeaderCols; c++ ) {
-//					sb.append("<td> <font color=\"red\">" +"?"+ "</font></td>");
-					sb.append("<td></td>");
-				}
-			}
-			
-			sb.append("</tr>\n");
-		}
-		sb.append("</table>");
-		
-		return sb.toString();
-	}
-	
 	/**
 	 * Parses the line using the given separator and respecting quoted strings, 
 	 * which are, however, returned without the quotes (the only handled quoted is the
@@ -650,57 +472,111 @@ public class ClassPanel extends VerticalPanel {
 	}
 
 
-	void reset(boolean confirm) {
-		if ( confirm
-		&&  ascii_ta.getText().trim().length() > 0
-		&&  ! Window.confirm("This action will replace the current values") ) {
-			return;
-		}
-		ascii_ta.setText("");
-		fieldSeparator_lb.setSelectedIndex(0);
-		tabular_cb.setChecked(false);
-		updateContents(contentsContainer, false);
+	void reset() {
+		updateContents(CONTENTS_DEFAULT);
 	}
 
-	private void importContents(boolean confirm) {
-		if ( confirm 
-		&&  ascii_ta.getText().trim().length() > 0
-		&&  ! Window.confirm("This action will replace the current table contents") ) {
-			return;
-		}
-
-		// TODO
-	}
-
-	void example(boolean confirm) {
-		if ( confirm 
-		&&  ascii_ta.getText().trim().length() > 0
-		&&  ! Window.confirm("This action will replace the current values") ) {
-			return;
-		}
+	/**
+	 * Dispatches the "import" action.
+	 */
+	private void importContents() {
+		final MyDialog popup = new MyDialog(null) {
+			public boolean onKeyUpPreview(char key, int modifiers) {
+				// avoid ENTER close the popup
+				if ( key == KeyboardListener.KEY_ESCAPE  ) {
+					hide();
+					return false;
+				}
+				return true;
+			}
+		};
+		popup.setText("Table of terms in CSV format");
 		
+		final TextArea textArea = popup.addTextArea(null);
+		textArea.setReadOnly(false);
+		textArea.setText(termTable.getCsv());
+		
+		textArea.setSize("700", "250");
+
+		/////////////////////////////////////
+		// NOTE: Only comma is handled
+		/////////////////////////////////////
+//		
+//		/////////////////////////////////////////////////
+//		CellPanel separatorPanel = new HorizontalPanel();
+//		final ListBox fieldSeparator_lb = new ListBox();
+//		fieldSeparator_lb.addItem("Comma", "csv");
+//		fieldSeparator_lb.addItem("Tab", "tab");
+//		separatorPanel.add(new Label("Column separator:"));
+//		separatorPanel.add(fieldSeparator_lb);
+//		////////////////////////////////////////////////
+		
+		VerticalPanel vp = new VerticalPanel();
+		vp.setSpacing(10);
+		popup.getDockPanel().add(vp, DockPanel.NORTH);
+		vp.add(new HTML(
+				"This area can also be used to edit and/or insert new contents into " +
+				"the table; click the \"Import\" button to update the table." 
+				)
+		);
+//		vp.add(separatorPanel);
+		
+		
+		final HTML status = new HTML("");
+		textArea.addKeyboardListener(new KeyboardListenerAdapter(){
+			  public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+				  status.setText("");
+			  }
+		});
+
+		PushButton importButton = new PushButton("Import", new ClickListener() {
+			public void onClick(Widget sender) {
+				String text = textArea.getText().trim();
+				if ( text.length() == 0 ) {
+					status.setHTML("<font color=\"red\">Empty contents</font>");
+					return;
+				}
+				
+//				String separatorName = fieldSeparator_lb.getValue(fieldSeparator_lb.getSelectedIndex());
+//				char separator = "csv".equalsIgnoreCase(separatorName) ? ',' : '\t';
+				char separator = ',';
+				
+				StringBuffer errorMsg = new StringBuffer();
+				TermTable tt = createTermTable(separator, text, errorMsg);
+				
+				if ( errorMsg.length() > 0 ) {
+					status.setHTML("<font color=\"red\">" +errorMsg+ "</font>");
+					return;
+				}
+				
+				// OK:
+				if ( Window.confirm("This action will update the term table") ) {
+					termTable = tt;
+					tableScroll.setWidget(termTable);
+					popup.hide();
+				}
+			}
+		});
+		
+		popup.getButtonsPanel().insert(importButton, 0);
+		popup.getButtonsPanel().insert(status, 0);
+		
+		popup.center();
+		popup.show();
+
+	}
+
+	void example() {
 		statusLabel.setText("");
 
 		resourceTypeWidget.setExample();
-		ascii_ta.setText(
-				"name,description,comment\n" +
-				"sea surface salinity, sea water salinity, salinity at the sea surface (above 3m.)\n" +
-				"sst, water temperature, temperature at the sea surface (above 3m.)\n" +
-				"depth, measurement depth, derived from pressure\n"
-		);
 
-		fieldSeparator_lb.setSelectedIndex(0);
-		boolean tabular = tabular_cb.isChecked();
-		if ( tabular ) {
-			updateContents(contentsContainer, tabular);
-		}
+		updateContents(CONTENTS_EXAMPLE);
 	}
 	
 	
 	void enable(boolean enabled) {
-		importButton.setEnabled(enabled);
-		tabular_cb.setEnabled(enabled);
-		fieldSeparator_lb.setEnabled(enabled);
+		csvButton.setEnabled(enabled);
 	}
 
 }

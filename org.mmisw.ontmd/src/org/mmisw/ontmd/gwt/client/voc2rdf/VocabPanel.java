@@ -353,7 +353,7 @@ public class VocabPanel extends VerticalPanel {
 		creatorTb.setText("");
 		descriptionTb.setText("");
 		authorityField.setValue("");
-		classPanel.reset(false);
+		classPanel.reset();
 	}
 
 	void example(boolean confirm) {
@@ -369,7 +369,7 @@ public class VocabPanel extends VerticalPanel {
 		descriptionTb.setText(descriptionAttrDef.getExample());
 		authorityField.setValue(authorityAttrDef.getExample());
 		
-		classPanel.example(false);
+		classPanel.example();
 	}
 	
 	
