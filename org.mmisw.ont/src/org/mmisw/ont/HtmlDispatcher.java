@@ -267,9 +267,8 @@ public class HtmlDispatcher {
 				out.printf("<td> <a href=\"%s\">%s</a> </td> %n", elemUri, elemUri);
 			}
 
-			elemUri = appendHtmlIfResolvableByThisService(elemUri);
-
-			out.printf("<td> <a href=\"%s\">%s</a> </td> %n", elemUri, elemUri);
+			out.printf("<td> <a href=\"%s\">%s</a> </td> %n", 
+					appendHtmlIfResolvableByThisService(elemUri), elemUri);
 
 			
 			//out.printf("<td> %s </td> %n", elem.getLocalName());
@@ -357,8 +356,8 @@ public class HtmlDispatcher {
 					Property prd = sta.getPredicate();
 					String prdUri = prd.getURI();
 					if ( prdUri != null ) {
-						prdUri = appendHtmlIfResolvableByThisService(prdUri);
-						out.printf("<td><a href=\"%s\">%s</a></td>", prdUri, prdUri);
+						out.printf("<td><a href=\"%s\">%s</a></td>", 
+								appendHtmlIfResolvableByThisService(prdUri), prdUri);
 					}
 					else {
 						out.printf("<td>%s</td>", prd.toString());
@@ -371,8 +370,8 @@ public class HtmlDispatcher {
 						objUri = objRes.getURI();
 					}
 					if ( objUri != null ) {
-						objUri = appendHtmlIfResolvableByThisService(objUri);
-						out.printf("<td><a href=\"%s\">%s</a></td>", objUri, objUri);
+						out.printf("<td><a href=\"%s\">%s</a></td>", 
+								appendHtmlIfResolvableByThisService(objUri), objUri);
 					}
 					else {
 						assert obj instanceof Literal ;
@@ -405,8 +404,8 @@ public class HtmlDispatcher {
 					String sjtUri = sjt.getURI();
 
 					if ( sjtUri != null ) {
-						sjtUri = appendHtmlIfResolvableByThisService(sjtUri);
-						out.printf("<td><a href=\"%s\">%s</a></td>", sjtUri, sjtUri);
+						out.printf("<td><a href=\"%s\">%s</a></td>", 
+								appendHtmlIfResolvableByThisService(sjtUri), sjtUri);
 					}
 					else {
 						out.printf("<td>%s</td>", sjt.toString());
@@ -438,8 +437,8 @@ public class HtmlDispatcher {
 					String idvUri = idv.getURI();
 					
 					if ( idvUri != null ) {
-						idvUri = appendHtmlIfResolvableByThisService(idvUri);
-						out.printf("<td><a href=\"%s\">%s</a></td>", idvUri, idvUri);
+						out.printf("<td><a href=\"%s\">%s</a></td>", 
+								appendHtmlIfResolvableByThisService(idvUri), idvUri);
 					}
 					else {
 						out.printf("<td>%s</td>", idv.toString());
