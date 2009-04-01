@@ -69,17 +69,20 @@ public class Accept {
 		}
 		
 		// determine dominating entry:
-		// TODO Entry paramenters not yet considered.
-		for ( Entry ctEntry : entries ) {
-			if ( "application/rdf+xml".equalsIgnoreCase(ctEntry.contentType) ) {
-				dominating = ctEntry;
-				break;
-			}
-			else if ( "text/html".equalsIgnoreCase(ctEntry.contentType) ) {
-				dominating = ctEntry;
-				break;
-			}
-		}
+		
+		// FIXME Hmm, why the following?  (2003-04-01)
+//		// TODO Entry paramenters not yet considered.
+//		for ( Entry ctEntry : entries ) {
+//			if ( "application/rdf+xml".equalsIgnoreCase(ctEntry.contentType) ) {
+//				dominating = ctEntry;
+//				break;
+//			}
+//			else if ( "text/html".equalsIgnoreCase(ctEntry.contentType) ) {
+//				dominating = ctEntry;
+//				break;
+//			}
+//		}
+		// makes more sense to just pick the first entry as we are not yet considering the "q" params.
 		
 		if ( dominating == null && entries.size() > 0 ) {
 			// FIXME arbitrarely choosing first entry.
