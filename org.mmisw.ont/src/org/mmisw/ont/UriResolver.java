@@ -178,6 +178,30 @@ public class UriResolver extends HttpServlet {
 			return;
 		}
 		
+		
+		// if the "_lpath" parameter is included, reply with full local path of ontology file
+		// (this is just a quick way to help ontmd to so some of its stuff ;)
+		if ( Util.yes(request, "_lpath") ) {
+			_resolveGetLocalPath(request, response);
+			return;
+		}
+		
+		// if the "_versions" parameter is included, reply with a list of the available
+		// version associated with the request
+		if ( Util.yes(request, "_versions") ) {
+			_resolveGetVersions(request, response);
+			return;
+		}
+		
+		// if the "_debug" parameter is included, show some info about the URI parse
+		// and the ontology from the database (but do not serve the contents)
+		if ( Util.yes(request, "_debug") ) {
+			_resolveUriDebug(request, response);
+			return;
+		}
+		
+
+		
 		// resolve URI?
 		if ( _resolveUri(request, response)  ) {
 			// OK, no more to do here.
@@ -306,27 +330,6 @@ public class UriResolver extends HttpServlet {
 		
 		final String fullRequestedUri = request.getRequestURL().toString();
 		
-		
-		// if the "_lpath" parameter is included, reply with full local path of ontology file
-		// (this is just a quick way to help ontmd to so some of its stuff ;)
-		if ( Util.yes(request, "_lpath") ) {
-			_resolveGetLocalPath(request, response);
-			return true;
-		}
-		
-		// if the "_versions" parameter is included, reply with a list of the available
-		// version associated with the request
-		if ( Util.yes(request, "_versions") ) {
-			_resolveGetVersions(request, response);
-			return true;
-		}
-		
-		// if the "_debug" parameter is included, show some info about the URI parse
-		// and the ontology from the database (but do not serve the contents)
-		if ( Util.yes(request, "_debug") ) {
-			_resolveUriDebug(request, response);
-			return true;
-		}
 		
 		// parse the given URI:
 		MmiUri mmiUriCheck;

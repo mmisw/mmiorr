@@ -7,6 +7,8 @@ ChangeLog
 	- HtmlDispacher.appendHtmlIfResolvableByThisService is now the way to properly
 	  prepare refered resources that are resolvable by the service (so they are links 
 	  to the HTML format as well).
+	  
+	- code clean-up: moved some special dispatchs from _resolveUri.
 	
 	
 2003-03-27
