@@ -157,7 +157,7 @@ public class FieldWithChoose  extends HorizontalPanel {
 	}
 
 	void enable(boolean enabled) {
-		textBox.setEnabled(enabled);
+		textBox.setReadOnly(!enabled);
 //		lb.setEnabled(enabled);
 		chooseButton.setEnabled(enabled);
 	}

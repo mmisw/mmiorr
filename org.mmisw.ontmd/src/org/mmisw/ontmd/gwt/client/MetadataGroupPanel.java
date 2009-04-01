@@ -296,7 +296,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 	void enable(boolean enabled) {
 		for ( Elem elem : widgets.values() ) {
 			if ( elem.widget instanceof TextBoxBase ) {
-				((TextBoxBase) elem.widget).setEnabled(enabled);
+				((TextBoxBase) elem.widget).setReadOnly(!enabled);
 			}
 			else if ( elem.widget instanceof ListBox ) {
 				ListBox lb = (ListBox) elem.widget;
