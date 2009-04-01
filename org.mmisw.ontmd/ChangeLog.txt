@@ -3,6 +3,13 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-03-31    voc2rdf 1.2.0.beta2
+	- oops, I introduced a bug with my latest changes: individuales were not put in the
+	  namespace appropriately (I forgot to use the namespace (_ns) in Converter.createIndividual()
+	  after the change in getGoodName(), which now does not include the namespace itself)
+	  -> fixed.
+	  
+	
 2009-03-28,29:   voc2rdf 1.2.0.beta1
 
 	- Many updates to Voc2RDF

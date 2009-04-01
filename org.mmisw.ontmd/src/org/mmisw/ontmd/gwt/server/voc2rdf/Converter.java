@@ -377,7 +377,8 @@ public class Converter {
 	private Individual createIndividual(DataRow row, int id, OntClass cs) {
 
 		if (isGood(row, id)) {
-			String resourceString = getGoodName(row, id);
+//			String resourceString = getGoodName(row, id);
+			String resourceString = ns_ + getGoodName(row, id).toLowerCase();
 			Individual ind = newOntModel.createIndividual(resourceString, cs);
 			ind.addProperty(RDFS.label, row.getString(id).trim());
 			log.info("ind created " + ind);
