@@ -40,7 +40,8 @@ public class HtmlDispatcher {
 	private OntConfig ontConfig;
 	private Db db;
 	
-	private String root;
+	// TODO This is hard-coded here:  http://mmisw.org/ont/
+	private String servedRoot = "http://mmisw.org/ont/"; 
 	
 	HtmlDispatcher(OntConfig ontConfig, Db db) { // TODO Remove, MdDispatcher mdDispatcher) {
 		this.ontConfig = ontConfig;
@@ -48,8 +49,6 @@ public class HtmlDispatcher {
 	}
 
 	void init() {
-		// TODO This is hard-coded here:  http://mmisw.org/ont/
-		root = "http://mmisw.org/ont/"; 
 	}
 
 	/** 
@@ -221,7 +220,7 @@ public class HtmlDispatcher {
 		try {
 			MmiUri mmiUri = new MmiUri(uri);
 			String untilRoot = mmiUri.getUntilRoot();
-			if ( untilRoot.equalsIgnoreCase(root) ) {
+			if ( untilRoot.equalsIgnoreCase(servedRoot) ) {
 				uri = mmiUri.getTermUri() + ".html";
 			}
 		}
