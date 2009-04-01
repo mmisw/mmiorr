@@ -3,6 +3,12 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2003-04-01
+	- HtmlDispacher.appendHtmlIfResolvableByThisService is now the way to properly
+	  prepare refered resources that are resolvable by the service (so they are links 
+	  to the HTML format as well).
+	
+	
 2003-03-27
 	- UriResolver: some doc updates and minor code re-arrangements (no changes in logic)
 	

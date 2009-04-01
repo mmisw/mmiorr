@@ -3,6 +3,7 @@ package org.mmisw.ont;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URISyntaxException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -39,13 +40,17 @@ public class HtmlDispatcher {
 	private OntConfig ontConfig;
 	private Db db;
 	
-	
+	private String root;
 	
 	HtmlDispatcher(OntConfig ontConfig, Db db) { // TODO Remove, MdDispatcher mdDispatcher) {
 		this.ontConfig = ontConfig;
 		this.db = db;
 	}
 
+	void init() {
+		// TODO This is hard-coded here:  http://mmisw.org/ont/
+		root = "http://mmisw.org/ont/"; 
+	}
 
 	/** 
 	 * Dispatchs the HTML response.
@@ -198,25 +203,33 @@ public class HtmlDispatcher {
 
 	
 	/**
-	 * "Slashes" an element's URI if it belongs to an ontology in the MMI Registry and Repository,
-	 * meaning it starts with <code>http://mmisw.org/ont/</code>.
+	 * Appends ".html" to the given URI if resolvable by this service.
+	 * This means that, if:
+	 * <ul>
+	 *     <li> the uri is a valid MmiUri, and </li>
+	 *     <li> the prefix until the root "belongs" to this service</li>
+	 * </ul>
+	 * then, ".html" is appended and returned. If the URI corresponds to a term, a slash is used as separator.
+	 * Otherwise, the argument is returned unchanged.
 	 * 
-	 * <p>
-	 * TODO This prefix is hard-coded here;  needs to be a configuration parameter, for example.
-	 * 
-	 * @param uri The element's URI
-	 * @return A slashed version on the element's URI if it belongs to an ontology in the MMI Registry and Repository.
+	 * @param uri A URI
+	 * @return The URI with ".html" appended according to the above.
 	 *         Otherwise, it returs the given URI unmodified.
 	 */
-	private static String slashMmiUri(String uri) {
+	private String appendHtmlIfResolvableByThisService(String uri) {
 		
-		// TODO This is hard-coded here:  http://mmisw.org/ont/
-		if ( uri.toLowerCase().startsWith("http://mmisw.org/ont/") ) {
-			return uri.replace('#', '/');
+		try {
+			MmiUri mmiUri = new MmiUri(uri);
+			String untilRoot = mmiUri.getUntilRoot();
+			if ( untilRoot.equalsIgnoreCase(root) ) {
+				uri = mmiUri.getTermUri() + ".html";
+			}
 		}
-		else {
-			return uri;
+		catch (URISyntaxException e) {
+			// ignore.
 		}
+
+		return uri;
 	}
 
 	/** 
@@ -255,9 +268,7 @@ public class HtmlDispatcher {
 				out.printf("<td> <a href=\"%s\">%s</a> </td> %n", elemUri, elemUri);
 			}
 
-			// does the elements belong to the ontology?
-			
-			elemUri = slashMmiUri(elemUri);
+			elemUri = appendHtmlIfResolvableByThisService(elemUri);
 
 			out.printf("<td> <a href=\"%s\">%s</a> </td> %n", elemUri, elemUri);
 
@@ -286,9 +297,8 @@ public class HtmlDispatcher {
 		String term = mmiUri.getTerm();
 		assert term.length() > 0 ;
 		
-		// construct URI of term.
-		// First, try with "/" separator:
-		String termUri = mmiUri.getTermUri("/");
+		// get URI of term
+		final String termUri = mmiUri.getTermUri("/");
 		Resource termRes = null;
 		
 		// Fix to Issue 101: "Inexistent term is resolved"
@@ -318,14 +328,12 @@ public class HtmlDispatcher {
 			_startPage(request, response, fullRequestedUri);
 		}
 		
-		// but slash the term URI for display purposes:
-		termUri = slashMmiUri(termRes.getURI());
-		
 		out.printf("<div align=\"center\">%n");
 		out.println("<table class=\"inline\">");
 		out.printf("<tr><th>%s</th></tr> %n", termUri);
 		out.println("</table>");
 		out.printf("</div>%n");
+		
 
 		if ( true ) { // get all statements about the term
 			StmtIterator iter = model.listStatements(termRes, (Property) null, (Property) null);
@@ -350,7 +358,7 @@ public class HtmlDispatcher {
 					Property prd = sta.getPredicate();
 					String prdUri = prd.getURI();
 					if ( prdUri != null ) {
-						prdUri = slashMmiUri(prdUri);
+						prdUri = appendHtmlIfResolvableByThisService(prdUri);
 						out.printf("<td><a href=\"%s\">%s</a></td>", prdUri, prdUri);
 					}
 					else {
@@ -364,7 +372,7 @@ public class HtmlDispatcher {
 						objUri = objRes.getURI();
 					}
 					if ( objUri != null ) {
-						objUri = slashMmiUri(objUri);
+						objUri = appendHtmlIfResolvableByThisService(objUri);
 						out.printf("<td><a href=\"%s\">%s</a></td>", objUri, objUri);
 					}
 					else {
@@ -398,7 +406,7 @@ public class HtmlDispatcher {
 					String sjtUri = sjt.getURI();
 
 					if ( sjtUri != null ) {
-						sjtUri = slashMmiUri(sjtUri);
+						sjtUri = appendHtmlIfResolvableByThisService(sjtUri);
 						out.printf("<td><a href=\"%s\">%s</a></td>", sjtUri, sjtUri);
 					}
 					else {
@@ -431,7 +439,7 @@ public class HtmlDispatcher {
 					String idvUri = idv.getURI();
 					
 					if ( idvUri != null ) {
-						idvUri = slashMmiUri(idvUri);
+						idvUri = appendHtmlIfResolvableByThisService(idvUri);
 						out.printf("<td><a href=\"%s\">%s</a></td>", idvUri, idvUri);
 					}
 					else {
