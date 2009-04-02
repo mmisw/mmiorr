@@ -42,20 +42,23 @@
 
 
 /* inline tables */
-table.inline {
+.MappingsTable {
+  width: 100%
   font-size: small;
   background-color: #ffffff;
   border-spacing: 0px;
   border-collapse: collapse;
 }
 
-table.inline th {
+.MappingsTable-header {
+  width: 100%
   padding: 3px;
   border: 1px solid #8cacbb;
   background-color: #dee7ec;
 }
 
-table.inline tr {
+.MappingsTable-row {
+  width: 100%
   padding: 3px;
   border: 1px solid #8cacbb;
 }

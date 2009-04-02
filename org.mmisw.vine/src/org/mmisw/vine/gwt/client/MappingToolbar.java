@@ -1,17 +1,17 @@
 package org.mmisw.vine.gwt.client;
 
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratorPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.PushButton;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 
 public class MappingToolbar extends VerticalPanel {
 	
 	interface IMappingRelationListener {
-		void clicked(Image img);
+		void clicked(AbstractImagePrototype imgProt);
 	}
 	
 	
@@ -30,33 +30,33 @@ public class MappingToolbar extends VerticalPanel {
 		PushButton b1 = new PushButton(Main.images.exactMatch28().createImage(), 
 				new ClickListener() {
 					public void onClick(Widget sender) {
-						mapRelListener.clicked(Main.images.exactMatch28().createImage());						
+						mapRelListener.clicked(Main.images.exactMatch28());						
 					}
 		});
 		PushButton b2 = new PushButton(Main.images.closeMatch28().createImage(), 
 				new ClickListener() {
 			public void onClick(Widget sender) {
-				mapRelListener.clicked(Main.images.closeMatch28().createImage());						
+				mapRelListener.clicked(Main.images.closeMatch28());						
 			}
 		});
 		PushButton b3 = new PushButton(Main.images.broadMatch28().createImage(), 
 				new ClickListener() {
 			public void onClick(Widget sender) {
-				mapRelListener.clicked(Main.images.broadMatch28().createImage());						
+				mapRelListener.clicked(Main.images.broadMatch28());						
 			}
 		});
 
 		PushButton b4 = new PushButton(Main.images.narrowMatch28().createImage(), 
 				new ClickListener() {
 			public void onClick(Widget sender) {
-				mapRelListener.clicked(Main.images.narrowMatch28().createImage());						
+				mapRelListener.clicked(Main.images.narrowMatch28());						
 			}
 		});
 
 		PushButton b5 = new PushButton(Main.images.relatedMatch28().createImage(), 
 				new ClickListener() {
 			public void onClick(Widget sender) {
-				mapRelListener.clicked(Main.images.relatedMatch28().createImage());						
+				mapRelListener.clicked(Main.images.relatedMatch28());						
 			}
 		});
 

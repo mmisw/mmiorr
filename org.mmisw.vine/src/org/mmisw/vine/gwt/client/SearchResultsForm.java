@@ -17,7 +17,6 @@ import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.MouseListenerAdapter;
-import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -55,24 +54,23 @@ public class SearchResultsForm extends VerticalPanel {
 		super();
 		this.resourceViewer = resourceViewer;
 		
+		SelectAllNonePanel selAllNonePanel = new SelectAllNonePanel() {
+			@Override
+			void updateAllNone(boolean selected) {
+				updateAllNone(selected);
+			}
+		};
+
 		CellPanel hp = new HorizontalPanel();
 		add(hp);
-		hp.setSpacing(10);		
+//		hp.setSpacing(5);	
+		hp.setStylePrimaryName("MappingsTable-header");
+		hp.setWidth("100%");
 		
-		PushButton all = new PushButton("All", new ClickListener() {
-			public void onClick(Widget sender) {
-				updateAllNone(true);
-			}
-		});
-		hp.add(all);
-		PushButton none = new PushButton("None", new ClickListener() {
-			public void onClick(Widget sender) {
-				updateAllNone(false);
-			}
-		});
-		hp.add(none);
-
+		hp.add(selAllNonePanel);
 		hp.add(status);
+		hp.setCellHorizontalAlignment(status, ALIGN_LEFT);
+		
 		
 		CellPanel p = new VerticalPanel();
 		
@@ -110,7 +108,6 @@ public class SearchResultsForm extends VerticalPanel {
 	}
 
 	public void updateEntities(List<EntityInfo> entities) {
-		// TODO dispatch checkBox for the terms
 		rowPanel.clear();
 		cbs.clear();
 		currentRows.clear();
@@ -174,11 +171,13 @@ public class SearchResultsForm extends VerticalPanel {
 //					_focus(false);
 //				}
 //			});
-//			textBox.addClickListener(new ClickListener() {
-//				public void onClick(Widget sender) {
+			textBox.addClickListener(new ClickListener() {
+				public void onClick(Widget sender) {
 //					textBox.selectAll();
-//				}
-//			});
+					checkBox.setChecked(!checkBox.isChecked());
+					checkBoxClicked();
+				}
+			});
 			addMouseListener(new MouseListenerAdapter() {
 				  public void onMouseEnter(Widget sender) {
 					  if ( lastFocusedRow == Row.this ) {
@@ -197,9 +196,7 @@ public class SearchResultsForm extends VerticalPanel {
 
 			checkBox.addClickListener(new ClickListener() {
 				public void onClick(Widget sender) {
-					boolean selected = checkBox.isChecked();
-					setSelected(selected);
-					updateStatus();
+					checkBoxClicked();
 				}
 			});
 
@@ -209,6 +206,12 @@ public class SearchResultsForm extends VerticalPanel {
 			this.add(hp);
 			hp.add(checkBox);
 			hp.add(textBox);
+		}
+		
+		private void checkBoxClicked() {
+			boolean selected = checkBox.isChecked();
+			setSelected(selected);
+			updateStatus();
 		}
 
 		public String getKey() {

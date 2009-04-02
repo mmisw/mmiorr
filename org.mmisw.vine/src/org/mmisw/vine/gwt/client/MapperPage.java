@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
 
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.Image;
 
@@ -23,8 +24,7 @@ public class MapperPage extends DockPanel {
 	
 	private MappingToolbar.IMappingRelationListener mapRelListener = 
 		new MappingToolbar.IMappingRelationListener() {
-		public void clicked(Image img) {
-			// FIXME Need to replicate img for each created mapping
+		public void clicked(AbstractImagePrototype imgProt) {
 			SearchResultsForm searchResultsLeft = vocabularyFormLeft.getSearchResultsForm();
 			SearchResultsForm searchResultsRight = vocabularyFormRight.getSearchResultsForm();
 			
@@ -32,6 +32,7 @@ public class MapperPage extends DockPanel {
 			for ( String leftKey: leftRowKeys ) {
 				Set<String> rightRowKeys = searchResultsRight.getSelectedRows();
 				for ( String rightKey: rightRowKeys ) {
+					Image img = imgProt.createImage();
 					mappingsPanel.addMapping(leftKey, img, rightKey);
 				}
 			}

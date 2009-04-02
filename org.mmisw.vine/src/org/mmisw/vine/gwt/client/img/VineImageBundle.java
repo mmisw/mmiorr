@@ -24,5 +24,9 @@ public interface VineImageBundle extends ImageBundle {
 	 
 	 public AbstractImagePrototype explicit();
 	 public AbstractImagePrototype inferred();
+	 
+	 public AbstractImagePrototype check();
+	 public AbstractImagePrototype delete();
+	 public AbstractImagePrototype metadata();
 
 }

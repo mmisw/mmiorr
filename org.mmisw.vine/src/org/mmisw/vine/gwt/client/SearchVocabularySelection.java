@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
 
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
@@ -30,7 +31,10 @@ public class SearchVocabularySelection extends VerticalPanel {
 
 		HTML label = new HTML("Search the following ontologies:");
 		hp.add(label);
-		label.setTitle("Select the working ontologies to search");
+		
+		String tooltip = "Select the working ontologies to search";
+		label.setTitle(tooltip);
+		buttons.setTitle(tooltip);
 		
 		hp.add(buttons);
 		
@@ -67,6 +71,7 @@ public class SearchVocabularySelection extends VerticalPanel {
 		for ( OntologyInfo s : Main.getWorkingUris().values() ) {
 			char id = s.getCode();
 			final ToggleButton sel = new ToggleButton("" +id);
+			DOM.setElementAttribute(sel.getElement(), "id", "my-button-id");
 			sel.setTitle(s.getDisplayLabel());
 			sel.addClickListener(new ClickListener() {
 				public void onClick(Widget sender) {
@@ -82,7 +87,7 @@ public class SearchVocabularySelection extends VerticalPanel {
 		}
 		
 		if ( idx == 0 ) {
-			buttons.add(new HTML(" <i>(no working ontologies)</i>"));
+			buttons.add(new HTML(" <font color=\"gray\"><i>(no working ontologies)</i></font>"));
 		}
 		
 	}

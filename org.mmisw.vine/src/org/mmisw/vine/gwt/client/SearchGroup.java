@@ -6,16 +6,17 @@ import java.util.List;
 import org.mmisw.vine.gwt.client.rpc.EntityInfo;
 import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
 
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -31,7 +32,7 @@ public class SearchGroup extends VerticalPanel {
 	private SearchResultsForm searchResultsForm;
 	
 	private MultiWordSuggestOracle oracle;
-	private CheckBox cb;
+	private ToggleButton regex;
 	private SuggestBox box;
 
 	SearchGroup(SearchVocabularySelection vocabularySelection, SearchResultsForm searchResultsForm) {
@@ -43,11 +44,12 @@ public class SearchGroup extends VerticalPanel {
 		add(hp0);
 		hp0.setSpacing(10);
 		hp0.add(new HTML("Search for:"));
-		cb = new CheckBox("REGEX");
-		cb.setTitle("Check this to apply a regular expression search - NOT IMPLEMENTED YET");
 		
 		// TODO implement REGEX search
-		cb.setEnabled(false);
+		regex = new ToggleButton("REGEX");
+		DOM.setElementAttribute(regex.getElement(), "id", "my-button-id");
+		regex.setTitle("Check this to apply a regular expression search - NOT IMPLEMENTED YET");
+		
 		
 		
 		oracle = new MultiWordSuggestOracle("/");  
@@ -71,7 +73,7 @@ public class SearchGroup extends VerticalPanel {
 		
 		hp0.add(b);
 
-		hp0.add(cb);
+		hp0.add(regex);
 	}
 
 	private void search() {
