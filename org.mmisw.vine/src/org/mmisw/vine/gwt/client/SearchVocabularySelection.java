@@ -47,9 +47,11 @@ public class SearchVocabularySelection extends VerticalPanel {
 		int count = buttons.getWidgetCount();
 		assert count == Main.getWorkingUris().size();
 		
+		List<OntologyInfo> workingUris = new ArrayList<OntologyInfo>(Main.getWorkingUris().values());
+		
 		for ( int i = 0; i < count; i++ ) {
 			if ( ((ToggleButton) buttons.getWidget(i)).isDown() ) {
-				selectedUris.add( Main.getWorkingUris().get(i) );
+				selectedUris.add( workingUris.get(i) );
 			}
 		}
 		return selectedUris;
@@ -62,7 +64,7 @@ public class SearchVocabularySelection extends VerticalPanel {
 	void setToggleButtons(int searchIndex) {
 		buttons.clear();
 		int idx = 0;
-		for ( OntologyInfo s : Main.getWorkingUris() ) {
+		for ( OntologyInfo s : Main.getWorkingUris().values() ) {
 			char id = s.getCode();
 			final ToggleButton sel = new ToggleButton("" +id);
 			sel.setTitle(s.getDisplayLabel());

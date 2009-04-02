@@ -56,7 +56,7 @@ public class OntologySelection extends VerticalPanel {
 		layout.add(vp);
 		
 		
-		for ( OntologyInfo s : Main.getWorkingUris() ) {
+		for ( OntologyInfo s : Main.getWorkingUris().values() ) {
 			vp.add(new HTML("<b>" +s.getCode()+ "</b>: " + s.getUri()));
 		}
 		

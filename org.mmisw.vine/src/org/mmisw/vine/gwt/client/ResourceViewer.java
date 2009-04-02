@@ -1,5 +1,7 @@
 package org.mmisw.vine.gwt.client;
 
+import org.mmisw.vine.gwt.client.rpc.EntityInfo;
+
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -13,9 +15,11 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class ResourceViewer extends VerticalPanel {
 	
-	private CellPanel p2;
+	private HTML bodyHtml;
 	
-	
+	/**
+	 * 
+	 */
 	ResourceViewer() {
 		super();
 		
@@ -25,23 +29,44 @@ public class ResourceViewer extends VerticalPanel {
 	    decPanel.setWidget(p);
 	    add(decPanel);
 
-	    p2 = new VerticalPanel();
-		ScrollPanel scroller = new ScrollPanel(p2);
-	    scroller.setSize("450px", "120px");
+	    bodyHtml = new HTML();
+	    bodyHtml.setWidth("700px");
+	    
+		ScrollPanel scroller = new ScrollPanel(bodyHtml); 
+//	    scroller.setSize("450px", "120px");
+		scroller.setWidth("450px");
 		p.add(scroller);
+		
+		_update("", "", "", "");
 	}
 
 	/** Updates the contents */
-	void update(String text) {
-		p2.add(new HTML("<b>" +text+ "</b>"));
+	void update(EntityInfo entityInfo) {
+		String name = entityInfo.getLocalName();
+		String code = "" + entityInfo.getCode();
+		String uri = Main.getWorkingUris().get(code).getUri() + name;
 		
-//		String url = "http://mmisw.org/ont/mmi/MarineOrganism/zeidae.html";
-//		p2.clear();
-//		p2.add(new HTML(
-//				"<iframe src=\"" +url+ "\" width=\"100%\" height=\"100%\">" +
-//				"<p>Your browser does not support iframes.</p>" +
-//				"</iframe>"
-//		));
+		String label = entityInfo.getDisplayLabel();
+		String comment = entityInfo.getComment();
+		
+		if ( label == null ) {
+			label = "";
+		}
+		if ( comment == null ) {
+			comment = "";
+		}
+		
+		_update(uri, name, label, comment);
+	}
+	
+	private void _update(String uri, String name, String label, String comment) {
+		bodyHtml.setHTML(""
+				+ "URI: <a target=\"_blank\" href=\"" +uri+ "\">" +uri+ "</a><br/>"
+				+ "Name: <b>" +name+ "</b><br/>"
+				+ "Label: <b>" +label + "</b><br/>"
+				+ "Comment: <b>" +comment + "</b><br/>"
+		);
+		
 	}
 
 }

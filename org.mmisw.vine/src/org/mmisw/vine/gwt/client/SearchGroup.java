@@ -6,7 +6,6 @@ import java.util.List;
 import org.mmisw.vine.gwt.client.rpc.EntityInfo;
 import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
 
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -100,7 +99,10 @@ public class SearchGroup extends VerticalPanel {
 	}
 	
 	private void executeSearch(String text) {
-		List<EntityInfo> entities = search(text, vocabularySelection.getSelectedVocabularies());
+		List<OntologyInfo> selectedVocabs = vocabularySelection.getSelectedVocabularies();
+		Main.log("search: vocabularySelection " +vocabularySelection);
+		Main.log("search: selectedVocabs " +selectedVocabs);
+		List<EntityInfo> entities = search(text, selectedVocabs );
 		
 		Main.log("search: retrieved " +entities.size()+ " terms");
 		if ( text.length() > 0 ) {

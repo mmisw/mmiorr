@@ -4,8 +4,8 @@ Carlos Rueda - MMI / MBARI
 ChangeLog
 
 2009-04-01
-	- Resuming with some updates an preparing to show infor about select term in the
-	  search result panel.
+	- Resuming with some updates and preparing to show info about select term in the
+	  search result panel, and created mappings..
 	  
 	  
 2009-01-06

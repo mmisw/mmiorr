@@ -1,7 +1,11 @@
 package org.mmisw.vine.gwt.client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.mmisw.vine.gwt.client.rpc.EntityInfo;
 
@@ -9,9 +13,10 @@ import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratorPanel;
-import com.google.gwt.user.client.ui.FocusListener;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.MouseListenerAdapter;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -25,36 +30,22 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class SearchResultsForm extends VerticalPanel {
 	
-	private ResourceViewer resourceViewer;
-	private int numElements;
-	private int numSelected;
 	
-	private HTML status = new HTML("Selected: " +numSelected+ " out of " +numElements+ " element(s)");
+	private Map<String,Row> currentRows = new HashMap<String, Row>();
+	
+	private Set<String> selectedRows = new HashSet<String>();
+
+
+	
+	private ResourceViewer resourceViewer;
+	
+	private HTML status = new HTML("Selected: " +selectedRows.size()+ " out of " +currentRows.size()+ " element(s)");
 	
 	private List<CheckBox> cbs;
 	
-	private CellPanel p2;
-	private ClickListener cl = new ClickListener() {
-		public void onClick(Widget sender) {
-			CheckBox cb = (CheckBox) sender;
-			boolean selected = cb.isChecked();
-			numSelected += selected ? +1 : -1;
-			updateStatus();
-		}
-	};
+	private CellPanel rowPanel;
+	private ScrollPanel scroller;
 
-	private FocusListener fl = new FocusListener() {
-
-		public void onFocus(Widget sender) {
-			TextBox comp = (TextBox) sender;
-			resourceViewer.update(comp.getText());  // TODO	
-		}
-
-		public void onLostFocus(Widget sender) {
-			// TODO Auto-generated method stub
-			
-		}
-	};
 	
 	/**
 	 * @param resourceViewer 
@@ -91,72 +82,161 @@ public class SearchResultsForm extends VerticalPanel {
 
 	    cbs = new ArrayList<CheckBox>();
 	    
-	    p2 = new VerticalPanel();
-		ScrollPanel scroller = new ScrollPanel(p2);
+	    rowPanel = new VerticalPanel();
+	    rowPanel.setSpacing(1);
+	    rowPanel.setStylePrimaryName("SearchResultsTable");
+	    scroller = new ScrollPanel(rowPanel);
 	    scroller.setSize("450px", "150px");
 		p.add(scroller);
 		
 	}
 	
 	void updateAllNone(boolean selected) {
-		for ( CheckBox cb : cbs  ) {
-			cb.setChecked(selected);
+		for ( Row row : currentRows.values()  ) {
+			row.setSelected(selected);
 		}
-		numSelected = selected ? cbs.size() : 0;
 		updateStatus();
 	}
 	
 	void updateStatus() {
-		status.setText("Selected: " +numSelected+ " out of " +numElements+ " element(s)");
+		status.setText("Selected: " +selectedRows.size()+ " out of " +currentRows.size()+ " element(s)");
 	}
 
 	public void searching() {
-		p2.clear();
-		p2.add(new HTML(
+		rowPanel.clear();
+		rowPanel.add(new HTML(
 				"<img src=\"images/loading.gif\"> <i>Searching...</i>"
 		));
 	}
 
 	public void updateEntities(List<EntityInfo> entities) {
 		// TODO dispatch checkBox for the terms
-		p2.clear();
+		rowPanel.clear();
 		cbs.clear();
+		currentRows.clear();
 		
 //		final FlexTable flexTable = new FlexTable();
 //		FlexCellFormatter cellFormatter = flexTable.getFlexCellFormatter();
 //		cellFormatter.s
 		
 		for ( EntityInfo entity : entities ) {
-			String str = entity.getCode()+ ": <b>" +entity.getLocalName()+ "</b>";
-			
-			HorizontalPanel hp = new HorizontalPanel();
-			p2.add(hp);
-			hp.setTitle(entity.getLocalName());
-			
-			CheckBox cb = new CheckBox(str, true);
-			cb.setFocus(true);
-			cbs.add(cb);
-			hp.add(cb);
-			
-			TextBox tb = new TextBox();
-			tb.setText(str);
-			tb.setReadOnly(true);
-			tb.addFocusListener(fl);
-			hp.add(tb);
-//			cb.addFocusListener(fl);
-
-//			HTML html = new HTML(str);
-//			hp.add(html);
-
-			cb.addClickListener(cl);
-			
+			Row row = new Row(entity);
+			currentRows.put(row.getKey(), row);
+			cbs.add(row.checkBox);
+			rowPanel.add(row);
 		}
-		numElements = entities.size();
 		updateStatus();
 		
-		if ( numElements == 0 ) {
-			p2.add(new HTML("<i>No entities found</i>"));
+		if ( currentRows.size() == 0 ) {
+			rowPanel.add(new HTML("<i>No entities found</i>"));
 		}
 	}
 
+	
+	
+	
+	Set<String> getSelectedRows() {
+		return selectedRows;
+	}
+
+
+
+
+	private Row lastFocusedRow;
+	
+	
+	/**
+	 * Creates a row for the search results area. 
+	 */
+	private class Row extends FocusPanel {
+		
+		EntityInfo entity;
+		CheckBox checkBox;
+		TextBox textBox;
+		
+		Row(EntityInfo entity) {
+			super();
+			this.entity = entity;
+			checkBox = new CheckBox();
+			textBox = new TextBox();
+			textBox.setStylePrimaryName("SearchResultsTable-TextBox");
+			
+			String str = entity.getCode()+ ":" +entity.getLocalName();
+			textBox.setText(str);
+			textBox.setReadOnly(true);
+//			textBox.
+//			addFocusListener(new FocusListener() {
+//				public void onFocus(Widget sender) {
+//					_focus(true);
+//				}
+//
+//				public void onLostFocus(Widget sender) {
+//					_focus(false);
+//				}
+//			});
+//			textBox.addClickListener(new ClickListener() {
+//				public void onClick(Widget sender) {
+//					textBox.selectAll();
+//				}
+//			});
+			addMouseListener(new MouseListenerAdapter() {
+				  public void onMouseEnter(Widget sender) {
+					  if ( lastFocusedRow == Row.this ) {
+						  return;
+					  }
+					  if ( lastFocusedRow != null ) {
+						  lastFocusedRow._focus(false);
+					  }
+					  lastFocusedRow = Row.this;
+					  _focus(true);
+				  }
+//				  public void onMouseLeave(Widget sender) {
+//					  _focus(false);
+//				  }
+			});
+
+			checkBox.addClickListener(new ClickListener() {
+				public void onClick(Widget sender) {
+					boolean selected = checkBox.isChecked();
+					setSelected(selected);
+					updateStatus();
+				}
+			});
+
+			this.setTitle(entity.getLocalName());
+
+			HorizontalPanel hp = new HorizontalPanel();
+			this.add(hp);
+			hp.add(checkBox);
+			hp.add(textBox);
+		}
+
+		public String getKey() {
+			return entity.getCode()+ ":" +entity.getLocalName()+ ".";
+		}
+
+		public void setSelected(boolean selected) {
+			checkBox.setChecked(selected);
+			if ( selected ) {
+				selectedRows.add(getKey());
+			}
+			else {
+				selectedRows.remove(getKey());
+			}
+		}
+		
+		private void _focus(boolean focus) {
+			if ( focus ) {
+				resourceViewer.update(Row.this.entity);	
+				setStyleName("SearchResultsTable-selected");
+				textBox.addStyleName("SearchResultsTable-TextBox-selected");
+//				scroller.setScrollPosition(this.getAbsoluteTop() + this.getOffsetHeight());
+			}
+			else {
+				removeStyleName("SearchResultsTable-selected");
+				textBox.removeStyleName("SearchResultsTable-TextBox-selected");
+			}
+		}
+	}
+	
 }

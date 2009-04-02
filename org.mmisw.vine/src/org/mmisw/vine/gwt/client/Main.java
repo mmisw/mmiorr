@@ -1,6 +1,7 @@
 package org.mmisw.vine.gwt.client;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,7 +49,8 @@ public class Main implements EntryPoint {
 	private static List<OntologyInfo> allUris = new ArrayList<OntologyInfo>();
 	
 	// selected ontologies to work on:
-	private static List<OntologyInfo> workingUris = new ArrayList<OntologyInfo>();
+	// Map: code -> OntologyInfo
+	private static final Map<String, OntologyInfo> workingUris = new LinkedHashMap<String,OntologyInfo>();
 	
 	
 	public static List<OntologyInfo> getAllUris() {
@@ -59,18 +61,18 @@ public class Main implements EntryPoint {
 		Main.allUris = allUris;
 	}
 
-	public static List<OntologyInfo> getWorkingUris() {
+	public static Map<String, OntologyInfo> getWorkingUris() {
 		return workingUris;
 	}
 
 	public static void addWorkingUri(OntologyInfo uri) {
 		char code = (char) ((int) 'A' + Main.workingUris.size());
 		uri.setCode(code);
-		Main.workingUris.add(uri);
+		Main.workingUris.put(""+ code, uri);
 	}
 
 	public static boolean containsWorkingUri(OntologyInfo uri) {
-		return workingUris.contains(uri);
+		return workingUris.get("" +uri.getCode()) != null;
 	}
 
 

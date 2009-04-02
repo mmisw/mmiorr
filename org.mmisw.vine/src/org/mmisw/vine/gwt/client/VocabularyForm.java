@@ -9,10 +9,10 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class VocabularyForm extends VerticalPanel {
 	
-	private SearchVocabularySelection vocabularySelection;
-	private SearchGroup searchGroup;
-	private SearchResultsForm searchResultsForm;
-	private ResourceViewer resourceViewer;
+	private final SearchVocabularySelection vocabularySelection;
+	private final SearchGroup searchGroup;
+	private final SearchResultsForm searchResultsForm;
+	private final ResourceViewer resourceViewer;
 	
 	
 	VocabularyForm(int searchIndex) {
@@ -45,6 +45,10 @@ public class VocabularyForm extends VerticalPanel {
 	 */
 	void notifyWorkingOntologyAdded(int searchIndex) {
 		vocabularySelection.setToggleButtons(searchIndex);
+	}
+
+	SearchResultsForm getSearchResultsForm() {
+		return searchResultsForm;
 	}
 
 

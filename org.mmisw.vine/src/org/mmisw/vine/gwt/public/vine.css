@@ -17,3 +17,25 @@
 }
 
 #my-button-id { font-size: 70%; }
+
+.SearchResultsTable {
+  min-width: 400px;
+  _width: 400px;/* IE6 hack */
+  background-color: #ffffff;
+  border-spacing: 0px;
+  border-collapse: collapse;
+  border: 1px solid #8cacbb;
+}
+.SearchResultsTable-selected {
+  background-color: #dee7ec;
+}
+.SearchResultsTable-TextBox {
+  min-width: 400px;
+  _width: 400px;/* IE6 hack */
+  background-color: #ffffff;
+}
+.SearchResultsTable-TextBox-selected {
+  min-width: 400px;
+  _width: 400px;/* IE6 hack */
+  background-color: #dee7ec;
+}

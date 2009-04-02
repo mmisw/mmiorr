@@ -17,7 +17,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class MainPanel extends VerticalPanel {
 	
-	private MultiPageEditor multiPageEditor;
+	private MapperPage mapperPage;
+	private MappingsPanel mappingsPanel;
 	
 	MainPanel() {
 		super();
@@ -25,14 +26,16 @@ public class MainPanel extends VerticalPanel {
 		VerticalPanel layout = new VerticalPanel();
 		DecoratorPanel decPanel = new DecoratorPanel();
 	    decPanel.setWidget(layout);
-	    
 	    add(decPanel);
 
 		OntologySelection ontSel = new OntologySelection(this);
-//		ontSel.setBorderWidth(1);
+		mappingsPanel = new MappingsPanel();
+	    mapperPage = new MapperPage(mappingsPanel);
+
+
 	    layout.add(ontSel);
-	    multiPageEditor = new MultiPageEditor();
-	    layout.add(multiPageEditor.getWidget());
+	    layout.add(mapperPage);
+	    layout.add(mappingsPanel);
 
 	    layout.setCellHorizontalAlignment(ontSel, ALIGN_CENTER);
 	}
@@ -73,7 +76,7 @@ public class MainPanel extends VerticalPanel {
 				
 				Main.addWorkingUri(ontologyInfo);
 				ontologySelection.ontologySucessfullyLoaded(ontologyInfo);
-				multiPageEditor.notifyWorkingOntologyAdded(ontologyInfo);
+				mapperPage.notifyWorkingOntologyAdded(ontologyInfo);
 				
 				popup.hide();
 			}

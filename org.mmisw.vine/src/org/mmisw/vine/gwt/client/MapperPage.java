@@ -1,8 +1,11 @@
 package org.mmisw.vine.gwt.client;
 
+import java.util.Set;
+
 import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
 
 import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.Image;
 
 /**
  * Maintains the two vocabulary forms.
@@ -14,18 +17,48 @@ public class MapperPage extends DockPanel {
 	VocabularyForm vocabularyFormLeft;
 	VocabularyForm vocabularyFormRight;
 	
-	MapperPage() {
+	private MappingToolbar mappingToolbar;
+	
+	private MappingsPanel mappingsPanel;
+	
+	private MappingToolbar.IMappingRelationListener mapRelListener = 
+		new MappingToolbar.IMappingRelationListener() {
+		public void clicked(Image img) {
+			
+			SearchResultsForm searchResultsLeft = vocabularyFormLeft.getSearchResultsForm();
+			SearchResultsForm searchResultsRight = vocabularyFormRight.getSearchResultsForm();
+			
+			Set<String> leftRowKeys = searchResultsLeft.getSelectedRows();
+			for ( String leftKey: leftRowKeys ) {
+				Set<String> rightRowKeys = searchResultsRight.getSelectedRows();
+				for ( String rightKey: rightRowKeys ) {
+					mappingsPanel.addMapping(leftKey, rightKey, img);
+				}
+			}
+			
+		}
+	};
+	
+	MapperPage(MappingsPanel mappingsPanel) {
 		super();
-		
-		setSpacing(5);
-		setVerticalAlignment(ALIGN_MIDDLE);
+		this.mappingsPanel = mappingsPanel;
 		
 		int workingOntsSize = Main.getWorkingUris().size();
 		int chooseLeft = workingOntsSize > 0 ? 0 : -1;
 		int chooseRight = workingOntsSize > 1 ? 1 : chooseLeft;
-		add(vocabularyFormLeft = new VocabularyForm(chooseLeft), WEST);
-		add(new MappingToolbar(), CENTER);
-		add(vocabularyFormRight = new VocabularyForm(chooseRight), EAST);
+		
+		vocabularyFormLeft = new VocabularyForm(chooseLeft);
+		vocabularyFormRight = new VocabularyForm(chooseRight);
+
+		mappingToolbar = new MappingToolbar(mapRelListener);
+
+		
+		setSpacing(5);
+		setVerticalAlignment(ALIGN_MIDDLE);
+		
+		add(vocabularyFormLeft, WEST);
+		add(mappingToolbar, CENTER);
+		add(vocabularyFormRight, EAST);
 	}
 
 	
