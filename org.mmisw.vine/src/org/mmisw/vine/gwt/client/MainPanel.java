@@ -9,6 +9,12 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+/**
+ * The main panel. This contains the ontology selection panel and
+ * the multi page editor.
+ * 
+ * @author Carlos Rueda
+ */
 public class MainPanel extends VerticalPanel {
 	
 	private MultiPageEditor multiPageEditor;

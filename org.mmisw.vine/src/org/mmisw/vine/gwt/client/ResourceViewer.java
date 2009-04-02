@@ -6,7 +6,15 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+/**
+ * This panel shows info about a given resource.
+ * 
+ * @author Carlos Rueda
+ */
 public class ResourceViewer extends VerticalPanel {
+	
+	private CellPanel p2;
+	
 	
 	ResourceViewer() {
 		super();
@@ -17,15 +25,23 @@ public class ResourceViewer extends VerticalPanel {
 	    decPanel.setWidget(p);
 	    add(decPanel);
 
-	    CellPanel p2 = new VerticalPanel();
+	    p2 = new VerticalPanel();
 		ScrollPanel scroller = new ScrollPanel(p2);
 	    scroller.setSize("450px", "120px");
 		p.add(scroller);
+	}
 
-		p2.add(new HTML("<b>http://marinemetadata.org/cf#air_temperature</b>"));
-		p2.add(new HTML("<b>Label:</b> air_temperature"));
-		p2.add(new HTML("<b>standard_name:</b> air_temperature"));
-		p2.add(new HTML("<b>hasCanocical_Units:</b> K"));
+	/** Updates the contents */
+	void update(String text) {
+		p2.add(new HTML("<b>" +text+ "</b>"));
+		
+//		String url = "http://mmisw.org/ont/mmi/MarineOrganism/zeidae.html";
+//		p2.clear();
+//		p2.add(new HTML(
+//				"<iframe src=\"" +url+ "\" width=\"100%\" height=\"100%\">" +
+//				"<p>Your browser does not support iframes.</p>" +
+//				"</iframe>"
+//		));
 	}
 
 }

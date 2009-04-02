@@ -5,7 +5,11 @@ import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-
+/**
+ * Holds the mapper page.
+ * 
+ * @author Carlos Rueda
+ */
 public class MultiPageEditor {
 	
 	private Widget widget;
@@ -33,6 +37,7 @@ public class MultiPageEditor {
 		return widget;
 	}
 
+	/** Call this to notify that a new ontology has been added to the working list */
 	void notifyWorkingOntologyAdded(OntologyInfo ontologyInfo) {
 		mapperPage.notifyWorkingOntologyAdded(ontologyInfo);
 	}

@@ -29,16 +29,16 @@ import com.google.gwt.user.client.ui.Widget;
 public class SearchGroup extends VerticalPanel {
 	
 	private SearchVocabularySelection vocabularySelection;
-	private ResultsForm resultsForm;
+	private SearchResultsForm searchResultsForm;
 	
 	private MultiWordSuggestOracle oracle;
 	private CheckBox cb;
 	private SuggestBox box;
 
-	SearchGroup(SearchVocabularySelection vocabularySelection, ResultsForm resultsForm) {
+	SearchGroup(SearchVocabularySelection vocabularySelection, SearchResultsForm searchResultsForm) {
 		super();
 		this.vocabularySelection = vocabularySelection;
-		this.resultsForm = resultsForm;
+		this.searchResultsForm = searchResultsForm;
 		
 		HorizontalPanel hp0 = new HorizontalPanel();
 		add(hp0);
@@ -84,7 +84,7 @@ public class SearchGroup extends VerticalPanel {
 		final String text = box.getText().trim();
 		
 		Main.log("searching: " +text);
-		resultsForm.searching();
+		searchResultsForm.searching();
 		
 		new Timer() {
 			public void run() {
@@ -106,7 +106,7 @@ public class SearchGroup extends VerticalPanel {
 		if ( text.length() > 0 ) {
 			oracle.add(text);
 		}
-		resultsForm.updateEntities(entities);
+		searchResultsForm.updateEntities(entities);
 	}
 	
 	private List<EntityInfo> search(String text, List<OntologyInfo> uris) {

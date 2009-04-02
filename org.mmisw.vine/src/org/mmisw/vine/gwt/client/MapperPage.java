@@ -4,6 +4,11 @@ import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
 
 import com.google.gwt.user.client.ui.DockPanel;
 
+/**
+ * Maintains the two vocabulary forms.
+ * 
+ * @author Carlos Rueda
+ */
 public class MapperPage extends DockPanel {
 	
 	VocabularyForm vocabularyFormLeft;
@@ -24,6 +29,7 @@ public class MapperPage extends DockPanel {
 	}
 
 	
+	/** Call this to notify that a new ontology has been added to the working list */
 	void notifyWorkingOntologyAdded(OntologyInfo ontologyInfo) {
 		int workingOntsSize = Main.getWorkingUris().size();
 		int chooseLeft = workingOntsSize > 0 ? 0 : -1;

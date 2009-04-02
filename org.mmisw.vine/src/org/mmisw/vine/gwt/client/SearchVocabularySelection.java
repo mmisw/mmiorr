@@ -55,6 +55,10 @@ public class SearchVocabularySelection extends VerticalPanel {
 		return selectedUris;
 	}
 
+	/**
+	 * Updates the toggle buttons according to the current list of working ontologies.
+	 * @param searchIndex
+	 */
 	void setToggleButtons(int searchIndex) {
 		buttons.clear();
 		int idx = 0;
