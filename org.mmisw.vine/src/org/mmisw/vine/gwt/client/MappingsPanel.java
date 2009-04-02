@@ -29,7 +29,7 @@ public class MappingsPanel extends FlexTable {
 	 */
 	MappingsPanel() {
 		super();
-//		setBorderWidth(1);
+		setBorderWidth(1);
 	    setWidth("100%");
 	    
 	    setStylePrimaryName("MappingsTable");
@@ -118,7 +118,7 @@ public class MappingsPanel extends FlexTable {
 		this.setWidget(row, 3, right);
 
 		if ( center instanceof Image ) {
-			String width = "40";
+			String width = "30";
 			Image img = (Image) center;
 			width = "" +img.getWidth();
 			cf.setWidth(row, 2, width);
@@ -131,8 +131,8 @@ public class MappingsPanel extends FlexTable {
 		cf.setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
-//		cf.setWidth(row, 1, "47%");
-//		cf.setWidth(row, 3, "47%");
+		cf.setWidth(row, 1, "50%");
+		cf.setWidth(row, 3, "50%");
 			
 		cf.setAlignment(row, 1, 
 				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE

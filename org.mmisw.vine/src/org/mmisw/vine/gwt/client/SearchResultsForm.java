@@ -57,7 +57,10 @@ public class SearchResultsForm extends VerticalPanel {
 		SelectAllNonePanel selAllNonePanel = new SelectAllNonePanel() {
 			@Override
 			void updateAllNone(boolean selected) {
-				updateAllNone(selected);
+				for ( Row row : currentRows.values()  ) {
+					row.setSelected(selected);
+				}
+				updateStatus();
 			}
 		};
 
@@ -89,13 +92,6 @@ public class SearchResultsForm extends VerticalPanel {
 		
 	}
 	
-	void updateAllNone(boolean selected) {
-		for ( Row row : currentRows.values()  ) {
-			row.setSelected(selected);
-		}
-		updateStatus();
-	}
-	
 	void updateStatus() {
 		status.setText("Selected: " +selectedRows.size()+ " out of " +currentRows.size()+ " element(s)");
 	}
@@ -109,12 +105,9 @@ public class SearchResultsForm extends VerticalPanel {
 
 	public void updateEntities(List<EntityInfo> entities) {
 		rowPanel.clear();
+		selectedRows.clear();
 		cbs.clear();
 		currentRows.clear();
-		
-//		final FlexTable flexTable = new FlexTable();
-//		FlexCellFormatter cellFormatter = flexTable.getFlexCellFormatter();
-//		cellFormatter.s
 		
 		for ( EntityInfo entity : entities ) {
 			Row row = new Row(entity);

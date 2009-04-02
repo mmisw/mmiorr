@@ -102,8 +102,6 @@ public class SearchGroup extends VerticalPanel {
 	
 	private void executeSearch(String text) {
 		List<OntologyInfo> selectedVocabs = vocabularySelection.getSelectedVocabularies();
-		Main.log("search: vocabularySelection " +vocabularySelection);
-		Main.log("search: selectedVocabs " +selectedVocabs);
 		List<EntityInfo> entities = search(text, selectedVocabs );
 		
 		Main.log("search: retrieved " +entities.size()+ " terms");
