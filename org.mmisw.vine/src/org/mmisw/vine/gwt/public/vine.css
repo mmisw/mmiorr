@@ -39,3 +39,28 @@
   _width: 400px;/* IE6 hack */
   background-color: #dee7ec;
 }
+
+
+/* inline tables */
+table.inline {
+  font-size: small;
+  background-color: #ffffff;
+  border-spacing: 0px;
+  border-collapse: collapse;
+}
+
+table.inline th {
+  padding: 3px;
+  border: 1px solid #8cacbb;
+  background-color: #dee7ec;
+}
+
+table.inline tr {
+  padding: 3px;
+  border: 1px solid #8cacbb;
+}
+
+table.inline td {
+  padding: 3px;
+  border: 1px solid #8cacbb;
+}

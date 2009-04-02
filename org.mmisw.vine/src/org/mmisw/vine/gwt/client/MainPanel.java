@@ -35,6 +35,7 @@ public class MainPanel extends VerticalPanel {
 
 	    layout.add(ontSel);
 	    layout.add(mapperPage);
+
 	    layout.add(mappingsPanel);
 
 	    layout.setCellHorizontalAlignment(ontSel, ALIGN_CENTER);

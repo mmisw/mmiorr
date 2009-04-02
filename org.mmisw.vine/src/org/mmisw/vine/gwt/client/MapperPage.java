@@ -24,7 +24,7 @@ public class MapperPage extends DockPanel {
 	private MappingToolbar.IMappingRelationListener mapRelListener = 
 		new MappingToolbar.IMappingRelationListener() {
 		public void clicked(Image img) {
-			
+			// FIXME Need to replicate img for each created mapping
 			SearchResultsForm searchResultsLeft = vocabularyFormLeft.getSearchResultsForm();
 			SearchResultsForm searchResultsRight = vocabularyFormRight.getSearchResultsForm();
 			
@@ -32,7 +32,7 @@ public class MapperPage extends DockPanel {
 			for ( String leftKey: leftRowKeys ) {
 				Set<String> rightRowKeys = searchResultsRight.getSelectedRows();
 				for ( String rightKey: rightRowKeys ) {
-					mappingsPanel.addMapping(leftKey, rightKey, img);
+					mappingsPanel.addMapping(leftKey, img, rightKey);
 				}
 			}
 			

@@ -113,6 +113,9 @@ public class SearchGroup extends VerticalPanel {
 	
 	private List<EntityInfo> search(String text, List<OntologyInfo> uris) {
 		
+		// TODO use a parameter to apply case-sensitive or not
+		text = text.toLowerCase();
+		
 		// TODO get this flags from parameters
 		boolean useLocalName = true;
 		boolean useLabel = true;
@@ -130,20 +133,20 @@ public class SearchGroup extends VerticalPanel {
 				boolean add = false;
 				
 				// check localName
-				if ( (useLocalName && entityInfo.getLocalName().indexOf(text) >= 0) ) {
+				if ( (useLocalName && entityInfo.getLocalName().toLowerCase().indexOf(text) >= 0) ) {
 					add = true;
 				}
 				
 				// check label
 				if ( !add && useLabel ) {
 					String str = entityInfo.getDisplayLabel();
-					add = str != null && str.indexOf(text) >= 0;
+					add = str != null && str.toLowerCase().indexOf(text) >= 0;
 				}
 				
 				// check comment
 				if ( !add && useComment ) {
 					String str = entityInfo.getComment();
-					add = str != null && str.indexOf(text) >= 0;
+					add = str != null && str.toLowerCase().indexOf(text) >= 0;
 				}
 				
 				if ( add ) {
