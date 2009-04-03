@@ -8,6 +8,7 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.mmisw.vine.core.Util;
 import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
+import org.mmisw.vine.gwt.client.rpc.RelationInfo;
 import org.mmisw.vine.gwt.client.rpc.VineService;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -89,5 +90,72 @@ public class VineServiceImpl extends RemoteServiceServlet implements VineService
 	    finally {
 	        meth.releaseConnection();
 	    }
+	}
+
+	public List<RelationInfo> getRelationInfos() {
+		
+		// TODO: determine mechanism to obtain the list of default mapping relations, for example,
+		// from an ontology.
+		
+		// For now, creating a hard-coded list
+		
+		List<RelationInfo> relInfos = new ArrayList<RelationInfo>();
+		
+//      URI="http://www.w3.org/2008/05/skos#exactMatch"
+//      icon="icons/exactMatch28.png"
+//      name="exactMatch"
+//      tooltip="The property skos:exactMatch is used to link two concepts, indicating a high degree of confidence that the concepts can be used interchangeably across a wide range of information retrieval applications. [SKOS Section 10.1] (transitive, symmetric)"
+		relInfos.add(new RelationInfo(
+				"http://www.w3.org/2008/05/skos#exactMatch", 
+				"exactMatch28.png", 
+				"exactMatch",
+				"The property skos:exactMatch is used to link two concepts, indicating a high degree of confidence that the concepts can be used interchangeably across a wide range of information retrieval applications. [SKOS Section 10.1] (transitive, symmetric)"
+		));
+		
+//      URI="http://www.w3.org/2008/05/skos#closeMatch"
+//      icon="icons/closeMatch28.png"
+//      name="closeMatch"
+//      tooltip="A skos:closeMatch link indicates that two concepts are sufficiently similar that they can be used interchangeably in some information retrieval applications. [SKOS Section 10.1] (symmetric)"
+		relInfos.add(new RelationInfo(
+				"http://www.w3.org/2008/05/skos#closeMatch", 
+				"closeMatch28.png", 
+				"closeMatch",
+				"A skos:closeMatch link indicates that two concepts are sufficiently similar that they can be used interchangeably in some information retrieval applications. [SKOS Section 10.1] (symmetric)"
+		));
+		
+//      URI="http://www.w3.org/2008/05/skos#broadMatch"
+//      icon="icons/broadMatch28.png"
+//      name="broadMatch"
+//      tooltip="'has the broader concept': the second (object) concept is broader than the first (subject) concept [SKOS Section 8.1] (infers broaderTransitive, a transitive relation)"
+		relInfos.add(new RelationInfo(
+				"http://www.w3.org/2008/05/skos#broadMatch", 
+				"broadMatch28.png", 
+				"broadMatch",
+				"'has the broader concept': the second (object) concept is broader than the first (subject) concept [SKOS Section 8.1] (infers broaderTransitive, a transitive relation)"
+		));
+
+//      URI="http://www.w3.org/2008/05/skos#narrowMatch"
+//      icon="icons/narrowMatch28.png"
+//      name="narrowMatch"
+//      tooltip="'has the narrower concept': the second (object) concept is narrower than the first (subject) concept [SKOS Section 8.1] (infers narrowTransitive, a transitive relation)"
+		relInfos.add(new RelationInfo(
+				"http://www.w3.org/2008/05/skos#narrowMatch", 
+				"narrowMatch28.png", 
+				"narrowMatch",
+				"'has the narrower concept': the second (object) concept is narrower than the first (subject) concept [SKOS Section 8.1] (infers narrowTransitive, a transitive relation)"
+		));
+
+//      URI="http://www.w3.org/2008/05/skos#relatedMatch"
+//      icon="icons/relatedMatch28.png"
+//      name="relatedMatch"
+//      tooltip="The property skos:relatedMatch is used to state an associative mapping link between two concepts. [SKOS Section 8.1] (symmetric)"
+		relInfos.add(new RelationInfo(
+				"http://www.w3.org/2008/05/skos#relatedMatch", 
+				"relatedMatch28.png", 
+				"relatedMatch",
+				"The property skos:relatedMatch is used to state an associative mapping link between two concepts. [SKOS Section 8.1] (symmetric)"
+		));
+
+		return relInfos;
 	}
 }

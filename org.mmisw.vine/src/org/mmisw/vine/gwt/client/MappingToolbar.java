@@ -1,24 +1,43 @@
 package org.mmisw.vine.gwt.client;
 
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import java.util.List;
+
+import org.mmisw.vine.gwt.client.rpc.RelationInfo;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratorPanel;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-
+/**
+ * Manages the set of relations available for the mappings.
+ * 
+ * @author Carlos Rueda
+ */
 public class MappingToolbar extends VerticalPanel {
 	
 	interface IMappingRelationListener {
-		void clicked(AbstractImagePrototype imgProt);
+		void clicked(RelationInfo relInfo);
 	}
 	
 	
+	private VerticalPanel layout = new VerticalPanel();
+	private IMappingRelationListener mapRelListener;
+	
+	/**
+	 * 
+	 * @param mapRelListener
+	 */
 	MappingToolbar(final IMappingRelationListener mapRelListener) {
 		super();
+		this.mapRelListener = mapRelListener;
 		
-		VerticalPanel layout = new VerticalPanel();
+		
 		DecoratorPanel decPanel = new DecoratorPanel();
 	    decPanel.setWidget(layout);
 	    
@@ -26,46 +45,51 @@ public class MappingToolbar extends VerticalPanel {
 		
 	    layout.setSpacing(2);
 		//setWidth("10%");
-		
-		PushButton b1 = new PushButton(Main.images.exactMatch28().createImage(), 
-				new ClickListener() {
-					public void onClick(Widget sender) {
-						mapRelListener.clicked(Main.images.exactMatch28());						
-					}
-		});
-		PushButton b2 = new PushButton(Main.images.closeMatch28().createImage(), 
-				new ClickListener() {
-			public void onClick(Widget sender) {
-				mapRelListener.clicked(Main.images.closeMatch28());						
-			}
-		});
-		PushButton b3 = new PushButton(Main.images.broadMatch28().createImage(), 
-				new ClickListener() {
-			public void onClick(Widget sender) {
-				mapRelListener.clicked(Main.images.broadMatch28());						
-			}
-		});
-
-		PushButton b4 = new PushButton(Main.images.narrowMatch28().createImage(), 
-				new ClickListener() {
-			public void onClick(Widget sender) {
-				mapRelListener.clicked(Main.images.narrowMatch28());						
-			}
-		});
-
-		PushButton b5 = new PushButton(Main.images.relatedMatch28().createImage(), 
-				new ClickListener() {
-			public void onClick(Widget sender) {
-				mapRelListener.clicked(Main.images.relatedMatch28());						
-			}
-		});
-
-		
-		layout.add(b1);
-		layout.add(b2);
-		layout.add(b3);
-		layout.add(b4);
-		layout.add(b5);
+	    
+	    update();
+	
 	}
 
+	
+	private void update() {
+		layout.clear();
+		layout.add(new HTML(
+				"<img src=\"" +GWT.getModuleBaseURL()+ "images/loading.gif\">"
+		));
+		
+		
+		AsyncCallback<List<RelationInfo>> callback = new AsyncCallback<List<RelationInfo>>() {
+			public void onFailure(Throwable thr) {
+				layout.clear();
+				layout.add(new HTML(thr.toString()));
+			}
+
+			public void onSuccess(List<RelationInfo> relInfos) {
+				layout.clear();
+				Main.log("getRelationInfos: retrieved " +relInfos.size()+ " relations");
+				_gottenRelationInfos(relInfos);
+			}
+		};
+
+	      Main.log("Getting relations ...");
+	      Main.vineService.getRelationInfos(callback);
+	}
+
+
+	private void _gottenRelationInfos(List<RelationInfo> relInfos) {
+		layout.clear();
+		for ( final RelationInfo relInfo : relInfos ) {
+			String imgUri = GWT.getModuleBaseURL()+ "images/" +relInfo.getIconUri();
+			Main.log("Loading relation image: " +imgUri);
+			Image img = new Image(imgUri);
+			PushButton button = new PushButton(img, 
+					new ClickListener() {
+						public void onClick(Widget sender) {
+							mapRelListener.clicked(relInfo);						
+						}
+			});
+			button.setTitle(relInfo.getDescription());
+			layout.add(button);
+		}
+	}
 }

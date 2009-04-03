@@ -27,6 +27,11 @@ public interface VineService extends RemoteService {
 	 */
 	OntologyInfo getEntities(OntologyInfo ontologyInfo);
 
+	/**
+	 * Gets the default list of RelationInfo's.
+	 */
+	List<RelationInfo> getRelationInfos();
+	
 	
 	// TODO Not used; the scheme for the mappings still to be determined
 	String performMapping(List<String> leftTerms, int relationCode, List<String> rightTerms);

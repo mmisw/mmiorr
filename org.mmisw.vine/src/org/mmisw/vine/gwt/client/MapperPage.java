@@ -3,10 +3,10 @@ package org.mmisw.vine.gwt.client;
 import java.util.Set;
 
 import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
+import org.mmisw.vine.gwt.client.rpc.RelationInfo;
 
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DockPanel;
-import com.google.gwt.user.client.ui.Image;
 
 /**
  * Maintains the two vocabulary forms.
@@ -22,23 +22,6 @@ public class MapperPage extends DockPanel {
 	
 	private MappingsPanel mappingsPanel;
 	
-	private MappingToolbar.IMappingRelationListener mapRelListener = 
-		new MappingToolbar.IMappingRelationListener() {
-		public void clicked(AbstractImagePrototype imgProt) {
-			SearchResultsForm searchResultsLeft = vocabularyFormLeft.getSearchResultsForm();
-			SearchResultsForm searchResultsRight = vocabularyFormRight.getSearchResultsForm();
-			
-			Set<String> leftRowKeys = searchResultsLeft.getSelectedRows();
-			for ( String leftKey: leftRowKeys ) {
-				Set<String> rightRowKeys = searchResultsRight.getSelectedRows();
-				for ( String rightKey: rightRowKeys ) {
-					Image img = imgProt.createImage();
-					mappingsPanel.addMapping(leftKey, img, rightKey);
-				}
-			}
-			
-		}
-	};
 	
 	MapperPage(MappingsPanel mappingsPanel) {
 		super();
@@ -51,7 +34,11 @@ public class MapperPage extends DockPanel {
 		vocabularyFormLeft = new VocabularyForm(chooseLeft);
 		vocabularyFormRight = new VocabularyForm(chooseRight);
 
-		mappingToolbar = new MappingToolbar(mapRelListener);
+		mappingToolbar = new MappingToolbar(new MappingToolbar.IMappingRelationListener() {
+			public void clicked(RelationInfo relInfo) {
+				_relButtonClicked(relInfo);
+			}
+		});
 
 		
 		setSpacing(5);
@@ -60,6 +47,35 @@ public class MapperPage extends DockPanel {
 		add(vocabularyFormLeft, WEST);
 		add(mappingToolbar, CENTER);
 		add(vocabularyFormRight, EAST);
+	}
+	
+	private void _relButtonClicked(RelationInfo relInfo) {
+		SearchResultsForm searchResultsLeft = vocabularyFormLeft.getSearchResultsForm();
+		SearchResultsForm searchResultsRight = vocabularyFormRight.getSearchResultsForm();
+		
+		Set<String> leftRowKeys = searchResultsLeft.getSelectedRows();
+		int numLeft = leftRowKeys.size();
+		Set<String> rightRowKeys = searchResultsRight.getSelectedRows();
+		int numRight = rightRowKeys.size();
+		
+		
+		//
+		// TODO: check for duplications
+		//
+		
+		int totalToCreate = numLeft * numRight;
+		if ( totalToCreate >= 20 ) {
+			String msg = totalToCreate+ " mappings are about to be created";
+			if ( ! Window.confirm(msg) ) {
+				return;
+			}
+		}
+		
+		for ( String leftKey: leftRowKeys ) {
+			for ( String rightKey: rightRowKeys ) {
+				mappingsPanel.addMapping(leftKey, relInfo, rightKey);
+			}
+		}
 	}
 
 	

@@ -22,12 +22,14 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Entry point classes define <code>onModuleLoad()</code>.
+ * The entry point for the Web VINE applications.
+ * 
+ * @author Carlos Rueda
  */
 public class Main implements EntryPoint {
 	
-	public static final String APP_NAME = "VINE";
-	public static final String VERSION = "0.1.pre1";
+	public static final String APP_NAME = "Web VINE";
+	public static final String VERSION = "2.0.0pre1";
 	public static final String VERSION_COMMENT = 
 		"NOTE: This is preliminary, not yet operational prototype of a Web version for VINE. " +
 		"<a target=_blank href=http://marinemetadata.org/vine>Click here</a> for current " +

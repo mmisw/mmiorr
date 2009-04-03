@@ -10,16 +10,15 @@ import java.io.Serializable;
 public class Mapping implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	// TODO determine proper attributes of this class
 	private String left;
-	private String center;
+	private RelationInfo relInfo;
 	private String right;
 	
 
-	public Mapping(String left, String center, String right) {
+	public Mapping(String left, RelationInfo relInfo, String right) {
 		super();
 		this.left = left;
-		this.center = center;
+		this.relInfo = relInfo;
 		this.right = right;
 	}
 	
@@ -30,11 +29,8 @@ public class Mapping implements Serializable {
 	public void setLeft(String left) {
 		this.left = left;
 	}
-	public String getCenter() {
-		return center;
-	}
-	public void setCenter(String center) {
-		this.center = center;
+	public RelationInfo getRelationInfo() {
+		return relInfo;
 	}
 	public String getRight() {
 		return right;

@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mmisw.vine.gwt.client.rpc.Mapping;
+import org.mmisw.vine.gwt.client.rpc.RelationInfo;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
@@ -29,7 +31,7 @@ public class MappingsPanel extends FlexTable {
 	 */
 	MappingsPanel() {
 		super();
-		setBorderWidth(1);
+//		setBorderWidth(1);
 	    setWidth("100%");
 	    
 	    setStylePrimaryName("MappingsTable");
@@ -43,18 +45,23 @@ public class MappingsPanel extends FlexTable {
 	 * @param sender
 	 * @param rightKey
 	 */
-	public void addMapping(String leftKey, Widget sender, String rightKey) {
+	public void addMapping(String leftKey, RelationInfo relInfo, String rightKey) {
 		int row = mappings.size();
 		if ( row == 0 ) {
 			this.clear();
 			_setHeader(0);
 		}
+
+		String imgUri = GWT.getModuleBaseURL()+ "images/" +relInfo.getIconUri();
+		Image img = new Image(imgUri);
+		img.setTitle(relInfo.getDescription());
 		
-		Mapping mapping = new Mapping(leftKey, "TODO", rightKey);
+		
+		Mapping mapping = new Mapping(leftKey, relInfo, rightKey);
 		mappings.add(mapping);
 		
 		Widget left = new Label(leftKey);
-		Widget center = sender;
+		Widget center = img;
 		Widget right = new Label(rightKey);
 
 		_addRow(left, center, right, "MappingsTable-row");

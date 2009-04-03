@@ -16,6 +16,10 @@ public interface VineServiceAsync {
 	
 	void getEntities(OntologyInfo ontologyInfo, AsyncCallback<OntologyInfo> callback);
 	
+	
+	void getRelationInfos(AsyncCallback<List<RelationInfo>> callback);
+	
+	// TODO
 	void performMapping(List<String> leftTerms, int relationCode, List<String> rightTerms,
 			AsyncCallback<String> callback);
 }

@@ -3,8 +3,9 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
-2009-04-02
+2009-04-02  2.0.0pre1
 	- New MappingsPanel with a tabular of the current mappings.
+	- Started handling of created mappings (RelationInfo)
 	
 2009-04-01
 	- Resuming with some updates and preparing to show info about select term in the
