@@ -20,7 +20,6 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.MouseListenerAdapter;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 
@@ -121,11 +120,9 @@ public class MappingsPanel extends FocusPanel {
 	}
 
 	private void _addRow(Widget left, Widget center, Widget right, String style) {
-		int row = flexPanel.getRowCount();
+		final int row = flexPanel.getRowCount();
 		FlexCellFormatter cf = flexPanel.getFlexCellFormatter();
 		flexPanel.getRowFormatter().setStyleName(row, style);
-		
-		
 		
 		
 		HorizontalPanel hp = new HorizontalPanel();
@@ -134,7 +131,18 @@ public class MappingsPanel extends FocusPanel {
 //		hp.add(Main.images.metadata().createImage());
 //		hp.add(Main.images.delete().createImage());
 		
-		hp.add(new MappingRow());
+		DisclosurePanel disclosure = new DisclosurePanel("");
+		disclosure.addEventHandler(new DisclosureHandler() {
+			public void onClose(DisclosureEvent event) {
+				flexPanel.setText(row + 1, 0, "");
+			}
+
+			public void onOpen(DisclosureEvent event) {
+				flexPanel.setWidget(row + 1, 0, new Label("Hello world"));	
+			}
+		});
+
+		hp.add(disclosure);
 		
 		flexPanel.setWidget(row, 0, hp);
 		
@@ -149,6 +157,15 @@ public class MappingsPanel extends FocusPanel {
 			cf.setWidth(row, 2, width);
 		}		
 		_setAlignments(row);
+		
+		
+		// add (empty) row for expansion
+		flexPanel.getRowFormatter().setStyleName(row + 1, style);
+		cf.setColSpan(row + 1, 0, 4);
+		cf.setAlignment(row + 1, 0, 
+				HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+
 	}
 	
 	private void _setAlignments(int row) {
@@ -168,69 +185,6 @@ public class MappingsPanel extends FocusPanel {
 		cf.setAlignment(row, 3, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
-	}
-	
-	
-	private MappingRow lastFocusedRow;
-	
-	private class MappingRow extends FocusPanel {
-		
-		DisclosurePanel disclosure;
-		
-		MappingRow() {
-			super();
-			addMouseListener(new MouseListenerAdapter() {
-				public void onMouseEnter(Widget sender) {
-					_pickedForInfo();
-				}
-//				public void onMouseLeave(Widget sender) {
-//					_focus(false);
-//				}
-			});
-			
-			disclosure = new DisclosurePanel("x");
-//			disclosure.setWidth("450");
-			disclosure.addEventHandler(new DisclosureHandler() {
-				public void onClose(DisclosureEvent event) {
-				}
-
-				public void onOpen(DisclosureEvent event) {
-					disclosureOpen();
-				}
-			});
-			
-			add(disclosure);
-		}
-		
-		
-		private void disclosureOpen() {
-			// TODO
-			disclosure.setContent(new HTML(
-					"<b>Hello<br/>world</b>"
-				));	
-		}
-		
-		
-		private void _pickedForInfo() {
-			  if ( lastFocusedRow == MappingRow.this ) {
-				  return;
-			  }
-			  if ( lastFocusedRow != null ) {
-				  lastFocusedRow._focus(false);
-			  }
-			  lastFocusedRow = MappingRow.this;
-			  _focus(true);			
-		}
-		
-		private void _focus(boolean focus) {
-			if ( focus ) {
-				setStyleName("SearchResultsTable-focused");
-			}
-			else {
-				removeStyleName("SearchResultsTable-focused");
-			}
-		}
-
 	}
 	
 

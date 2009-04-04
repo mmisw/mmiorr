@@ -77,10 +77,7 @@
 .MappingsTable-row {
   width: 100%
   padding: 3px;
-  border: 1px solid #8cacbb;
+  background-color: #f4f4f4;
+/*  border: 1px solid #8cacbb; */
 }
 
-table.inline td {
-  padding: 3px;
-  border: 1px solid #8cacbb;
-}
