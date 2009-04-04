@@ -2,6 +2,8 @@ package org.mmisw.vine.gwt.client.rpc;
 
 import java.util.List;
 
+import org.mmisw.vine.gwt.client.rpc.AppInfo;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 
 /**
@@ -11,6 +13,11 @@ import com.google.gwt.user.client.rpc.RemoteService;
  * @version $Id$
  */
 public interface VineService extends RemoteService {
+	
+	/**
+	 * Gets basic application info.
+	 */
+	AppInfo getAppInfo();
 	
 	/**
 	 * Gets the vocabularies.

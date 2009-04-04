@@ -1,4 +1,4 @@
-package org.mmisw.vine.gwt.client;
+package org.mmisw.vine.gwt.client.util;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -12,9 +12,9 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author Carlos Rueda
  */
-abstract class SelectAllNonePanel extends HorizontalPanel {
+public abstract class SelectAllNonePanel extends HorizontalPanel {
 	
-	SelectAllNonePanel() {
+	public SelectAllNonePanel() {
 		super();
 		
 		Label label = new Label("Select: ");
@@ -38,6 +38,6 @@ abstract class SelectAllNonePanel extends HorizontalPanel {
 	}
 
 	/** Called when one of the buttons is clicked to notified the selection desored */
-	abstract void updateAllNone(boolean selected);
+	protected abstract void updateAllNone(boolean selected);
 	
 }

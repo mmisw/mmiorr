@@ -8,11 +8,15 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mmisw.vine.gwt.client.rpc.EntityInfo;
+import org.mmisw.vine.gwt.client.util.SelectAllNonePanel;
 
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratorPanel;
+import com.google.gwt.user.client.ui.DisclosureEvent;
+import com.google.gwt.user.client.ui.DisclosureHandler;
+import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -36,7 +40,7 @@ public class SearchResultsForm extends VerticalPanel {
 
 
 	
-	private ResourceViewer resourceViewer;
+	private VocabularyForm vocabularyForm;
 	
 	private HTML status = new HTML("Selected: " +selectedRows.size()+ " out of " +currentRows.size()+ " element(s)");
 	
@@ -47,16 +51,16 @@ public class SearchResultsForm extends VerticalPanel {
 
 	
 	/**
-	 * @param resourceViewer 
+	 * @param vocabularyForm 
 	 * 
 	 */
-	SearchResultsForm(ResourceViewer resourceViewer) {
+	SearchResultsForm(VocabularyForm vocabularyForm) {
 		super();
-		this.resourceViewer = resourceViewer;
+		this.vocabularyForm = vocabularyForm;
 		
 		SelectAllNonePanel selAllNonePanel = new SelectAllNonePanel() {
 			@Override
-			void updateAllNone(boolean selected) {
+			protected void updateAllNone(boolean selected) {
 				for ( Row row : currentRows.values()  ) {
 					row.setSelected(selected);
 				}
@@ -87,7 +91,7 @@ public class SearchResultsForm extends VerticalPanel {
 	    rowPanel.setSpacing(1);
 	    rowPanel.setStylePrimaryName("SearchResultsTable");
 	    scroller = new ScrollPanel(rowPanel);
-	    scroller.setSize("450px", "150px");
+	    scroller.setSize("500px", "300px");
 		p.add(scroller);
 		
 	}
@@ -144,10 +148,20 @@ public class SearchResultsForm extends VerticalPanel {
 		CheckBox checkBox;
 		TextBox textBox;
 		
+		DisclosurePanel disclosure;
+		
 		Row(EntityInfo entity) {
 			super();
 			this.entity = entity;
+			
 			checkBox = new CheckBox();
+			
+//			Image infoImg = Main.images.metadata().createImage();
+//			infoImg.addClickListener(new ClickListener() {
+//				public void onClick(Widget sender) {
+//					_pickedForInfo();				}
+//			});
+			
 			textBox = new TextBox();
 			textBox.setStylePrimaryName("SearchResultsTable-TextBox");
 			
@@ -173,14 +187,7 @@ public class SearchResultsForm extends VerticalPanel {
 			});
 			addMouseListener(new MouseListenerAdapter() {
 				  public void onMouseEnter(Widget sender) {
-					  if ( lastFocusedRow == Row.this ) {
-						  return;
-					  }
-					  if ( lastFocusedRow != null ) {
-						  lastFocusedRow._focus(false);
-					  }
-					  lastFocusedRow = Row.this;
-					  _focus(true);
+					  _pickedForInfo();
 				  }
 //				  public void onMouseLeave(Widget sender) {
 //					  _focus(false);
@@ -193,12 +200,30 @@ public class SearchResultsForm extends VerticalPanel {
 				}
 			});
 
-			this.setTitle(entity.getLocalName());
+//			this.setTitle(entity.getLocalName());
 
+			
+			disclosure = new DisclosurePanel(str);
+			disclosure.setWidth("450");
+			disclosure.addEventHandler(new DisclosureHandler() {
+				public void onClose(DisclosureEvent event) {
+					disclosure.setContent(null);
+				}
+
+				public void onOpen(DisclosureEvent event) {
+					disclosureOpen();
+				}
+			});
+			
 			HorizontalPanel hp = new HorizontalPanel();
 			this.add(hp);
 			hp.add(checkBox);
-			hp.add(textBox);
+			
+//			hp.add(infoImg);
+			
+			
+			//hp.add(textBox);
+			hp.add(disclosure);
 		}
 		
 		private void checkBoxClicked() {
@@ -221,16 +246,58 @@ public class SearchResultsForm extends VerticalPanel {
 			}
 		}
 		
+		
+		private void _pickedForInfo() {
+			  if ( lastFocusedRow == Row.this ) {
+				  return;
+			  }
+			  if ( lastFocusedRow != null ) {
+				  lastFocusedRow._focus(false);
+			  }
+			  lastFocusedRow = Row.this;
+			  _focus(true);			
+		}
+		
+		
+		private void disclosureOpen() {
+			String name = entity.getLocalName();
+			String code = "" + entity.getCode();
+			String uri = Main.getWorkingUris().get(code).getUri() + name;
+			
+			String label = entity.getDisplayLabel();
+			String comment = entity.getComment();
+			
+			if ( label == null ) {
+				label = "";
+			}
+			if ( comment == null ) {
+				comment = "";
+			}
+
+			disclosure.setContent(new HTML(
+				""
+				+ "URI: <a target=\"_blank\" href=\"" +uri+ "\">" +uri+ "</a><br/>"
+				+ "Name: <b>" +name+ "</b><br/>"
+				+ "Label: <b>" +label + "</b><br/>"
+				+ "Comment: <b>" +comment + "</b><br/>"
+			));	
+		}
+		
 		private void _focus(boolean focus) {
 			if ( focus ) {
-				resourceViewer.update(Row.this.entity);	
-				setStyleName("SearchResultsTable-selected");
-				textBox.addStyleName("SearchResultsTable-TextBox-selected");
+				if ( disclosure != null ) {
+					// nothing here
+				}
+				else {
+					vocabularyForm.entityFocused(entity);
+				}
+				setStyleName("SearchResultsTable-focused");
+				textBox.addStyleName("SearchResultsTable-TextBox-focused");
 //				scroller.setScrollPosition(this.getAbsoluteTop() + this.getOffsetHeight());
 			}
 			else {
-				removeStyleName("SearchResultsTable-selected");
-				textBox.removeStyleName("SearchResultsTable-TextBox-selected");
+				removeStyleName("SearchResultsTable-focused");
+				textBox.removeStyleName("SearchResultsTable-TextBox-focused");
 			}
 		}
 	}

@@ -42,7 +42,7 @@ public class SearchGroup extends VerticalPanel {
 		
 		HorizontalPanel hp0 = new HorizontalPanel();
 		add(hp0);
-		hp0.setSpacing(10);
+		hp0.setSpacing(3);
 		hp0.add(new HTML("Search for:"));
 		
 		// TODO implement REGEX search

@@ -9,6 +9,14 @@
 	<servlet>
 		<servlet-name>vineService</servlet-name>
 		<servlet-class>org.mmisw.vine.gwt.server.VineServiceImpl</servlet-class>
+		<init-param>
+			<param-name>vine.app.version</param-name>
+			<param-value>@vine.app.version@</param-value>
+		</init-param>
+		<init-param>
+			<param-name>vine.app.build</param-name>
+			<param-value>@vine.app.build@</param-value>
+		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	

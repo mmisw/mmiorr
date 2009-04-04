@@ -2,6 +2,8 @@ package org.mmisw.vine.gwt.client.rpc;
 
 import java.util.List;
 
+import org.mmisw.vine.gwt.client.rpc.AppInfo;
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
@@ -12,6 +14,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public interface VineServiceAsync {
 
+	void getAppInfo(AsyncCallback<AppInfo> callback);
+	
 	void getAllOntologies(AsyncCallback<List<OntologyInfo>> callback);
 	
 	void getEntities(OntologyInfo ontologyInfo, AsyncCallback<OntologyInfo> callback);

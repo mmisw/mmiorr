@@ -3,10 +3,15 @@ package org.mmisw.vine.gwt.server;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.ServletException;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mmisw.vine.core.Util;
+import org.mmisw.vine.gwt.client.rpc.AppInfo;
 import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
 import org.mmisw.vine.gwt.client.rpc.RelationInfo;
 import org.mmisw.vine.gwt.client.rpc.VineService;
@@ -28,15 +33,57 @@ public class VineServiceImpl extends RemoteServiceServlet implements VineService
 	private static final String VOCABS = ONT + "?vocabs";
 //	private static final String MAPPINGS = ONT + "?mappings";
 
-	
 	private static List<OntologyInfo> onts;
 
+	
+	private final AppInfo appInfo = new AppInfo("Web VINE");
+	private final Log log = LogFactory.getLog(VineServiceImpl.class);
+	
+	public void init() throws ServletException {
+		super.init();
+		log.info("initializing " +appInfo.getAppName()+ "...");
+		try {
+			Config.getInstance().init(getServletConfig(), log);
+			
+			appInfo.setVersion(
+					Config.Prop.VERSION.getValue()+ " (" +
+						Config.Prop.BUILD.getValue()  + ")"
+			);
+					
+			log.info(appInfo.toString());
+			
+		}
+		catch (Throwable ex) {
+			log.error("Cannot initialize: " +ex.getMessage(), ex);
+			// TODO throw ServletException
+			// NOTE: apparently this happens because getServletConfig fails in hosted mode (GWT 1.5.2). 
+			// Normally we should throw a Servlet exception as the following: 
+//			throw new ServletException("Cannot initialize", ex);
+			// but, I'm ignoring it as this is currently only for version information.
+		}
+	}
+	
+	public void destroy() {
+		super.destroy();
+		log.info(appInfo+ ": destroy called.\n\n");
+	}
+	
+	public AppInfo getAppInfo() {
+		return appInfo;
+	}
+	
 
+	
+	/**
+	 * 
+	 */
 	public List<OntologyInfo> getAllOntologies() {
 		onts = new ArrayList<OntologyInfo>();
 		
 		String uri = VOCABS;
-		System.out.println("getAsString. uri= " +uri);
+		if ( log.isDebugEnabled() ) {
+			log.debug("getAsString. uri= " +uri);
+		}
 		String response;
 		try {
 			response = getAsString(uri, Integer.MAX_VALUE);
@@ -59,9 +106,10 @@ public class VineServiceImpl extends RemoteServiceServlet implements VineService
 	}
 	
 	public OntologyInfo getEntities(OntologyInfo ontologyInfo) {
-		System.out.println("getEntities starting");
+		if ( log.isDebugEnabled() ) {
+			log.debug("getEntities starting");
+		}
 		Util.getEntities(ontologyInfo);
-		System.out.println("getEntities done");
 		return ontologyInfo;
 	}
 
@@ -93,7 +141,10 @@ public class VineServiceImpl extends RemoteServiceServlet implements VineService
 	}
 
 	public List<RelationInfo> getRelationInfos() {
-		
+		if ( log.isDebugEnabled() ) {
+			log.debug("getRelationInfos starting");
+		}
+	
 		// TODO: determine mechanism to obtain the list of default mapping relations, for example,
 		// from an ontology.
 		
@@ -155,6 +206,10 @@ public class VineServiceImpl extends RemoteServiceServlet implements VineService
 				"relatedMatch",
 				"The property skos:relatedMatch is used to state an associative mapping link between two concepts. [SKOS Section 8.1] (symmetric)"
 		));
+
+		if ( log.isDebugEnabled() ) {
+			log.debug("getRelationInfos returning: " +relInfos);
+		}
 
 		return relInfos;
 	}

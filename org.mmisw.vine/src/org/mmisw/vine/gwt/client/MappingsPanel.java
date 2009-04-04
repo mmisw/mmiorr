@@ -5,24 +5,33 @@ import java.util.List;
 
 import org.mmisw.vine.gwt.client.rpc.Mapping;
 import org.mmisw.vine.gwt.client.rpc.RelationInfo;
+import org.mmisw.vine.gwt.client.util.SelectAllNonePanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.DisclosureEvent;
+import com.google.gwt.user.client.ui.DisclosureHandler;
+import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.MouseListenerAdapter;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 
 /**
  * The panel containing the mappings.
  * 
  * @author Carlos Rueda
  */
-public class MappingsPanel extends FlexTable {
+public class MappingsPanel extends FocusPanel {
+	
+	private FlexTable flexPanel = new FlexTable();
 	
 	private List<Mapping> mappings = new ArrayList<Mapping>();
 	
@@ -32,11 +41,14 @@ public class MappingsPanel extends FlexTable {
 	MappingsPanel() {
 		super();
 //		setBorderWidth(1);
-	    setWidth("100%");
+		
+		add(flexPanel);
+	    flexPanel.setWidth("100%");
 	    
-	    setStylePrimaryName("MappingsTable");
+	    flexPanel.setStylePrimaryName("MappingsTable");
 	    _setHeader(0);
 	    _addNoMappingsRow(1);
+
 	}
 
 	/**
@@ -48,7 +60,7 @@ public class MappingsPanel extends FlexTable {
 	public void addMapping(String leftKey, RelationInfo relInfo, String rightKey) {
 		int row = mappings.size();
 		if ( row == 0 ) {
-			this.clear();
+			flexPanel.clear();
 			_setHeader(0);
 		}
 
@@ -68,33 +80,33 @@ public class MappingsPanel extends FlexTable {
 	}
 	
 	private void _setHeader(int row) {
-		this.getRowFormatter().setStyleName(row, "MappingsTable-header");
+		flexPanel.getRowFormatter().setStyleName(row, "MappingsTable-header");
 		
 		SelectAllNonePanel selAllNonePanel = new SelectAllNonePanel() {
 			@Override
-			void updateAllNone(boolean selected) {
+			protected void updateAllNone(boolean selected) {
 				// TODO Auto-generated method stub
 			}
 		};
 
 		HTML title = new HTML("<b>Mappings</b>");
 		
-		this.setWidget(row, 0, selAllNonePanel);
+		flexPanel.setWidget(row, 0, selAllNonePanel);
 		
-		FlexCellFormatter cf = this.getFlexCellFormatter();
+		FlexCellFormatter cf = flexPanel.getFlexCellFormatter();
 		cf.setColSpan(row, 1, 3);
 		cf.setAlignment(row, 1, 
 				HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		cf.setWidth(row, 1, "100%");
-		this.setWidget(row, 1, title);
+		flexPanel.setWidget(row, 1, title);
 		row++;
 		
 	}
 	
 	private void _addNoMappingsRow(int row) {
-		this.getRowFormatter().setStyleName(row, "MappingsTable-row");
-		FlexCellFormatter cf = this.getFlexCellFormatter();
+		flexPanel.getRowFormatter().setStyleName(row, "MappingsTable-row");
+		FlexCellFormatter cf = flexPanel.getFlexCellFormatter();
 //		_setAlignments(row);
 		cf.setColSpan(row, 1, 3);
 		cf.setAlignment(row, 1, 
@@ -102,27 +114,33 @@ public class MappingsPanel extends FlexTable {
 		);
 //		cf.setWidth(row, 1, "100%");
 		HTML noYet = new HTML("<font color=\"gray\">(<i>No mappings</i>)</font>");
-		this.setWidget(row, 0, noYet);
-//		this.setText(row, 1, ".");
-//		this.setText(row, 2, ".");
-//		this.setText(row, 3, ".");
+		flexPanel.setWidget(row, 0, noYet);
+//		thisFp.setText(row, 1, ".");
+//		thisFp.setText(row, 2, ".");
+//		thisFp.setText(row, 3, ".");
 	}
 
 	private void _addRow(Widget left, Widget center, Widget right, String style) {
-		int row = this.getRowCount();
-		FlexCellFormatter cf = this.getFlexCellFormatter();
-		this.getRowFormatter().setStyleName(row, style);
+		int row = flexPanel.getRowCount();
+		FlexCellFormatter cf = flexPanel.getFlexCellFormatter();
+		flexPanel.getRowFormatter().setStyleName(row, style);
+		
+		
+		
 		
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.add(new CheckBox());
-		hp.add(Main.images.metadata().createImage());
+		
+//		hp.add(Main.images.metadata().createImage());
 //		hp.add(Main.images.delete().createImage());
 		
-		this.setWidget(row, 0, hp);
+		hp.add(new MappingRow());
 		
-		this.setWidget(row, 1, left);
-		this.setWidget(row, 2, center);
-		this.setWidget(row, 3, right);
+		flexPanel.setWidget(row, 0, hp);
+		
+		flexPanel.setWidget(row, 1, left);
+		flexPanel.setWidget(row, 2, center);
+		flexPanel.setWidget(row, 3, right);
 
 		if ( center instanceof Image ) {
 			String width = "30";
@@ -134,7 +152,7 @@ public class MappingsPanel extends FlexTable {
 	}
 	
 	private void _setAlignments(int row) {
-		FlexCellFormatter cf = this.getFlexCellFormatter();
+		FlexCellFormatter cf = flexPanel.getFlexCellFormatter();
 		cf.setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
@@ -151,4 +169,69 @@ public class MappingsPanel extends FlexTable {
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 	}
+	
+	
+	private MappingRow lastFocusedRow;
+	
+	private class MappingRow extends FocusPanel {
+		
+		DisclosurePanel disclosure;
+		
+		MappingRow() {
+			super();
+			addMouseListener(new MouseListenerAdapter() {
+				public void onMouseEnter(Widget sender) {
+					_pickedForInfo();
+				}
+//				public void onMouseLeave(Widget sender) {
+//					_focus(false);
+//				}
+			});
+			
+			disclosure = new DisclosurePanel("x");
+//			disclosure.setWidth("450");
+			disclosure.addEventHandler(new DisclosureHandler() {
+				public void onClose(DisclosureEvent event) {
+				}
+
+				public void onOpen(DisclosureEvent event) {
+					disclosureOpen();
+				}
+			});
+			
+			add(disclosure);
+		}
+		
+		
+		private void disclosureOpen() {
+			// TODO
+			disclosure.setContent(new HTML(
+					"<b>Hello<br/>world</b>"
+				));	
+		}
+		
+		
+		private void _pickedForInfo() {
+			  if ( lastFocusedRow == MappingRow.this ) {
+				  return;
+			  }
+			  if ( lastFocusedRow != null ) {
+				  lastFocusedRow._focus(false);
+			  }
+			  lastFocusedRow = MappingRow.this;
+			  _focus(true);			
+		}
+		
+		private void _focus(boolean focus) {
+			if ( focus ) {
+				setStyleName("SearchResultsTable-focused");
+			}
+			else {
+				removeStyleName("SearchResultsTable-focused");
+			}
+		}
+
+	}
+	
+
 }

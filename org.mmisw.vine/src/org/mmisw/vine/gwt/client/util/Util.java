@@ -1,7 +1,9 @@
-package org.mmisw.vine.gwt.client;
+package org.mmisw.vine.gwt.client.util;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import org.mmisw.vine.gwt.client.Main;
 
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.DOM;
@@ -17,16 +19,16 @@ public class Util {
 	    return $wnd.location.search;
 	}-*/ ;
 
-    static native String getLocationHost() /*-{
+    public static native String getLocationHost() /*-{
 	    return $wnd.location.host;
 	}-*/ ;
 
-	static native String getLocationProtocol() /*-{
+	public static native String getLocationProtocol() /*-{
 	    return $wnd.location.protocol;
 	}-*/ ;
 
 
-	static Map<String,String> getParams() {
+	public static Map<String,String> getParams() {
 	    Map<String,String> params = null;
 	    String locSearch = URL.decode(Util.getLocationSearch());
 	    Main.log("getParams: locSearch=" +locSearch);
@@ -54,7 +56,7 @@ public class Util {
 	    setFontSize(obj, 10);
 	    return obj;
 	}
-	static ButtonBase createButton(String str, String tooltip, ClickListener cl) {
+	public static ButtonBase createButton(String str, String tooltip, ClickListener cl) {
 	    ButtonBase obj = createButton(str);
 	    obj.setTitle(tooltip);
 	    if ( cl != null ) {

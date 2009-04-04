@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<project name="vine" default="compile" basedir=".">
+<project name="vine" default="war" basedir=".">
 
-  <property name="GWT_HOME" value="/Users/carueda/Software/gwt-mac-1.5.2" />
-	
+  <property file="version.properties" />
+  <property file="build.properties" />	
   <property name="build.dir" value="_generated"/>
 
   <!-- set classpath -->
   <path id="project.class.path">
+	<fileset dir="${appserver.lib}">
+		<include name="servlet*.jar" />
+	</fileset>
     <pathelement path="${java.class.path}/"/>
 
 	<pathelement path="${GWT_HOME}/gwt-user.jar"/>
@@ -20,7 +23,15 @@
 	<pathelement path="base_war/WEB-INF/lib/jena.jar"/>
   	<pathelement path="base_war/WEB-INF/lib/arq.jar"/>
 
+  	<pathelement path="base_war/WEB-INF/lib/commons-logging.jar"/>
+  	<pathelement path="base_war/WEB-INF/lib/log4j-1.2.12.jar"/>
   </path>
+
+	<target name="init">
+		<tstamp>
+		    <format property="vine.app.build" pattern="yyyyMMddHHmmss" />
+		</tstamp>
+	</target>
 
   <target name="gwt-compiler-help">
   	<java classname="com.google.gwt.dev.GWTCompiler" fork="false">
@@ -60,7 +71,7 @@
     </java>
   </target>
 
-  <target name="compile" description="Compile src to bin">
+  <target name="compile" depends="init">
     <mkdir dir="bin"/>
     <mkdir dir="${build.dir}/classes"/>
     <javac srcdir="src" destdir="${build.dir}/classes" 
@@ -78,20 +89,43 @@
   </target>
 
     <target name="war" depends="jar, gwt-compile">
+    	<!-- prepare tmp.WebContent -->
+		<copy todir="${build.dir}/tmp.WebContent">
+			<fileset dir="base_war">
+				<exclude name="WEB-INF/web.xml" />
+				<exclude name="WEB-INF/lib**" />
+				<exclude name="WEB-INF/classes/log4j.xml" />
+			</fileset>
+		</copy>
 
-            <copy todir="${build.dir}/tmp.web-inf-lib" flatten="true">
-                    <fileset dir="base_war/WEB-INF/lib">
-                            <include name="**.jar"/>
-                    </fileset>
-            </copy>
+		<copy file="base_war/WEB-INF/web.xml" 
+			tofile="${build.dir}/tmp.WebContent/WEB-INF/web.xml" overwrite="true">
+			<filterset>
+				<filter token="vine.app.version"        value="${vine.app.version}" />
+				<filter token="vine.app.build"          value="${vine.app.build}" />
+			</filterset>
+		</copy>
 
-            <war warfile="${build.dir}/vine.war" webxml="base_war/WEB-INF/web.xml">
-                    <fileset dir="www/org.mmisw.vine.gwt.Main" />
-                    <lib dir="${build.dir}/tmp.web-inf-lib" />
-            </war>
-            <delete includeEmptyDirs="true" failonerror="false">
-                    <fileset dir="${build.dir}/tmp.web-inf-lib" />
-            </delete>
+		<copy file="base_war/WEB-INF/classes/log4j.xml" 
+			tofile="${build.dir}/tmp.WebContent/WEB-INF/classes/log4j.xml" overwrite="true">
+			<filterset>
+				<filter token="vine.app.logfilepath"       value="${vine.app.logfilepath}" />
+				<filter token="vine.app.maxlogfilesize"    value="${vine.app.maxlogfilesize}" />
+				<filter token="vine.app.maxlogbackupindex" value="${vine.app.maxlogbackupindex}" />
+				<filter token="vine.app.log.deflevel"      value="${vine.app.log.deflevel}" />
+				<filter token="vine.app.log.vinelevel"    value="${vine.app.log.vinelevel}" />
+			</filterset>
+		</copy>
+
+        <war warfile="${build.dir}/vine.war" webxml="${build.dir}/tmp.WebContent/WEB-INF/web.xml">
+                <fileset dir="www/org.mmisw.vine.gwt.Main" />
+        	    <fileset dir="${build.dir}/tmp.WebContent" />
+                <lib dir="base_war/WEB-INF/lib" />
+        </war>
+    	
+        <delete includeEmptyDirs="true" failonerror="false">
+                <fileset dir="${build.dir}/tmp.WebContent" />
+        </delete>
     </target>     	
 
   <target name="clean">

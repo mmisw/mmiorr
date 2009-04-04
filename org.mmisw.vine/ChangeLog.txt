@@ -3,7 +3,17 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
-2009-04-02  2.0.0pre1
+2009-04-03  1.5.0.alpha
+	- setting up build environment similar to that in org.mmisw.ontmd project:
+		version.properties
+		AppInfo
+		Config
+		log4j.xml
+	- More layout improvements: using disclosure panels for displaying term info; some 
+	  preliminary tests for doing a similar handling in the mappings panel, but this is
+	  trickier because it'd be good to keep the alignment of the relation symbols.
+
+2009-04-02 
 	- New MappingsPanel with a tabular of the current mappings.
 	- Started handling of created mappings (RelationInfo)
 	

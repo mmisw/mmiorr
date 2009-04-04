@@ -53,4 +53,7 @@ public class RelationInfo implements Serializable {
 		this.description = description;
 	}
 
+	public String toString() {
+		return uri;
+	}
 }

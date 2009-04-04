@@ -30,11 +30,14 @@ public class MyDialog extends DialogBox {
 
 	
 	MyDialog(Widget contents) {
-		super(false, true);
+		this(contents, true);
+	}
+	
+	MyDialog(Widget contents, boolean modal) {
+		super(false, modal);
 		setAnimationEnabled(true);
 		Grid grid = new Grid(1,1);
 		grid.setWidget(0, 0, dockPanel);
-		grid.setBorderWidth(1);  // just to improve appearance in firefox
 		setWidget(grid);
 		
 		hp.setCellHorizontalAlignment(buttons, HasHorizontalAlignment.ALIGN_RIGHT);
