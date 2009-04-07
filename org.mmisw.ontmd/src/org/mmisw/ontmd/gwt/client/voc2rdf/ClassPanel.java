@@ -9,7 +9,7 @@ import java.util.Set;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.MyDialog;
 import org.mmisw.ontmd.gwt.client.ResourceTypeWidget;
-import org.mmisw.ontmd.gwt.client.TLabel;
+import org.mmisw.ontmd.gwt.client.util.TLabel;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
 
 import com.google.gwt.user.client.Window;
@@ -391,10 +391,14 @@ public class ClassPanel extends VerticalPanel {
 			
 			// any missing columns? 
 			if ( numCols < numHeaderCols ) {
-				if ( !error ) {
-					error = true;
-					errorMsg.append("missing columns according to header, line " +r);
-				}
+				
+				// Accept empty collumns (except the first columns, which is the key) is OK. See issue #119.
+//				if ( !error ) {
+//					error = true;
+//					errorMsg.append("missing columns according to header, line " +r);
+//				}
+				// Note that no further check for the required key column (the first one) is neccesary,
+				// because the has at least one column and the check was already done above.
 				
 				for ( int c = numCols; c < numHeaderCols; c++ ) {
 					termTable.setCell(row, c, "");

@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.mmisw.ontmd.gwt.client.rpc.OntologyInfo;
 import org.mmisw.ontmd.gwt.client.rpc.ReviewResult;
+import org.mmisw.ontmd.gwt.client.util.TLabel;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrGroup;
 
 import com.google.gwt.user.client.ui.CellPanel;

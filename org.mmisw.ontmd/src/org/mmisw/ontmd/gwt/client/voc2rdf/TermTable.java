@@ -1,6 +1,6 @@
 package org.mmisw.ontmd.gwt.client.voc2rdf;
 
-import org.mmisw.ontmd.gwt.client.Util;
+import org.mmisw.ontmd.gwt.client.util.Util;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Timer;
@@ -410,6 +410,9 @@ public class TermTable extends VerticalPanel {
 				String text = html.getText().trim();
 				if ( text.length() > 0 ) {
 					empty = false;
+				}
+				else if ( col > CONTROL_COL + 1) {
+					// empty column (except the first columns, which is the key) is OK. See issue #119. 
 				}
 				else if ( error == null ) {
 					error = "Line " +(row -FIRST_REGULAR_ROW + 1)+ ": Missing value in column " +col;

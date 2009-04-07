@@ -3,6 +3,8 @@ package org.mmisw.ontmd.gwt.client;
 import java.util.List;
 import java.util.Map;
 
+import org.mmisw.ontmd.gwt.client.util.TLabel;
+import org.mmisw.ontmd.gwt.client.util.Util;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.client.vocabulary.Option;
 

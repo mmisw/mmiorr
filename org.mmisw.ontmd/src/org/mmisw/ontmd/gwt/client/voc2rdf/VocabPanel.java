@@ -5,8 +5,8 @@ import java.util.Map;
 
 import org.mmisw.ontmd.gwt.client.FieldWithChoose;
 import org.mmisw.ontmd.gwt.client.Main;
-import org.mmisw.ontmd.gwt.client.TLabel;
-import org.mmisw.ontmd.gwt.client.Util;
+import org.mmisw.ontmd.gwt.client.util.TLabel;
+import org.mmisw.ontmd.gwt.client.util.Util;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
 
