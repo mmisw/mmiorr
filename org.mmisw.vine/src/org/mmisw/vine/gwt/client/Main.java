@@ -43,7 +43,7 @@ public class Main implements EntryPoint {
 	
 	private static String baseUrl;
 	
-	static VineImageBundle images = (VineImageBundle) GWT.create(VineImageBundle.class);
+	public static VineImageBundle images = (VineImageBundle) GWT.create(VineImageBundle.class);
 
 	private static AppInfo appInfo;
 	
@@ -116,7 +116,7 @@ public class Main implements EntryPoint {
 	  MainPanel mainPanel = new MainPanel();
 	  HorizontalPanel hp = new HorizontalPanel();
 	  RootPanel.get().add(hp);
-	  hp.add(Main.images.vine().createImage());
+	  hp.add(Main.images.vinealpha().createImage());
 	  hp.add(Util.createHtml("<br/>\n" +VERSION_COMMENT, 11));
 	  RootPanel.get().add(mainPanel);
 

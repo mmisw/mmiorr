@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.mmisw.vine.gwt.client.util.TLabel;
 import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
 
 import com.google.gwt.user.client.DOM;
@@ -45,7 +46,17 @@ public class OntologySelection extends VerticalPanel {
 		CellPanel hp = new HorizontalPanel();
 		layout.add(hp);
 		
-		hp.add(new HTML("Working ontologies:"));
+		hp.add(new TLabel("Working ontologies:", 
+				"This section lists the ontologies the entities to be mapped are taken from. " +
+				"Use the \"Add\" button to add a working ontology. " +
+				"The available ontologies are retrieved from the MMI Repository. " +
+				"<br/>" +
+				"The working ontologies are given " +
+				"codes, starting from 'A', to identify them in " +
+				"the rest of the VINE interface. " +
+				"<br/>" +
+				"(TODO: the prefix should include the trailing slash, so the references are simpler)"
+		));
 		
 		final PushButton addButton = new PushButton("Add...");
 		addButton.setTitle("Allows to add a working ontology");
@@ -130,6 +141,12 @@ public class OntologySelection extends VerticalPanel {
 			    return true;
 			  }
 		};
+		hp.add(new TLabel("Ontology URI:", 
+				"Select the ontology to include in the list of working ontologies. " +
+				"<br/>" +
+				"As you type, URIs are displayed according to matching components in the " +
+				"URI or the associated title."
+		));
 		hp.add(box);
 		
 		box.addEventHandler(new SuggestionHandler() {
@@ -155,7 +172,7 @@ public class OntologySelection extends VerticalPanel {
 		});
 
 		popup.setText("Select a vocabulary");
-		hp.add(new HTML("Elements are displayed as you type. Enter * to see the full list."));
+//		hp.add(new HTML("Elements are displayed as you type. Enter * to see the full list."));
 
 		// use a timer to request for focus in the suggest-box:
 		new Timer() {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
+import org.mmisw.vine.gwt.client.util.TLabel;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.CellPanel;
@@ -29,12 +30,13 @@ public class SearchVocabularySelection extends VerticalPanel {
 		CellPanel hp = new HorizontalPanel();
 		add(hp);
 
-		HTML label = new HTML("Search the following ontologies:");
-		hp.add(label);
 		
-		String tooltip = "Select the working ontologies to search";
-		label.setTitle(tooltip);
-		buttons.setTitle(tooltip);
+		hp.add(new TLabel("Search the following ontologies:", 
+				"Check the working ontologies you want to search. " +
+				"Each found entity will be abbreviated by using the corresponding " +
+				"ontology code given in the working ontologies section."
+		));
+		
 		
 		hp.add(buttons);
 		

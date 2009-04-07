@@ -5,13 +5,13 @@ import java.util.List;
 
 import org.mmisw.vine.gwt.client.rpc.EntityInfo;
 import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
+import org.mmisw.vine.gwt.client.util.TLabel;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.PushButton;
@@ -43,7 +43,16 @@ public class SearchGroup extends VerticalPanel {
 		HorizontalPanel hp0 = new HorizontalPanel();
 		add(hp0);
 		hp0.setSpacing(3);
-		hp0.add(new HTML("Search for:"));
+		
+		hp0.add(new TLabel("Search for:", 
+				"Enter the string you want to search in the selected ontologies and click " +
+				"the search button. " +
+				"Leave the field blank to retrieve all associated entities. " +
+				"<br/>" +
+				"Check the REGEX button if you are entering a regular expression for your search " +
+				"(not implemented yet)."
+		));
+
 		
 		// TODO implement REGEX search
 		regex = new ToggleButton("REGEX");

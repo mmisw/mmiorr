@@ -3,8 +3,11 @@ package org.mmisw.vine.gwt.client;
 import java.util.List;
 
 import org.mmisw.vine.gwt.client.rpc.RelationInfo;
+import org.mmisw.vine.gwt.client.util.TLabel;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratorPanel;
@@ -37,15 +40,38 @@ public class MappingToolbar extends VerticalPanel {
 		super();
 		this.mapRelListener = mapRelListener;
 		
+		setHorizontalAlignment(ALIGN_CENTER);
+		
+//		setSpacing(4);
+		
+		add(new TLabel("", 
+				"Once you have selected entities on both sides, choose the relationship you want " +
+				"to establish between the corresponding entities. " +
+				"<br/>" +
+				"<br/>" +
+				"Click the \"Config\" button to configure the available relations " +
+				"(not implemented yet)."
+		));
 		
 		DecoratorPanel decPanel = new DecoratorPanel();
 	    decPanel.setWidget(layout);
-	    
+	    layout.setSpacing(2);
 	    add(decPanel);
 		
-	    layout.setSpacing(2);
 		//setWidth("10%");
-	    
+
+		final PushButton configButton = new PushButton("Config");
+		configButton.setTitle("Allows to configure the available relations (not implemented yet)");
+		DOM.setElementAttribute(configButton.getElement(), "id", "my-button-id");
+
+		configButton.addClickListener(new ClickListener() {
+			public void onClick(Widget sender) {
+				// TODO
+				Window.alert("sorry, not implemented yet");
+			}
+		});
+		add(configButton);
+
 	    update();
 	
 	}

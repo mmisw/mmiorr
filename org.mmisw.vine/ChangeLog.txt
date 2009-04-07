@@ -3,6 +3,21 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2009-04-06  1.5.0.alpha1
+	- Added some (?) tooltips and some "not implemented" actions to proceed with asking
+	  for feedback especially regarding UI.
+	  
+	  Here are some the next steps regarding the core functionality:
+	  	- Determine the mapping ontology to use as a basis for all mappings
+	  	- Determine the mechanism to allow the creation or configuration of the set of relations
+	  	  that can be used in a session.
+	  	- Allow registration in the repository. Perhaps this will be similar to voc2rdf, so
+	  	  some metadata should be captured.
+	  	- Allow read-only display for browsing existing mapping ontologies.
+	  	- Allow loading of a local mapping file?
+	  	- Allow saving of the current mappings in a local file?
+	  	 
+
 2009-04-03  1.5.0.alpha
 	- setting up build environment similar to that in org.mmisw.ontmd project:
 		version.properties

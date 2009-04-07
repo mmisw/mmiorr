@@ -78,6 +78,18 @@
   width: 100%
   padding: 3px;
   background-color: #f4f4f4;
-/*  border: 1px solid #8cacbb; */
+  border: 1px solid #8cacbb;
 }
+  
+
+.MappingsTable-focused {
+/*  
+	background-color: #dee7ec; 
+  background-color: #ffccff;
+*/
+  border: 1px solid #8cacbb;
+  background-color: #f3fcff;
+}
+  
+
 

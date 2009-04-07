@@ -6,8 +6,10 @@ import java.util.List;
 import org.mmisw.vine.gwt.client.rpc.Mapping;
 import org.mmisw.vine.gwt.client.rpc.RelationInfo;
 import org.mmisw.vine.gwt.client.util.SelectAllNonePanel;
+import org.mmisw.vine.gwt.client.util.TLabel;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DisclosureEvent;
 import com.google.gwt.user.client.ui.DisclosureHandler;
@@ -20,6 +22,7 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.MouseListenerAdapter;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 
@@ -39,7 +42,7 @@ public class MappingsPanel extends FocusPanel {
 	 */
 	MappingsPanel() {
 		super();
-//		setBorderWidth(1);
+//		flexPanel.setBorderWidth(1);
 		
 		add(flexPanel);
 	    flexPanel.setWidth("100%");
@@ -85,10 +88,16 @@ public class MappingsPanel extends FocusPanel {
 			@Override
 			protected void updateAllNone(boolean selected) {
 				// TODO Auto-generated method stub
+				Window.alert("sorry, not implemented yet");
 			}
 		};
 
-		HTML title = new HTML("<b>Mappings</b>");
+		Widget title = //new HTML("<b>Mappings</b>");
+			new TLabel("Mappings", 
+					"Lists the current mappings.. " +
+					"<br/>" +
+					"(just basic listing but operations not implemented yet)."
+		);
 		
 		flexPanel.setWidget(row, 0, selAllNonePanel);
 		
@@ -138,17 +147,33 @@ public class MappingsPanel extends FocusPanel {
 			}
 
 			public void onOpen(DisclosureEvent event) {
-				flexPanel.setWidget(row + 1, 0, new Label("Hello world"));	
+				flexPanel.setWidget(row + 1, 0, disclosureOpen());	
 			}
 		});
 
 		hp.add(disclosure);
 		
-		flexPanel.setWidget(row, 0, hp);
 		
-		flexPanel.setWidget(row, 1, left);
-		flexPanel.setWidget(row, 2, center);
-		flexPanel.setWidget(row, 3, right);
+		flexPanel.setWidget(row, 0,
+				new FocusableRowElement(row, hp)
+//				hp
+		);
+		
+		flexPanel.setWidget(row, 1, 
+				new FocusableRowElement(row, left)
+				//left
+		);
+		
+		flexPanel.getCellFormatter().setStyleName(row, 2, "MappingsTable-row");
+		flexPanel.setWidget(row, 2,
+				new FocusableRowElement(row, center)
+				//center
+		);
+				
+		flexPanel.setWidget(row, 3,
+				new FocusableRowElement(row, right)
+				//right
+		);
 
 		if ( center instanceof Image ) {
 			String width = "30";
@@ -188,4 +213,48 @@ public class MappingsPanel extends FocusPanel {
 	}
 	
 
+	private Widget disclosureOpen() {
+		// TODO fill in mapping metadata widget
+		String comment = "TODO";
+		String confidence = "TODO";
+		
+		return new HTML(
+			""
+			+ "<b>Comment</b>: " +comment+ "<br/>"
+			+ "<b>Confidence</b>: " +confidence+ "<br/>"
+		);	
+	}
+
+	
+
+	private class FocusableRowElement extends FocusPanel {
+		int row;
+		
+		FocusableRowElement(int row, Widget child) {
+			super(child);
+			this.row = row;
+			
+			addMouseListener(new MouseListenerAdapter() {
+				  public void onMouseEnter(Widget sender) {
+					  _focus(true);
+				  }
+				  public void onMouseLeave(Widget sender) {
+					  _focus(false);
+				  }
+			});
+		}
+		
+		private void _focus(boolean focus) {
+			if ( focus ) {
+				flexPanel.getRowFormatter().setStyleName(row + 0, "MappingsTable-focused");
+				flexPanel.getRowFormatter().setStyleName(row + 1, "MappingsTable-focused");
+			}
+			else {
+				flexPanel.getRowFormatter().setStyleName(row + 0, "MappingsTable-row");
+				flexPanel.getRowFormatter().setStyleName(row + 1, "MappingsTable-row");
+//				flexPanel.getRowFormatter().removeStyleName(row + 0, "MappingsTable-focused");
+//				flexPanel.getRowFormatter().removeStyleName(row + 1, "MappingsTable-focused");
+			}
+		}
+	}
 }

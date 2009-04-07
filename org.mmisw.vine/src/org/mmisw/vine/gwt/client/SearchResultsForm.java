@@ -275,11 +275,11 @@ public class SearchResultsForm extends VerticalPanel {
 			}
 
 			disclosure.setContent(new HTML(
-				""
-				+ "URI: <a target=\"_blank\" href=\"" +uri+ "\">" +uri+ "</a><br/>"
-				+ "Name: <b>" +name+ "</b><br/>"
-				+ "Label: <b>" +label + "</b><br/>"
-				+ "Comment: <b>" +comment + "</b><br/>"
+				"(<i>will include relevant info available for the term</i>)<br/>"
+				+ "<b>URI</b>: <a target=\"_blank\" href=\"" +uri+ "\">" +uri+ "</a><br/>"
+				+ "<b>Name</b>: " +name+ "<br/>"
+				+ "<b>Label</b>: " +label + "<br/>"
+				+ "<b>Comment</b>:" +comment + "<br/>"
 			));	
 		}
 		
