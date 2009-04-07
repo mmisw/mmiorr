@@ -5,6 +5,9 @@ ChangeLog
 
 2009-04-06
 	Fixed issue #119: "Allow empty fields in non-required columns"
+	This also required to generate "" column values for the missing fields so the original
+	voc2rdf scheme to make the conversion (which is based on the com.infomata.data library)
+	works with no ArrayOutOfBoundsException's. 
 	
 2009-04-01
 	- setReadOnly(!enabled) instead of setEnabled(enabled) for text fields; this allows the

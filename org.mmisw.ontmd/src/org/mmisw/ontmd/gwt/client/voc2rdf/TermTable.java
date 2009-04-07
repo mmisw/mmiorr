@@ -329,9 +329,10 @@ public class TermTable extends VerticalPanel {
 
 	/**
 	 * Gets the contents in CSV format.
+	 * @param emptyFieldString If non-null, will be used for empty fields in the body (not on the header).
 	 * @return
 	 */
-	public String getCsv() {
+	public String getCsv(String emptyFieldString) {
 		StringBuffer sb = new StringBuffer();
 		int rows = flexTable.getRowCount();
 		
@@ -345,7 +346,7 @@ public class TermTable extends VerticalPanel {
 				text = '"' +text+ '"';
 			}
 			sb.append(sep + text);
-			sep = ", ";
+			sep = ",";
 		}
 		sb.append('\n');
 
@@ -364,11 +365,14 @@ public class TermTable extends VerticalPanel {
 				if ( text.length() > 0 ) {
 					empty = false;
 				}
+				else if ( emptyFieldString != null ) {
+					text = emptyFieldString;
+				}
 				if ( text.indexOf(',') >= 0 ) {
 					text = '"' +text+ '"';
 				}
 				line.append(sep + text);
-				sep = ", ";
+				sep = ",";
 			}
 			if ( !empty ) {
 				sb.append(line.toString() + '\n');

@@ -235,7 +235,10 @@ public class ClassPanel extends VerticalPanel {
 			return error;
 		}
 			
-		String csv = termTable.getCsv();
+		// NOTE: Need to put "" for the missing values so the original
+		// voc2rdf scheme to make the conversion (which is based on the com.infomata.data library)
+		// works with no ArrayOutOfBoundsException's.  
+		String csv = termTable.getCsv("\"\"");
 		values.put("ascii", csv);
 		
 		// always comma now.
@@ -505,7 +508,7 @@ public class ClassPanel extends VerticalPanel {
 		
 		final TextArea textArea = popup.addTextArea(null);
 		textArea.setReadOnly(false);
-		textArea.setText(termTable.getCsv());
+		textArea.setText(termTable.getCsv(null));
 		
 		textArea.setSize("700", "250");
 
