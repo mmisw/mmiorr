@@ -3,7 +3,10 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
-2003-04-01
+2009-04-07:
+	- Fix of issue #123: "encoded URI not properly handled" (MmiUri, MmiUriTest)
+
+2009-04-01
 	- HtmlDispacher.appendHtmlIfResolvableByThisService is now the way to properly
 	  prepare refered resources that are resolvable by the service (so they are links 
 	  to the HTML format as well).
@@ -11,7 +14,7 @@ ChangeLog
 	- code clean-up: moved some special dispatchs from _resolveUri.
 	
 	
-2003-03-27
+2009-03-27
 	- UriResolver: some doc updates and minor code re-arrangements (no changes in logic)
 	
 	- JenaUtil2: some pending renamings done:
@@ -24,22 +27,22 @@ ChangeLog
 		- TermExtractor: extracts a model with information about the requested entity.
 		- UriResolver._resolveUriOntFormat: serialized resulting model in the requested format. 
 	
-2003-03-21
+2009-03-21
 	- Just comment about Omv.acronym saying that is about "resourceType" not "shortName"
        
 	 
-2003-03-19:   (1.0.0.beta)
+2009-03-19:   (1.0.0.beta)
 	- Issue 8: "Improve HTML response"
 	  Added a header with logo and links to semanticframework
 
-2003-03-17:   (0.2.0.beta7)
+2009-03-17:   (0.2.0.beta7)
 	- Code clean-up:
 		- Removed unused types: MdDispatcher, MdHelper, AttrGroup, AttrDef.
 		  Medatada is handled in "ontmd" project. See 2008-11-14 comment below.
 		
 		
 		
-2003-03-16:
+2009-03-16:
 	- Fixed Issue 102: "searches should be against the "unversioned" form of the latest ontologies"
  	  See OntGraph.
  	  NOTE: *only* the "unversioned" latest versions are loaded into the graph so all

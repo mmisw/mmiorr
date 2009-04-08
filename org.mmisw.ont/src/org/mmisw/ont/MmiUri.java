@@ -118,7 +118,13 @@ public final class MmiUri {
 	public MmiUri(String str) throws URISyntaxException {
 		URI juri = new URI(str);
 		
-		String path = juri.getPath();
+		//
+		// Fix of issue #123: "encoded URI not properly handled"
+		// str may contain encoded parts, and note that URI.getPath() returns a *decoded* path.
+		// So, use URI.getRawPath() to keep everything consistent for extraction purposes.
+		//
+		final String path = juri.getRawPath();
+		
 		if ( !path.startsWith("/") ) {
 			throw new URISyntaxException(str, "not absolute path");
 		}
@@ -133,7 +139,6 @@ public final class MmiUri {
 		
 		
 		
-		//MmiUri mmiUri = new MmiUri(str, reqUri, contextPath);
 		String fullRequestedUri = str;
 		String requestedUri = reqUri;
 		// parsing described with an example:

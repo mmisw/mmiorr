@@ -8,7 +8,6 @@ import junit.framework.TestCase;
  * @author Carlos Rueda
  */
 public class MmiUriTest extends TestCase {
-
     public void testBasic0() throws URISyntaxException {
     	MmiUri mmiUri = new MmiUri("http://mmisw.org/ont/mmi/someVocab/someTerm.owl");
     
@@ -168,6 +167,12 @@ public class MmiUriTest extends TestCase {
     public void testGetOntologyUri2() throws URISyntaxException {
     	MmiUri mmiUri = new MmiUri("http://mmisw.org/ont/mmi/someVocab.html/someTerm");
     	assertEquals("http://mmisw.org/ont/mmi/someVocab", mmiUri.getOntologyUri());
+    }
+
+    /** See <a href="http://code.google.com/p/mmisw/issues/detail?id=123">Issue #123</a> */
+    public void testEncodedUri() throws URISyntaxException {
+    	MmiUri mmiUri = new MmiUri("http://mmisw.org/ont/mmi/someVocab/some%20Term");
+    	assertEquals("some%20Term", mmiUri.getTerm());
     }
 
 }
