@@ -207,10 +207,6 @@ public class Converter {
 		// set Omv.uri from final
 		ont.addProperty(Omv.uri, finalUri);
 		
-		// set Omv.name from primaryClass
-		ont.addProperty(Omv.name, 
-				setFirstUpperCase(cleanStringforID(primaryClass)) + " Vocabulary");
-		
 		// set Omv.acronym from primaryClass
 		ont.addProperty(Omv.acronym, primaryClass);
 		
@@ -219,6 +215,11 @@ public class Converter {
 			ont.addProperty(OmvMmi.shortNameUri, classUri);
 		}
 		
+		// fixed issue #120: "title doesn't get carried forward"
+		// problem was that Omv.name was assigned BOTH the class name and the fulltitle.
+		// Only the fullTitle is now assigned.
+//		ont.addProperty(Omv.name, 
+//		setFirstUpperCase(cleanStringforID(primaryClass)) + " Vocabulary");
 		String fullTitle = values.get("fullTitle");
 		if ( fullTitle != null ) {
 			ont.addProperty(Omv.name, fullTitle);

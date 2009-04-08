@@ -3,6 +3,11 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-04-07
+	Fixed issue #120: "title doesn't get carried forward"
+	Problem was that Omv.name was assigned BOTH the class name and the fulltitle.
+	Only the fullTitle is now assigned.
+	
 2009-04-06
 	Fixed issue #119: "Allow empty fields in non-required columns"
 	This also required to generate "" column values for the missing fields so the original
