@@ -3,13 +3,16 @@ package org.mmisw.ontmd.gwt.client.voc2rdf;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.mmisw.ontmd.gwt.client.FieldWithChoose;
 import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
+import org.mmisw.ontmd.gwt.client.util.MyDialog;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
 import org.mmisw.ontmd.gwt.client.util.Util;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
 
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CellPanel;
@@ -20,8 +23,10 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -42,14 +47,13 @@ public class VocabPanel extends VerticalPanel {
 
 	private CellPanel contentsContainer = new VerticalPanel();
 	
-	// User-specified URI for the ontology
-//	private TextBoxBase ontologyUriTb;
-	
 	private TextBoxBase fullTitleTb;
 	private TextBoxBase creatorTb;
 	private TextBoxBase descriptionTb;
 	private FieldWithChoose authorityField;
 	
+	
+	private OntologyUriPanel ontologyUriPanel = new OntologyUriPanel();
 	
 	private ClassPanel classPanel;
 	
@@ -74,6 +78,17 @@ public class VocabPanel extends VerticalPanel {
 		authorityAttrDef = Voc2Rdf.baseInfo.getAttrDefMap().get("authority");
 
 		add(createForm());
+		
+		ontologyUriPanel.update();
+
+		ChangeListener cl = new ChangeListener() {
+			public void onChange(Widget sender) {
+				ontologyUriPanel.update();
+			}
+		};
+		
+		classPanel.getFieldWithChoose().addChangeListener(cl);
+		authorityField.addChangeListener(cl);
 	}
 
 	/**
@@ -111,15 +126,6 @@ public class VocabPanel extends VerticalPanel {
 		
 		
 		
-//		ontologyUriTb = Util.createTextBoxBase(1, "500", 
-//				new ChangeListener() {
-//					public void onChange(Widget sender) {
-//						  statusLabel.setText("");
-//					}
-//				}
-//		);
-
-
 //		ascii_ta.setSize("800", "200");
 //		table.setSize("800", "200");
 //		
@@ -135,6 +141,14 @@ public class VocabPanel extends VerticalPanel {
 		int row = 0;
 				
 		
+		flexPanel.getFlexCellFormatter().setColSpan(row, 0, 4);
+		flexPanel.setWidget(row, 0, ontologyUriPanel);
+		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
+				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		row++;
+		
+
 		CellPanel buttons = createConvertButton();
 		flexPanel.getFlexCellFormatter().setColSpan(row, 0, 4);
 		flexPanel.setWidget(row, 0, buttons);
@@ -218,25 +232,6 @@ public class VocabPanel extends VerticalPanel {
 		row++;
 
 
-		
-		/////////////////////
-		// ontologUri
-//		
-//		flexPanel.setWidget(row, 0, new TLabel("Ontology URI:", true, "<b>Ontology URI</b>:<br/>" +ONTOLOGY_URI_TOOTIP));
-//		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
-//				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
-//		);
-//
-//		flexPanel.getFlexCellFormatter().setColSpan(row, 1, 2);
-//		flexPanel.setWidget(row, 1, ontologyUriTb);
-//		flexPanel.getFlexCellFormatter().setAlignment(row, 1, 
-//				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
-//		);
-//		row++;
-
-
-
-
 		classPanel = new ClassPanel(mainPanel);
 		TabPanel tabPanel = new TabPanel();
 		tabPanel.add(classPanel, "Vocabulary");
@@ -249,6 +244,158 @@ public class VocabPanel extends VerticalPanel {
 		
 		return flexPanel;
 	}
+	
+	/**
+	 * Handles the information about the resulting URI for the ontology.
+	 */
+	private class OntologyUriPanel extends HorizontalPanel {
+
+		// TODO get this from some parameter
+		private static final String serverAndRoot = "http://mmisw.org/ont/";
+		
+		private TLabel tlabel = new TLabel("", 
+				"This is the URI that will be given to the resulting ontology.<br/> " +
+				"<br/>" +
+				"By default, this URI is automatically composed from the authority and class name fields and according to " +
+				"<a target=\"_blank\" href=\"http://marinemetadata.org/apguides/ontprovidersguide/ontguideconstructinguris\"" +
+				">MMI recommendations</a>.<br/> " +
+				"Further validation will be applied if the ontology is summitted to the MMI Registry and Repository. <br/> " +
+				"<br/>" +
+				serverAndRoot+ " will be given as the server and root, and the values<br/> " +
+				"entered in the authority and class name fields will be used to complete the authority and shortName components. <br/>" +
+				"<br/>" +
+				"Use the \"Set\" button if you prefer a different URI than the one given by default."
+		);
+		
+		private boolean userGiven = false;
+		private String userUri;
+		
+		private HTML uriHtml = new HTML();
+		
+		private PushButton userUriButton = new PushButton("Set", new ClickListener() {
+			public void onClick(Widget sender) {
+				promptUserUri(getAbsoluteLeft(), getAbsoluteTop());
+			}
+		});
+		
+		/**
+		 * 
+		 */
+		OntologyUriPanel() {
+			super();
+			setStylePrimaryName("TermTable-OddRow");
+			setSpacing(3);
+			setVerticalAlignment(ALIGN_MIDDLE);
+
+			userUriButton.setTitle("Allows you to set the URI");
+			DOM.setElementAttribute(userUriButton.getElement(), "id", "my-button-id");
+
+			HorizontalPanel hp = this;
+			hp.add(tlabel);
+			hp.add(uriHtml);
+			hp.add(userUriButton);
+		}
+
+		/** displays a popup to prompt the user for the URI or revert to default assignment 
+		 * @param left 
+		 * @param top 
+		*/
+		void promptUserUri(int left, int top) {
+			final TextBoxBase textBox = new TextBox();
+			final MyDialog popup = new MyDialog(textBox) {
+				public boolean onKeyUpPreview(char key, int modifiers) {
+					// avoid ENTER from closing the popup without proper reaction
+					if ( key == KeyboardListener.KEY_ESCAPE ) {
+						hide();      // only ESCAPE keystroke closes the popup
+						return false;
+					}
+					
+					if ( key == KeyboardListener.KEY_ENTER ) {
+						String str = textBox.getText().trim();
+						_processAccept(str, this);
+					}
+				    return true;
+				  }
+			};
+			popup.setText("Specify the URI for the ontology");
+			
+			textBox.setWidth("300");
+			if ( userUri != null ) {
+				textBox.setText(userUri);
+			}
+
+			popup.getButtonsPanel().insert(
+					new PushButton("OK", new ClickListener() {
+						public void onClick(Widget sender) {
+							String str = textBox.getText().trim();
+							_processAccept(str, popup);
+						}
+					})
+					, 0
+			);
+
+			if ( userGiven ) {
+				popup.getButtonsPanel().insert(
+						new PushButton("Revert to default", new ClickListener() {
+							public void onClick(Widget sender) {
+								userGiven = false;
+								update();
+								popup.hide();
+							}
+						})
+						, 0
+				);
+			}
+			
+			popup.setPopupPosition(left, top + 20);
+			new Timer() { @Override
+				public void run() {
+					textBox.setFocus(true);
+				}
+			}.schedule(180);
+			
+			popup.show();
+
+		}
+		
+		private void _processAccept(String str, MyDialog popup) {
+			if ( str.length() > 0 ) {
+				userUri = str;
+				userGiven = true;
+				update();
+				popup.hide();	
+			}
+		}
+		
+		void update() {
+			String uri;
+			
+			if ( userGiven ) {
+				uri = userUri;
+			}
+			else {
+				String authority = authorityField.getValue();
+				if ( authority.trim().length() == 0 ) {
+					authority = "<font color=\"red\">auth</font>";
+				}
+	
+				// TODO handle className vs. specific shortName field
+				String shortName = classPanel.getClassName();
+				if ( shortName.length() == 0 ) {
+					shortName = "<font color=\"red\">shortName</font>";
+				}
+				
+				uri = serverAndRoot + authority+ "/" +shortName+ "/";
+			}
+			
+			uriHtml.setHTML(
+					"<code>" +
+					uri +
+					"</code>"
+			);
+		}
+	}
+	
 	
 	private CellPanel createExampleButton() {
 		CellPanel panel = new HorizontalPanel();
@@ -320,11 +467,10 @@ public class VocabPanel extends VerticalPanel {
 		}
 		values.put("authority", authority);
 		
-//		String ontologyUri = ontologyUriTb.getText().trim();
-//		if ( ontologyUri.length() == 0 ) {
-//			return "Please, select a URI for the ontology to be generated";
-//		}
-//		values.put("ontologyUri", ontologyUri);
+		if ( ontologyUriPanel.userGiven ) {
+			String ontologyUri = ontologyUriPanel.uriHtml.getText();
+			values.put("ontologyUri", ontologyUri);
+		}
 		
 		// NOTE 3/21/09: namespaceRoot will be ignored because ontologyUri takes precedence
 		// See Converter.
@@ -354,6 +500,8 @@ public class VocabPanel extends VerticalPanel {
 		descriptionTb.setText("");
 		authorityField.setValue("");
 		classPanel.reset();
+		
+		ontologyUriPanel.update();
 	}
 
 	void example(boolean confirm) {
@@ -370,6 +518,7 @@ public class VocabPanel extends VerticalPanel {
 		authorityField.setValue(authorityAttrDef.getExample());
 		
 		classPanel.example();
+		ontologyUriPanel.update();
 	}
 	
 	

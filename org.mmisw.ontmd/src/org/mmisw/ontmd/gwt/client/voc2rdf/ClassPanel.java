@@ -7,8 +7,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mmisw.ontmd.gwt.client.Main;
-import org.mmisw.ontmd.gwt.client.MyDialog;
 import org.mmisw.ontmd.gwt.client.ResourceTypeWidget;
+import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
+import org.mmisw.ontmd.gwt.client.util.MyDialog;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
 
@@ -213,13 +214,21 @@ public class ClassPanel extends VerticalPanel {
 		return panel;
 	}
 	
-
+	
+	FieldWithChoose getFieldWithChoose() {
+		return resourceTypeWidget.resourceTypeFieldWithChoose;
+	}
+	
+	String getClassName() {
+		String primaryClass = resourceTypeWidget.resourceTypeFieldWithChoose.getValue().trim();
+		return primaryClass;
+	}
 
 	String putValues(Map<String, String> values) {
 
 		// NOTE 3/21/09: take class name from the resourcetype field
 //		String primaryClass = classNameTb.getText().trim();
-		String primaryClass = resourceTypeWidget.resourceTypeFieldWithChoose.getValue().trim();
+		String primaryClass = getClassName();
 		if ( primaryClass.length() == 0 ) {
 			return "Please, select a class for the terms in your vocabulary";
 		}
@@ -487,6 +496,9 @@ public class ClassPanel extends VerticalPanel {
 
 
 	void reset() {
+		statusLabel.setText("");
+
+		resourceTypeWidget.reset();
 		updateContents(CONTENTS_DEFAULT);
 	}
 

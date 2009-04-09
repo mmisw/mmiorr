@@ -3,6 +3,7 @@ package org.mmisw.ontmd.gwt.client;
 import java.util.List;
 import java.util.Map;
 
+import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
 import org.mmisw.ontmd.gwt.client.util.Util;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
@@ -130,9 +131,9 @@ public class ResourceTypeWidget extends VerticalPanel {
 			resourceTypeIsMap = new CheckBox("Check here if this is a mapping ontology");
 
 			// update this checkbox according to contents in the text field:
-			resourceTypeFieldWithChoose.textBox.addKeyboardListener(new KeyboardListenerAdapter() {
+			resourceTypeFieldWithChoose.getTextBox().addKeyboardListener(new KeyboardListenerAdapter() {
 				public void onKeyUp(Widget sender, char keyCode, int modifiers) {
-					String value = resourceTypeFieldWithChoose.textBox.getText().toLowerCase();
+					String value = resourceTypeFieldWithChoose.getTextBox().getText().toLowerCase();
 					boolean isMap = value.matches(".*_[mM][aA][pP]($|_.*)");
 					resourceTypeIsMap.setChecked(isMap);
 				}
@@ -141,7 +142,7 @@ public class ResourceTypeWidget extends VerticalPanel {
 			resourceTypeIsMap.addClickListener(new ClickListener() {
 				public void onClick(Widget sender) {
 					boolean checked = resourceTypeIsMap.isChecked();
-					String value = resourceTypeFieldWithChoose.textBox.getText().toLowerCase();
+					String value = resourceTypeFieldWithChoose.getTextBox().getText().toLowerCase();
 					boolean isMap = value.matches(".*_[mM][aA][pP]($|_.*)");
 					if ( resourceTypeIsMap.isChecked() && ! isMap ) {
 						resourceTypeFieldWithChoose.setValue(value.replaceAll("_+$", "")+ "_map");
@@ -216,6 +217,14 @@ public class ResourceTypeWidget extends VerticalPanel {
 		}
 	}
 	
+	public void reset() {
+		resourceTypeFieldWithChoose.setValue("");
+		resourceTypeRelatedField.setText("");
+		if ( resourceTypeIsMap != null ) {
+			resourceTypeIsMap.setChecked(false);
+		}
+	}
+
 	public void setExample() {
 		if ( resourceTypeAttrDef != null ) {
 			String example = resourceTypeAttrDef.getExample();

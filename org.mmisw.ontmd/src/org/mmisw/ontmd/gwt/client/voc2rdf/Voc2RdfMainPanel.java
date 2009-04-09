@@ -3,8 +3,8 @@ package org.mmisw.ontmd.gwt.client.voc2rdf;
 import java.util.Map;
 
 import org.mmisw.ontmd.gwt.client.Main;
-import org.mmisw.ontmd.gwt.client.MyDialog;
 import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
+import org.mmisw.ontmd.gwt.client.util.MyDialog;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 
 import com.google.gwt.core.client.GWT;

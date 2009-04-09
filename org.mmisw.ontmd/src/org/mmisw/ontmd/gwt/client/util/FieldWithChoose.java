@@ -1,22 +1,25 @@
-package org.mmisw.ontmd.gwt.client;
+package org.mmisw.ontmd.gwt.client.util;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mmisw.ontmd.gwt.client.util.Util;
+import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.client.vocabulary.Option;
 
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.ChangeListenerCollection;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.PushButton;
+import com.google.gwt.user.client.ui.SourcesChangeEvents;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.SuggestionEvent;
 import com.google.gwt.user.client.ui.SuggestionHandler;
@@ -28,17 +31,29 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author Carlos Rueda
  */
-public class FieldWithChoose  extends HorizontalPanel {
+public class FieldWithChoose  extends HorizontalPanel implements SourcesChangeEvents {
 	AttrDef attr;
-	TextBoxBase textBox;
+	private TextBoxBase textBox;
 	PushButton chooseButton;
 	ChangeListener cl;
 	
+	private ChangeListenerCollection changeListeners;
+	
+	/**
+	 * Creates a field with a choose feature.
+	 * @param attr
+	 * @param cl
+	 */
 	public FieldWithChoose(AttrDef attr, ChangeListener cl) {
 		this.attr = attr;
 		this.cl = cl;
 		int nl = 1;    /// attr.getNumberOfLines() is ignored
 		textBox = Util.createTextBoxBase(nl, "200", cl);
+		textBox.addChangeListener(new ChangeListener() {
+			public void onChange(Widget sender) {
+				_onChange();
+			}
+		});
 
 		add(textBox);
 		
@@ -53,6 +68,13 @@ public class FieldWithChoose  extends HorizontalPanel {
 
 	/** nothing done here */
 	protected void optionSelected(Option option) {
+	}
+
+	
+	private void _onChange() {
+		if (changeListeners != null) {
+			changeListeners.fireChange(FieldWithChoose.this);
+		}
 	}
 
 	
@@ -110,12 +132,15 @@ public class FieldWithChoose  extends HorizontalPanel {
 				
 				Option option = options.get(listBox.getSelectedIndex());
 				optionSelected(option);
+
+				_onChange();
+
 				popup.hide();
 			}
 		});
 		
 		/////////////////////////////////////////////////////////
-		// Use a SuggestBox wirh a MultiWordSuggestOracle.
+		// Use a SuggestBox with a MultiWordSuggestOracle.
 		//
 		// A map from a suggestion to its corresponding Option:
 		final Map<String,Option> suggestions = new HashMap<String,Option>();
@@ -134,6 +159,9 @@ public class FieldWithChoose  extends HorizontalPanel {
 				Option option = suggestions.get(suggestion);
 				textBox.setText(option.getName());
 				optionSelected(option);
+				
+				_onChange();
+				
 				popup.hide();
 			}
 		});
@@ -157,7 +185,7 @@ public class FieldWithChoose  extends HorizontalPanel {
 
 	}
 
-	void enable(boolean enabled) {
+	public void enable(boolean enabled) {
 		textBox.setReadOnly(!enabled);
 //		lb.setEnabled(enabled);
 		chooseButton.setEnabled(enabled);
@@ -171,4 +199,23 @@ public class FieldWithChoose  extends HorizontalPanel {
 	public String getValue() {
 		return textBox.getText();
 	}
+
+	public TextBoxBase getTextBox() {
+		return textBox;
+	}
+
+	public void addChangeListener(ChangeListener listener) {
+	    if (changeListeners == null) {
+	        changeListeners = new ChangeListenerCollection();
+	        sinkEvents(Event.ONCHANGE);
+	      }
+	      changeListeners.add(listener);
+	}
+
+	public void removeChangeListener(ChangeListener listener) {
+		if (changeListeners != null) {
+			changeListeners.remove(listener);
+		}
+	}
+	
 }

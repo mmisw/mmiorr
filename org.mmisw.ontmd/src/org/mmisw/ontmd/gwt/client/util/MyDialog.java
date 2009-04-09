@@ -1,4 +1,4 @@
-package org.mmisw.ontmd.gwt.client;
+package org.mmisw.ontmd.gwt.client.util;
 
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -30,7 +30,7 @@ public class MyDialog extends DialogBox {
 		this(contents, true);
 	}
 	
-	MyDialog(Widget contents, boolean buttons) {
+	public MyDialog(Widget contents, boolean buttons) {
 		super(false, true);
 		setAnimationEnabled(true);
 		Grid grid = new Grid(1,1);
@@ -68,7 +68,7 @@ public class MyDialog extends DialogBox {
 		return ta;
 	}
 	
-	TextArea getTextArea() {
+	public TextArea getTextArea() {
 		return ta;
 	}
 
@@ -91,6 +91,7 @@ public class MyDialog extends DialogBox {
 			}
 		});
 		panel.add(closeButton);
+
 		return panel;
 	}
 	

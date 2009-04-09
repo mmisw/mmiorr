@@ -1,6 +1,7 @@
 package org.mmisw.ontmd.gwt.client;
 
 import org.mmisw.ontmd.gwt.client.rpc.OntologyInfo;
+import org.mmisw.ontmd.gwt.client.util.MyDialog;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;

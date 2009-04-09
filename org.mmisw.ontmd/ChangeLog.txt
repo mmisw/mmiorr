@@ -4,6 +4,12 @@ Carlos Rueda  -  http://marinemetadata.org
 ChangeLog
 
 2009-04-07
+	Implemented issue #84: "allow user-given namespace (URI) in voc2rdf"
+	VocabPanel.OntologyUriPanel handles the information about the resulting URI for the ontology.
+	The user can now specify the complete URI and later, if desired, revert to the automated 
+	handling.
+
+2009-04-07
 	Fixed issue #120: "title doesn't get carried forward"
 	Problem was that Omv.name was assigned BOTH the class name and the fulltitle.
 	Only the fullTitle is now assigned.

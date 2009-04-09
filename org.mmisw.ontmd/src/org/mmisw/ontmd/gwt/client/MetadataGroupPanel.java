@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mmisw.ontmd.gwt.client.rpc.OntologyInfo;
+import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
 import org.mmisw.ontmd.gwt.client.util.Util;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
@@ -236,7 +237,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 		
 		// special case:
 		if ( resourceTypeWidget != null && resourceTypeWidget.resourceTypeAttrDef != null ) {
-			String value = resourceTypeWidget.resourceTypeFieldWithChoose.textBox.getText().trim();
+			String value = resourceTypeWidget.resourceTypeFieldWithChoose.getTextBox().getText().trim();
 			if ( value.length() == 0 ) {
 				String error = "Please provide a value for the field with label: " +
 							resourceTypeWidget.resourceTypeAttrDef.getLabel();
@@ -268,7 +269,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 				value = lb.getValue(lb.getSelectedIndex());
 			}
 			else if ( elem.widget instanceof FieldWithChoose ) {
-				value = ((FieldWithChoose) elem.widget).textBox.getText();
+				value = ((FieldWithChoose) elem.widget).getTextBox().getText();
 			}
 			
 			value = value.trim();

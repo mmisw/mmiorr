@@ -11,6 +11,8 @@
   margin-top: 20px;
 }
 
+#my-button-id { font-size: 70%; }
+
 /* NOTE: this would make firefox to hide some borders.
 Removed to fix http://code.google.com/p/mmisw/issues/detail?id=97
 table { empty-cells: hide; }

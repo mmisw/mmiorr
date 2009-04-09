@@ -59,7 +59,7 @@ public class TLabel extends HorizontalPanel {
 	 */
 	public TLabel(String text, boolean required, String tooltip) {
 		setSpacing(4);
-		if ( !text.endsWith(":") ) {
+		if ( text.trim().length() > 0 && ! text.endsWith(":") ) {
 			text += ":";
 		}
 		label.setHTML(text + (required ? requiredHtml : ""));
