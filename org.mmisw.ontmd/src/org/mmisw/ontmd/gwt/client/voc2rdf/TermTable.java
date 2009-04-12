@@ -516,6 +516,10 @@ public class TermTable extends VerticalPanel {
 				}
 
 				public void onLostFocus(Widget sender) {
+					contents.removeStyleDependentName("focusedEdit");
+					contents.setReadOnly(true);
+					contents.selectAll();
+
 					contents.removeStyleDependentName("focused");
 				}
 			});
