@@ -3,6 +3,11 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-04-11
+	Issue #116: editing interface in the table is not functional
+		- various changes including textbox in each field and navigation with keyboard
+		- enter: enables cell for editing; enter again: returns to navigation
+		
 2009-04-07
 	Implemented issue #84: "allow user-given namespace (URI) in voc2rdf"
 	VocabPanel.OntologyUriPanel handles the information about the resulting URI for the ontology.

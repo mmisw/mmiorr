@@ -69,9 +69,9 @@ table.inline td {
 
 .TermTable-header td {
   min-width: 40px;
-  _width: 40px;/* IE6 hack */
+  _width: 40px;  /* IE6 hack */
   min-height: 20px;
-  _height: 20px;/* IE6 hack */
+  _height: 20px;   /* IE6 hack */
 }
 
 .TermTable-OddRow {
@@ -82,6 +82,22 @@ table.inline td {
 .TermTable-EvenRow {
   background-color: #ffffff;
   border: 1px solid #8cacbb;
+}
+
+.TermTable-cellFocused {
+  background-color: cyan;
+  border: 3px solid #8cacbb;
+}
+
+.TermTable-termField {
+	background-color: transparent;
+	border: 2px solid transparent;
+}
+.TermTable-termField-focused {
+	border: 2px solid blue;
+}
+.TermTable-termField-focusedEdit {
+	border: 2px solid red;
 }
 
 

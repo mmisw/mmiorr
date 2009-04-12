@@ -7,14 +7,18 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.DecoratedPopupPanel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLTable;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.KeyboardListener;
+import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -38,7 +42,7 @@ public class TermTable extends VerticalPanel {
 	private TextBoxBase textBox;
 	private int currRow;
 	private int currCol;
-	private HTML currCell;
+	private TableCell currCell;
 	
 
 	/**
@@ -62,27 +66,30 @@ public class TermTable extends VerticalPanel {
 
 		_updateControlColumns(cols);
 
-		_setHtml(HEADER_ROW, 0, "");
+		_setCell(HEADER_ROW, 0, "");
 
 		_preparePopUp();
 		_updateStyles(1);
+		_updatePositions(0, 0);
 	}
+	
 	
 	/**
 	 * @param cols in client space
 	 */
 	private void _updateControlColumns(int cols) {
-		_setHtml(CONTROL_ROW, 0, "");
+		_setCell(CONTROL_ROW, 0, "");
 		for ( int col = 0; col < cols; col++ ) {
 			String letter = String.valueOf( (char) ('a' + col));
 			String controlCol = "<font color=\"gray\">" +letter+ "</font>";
-			_setHtml(CONTROL_ROW, CONTROL_COL + 1 + col, controlCol);
+			_setCell(CONTROL_ROW, CONTROL_COL + 1 + col, controlCol);
 		}
 	}
 
 	public void setHeader(int col, String html) {
-		_setHtml(HEADER_ROW, CONTROL_COL + 1 + col, html);
+		_setCell(HEADER_ROW, CONTROL_COL + 1 + col, html);
 		_updateControlColumns(1 + col);
+//		_updatePositions(HEADER_ROW, CONTROL_COL + 1 + col);
 	}
 	
 	
@@ -90,21 +97,40 @@ public class TermTable extends VerticalPanel {
 	 * Sets a cell in this table in client coordinates.
 	 * @param row
 	 * @param col
-	 * @param cell
+	 * @param text
 	 */
-	public void setCell(int row, int col, String html) {
-		_setHtml(FIRST_REGULAR_ROW + row, col + 1, html);
+	public void setCell(int row, int col, String text) {
+		int actualRow = FIRST_REGULAR_ROW + row;
+		int actualCol = col + 1;
+		_setWidget(actualRow, actualCol, new TableCell(actualRow, actualCol, text));
+//		_updatePositions(actualRow, actualCol);
+	}
+
+	
+	private void _setWidget(int row, int col, Widget widget) {
+		flexTable.setWidget(row, col, widget);
+	}
+
+	private Widget _getWidget(int row, int col) {
+		return flexTable.getWidget(row, col);
 	}
 
 	/**
 	 * Sets a cell in this table.
 	 * @param row
 	 * @param col
-	 * @param cell
+	 * @param text
 	 */
-	private void _setHtml(int row, int col, String html) {
-		flexTable.setWidget(row, col, new HTML(html));
+	private void _setCell(int row, int col, String text) {
+		if ( row >= HEADER_ROW && col > CONTROL_COL ) {
+			TableCell tcell = new TableCell(row, col, text, true);
+			_setWidget(row, col, tcell);
+		}
+		else {
+			_setWidget(row, col, new HTML(text));	
+		}
 	}
+
 
 	private void _updateStyles(int fromRow) {
 		HTMLTable.RowFormatter rf = flexTable.getRowFormatter();
@@ -133,6 +159,7 @@ public class TermTable extends VerticalPanel {
 				||  keyCode == KeyboardListener.KEY_ENTER 
 				) {
 					hide();
+					currCell.setFocus(true);
 					return false;
 				}
 				return true;
@@ -145,6 +172,7 @@ public class TermTable extends VerticalPanel {
 		textBox.addChangeListener(new ChangeListener() {
 			public void onChange(Widget sender) {
 				currCell.setText(textBox.getText());
+				currCell.setFocus(true);
 			}
 		});
 	}
@@ -168,7 +196,10 @@ public class TermTable extends VerticalPanel {
 				// dispatch regular cell:
 				currRow = row;
 				currCol = col;
-				_editCell(true);
+				currCell = (TableCell) _getWidget(currRow, currCol);
+				
+				//_editCell(true);
+				currCell.setFocus(true);
 			}
 		}
 	}
@@ -178,7 +209,7 @@ public class TermTable extends VerticalPanel {
 	 */
 	private void _dispatchRowMenu(final int row) {
 		
-		HTML ww = (HTML) flexTable.getWidget(row, 0);
+		Widget ww = _getWidget(row, 0);
 		int left = ww.getAbsoluteLeft();
 		int top = ww.getAbsoluteTop();
 
@@ -228,28 +259,30 @@ public class TermTable extends VerticalPanel {
 		flexTable.insertRow(row);
 		for ( int c = 0; c < cols; c++ ) {
 			flexTable.insertCell(row, c);
-			_setHtml(row, c, "");
+			_setCell(row, c, "");
 		}
 		rows = flexTable.getRowCount();
 		for ( int r = row; r < rows; r++ ) {
 			int displayRow = r - FIRST_REGULAR_ROW + 1;
 			if ( displayRow >= 1 ) {
-				_setHtml(r, 0, "<font color=\"gray\">" +displayRow + "</font>");
+				_setCell(r, 0, "<font color=\"gray\">" +displayRow + "</font>");
 			}
 		}
 		_updateStyles(row);
+		_updatePositions(row, 0);
 	}
 	private void _deleteRow(final int row) {
 		flexTable.removeRow(row);
 		for ( int r = row, rows = flexTable.getRowCount(); r < rows; r++ ) {
-			_setHtml(r, 0, "<font color=\"gray\">" +(r - FIRST_REGULAR_ROW + 1)+ "</font>");
+			_setCell(r, 0, "<font color=\"gray\">" +(r - FIRST_REGULAR_ROW + 1)+ "</font>");
 		}
 		_updateStyles(row);
+		_updatePositions(row, 0);
 	}
 
 	
 	private void _dispatchColumnHeader(final int col) {
-		HTML ww = (HTML) flexTable.getWidget(CONTROL_COL, col);
+		Widget ww = _getWidget(CONTROL_COL, col);
 		int left = ww.getAbsoluteLeft();
 		int top = ww.getAbsoluteTop();
 
@@ -289,15 +322,29 @@ public class TermTable extends VerticalPanel {
 	private void _insertCol(int col) {
 		for ( int r = 0, rows = flexTable.getRowCount(); r < rows; r++ ) {
 			flexTable.insertCell(r, col);
-			_setHtml(r, col, "");
+			_setCell(r, col, "");
 		}
 		_updateControlColumns(flexTable.getCellCount(0) - 1);
+		_updatePositions(0, 0);
 	}
 	private void _deleteCol(int col) {
 		for ( int r = 0, rows = flexTable.getRowCount(); r < rows; r++ ) {
 			flexTable.removeCell(r, col);
 		}
 		_updateControlColumns(flexTable.getCellCount(0) - 1);
+		_updatePositions(0, 0);
+	}
+	
+	private void _updatePositions(int row, int col) {
+		for ( int r = row, rows = flexTable.getRowCount(); r < rows; r++ ) {
+			for ( int c = col, cols = flexTable.getCellCount(r); c < cols; c++ ) {
+				Widget widget = _getWidget(r, c);
+				if ( widget instanceof TableCell ) {
+					((TableCell) widget).updatePosition(r, c);
+				}
+			}
+			col = 0;  // for next row
+		}
 	}
 
 	
@@ -305,7 +352,6 @@ public class TermTable extends VerticalPanel {
 	 * 
 	 */
 	private void _editCell(boolean show) {
-		currCell = (HTML) flexTable.getWidget(currRow, currCol);
 		int left = currCell.getAbsoluteLeft();
 		int top = currCell.getAbsoluteTop();
 
@@ -340,7 +386,7 @@ public class TermTable extends VerticalPanel {
 		int cols = flexTable.getCellCount(0);
 		String sep = "";
 		for ( int col = CONTROL_COL + 1; col < cols; col++ ) {
-			HTML html = (HTML) flexTable.getWidget(HEADER_ROW, col);
+			TableCell html = (TableCell) _getWidget(HEADER_ROW, col);
 			String text = html.getText();
 			if ( text.indexOf(',') >= 0 ) {
 				text = '"' +text+ '"';
@@ -353,14 +399,14 @@ public class TermTable extends VerticalPanel {
 		// terms:
 		for ( int row = FIRST_REGULAR_ROW; row < rows; row++ ) {
 			//
-			// Note: emtpy rows are ignored.
+			// Note: empty rows are ignored.
 			
 			StringBuffer line = new StringBuffer();
 			boolean empty = true;
 			cols = flexTable.getCellCount(row);
 			sep = "";
 			for ( int col = CONTROL_COL + 1; col < cols; col++ ) {
-				HTML html = (HTML) flexTable.getWidget(row, col);
+				TableCell html = (TableCell) _getWidget(row, col);
 				String text = html.getText().trim();
 				if ( text.length() > 0 ) {
 					empty = false;
@@ -391,7 +437,7 @@ public class TermTable extends VerticalPanel {
 		// header
 		int cols = flexTable.getCellCount(0);
 		for ( int col = CONTROL_COL + 1; col < cols; col++ ) {
-			HTML html = (HTML) flexTable.getWidget(HEADER_ROW, col);
+			TableCell html = (TableCell) _getWidget(HEADER_ROW, col);
 			String text = html.getText().trim();
 			if ( text.length() == 0 ) {
 				return "Missing column header: " +col;
@@ -410,7 +456,7 @@ public class TermTable extends VerticalPanel {
 			
 			cols = flexTable.getCellCount(row);
 			for ( int col = CONTROL_COL + 1; col < cols; col++ ) {
-				HTML html = (HTML) flexTable.getWidget(row, col);
+				TableCell html = (TableCell) _getWidget(row, col);
 				String text = html.getText().trim();
 				if ( text.length() > 0 ) {
 					empty = false;
@@ -441,5 +487,128 @@ public class TermTable extends VerticalPanel {
 		}
 		
 		return null;
+	}
+	
+	
+	private class TableCell extends HorizontalPanel {
+		private TextBox contents = new TextBox();
+
+		private int actualRow;
+		private int actualCol;
+		
+		
+		TableCell(int actualRow, int actualCol, String text) {
+			this(actualRow, actualCol, text, false);
+		}
+		
+		TableCell(int row, int col, String text, boolean html) {
+			this.actualRow = row;
+			this.actualCol = col;
+			
+			contents.setStylePrimaryName("TermTable-termField");
+			contents.setReadOnly(true);
+			contents.setWidth("250px");
+			
+			contents.addFocusListener(new FocusListener() {
+				public void onFocus(Widget sender) {
+					contents.addStyleDependentName("focused");
+					contents.selectAll();
+				}
+
+				public void onLostFocus(Widget sender) {
+					contents.removeStyleDependentName("focused");
+				}
+			});
+
+			contents.addKeyboardListener(new KeyboardListenerAdapter() {
+				public void onKeyPress(Widget sender, char keyCode, int modifiers) {
+
+					if ( keyCode == KEY_ENTER ) {
+						if ( contents.isReadOnly() ) {
+							contents.setReadOnly(false);
+							contents.addStyleDependentName("focusedEdit");
+							int len = contents.getText().length();
+							
+							
+//							int vislen = contents.getVisibleLength();
+//							if ( vislen < len ) {
+//								contents.setVisibleLength(len);
+//							}
+							
+							contents.setCursorPos(len);
+							
+						}
+						else {
+							contents.removeStyleDependentName("focusedEdit");
+							contents.setReadOnly(true);
+							contents.selectAll();
+						}
+						return;
+					}
+					
+					if ( !contents.isReadOnly() ) {
+						return;
+					}
+					
+					int row = actualRow;
+					int col = actualCol;
+					if ( keyCode == KEY_DOWN || keyCode == KEY_UP ) {
+						row = actualRow + (keyCode == KEY_DOWN ? 1 : -1);
+						contents.cancelKey();
+					}
+					else if ( keyCode == KEY_RIGHT || keyCode == KEY_LEFT ) {
+						col = actualCol + (keyCode == KEY_RIGHT ? 1 : -1);
+						contents.cancelKey();
+					}	
+
+					if ( row == actualRow && col == actualCol ) {
+						return;
+					}
+
+					if ( row < 0 || col < 0 ) {
+						return;
+					}
+
+					if ( row >= flexTable.getRowCount() ) {
+						return;
+					}
+
+					if ( col >= flexTable.getCellCount(row) ) {
+						return;
+					}
+
+					Widget widget = _getWidget(row, col);
+					if ( ! (widget instanceof TableCell) ) {
+						return;
+					}
+
+					TableCell tcell = (TableCell) widget;
+					if ( tcell != null ) {
+						tcell.setFocus(true);
+					}
+				}
+			});
+			
+			contents.setText(text);
+			add(contents);
+		}
+
+		
+		public void setFocus(boolean b) {
+			contents.setFocus(b);
+		}
+
+		void updatePosition(int row, int col) {
+			actualRow = row;
+			actualCol = col;
+		}
+
+		void setText(String text) {
+			contents.setText(text);
+		}
+
+		String getText() {
+			return contents.getText();
+		}
 	}
 }

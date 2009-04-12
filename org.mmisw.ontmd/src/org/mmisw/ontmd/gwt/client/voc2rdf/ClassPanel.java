@@ -303,8 +303,6 @@ public class ClassPanel extends VerticalPanel {
 
 		TermTable termTable = new TermTable(numHeaderCols);
 		
-		Main.log("termTable created");
-		
 		// header:
 		
 		// to check not repeated column headers
@@ -418,6 +416,9 @@ public class ClassPanel extends VerticalPanel {
 			}
 			
 		}
+		
+		Main.log("termTable created");
+//		Main.log(termTable.toString().replace('<', '{'));
 		
 		return termTable;
 	}
