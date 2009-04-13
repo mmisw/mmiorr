@@ -1,5 +1,6 @@
 package org.mmisw.ontmd.gwt.client.voc2rdf;
 
+import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.util.Util;
 
 import com.google.gwt.user.client.Command;
@@ -16,6 +17,7 @@ import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.TextBox;
@@ -35,8 +37,9 @@ public class TermTable extends VerticalPanel {
 	private static final int HEADER_ROW = 1;
 	private static final int FIRST_REGULAR_ROW = 2;
 	private static final int CONTROL_COL = 0;
+	private static final int FIRST_REGULAR_COL = 1;
 	
-	
+	private ScrollPanel scrollPanel;
 	private final FlexTable flexTable = new FlexTable();
 	private PopupPanel popup;
 	private TextBoxBase textBox;
@@ -74,6 +77,11 @@ public class TermTable extends VerticalPanel {
 	}
 	
 	
+	public void setScrollPanel(ScrollPanel scrollPanel) {
+		this.scrollPanel = scrollPanel;
+	}
+
+
 	/**
 	 * @param cols in client space
 	 */
@@ -507,10 +515,18 @@ public class TermTable extends VerticalPanel {
 			
 			contents.setStylePrimaryName("TermTable-termField");
 			contents.setReadOnly(true);
-			contents.setWidth("250px");
+			contents.setWidth("270px");
 			
 			contents.addFocusListener(new FocusListener() {
 				public void onFocus(Widget sender) {
+					if ( scrollPanel != null ) {
+						if ( actualRow <= FIRST_REGULAR_ROW ) {
+							scrollPanel.scrollToTop();
+						}
+						if ( actualCol <= FIRST_REGULAR_COL ) {
+							scrollPanel.scrollToLeft();
+						}
+					}
 					contents.addStyleDependentName("focused");
 					contents.selectAll();
 				}

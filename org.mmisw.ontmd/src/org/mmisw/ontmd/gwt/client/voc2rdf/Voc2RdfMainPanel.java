@@ -31,7 +31,6 @@ public class Voc2RdfMainPanel extends VerticalPanel {
 		;
 	
 	private CellPanel container = new VerticalPanel();
-//	private TabPanel tabPanel = new TabPanel();
 	
 	private VocabPanel vocabPanel = new VocabPanel(this);
 	private ConversionPanel conversionPanel = new ConversionPanel(this);
@@ -69,7 +68,6 @@ public class Voc2RdfMainPanel extends VerticalPanel {
 		HTML info = new HTML(INFO);
 		headerPanel.add(info);
 		
-//		container.setSize("800px", "450px");
 		DecoratorPanel decPanel = new DecoratorPanel();
 	    decPanel.setWidget(container);
 	    add(decPanel);
@@ -77,20 +75,9 @@ public class Voc2RdfMainPanel extends VerticalPanel {
 	    
 	    /////////
 		
+//	    container.setSize("1000px", "600px");
 	    container.add(vocabPanel);
-		
-//		FlexTable flexPanel = new FlexTable();
-//		flexPanel.setWidth("800px");
-//		int row = 0;
-//
-//		
-//		flexPanel.getFlexCellFormatter().setColSpan(row, 0, 3);
-//		flexPanel.setWidget(row, 0, tabPanel);
-//		tabPanel.add(vocabPanel, "Vocabulary");
-//		tabPanel.add(conversionPanel, "Conversion");
-//		tabPanel.selectTab(0);
-//	    
-//	    container.add(flexPanel); // tabPanel);
+	    
 	}
 	
 	
@@ -105,7 +92,6 @@ public class Voc2RdfMainPanel extends VerticalPanel {
 	}
 	
 	void conversionOk(ConversionResult conversionResult) {
-//		tabPanel.selectTab(tabPanel.getWidgetIndex(conversionPanel));
 		conversionPanel.setText(conversionResult.getRdf());
 		conversionPanel.updateForm(conversionResult.getPathOnServer(), loginResult);
 		

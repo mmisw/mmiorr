@@ -3,10 +3,14 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
-2009-04-11
+2009-04-11, 13  (1.2.0.beta3)
 	Issue #116: editing interface in the table is not functional
 		- various changes including textbox in each field and navigation with keyboard
-		- enter: enables cell for editing; enter again: returns to navigation
+		- enter key enables cell for editing; enter typed again returns to navigation
+		- first column and first row are made visible if the current focused cell is close
+		  enough.
+	Note: Some other improvements are of course possible; but any more sophisticated 
+	      spreadsheet-like interface would require some significant effort. 
 		
 2009-04-07
 	Implemented issue #84: "allow user-given namespace (URI) in voc2rdf"

@@ -70,7 +70,7 @@ public class VocabPanel extends VerticalPanel {
 	
 	VocabPanel(Voc2RdfMainPanel mainPanel) {
 		this.mainPanel = mainPanel;
-		setWidth("850");
+		setWidth("1000");
 		
 		fullTitleAttrDef = Voc2Rdf.baseInfo.getAttrDefMap().get("fullTitle");
 		creatorAttrDef = Voc2Rdf.baseInfo.getAttrDefMap().get("creator");
@@ -98,19 +98,19 @@ public class VocabPanel extends VerticalPanel {
 		contentsContainer.setBorderWidth(1);
 		
 		
-		fullTitleTb = Util.createTextBoxBase(1, "500", new ChangeListener() {
+		fullTitleTb = Util.createTextBoxBase(1, "700", new ChangeListener() {
 			public void onChange(Widget sender) {
 				statusLabel.setText("");
 			}
 		});
 		
-		creatorTb = Util.createTextBoxBase(1, "500", new ChangeListener() {
+		creatorTb = Util.createTextBoxBase(1, "700", new ChangeListener() {
 			public void onChange(Widget sender) {
 				statusLabel.setText("");
 			}
 		});
 		
-		descriptionTb = Util.createTextBoxBase(4, "500", new ChangeListener() {
+		descriptionTb = Util.createTextBoxBase(4, "700", new ChangeListener() {
 			public void onChange(Widget sender) {
 				statusLabel.setText("");
 			}
@@ -137,7 +137,7 @@ public class VocabPanel extends VerticalPanel {
 		
 		FlexTable flexPanel = new FlexTable();
 //		flexPanel.setBorderWidth(1);
-		flexPanel.setWidth("850");
+		flexPanel.setWidth("1000");
 		int row = 0;
 				
 		

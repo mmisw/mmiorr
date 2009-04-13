@@ -63,7 +63,16 @@ public class ClassPanel extends VerticalPanel {
 //		"Column values should be separated by comma characters; empty fields are " +
 //		"represented by two commas or tabs in a row. Each record (row) should be separated by a " +
 //		"return or end of line character. " +
-		"All term labels must be unique.";
+		"All term labels must be unique. " +
+		"<br/>" +
+		"<br/>" +
+		"Type Enter to edit a cell. Type Enter again to complete the change (or just move to a different " +
+		"field in the form using the navigation keys or the mouse). " +
+		"<br/>" +
+		"<br/>" +
+		"Use the CSV button to get a text version of the current contents of the table. " +
+		"You can use the text area to edit or import contents into the table."
+		;
 
 	private static final String CONTENTS_DEFAULT = 
 		"name,description\n" +
@@ -107,7 +116,7 @@ public class ClassPanel extends VerticalPanel {
 
 	
 	ClassPanel(Voc2RdfMainPanel mainPanel) {
-		setWidth("850");
+		setWidth("1000");
 
 		resourceTypeAttrDef = Voc2Rdf.baseInfo.getResourceTypeAttrDef();
 		add(createForm());
@@ -120,7 +129,7 @@ public class ClassPanel extends VerticalPanel {
 	private Widget createForm() {
 		contentsContainer.setBorderWidth(1);
 
-		tableScroll.setSize("800", "180");
+		tableScroll.setSize("1000", "180");
 		
 		FlexTable flexPanel = new FlexTable();
 //		flexPanel.setBorderWidth(1);
@@ -186,7 +195,7 @@ public class ClassPanel extends VerticalPanel {
 				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 
-		contentsContainer.setSize("600", "200");
+//		contentsContainer.setSize("600", "200");
 		
 		contentsContainer.add(tableScroll);
 		flexPanel.getFlexCellFormatter().setColSpan(row, 1, 3);
@@ -278,6 +287,7 @@ public class ClassPanel extends VerticalPanel {
 		// OK:
 		termTable = tt;
 		tableScroll.setWidget(termTable);
+		termTable.setScrollPanel(tableScroll);
 	}
 
 	/**
@@ -523,7 +533,7 @@ public class ClassPanel extends VerticalPanel {
 		textArea.setReadOnly(false);
 		textArea.setText(termTable.getCsv(null));
 		
-		textArea.setSize("700", "250");
+		textArea.setSize("800", "270");
 
 		/////////////////////////////////////
 		// NOTE: Only comma is handled
@@ -580,6 +590,7 @@ public class ClassPanel extends VerticalPanel {
 				if ( Window.confirm("This action will update the term table") ) {
 					termTable = tt;
 					tableScroll.setWidget(termTable);
+					termTable.setScrollPanel(tableScroll);
 					popup.hide();
 				}
 			}
