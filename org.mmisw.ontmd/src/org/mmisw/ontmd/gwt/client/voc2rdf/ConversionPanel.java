@@ -1,6 +1,5 @@
 package org.mmisw.ontmd.gwt.client.voc2rdf;
 
-import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
 
 import com.google.gwt.core.client.GWT;
@@ -33,40 +32,38 @@ public class ConversionPanel extends VerticalPanel {
 	
 	ConversionPanel(Voc2RdfMainPanel mainPanel) {
 		this.mainPanel = mainPanel;
-		setWidth("850");
-		
+		setWidth("850px");
 		
 		textArea.setReadOnly(true);
-	    textArea.setSize("600px", "300px");
+	    textArea.setSize("100%", "200px");
 		DecoratorPanel decPanel = new DecoratorPanel();
 	    decPanel.setWidget(textArea);
 	    textArea.setText("");
 
+		HorizontalPanel hp = new HorizontalPanel();
+		hp.setSpacing(4);
+		hp.add(info);
 		
 		FlexTable panel = new FlexTable();
 		int row = 0;
 		
-		HorizontalPanel hp = new HorizontalPanel();
-		hp.setWidth("850");
-		hp.setSpacing(4);
-		hp.add(info);
-		
-		panel.getFlexCellFormatter().setColSpan(row, 0, 2);
+//		panel.getFlexCellFormatter().setColSpan(row, 0, 2);
 		panel.setWidget(row, 0, hp);
 		panel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		row++;
 		
+		panel.setWidget(row, 0, ontMdForm);
+		panel.getFlexCellFormatter().setAlignment(row, 1, 
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP
+		);
+		row++;
+
 //		panel.getFlexCellFormatter().setColSpan(row, 0, 2);
 		panel.setWidget(row, 0, textArea);
 		panel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE
-		);
-
-		panel.setWidget(row, 1, ontMdForm);
-		panel.getFlexCellFormatter().setAlignment(row, 1, 
-				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP
 		);
 		row++;
 
@@ -99,7 +96,7 @@ public class ConversionPanel extends VerticalPanel {
 		HTML html;
 		
 		OntMdForm() {
-			setWidth("300");
+//			setWidth("300");
 			html = new HTML();
 			add(html);
 		}
@@ -123,32 +120,35 @@ public class ConversionPanel extends VerticalPanel {
 				}
 				
 				
-				str = 
-					"<b>" +
-					"<font color=\"green\">You can now upload your vocabulary in the MMI Repository</font>" +
-					"</b>" +
-					"<br/>" +
-					"<br/>" +
+				str =
+					"<table>" +
+					"<tr>" +
+					"<td>" +
 					"<div align=\"center\">" +
 					"<form action=\"" +action+ "\" method=\"post\" >\n" +
+					"<b>" +
+					"<font color=\"green\">You can now upload your vocabulary in the MMI Registry and Repository</font>" +
+					"</b>" +
+					"<br/>" +
 					"<input type=\"submit\" value=\"" +"Register my vocabulary"+ "\" />\n" +
 					"</form>" +
 					"</div>\n" +
-					"This button will open the " +
-					"<font color=\"green\">MMI Ontology Metadata Editor</font> " +
-					"tool, which you can use " +
-					"to proceed with preparing your ontology for registration in " +
+					"</td>" +
+					"<td>" +
+					"This button will open the <font color=\"green\">MMI Ontology Metadata Editor</font> " +
+					"tool, which you can use to proceed with preparing your ontology for registration in " +
 					"the MMI Registry and Repository. " +
 					"You may need to log in. " +
+					"</td>" +
+					"</tr>" +
+					"</table>" +
 					
 					"<br/>" +
 					"<br/>" +
-					"<br/>" +
-					"Note: You can also just use the resulting contents and make a copy in a file on your computer."
-
+					"You can also just use the resulting contents and make a copy in a file on your computer."
 				;
 				
-				Main.log("<pre>\n" +str.replaceAll("\\<", "&lt;")+ "</pre>");
+//				Main.log("<pre>\n" +str.replaceAll("\\<", "&lt;")+ "</pre>");
 			}
 			html.setHTML(str);
 		}		
