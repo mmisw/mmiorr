@@ -13,7 +13,6 @@ import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.ontmd.gwt.server.Config;
 import org.mmisw.ontmd.gwt.server.JenaUtil2;
 import org.mmisw.ontmd.gwt.server.MdHelper;
-import org.mmisw.voc2rdf.transf.StringManipulationInterface;
 import org.mmisw.voc2rdf.transf.StringManipulationUtil;
 
 import com.hp.hpl.jena.ontology.DatatypeProperty;
@@ -84,7 +83,7 @@ public class Converter {
 
 	private OntClass classForTerms;
 	
-	private StringManipulationInterface stringManipulation = new StringManipulationUtil();
+	private StringManipulationUtil stringManipulation = new StringManipulationUtil();
 
 	private String pathOnServer;
 
@@ -374,12 +373,14 @@ public class Converter {
 
 	}
 
-
+	//
+	// Note: colons are OK for the name of an individual (issue #124)
+	//
 	private Individual createIndividual(DataRow row, int id, OntClass cs) {
 
 		if (isGood(row, id)) {
-//			String resourceString = getGoodName(row, id);
-			String resourceString = ns_ + getGoodName(row, id).toLowerCase();
+			boolean allowColon = true;
+			String resourceString = ns_ + getGoodName(row, id, allowColon).toLowerCase();
 			Individual ind = newOntModel.createIndividual(resourceString, cs);
 			ind.addProperty(RDFS.label, row.getString(id).trim());
 			log.info("ind created " + ind);
@@ -391,8 +392,8 @@ public class Converter {
 
 	
 	private DatatypeProperty createDatatypeProperty(DataRow row, int id) {
-		//String resourceString = getGoodName(row, id).toLowerCase();
-		String resourceString = ns_ + getGoodName(row, id).toLowerCase();
+		boolean allowColon = false;
+		String resourceString = ns_ + getGoodName(row, id, allowColon).toLowerCase();
 		log.info("datatype Property created " + resourceString);
 		DatatypeProperty p = newOntModel.createDatatypeProperty(resourceString);
 		p.addProperty(RDFS.label, row.getString(id).trim());
@@ -400,15 +401,15 @@ public class Converter {
 		return p;
 	}
 
-	private String getGoodName(DataRow row, int id) {
+	private String getGoodName(DataRow row, int id, boolean allowColon) {
 //		return finalUri + cleanStringforID(row.getString(id).trim());
 //		return ns_ + cleanStringforID(row.getString(id).trim());
-		return       cleanStringforID(row.getString(id).trim());
+		return       cleanStringforID(row.getString(id).trim(), allowColon);
 	}
 
-	private String cleanStringforID(String s) {
+	private String cleanStringforID(String s, boolean allowColon) {
 
-		return stringManipulation.replaceString(s.trim());
+		return stringManipulation.replaceStringAllowColon(s.trim(),  allowColon);
 
 	}
 
@@ -416,7 +417,9 @@ public class Converter {
 	
 	private OntClass createClassNameGiven() {
 		//		String resourceString = finalUri + setFirstUpperCase(cleanStringforID(primaryClass));
-		String firtUcClass = setFirstUpperCase(cleanStringforID(primaryClass));
+		
+		boolean allowColon = false;
+		String firtUcClass = setFirstUpperCase(cleanStringforID(primaryClass, allowColon));
 		String resourceString = ns_ + firtUcClass ;
 
 		OntClass cls = newOntModel.createClass(resourceString);
@@ -453,7 +456,12 @@ public class Converter {
 			// remove any trailing slashes
 			namespaceRoot = namespaceRoot.replaceAll("(/|\\\\)+$", "");  
 			
-			String orgAbbrev = orgAbbreviation.replaceAll("\\s+", "");
+			//
+			// replace any colon (:) in the pieces that go to the ontology URI
+			// with underscores (_):
+			//
+			
+			String orgAbbrev = orgAbbreviation.replaceAll("\\s+", "").replace(':', '_');
 			
 			finalUri = namespaceRoot + "/" + orgAbbrev;
 			
@@ -461,9 +469,7 @@ public class Converter {
 				finalUri +=  "/" + version;
 			}
 			
-			finalUri += "/" + getPrimaryClass().toLowerCase() ;
-			// NO ".owl" extension!!
-			// because it messes up the base URI of the elements
+			finalUri += "/" + getPrimaryClass().toLowerCase().replace(':', '_');
 		}
 		
 		// see createProperties()

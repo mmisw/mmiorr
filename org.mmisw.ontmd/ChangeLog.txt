@@ -3,6 +3,16 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-04-14
+	Issue #124: Keep colons in values
+		- Now colons are ONLY kept (not replaced with underscores) for the *term IDs* in voc2rdf;
+		  so the name for a term (first column), eg., "abc:def:myterm" will result in
+		  a term URI like the following http://mmisw.org/ont/someAuth/someVocab/abc:def:myterm
+		- See Converter.createIndividual()
+		- NOTE: Colons in the name of the class and in the column headers (which are converted to
+		  datatype properties in the ontology) are still converted to underscores.
+		   
+	
 2009-04-11, 13  (1.2.0.beta3)
 	Issue #116: editing interface in the table is not functional
 		- various changes including textbox in each field and navigation with keyboard

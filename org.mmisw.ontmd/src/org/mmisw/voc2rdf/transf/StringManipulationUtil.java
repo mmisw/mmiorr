@@ -54,14 +54,27 @@ import java.util.regex.Pattern;
 
 public class StringManipulationUtil implements StringManipulationInterface {
 
-	private static final String[] patternStrings = { "[^a-zA-Z0-9-_]+", "(_+)$" };
-	private static final String[] replace = { "_", "" };
+	// Issue #124: Keep colons in values
+	// (Note that I'm doing minimal changes to the original code in this class - TODO simplify this class)
+	
+	// This allows colons:
+	private static final String[] patternStringsAllowColon = { "[^a-zA-Z0-9-_:]+", "(_+)$" };
+	private static final Pattern[] patternsAllowColon = new Pattern[patternStringsAllowColon.length];
+	
+	// the original pattern array (which replaces colons):
+	private static final String[] patternStringsNoColon = { "[^a-zA-Z0-9-_]+", "(_+)$" };
+	
+	
+	private static final String[] replaceStrings = { "_", "" };
 
-	private static final Pattern[] patterns = new Pattern[patternStrings.length];
+	private static final Pattern[] patternsNoColon = new Pattern[patternStringsNoColon.length];
 	
 	static {
-		for (int i = 0; i < patterns.length; i++) {
-			patterns[i] = Pattern.compile(patternStrings[i]);
+		for (int i = 0; i < patternsAllowColon.length; i++) {
+			patternsAllowColon[i] = Pattern.compile(patternStringsAllowColon[i]);
+		}
+		for (int i = 0; i < patternsNoColon.length; i++) {
+			patternsNoColon[i] = Pattern.compile(patternStringsNoColon[i]);
 		}
 	}
 	
@@ -69,19 +82,35 @@ public class StringManipulationUtil implements StringManipulationInterface {
 	private static final Pattern p_2 = Pattern.compile("_{2,}");
 
 	
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.mmi.ont.voc2owl.trans.StringManipulationInterface#replaceString(java.lang.String)
+	
+	/**
+	 * The same as {@link #replaceString(String)} but allowing (ie, not replacing) colons if
+	 * allowColon is true.
+	 * @param s
+	 * @param allowColon
+	 * @return
 	 */
+	public String replaceStringAllowColon(String s, boolean allowColon) {
+		if ( allowColon ) {
+			return _replaceString(patternsAllowColon, s);
+		}
+		else {
+			return _replaceString(patternsNoColon, s);
+		}
+	}
+
+	/** does replace colons */
 	public String replaceString(String s) {
+		return _replaceString(patternsNoColon, s);
+	}
+	
+	private String _replaceString(Pattern[] patterns, String s) {
 		String rep = s;
 
 		for (int i = 0; i < patterns.length; i++) {
 			Matcher m = patterns[i].matcher(rep);
 
-			rep = m.replaceAll(replace[i]);
+			rep = m.replaceAll(replaceStrings[i]);
 		}
 
 		return clean(appendUnderScoreStart(rep));

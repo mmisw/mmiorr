@@ -371,18 +371,29 @@ public class VocabPanel extends VerticalPanel {
 			String uri;
 			
 			if ( userGiven ) {
+				// use the user-given value as it is:
 				uri = userUri;
 			}
 			else {
-				String authority = authorityField.getValue();
-				if ( authority.trim().length() == 0 ) {
+				//
+				// replace any colon (:) in the pieces that go to the ontology URI
+				// with underscores (_):
+				//
+				String authority = authorityField.getValue().trim();
+				if ( authority.length() == 0 ) {
 					authority = "<font color=\"red\">auth</font>";
+				}
+				else {
+					authority = authority.replace(':', '_');
 				}
 	
 				// TODO handle className vs. specific shortName field
 				String shortName = classPanel.getClassName();
 				if ( shortName.length() == 0 ) {
 					shortName = "<font color=\"red\">shortName</font>";
+				}
+				else {
+					shortName = shortName.replace(':', '_');
 				}
 				
 				uri = serverAndRoot + authority+ "/" +shortName+ "/";
