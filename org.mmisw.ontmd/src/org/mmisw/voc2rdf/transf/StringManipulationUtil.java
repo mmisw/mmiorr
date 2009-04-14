@@ -54,9 +54,21 @@ import java.util.regex.Pattern;
 
 public class StringManipulationUtil implements StringManipulationInterface {
 
-	private final String[] patterns = { "[^a-zA-Z0-9-_]+", "(_+)$" };
+	private static final String[] patternStrings = { "[^a-zA-Z0-9-_]+", "(_+)$" };
+	private static final String[] replace = { "_", "" };
 
-	private final String[] replace = { "_", "" };
+	private static final Pattern[] patterns = new Pattern[patternStrings.length];
+	
+	static {
+		for (int i = 0; i < patterns.length; i++) {
+			patterns[i] = Pattern.compile(patternStrings[i]);
+		}
+	}
+	
+	private static final Pattern p_ = Pattern.compile("[^a-zA-Z_]");
+	private static final Pattern p_2 = Pattern.compile("_{2,}");
+
+	
 
 	/*
 	 * (non-Javadoc)
@@ -67,8 +79,7 @@ public class StringManipulationUtil implements StringManipulationInterface {
 		String rep = s;
 
 		for (int i = 0; i < patterns.length; i++) {
-			Pattern p = Pattern.compile(patterns[i]);
-			Matcher m = p.matcher(rep);
+			Matcher m = patterns[i].matcher(rep);
 
 			rep = m.replaceAll(replace[i]);
 		}
@@ -81,7 +92,6 @@ public class StringManipulationUtil implements StringManipulationInterface {
 		String rep = s;
 		// if starts with a non a-z or A_Z
 
-		Pattern p_ = Pattern.compile("[^a-zA-Z_]");
 		Matcher m_ = p_.matcher(rep);
 
 		if (m_.lookingAt()) {
@@ -93,8 +103,7 @@ public class StringManipulationUtil implements StringManipulationInterface {
 
 	private String clean(String s) {
 		String rep = s;
-		Pattern p_ = Pattern.compile("_{2,}");
-		Matcher m_ = p_.matcher(rep);
+		Matcher m_ = p_2.matcher(rep);
 		rep = m_.replaceAll("_");
 
 		return rep;
