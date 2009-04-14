@@ -20,6 +20,12 @@ ChangeLog
 			  the user indicates the desired separator character.
 		- the following separators are possible: comma (,), sem-colon (;), tab, and pipe (|)
 		
+	Fixed #118: "Difficult to fix errors reported by voc2rdf"
+		 Yes, this is difficult in the popup itself.
+		 Fix: just let the table be updated; then the user can continue editing; the system
+		 will make the error checking when attempting the "Convert to RDF action", anyway.
+	
+		
 2009-04-07
 	Implemented issue #84: "allow user-given namespace (URI) in voc2rdf"
 	VocabPanel.OntologyUriPanel handles the information about the resulting URI for the ontology.

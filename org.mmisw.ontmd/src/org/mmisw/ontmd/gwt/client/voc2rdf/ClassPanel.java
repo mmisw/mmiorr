@@ -579,13 +579,18 @@ public class ClassPanel extends VerticalPanel {
 				StringBuffer errorMsg = new StringBuffer();
 				TermTable tt = createTermTable(separator, text, errorMsg);
 				
-				if ( errorMsg.length() > 0 ) {
-					status.setHTML("<font color=\"red\">" +errorMsg+ "</font>");
-					return;
-				}
+				// 118: "Difficult to fix errors reported by voc2rdf"
+				// Yes, this is difficult in the popup itself.
+				// Fix: just let the table be updated; then the user can continue editing; the system
+				// will make the error checking when attempting the "Convert to RDF action", anyway.
+				//
+//				if ( errorMsg.length() > 0 ) {
+//					status.setHTML("<font color=\"red\">" +errorMsg+ "</font>");
+//					return;
+//				}
 				
 				// OK:
-				if ( Window.confirm("This action will update the term table") ) {
+				if ( Window.confirm("This action will update the term table. (Previous contents will be discarded.)") ) {
 					termTable = tt;
 					tableScroll.setWidget(termTable);
 					termTable.setScrollPanel(tableScroll);
