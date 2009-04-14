@@ -26,6 +26,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.PushButton;
+import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -70,8 +71,8 @@ public class ClassPanel extends VerticalPanel {
 		"field in the form using the navigation keys or the mouse). " +
 		"<br/>" +
 		"<br/>" +
-		"Use the CSV button to get a text version of the current contents of the table. " +
-		"You can use the text area to edit or import contents into the table."
+		"Use the Import button to set the contents of the table from CSV formatted text. <br/>" +
+		"Use the Export button to get a text version of the current contents of the table. " 
 		;
 
 	private static final String CONTENTS_DEFAULT = 
@@ -111,7 +112,8 @@ public class ClassPanel extends VerticalPanel {
 
 	private TermTable termTable;
 	
-	private PushButton csvButton;
+	private PushButton importCsvButton;
+	private PushButton exportCsvButton;
 	
 
 	
@@ -181,7 +183,7 @@ public class ClassPanel extends VerticalPanel {
 //		row++;
 
 		HorizontalPanel exPanel = new HorizontalPanel();
-		exPanel.add(_createCsvButton());
+		exPanel.add(_createCsvButtons());
 		flexPanel.setWidget(row, 2, exPanel);
 		flexPanel.getFlexCellFormatter().setAlignment(row, 2, 
 				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_BOTTOM
@@ -209,16 +211,25 @@ public class ClassPanel extends VerticalPanel {
 		return flexPanel;
 	}
 	
-	private CellPanel _createCsvButton() {
+	private CellPanel _createCsvButtons() {
 		CellPanel panel = new HorizontalPanel();
 		panel.setSpacing(2);
-		csvButton = new PushButton("CSV", new ClickListener() {
+		
+		importCsvButton = new PushButton("Import", new ClickListener() {
 			public void onClick(Widget sender) {
 				importContents();
 			}
 		});
-		csvButton.setTitle("Displays contents in CSV format");
-		panel.add(csvButton);
+		importCsvButton.setTitle("Import contents in CSV format");
+		panel.add(importCsvButton);
+		
+		exportCsvButton = new PushButton("Export", new ClickListener() {
+			public void onClick(Widget sender) {
+				exportContents();
+			}
+		});
+		exportCsvButton.setTitle("Exports the contents in a CSV format");
+		panel.add(exportCsvButton);
 		
 		return panel;
 	}
@@ -256,7 +267,7 @@ public class ClassPanel extends VerticalPanel {
 		// NOTE: Need to put "" for the missing values so the original
 		// voc2rdf scheme to make the conversion (which is based on the com.infomata.data library)
 		// works with no ArrayOutOfBoundsException's.  
-		String csv = termTable.getCsv("\"\"");
+		String csv = termTable.getCsv("\"\"", ",");
 		values.put("ascii", csv);
 		
 		// always comma now.
@@ -527,36 +538,25 @@ public class ClassPanel extends VerticalPanel {
 				return true;
 			}
 		};
-		popup.setText("Table of terms in CSV format");
+		popup.setText("Import terms");
 		
 		final TextArea textArea = popup.addTextArea(null);
 		textArea.setReadOnly(false);
-		textArea.setText(termTable.getCsv(null));
 		
 		textArea.setSize("800", "270");
 
-		/////////////////////////////////////
-		// NOTE: Only comma is handled
-		/////////////////////////////////////
-//		
-//		/////////////////////////////////////////////////
-//		CellPanel separatorPanel = new HorizontalPanel();
-//		final ListBox fieldSeparator_lb = new ListBox();
-//		fieldSeparator_lb.addItem("Comma", "csv");
-//		fieldSeparator_lb.addItem("Tab", "tab");
-//		separatorPanel.add(new Label("Column separator:"));
-//		separatorPanel.add(fieldSeparator_lb);
-//		////////////////////////////////////////////////
 		
 		VerticalPanel vp = new VerticalPanel();
 		vp.setSpacing(10);
 		popup.getDockPanel().add(vp, DockPanel.NORTH);
 		vp.add(new HTML(
-				"This area can also be used to edit and/or insert new contents into " +
-				"the table; click the \"Import\" button to update the table." 
+				"Select the separator character, insert the new contents into the text area, " +
+				"and click the \"Import\" button to update the table." 
 				)
 		);
-//		vp.add(separatorPanel);
+		
+		final SeparatorPanel separatorPanel = new SeparatorPanel();
+		vp.add(separatorPanel);
 		
 		
 		final HTML status = new HTML("");
@@ -574,9 +574,7 @@ public class ClassPanel extends VerticalPanel {
 					return;
 				}
 				
-//				String separatorName = fieldSeparator_lb.getValue(fieldSeparator_lb.getSelectedIndex());
-//				char separator = "csv".equalsIgnoreCase(separatorName) ? ',' : '\t';
-				char separator = ',';
+				char separator = separatorPanel.separator.charAt(0);
 				
 				StringBuffer errorMsg = new StringBuffer();
 				TermTable tt = createTermTable(separator, text, errorMsg);
@@ -603,6 +601,73 @@ public class ClassPanel extends VerticalPanel {
 		popup.show();
 
 	}
+	
+	/**
+	 * Dispatches the "export" action.
+	 */
+	private void exportContents() {
+		final MyDialog popup = new MyDialog(null) {
+			public boolean onKeyUpPreview(char key, int modifiers) {
+				// avoid ENTER close the popup
+				if ( key == KeyboardListener.KEY_ESCAPE  ) {
+					hide();
+					return false;
+				}
+				return true;
+			}
+		};
+		popup.setText("Table of terms in CSV format");
+		
+		final TextArea textArea = popup.addTextArea(null);
+		textArea.setReadOnly(true);
+		textArea.setText(termTable.getCsv(null, ","));
+		
+		textArea.setSize("800", "270");
+
+		
+		VerticalPanel vp = new VerticalPanel();
+		vp.setSpacing(10);
+		popup.getDockPanel().add(vp, DockPanel.NORTH);
+		vp.add(new HTML(
+				"Select the separator character for your CSV formatted contents. " 
+				)
+		);
+		
+		CellPanel separatorPanel = new SeparatorPanel() {
+			public void onClick(Widget sender) {
+				super.onClick(sender);
+				textArea.setText(termTable.getCsv(null, separator));
+			}
+		};
+		vp.add(separatorPanel);
+		
+		popup.center();
+		popup.show();
+
+	}
+	
+	/** Helper class to capture desired separator for CSV contents */
+	private static class SeparatorPanel extends HorizontalPanel implements ClickListener {
+		String separator = ",";
+		
+		SeparatorPanel() {
+			super();
+			String[] separators = { "Comma (,)", "Semi-colon (;)", "Tab", "Pipe (|)" };
+			for (int i = 0; i< separators.length; i++ ) {
+				String separator = separators[i];
+				RadioButton rb = new RadioButton("separator", separator);
+				if ( i == 0 ) {
+					rb.setChecked(true);
+				}
+				rb.addClickListener(this);
+				this.add(rb);
+			}
+		}
+		public void onClick(Widget sender) {
+			RadioButton rb = (RadioButton) sender;
+			separator = rb.getText();
+		}
+	}
 
 	void example() {
 		statusLabel.setText("");
@@ -614,7 +679,8 @@ public class ClassPanel extends VerticalPanel {
 	
 	
 	void enable(boolean enabled) {
-		csvButton.setEnabled(enabled);
+		importCsvButton.setEnabled(enabled);
+		exportCsvButton.setEnabled(enabled);
 	}
 
 }

@@ -1,6 +1,5 @@
 package org.mmisw.ontmd.gwt.client.voc2rdf;
 
-import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.util.Util;
 
 import com.google.gwt.user.client.Command;
@@ -383,10 +382,29 @@ public class TermTable extends VerticalPanel {
 
 	/**
 	 * Gets the contents in CSV format.
+	 * 
 	 * @param emptyFieldString If non-null, will be used for empty fields in the body (not on the header).
-	 * @return
+	 * 
+	 * @param separator desired field separator; some descriptive names are recognized if they start with
+	 *        one of "Comma", "Semi-colon", "Pipe", or "Tab" (ignoring case), so the corresponding
+	 *        character will be used. Other separator value will be used exactly as given.
+	 * 
+	 * @return The contents in CSV format with the given separator.
 	 */
-	public String getCsv(String emptyFieldString) {
+	public String getCsv(String emptyFieldString, String separator) {
+		if ( separator == null || separator.equals(",") || separator.toLowerCase().startsWith("comma") ) {
+			separator = ",";
+		}
+		else if ( separator.equals(";") || separator.toLowerCase().startsWith("semi-colon") ) {
+			separator = ";";
+		}
+		else if ( separator.equals("|") || separator.toLowerCase().startsWith("pipe") ) {
+			separator = "|";
+		}
+		else if ( separator.equals("\t") || separator.toLowerCase().startsWith("tab") ) {
+			separator = "\t";
+		}
+		
 		StringBuffer sb = new StringBuffer();
 		int rows = flexTable.getRowCount();
 		
@@ -396,11 +414,11 @@ public class TermTable extends VerticalPanel {
 		for ( int col = CONTROL_COL + 1; col < cols; col++ ) {
 			TableCell html = (TableCell) _getWidget(HEADER_ROW, col);
 			String text = html.getText();
-			if ( text.indexOf(',') >= 0 ) {
+			if ( text.indexOf(separator) >= 0 ) {
 				text = '"' +text+ '"';
 			}
 			sb.append(sep + text);
-			sep = ",";
+			sep = separator;
 		}
 		sb.append('\n');
 
@@ -422,11 +440,11 @@ public class TermTable extends VerticalPanel {
 				else if ( emptyFieldString != null ) {
 					text = emptyFieldString;
 				}
-				if ( text.indexOf(',') >= 0 ) {
+				if ( text.indexOf(separator) >= 0 ) {
 					text = '"' +text+ '"';
 				}
 				line.append(sep + text);
-				sep = ",";
+				sep = separator;
 			}
 			if ( !empty ) {
 				sb.append(line.toString() + '\n');
