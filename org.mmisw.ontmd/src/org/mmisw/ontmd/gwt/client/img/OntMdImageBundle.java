@@ -22,4 +22,7 @@ public interface OntMdImageBundle extends ImageBundle {
 	public AbstractImagePrototype search();
 	 
 	public AbstractImagePrototype voc2rdf2();
+	
+	
+	public AbstractImagePrototype tridown();
 }
