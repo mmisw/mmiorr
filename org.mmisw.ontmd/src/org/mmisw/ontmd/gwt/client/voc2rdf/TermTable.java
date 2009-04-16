@@ -1,6 +1,11 @@
 package org.mmisw.ontmd.gwt.client.voc2rdf;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.util.Util;
+import org.mmisw.ontmd.gwt.client.voc2rdf.VocabPanel.CheckError;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Timer;
@@ -11,6 +16,7 @@ import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.MenuBar;
@@ -133,8 +139,41 @@ public class TermTable extends VerticalPanel {
 			TableCell tcell = new TableCell(row, col, text, true);
 			_setWidget(row, col, tcell);
 		}
+		else if ( row > CONTROL_ROW || col > CONTROL_COL ) {
+			Image img = Main.images.tridown().createImage();
+			
+			HorizontalPanel hp = new HorizontalPanel();
+			hp.setWidth("100%");
+//			hp.setBorderWidth(1);
+			hp.setVerticalAlignment(ALIGN_MIDDLE);
+			_setWidget(row, col, hp);
+			
+			if ( row > CONTROL_ROW ) {
+				HTML html = new HTML(text);
+				HTML filler = new HTML("");
+				
+				hp.add(img);
+				hp.add(html);
+				hp.add(filler);
+
+				hp.setCellWidth(img, "30%");
+				hp.setCellWidth(html, "50%");
+				hp.setCellWidth(filler, "20%");
+				
+				hp.setCellHorizontalAlignment(img, ALIGN_LEFT);
+				hp.setCellHorizontalAlignment(html, ALIGN_RIGHT);
+			}
+			else {
+				hp.add(img);
+			}
+			
+			
+//			PushButton bt = new PushButton(img);
+//			bt.setText(text);
+//			_setWidget(row, col, bt);
+		}
 		else {
-			_setWidget(row, col, new HTML(text));	
+			_setWidget(row, col, new HTML(text));
 		}
 	}
 
@@ -453,24 +492,59 @@ public class TermTable extends VerticalPanel {
 		return sb.toString();
 	}
 
+	
+	static class TermError extends CheckError {
+		int line;
+		int column;
+		TermError(int line, int column, String msg) {
+			super(msg);
+			this.line = line;
+			this.column = column;
+		}
+		public String toString() {
+			if ( line < 0 && column < 0 ) {
+				return msg;
+			}
+			
+			StringBuffer sb = new StringBuffer("[");
+			if ( line >= 0 ) {
+				sb.append(line == 0 ? "header" : "row " +line);
+				sb.append(":");
+			}
+			
+			if ( column >= 0 ) {
+				sb.append("column " +column);
+			}
+			
+			sb.append("] " +msg);
+			
+			return sb.toString();
+		}
+
+	}
+	
 	/**
 	 * Check the contents of the table.
-	 * @return An error message; null if OK
+	 * @return An error; null if OK
 	 */
-	public String check() {
+	public TermError check() {
 		int rows = flexTable.getRowCount();
 		
 		// header
 		int cols = flexTable.getCellCount(0);
 		for ( int col = CONTROL_COL + 1; col < cols; col++ ) {
-			TableCell html = (TableCell) _getWidget(HEADER_ROW, col);
-			String text = html.getText().trim();
+			TableCell tcell = (TableCell) _getWidget(HEADER_ROW, col);
+			String text = tcell.getText().trim();
 			if ( text.length() == 0 ) {
-				return "Missing column header: " +col;
+				tcell.setFocus(true);
+				return new TermError(0, col, "Missing column header in term table");
 			}
 		}
 
 		int actualRowsWithContents = 0;
+		
+		// to check for duplicate keys
+		Set<String> keys = new HashSet<String>();
 		
 		// terms:
 		for ( int row = FIRST_REGULAR_ROW; row < rows; row++ ) {
@@ -478,26 +552,44 @@ public class TermTable extends VerticalPanel {
 			// Note: empty rows are OK -- they're ignored.
 			
 			boolean empty = true;
-			String error = null;    // will get the first error, if any
+			TermError error = null;    // will get the first error, if any
 			
 			cols = flexTable.getCellCount(row);
 			for ( int col = CONTROL_COL + 1; col < cols; col++ ) {
-				TableCell html = (TableCell) _getWidget(row, col);
-				String text = html.getText().trim();
+				TableCell tcell = (TableCell) _getWidget(row, col);
+				String text = tcell.getText().trim();
 				if ( text.length() > 0 ) {
 					empty = false;
+					
+					if ( col == FIRST_REGULAR_COL ) {
+						// the key column;
+						String key = text;
+						if ( keys.contains(key) ) {
+							tcell.setFocus(true);
+							return new TermError((row -FIRST_REGULAR_ROW + 1), col, "Duplicate key value in term table: " +key);
+						}
+						else {
+							keys.add(key);
+						}
+					}
 				}
 				else if ( col > CONTROL_COL + 1) {
-					// empty column (except the first columns, which is the key) is OK. See issue #119. 
+					// empty column (except the first column, which is the key) is OK. See issue #119. 
 				}
 				else if ( error == null ) {
-					error = "Line " +(row -FIRST_REGULAR_ROW + 1)+ ": Missing value in column " +col;
+					tcell.setFocus(true);
+					error = new TermError((row -FIRST_REGULAR_ROW + 1), col, "Missing value in column " +col+ 
+							" in term table");
 				}
 			}
 			
 			if ( empty ) {
+				// allow the last row to be empty.
 				if ( row < rows -1 ) {
-					error = "Line " +(row -FIRST_REGULAR_ROW + 1)+ " is empty";
+					// it is not the last row:
+					TableCell tcell = (TableCell) _getWidget(row, FIRST_REGULAR_COL);
+					tcell.setFocus(true);
+					error = new TermError((row -FIRST_REGULAR_ROW + 1), -1, "Row is empty in term table");
 				}
 				// ELse: OK: accept last row empty.
 			}
@@ -508,8 +600,9 @@ public class TermTable extends VerticalPanel {
 				actualRowsWithContents++;
 			}
 		}
+		
 		if ( actualRowsWithContents == 0 ) {
-			return "Empty contents";
+			return new TermError(-1, -1, "Empty contents in term table");
 		}
 		
 		return null;

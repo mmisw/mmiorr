@@ -8,6 +8,7 @@ import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
 import org.mmisw.ontmd.gwt.client.util.Util;
+import org.mmisw.ontmd.gwt.client.voc2rdf.TermTable.TermError;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
 
@@ -452,29 +453,29 @@ public class VocabPanel extends VerticalPanel {
 	}
 	
 
-	String putValues(Map<String, String> values) {
+	CheckError putValues(Map<String, String> values) {
 
 		String fullTitle = fullTitleTb.getText().trim();
 		if ( fullTitle.length() == 0 ) {
-			return "Please, specify a title for the vocabulary";
+			return new CheckError("Please, specify a title for the vocabulary");
 		}
 		values.put("fullTitle", fullTitle);
 		
 		String creator = creatorTb.getText().trim();
 		if ( creator.length() == 0 ) {
-			return "Please, specify the creator of the vocabulary";
+			return new CheckError("Please, specify the creator of the vocabulary");
 		}
 		values.put("creator", creator);
 		
 		String briefDescription = descriptionTb.getText().trim();
 		if ( briefDescription.length() == 0 ) {
-			return "Please, specify the brief description of the vocabulary";
+			return new CheckError("Please, specify the brief description of the vocabulary");
 		}
 		values.put("briefDescription", briefDescription);
 		
 		String authority = authorityField.getValue();
 		if ( authority.length() == 0 ) {
-			return "Please, specify the authority abbreviation";
+			return new CheckError("Please, specify the authority abbreviation");
 		}
 		values.put("authority", authority);
 		
@@ -489,7 +490,7 @@ public class VocabPanel extends VerticalPanel {
 
 
 		
-		String err = classPanel.putValues(values);
+		CheckError err = classPanel.putValues(values);
 		if ( err != null ) {
 			return err;
 		}
@@ -532,6 +533,16 @@ public class VocabPanel extends VerticalPanel {
 		ontologyUriPanel.update();
 	}
 	
+	static class CheckError {
+		String msg;
+		CheckError(String msg) {
+			super();
+			this.msg = msg;
+		}
+		public String toString() {
+			return msg;
+		}
+	}
 	
 	/**
 	 * Runs the "test conversion" on the vocabulary contents and with
@@ -541,10 +552,10 @@ public class VocabPanel extends VerticalPanel {
 		Map<String, String> values = new HashMap<String, String>();
 
 		// error only possibly from the vocabPanel:
-		String error;
+		CheckError error;
 		if ( (error = putValues(values)) != null ) {
 			statusLabel.setHTML("<font color=\"red\">" + error+ "</font>");
-			mainPanel.conversionError(error);
+			mainPanel.conversionError(error.msg);
 			return;
 		}
 		

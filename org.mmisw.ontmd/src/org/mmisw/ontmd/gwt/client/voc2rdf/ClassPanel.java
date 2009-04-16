@@ -11,6 +11,7 @@ import org.mmisw.ontmd.gwt.client.ResourceTypeWidget;
 import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
+import org.mmisw.ontmd.gwt.client.voc2rdf.VocabPanel.CheckError;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
 
 import com.google.gwt.user.client.Window;
@@ -244,13 +245,13 @@ public class ClassPanel extends VerticalPanel {
 		return primaryClass;
 	}
 
-	String putValues(Map<String, String> values) {
+	CheckError putValues(Map<String, String> values) {
 
 		// NOTE 3/21/09: take class name from the resourcetype field
 //		String primaryClass = classNameTb.getText().trim();
 		String primaryClass = getClassName();
 		if ( primaryClass.length() == 0 ) {
-			return "Please, select a class for the terms in your vocabulary";
+			return new CheckError("Please, select a class for the terms in your vocabulary");
 		}
 		
 		String classUri = resourceTypeWidget.getRelatedValue().trim();
@@ -258,7 +259,7 @@ public class ClassPanel extends VerticalPanel {
 			values.put("classUri", classUri);
 		}
 		
-		String error = termTable.check();
+		VocabPanel.CheckError error = termTable.check();
 
 		if ( error != null ) {
 			return error;

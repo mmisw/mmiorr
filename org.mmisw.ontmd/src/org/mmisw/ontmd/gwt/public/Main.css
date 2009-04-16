@@ -68,8 +68,8 @@ table.inline td {
 }
 
 .TermTable-header td {
-  min-width: 40px;
-  _width: 40px;  /* IE6 hack */
+  min-width: 25px;
+  _width: 25px;  /* IE6 hack */
   min-height: 20px;
   _height: 20px;   /* IE6 hack */
 }

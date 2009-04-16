@@ -3,6 +3,13 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-04-16
+	- Issue #118: "Difficult to fix errors reported by voc2rdf"
+		As an additional improvement, now the affected cell is focused automatically.
+		
+	- Other various GUI improvements to voc2rdf, including an icon for the popup menu associated
+	  with the control columns and rows (previously those menus were not apparent). 
+		
 2009-04-14
 	Issue #124: Keep colons in values
 		- Now colons are ONLY kept (not replaced with underscores) for the *term IDs* in voc2rdf;
