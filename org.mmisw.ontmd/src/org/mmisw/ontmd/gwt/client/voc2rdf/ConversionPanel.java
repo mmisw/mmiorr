@@ -23,13 +23,10 @@ public class ConversionPanel extends VerticalPanel {
 		GWT.isScript() ? "/ontmd/download" : "/ontmd/download";
 
 	
-	private Voc2RdfMainPanel mainPanel;
-	
 	private  HTML html = new HTML(); 
 	
 	
 	ConversionPanel(Voc2RdfMainPanel mainPanel) {
-		this.mainPanel = mainPanel;
 		setWidth("850px");
 		this.setSpacing(6);
 		this.add(html);
