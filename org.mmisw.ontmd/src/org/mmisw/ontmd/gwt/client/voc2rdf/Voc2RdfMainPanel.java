@@ -92,12 +92,15 @@ public class Voc2RdfMainPanel extends VerticalPanel {
 	}
 	
 	void conversionOk(ConversionResult conversionResult) {
-		conversionPanel.setText(conversionResult.getRdf());
-		conversionPanel.updateForm(conversionResult.getPathOnServer(), loginResult);
+		conversionPanel.updateForm(conversionResult, loginResult);
 		
 		final MyDialog popup = new MyDialog(conversionPanel);
 		popup.setText("Conversion complete");
 		popup.center();
+		
+		vocabPanel.statusPanel.setWaiting(false);
+		vocabPanel.statusPanel.setHTML("<font color=\"green\">" + "Conversion complete" + "</font>");
+
 		popup.show();
 	}
 

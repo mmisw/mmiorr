@@ -8,10 +8,10 @@ import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
 import org.mmisw.ontmd.gwt.client.util.Util;
-import org.mmisw.ontmd.gwt.client.voc2rdf.TermTable.TermError;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
@@ -58,8 +58,32 @@ public class VocabPanel extends VerticalPanel {
 	
 	private ClassPanel classPanel;
 	
+	static class StatusPanel {
+		private HorizontalPanel hp = new HorizontalPanel();
+		private HTML waitingHtml = new HTML();
+		private HTML statusLabel = new HTML();
+
+		StatusPanel() {
+			hp.add(waitingHtml);
+			hp.add(statusLabel);
+		}
+		void setWaiting(boolean waiting) {
+			waitingHtml.setHTML(waiting ? "<img src=\"" +GWT.getModuleBaseURL()+ "images/loading.gif\">" : "");
+		}
+		void setText(String text) {
+			statusLabel.setText(text);
+		}
+
+		void setHTML(String html) {
+			statusLabel.setHTML(html);
+		}
+
+		Widget getWidget() {
+			return hp;
+		}
+	}
 	
-	private HTML statusLabel = new HTML();
+	StatusPanel statusPanel = new StatusPanel();
 	private PushButton convertButton;
 
 
@@ -101,25 +125,25 @@ public class VocabPanel extends VerticalPanel {
 		
 		fullTitleTb = Util.createTextBoxBase(1, "700", new ChangeListener() {
 			public void onChange(Widget sender) {
-				statusLabel.setText("");
+				statusPanel.setText("");
 			}
 		});
 		
 		creatorTb = Util.createTextBoxBase(1, "700", new ChangeListener() {
 			public void onChange(Widget sender) {
-				statusLabel.setText("");
+				statusPanel.setText("");
 			}
 		});
 		
 		descriptionTb = Util.createTextBoxBase(4, "700", new ChangeListener() {
 			public void onChange(Widget sender) {
-				statusLabel.setText("");
+				statusPanel.setText("");
 			}
 		});
 		
 		ChangeListener cl = new ChangeListener () {
 			public void onChange(Widget sender) {
-				statusLabel.setText("");
+				statusPanel.setText("");
 			}
 		};
 		authorityField = new FieldWithChoose(authorityAttrDef, cl);
@@ -440,7 +464,7 @@ public class VocabPanel extends VerticalPanel {
 	private CellPanel createConvertButton() {
 		CellPanel panel = new HorizontalPanel();
 		panel.setSpacing(2);
-		panel.add(statusLabel);
+		panel.add(statusPanel.getWidget());
 		convertButton = new PushButton("Convert to RDF", new ClickListener() {
 			public void onClick(Widget sender) {
 				convert2Rdf();
@@ -505,7 +529,7 @@ public class VocabPanel extends VerticalPanel {
 		&&  ! Window.confirm("This action will replace the current values") ) {
 			return;
 		}
-		statusLabel.setText("");
+		statusPanel.setText("");
 		
 		fullTitleTb.setText("");
 		creatorTb.setText("");
@@ -522,7 +546,7 @@ public class VocabPanel extends VerticalPanel {
 			return;
 		}
 		
-		statusLabel.setText("");
+		statusPanel.setText("");
 		
 		fullTitleTb.setText(fullTitleAttrDef.getExample());
 		creatorTb.setText(creatorAttrDef.getExample());
@@ -551,19 +575,24 @@ public class VocabPanel extends VerticalPanel {
 	void convert2Rdf() {
 		Map<String, String> values = new HashMap<String, String>();
 
+		statusPanel.setWaiting(true);
+		statusPanel.setHTML(" <font color=\"blue\">" + "Checking ..." + "</font>");
+		enable(false);
+
 		// error only possibly from the vocabPanel:
 		CheckError error;
 		if ( (error = putValues(values)) != null ) {
-			statusLabel.setHTML("<font color=\"red\">" + error+ "</font>");
+			statusPanel.setWaiting(false);
+			statusPanel.setHTML("<font color=\"red\">" + error+ "</font>");
 			mainPanel.conversionError(error.msg);
+			enable(true);
 			return;
 		}
 		
-		statusLabel.setHTML("<font color=\"blue\">" + "Converting ..." + "</font>");
-		enable(false);
+		statusPanel.setHTML("<font color=\"blue\">" + "Converting ..." + "</font>");
 		mainPanel.converting();
 		
-		Main.log("convert2Rdf: values = " +values);
+//		Main.log("convert2Rdf: values = " +values);
 
 		// do test conversion
 		AsyncCallback<ConversionResult> callback = new AsyncCallback<ConversionResult>() {
@@ -574,7 +603,8 @@ public class VocabPanel extends VerticalPanel {
 				}
 				Main.log("convertTest: error: " +error);
 				mainPanel.conversionError(error);
-				statusLabel.setHTML("<font color=\"red\">" +"Error"+ "</font>");
+				statusPanel.setWaiting(false);
+				statusPanel.setHTML("<font color=\"red\">" +"Error"+ "</font>");
 				enable(true);
 			}
 
@@ -582,15 +612,13 @@ public class VocabPanel extends VerticalPanel {
 				String error = conversionResult.getError();
 				if ( error != null ) {
 					Main.log("convertTest: error: " +error);
-//					statusLabel.setHTML("<font color=\"red\">" +"Error"+ "</font>");
-					statusLabel.setHTML("<font color=\"red\">" +error+ "</font>");
+					statusPanel.setWaiting(false);
+					statusPanel.setHTML("<font color=\"red\">" +error+ "</font>");
 					mainPanel.conversionError(error);
 				}
 				else {
-					Main.log("convertTest: OK: " +conversionResult.getRdf());
-					statusLabel.setHTML("<font color=\"green\">" + "Conversion complete" + "</font>");
+					Main.log("convert2Rdf: OK");
 					mainPanel.conversionOk(conversionResult);
-					statusLabel.setText("");
 				}
 				enable(true);
 			}
@@ -598,7 +626,6 @@ public class VocabPanel extends VerticalPanel {
 
 		Main.log("convertTest: converting ... ");
 		
-//		Voc2Rdf.voc2rdfService.convert(values, callback);
 		Main.ontmdService.convert2Rdf(values, callback);
 
 	}

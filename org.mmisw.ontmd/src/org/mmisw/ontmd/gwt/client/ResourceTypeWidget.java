@@ -197,7 +197,7 @@ public class ResourceTypeWidget extends VerticalPanel {
 		
 	}
 	
-	void enable(boolean enabled) {
+	public void enable(boolean enabled) {
 		if ( resourceTypeAttrDef != null ) {
 			resourceTypeFieldWithChoose.enable(enabled);
 			resourceTypeRelatedField.setEnabled(enabled);

@@ -685,6 +685,7 @@ public class ClassPanel extends VerticalPanel {
 	
 	
 	void enable(boolean enabled) {
+		resourceTypeWidget.enable(enabled);
 		importCsvButton.setEnabled(enabled);
 		exportCsvButton.setEnabled(enabled);
 	}
