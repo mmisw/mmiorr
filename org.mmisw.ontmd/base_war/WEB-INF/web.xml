@@ -117,4 +117,15 @@
 		<url-pattern>/upload</url-pattern>
 	</servlet-mapping>
 
+	<servlet>
+		<servlet-name>download</servlet-name>
+		<servlet-class>org.mmisw.ontmd.gwt.server.DownloadServlet</servlet-class>
+		<load-on-startup>4</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>download</servlet-name>
+		<url-pattern>/download</url-pattern>
+	</servlet-mapping>
+
 </web-app>
