@@ -532,30 +532,27 @@ public class ClassPanel extends VerticalPanel {
 	 * Incremental command to create the resulting table.
 	 */
 	private class ImportCommand implements IncrementalCommand {
+		private static final int rowIncrement = 34;
+		
 		private char separator;
 		private String text;
 
 		private TermTable incrTermTable;
-		StringBuffer errorMsg = new StringBuffer();
 
-		// to check not repeated values for first column:
-		Set<String> usedFirstColValue = new HashSet<String>();
+		private int numHeaderCols;
 
-		boolean error = false;
-		List<String> headerCols;
-		int numHeaderCols;
+		private String[] lines;
 
-		String[] lines;
-
-		// row = row in termTable:
-		int rowInTermTable = -1;
+		private int rowInTermTable = -1;
 		
-		int currFromRow;
+		private int currFromRow;
 		
 		private HTML statusHtml;
+		
+		private boolean preDone;
 
 
-		public ImportCommand(char separator, String text, HTML statusHtml) {
+		ImportCommand(char separator, String text, HTML statusHtml) {
 			assert text.length() > 0;
 			this.separator = separator;
 			this.text = text;
@@ -564,50 +561,35 @@ public class ClassPanel extends VerticalPanel {
 
 
 		public boolean execute() {
+			if ( preDone ) {
+				done();
+				return false;
+			}
+				
 			if ( incrTermTable == null ) {
+				// first step.
+				
 				lines = text.split("\n|\r\n|\r");
 				if ( lines.length == 0 || lines[0].trim().length() == 0 ) {
-					errorMsg.append("Empty vocabulary contents");
 					// A 1-column table to allow the user to insert columns (make column menu will be available)
 					incrTermTable =  new TermTable(1);
-					done();
-					return false;
+					preDone();
+					return true;
 				}
 				
 				List<String> headerCols = parseLine(lines[0], separator);
-				final int numHeaderCols = headerCols.size();
+				numHeaderCols = headerCols.size();
 				incrTermTable = new TermTable(numHeaderCols);
 				
 				// header:
-				// to check not repeated column headers
-				Set<String> usedColHeader = new HashSet<String>();
 				for ( int c = 0; c < numHeaderCols; c++ ) {
 					String str = headerCols.get(c).trim();
-					if ( str.length() == 0 ) {
-						if ( !error ) {
-							error = true;
-							errorMsg.append("empty column header: " +(c+1));
-						}
-					}
-					else if ( usedColHeader.contains(str) ) {
-						if ( !error ) {
-							error = true;
-							errorMsg.append("repeated column header: " +str);
-						}
-					}
-					else {
-						usedColHeader.add(str);
-					}
 					incrTermTable.setHeader(c, str);
 				}		
 				
 				if ( lines.length  == 1 ) {
-					if ( !error ) {
-						error = true;
-						errorMsg.append("Only a header line is included");
-					}
-					done();
-					return false;
+					preDone();
+					return true;
 				}
 				
 				// row = row in termTable:
@@ -616,22 +598,31 @@ public class ClassPanel extends VerticalPanel {
 				currFromRow = 1;
 			}
 
-			final int rowIncrement = 20;
+			// add a chunk of rows:
 			if ( _addRows(currFromRow, currFromRow + rowIncrement) ) {
-				done();
-				return false;
+				preDone();
 			}
 			else {
-				statusHtml.setHTML("<font color=\"blue\">" + "Importing ... (" +currFromRow+ ")" + "</font>");
+				updateStatus();
 				currFromRow += rowIncrement;
-				return true;
 			}
+			return true;
+		}
+		
+		private void updateStatus() {
+			statusHtml.setHTML("<font color=\"blue\">Importing ... (" +
+					(1+rowInTermTable)+ ")" + "</font>");
+		}
+		
+		private void preDone() {
+			updateStatus();
+			preDone = true;
+			termTable = incrTermTable;
 		}
 		
 		private void done() {
-			termTable = incrTermTable;
-			tableScroll.setWidget(incrTermTable);
-			incrTermTable.setScrollPanel(tableScroll);
+			tableScroll.setWidget(termTable);
+			termTable.setScrollPanel(tableScroll);
 
 			vocabPanel.statusPanel.setWaiting(false);
 			vocabPanel.statusPanel.setHTML("");
@@ -640,10 +631,10 @@ public class ClassPanel extends VerticalPanel {
 		
 		
 		private boolean _addRows(int fromRow, int toRow) {
-			int r = fromRow;
-			for ( ; r < lines.length && r < toRow; r++ ) {
+			int rr = fromRow;
+			for ( ; rr < lines.length && rr < toRow; rr++ ) {
 				
-				List<String> cols = parseLine(lines[r], separator);
+				List<String> cols = parseLine(lines[rr], separator);
 				final int numCols = cols.size();
 
 				// skip empty line
@@ -662,54 +653,21 @@ public class ClassPanel extends VerticalPanel {
 				incrTermTable.addRow(numCols);
 				for ( int c = 0; c < numCols; c++ ) {
 					String str = cols.get(c).trim();
-					
-					if ( c == 0 ) {
-						if ( str.length() == 0 ) {
-							if ( !error ) {
-								error = true;
-								errorMsg.append("Empty key in first column, line " +r);
-							}
-						}
-						
-						else if ( usedFirstColValue.contains(str) ) {
-							if ( !error ) {
-								error = true;
-								errorMsg.append("repeated key in first column: " +str+ ", line " +r);
-							}
-						}
-						else {
-							usedFirstColValue.add(str);
-						}
-					}
-					
-					if ( c < numHeaderCols ) {
-						incrTermTable.setCell(rowInTermTable, c, str);
-					}
-					else {
-						// more columns than expected
-						if ( !error ) {
-							error = true;
-							errorMsg.append("more columns than expected, line " +r);
-						}
-						incrTermTable.setCell(rowInTermTable, c, str);
-					}
+					incrTermTable.setCell(rowInTermTable, c, str);
 				}
 				
 				// any missing columns? 
 				if ( numCols < numHeaderCols ) {
-					
 					for ( int c = numCols; c < numHeaderCols; c++ ) {
 						incrTermTable.setCell(rowInTermTable, c, "");
 					}
 				}
-				
 			}
 			
-			return r >= lines.length;   // DONE
+			return rr >= lines.length;   // DONE
 		}
-
-		
 	}
+
 	/**
 	 * Dispatches the "import" action.
 	 */
