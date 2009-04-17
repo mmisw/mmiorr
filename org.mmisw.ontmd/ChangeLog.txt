@@ -12,6 +12,8 @@ ChangeLog
 	  Also, simple conversion panel layout and new "download" button instead of embedding the
 	  resulting RDF contents in the window. This provides: 1) simpler interface (issue #75), 
 	  and 2) less memory consumption on the client.
+	  
+	- Incremental import so the GUI is responsive when importing big files.
 		
 2009-04-14
 	Issue #124: Keep colons in values

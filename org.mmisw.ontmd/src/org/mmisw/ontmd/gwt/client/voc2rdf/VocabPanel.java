@@ -64,6 +64,8 @@ public class VocabPanel extends VerticalPanel {
 		private HTML statusLabel = new HTML();
 
 		StatusPanel() {
+			hp.setSpacing(4);
+			hp.setVerticalAlignment(ALIGN_MIDDLE);
 			hp.add(waitingHtml);
 			hp.add(statusLabel);
 		}
@@ -257,7 +259,7 @@ public class VocabPanel extends VerticalPanel {
 		row++;
 
 
-		classPanel = new ClassPanel(mainPanel);
+		classPanel = new ClassPanel(this);
 		TabPanel tabPanel = new TabPanel();
 		tabPanel.add(classPanel, "Vocabulary");
 		tabPanel.selectTab(0);
@@ -630,7 +632,8 @@ public class VocabPanel extends VerticalPanel {
 
 	}
 
-	private void enable(boolean enabled) {
+	void enable(boolean enabled) {
+		authorityField.enable(enabled);
 		convertButton.setEnabled(enabled);
 		exampleButton.setEnabled(enabled);
 		resetButton.setEnabled(enabled);

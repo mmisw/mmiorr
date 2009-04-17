@@ -14,6 +14,9 @@ import org.mmisw.ontmd.gwt.client.util.TLabel;
 import org.mmisw.ontmd.gwt.client.voc2rdf.VocabPanel.CheckError;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
 
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.IncrementalCommand;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -109,16 +112,15 @@ public class ClassPanel extends VerticalPanel {
 
 	private ScrollPanel tableScroll = new ScrollPanel();
 	
-	private HTML statusLabel = new HTML();
-
 	private TermTable termTable;
 	
 	private PushButton importCsvButton;
 	private PushButton exportCsvButton;
 	
-
+	private VocabPanel vocabPanel;
 	
-	ClassPanel(Voc2RdfMainPanel mainPanel) {
+	ClassPanel(VocabPanel vocabPanel) {
+		this.vocabPanel = vocabPanel;
 		setWidth("1000");
 
 		resourceTypeAttrDef = Voc2Rdf.baseInfo.getResourceTypeAttrDef();
@@ -162,7 +164,7 @@ public class ClassPanel extends VerticalPanel {
 		resourceTypeWidget = new ResourceTypeWidget(resourceTypeAttrDef, editing, 
 				new ChangeListener () {
 					public void onChange(Widget sender) {
-						statusLabel.setText("");
+//						statusLabel.setText("");
 					}
 				}
 		);
@@ -292,7 +294,7 @@ public class ClassPanel extends VerticalPanel {
 		TermTable tt = createTermTable(',', contents, errorMsg);
 		
 		if ( errorMsg.length() > 0 ) {
-			statusLabel.setHTML("<font color=\"red\">" +errorMsg+ "</font>");
+//			statusLabel.setHTML("<font color=\"red\">" +errorMsg+ "</font>");
 			return;
 		}
 		
@@ -519,12 +521,195 @@ public class ClassPanel extends VerticalPanel {
 
 
 	void reset() {
-		statusLabel.setText("");
+//		statusLabel.setText("");
 
 		resourceTypeWidget.reset();
 		updateContents(CONTENTS_DEFAULT);
 	}
 
+	
+	/**
+	 * Incremental command to create the resulting table.
+	 */
+	private class ImportCommand implements IncrementalCommand {
+		private char separator;
+		private String text;
+
+		private TermTable incrTermTable;
+		StringBuffer errorMsg = new StringBuffer();
+
+		// to check not repeated values for first column:
+		Set<String> usedFirstColValue = new HashSet<String>();
+
+		boolean error = false;
+		List<String> headerCols;
+		int numHeaderCols;
+
+		String[] lines;
+
+		// row = row in termTable:
+		int rowInTermTable = -1;
+		
+		int currFromRow;
+		
+		private HTML statusHtml;
+
+
+		public ImportCommand(char separator, String text, HTML statusHtml) {
+			assert text.length() > 0;
+			this.separator = separator;
+			this.text = text;
+			this.statusHtml = statusHtml;
+		}
+
+
+		public boolean execute() {
+			if ( incrTermTable == null ) {
+				lines = text.split("\n|\r\n|\r");
+				if ( lines.length == 0 || lines[0].trim().length() == 0 ) {
+					errorMsg.append("Empty vocabulary contents");
+					// A 1-column table to allow the user to insert columns (make column menu will be available)
+					incrTermTable =  new TermTable(1);
+					done();
+					return false;
+				}
+				
+				List<String> headerCols = parseLine(lines[0], separator);
+				final int numHeaderCols = headerCols.size();
+				incrTermTable = new TermTable(numHeaderCols);
+				
+				// header:
+				// to check not repeated column headers
+				Set<String> usedColHeader = new HashSet<String>();
+				for ( int c = 0; c < numHeaderCols; c++ ) {
+					String str = headerCols.get(c).trim();
+					if ( str.length() == 0 ) {
+						if ( !error ) {
+							error = true;
+							errorMsg.append("empty column header: " +(c+1));
+						}
+					}
+					else if ( usedColHeader.contains(str) ) {
+						if ( !error ) {
+							error = true;
+							errorMsg.append("repeated column header: " +str);
+						}
+					}
+					else {
+						usedColHeader.add(str);
+					}
+					incrTermTable.setHeader(c, str);
+				}		
+				
+				if ( lines.length  == 1 ) {
+					if ( !error ) {
+						error = true;
+						errorMsg.append("Only a header line is included");
+					}
+					done();
+					return false;
+				}
+				
+				// row = row in termTable:
+				rowInTermTable = -1;
+
+				currFromRow = 1;
+			}
+
+			final int rowIncrement = 20;
+			if ( _addRows(currFromRow, currFromRow + rowIncrement) ) {
+				done();
+				return false;
+			}
+			else {
+				statusHtml.setHTML("<font color=\"blue\">" + "Importing ... (" +currFromRow+ ")" + "</font>");
+				currFromRow += rowIncrement;
+				return true;
+			}
+		}
+		
+		private void done() {
+			termTable = incrTermTable;
+			tableScroll.setWidget(incrTermTable);
+			incrTermTable.setScrollPanel(tableScroll);
+
+			vocabPanel.statusPanel.setWaiting(false);
+			vocabPanel.statusPanel.setHTML("");
+			vocabPanel.enable(true);
+		}
+		
+		
+		private boolean _addRows(int fromRow, int toRow) {
+			int r = fromRow;
+			for ( ; r < lines.length && r < toRow; r++ ) {
+				
+				List<String> cols = parseLine(lines[r], separator);
+				final int numCols = cols.size();
+
+				// skip empty line
+				boolean empty = true;
+				for ( int c = 0; empty && c < numCols; c++ ) {
+					String str = cols.get(c).trim();
+					if ( str.length() > 0 ) {
+						empty = false;
+					}
+				}
+				if ( empty ) {
+					continue;
+				}
+				
+				rowInTermTable++;
+				incrTermTable.addRow(numCols);
+				for ( int c = 0; c < numCols; c++ ) {
+					String str = cols.get(c).trim();
+					
+					if ( c == 0 ) {
+						if ( str.length() == 0 ) {
+							if ( !error ) {
+								error = true;
+								errorMsg.append("Empty key in first column, line " +r);
+							}
+						}
+						
+						else if ( usedFirstColValue.contains(str) ) {
+							if ( !error ) {
+								error = true;
+								errorMsg.append("repeated key in first column: " +str+ ", line " +r);
+							}
+						}
+						else {
+							usedFirstColValue.add(str);
+						}
+					}
+					
+					if ( c < numHeaderCols ) {
+						incrTermTable.setCell(rowInTermTable, c, str);
+					}
+					else {
+						// more columns than expected
+						if ( !error ) {
+							error = true;
+							errorMsg.append("more columns than expected, line " +r);
+						}
+						incrTermTable.setCell(rowInTermTable, c, str);
+					}
+				}
+				
+				// any missing columns? 
+				if ( numCols < numHeaderCols ) {
+					
+					for ( int c = numCols; c < numHeaderCols; c++ ) {
+						incrTermTable.setCell(rowInTermTable, c, "");
+					}
+				}
+				
+			}
+			
+			return r >= lines.length;   // DONE
+		}
+
+		
+	}
 	/**
 	 * Dispatches the "import" action.
 	 */
@@ -569,34 +754,34 @@ public class ClassPanel extends VerticalPanel {
 
 		PushButton importButton = new PushButton("Import", new ClickListener() {
 			public void onClick(Widget sender) {
-				String text = textArea.getText().trim();
+				final String text = textArea.getText().trim();
 				if ( text.length() == 0 ) {
 					status.setHTML("<font color=\"red\">Empty contents</font>");
 					return;
 				}
 				
-				char separator = separatorPanel.separator.charAt(0);
-				
-				StringBuffer errorMsg = new StringBuffer();
-				TermTable tt = createTermTable(separator, text, errorMsg);
-				
-				// 118: "Difficult to fix errors reported by voc2rdf"
-				// Yes, this is difficult in the popup itself.
-				// Fix: just let the table be updated; then the user can continue editing; the system
-				// will make the error checking when attempting the "Convert to RDF action", anyway.
-				//
-//				if ( errorMsg.length() > 0 ) {
-//					status.setHTML("<font color=\"red\">" +errorMsg+ "</font>");
-//					return;
-//				}
-				
-				// OK:
-				if ( Window.confirm("This action will update the term table. (Previous contents will be discarded.)") ) {
-					termTable = tt;
-					tableScroll.setWidget(termTable);
-					termTable.setScrollPanel(tableScroll);
-					popup.hide();
+				if ( ! Window.confirm("This action will update the term table. (Previous contents will be discarded.)") ) {
+					return;
 				}
+					
+				popup.hide();
+				String importingHtml = "<font color=\"blue\">" + "Importing ..." + "</font>";
+				HTML statusHtml = new HTML(importingHtml);
+				tableScroll.setWidget(statusHtml);
+				termTable = null;
+				vocabPanel.statusPanel.setWaiting(true);
+				vocabPanel.statusPanel.setHTML(importingHtml);
+				vocabPanel.enable(false);
+
+				char separator = separatorPanel.separator.charAt(0);
+				final ImportCommand importCommand = new ImportCommand(separator, text, statusHtml);
+				
+				// the timer is to give the popup a chance to actually disappear.
+				new Timer() {
+					public void run() {
+						DeferredCommand.addCommand(importCommand);
+					}
+				}.schedule(1000);
 			}
 		});
 		
@@ -676,7 +861,7 @@ public class ClassPanel extends VerticalPanel {
 	}
 
 	void example() {
-		statusLabel.setText("");
+//		statusLabel.setText("");
 
 		resourceTypeWidget.setExample();
 
