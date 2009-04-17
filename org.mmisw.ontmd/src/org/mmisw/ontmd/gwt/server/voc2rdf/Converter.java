@@ -54,8 +54,14 @@ public class Converter {
 	// To set TransProperties.NS
 	private String finalUri;
 	
+	private String finalShortName;
+	
 	public String getFinalUri() {
 		return finalUri;
+	}
+
+	public String getFinalShortName() {
+		return finalShortName;
 	}
 
 
@@ -469,7 +475,8 @@ public class Converter {
 				finalUri +=  "/" + version;
 			}
 			
-			finalUri += "/" + getPrimaryClass().toLowerCase().replace(':', '_');
+			finalShortName = getPrimaryClass().toLowerCase().replace(':', '_');
+			finalUri += "/" + finalShortName;
 		}
 		
 		// see createProperties()

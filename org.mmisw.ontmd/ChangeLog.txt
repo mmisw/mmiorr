@@ -7,8 +7,11 @@ ChangeLog
 	- Issue #118: "Difficult to fix errors reported by voc2rdf"
 		As an additional improvement, now the affected cell is focused automatically.
 		
-	- Other various GUI improvements to voc2rdf, including an icon for the popup menu associated
+	- Various GUI improvements to voc2rdf, including an icon for the popup menu associated
 	  with the control columns and rows (previously those menus were not apparent). 
+	  Also, simple conversion panel layout and new "download" button instead of embedding the
+	  resulting RDF contents in the window. This provides: 1) simpler interface (issue #75), 
+	  and 2) less memory consumption on the client.
 		
 2009-04-14
 	Issue #124: Keep colons in values

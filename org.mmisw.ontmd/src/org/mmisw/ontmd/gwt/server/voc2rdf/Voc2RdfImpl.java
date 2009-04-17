@@ -150,9 +150,12 @@ public class Voc2RdfImpl  {
 		else {
 			String finalUri = ontConverter.getFinalUri();
 			conversionResult.setFinalUri(finalUri);
+			conversionResult.setFinalShortName(ontConverter.getFinalShortName());
 			conversionResult.setPathOnServer(ontConverter.getPathOnServer());
-			String rdf = ontConverter.getOntologyStringXml();
-			conversionResult.setRdf(rdf);
+			
+			// RDF string no longer sent to client (there is a new "download" action)
+//			String rdf = ontConverter.getOntologyStringXml();
+//			conversionResult.setRdf(rdf);
 		}
 
 		return conversionResult;
