@@ -9,14 +9,28 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class ConversionResult implements IsSerializable {
 
 	private String error = null;
-	private String rdf = "";
 	
+//	RDF string no longer sent to client (there is now a "download" action)
+//	private String rdf = "";
+//	public String getRdf() {
+//		return rdf;
+//	}
+//	public void setRdf(String rdf) {
+//		this.rdf = rdf;
+//	}
+
+
+	private String finalShortName;
 	private String finalUri;
 	private String pathOnServer;
 	
 	public ConversionResult () {
 	}
 	
+	
+	public void setFinalShortName(String finalShortName) {
+		this.finalShortName = finalShortName;
+	}
 	
 	public void setFinalUri(String finalNamespace) {
 		this.finalUri = finalNamespace;
@@ -26,8 +40,8 @@ public class ConversionResult implements IsSerializable {
 		return finalUri;
 	}
 
-	public String getRdf() {
-		return rdf;
+	public String getFinalShortName() {
+		return finalShortName;
 	}
 
 	public String getError() {
@@ -36,10 +50,6 @@ public class ConversionResult implements IsSerializable {
 
 	public void setError(String error) {
 		this.error = error;
-	}
-
-	public void setRdf(String rdf) {
-		this.rdf = rdf;
 	}
 
 
