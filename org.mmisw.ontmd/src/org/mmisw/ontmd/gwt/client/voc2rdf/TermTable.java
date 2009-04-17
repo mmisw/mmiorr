@@ -4,20 +4,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.mmisw.ontmd.gwt.client.Main;
-import org.mmisw.ontmd.gwt.client.util.Util;
 import org.mmisw.ontmd.gwt.client.voc2rdf.VocabPanel.CheckError;
 
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.DecoratedPopupPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
@@ -26,7 +21,6 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
@@ -46,8 +40,6 @@ public class TermTable extends VerticalPanel {
 	
 	private ScrollPanel scrollPanel;
 	private final FlexTable flexTable = new FlexTable();
-	private PopupPanel popup;
-	private TextBoxBase textBox;
 	private int currRow;
 	private int currCol;
 	private TableCell currCell;
@@ -76,7 +68,6 @@ public class TermTable extends VerticalPanel {
 
 		_setCell(HEADER_ROW, 0, "");
 
-		_preparePopUp();
 		_updateStyles(1);
 		_updatePositions(0, 0);
 	}
@@ -167,10 +158,6 @@ public class TermTable extends VerticalPanel {
 				hp.add(img);
 			}
 			
-			
-//			PushButton bt = new PushButton(img);
-//			bt.setText(text);
-//			_setWidget(row, col, bt);
 		}
 		else {
 			_setWidget(row, col, new HTML(text));
@@ -195,33 +182,6 @@ public class TermTable extends VerticalPanel {
 		_updateControlColumns(flexTable.getCellCount(0) - 1);
 	}
 
-	/**
-	 * 
-	 */
-	private void _preparePopUp() {
-		popup = new DecoratedPopupPanel(true, true) {
-			public boolean onKeyUpPreview(char keyCode, int modifiers) {
-				if ( keyCode == KeyboardListener.KEY_ESCAPE
-				||  keyCode == KeyboardListener.KEY_ENTER 
-				) {
-					hide();
-					currCell.setFocus(true);
-					return false;
-				}
-				return true;
-			}
-		};
-		popup.setWidth("250");
-		textBox = Util.createTextBoxBase(1, "250", null);
-		popup.setWidget(textBox);
-		
-		textBox.addChangeListener(new ChangeListener() {
-			public void onChange(Widget sender) {
-				currCell.setText(textBox.getText());
-				currCell.setFocus(true);
-			}
-		});
-	}
 
 	/**
 	 * @param col 
@@ -394,30 +354,6 @@ public class TermTable extends VerticalPanel {
 	}
 
 	
-	/**
-	 * 
-	 */
-	private void _editCell(boolean show) {
-		int left = currCell.getAbsoluteLeft();
-		int top = currCell.getAbsoluteTop();
-
-		textBox.setText(currCell.getText());
-		
-		popup.setPopupPosition(left, top);
-		
-		if ( show ) {
-			new Timer() { @Override
-				public void run() {
-					textBox.setFocus(true);
-				}
-			}.schedule(180);
-			
-			popup.show();
-		}
-		else {
-			textBox.setFocus(true);
-		}
-	}
 
 	/**
 	 * Gets the contents in CSV format.
@@ -659,12 +595,6 @@ public class TermTable extends VerticalPanel {
 							contents.setReadOnly(false);
 							contents.addStyleDependentName("focusedEdit");
 							int len = contents.getText().length();
-							
-							
-//							int vislen = contents.getVisibleLength();
-//							if ( vislen < len ) {
-//								contents.setVisibleLength(len);
-//							}
 							
 							contents.setCursorPos(len);
 							
