@@ -1,5 +1,7 @@
 package org.mmisw.vine.core;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -38,6 +40,21 @@ public class Util {
 		"        ?instance rdf:type ?class . }"
 	;
 	
+	/** Query to obtain the classes in a model */
+	private static final String PROPERTIES_QUERY =
+		"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
+		"SELECT ?prop " +
+		"WHERE { ?prop rdf:type rdf:Property . }"
+	;
+	
+	/** Query to obtain the classes in a model */
+	private static final String CLASSES_QUERY =
+		"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
+		"PREFIX owl: <http://www.w3.org/2002/07/owl#>" +
+		"SELECT ?class " +
+		"WHERE { ?class rdf:type owl:Class . }"
+	;
+	
 	/** Query template to obtain all properties associated with an entity */
 	private static final String PROPS_QUERY_TEMPLATE =
 		"SELECT ?prop ?value " +
@@ -50,34 +67,26 @@ public class Util {
 
 		List<EntityInfo> entities = new ArrayList<EntityInfo>();
 		
-		// classes:
-		addClasses(entities, ontModel, ontologyUri);
-
 		// individuals:
 		addIndividuals(entities, ontModel, ontologyUri);
 
 		// properties:
 		addProperties(entities, ontModel, ontologyUri);
 
+		// classes:
+		addClasses(entities, ontModel, ontologyUri);
+
 		ontologyInfo.setEntities(entities);
 		return ontologyInfo;
 	}
 	
 	
-	private static void addProperties(List<EntityInfo> entities,
-			OntModel ontModel, String ontologyUri) {
-		// TODO addProperties
-		
-	}
-
-
-	private static void addClasses(List<EntityInfo> entities,
-			OntModel ontModel, String ontologyUri) {
-		// TODO addClasses
-		
-	}
-
-
+	/**
+	 * Adds the individuals defined in the model to the given list.
+	 * @param entities
+	 * @param ontModel
+	 * @param ontologyUri
+	 */
 	private static void addIndividuals(List<EntityInfo> entities,
 			OntModel ontModel, String ontologyUri) {
 		
@@ -90,11 +99,11 @@ public class Util {
 			QuerySolution sol = results.nextSolution();
 			Iterator<?> varNames = sol.varNames();
 			while ( varNames.hasNext() ) {
-				String varName = varNames.next().toString();
-				String entityUri = sol.get(varName).toString();
+				String varName = String.valueOf(varNames.next());
+				String entityUri = String.valueOf(sol.get(varName));
 				
 				// is ontologyUri a prefix of entityUri?
-				if ( entityUri.indexOf(ontologyUri) == 0 ) {
+				if ( entityUri != null && entityUri.indexOf(ontologyUri) == 0 ) {
 					IndividualInfo entityInfo = new IndividualInfo();
 					String localName = entityUri.substring(ontologyUri.length());
 					entityInfo.setLocalName(localName);
@@ -107,8 +116,89 @@ public class Util {
 		}
 		
 	}
+
+	/**
+	 * Adds the properties defined in the model to the given list.
+	 * @param entities
+	 * @param ontModel
+	 * @param ontologyUri
+	 */
+	private static void addProperties(List<EntityInfo> entities,
+			OntModel ontModel, String ontologyUri) {
+
+		Query query = QueryFactory.create(PROPERTIES_QUERY);
+		QueryExecution qe = QueryExecutionFactory.create(query, ontModel);
+		
+		ResultSet results = qe.execSelect();
+		
+		while ( results.hasNext() ) {
+			QuerySolution sol = results.nextSolution();
+			Iterator<?> varNames = sol.varNames();
+			while ( varNames.hasNext() ) {
+				String varName = String.valueOf(varNames.next());
+				String entityUri = String.valueOf(sol.get(varName));
+				
+				// is ontologyUri a prefix of entityUri?
+				if ( entityUri != null && entityUri.indexOf(ontologyUri) == 0 ) {
+					IndividualInfo entityInfo = new IndividualInfo();
+					String localName = entityUri.substring(ontologyUri.length());
+					entityInfo.setLocalName(localName);
+					
+					_addProps(entityUri, entityInfo, ontModel);
+					
+					entities.add(entityInfo);
+				}
+			}
+		}
+		
+		
+	}
+
+
+	/**
+	 * Adds the classes defined in the model to the given list.
+	 * @param entities
+	 * @param ontModel
+	 * @param ontologyUri
+	 */
+	private static void addClasses(List<EntityInfo> entities,
+			OntModel ontModel, String ontologyUri) {
+
+		Query query = QueryFactory.create(CLASSES_QUERY);
+		QueryExecution qe = QueryExecutionFactory.create(query, ontModel);
+		
+		ResultSet results = qe.execSelect();
+		
+		while ( results.hasNext() ) {
+			QuerySolution sol = results.nextSolution();
+			Iterator<?> varNames = sol.varNames();
+			while ( varNames.hasNext() ) {
+				String varName = String.valueOf(varNames.next());
+				String entityUri = String.valueOf(sol.get(varName));
+				
+				// is ontologyUri a prefix of entityUri?
+				if ( entityUri !=null && entityUri.indexOf(ontologyUri) == 0 ) {
+					IndividualInfo entityInfo = new IndividualInfo();
+					String localName = entityUri.substring(ontologyUri.length());
+					entityInfo.setLocalName(localName);
+					
+					_addProps(entityUri, entityInfo, ontModel);
+					
+					entities.add(entityInfo);
+				}
+			}
+		}
+		
+	}
+
+
 	
-	// TODO complete
+	/**
+	 * Adds PropValue's to the entityInfo
+	 * @param entityUri
+	 * @param entityInfo
+	 * @param ontModel
+	 */
 	private static void _addProps(String entityUri, EntityInfo entityInfo, OntModel ontModel) {
 		String queryStr = PROPS_QUERY_TEMPLATE.replaceAll("\\{E\\}", entityUri);
 		Query query = QueryFactory.create(queryStr);
@@ -139,6 +229,14 @@ public class Util {
 					}
 					else {
 						propName = rdfNode.toString();
+						
+						// if propName looks like a URL, associate the link also:
+						try {
+							new URL(propName);
+							propUri = propName;
+						}
+						catch (MalformedURLException ignore) {
+						}
 					}
 				}
 				else if ( varName.equals("value") ) {
@@ -149,6 +247,13 @@ public class Util {
 					}
 					else {
 						valueName = rdfNode.toString();
+						// if valueName looks like a URL, associate the link also:
+						try {
+							new URL(valueName);
+							valueUri = valueName;
+						}
+						catch (MalformedURLException ignore) {
+						}
 					}
 				}
 			}

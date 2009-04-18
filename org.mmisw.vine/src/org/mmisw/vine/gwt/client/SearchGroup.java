@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.mmisw.vine.gwt.client.rpc.EntityInfo;
 import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
+import org.mmisw.vine.gwt.client.rpc.PropValue;
 import org.mmisw.vine.gwt.client.util.TLabel;
 
 import com.google.gwt.user.client.DOM;
@@ -127,8 +128,7 @@ public class SearchGroup extends VerticalPanel {
 		
 		// TODO get this flags from parameters
 		boolean useLocalName = true;
-		boolean useLabel = true;
-		boolean useComment = true;
+		boolean useProps = true;
 		
 		
 		List<EntityInfo> foundEntities = new ArrayList<EntityInfo>();
@@ -146,18 +146,19 @@ public class SearchGroup extends VerticalPanel {
 					add = true;
 				}
 				
-				// check label
-				if ( !add && useLabel ) {
-					String str = entityInfo.getDisplayLabel();
-					add = str != null && str.toLowerCase().indexOf(text) >= 0;
+				// check props
+				if ( !add && useProps ) {
+					List<PropValue> props = entityInfo.getProps();
+					for ( PropValue pv : props ) {
+						String str = pv.getValueName();
+						add = str != null && str.toLowerCase().indexOf(text) >= 0;
+						if ( add ) {
+							break;
+						}
+					}
 				}
 				
-				// check comment
-				if ( !add && useComment ) {
-					String str = entityInfo.getComment();
-					add = str != null && str.toLowerCase().indexOf(text) >= 0;
-				}
-				
+					
 				if ( add ) {
 					entityInfo.setCode(ont.getCode());
 					foundEntities.add(entityInfo);

@@ -277,10 +277,9 @@ public class SearchResultsForm extends VerticalPanel {
 			
 			int row = 0;
 			
-			flexPanel.setWidget(row, 0, new HTML("<b>URI</b>:"));
-			flexPanel.setWidget(row, 1, new HTML("<a target=\"_blank\" href=\"" +uri+ "\">" +uri+ "</a>"));
-			cf.setAlignment(row, 0, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE);
-			cf.setAlignment(row, 1, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE);
+			cf.setColSpan(row, 0, 2);
+			flexPanel.setWidget(row, 0, new HTML("<a target=\"_blank\" href=\"" +uri+ "\">" +uri+ "</a>"));
+			cf.setAlignment(row, 0, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP);
 			row++;
 			
 			
@@ -308,7 +307,7 @@ public class SearchResultsForm extends VerticalPanel {
 					html.setTitle(propUri);
 				}
 				flexPanel.setWidget(row, 0, html);
-				cf.setAlignment(row, 0, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE);
+				cf.setAlignment(row, 0, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);
 
 				
 				// column 1
@@ -330,7 +329,7 @@ public class SearchResultsForm extends VerticalPanel {
 					html.setTitle(valueUri);
 				}
 				flexPanel.setWidget(row, 1, html);
-				cf.setAlignment(row, 1, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE);
+				cf.setAlignment(row, 1, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP);
 
 				
 				row++;
