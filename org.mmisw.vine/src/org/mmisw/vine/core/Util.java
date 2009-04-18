@@ -43,8 +43,11 @@ public class Util {
 	/** Query to obtain the classes in a model */
 	private static final String PROPERTIES_QUERY =
 		"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
+		"PREFIX owl: <http://www.w3.org/2002/07/owl#>" +
 		"SELECT ?prop " +
-		"WHERE { ?prop rdf:type rdf:Property . }"
+		"WHERE {       { ?prop rdf:type rdf:Property }" +
+		        "UNION { ?prop rdf:type owl:DatatypeProperty  }" +
+		        "UNION { ?prop rdf:type owl:ObjectProperty } }"
 	;
 	
 	/** Query to obtain the classes in a model */

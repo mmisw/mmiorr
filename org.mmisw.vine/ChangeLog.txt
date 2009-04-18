@@ -5,7 +5,8 @@ ChangeLog
 
 2009-04-17
 	- Show associated properties and values for entities in the Search result form. 
-	- Besides individuals, search now also includes owl:classes and rdf:properties with the
+	- Besides individuals, search now also includes owl:classes, rdf:properties,
+	  owl:DatatypeProperty's, and owl:ObjectProperty's with the
 	  search string also applied on the values of any associated properties of those entities.
 	
 2009-04-06  1.5.0.alpha1
