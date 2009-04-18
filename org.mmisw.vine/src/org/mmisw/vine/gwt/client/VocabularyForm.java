@@ -20,7 +20,7 @@ public class VocabularyForm extends VerticalPanel {
 	private final SearchVocabularySelection vocabularySelection;
 	private final SearchGroup searchGroup;
 	private final SearchResultsForm searchResultsForm;
-	private final ResourceViewer resourceViewer;
+	final ResourceViewer resourceViewer;
 	
 	
 	VocabularyForm(int searchIndex) {

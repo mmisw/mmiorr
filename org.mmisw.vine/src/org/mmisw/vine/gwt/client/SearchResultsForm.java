@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mmisw.vine.gwt.client.rpc.EntityInfo;
+import org.mmisw.vine.gwt.client.rpc.PropValue;
 import org.mmisw.vine.gwt.client.util.SelectAllNonePanel;
 
 import com.google.gwt.user.client.ui.CellPanel;
@@ -17,14 +18,18 @@ import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.DisclosureEvent;
 import com.google.gwt.user.client.ui.DisclosureHandler;
 import com.google.gwt.user.client.ui.DisclosurePanel;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.MouseListenerAdapter;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 
 /**
  * The panel where the search results are displayed.
@@ -264,23 +269,74 @@ public class SearchResultsForm extends VerticalPanel {
 			String code = "" + entity.getCode();
 			String uri = Main.getWorkingUris().get(code).getUri() + name;
 			
-			String label = entity.getDisplayLabel();
-			String comment = entity.getComment();
 			
-			if ( label == null ) {
-				label = "";
-			}
-			if ( comment == null ) {
-				comment = "";
+			FlexTable flexPanel = new FlexTable();
+			flexPanel.setStylePrimaryName("DisclosureTable");
+			flexPanel.setCellSpacing(4);
+			FlexCellFormatter cf = flexPanel.getFlexCellFormatter();
+			
+			int row = 0;
+			
+			flexPanel.setWidget(row, 0, new HTML("<b>URI</b>:"));
+			flexPanel.setWidget(row, 1, new HTML("<a target=\"_blank\" href=\"" +uri+ "\">" +uri+ "</a>"));
+			cf.setAlignment(row, 0, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE);
+			cf.setAlignment(row, 1, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE);
+			row++;
+			
+			
+			List<PropValue> props = entity.getProps();
+			for ( PropValue pv : props ) {
+				
+				String htmlStr;
+				HTML html;
+				
+				// column 0
+				html = new HTML();
+				String propName = pv.getPropName();
+				String propUri = pv.getPropUri();
+				if ( propName == null ) {
+					propName = "?";
+				}
+				if ( propUri != null ) {
+					htmlStr = "<a target=\"_blank\" href=\"" +propUri+ "\">" +propName+ "</a>";
+				}
+				else {
+					htmlStr = propName;
+				}
+				html.setHTML("<b>" +htmlStr+ "</b>:");
+				if ( propUri != null ) {
+					html.setTitle(propUri);
+				}
+				flexPanel.setWidget(row, 0, html);
+				cf.setAlignment(row, 0, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE);
+
+				
+				// column 1
+				html = new HTML();
+				String valueName = pv.getValueName();
+				String valueUri = pv.getValueUri();
+				if ( valueName == null ) {
+					valueName = "?";
+				}
+				if ( valueUri != null ) {
+					htmlStr = "<a target=\"_blank\" href=\"" +valueUri+ "\">" +valueName+ "</a>";
+					html.setHTML(htmlStr);
+				}
+				else {
+					htmlStr = valueName;
+					html.setText(htmlStr);
+				}
+				if ( valueUri != null ) {
+					html.setTitle(valueUri);
+				}
+				flexPanel.setWidget(row, 1, html);
+				cf.setAlignment(row, 1, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE);
+
+				
+				row++;
 			}
 
-			disclosure.setContent(new HTML(
-				"(<i>will include relevant info available for the term</i>)<br/>"
-				+ "<b>URI</b>: <a target=\"_blank\" href=\"" +uri+ "\">" +uri+ "</a><br/>"
-				+ "<b>Name</b>: " +name+ "<br/>"
-				+ "<b>Label</b>: " +label + "<br/>"
-				+ "<b>Comment</b>:" +comment + "<br/>"
-			));	
+			disclosure.setContent(flexPanel);
 		}
 		
 		private void _focus(boolean focus) {

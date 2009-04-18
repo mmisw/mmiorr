@@ -77,6 +77,7 @@ public class ResourceViewer extends VerticalPanel {
 		String code = "" + entityInfo.getCode();
 		String uri = Main.getWorkingUris().get(code).getUri() + name;
 		
+		
 		String label = entityInfo.getDisplayLabel();
 		String comment = entityInfo.getComment();
 		
@@ -89,6 +90,8 @@ public class ResourceViewer extends VerticalPanel {
 		
 		_update(uri, name, label, comment);
 	}
+	
+
 	
 	private void _update(String uri, String name, String label, String comment) {
 		bodyHtml.setHTML(""

@@ -3,6 +3,9 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2009-04-17
+	- Show associated properties and values for entities in the Search result form. 
+	
 2009-04-06  1.5.0.alpha1
 	- Added some (?) tooltips and some "not implemented" actions to proceed with asking
 	  for feedback especially regarding UI.

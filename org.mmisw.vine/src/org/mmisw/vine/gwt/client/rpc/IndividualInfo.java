@@ -9,5 +9,9 @@ import java.io.Serializable;
  */
 public class IndividualInfo extends EntityInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
+	
+	public IndividualInfo() {
+		super();
+	}
 
 }

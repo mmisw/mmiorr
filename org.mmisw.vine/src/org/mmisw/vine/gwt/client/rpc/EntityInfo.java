@@ -1,6 +1,8 @@
 package org.mmisw.vine.gwt.client.rpc;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Info about an entity.
@@ -19,6 +21,8 @@ public abstract class EntityInfo implements Serializable {
 	private String localName;
 	private String displayLabel;
 	private String comment;
+	
+	private List<PropValue> props;
 	
 	
 	public char getCode() {
@@ -46,6 +50,14 @@ public abstract class EntityInfo implements Serializable {
 	}
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+	
+	public List<PropValue> getProps() {
+		if ( props == null ) {
+			props = new ArrayList<PropValue>();
+		}
+		return props;
+		
 	}
 
 }
