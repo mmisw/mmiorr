@@ -27,7 +27,7 @@ public class ConversionPanel extends VerticalPanel {
 	
 	
 	ConversionPanel(Voc2RdfMainPanel mainPanel) {
-		setWidth("850px");
+		setWidth("750px");
 		this.setSpacing(6);
 		this.add(html);
 	}
@@ -81,11 +81,10 @@ public class ConversionPanel extends VerticalPanel {
 			"<b>" +
 			"<font color=\"green\">You can now upload your vocabulary in the MMI Registry and Repository:</font>" +
 			"</b>" +
-			" <input type=\"submit\" value=\"" +"Register my vocabulary"+ "\" />\n" +
+			" <input type=\"submit\" value=\"" +"Upload vocabulary"+ "\" />\n" +
 			"<br/>" +
 			"This button will open the MMI Ontology Metadata Editor " +
-			"tool, which will allow you to prepare your vocabulary for registration in " +
-			"the MMI Registry and Repository. " +
+			"tool, which will allow you to prepare your vocabulary for registration. " +
 			"You may need to log in. " +
 			"</form>"
 			;
