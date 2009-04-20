@@ -8,6 +8,9 @@ ChangeLog
 		run ontmd and voc2rdf from within eclipse. I will configure this much better, probably
 		when I start using GWT 1.6.  Also renamed Main.launch to ontmd.launch and
 		created voc2rdf.launch
+		
+	- Converter: save copy of CSV file.
+	
 
 2009-04-16
 	- Issue #118: "Difficult to fix errors reported by voc2rdf"

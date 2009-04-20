@@ -3,9 +3,11 @@ package org.mmisw.ontmd.gwt.server.voc2rdf;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.vocabulary.Omv;
@@ -91,8 +93,6 @@ public class Converter {
 	
 	private StringManipulationUtil stringManipulation = new StringManipulationUtil();
 
-	private String pathOnServer;
-
 	
 	/**
 	 * TODO createUniqueBaseName(): need a more robust way to get a unique name. 
@@ -148,27 +148,43 @@ public class Converter {
 
 
 	public String createOntology() throws Exception {
-		log.info("!!!!!!!!!!!!!!!! Converter.createOntology");
-		
+		if ( log.isDebugEnabled() ) {
+			log.debug("Converter.createOntology");
+		}
+
+		//
+		// generate RDF:
+		//
 		setFinalUri();
 		processCreateOntology();
-
-		// save the converted ontology in the server to enable subsequent
-		// metadata edition by ontmd if the user so wishes:
 		String rdf = getOntologyStringXml();
 		
-		// just the simple name:
-		setPathOnServer(uniqueBaseName); 
-		
+		//
+		// before saving the RDF, save a copy of the text contents:
+		//
+		String full_path_csv = Config.Prop.ONTMD_VOC2RDF_DIR.getValue() + getPathOnServer() + ".csv";
+		try {
+			FileWriter os = new FileWriter(full_path_csv);
+			IOUtils.copy(new StringReader(ascii), os);
+			os.close();
+		}
+		catch (IOException ex) {
+			String msg = "Error saving copy of text file: " +full_path_csv;
+			log.error(msg, ex);
+			throw new Exception(msg, ex);
+		}
+
+		// now save the RDF:
 		String full_path = Config.Prop.ONTMD_VOC2RDF_DIR.getValue() + getPathOnServer();
-		
 		try {
 			FileWriter os = new FileWriter(full_path);
 			os.write(rdf);
 			os.close();
 		}
 		catch (IOException ex) {
-			throw new Exception("Error writing generated file: " +full_path, ex);
+			String msg = "Error writing generated RDF file: " +full_path; 
+			log.error(msg, ex);
+			throw new Exception(msg, ex);
 		}
 
 		return null;   // OK
@@ -514,21 +530,12 @@ public class Converter {
 	}
 
 
-
-
 	public String getOntologyStringXml() {
 		return JenaUtil2.getOntModelAsString(newOntModel, "RDF/XML-ABBREV");
 	}
 
-
-
-
-	private void setPathOnServer(String pathOnServer) {
-		this.pathOnServer = pathOnServer;
-	}
-
 	public String getPathOnServer() {
-		return pathOnServer;
+		return uniqueBaseName;
 	}
 
 }
