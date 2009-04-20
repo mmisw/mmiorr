@@ -11,6 +11,8 @@ ChangeLog
 		
 	- Converter: save copy of CSV file.
 	
+	- preliminary stuff to alert the user when closing the window page.
+	
 
 2009-04-16
 	- Issue #118: "Difficult to fix errors reported by voc2rdf"

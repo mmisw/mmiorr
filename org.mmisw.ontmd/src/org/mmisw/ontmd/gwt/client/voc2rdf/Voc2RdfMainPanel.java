@@ -12,6 +12,8 @@ import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.PopupListener;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
@@ -101,6 +103,13 @@ public class Voc2RdfMainPanel extends VerticalPanel {
 		vocabPanel.statusPanel.setWaiting(false);
 		vocabPanel.statusPanel.setHTML("<font color=\"green\">" + "Conversion complete" + "</font>");
 
+		Main.leavePage.pushMsg(null);
+		popup.addPopupListener(new PopupListener() {
+			public void onPopupClosed(PopupPanel sender, boolean autoClosed) {
+				Main.leavePage.popMsg();
+			}
+		});
+		
 		popup.show();
 	}
 

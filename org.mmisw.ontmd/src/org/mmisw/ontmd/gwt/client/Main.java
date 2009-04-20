@@ -1,6 +1,7 @@
 package org.mmisw.ontmd.gwt.client;
 
 import java.util.Map;
+import java.util.Stack;
 
 import org.mmisw.ontmd.gwt.client.img.OntMdImageBundle;
 import org.mmisw.ontmd.gwt.client.rpc.AppInfo;
@@ -15,6 +16,8 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.WindowCloseListener;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.ButtonBase;
@@ -52,6 +55,33 @@ public class Main implements EntryPoint {
 	private static boolean includeLog;
 
 	public static OntMdServiceAsync ontmdService;
+	
+	/** helps confirm the leave of the current page */
+	public static class LeavePage implements WindowCloseListener {
+		Stack<String> stack = new Stack<String>();
+		
+		public void pushMsg(String confirmMsg) {
+			stack.push(confirmMsg == null ? "-" : confirmMsg);
+			Main.log("stack: push: " +stack);
+		}
+
+		public void popMsg() {
+			stack.pop();
+			Main.log("stack: pop: " +stack);
+		}
+
+		public String onWindowClosing() {
+			Main.log("stack: onWindowClosing: " +stack);
+			if ( stack.isEmpty() ) {
+				return null;
+			}
+			String msg = stack.peek();
+			return msg.equals("-") ? null : msg;
+		}
+		
+		public void onWindowClosed() { /* ignore */  }
+	}
+	public static LeavePage leavePage = new LeavePage();
 
 	/**
 	 * This is the entry point method.
@@ -147,6 +177,8 @@ public class Main implements EntryPoint {
 		
 		panel.add(Util.createHtml("<font color=\"gray\">" +footer+ "</font><br/><br/>", 10));
 
+		Window.addWindowCloseListener(leavePage);
+		leavePage.pushMsg("(If any, all edits will be lost.)");
 	}
 
 	private static void getOntMdService() {
