@@ -43,7 +43,7 @@ public class UploadServlet extends HttpServlet {
 		super.init();
 		log.info("initializing upload service ...");
 		try {
-			Config.getInstance().init(getServletConfig(), null);
+			Config.getInstance().init(getServletConfig(), null, true);
 			preUploadsDir = new File(Config.Prop.ONTMD_PRE_UPLOADS_DIR.getValue());
 			log.info("preUploadsDir = " +preUploadsDir);
 		}

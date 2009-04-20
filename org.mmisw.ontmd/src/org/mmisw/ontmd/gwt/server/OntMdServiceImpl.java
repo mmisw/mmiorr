@@ -22,6 +22,7 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
 import org.apache.commons.httpclient.HttpStatus;
@@ -93,8 +94,9 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	public void init() throws ServletException {
 		super.init();
 		log.info("initializing " +appInfo.getAppName()+ "...");
+		ServletConfig servletConfig = getServletConfig();
 		try {
-			Config.getInstance().init(getServletConfig(), log);
+			Config.getInstance().init(servletConfig, log, true);
 			
 			appInfo.setVersion(
 					Config.Prop.VERSION.getValue()+ " (" +

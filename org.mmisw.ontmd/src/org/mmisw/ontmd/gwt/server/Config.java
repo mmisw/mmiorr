@@ -16,32 +16,36 @@ public class Config {
 	 */
 	public enum Prop {
 		
-		VERSION                       ("ontmd.app.version"),
-		BUILD                         ("ontmd.app.build"),
+		VERSION                       ("ontmd.app.version", "pendVersion"),
+		BUILD                         ("ontmd.app.build", "pendBuild"),
 
 		/** where the pre-loaded files are stored: */
-		ONTMD_PRE_UPLOADS_DIR         ("ontmd.pre.uploads.dir"),
+		ONTMD_PRE_UPLOADS_DIR         ("ontmd.pre.uploads.dir", "/Users/Shared/mmiregistry/ontmd/preuploads/"),
 		
 		/** where voc2rdf-generated files are stored: */
-		ONTMD_VOC2RDF_DIR             ("ontmd.voc2rdf.dir"),
+		ONTMD_VOC2RDF_DIR             ("ontmd.voc2rdf.dir", "/Users/Shared/mmiregistry/ontmd/preuploads/voc2rdf/"),
 		
 		/** where the previewed files are stored: */
-		ONTMD_PREVIEW_DIR             ("ontmd.preview.dir"),
+		ONTMD_PREVIEW_DIR             ("ontmd.preview.dir", "/Users/Shared/mmiregistry/ontmd/previews/"),
 		
 		/** where the resource files are stored: */
-		ONTMD_RESOURCES_DIR           ("ontmd.resource.dir"),
+		ONTMD_RESOURCES_DIR           ("ontmd.resource.dir", "/Users/Shared/mmiregistry/ontmd/resources/"),
 		
 		/** URI of the OWL class: resource type */
-		RESOURCE_TYPE_CLASS           ("ontmd.resourcetype.class"),
+		RESOURCE_TYPE_CLASS           ("ontmd.resourcetype.class", "http://mmisw.org/ont/mmi/resourcetype/ResourceType"),
 		
 		/** URI of the OWL class: authority  */
-		AUTHORITY_CLASS               ("ontmd.authority.class"),
+		AUTHORITY_CLASS               ("ontmd.authority.class", "http://mmisw.org/ont/mmi/authority/Authority"),
 		;
 		
 		private final String name;
+		private final String defValue;
 		private String value;
 
-		Prop(String name) { this.name = name; };
+		Prop(String name, String defValue) {
+			this.name = name; 
+			this.defValue = defValue; 
+		}
 		
 		public String getName() { return name; }
 
@@ -72,16 +76,28 @@ public class Config {
 	 * Does nothing if this method has already been called, even if the previous
 	 * call threw any exception.
 	 * 
+	 * @param useDefault true to allow the usage of pre-defined values in the code when the
+	 *        servlet configuration doesn't provide them. If false, any undefined parameter
+	 *        will throw an exception.
+	 * 
 	 * @throws Exception If any required parameter is undefined.
 	 */
-	public void init(ServletConfig sc, Log log) throws Exception {
+	public void init(ServletConfig sc, Log log, boolean useDefault) throws Exception {
 		if ( ! initCalled ) {
 			initCalled = true;
 			// Read in the required properties:
 			for ( Prop prop : Prop.values() ) {
 				String value = sc.getInitParameter(prop.getName());
 				if ( value == null || value.trim().length() == 0 ) {
-					throw new Exception("Required init parameter not defined: " +prop.getName());
+					if ( useDefault ) {
+						value = prop.defValue;
+						if ( log != null && log.isDebugEnabled() ) {
+							log.debug("Using internal default value for " +prop.getName());
+						}
+					}
+					else {
+						throw new Exception("Required init parameter not defined: " +prop.getName());
+					}
 				}
 				prop.setValue(value);
 				if ( log != null && log.isDebugEnabled() ) {

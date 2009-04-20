@@ -3,6 +3,12 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-04-20
+	- Config: a useDefault flag now allows to use pre-defined parameters so I can quickly
+		run ontmd and voc2rdf from within eclipse. I will configure this much better, probably
+		when I start using GWT 1.6.  Also renamed Main.launch to ontmd.launch and
+		created voc2rdf.launch
+
 2009-04-16
 	- Issue #118: "Difficult to fix errors reported by voc2rdf"
 		As an additional improvement, now the affected cell is focused automatically.

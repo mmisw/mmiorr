@@ -34,7 +34,7 @@ public class DownloadServlet extends HttpServlet {
 		super.init();
 		log.info("initializing download service ...");
 		try {
-			Config.getInstance().init(getServletConfig(), null);
+			Config.getInstance().init(getServletConfig(), null, true);
 			downloadsDir = new File(Config.Prop.ONTMD_VOC2RDF_DIR.getValue());
 			log.info("downloadsDir = " +downloadsDir);
 		}
