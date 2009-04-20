@@ -27,7 +27,8 @@ public class SearchVocabularySelection extends VerticalPanel {
 	
 	SearchVocabularySelection(int searchIndex) {
 		super();
-		CellPanel hp = new HorizontalPanel();
+		HorizontalPanel hp = new HorizontalPanel();
+		hp.setVerticalAlignment(ALIGN_MIDDLE);
 		add(hp);
 
 		

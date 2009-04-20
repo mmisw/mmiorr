@@ -43,7 +43,8 @@ public class OntologySelection extends VerticalPanel {
 	    layout.setSpacing(5);
 		
 		
-		CellPanel hp = new HorizontalPanel();
+	    HorizontalPanel hp = new HorizontalPanel();
+	    hp.setVerticalAlignment(ALIGN_MIDDLE);
 		layout.add(hp);
 		
 		hp.add(new TLabel("Working ontologies:", 

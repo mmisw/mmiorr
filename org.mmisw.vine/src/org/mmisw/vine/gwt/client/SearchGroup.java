@@ -42,6 +42,7 @@ public class SearchGroup extends VerticalPanel {
 		this.searchResultsForm = searchResultsForm;
 		
 		HorizontalPanel hp0 = new HorizontalPanel();
+		hp0.setVerticalAlignment(ALIGN_MIDDLE);
 		add(hp0);
 		hp0.setSpacing(3);
 		
