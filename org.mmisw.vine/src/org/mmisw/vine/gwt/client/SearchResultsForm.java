@@ -129,6 +129,11 @@ public class SearchResultsForm extends VerticalPanel {
 		if ( currentRows.size() == 0 ) {
 			rowPanel.add(new HTML("<i>No entities found</i>"));
 		}
+		else if ( currentRows.size() == 1 ) {
+			// automatically expose the contents of this single result
+			Row row = currentRows.values().iterator().next();
+			row.open();
+		}
 	}
 
 	
@@ -231,6 +236,11 @@ public class SearchResultsForm extends VerticalPanel {
 			hp.add(disclosure);
 		}
 		
+		/** opens the contents of this row. */
+		void open() {
+			disclosure.setOpen(true);
+		}
+
 		private void checkBoxClicked() {
 			boolean selected = checkBox.isChecked();
 			setSelected(selected);

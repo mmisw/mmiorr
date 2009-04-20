@@ -3,6 +3,10 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2009-04-20
+	- automatically open row disclosure in search results when only one result.
+	
+
 2009-04-17
 	- Show associated properties and values for entities in the Search result form. 
 	- Besides individuals, search now also includes owl:classes, rdf:properties,
