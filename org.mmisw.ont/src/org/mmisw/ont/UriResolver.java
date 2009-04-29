@@ -43,16 +43,31 @@ import edu.drexel.util.rdf.JenaUtil;
 
 
 /**
- * The "ont" service to resolve ontology URIs.
+ * The "ont" service to resolve ontology and term URIs.
  * 
  * @author Carlos Rueda
+ * @version $Id$
  */
 public class UriResolver extends HttpServlet {
+	
+	//
+	//
+	// TODO Clean up and refactor this class
+	// The implementation of this class has become a bit messy as things were added sometimes 
+	// without a minimum of preparation and design.
+	// In particular, a new design should allow to better differenciate the steps to resolve a request:
+	//	- Determine if the requested resource is a whole ontology or an entity
+	//  - Associate a corresponding object for the requested resource
+	//  - Determine the output format
+	//	- then dispatch the requested resource in that output format
+	//
+	
+	
 	private static final long serialVersionUID = 1L;
 	
 	static final String TITLE = "MMI Ontology and Term URI Resolver";
 	
-	private static String VERSION = "0.2.0.beta5 (20090315)";
+	private static String VERSION = "?";   // determined at init() time -- see build.xml and version.properties
 	static String FULL_TITLE = TITLE + ". Version " +VERSION;
 
 
@@ -72,7 +87,14 @@ public class UriResolver extends HttpServlet {
 	
 	private List<String> userAgentList;
 	
-
+	/**
+	 * Initializes this service.
+	 * This basically consists of
+	 * retrieval of configuration parameters, 
+	 * initialization of the database connection, 
+	 * loading of the ontology graph,
+	 * and retrieval of version information.
+	 */
 	public void init() throws ServletException {
 		log.info(TITLE+ ": initializing");
 		
