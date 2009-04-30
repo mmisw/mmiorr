@@ -7,6 +7,8 @@ ChangeLog
 2009-04-29:
 	- Some refactorings/clean-up:
 		- new RegularFileDispatcher
+		- moved some misc operations into a new MiscDispatcher
+		- preliminary code for dispatching an image request
 		
 2009-04-07:
 	- Fix of issue #123: "encoded URI not properly handled" (MmiUri, MmiUriTest)
