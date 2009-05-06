@@ -361,7 +361,7 @@ public class TermTable extends VerticalPanel {
 	 * @param emptyFieldString If non-null, will be used for empty fields in the body (not on the header).
 	 * 
 	 * @param separator desired field separator; some descriptive names are recognized if they start with
-	 *        one of "Comma", "Semi-colon", "Pipe", or "Tab" (ignoring case), so the corresponding
+	 *        one of "Comma", "Semi-colon", "Vertical bar", or "Tab" (ignoring case), so the corresponding
 	 *        character will be used. Other separator value will be used exactly as given.
 	 * 
 	 * @return The contents in CSV format with the given separator.
@@ -373,7 +373,7 @@ public class TermTable extends VerticalPanel {
 		else if ( separator.equals(";") || separator.toLowerCase().startsWith("semi-colon") ) {
 			separator = ";";
 		}
-		else if ( separator.equals("|") || separator.toLowerCase().startsWith("pipe") ) {
+		else if ( separator.equals("|") || separator.toLowerCase().startsWith("vertical bar") ) {
 			separator = "|";
 		}
 		else if ( separator.equals("\t") || separator.toLowerCase().startsWith("tab") ) {

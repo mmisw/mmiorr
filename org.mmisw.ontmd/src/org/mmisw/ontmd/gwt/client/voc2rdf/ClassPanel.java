@@ -801,7 +801,7 @@ public class ClassPanel extends VerticalPanel {
 		
 		SeparatorPanel() {
 			super();
-			String[] separators = { "Comma (,)", "Semi-colon (;)", "Tab", "Pipe (|)" };
+			String[] separators = { "Comma (,)", "Semi-colon (;)", "Tab", "Vertical bar (|)" };
 			for (int i = 0; i< separators.length; i++ ) {
 				String separator = separators[i];
 				RadioButton rb = new RadioButton("separator", separator);
