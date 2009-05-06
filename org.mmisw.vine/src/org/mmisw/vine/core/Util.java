@@ -40,7 +40,7 @@ public class Util {
 		"        ?instance rdf:type ?class . }"
 	;
 	
-	/** Query to obtain the classes in a model */
+	/** Query to obtain the properties in a model */
 	private static final String PROPERTIES_QUERY =
 		"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
 		"PREFIX owl: <http://www.w3.org/2002/07/owl#>" +
