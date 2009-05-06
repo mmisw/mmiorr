@@ -23,17 +23,15 @@ import org.mmisw.ont.vocabulary.Omv;
 import com.hp.hpl.jena.vocabulary.DC;
 
 /** 
- * A helper to upload ontologies.
+ * A helper class to upload ontologies into the repository.
  * 
  * @author Carlos Rueda
  */
 class OntologyUploader {
 	
-	
 	private static String SERVER    = "http://mmisw.org";
 	private static String REST      = SERVER+ "/bioportal/rest";
 	static final String ONTOLOGIES  = REST+ "/ontologies";
-
 	
 	private final Log log = LogFactory.getLog(OntologyUploader.class);
 	
@@ -78,18 +76,16 @@ class OntologyUploader {
 
 	/**
 	 * Executes the POST operation to upload the ontology.
-	 * @return
+	 * 
+	 * @return The message in the response from the POST operation, prefixed with "OK:" if
+	 *         the result was successfull; otherwise, the description of the error 
+	 *         prefixed with "ERROR:"
+	 *         
 	 * @throws Exception
 	 */
 	String create()	throws Exception {
-//		File targetFile = new File("/Users/carueda/new_mapping.owl");
-		
 		PostMethod post = new PostMethod(ONTOLOGIES);
 		try {
-			// TODO keep in mind USE_EXPECT_CONTINUE
-//			post.getParams().setBooleanParameter(HttpMethodParams.USE_EXPECT_CONTINUE, true);
-
-			
 			List<Part> partList = new ArrayList<Part>();
 			
 			partList.add(new FilePart("filePath", partSource));
