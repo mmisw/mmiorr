@@ -168,22 +168,24 @@ public class VocabPanel extends VerticalPanel {
 		int row = 0;
 				
 		
+		// Note: preamble and ontologyUriPanel were originally in a single row, but I reverted to
+		// separate rows to avoid mis-behaviors in layout as the ontology URI is updated
+		
 		HTML preamble = new HTML(
 				"Please fill in the following information to create your vocabulary in RDF.<br/>" +
 				"Fields marked <font color=red>*</font> are required."
 		);
-		flexPanel.getFlexCellFormatter().setColSpan(row, 0, 2);
+		flexPanel.getFlexCellFormatter().setColSpan(row, 0, 4);
 		flexPanel.setWidget(row, 0, preamble);
 		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
-//		row++;
+		row++;
 		
 
-		flexPanel.getFlexCellFormatter().setColSpan(row, 1, 2);
-		flexPanel.getFlexCellFormatter().setWidth(row, 1, "40%");
-		flexPanel.setWidget(row, 1, ontologyUriPanel);
-		flexPanel.getFlexCellFormatter().setAlignment(row, 1, 
+		flexPanel.getFlexCellFormatter().setColSpan(row, 0, 4);
+		flexPanel.setWidget(row, 0, ontologyUriPanel);
+		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		row++;
