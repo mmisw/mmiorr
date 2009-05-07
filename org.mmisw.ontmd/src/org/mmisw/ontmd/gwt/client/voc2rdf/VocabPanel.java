@@ -247,7 +247,7 @@ public class VocabPanel extends VerticalPanel {
 
 		/////////////////////
 		// authority
-		flexPanel.setWidget(row, 0, new TLabel("Authority:", true, "<b>Authority</b>:<br/>" +authorityAttrDef.getTooltip()));
+		flexPanel.setWidget(row, 0, new TLabel(authorityAttrDef.getLabel(), true, "<b>Authority</b>:<br/>" +authorityAttrDef.getTooltip()));
 		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
 		);

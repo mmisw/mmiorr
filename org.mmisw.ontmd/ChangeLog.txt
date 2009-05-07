@@ -3,6 +3,9 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-05-06
+	- fixed issue #131: use abbreviation of organization instead of authority in the web form
+	
 	
 2009-04-20
 	- Config: a useDefault flag now allows to use pre-defined parameters so I can quickly
