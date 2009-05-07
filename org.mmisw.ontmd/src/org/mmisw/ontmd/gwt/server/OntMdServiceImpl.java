@@ -254,6 +254,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	/**
 	 * Completes the ontology info object by assigning some of the members
 	 * except the Rdf string and the new values map.
+	 * 
 	 * @param file  The ontology file.
 	 * @param ontologyInfo  The object to be completed
 	 */
@@ -1001,10 +1002,12 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			uploadResult.setError("Please, do the review action first.");
 			return uploadResult;
 		}
+		
+		OntologyInfo ontologyInfo = reviewResult.getOntologyInfo();
 
 		// the "new" values in the ontologyInfo are used to fill in some of the
 		// fields required by the bioportal back-end
-		Map<String, String> newValues = reviewResult.getOntologyInfo().getNewValues();
+		Map<String, String> newValues = ontologyInfo.getNewValues();
 		
 		uploadResult.setUri(reviewResult.getUri());
 		
@@ -1071,15 +1074,14 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		assert userId != null;
 		assert sessionId != null;
 		
-		String ontologyId = reviewResult.getOntologyInfo().getOntologyId();
+		String ontologyId = ontologyInfo.getOntologyId();
 		if ( ontologyId != null ) {
 			log.info("Will create a new version for ontologyId = " +ontologyId);
 		}
 		
 		try {
 			
-			String fileName;
-			fileName = new URL(uri).getPath();
+			String fileName = new URL(uri).getPath();
 			
 			//
 			// make sure the fileName ends with ".owl" as the aquaportal back-end seems
@@ -1121,6 +1123,23 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			
 			if ( res.startsWith("OK") ) {
 				uploadResult.setInfo(res);
+				
+				// If there is a corresponding CSV, rename it with a name derived from the URI: 
+				String origPathCsv = reviewResult.getOntologyInfo().getFullPathCsv();
+				if ( origPathCsv != null ) {
+					
+					File origFileCsv = new File(origPathCsv);
+					if ( origFileCsv.exists() ) {
+						// the simple name will be the same path of the URI with separators replaced 
+						// with underscore '_', and with ".csv" appended:
+						String destPathCsv = new URL(uri).getPath();
+						destPathCsv = destPathCsv.replaceAll("/|\\\\", "_") + ".csv";
+						File destFileCsv = new File(origFileCsv.getParentFile(), destPathCsv);
+						
+						boolean renRes = origFileCsv.renameTo(destFileCsv);
+						log.debug("upload: renaming " +origFileCsv+ " -> " +destFileCsv+ " returned " +renRes);
+					}
+				}
 			}
 			else {
 				uploadResult.setError(res);
@@ -1210,10 +1229,20 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	}
 	
 	
-	
+	/**
+	 * Gets info about an ontology stored in a filesystem file on the server.
+	 * 
+	 * If the given path is relative, then it is taken as relative to {@link Config.Prop#ONTMD_VOC2RDF_DIR}.
+	 * In this case, if a similar filename but with extension ".csv" is found, then
+	 * the .
+	 * 
+	 * @param path the path to the file. 
+	 */
 	public OntologyInfo getOntologyInfoFromFileOnServer(String path) {
 		log.info("getOntologyInfoFromFileOnServer: local path: " +path);
 		File file = new File(path);
+		
+		File fileCsv = null;
 		
 		if ( !file.isAbsolute() ) {
 			
@@ -1221,6 +1250,11 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			// TODO Note: Currently, this is only handled for the Voc2Rdf case:
 			
 			file = new File(Config.Prop.ONTMD_VOC2RDF_DIR.getValue() + path);
+			
+			fileCsv = new File(Config.Prop.ONTMD_VOC2RDF_DIR.getValue() + path + ".csv");
+			if ( ! fileCsv.exists() ) {
+				fileCsv = null;
+			}
 		}
 
 		String full_path = file.getAbsolutePath();
@@ -1238,7 +1272,13 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		}
 
 		String error = prepareOntologyInfo(file, ontologyInfo);
-		if ( error != null ) {
+		if ( error == null ) {
+			if ( fileCsv != null ) {
+				String fullPathCsv = fileCsv.getAbsolutePath();
+				ontologyInfo.setFullPathCsv(fullPathCsv);
+			}
+		}
+		else {
 			ontologyInfo.setError(error);
 		}
 		

@@ -3,15 +3,19 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+	
 2009-04-20
 	- Config: a useDefault flag now allows to use pre-defined parameters so I can quickly
 		run ontmd and voc2rdf from within eclipse. I will configure this much better, probably
 		when I start using GWT 1.6.  Also renamed Main.launch to ontmd.launch and
 		created voc2rdf.launch
-		
-	- Converter: save copy of CSV file.
 	
 	- preliminary stuff to alert the user when closing the window page.
+	
+	- Converter: save copy of CSV file.
+	- OntMdServiceImpl.upload: upon sucessfull upload, it renames the associated CSV (if any)
+	  to a name based on the final ontology URI.  This provides a convenient mechanism to use
+	  the CSV version for display purposes.
 	
 
 2009-04-16

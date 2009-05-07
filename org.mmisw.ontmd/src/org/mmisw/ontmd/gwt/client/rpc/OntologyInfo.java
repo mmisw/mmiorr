@@ -7,9 +7,12 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 /**
  * Info about an original ontology.
  * 
- * It also allows to stored the aquaportal ID of a pre-existing ontology ({@link #getOntologyId()})
+ * It also allows to store the aquaportal ID of a pre-existing ontology ({@link #getOntologyId()})
  * in case the user wants to perform the submission of a new version. This ID will be null when
  * the user is performing a completely new submission.
+ * 
+ * <p>
+ * Also, the full path to a corresponding CSV file can be stored.
  * 
  * @author Carlos Rueda
  */
@@ -21,6 +24,7 @@ public class OntologyInfo implements IsSerializable {
 	private String rdf;
 	private String details;
 	
+	private String fullPathCsv;
 	
 	/** aquaportal ontology ID used, if not null, to create a new version */
 	private String ontologyId = null;
@@ -113,5 +117,21 @@ public class OntologyInfo implements IsSerializable {
 	public void setOntologyId(String ontologyId) {
 		this.ontologyId = ontologyId;
 	}
+
+	/**
+	 * @return the fullPathCsv
+	 */
+	public String getFullPathCsv() {
+		return fullPathCsv;
+	}
+
+	/**
+	 * @param fullPathCsv the fullPathCsv to set
+	 */
+	public void setFullPathCsv(String fullPathCsv) {
+		this.fullPathCsv = fullPathCsv;
+	}
+	
+	
 
 }
