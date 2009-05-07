@@ -42,7 +42,7 @@ public class ResourceTypeWidget extends VerticalPanel {
 	 */
 	public ResourceTypeWidget(AttrDef attr, boolean editing, ChangeListener cl) {
 		super();
-		Main.log("Creating ResourceTypeWidget: " +attr+ ", " +editing);
+		Main.log("Creating ResourceTypeWidget: " +attr+ ", isRequired=" +attr.isRequired()+ " , editing=" +editing);
 		resourceTypeAttrDef = attr;
 
 		// see MdHelper:
@@ -74,7 +74,7 @@ public class ResourceTypeWidget extends VerticalPanel {
 							attr2.getTooltip() +
 							"<br/><br/><div align=\"right\">(" +attr2.getUri()+ ")</div>";
 
-		flexPanel.setWidget(row, 0, new TLabel("Name:", editing && attr2.isRequired(), tooltip ));
+		flexPanel.setWidget(row, 0, new TLabel("Name:", editing && attr.isRequired(), tooltip ));
 		flexPanel.getFlexCellFormatter().setColSpan(row, 1, 2);
 		flexPanel.setWidget(row, 1, resourceTypeFieldWithChoose);
 		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 

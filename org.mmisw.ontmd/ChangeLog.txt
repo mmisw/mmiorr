@@ -6,6 +6,12 @@ ChangeLog
 2009-05-06
 	- fixed issue #131: use abbreviation of organization instead of authority in the web form
 	
+	- fixed issue 132: add (optional) on the "uri of class" label
+		But, instead of adding "optional" to the label, now the "name" field is marked with the
+		red star, indicating that the name of the class is required, while the label
+		for the URI of the class remains as it is. To complement, a preamble in the interface
+		says that "fields marked * are required" (which used to be there in a previous version, btw).
+		
 	
 2009-04-20
 	- Config: a useDefault flag now allows to use pre-defined parameters so I can quickly
