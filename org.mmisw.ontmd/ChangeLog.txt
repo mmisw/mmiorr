@@ -12,6 +12,7 @@ ChangeLog
 		for the URI of the class remains as it is. To complement, a preamble in the interface
 		says that "fields marked * are required" (which used to be there in a previous version, btw).
 		
+	- fixed issue #129:  "Convert to RDF" button below term table
 	
 2009-04-20
 	- Config: a useDefault flag now allows to use pre-defined parameters so I can quickly

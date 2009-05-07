@@ -191,16 +191,6 @@ public class VocabPanel extends VerticalPanel {
 		row++;
 		
 
-		CellPanel buttons = createConvertButton();
-		flexPanel.getFlexCellFormatter().setColSpan(row, 0, 4);
-		flexPanel.setWidget(row, 0, buttons);
-		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
-				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
-		);
-		row++;
-		
-
-		
 		/////////////////////
 		// full title
 		flexPanel.setWidget(row, 0, new TLabel("Full title:", true, "<b>Full title</b>:<br/>" +fullTitleAttrDef.getTooltip()));
@@ -283,7 +273,16 @@ public class VocabPanel extends VerticalPanel {
 		flexPanel.setWidget(row, 0, tabPanel);
 		row++;
 
+		CellPanel buttons = createConvertButton();
+		flexPanel.getFlexCellFormatter().setColSpan(row, 0, 4);
+		flexPanel.setWidget(row, 0, buttons);
+		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
+				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		row++;
 		
+
+
 		return flexPanel;
 	}
 	
