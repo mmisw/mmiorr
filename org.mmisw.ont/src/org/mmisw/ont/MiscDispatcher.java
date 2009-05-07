@@ -179,9 +179,7 @@ public class MiscDispatcher {
 	        		}
 	        	}
 	    		catch (URISyntaxException e) {
-	    			// Shouldn't happen.
-	    			// TODO Auto-generated catch block
-	    			e.printStackTrace();
+	    			log.error("Shouldn't happen", e);
 	    			continue;
 	    		}
 	        }
@@ -254,9 +252,7 @@ public class MiscDispatcher {
 	        		}
 	        	}
 	    		catch (URISyntaxException e) {
-	    			// Shouldn't happen.
-	    			// TODO Auto-generated catch block
-	    			e.printStackTrace();
+	    			log.error("Shouldn't happen", e);
 	    			continue;
 	    		}
 	        }
