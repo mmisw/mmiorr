@@ -3,6 +3,15 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-05-07
+	- implemented issue #135: preserve URIS from simple vocabularies that allready have defines URIs
+	  It works as follows:
+	  	- Enabled when the header label for the first column is "URI" (ignoring case) (so, no extra
+	  	  check box or other GUI component for the moment)
+	  	- Converter: uses a flag keyIsUri which is set to true in createDatatypeProperty if the label
+	  	  of the first column is "URI"; then createIndividual uses the flag to determine the
+	  	  URI for the individual to be created.
+	
 2009-05-06
 	- fixed issue #131: use abbreviation of organization instead of authority in the web form
 	

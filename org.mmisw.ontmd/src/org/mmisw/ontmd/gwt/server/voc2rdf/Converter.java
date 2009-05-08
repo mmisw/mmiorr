@@ -93,6 +93,9 @@ public class Converter {
 	
 	private StringManipulationUtil stringManipulation = new StringManipulationUtil();
 
+	/** Is the key for the terms to be used exclusively as the term URI? */
+	private boolean keyIsUri = false;
+	
 	
 	/**
 	 * TODO createUniqueBaseName(): need a more robust way to get a unique name. 
@@ -395,14 +398,33 @@ public class Converter {
 
 	}
 
-	//
-	// Note: colons are OK for the name of an individual (issue #124)
-	//
+	/**
+	 * Creates an individual from the given column (id) in the given row.
+	 * 
+	 * Note: colons are OK for the name of an individual (issue #124).
+	 * This is especially relevant when the first column is going to exclusively 
+	 * determine the URI for each term (issue #135)
+	 * 
+	 * @param row
+	 * @param id
+	 * @param cs
+	 * @return
+	 */
 	private Individual createIndividual(DataRow row, int id, OntClass cs) {
 
 		if (isGood(row, id)) {
 			boolean allowColon = true;
-			String resourceString = ns_ + getGoodName(row, id, allowColon).toLowerCase();
+			String resourceString;
+			
+			if ( id == 0 && keyIsUri ) {
+				// just use the simple name given in this column
+				resourceString = getGoodName(row, id, allowColon).toLowerCase();
+			}
+			else {
+				// "locate" the individual within the namespace of the ontology
+				resourceString = ns_ + getGoodName(row, id, allowColon).toLowerCase();
+			}
+			
 			Individual ind = newOntModel.createIndividual(resourceString, cs);
 			ind.addProperty(RDFS.label, row.getString(id).trim());
 			log.info("ind created " + ind);
@@ -415,7 +437,20 @@ public class Converter {
 	
 	private DatatypeProperty createDatatypeProperty(DataRow row, int id) {
 		boolean allowColon = false;
-		String resourceString = ns_ + getGoodName(row, id, allowColon).toLowerCase();
+		
+		String keyName = row.getString(id).trim();
+		String goodName = getGoodName(row, id, allowColon).toLowerCase();
+		
+		if ( id == 0 && keyName.equalsIgnoreCase("uri")) {
+			// use the key values in this column as the complet URI of each term.
+			keyIsUri = true;
+
+			if ( log.isDebugEnabled() ) {
+				log.debug("first column labeled 'uri', so will use column values as full URIs for the terms");
+			}
+		}
+		
+		String resourceString = ns_ + goodName ;
 		log.info("datatype Property created " + resourceString);
 		DatatypeProperty p = newOntModel.createDatatypeProperty(resourceString);
 		p.addProperty(RDFS.label, row.getString(id).trim());
