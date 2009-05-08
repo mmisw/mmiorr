@@ -4,6 +4,9 @@ $Id$
 
 ChangeLog
 
+2009-05-07
+	- MmiUri(String): prevent NPE when there is no path in the URI
+	
 2009-04-29:
 	- Some refactorings/clean-up:
 		- new RegularFileDispatcher

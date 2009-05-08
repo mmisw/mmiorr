@@ -125,6 +125,10 @@ public final class MmiUri {
 		//
 		final String path = juri.getRawPath();
 		
+		if ( path == null ) {
+			throw new URISyntaxException(str, "not path");
+		}
+
 		if ( !path.startsWith("/") ) {
 			throw new URISyntaxException(str, "not absolute path");
 		}
