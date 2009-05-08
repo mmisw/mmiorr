@@ -64,6 +64,7 @@ public class Util {
 		"WHERE { <{E}> ?prop ?value . }"
 	;
 	
+	
 	public static OntologyInfo getEntities(OntologyInfo ontologyInfo) {
 		String ontologyUri = ontologyInfo.getUri();
 		OntModel ontModel = loadModel(ontologyUri);
@@ -105,14 +106,29 @@ public class Util {
 				String varName = String.valueOf(varNames.next());
 				String entityUri = String.valueOf(sol.get(varName));
 				
+				if ( entityUri == null ) {
+					continue;
+				}
+				
+				IndividualInfo entityInfo = null;
+				
 				// is ontologyUri a prefix of entityUri?
-				if ( entityUri != null && entityUri.indexOf(ontologyUri) == 0 ) {
-					IndividualInfo entityInfo = new IndividualInfo();
+				if ( entityUri.indexOf(ontologyUri) == 0 ) {
+					entityInfo = new IndividualInfo();
 					String localName = entityUri.substring(ontologyUri.length());
 					entityInfo.setLocalName(localName);
-					
+				}
+				else {
+					entityInfo = new IndividualInfo();
+					// use the given entityUri as the local name.
+					// Note that the query is made against the ontology, so every individual
+					// found there should be included.
+					String localName = entityUri;
+					entityInfo.setLocalName(localName);
+				}
+				
+				if ( entityInfo != null ) {
 					_addProps(entityUri, entityInfo, ontModel);
-					
 					entities.add(entityInfo);
 				}
 			}

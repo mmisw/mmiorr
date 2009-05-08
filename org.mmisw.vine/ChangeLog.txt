@@ -3,6 +3,15 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2009-05-07
+	- Util.addIndividuals: if ontologyUri is NOT a prefix of the retrieved entityUri,
+	  now uses that entityUri as the "local name"; Note that the query is made against 
+	  the ontology, so every individual found there should be included.
+	  NOTE: this should perhaps be done to the other entities found in the ontology, but
+	  only doing it for individuals as I am preparing the dispatch of URIs that are
+	  completely specified in voc2rdf (first column) and not as a composition of the
+	  ontology base URI and the key given to the term.
+	
 2009-04-20
 	- automatically open row disclosure in search results when only one result.
 	
