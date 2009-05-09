@@ -74,6 +74,8 @@ public class UriResolver extends HttpServlet {
 	
 	private final RegularFileDispatcher regularFileDispatcher = new RegularFileDispatcher();
 
+	private final UriDispatcher uriDispatcher = new UriDispatcher(sparqlDispatcher);
+	
 	
 	private enum OntFormat { RDFXML, N3 };
 	
@@ -212,6 +214,12 @@ public class UriResolver extends HttpServlet {
 		// and the ontology from the database (but do not serve the contents)
 		if ( Util.yes(request, "_debug") ) {
 			miscDispatcher.resolveUriDebug(request, response);
+			return;
+		}
+		
+		// if the "uri" parameter is included, resolve by the given URI
+		if ( Util.yes(request, "uri") ) {
+			uriDispatcher.dispatchUri(request, response);
 			return;
 		}
 		

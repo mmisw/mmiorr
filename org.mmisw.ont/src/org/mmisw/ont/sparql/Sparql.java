@@ -35,11 +35,11 @@ public class Sparql {
 		private String result;
 		private String contentType;
 
-		void setResult(String result) {
+		public void setResult(String result) {
 			this.result = result;
 		}
 
-		void setContentType(String contentType) {
+		public void setContentType(String contentType) {
 			this.contentType = contentType;
 		}
 		public String getResult() {
@@ -66,15 +66,38 @@ public class Sparql {
 		QueryExecution qe = QueryExecutionFactory.create(query, model);
 		
 		try {
-			if ( query.isConstructType() ) {
-				Model model_ = qe.execConstruct();
+			// CONSTRUCT or DESCRIBE
+			if ( query.isConstructType() || query.isDescribeType() ) {
+				Model model_;
+				
+				if ( query.isConstructType() ) {
+					model_ = qe.execConstruct();
+				}
+				else {
+					// DESCRIBE
+					model_ = qe.execDescribe();
+				}
 				
 				JenaUtil2.removeUnusedNsPrefixes(model_);
 				
-				String str = JenaUtil2.getOntModelAsString(model_, "RDF/XML-ABBREV");				
+				String str = JenaUtil2.getOntModelAsString(model_, "RDF/XML-ABBREV");	
+				
+				if ( form.equalsIgnoreCase("owl") || form.equalsIgnoreCase("rdf") ) {
+					str = JenaUtil2.getOntModelAsString(model_, "RDF/XML-ABBREV");
+					queryResult.setContentType("Application/rdf+xml");
+				}
+				else if ( form.equalsIgnoreCase("n3") ) {
+					str = JenaUtil2.getOntModelAsString(model_, "N3");
+					queryResult.setContentType("text/plain");
+				}
+				else {
+					str = JenaUtil2.getOntModelAsString(model_, "RDF/XML-ABBREV");
+					queryResult.setContentType("Application/rdf+xml");
+				}
 				queryResult.setResult(str);
-				queryResult.setContentType("Application/rdf+xml");
 			}
+			
+			// SELECT
 			else if ( query.isSelectType() ) {
 				ResultSet results = qe.execSelect();
 				
@@ -93,15 +116,7 @@ public class Sparql {
 					queryResult.setResult(os.toString());
 				}
 			}
-			else if ( query.isDescribeType() ) {
-				Model model_ = qe.execDescribe();
-				
-				JenaUtil2.removeUnusedNsPrefixes(model_);
-				
-				String str = JenaUtil2.getOntModelAsString(model_, "RDF/XML-ABBREV");				
-				queryResult.setResult(str);
-				queryResult.setContentType("Application/rdf+xml");
-			}
+			
 			
 			// TODO handle other types of queries.
 			else {

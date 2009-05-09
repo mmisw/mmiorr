@@ -38,14 +38,26 @@ public class SparqlDispatcher {
 		this.ontGraph = ontGraph;
 	}
 
+	
 	/** 
-	 * Executes the query indicated as argument of the "sparql" parameter.
+	 * Executes the query indicated as argument of the "sparql" parameter in the request.
+	 * An example query is processed in the parameter is not given,
 	 */
-	public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public void execute(HttpServletRequest request, HttpServletResponse response) 
+	throws ServletException, IOException {
 		String query = Util.getParam(request, "sparql", "");
 		if ( query.length() == 0 ) {
 			query = SPARQL_EXAMPLE;
 		}
+
+		execute(request, response, query);
+	}
+	
+	/** 
+	 * Executes the given query.
+	 */
+	public void execute(HttpServletRequest request, HttpServletResponse response, String query)
+	throws ServletException, IOException {
 		
 		String form = Util.getParam(request, "form", null);
 		
@@ -53,7 +65,7 @@ public class SparqlDispatcher {
 		
 		String result = queryResult.getResult();
 		
-		if ( "Application/rdf+xml".equals(queryResult.getContentType()) ) {
+		if ( "Application/rdf+xml".equalsIgnoreCase(queryResult.getContentType()) ) {
 			// convert to HTML?
 			if ( Util.yes(request, "xslt") ) {
 				String XSLT_RESOURCE = "rdf.xslt";
@@ -88,7 +100,7 @@ public class SparqlDispatcher {
 			}
 		}
 		
-		else if ( "text/html".equals(queryResult.getContentType()) ) {
+		else if ( "text/html".equalsIgnoreCase(queryResult.getContentType()) ) {
 			String pre = "<html><head><title>Query result</title>" +
 			             "<link rel=stylesheet href=\"" +
 			                  request.getContextPath()+ "/main.css\" type=\"text/css\">" +
