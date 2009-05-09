@@ -9,6 +9,8 @@ ChangeLog
 	  via a SPARQL query that depends on the "form" parameter. If form is "html" 
 	  or "csv" a SELECT query, otherwise, for "owl", "rdf", "n3", a CONSTRUCT query.
 	  The sparql dispatcher has been updated to handle these possible formats.
+	  
+	- dispatch form=json for SELECT SPARQL query.
 	
 2009-05-07
 	- MmiUri(String): prevent NPE when there is no path in the URI

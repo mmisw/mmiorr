@@ -109,6 +109,10 @@ public class Sparql {
 					queryResult.setContentType("text/plain");
 					queryResult.setResult(_csvSelectResults(results));
 				}
+				else if ( form.equalsIgnoreCase("json") ) {
+					queryResult.setContentType("application/json");
+					queryResult.setResult(_jsonSelectResults(results));
+				}
 				else {
 					queryResult.setContentType("text/plain");
 					ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -201,6 +205,15 @@ public class Sparql {
 		return null;
 	}
 
+	/** Formats the results in JSON */
+	private static String _jsonSelectResults(ResultSet results) {
+		
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		ResultSetFormatter.outputAsJSON(bos, results);
+		
+		return bos.toString();
+	}	
+	
 	/** Formats the results in CSV */
 	private static String _csvSelectResults(ResultSet results) {
 		
