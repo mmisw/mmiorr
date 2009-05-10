@@ -275,9 +275,12 @@ public class SearchResultsForm extends VerticalPanel {
 		
 		
 		private void disclosureOpen() {
-			String name = entity.getLocalName();
-			String code = "" + entity.getCode();
-			String uri = Main.getWorkingUris().get(code).getUri()+ "/" +name;
+//			String name = entity.getLocalName();
+//			String code = "" + entity.getCode();
+//			String uri = Main.getWorkingUris().get(code).getUri()+ "/" +name;
+			String uri = entity.getUri();
+			
+			String uriResLink = getUriResolutionLink(uri);
 			
 			
 			FlexTable flexPanel = new FlexTable();
@@ -288,7 +291,7 @@ public class SearchResultsForm extends VerticalPanel {
 			int row = 0;
 			
 			cf.setColSpan(row, 0, 2);
-			flexPanel.setWidget(row, 0, new HTML("<a target=\"_blank\" href=\"" +uri+ "\">" +uri+ "</a>"));
+			flexPanel.setWidget(row, 0, new HTML("<a target=\"_blank\" href=\"" +uriResLink+ "\">" +uri+ "</a>"));
 			cf.setAlignment(row, 0, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP);
 			row++;
 			
@@ -348,6 +351,21 @@ public class SearchResultsForm extends VerticalPanel {
 			disclosure.setContent(flexPanel);
 		}
 		
+		private String getUriResolutionLink(String uri) {
+			// TODO get resolver for URNs from a configuration parameter
+			final String URN_RESOLVER = "http://mmisw.org/ont";
+			
+			String link;
+			if ( uri.startsWith("urn:") ) {
+				link = URN_RESOLVER + "?uri=" +uri;
+			}
+			else {
+				link = uri;
+			}
+			
+			return link;
+		}
+
 		private void _focus(boolean focus) {
 			if ( focus ) {
 				if ( disclosure != null ) {

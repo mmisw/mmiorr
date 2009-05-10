@@ -6,10 +6,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.mmisw.vine.gwt.client.rpc.ClassInfo;
 import org.mmisw.vine.gwt.client.rpc.EntityInfo;
 import org.mmisw.vine.gwt.client.rpc.IndividualInfo;
 import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
 import org.mmisw.vine.gwt.client.rpc.PropValue;
+import org.mmisw.vine.gwt.client.rpc.PropertyInfo;
 
 import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -65,6 +67,11 @@ public class Util {
 	;
 	
 	
+	/**
+	 * Populates the list of entities associated with the given ontology. 
+	 * @param ontologyInfo
+	 * @return the given argument
+	 */
 	public static OntologyInfo getEntities(OntologyInfo ontologyInfo) {
 		String ontologyUri = ontologyInfo.getUri();
 		OntModel ontModel = loadModel(ontologyUri);
@@ -110,19 +117,18 @@ public class Util {
 					continue;
 				}
 				
-				IndividualInfo entityInfo = null;
+				IndividualInfo entityInfo = new IndividualInfo();
+				entityInfo.setUri(entityUri);
 				
 				// is ontologyUri a prefix of entityUri?
 				if ( entityUri.indexOf(ontologyUri) == 0 ) {
-					entityInfo = new IndividualInfo();
 					String localName = entityUri.substring(ontologyUri.length());
 					localName = localName.replaceAll("^/+", "");
 					entityInfo.setLocalName(localName);
 				}
 				else {
-					entityInfo = new IndividualInfo();
 					// use the given entityUri as the local name.
-					// Note that the query is made against the ontology, so every individual
+					// Note that the query is made against the ontology, so every entity
 					// found there should be included.
 					String localName = entityUri;
 					entityInfo.setLocalName(localName);
@@ -158,9 +164,15 @@ public class Util {
 				String varName = String.valueOf(varNames.next());
 				String entityUri = String.valueOf(sol.get(varName));
 				
+				if ( entityUri == null ) {
+					continue;
+				}
+				
+				PropertyInfo entityInfo = new PropertyInfo();
+				entityInfo.setUri(entityUri);
+				
 				// is ontologyUri a prefix of entityUri?
-				if ( entityUri != null && entityUri.indexOf(ontologyUri) == 0 ) {
-					IndividualInfo entityInfo = new IndividualInfo();
+				if ( entityUri.indexOf(ontologyUri) == 0 ) {
 					String localName = entityUri.substring(ontologyUri.length());
 					localName = localName.replaceAll("^/+", "");
 					entityInfo.setLocalName(localName);
@@ -168,6 +180,13 @@ public class Util {
 					_addProps(entityUri, entityInfo, ontModel);
 					
 					entities.add(entityInfo);
+				}
+				else {
+					// use the given entityUri as the local name.
+					// Note that the query is made against the ontology, so every entity
+					// found there should be included.
+					String localName = entityUri;
+					entityInfo.setLocalName(localName);
 				}
 			}
 		}
@@ -197,9 +216,15 @@ public class Util {
 				String varName = String.valueOf(varNames.next());
 				String entityUri = String.valueOf(sol.get(varName));
 				
+				if ( entityUri == null ) {
+					continue;
+				}
+				
+				ClassInfo entityInfo = new ClassInfo();
+				entityInfo.setUri(entityUri);
+				
 				// is ontologyUri a prefix of entityUri?
-				if ( entityUri !=null && entityUri.indexOf(ontologyUri) == 0 ) {
-					IndividualInfo entityInfo = new IndividualInfo();
+				if ( entityUri.indexOf(ontologyUri) == 0 ) {
 					String localName = entityUri.substring(ontologyUri.length());
 					localName = localName.replaceAll("^/+", "");
 					entityInfo.setLocalName(localName);
@@ -207,6 +232,13 @@ public class Util {
 					_addProps(entityUri, entityInfo, ontModel);
 					
 					entities.add(entityInfo);
+				}
+				else {
+					// use the given entityUri as the local name.
+					// Note that the query is made against the ontology, so every entity
+					// found there should be included.
+					String localName = entityUri;
+					entityInfo.setLocalName(localName);
 				}
 			}
 		}

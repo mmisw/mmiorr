@@ -17,7 +17,7 @@ public abstract class EntityInfo implements Serializable {
 	// used only on the client side
 	private transient char code;
 	
-	
+	private String uri;
 	private String localName;
 	private String displayLabel;
 	private String comment;
@@ -33,6 +33,20 @@ public abstract class EntityInfo implements Serializable {
 	}
 	
 
+	/**
+	 * @return the uri
+	 */
+	public String getUri() {
+		return uri;
+	}
+	
+	/**
+	 * @param uri the uri to set
+	 */
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
+	
 	public String getLocalName() {
 		return localName;
 	}
