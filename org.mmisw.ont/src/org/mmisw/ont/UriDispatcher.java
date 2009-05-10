@@ -67,6 +67,7 @@ public class UriDispatcher {
 		else if ( outFormat.equalsIgnoreCase("owl")
 			 ||   outFormat.equalsIgnoreCase("rdf")	 
 			 ||   outFormat.equalsIgnoreCase("n3")	 
+			 ||   outFormat.equalsIgnoreCase("json")	 
 		) {
 			_dispatchUriOntologyFormat(request, response, entityUri, outFormat);
 		}
