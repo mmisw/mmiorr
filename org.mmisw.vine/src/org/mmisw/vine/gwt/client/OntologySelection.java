@@ -69,7 +69,7 @@ public class OntologySelection extends VerticalPanel {
 		
 		
 		for ( OntologyInfo s : Main.getWorkingUris().values() ) {
-			vp.add(new HTML("<b>" +s.getCode()+ "</b>: " + s.getUri()));
+			vp.add(new HTML("<b>" +s.getCode()+ "</b>: " + s.getUri() + "/"));
 		}
 		
 		addButton.addClickListener(new ClickListener() {
@@ -86,7 +86,7 @@ public class OntologySelection extends VerticalPanel {
 		String uri = ontologyInfo.getUri();
 		
 		vp.add(new HTML("<b>" +code+ "</b>: " 
-				+ "<a target=\"_blank\" href=\"" +uri+ "\">" +uri+ "</a>" 
+				+ "<a target=\"_blank\" href=\"" +uri+ "\">" +uri+ "/</a>" 
 				+ " -- "
 				+ "<i>" +ontologyInfo.getDisplayLabel()+ "</i>"
 		));

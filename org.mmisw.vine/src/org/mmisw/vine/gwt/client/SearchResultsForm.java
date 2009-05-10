@@ -277,7 +277,7 @@ public class SearchResultsForm extends VerticalPanel {
 		private void disclosureOpen() {
 			String name = entity.getLocalName();
 			String code = "" + entity.getCode();
-			String uri = Main.getWorkingUris().get(code).getUri() + name;
+			String uri = Main.getWorkingUris().get(code).getUri()+ "/" +name;
 			
 			
 			FlexTable flexPanel = new FlexTable();

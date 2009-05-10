@@ -3,6 +3,10 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2009-05-11
+	- Include trailing slash for the prefixed namespaces so the terms are shown now
+	  with only the <letter>:  prefix (and not <letter>:/)
+	
 2009-05-07
 	- Util.addIndividuals: if ontologyUri is NOT a prefix of the retrieved entityUri,
 	  now uses that entityUri as the "local name"; Note that the query is made against 

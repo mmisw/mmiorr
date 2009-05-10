@@ -116,6 +116,7 @@ public class Util {
 				if ( entityUri.indexOf(ontologyUri) == 0 ) {
 					entityInfo = new IndividualInfo();
 					String localName = entityUri.substring(ontologyUri.length());
+					localName = localName.replaceAll("^/+", "");
 					entityInfo.setLocalName(localName);
 				}
 				else {
@@ -161,6 +162,7 @@ public class Util {
 				if ( entityUri != null && entityUri.indexOf(ontologyUri) == 0 ) {
 					IndividualInfo entityInfo = new IndividualInfo();
 					String localName = entityUri.substring(ontologyUri.length());
+					localName = localName.replaceAll("^/+", "");
 					entityInfo.setLocalName(localName);
 					
 					_addProps(entityUri, entityInfo, ontModel);
@@ -199,6 +201,7 @@ public class Util {
 				if ( entityUri !=null && entityUri.indexOf(ontologyUri) == 0 ) {
 					IndividualInfo entityInfo = new IndividualInfo();
 					String localName = entityUri.substring(ontologyUri.length());
+					localName = localName.replaceAll("^/+", "");
 					entityInfo.setLocalName(localName);
 					
 					_addProps(entityUri, entityInfo, ontModel);
