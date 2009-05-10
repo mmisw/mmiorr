@@ -82,7 +82,7 @@ public class Sparql {
 				
 				String str = JenaUtil2.getOntModelAsString(model_, "RDF/XML-ABBREV");	
 				
-				if ( form.equalsIgnoreCase("owl") || form.equalsIgnoreCase("rdf") ) {
+				if ( form == null || form.equalsIgnoreCase("owl") || form.equalsIgnoreCase("rdf") ) {
 					str = JenaUtil2.getOntModelAsString(model_, "RDF/XML-ABBREV");
 					queryResult.setContentType("Application/rdf+xml");
 				}
