@@ -43,6 +43,10 @@ public interface OntMdServiceAsync {
 	void getVoc2RdfBaseInfo(AsyncCallback<Voc2RdfBaseInfo> callback);
 	
 	void convert2Rdf(Map<String,String> values, AsyncCallback<ConversionResult> callback);
-	
 
+	
+	///////////////////////////////////////////////////////////////////////
+	// data
+
+	void getData(OntologyInfo ontologyInfo, AsyncCallback<DataResult> callback);
 }

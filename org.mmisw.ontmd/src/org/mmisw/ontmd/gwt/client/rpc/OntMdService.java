@@ -79,4 +79,13 @@ public interface OntMdService extends RemoteService {
 	ConversionResult convert2Rdf(Map<String,String> values);
 	
 	
+	///////////////////////////////////////////////////////////////////////
+	// data
+	
+	/**
+	 * Reviews the pre-loaded model with the associated new values.
+	 */
+	DataResult getData(OntologyInfo ontologyInfo);
+
+
 }

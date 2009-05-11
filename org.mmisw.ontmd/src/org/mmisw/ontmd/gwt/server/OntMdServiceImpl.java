@@ -34,6 +34,7 @@ import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.ontmd.gwt.client.rpc.AppInfo;
 import org.mmisw.ontmd.gwt.client.rpc.BaseInfo;
 import org.mmisw.ontmd.gwt.client.rpc.BaseResult;
+import org.mmisw.ontmd.gwt.client.rpc.DataResult;
 import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
 import org.mmisw.ontmd.gwt.client.rpc.OntMdService;
 import org.mmisw.ontmd.gwt.client.rpc.OntologyInfo;
@@ -1324,4 +1325,44 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		return voc2rdf.convert(values);
 	}
 
+	
+	///////////////////////////////////////////////////////////////////////
+	// data
+	
+	public DataResult getData(OntologyInfo ontologyInfo) {
+		DataResult dataResult = new DataResult();
+		
+		String fullPathCsv = ontologyInfo.getFullPathCsv();
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug("getData: fullPathCsv=" +fullPathCsv);
+		}
+		
+		BufferedReader is = null;
+		try {
+			is = new BufferedReader(new InputStreamReader(new FileInputStream(fullPathCsv)));
+			StringWriter sw = new StringWriter();
+			PrintWriter os = new PrintWriter(sw);
+			IOUtils.copy(is, os);
+			os.flush();
+			String csv = sw.toString();
+			dataResult.setCsv(csv);
+			dataResult.setOntologyInfo(ontologyInfo);
+		}
+		catch (IOException e) {
+			String error = "error reading CSV: " +e.getMessage(); 
+			dataResult.setError(error);
+		}
+		finally {
+			if ( is != null ) {
+				try {
+					is.close();
+				}
+				catch(IOException ignore) {
+				}
+			}
+		}
+
+		return dataResult;
+	}
 }
