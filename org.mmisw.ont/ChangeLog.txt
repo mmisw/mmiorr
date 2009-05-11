@@ -7,6 +7,7 @@ ChangeLog
 2009-09-11
 	- Added config property: aquaportal.voc2rdf.dir
 	- Added internal operation _csv to provide the CSV contents of an ontology
+	- TODO remove the "_lpath" operation in "Ont"
 	
 	
 2009-05-08

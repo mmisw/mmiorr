@@ -1208,7 +1208,8 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		OntologyInfo ontologyInfo = new OntologyInfo();
 		
 		
-		if ( false ) {        // previous mechanism
+		if ( false ) {        // TODO remove this previous mechanism
+			
 			// Note: we assume this ontmd service is located in the same server as the "ont" service.
 			// We request the local path and then directly load the ontology to obtain
 			// some of the associated attributes.
