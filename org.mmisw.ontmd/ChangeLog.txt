@@ -5,7 +5,11 @@ ChangeLog
 
 2009-05-11
 	- Preparations to show ontology data in view only mode.
-		Initially, to show term table for a voc2rdf ontology (based on the assiciated CSV)
+		Initially, to show term table for a voc2rdf ontology (based on the associated CSV)
+		
+	- View only of an ontology now does requests to "Ont" to get the model (via Jena) and the
+	  contents of the CSV (if any) via a new Ont operation with (parameter "_csv").
+	  TODO remove the "_lpath" operation in "Ont"
 	
 	
 2009-05-07

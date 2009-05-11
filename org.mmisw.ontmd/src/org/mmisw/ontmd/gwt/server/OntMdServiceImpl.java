@@ -260,12 +260,31 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	 * @param ontologyInfo  The object to be completed
 	 */
 	private String prepareOntologyInfo(File file, OntologyInfo ontologyInfo) {
+		String full_path = file.getAbsolutePath();
+		ontologyInfo.setFullPath(full_path);
+		
 		String uriFile = file.toURI().toString();
 		log.info("Loading model: " +uriFile);
+
+		return prepareOntologyInfoFromUri(uriFile, ontologyInfo);
+	}
+	
+	/**
+	 * Does the preparation by reading the model from the given URI.
+	 * @param uriModel URI of the model to be loaded
+	 * @param ontologyInfo  The object to be completed
+	 * @return
+	 */
+	private String prepareOntologyInfoFromUri(String uriModel, OntologyInfo ontologyInfo) {
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug("prepareOntologyInfoFromUri: uriModel=" +uriModel);
+		}
+		
 		OntModel model;
 		
 		try {
-			model = JenaUtil.loadModel(uriFile, false);
+			model = JenaUtil.loadModel(uriModel, false);
 		}
 		catch (Throwable ex) {
 			String error = "Unexpected error: " +ex.getClass().getName()+ " : " +ex.getMessage();
@@ -273,12 +292,10 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			return error;
 		}
 		
-		if ( log.isDebugEnabled() ) {
+		if ( false && log.isDebugEnabled() ) {
 			debugOntModel(model);
 		}
 
-		String full_path = file.getAbsolutePath();
-		
 		Resource ontRes = JenaUtil.getFirstIndividual(model, OWL.Ontology);
 		
 		_getBaseInfoIfNull();
@@ -381,7 +398,6 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		}
 		
 		ontologyInfo.setOriginalValues(originalValues);
-		ontologyInfo.setFullPath(full_path);
 		
 		// associate the original base URI:
 		String uri = model.getNsPrefixURI("");
@@ -1157,95 +1173,127 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	}
 
 	
-	public OntologyInfo getOntologyInfoFromRegistry(String ontologyUri) {
-		OntologyInfo ontologyInfo = new OntologyInfo();
-		
-		// Note: we assume this ontmd service is located in the same server as the "ont" service.
-		// We request the local path and then directly load the ontology to obtain
-		// some of the associated attributes.
-		
+//	private String getOntologyOwl(String ontologyUri) {
+//		
+//		URL url = new URL(ontologyUri);
+//	}
+	
+	
+	private File getLocalOntologyFile(String ontologyUri) throws Exception {
 		String ontologyUri_lpath = ontologyUri+ "?_lpath";
 		
-		URL url;
-		try {
-			url = new URL(ontologyUri_lpath);
-		}
-		catch (MalformedURLException ex) {
-			String error = ex.getClass().getName()+ " : " +ex.getMessage();
-			log.info(error);
-			ontologyInfo.setError(error);
-			return ontologyInfo;
-		}
-		
-		String full_path ;
-		try {
-			InputStream is = url.openStream();
-			BufferedReader br = new BufferedReader(new InputStreamReader(is));
-			full_path = br.readLine();
-		}
-		catch (IOException ex) {
-			String error = ex.getClass().getName()+ " : " +ex.getMessage();
-			log.info(error);
-			ontologyInfo.setError(error);
-			return ontologyInfo;
-		}
+		URL url = new URL(ontologyUri_lpath);
 
-		if ( full_path == null ) {
-			String error = "Could not get local path of ontology";
-			log.info(error);
-			ontologyInfo.setError(error);
-			return ontologyInfo;
-		}
+		InputStream is = url.openStream();
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+		String full_path = br.readLine();
 
 		if ( full_path.startsWith("ERROR") ) {
 			String error = "Getting local path returned: " +full_path;
 			log.info(error);
-			ontologyInfo.setError(error);
-			return ontologyInfo;
+			throw new Exception(error);
 		}
 		
 		// full_path should be ok here.
 		
-		log.info("getOntologyInfoFromRegistry: local path: " +full_path);
+		log.info("getLocalOntologyFile: local path: " +full_path);
 		
-		// now, complete the ontology object:
 		File file = new File(full_path);
 		
-		try {
-			ontologyInfo.setRdf(readRdf(file));
-		}
-		catch (Throwable e) {
-			String error = "Cannot read RDF model: " +full_path+ " : " +e.getMessage();
-			log.info(error);
-			ontologyInfo.setError(error);
-			return ontologyInfo;
-		}
-
-		String error = prepareOntologyInfo(file, ontologyInfo);
-		if ( error != null ) {
-			ontologyInfo.setError(error);
-			return ontologyInfo;
-		}
-
+		return file;
+	}
+	
+	
+	public OntologyInfo getOntologyInfoFromRegistry(String ontologyUri) {
+		OntologyInfo ontologyInfo = new OntologyInfo();
 		
-		///////////////////////////////////////////////////////////////////////////////
-		// .csv
-		String destPathCsv;
-		try {
-			destPathCsv = new URL(ontologyUri).getPath();
-			destPathCsv = destPathCsv.replaceAll("/|\\\\", "_") + ".csv";
-			File fileCsv = new File(Config.Prop.ONTMD_VOC2RDF_DIR.getValue() + destPathCsv);
-			if ( fileCsv.exists() ) {
-				ontologyInfo.setFullPathCsv(fileCsv.getAbsolutePath());
+		
+		if ( false ) {        // previous mechanism
+			// Note: we assume this ontmd service is located in the same server as the "ont" service.
+			// We request the local path and then directly load the ontology to obtain
+			// some of the associated attributes.
+
+			File file;
+
+			try {
+				file = getLocalOntologyFile(ontologyUri);
 			}
+			catch (Exception ex) {
+				String error = ex.getClass().getName()+ " : " +ex.getMessage();
+				log.info(error);
+				ontologyInfo.setError(error);
+				return ontologyInfo;
+			}
+
+			try {
+				ontologyInfo.setRdf(readRdf(file));
+			}
+			catch (Throwable e) {
+				String error = "Cannot read RDF model: " +file+ " : " +e.getMessage();
+				log.info(error);
+				ontologyInfo.setError(error);
+				return ontologyInfo;
+			}
+
+			String error = prepareOntologyInfo(file, ontologyInfo);
+			if ( error != null ) {
+				ontologyInfo.setError(error);
+				return ontologyInfo;
+			}
+			
+			///////////////////////////////////////////////////////////////////////////////
+			// .csv
+			String destPathCsv;
+			try {
+				destPathCsv = new URL(ontologyUri).getPath();
+				destPathCsv = destPathCsv.replaceAll("/|\\\\", "_") + ".csv";
+				File fileCsv = new File(Config.Prop.ONTMD_VOC2RDF_DIR.getValue() + destPathCsv);
+				if ( fileCsv.exists() ) {
+					ontologyInfo.setFullPathCsv(fileCsv.getAbsolutePath());
+				}
+				
+				if ( log.isDebugEnabled() ) {
+					log.debug("getOntologyInfoFromRegistry: fileCsv=" +fileCsv+ " exists=" +fileCsv.exists());
+				}
+
+			}
+			catch (MalformedURLException e) {
+				log.error("shouldn't happen", e);
+				ontologyInfo.setError(e.getMessage());
+				return ontologyInfo;
+			}
+			///////////////////////////////////////////////////////////////////////////////
+
 		}
-		catch (MalformedURLException e) {
-			log.error("shouldn't happen", e);
-			ontologyInfo.setError(e.getMessage());
-			return ontologyInfo;
+		else { // new mechanism
+			
+			if ( log.isDebugEnabled() ) {
+				log.debug("getOntologyInfoFromRegistry: ontologyUri=" +ontologyUri);
+			}
+			
+			try {
+				URL url = new URL(ontologyUri);
+				InputStream is = url.openStream();
+				StringWriter os = new StringWriter();
+				IOUtils.copy(is, os);
+				ontologyInfo.setRdf(os.toString());
+				
+				String error = prepareOntologyInfoFromUri(ontologyUri, ontologyInfo);
+				if ( error != null ) {
+					ontologyInfo.setError(error);
+					return ontologyInfo;
+				}
+			}
+			catch (Exception e) {
+				String error = "Cannot read RDF model: " +ontologyUri+ " : " +e.getMessage();
+				log.info(error);
+				ontologyInfo.setError(error);
+				return ontologyInfo;
+			}
+			
+			// CSV not prepared here.  See getData
+			
 		}
-		///////////////////////////////////////////////////////////////////////////////
-		
 		
 		return ontologyInfo;
 	}
@@ -1331,38 +1379,34 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	
 	public DataResult getData(OntologyInfo ontologyInfo) {
 		DataResult dataResult = new DataResult();
+		dataResult.setOntologyInfo(ontologyInfo);
 		
-		String fullPathCsv = ontologyInfo.getFullPathCsv();
-		
+		String ontologyUri = ontologyInfo.getUri();
 		if ( log.isDebugEnabled() ) {
-			log.debug("getData: fullPathCsv=" +fullPathCsv);
+			log.debug("getData: ontologyUri=" +ontologyUri);
 		}
 		
-		BufferedReader is = null;
 		try {
-			is = new BufferedReader(new InputStreamReader(new FileInputStream(fullPathCsv)));
-			StringWriter sw = new StringWriter();
-			PrintWriter os = new PrintWriter(sw);
+			URL url = new URL(ontologyUri  + "?_csv");
+			InputStream is = url.openStream();
+			StringWriter os = new StringWriter();
 			IOUtils.copy(is, os);
-			os.flush();
-			String csv = sw.toString();
-			dataResult.setCsv(csv);
-			dataResult.setOntologyInfo(ontologyInfo);
-		}
-		catch (IOException e) {
-			String error = "error reading CSV: " +e.getMessage(); 
-			dataResult.setError(error);
-		}
-		finally {
-			if ( is != null ) {
-				try {
-					is.close();
-				}
-				catch(IOException ignore) {
-				}
+			
+			String result = os.toString();
+			if ( result.startsWith("ERROR") ) {
+				log.info(result);
+				dataResult.setError(result);
+			}
+			else {
+				dataResult.setCsv(result);
 			}
 		}
-
+		catch (Exception e) {
+			String error = "Cannot read CSV for: " +ontologyUri+ " : " +e.getMessage();
+			log.info(error);
+			dataResult.setError(error);
+		}
+		
 		return dataResult;
 	}
 }
