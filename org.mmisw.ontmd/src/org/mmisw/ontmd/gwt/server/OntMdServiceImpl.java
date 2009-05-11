@@ -1223,7 +1223,28 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		String error = prepareOntologyInfo(file, ontologyInfo);
 		if ( error != null ) {
 			ontologyInfo.setError(error);
+			return ontologyInfo;
 		}
+
+		
+		///////////////////////////////////////////////////////////////////////////////
+		// .csv
+		String destPathCsv;
+		try {
+			destPathCsv = new URL(ontologyUri).getPath();
+			destPathCsv = destPathCsv.replaceAll("/|\\\\", "_") + ".csv";
+			File fileCsv = new File(Config.Prop.ONTMD_VOC2RDF_DIR.getValue() + destPathCsv);
+			if ( fileCsv.exists() ) {
+				ontologyInfo.setFullPathCsv(fileCsv.getAbsolutePath());
+			}
+		}
+		catch (MalformedURLException e) {
+			log.error("shouldn't happen", e);
+			ontologyInfo.setError(e.getMessage());
+			return ontologyInfo;
+		}
+		///////////////////////////////////////////////////////////////////////////////
+		
 		
 		return ontologyInfo;
 	}

@@ -3,6 +3,11 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-05-11
+	- Preparations to show ontology data in view only mode.
+		Initially, to show term table for a voc2rdf ontology (based on the assiciated CSV)
+	
+	
 2009-05-07
 	- implemented issue #135: preserve URIS from simple vocabularies that allready have defines URIs
 	  It works as follows:

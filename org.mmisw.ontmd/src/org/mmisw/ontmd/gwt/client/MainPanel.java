@@ -45,6 +45,9 @@ public class MainPanel extends VerticalPanel {
 	// created depending on type of interface: editing or viewwing
 	private MetadataPanel metadataPanel;
 	
+	// created ONLY in viewing mode
+	private DataPanel dataPanel;
+	
 	
 	private UserPanel userInfoPanel = new UserPanel(this);
 //	private UploadPanel loginPanel = new UploadPanel(this);
@@ -259,7 +262,14 @@ public class MainPanel extends VerticalPanel {
 		// create metadata panel for vieweing:
 		metadataPanel = new MetadataPanel(this, false);
 
-	    return metadataPanel;
+		dataPanel = new DataPanel(this, false);
+		
+		CellPanel panel = new VerticalPanel();
+		panel.add(metadataPanel);
+		panel.add(dataPanel);
+		
+		return panel;
+//	    return metadataPanel;
 	}
 	
 	private void getOntologyInfoFromRegistry(String ontologyUri) {
@@ -288,6 +298,10 @@ public class MainPanel extends VerticalPanel {
 				else {
 					boolean link = !editRequestedOntology;
 					metadataPanel.resetToOriginalValues(ontologyInfo, null, false, link);
+					
+					if ( dataPanel != null ) {
+						dataPanel.updateWith(ontologyInfo);
+					}
 				}
 			}
 		};
@@ -325,6 +339,10 @@ public class MainPanel extends VerticalPanel {
 				}
 				else {
 					metadataPanel.resetToOriginalValues(ontologyInfo, null, false, false);
+					
+					if ( dataPanel != null ) {
+						dataPanel.updateWith(ontologyInfo);
+					}
 				}
 			}
 		};
@@ -677,6 +695,9 @@ public class MainPanel extends VerticalPanel {
 		resetAllButton.setEnabled(enabled);
 		if ( metadataPanel != null ) {
 			metadataPanel.enable(enabled);
+		}
+		if ( dataPanel != null ) {
+			dataPanel.enable(enabled);
 		}
 	}
 
