@@ -20,6 +20,10 @@
 			<param-value>@aquaportal.uploads.directory@</param-value>
 		</init-param>
 		<init-param>
+			<param-name>aquaportal.voc2rdf.dir</param-name>
+			<param-value>@aquaportal.voc2rdf.dir@</param-value>
+		</init-param>
+		<init-param>
 			<param-name>aquaportal.datasource</param-name>
 			<param-value>@aquaportal.datasource@</param-value>
 		</init-param>
