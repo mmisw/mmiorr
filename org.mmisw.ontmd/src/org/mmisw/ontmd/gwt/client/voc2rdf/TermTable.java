@@ -44,13 +44,16 @@ public class TermTable extends VerticalPanel {
 	private int currCol;
 	private TableCell currCell;
 	
+	private final boolean readOnly;
 
 	/**
 	 * Create a editable table for the terms.
 	 * @param cols number of desired columns
 	 */
-	TermTable(int cols) {
+	TermTable(int cols, boolean readOnly) {
 		this.add(flexTable);
+		this.readOnly = readOnly;
+		
 		flexTable.setBorderWidth(1);
 		
 		flexTable.setStylePrimaryName("TermTable");
@@ -131,8 +134,6 @@ public class TermTable extends VerticalPanel {
 			_setWidget(row, col, tcell);
 		}
 		else if ( row > CONTROL_ROW || col > CONTROL_COL ) {
-			Image img = Main.images.tridown().createImage();
-			
 			HorizontalPanel hp = new HorizontalPanel();
 			hp.setWidth("100%");
 //			hp.setBorderWidth(1);
@@ -143,18 +144,31 @@ public class TermTable extends VerticalPanel {
 				HTML html = new HTML(text);
 				HTML filler = new HTML("");
 				
-				hp.add(img);
-				hp.add(html);
-				hp.add(filler);
-
-				hp.setCellWidth(img, "30%");
-				hp.setCellWidth(html, "50%");
-				hp.setCellWidth(filler, "20%");
-				
-				hp.setCellHorizontalAlignment(img, ALIGN_LEFT);
 				hp.setCellHorizontalAlignment(html, ALIGN_RIGHT);
+				
+				if ( readOnly ) {
+					hp.add(html);
+					hp.add(filler);
+					
+					hp.setCellWidth(html, "80%");
+					hp.setCellWidth(filler, "20%");
+				}
+				else {
+					Image img = Main.images.tridown().createImage();
+					
+					hp.add(img);
+					hp.add(html);
+					hp.add(filler);
+					
+					hp.setCellWidth(img, "30%");
+					hp.setCellWidth(html, "50%");
+					hp.setCellWidth(filler, "20%");
+					
+					hp.setCellHorizontalAlignment(img, ALIGN_LEFT);
+				}
 			}
-			else {
+			else if ( ! readOnly ) {
+				Image img = Main.images.tridown().createImage();
 				hp.add(img);
 			}
 			
@@ -214,6 +228,9 @@ public class TermTable extends VerticalPanel {
 	 * 
 	 */
 	private void _dispatchRowMenu(final int row) {
+		if ( readOnly ) {
+			return;
+		}
 		
 		Widget ww = _getWidget(row, 0);
 		int left = ww.getAbsoluteLeft();
@@ -288,6 +305,10 @@ public class TermTable extends VerticalPanel {
 
 	
 	private void _dispatchColumnHeader(final int col) {
+		if ( readOnly ) {
+			return;
+		}
+
 		Widget ww = _getWidget(CONTROL_COL, col);
 		int left = ww.getAbsoluteLeft();
 		int top = ww.getAbsoluteTop();
@@ -587,68 +608,70 @@ public class TermTable extends VerticalPanel {
 				}
 			});
 
-			contents.addKeyboardListener(new KeyboardListenerAdapter() {
-				public void onKeyPress(Widget sender, char keyCode, int modifiers) {
+			if ( ! readOnly ) {
+				contents.addKeyboardListener(new KeyboardListenerAdapter() {
+					public void onKeyPress(Widget sender, char keyCode, int modifiers) {
 
-					if ( keyCode == KEY_ENTER ) {
-						if ( contents.isReadOnly() ) {
-							contents.setReadOnly(false);
-							contents.addStyleDependentName("focusedEdit");
-							int len = contents.getText().length();
-							
-							contents.setCursorPos(len);
-							
+						if ( keyCode == KEY_ENTER ) {
+							if ( contents.isReadOnly() ) {
+								contents.setReadOnly(false);
+								contents.addStyleDependentName("focusedEdit");
+								int len = contents.getText().length();
+
+								contents.setCursorPos(len);
+
+							}
+							else {
+								contents.removeStyleDependentName("focusedEdit");
+								contents.setReadOnly(true);
+								contents.selectAll();
+							}
+							return;
 						}
-						else {
-							contents.removeStyleDependentName("focusedEdit");
-							contents.setReadOnly(true);
-							contents.selectAll();
+
+						if ( !contents.isReadOnly() ) {
+							return;
 						}
-						return;
-					}
-					
-					if ( !contents.isReadOnly() ) {
-						return;
-					}
-					
-					int row = actualRow;
-					int col = actualCol;
-					if ( keyCode == KEY_DOWN || keyCode == KEY_UP ) {
-						row = actualRow + (keyCode == KEY_DOWN ? 1 : -1);
-						contents.cancelKey();
-					}
-					else if ( keyCode == KEY_RIGHT || keyCode == KEY_LEFT ) {
-						col = actualCol + (keyCode == KEY_RIGHT ? 1 : -1);
-						contents.cancelKey();
-					}	
 
-					if ( row == actualRow && col == actualCol ) {
-						return;
-					}
+						int row = actualRow;
+						int col = actualCol;
+						if ( keyCode == KEY_DOWN || keyCode == KEY_UP ) {
+							row = actualRow + (keyCode == KEY_DOWN ? 1 : -1);
+							contents.cancelKey();
+						}
+						else if ( keyCode == KEY_RIGHT || keyCode == KEY_LEFT ) {
+							col = actualCol + (keyCode == KEY_RIGHT ? 1 : -1);
+							contents.cancelKey();
+						}	
 
-					if ( row < 0 || col < 0 ) {
-						return;
-					}
+						if ( row == actualRow && col == actualCol ) {
+							return;
+						}
 
-					if ( row >= flexTable.getRowCount() ) {
-						return;
-					}
+						if ( row < 0 || col < 0 ) {
+							return;
+						}
 
-					if ( col >= flexTable.getCellCount(row) ) {
-						return;
-					}
+						if ( row >= flexTable.getRowCount() ) {
+							return;
+						}
 
-					Widget widget = _getWidget(row, col);
-					if ( ! (widget instanceof TableCell) ) {
-						return;
-					}
+						if ( col >= flexTable.getCellCount(row) ) {
+							return;
+						}
 
-					TableCell tcell = (TableCell) widget;
-					if ( tcell != null ) {
-						tcell.setFocus(true);
+						Widget widget = _getWidget(row, col);
+						if ( ! (widget instanceof TableCell) ) {
+							return;
+						}
+
+						TableCell tcell = (TableCell) widget;
+						if ( tcell != null ) {
+							tcell.setFocus(true);
+						}
 					}
-				}
-			});
+				});
+			}
 			
 			contents.setText(text);
 			add(contents);

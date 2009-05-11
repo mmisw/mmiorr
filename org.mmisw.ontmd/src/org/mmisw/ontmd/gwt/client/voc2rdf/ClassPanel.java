@@ -287,7 +287,7 @@ public class ClassPanel extends VerticalPanel {
 	private void updateContents(String contents) {
 		
 		StringBuffer errorMsg = new StringBuffer();
-		TermTable tt = TermTableCreator.createTermTable(',', contents, errorMsg);
+		TermTable tt = TermTableCreator.createTermTable(',', contents, false, errorMsg);
 		
 		if ( errorMsg.length() > 0 ) {
 //			statusLabel.setHTML("<font color=\"red\">" +errorMsg+ "</font>");
@@ -355,14 +355,14 @@ public class ClassPanel extends VerticalPanel {
 				lines = text.split("\n|\r\n|\r");
 				if ( lines.length == 0 || lines[0].trim().length() == 0 ) {
 					// A 1-column table to allow the user to insert columns (make column menu will be available)
-					incrTermTable =  new TermTable(1);
+					incrTermTable =  new TermTable(1, false);
 					preDone();
 					return true;
 				}
 				
 				List<String> headerCols = TermTableCreator.parseLine(lines[0], separator);
 				numHeaderCols = headerCols.size();
-				incrTermTable = new TermTable(numHeaderCols);
+				incrTermTable = new TermTable(numHeaderCols, false);
 				
 				// header:
 				for ( int c = 0; c < numHeaderCols; c++ ) {

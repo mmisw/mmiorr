@@ -65,7 +65,7 @@ public class DataPanel extends VerticalPanel {
 		String contents = dataResult.getCsv();
 		
 		StringBuffer errorMsg = new StringBuffer();
-		TermTable termTable = TermTableCreator.createTermTable(',', contents, errorMsg);
+		TermTable termTable = TermTableCreator.createTermTable(',', contents, true, errorMsg);
 		
 		if ( errorMsg.length() > 0 ) {
 			add(new HTML("<font color=\"red\">" +errorMsg+ "</font>"));
