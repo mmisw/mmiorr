@@ -24,7 +24,10 @@ class OntConfig {
 		VERSION                       ("ont.app.version"),
 		BUILD                         ("ont.app.build"),
 		AQUAPORTAL_UPLOADS_DIRECTORY  ("aquaportal.uploads.directory"),
-		AQUAPORTAL_DATASOURCE         ("aquaportal.datasource");
+		AQUAPORTAL_DATASOURCE         ("aquaportal.datasource"),
+		
+		AQUAPORTAL_VOC2RDF_DIR        ("aquaportal.voc2rdf.dir"),
+		;
 		
 		private String name;
 		Prop(String name) { this.name = name; };

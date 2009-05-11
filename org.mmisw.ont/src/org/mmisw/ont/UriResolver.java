@@ -203,6 +203,13 @@ public class UriResolver extends HttpServlet {
 			return;
 		}
 		
+		// if the "_csv" parameter is included, reply with contents of associated CSV file
+		// (this is just a quick way to help ontmd to so some of its stuff ;)
+		if ( Util.yes(request, "_csv") ) {
+			miscDispatcher.resolveGetCsv(request, response);
+			return;
+		}
+		
 		// if the "_versions" parameter is included, reply with a list of the available
 		// version associated with the request
 		if ( Util.yes(request, "_versions") ) {

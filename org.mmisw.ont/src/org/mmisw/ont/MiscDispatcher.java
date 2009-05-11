@@ -1,9 +1,14 @@
 package org.mmisw.ont;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -15,6 +20,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.util.Util;
@@ -282,7 +288,7 @@ public class MiscDispatcher {
 	throws ServletException, IOException {
 		
 		if ( log.isDebugEnabled() ) {
-			log.debug("_resolveGetPath: starting '_path' response.");
+			log.debug("_resolveGetPath: starting '_lpath' response.");
 		}
 		
 		final String fullRequestedUri = request.getRequestURL().toString();
@@ -323,6 +329,95 @@ public class MiscDispatcher {
 	}
 	
 
+	/**
+	 * Helper method to dispatch a "_csv" request.
+	 * The dispatch is always completed here.
+	 */
+	void resolveGetCsv(HttpServletRequest request, HttpServletResponse response) 
+	throws ServletException, IOException {
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug("resolveGetCsv: starting '_csv' response.");
+		}
+		
+		final String fullRequestedUri = request.getRequestURL().toString();
+		
+		PrintWriter out = null; 
+		
+
+		// start the response page:
+		response.setContentType("text/plain");
+		out = response.getWriter();
+		
+		// parse the given URI:
+		MmiUri mmiUri = null;
+		try {
+			mmiUri = new MmiUri(fullRequestedUri);
+		}
+		catch (URISyntaxException e) {
+			out.println("ERROR: " +e.getReason());
+			return;
+		}
+		
+		// obtain info about the ontology:
+		String[] foundUri = { null };
+    	Ontology ontology = db.getOntologyWithExts(mmiUri, foundUri);
+		
+    	if ( ontology == null ) {
+    		out.println("ERROR: " +mmiUri.getOntologyUri()+ ": Not found.");
+    		return;
+    	}
+
+
+    	// get the CSV corresponding to the found URI
+    	String ontologyUri = foundUri[0];
+    	log.debug("getOntologyInfoFromRegistry: foundUri=" +ontologyUri);
+
+    	String destPathCsv;
+		try {
+			destPathCsv = new URL(ontologyUri).getPath();
+		}
+		catch (MalformedURLException e) {
+			log.error("shouldn't happen", e);
+			out.println("ERROR: shouldn't happen: " +e.getMessage());
+			return;
+		}
+		
+		destPathCsv = destPathCsv.replaceAll("/|\\\\", "_") + ".csv";
+		File fileCsv = new File(ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_VOC2RDF_DIR) + destPathCsv);
+
+		if ( log.isDebugEnabled() ) {
+			log.debug("getOntologyInfoFromRegistry: fileCsv=" +fileCsv+ " exists=" +fileCsv.exists());
+		}
+
+		if ( ! fileCsv.exists() ) {
+			out.println("ERROR: CSV of " +ontologyUri + " does not exist");
+			return;
+		}
+
+
+		BufferedReader is = null;
+		try {
+			is = new BufferedReader(new InputStreamReader(new FileInputStream(fileCsv)));
+			IOUtils.copy(is, out);
+			out.flush();
+		}
+		catch (IOException e) {
+			out.println("ERROR: error reading CSV: " +e.getMessage()); 
+		}
+		finally {
+			if ( is != null ) {
+				try {
+					is.close();
+				}
+				catch(IOException ignore) {
+				}
+			}
+		}
+
+	}
+
+	
 	/**
 	 * Helper method to dispatch a "_versions" request.
 	 * The dispatch is always completed here.

@@ -4,6 +4,11 @@ $Id$
 
 ChangeLog
 
+2009-09-11
+	- Added config property: aquaportal.voc2rdf.dir
+	- Added internal operation _csv to provide the CSV contents of an ontology
+	
+	
 2009-05-08
 	- if the "uri" parameter is included, resolve by the given URI, which is done 
 	  via a SPARQL query that depends on the "form" parameter. If form is "html" 

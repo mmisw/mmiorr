@@ -102,6 +102,7 @@
 				<filter token="ont.app.build"   value="${ont.app.build}" />
 				<filter token="aquaportal.datasource.name" value="${aquaportal.datasource.name}" />
 				<filter token="aquaportal.uploads.directory" value="${aquaportal.uploads.directory}" />
+				<filter token="aquaportal.voc2rdf.dir" value="${aquaportal.voc2rdf.dir}" />
 				<filter token="aquaportal.datasource" value="${aquaportal.datasource}" />
 			</filterset>
 		</copy>
