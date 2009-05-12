@@ -8,7 +8,6 @@ import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -52,31 +51,23 @@ public class UriResolver {
 	//
 	
 	
-	private static final long serialVersionUID = 1L;
-	
-	static final String TITLE = "MMI Ontology and Term URI Resolver";
-	
-	private static String VERSION = "?";   // determined at init() time -- see build.xml and version.properties
-	static String FULL_TITLE = TITLE + ". Version " +VERSION;
-
-
 	private final Log log = LogFactory.getLog(UriResolver.class);
 
-	private final OntConfig ontConfig = new OntConfig();
-	private final Db db = new Db(ontConfig);
-	private final OntGraph ontGraph = new OntGraph(ontConfig, db);
+	private final OntConfig ontConfig;
+	private final Db db;
+	private final OntGraph ontGraph;
 	
-	private final SparqlDispatcher sparqlDispatcher = new SparqlDispatcher(ontGraph);
+	private final SparqlDispatcher sparqlDispatcher;
 	
-	private final HtmlDispatcher htmlDispatcher = new HtmlDispatcher(ontConfig, db);
+	private final HtmlDispatcher htmlDispatcher;
 	
-	private final ImageDispatcher imgDispatcher = new ImageDispatcher(ontConfig, db);
+	private final ImageDispatcher imgDispatcher;
 	
-	private final MiscDispatcher miscDispatcher = new MiscDispatcher(ontConfig, db);
+	private final MiscDispatcher miscDispatcher;
 	
 	private final RegularFileDispatcher regularFileDispatcher = new RegularFileDispatcher();
 
-	private final UriDispatcher uriDispatcher = new UriDispatcher(sparqlDispatcher);
+	private final UriDispatcher uriDispatcher;
 	
 	
 	private enum OntFormat { RDFXML, N3 };
@@ -87,39 +78,19 @@ public class UriResolver {
 	private ServletContext servletContext;
 	
 	
-	/**
-	 * Initializes this service.
-	 * This basically consists of
-	 * retrieval of configuration parameters, 
-	 * initialization of the database connection, 
-	 * loading of the ontology graph,
-	 * and retrieval of version information.
-	 */
-	public void init(ServletConfig servletConfig) throws ServletException {
-		log.info(TITLE+ ": initializing");
-		
-		try {
-			ontConfig.init(servletConfig);
-			
-			VERSION = ontConfig.getProperty(OntConfig.Prop.VERSION)+ " (" +
-			          ontConfig.getProperty(OntConfig.Prop.BUILD)  + ")";
-			FULL_TITLE = TITLE + ". Version " +VERSION;
-			
-			log.info(FULL_TITLE);
+	public UriResolver(OntConfig ontConfig, Db db, OntGraph ontGraph) {
+		this.ontConfig = ontConfig;
+		this.db = db;
+		this.ontGraph = ontGraph;
 
-			db.init();
-			ontGraph.init();
-		} 
-		catch (Exception ex) {
-			log.error("Cannot initialize: " +ex.getMessage(), ex);
-			throw new ServletException("Cannot initialize", ex);
-		}
+		sparqlDispatcher = new SparqlDispatcher(ontGraph);
+		htmlDispatcher = new HtmlDispatcher(ontConfig, db);
+		imgDispatcher = new ImageDispatcher(ontConfig, db);
+		miscDispatcher = new MiscDispatcher(ontConfig, db);
+		
+		uriDispatcher = new UriDispatcher(sparqlDispatcher);
 	}
-	
-	public void destroy() {
-		log.info(FULL_TITLE+ ": destroy called.\n\n");
-	}
-	
+
 	
 	public void setServletContext(ServletContext servletContext) {
 		this.servletContext = servletContext;
@@ -514,38 +485,6 @@ public class UriResolver {
 	
 	
 	/**
-	 * Gets the full path to get to the uploaded ontology file.
-	 * @param ontology
-	 * @return
-	 */
-	static File _getFullPath(Ontology ontology, OntConfig ontConfig, Log log) {
-		String full_path = ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY) 
-			+ "/" +ontology.file_path + "/" + ontology.filename;
-		
-		File file = new File(full_path);
-		
-		if ( ! file.canRead() ) {
-			if ( full_path.toLowerCase().endsWith(".owl") ) {
-				// try without ".owl":
-				full_path = full_path.substring(0, full_path.length() - 4);
-			}
-			else {
-				// Note: the following is a quick workaround for submissions whose URI don't have
-				// the .owl extension (the general rule, btw), but whose uploaded files do. 
-				// I had to add the .owl extension in ontmd for the aquaportal parsing jobs to work.
-				// try with ".owl":
-				full_path += ".owl";
-			}
-			if ( log.isDebugEnabled() ) {
-				log.debug("TRYING: " +full_path);
-			}
-			file = new File(full_path);
-		}
-
-		return file;
-	}
-
-	/**
 	 * Helper method to dispatch a request with response in the given ontology format.
 	 * 
 	 * @param unversionedRequest If the original request was for the "unversioned" version.
@@ -575,7 +514,7 @@ public class UriResolver {
 		}
 		
 		
-		File file = UriResolver._getFullPath(ontology, ontConfig, log);
+		File file = OntServlet.getFullPath(ontology, ontConfig, log);
 		
 		
 		if ( !file.canRead() ) {

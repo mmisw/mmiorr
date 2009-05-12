@@ -87,7 +87,7 @@ public class RegularFileDispatcher {
 		out = response.getWriter();
 		out.println("<html>");
 		out.println("<head>");
-		out.println("<title>" +UriResolver.FULL_TITLE+ "</title>");
+		out.println("<title>" +OntServlet.FULL_TITLE+ "</title>");
 		out.println("<link rel=stylesheet href=\"" +contextPath + "/main.css\" type=\"text/css\">");
 		out.println("</head>");
 		out.println("<body>");
@@ -103,13 +103,13 @@ public class RegularFileDispatcher {
 				"</a>" +
 				"<br/>" +
 				"<br/>" +
-				"<b>" +UriResolver.TITLE+ "</b>" +
+				"<b>" +OntServlet.TITLE+ "</b>" +
 				"</br>This service is part of the " +
 				"<a href=\"http://marinemetadata.org/semanticframework\">" +
 				"MMI Semantic Framework</a>" +
 				"<br/>" +
 				"<br/>" +
-				"<font color=\"gray\" size=\"-2\">" +UriResolver.FULL_TITLE+ "</font>" +
+				"<font color=\"gray\" size=\"-2\">" +OntServlet.FULL_TITLE+ "</font>" +
 				"</td>" +
 				"</tr>" +
 				"</table>" +

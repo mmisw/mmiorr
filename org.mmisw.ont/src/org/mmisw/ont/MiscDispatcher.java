@@ -323,7 +323,7 @@ public class MiscDispatcher {
 
 		
 		// just return the path, without any further checks:
-    	File file = UriResolver._getFullPath(ontology, ontConfig, log);
+    	File file = OntServlet.getFullPath(ontology, ontConfig, log);
 
     	out.println(file.getAbsolutePath());
 	}
@@ -480,11 +480,11 @@ public class MiscDispatcher {
 		out = response.getWriter();
 		out.println("<html>");
 		out.println("<head>");
-		out.println("<title>" +UriResolver.FULL_TITLE+ "</title>");
+		out.println("<title>" +OntServlet.FULL_TITLE+ "</title>");
 		out.println("<link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\">");
 		out.println("</head>");
 		out.println("<body>");
-		out.println("<b>" +UriResolver.FULL_TITLE+ "</b><br/><br/>");
+		out.println("<b>" +OntServlet.FULL_TITLE+ "</b><br/><br/>");
 		out.println(" Full requested URI: <code>" + fullRequestedUri + "</code> <br/><br/>");
 		
 		// parse the given URI:
@@ -544,7 +544,7 @@ public class MiscDispatcher {
 
 		
 		// prepare info about the path to the file on disk:
-    	File file = UriResolver._getFullPath(ontology, ontConfig, log);
+    	File file = OntServlet.getFullPath(ontology, ontConfig, log);
 
 		// report the db info and whether the file can be read or not:
 		out.println(" Ontology entry FOUND: <br/>");

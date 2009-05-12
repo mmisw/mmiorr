@@ -88,7 +88,7 @@ public class HtmlDispatcher {
 			foundUri = foundUri_[0];
 		}
 
-		File file = UriResolver._getFullPath(ontology, ontConfig, log);
+		File file = OntServlet.getFullPath(ontology, ontConfig, log);
 		
 		if ( ! file.canRead() ) {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND, 
@@ -172,7 +172,7 @@ public class HtmlDispatcher {
 					"</a>" +
 				"</td>" +
 				"<td>" +
-					"<b>" +UriResolver.TITLE+ "</b>" +
+					"<b>" +OntServlet.TITLE+ "</b>" +
 					"<br/>" +
 					"<font size=\"-1\">" +
 					"This service is part of the " +
@@ -195,7 +195,7 @@ public class HtmlDispatcher {
 		out.println(
 				"<hr/>" +
 				"<div align=\"right\">" +
-					"<font color=\"gray\" size=\"-2\">" +UriResolver.FULL_TITLE+ "</font>" +
+					"<font color=\"gray\" size=\"-2\">" +OntServlet.FULL_TITLE+ "</font>" +
 				"</div>"
 		);
 	}
