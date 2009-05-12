@@ -6,6 +6,7 @@ ChangeLog
 
 2009-09-12
 	- new OntServlet as main entry point and as a preparation to start refactoring oif UriResolver
+	- new UriResolver2 as a support for the incremental refactoring
 	
 2009-09-11
 	- Added config property: aquaportal.voc2rdf.dir
