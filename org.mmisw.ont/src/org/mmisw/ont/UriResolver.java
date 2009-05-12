@@ -6,18 +6,16 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
-import java.util.List;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.ont.OntServlet.Request;
 import org.mmisw.ont.sparql.SparqlDispatcher;
 import org.mmisw.ont.util.Accept;
 import org.mmisw.ont.util.Util;
@@ -41,8 +39,10 @@ public class UriResolver {
 	//
 	//
 	// TODO Clean up and refactor this class
+	// (2009-05-12: doing it -- see OntServlet and UriResolver2)
+	//
 	// The implementation of this class has become a bit messy as things were added sometimes 
-	// without a minimum of preparation and design.
+	// very hastily (not much proper preparation and design).
 	// In particular, a new design should allow to better differenciate the steps to resolve a request:
 	//	- Determine if the requested resource is a whole ontology or an entity
 	//  - Associate a corresponding object for the requested resource
@@ -73,9 +73,7 @@ public class UriResolver {
 	private enum OntFormat { RDFXML, N3 };
 	
 	
-	private List<String> userAgentList;
-
-	private ServletContext servletContext;
+	private Request req;
 	
 	
 	public UriResolver(OntConfig ontConfig, Db db, OntGraph ontGraph) {
@@ -92,136 +90,102 @@ public class UriResolver {
 	}
 
 	
-	public void setServletContext(ServletContext servletContext) {
-		this.servletContext = servletContext;
-	}
-
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
-	}
-	
 	/**
 	 * The main dispatcher.
-	 * 
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		userAgentList = Util.getHeader(request, "user-agent");
-
-		if ( log.isDebugEnabled() ) {
-			String fullRequestedUri = request.getRequestURL().toString();
-			List<String> pcList = Util.getHeader(request, "PC-Remote-Addr");
-			log.debug("___ doGet: fullRequestedUri: " +fullRequestedUri);
-			log.debug("                 user-agent: " +userAgentList);
-			log.debug("             PC-Remote-Addr: " +pcList);
-			
-			// filter out Googlebot?
-			if ( false ) {   // Disabled as the robots.txt is now active.
-				for ( String ua: userAgentList ) {
-					if ( ua.matches(".*Googlebot.*") ) {
-						log.debug("returning NO_CONTENT to googlebot");
-						response.sendError(HttpServletResponse.SC_NO_CONTENT);
-						return;
-					}
-				}
-			}
-		}
+	void service(Request req) throws ServletException, IOException {
+		this.req = req;
 		
 		// first, see if there are any testing requests to dispatch 
 		
 		// show request info?
-		if ( Util.yes(request, "showreq")  ) {
-			Util.showReq(request, response);
+		if ( Util.yes(req.request, "showreq")  ) {
+			Util.showReq(req.request, req.response);
 			return;
 		} 
 		
 		// dispatch list of ontologies?
-		if ( Util.yes(request, "list")  ) {
-			miscDispatcher.listOntologies(request, response);
+		if ( Util.yes(req.request, "list")  ) {
+			miscDispatcher.listOntologies(req.request, req.response);
 			return;
 		}
 		
 		// dispatch list of vocabularies?
-		if ( Util.yes(request, "vocabs")  ) {
-			miscDispatcher.listVocabularies(request, response);
+		if ( Util.yes(req.request, "vocabs")  ) {
+			miscDispatcher.listVocabularies(req.request, req.response);
 			return;
 		}
 		
 		// dispatch list of mappings?
-		if ( Util.yes(request, "mappings")  ) {
-			miscDispatcher.listMappings(request, response);
+		if ( Util.yes(req.request, "mappings")  ) {
+			miscDispatcher.listMappings(req.request, req.response);
 			return;
 		}
 		
 		// dispatch a sparql-query?
-		if ( Util.yes(request, "sparql")  ) {
-			sparqlDispatcher.execute(request, response);
+		if ( Util.yes(req.request, "sparql")  ) {
+			sparqlDispatcher.execute(req.request, req.response);
 			return;
 		}
 		
 		
 		// reload graph?
-		if ( Util.yes(request, "_reload")  ) {
+		if ( Util.yes(req.request, "_reload")  ) {
 			ontGraph.reinit();
 			return;
 		}
 		
 		// dispatch a db-query?
-		if ( Util.yes(request, "dbquery")  ) {
-			Util.doDbQuery(request, response, db);
+		if ( Util.yes(req.request, "dbquery")  ) {
+			Util.doDbQuery(req.request, req.response, db);
 			return;
 		}
 		
 		
 		// if the "_lpath" parameter is included, reply with full local path of ontology file
 		// (this is just a quick way to help ontmd to so some of its stuff ;)
-		if ( Util.yes(request, "_lpath") ) {
-			miscDispatcher.resolveGetLocalPath(request, response);
+		if ( Util.yes(req.request, "_lpath") ) {
+			miscDispatcher.resolveGetLocalPath(req.request, req.response);
 			return;
 		}
 		
 		// if the "_csv" parameter is included, reply with contents of associated CSV file
 		// (this is just a quick way to help ontmd to so some of its stuff ;)
-		if ( Util.yes(request, "_csv") ) {
-			miscDispatcher.resolveGetCsv(request, response);
+		if ( Util.yes(req.request, "_csv") ) {
+			miscDispatcher.resolveGetCsv(req.request, req.response);
 			return;
 		}
 		
 		// if the "_versions" parameter is included, reply with a list of the available
-		// version associated with the request
-		if ( Util.yes(request, "_versions") ) {
-			miscDispatcher.resolveGetVersions(request, response);
+		// version associated with the req.request
+		if ( Util.yes(req.request, "_versions") ) {
+			miscDispatcher.resolveGetVersions(req.request, req.response);
 			return;
 		}
 		
 		// if the "_debug" parameter is included, show some info about the URI parse
 		// and the ontology from the database (but do not serve the contents)
-		if ( Util.yes(request, "_debug") ) {
-			miscDispatcher.resolveUriDebug(request, response);
+		if ( Util.yes(req.request, "_debug") ) {
+			miscDispatcher.resolveUriDebug(req.request, req.response);
 			return;
 		}
 		
 		// if the "uri" parameter is included, resolve by the given URI
-		if ( Util.yes(request, "uri") ) {
-			uriDispatcher.dispatchUri(request, response);
+		if ( Util.yes(req.request, "uri") ) {
+			uriDispatcher.dispatchUri(req.request, req.response);
 			return;
 		}
 		
 
 		
 		// resolve URI?
-		if ( _resolveUri(request, response)  ) {
+		if ( _resolveUri(req.request, req.response)  ) {
 			// OK, no more to do here.
 			return;
 		}
 		
 		// Else, try to resolve the requested resource.
-		regularFileDispatcher.dispatch(servletContext, request, response);
+		regularFileDispatcher.dispatch(req.servletContext, req.request, req.response);
 	}
 
 	/**
@@ -409,7 +373,7 @@ public class UriResolver {
 			//   Wrong Accept-Header in HTTP-Connections - ID: 1424091
 			//   http://sourceforge.net/tracker2/?func=detail&aid=1424091&group_id=40417&atid=430288
 			//
-			else if ( userAgentList.size() > 0 && userAgentList.get(0).startsWith("Java/") ) {
+			else if ( req.userAgentList.size() > 0 && req.userAgentList.get(0).startsWith("Java/") ) {
 				
 				return _resolveUriOntFormat(request, response, mmiUri, OntFormat.RDFXML, unversionedRequest, mostRecentOntology);
 			}
@@ -686,5 +650,6 @@ public class UriResolver {
 		
 		return _serializeModel(model, "N3");
 	}
+
 
 }

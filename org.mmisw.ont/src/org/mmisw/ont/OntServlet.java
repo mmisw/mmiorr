@@ -2,8 +2,10 @@ package org.mmisw.ont;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.ont.util.Util;
 
 /**
  * The entry point.
@@ -36,6 +39,50 @@ public class OntServlet extends HttpServlet {
 
 	private final UriResolver uriResolver = new UriResolver(ontConfig, db, ontGraph);
 	
+	
+	/**
+	 * A request object.
+	 */
+	class Request {
+		final ServletContext servletContext;
+		final HttpServletRequest request; 
+		final HttpServletResponse response;
+		
+		final List<String> userAgentList;
+		
+		Request(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) {
+			this.servletContext = servletContext;
+			this.request = request;
+			this.response = response;
+			
+			userAgentList = Util.getHeader(request, "user-agent");
+			
+			if ( log.isDebugEnabled() ) {
+				String fullRequestedUri = request.getRequestURL().toString();
+				List<String> pcList = Util.getHeader(request, "PC-Remote-Addr");
+				log.debug("___ doGet: fullRequestedUri: " +fullRequestedUri);
+				log.debug("                 user-agent: " +userAgentList);
+				log.debug("             PC-Remote-Addr: " +pcList);
+				
+				// filter out Googlebot?
+				if ( false ) {   // Disabled as the robots.txt is now active.
+					for ( String ua: userAgentList ) {
+						if ( ua.matches(".*Googlebot.*") ) {
+							log.debug("returning NO_CONTENT to googlebot");
+							try {
+								response.sendError(HttpServletResponse.SC_NO_CONTENT);
+							}
+							catch (IOException ignore) {
+							}
+							return;
+						}
+					}
+				}
+			}
+			
+
+		}
+	}
 	
 	/**
 	 * Initializes this service.
@@ -78,8 +125,8 @@ public class OntServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		uriResolver.setServletContext(getServletContext());
-		uriResolver.doPost(request, response);
+		Request req = new Request(getServletContext(), request, response);
+		uriResolver.service(req);
 	}
 	
 	/**
@@ -88,8 +135,8 @@ public class OntServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		uriResolver.setServletContext(getServletContext());
-		uriResolver.doGet(request, response);
+		Request req = new Request(getServletContext(), request, response);
+		uriResolver.service(req);
 	}
 	
 	
