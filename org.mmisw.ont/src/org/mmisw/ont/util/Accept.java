@@ -34,7 +34,7 @@ public class Accept {
 	
 	private List<Entry> entries = new ArrayList<Entry>();
 
-	private Entry dominating;
+	public Entry dominating;
 
 	/**
 	 * Parses the list of values according to:

@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.ont.util.Accept;
 import org.mmisw.ont.util.Util;
 
 /**
@@ -36,9 +37,20 @@ public class OntServlet extends HttpServlet {
 	private final OntConfig ontConfig = new OntConfig();
 	private final Db db = new Db(ontConfig);
 	private final OntGraph ontGraph = new OntGraph(ontConfig, db);
+	
+	
+	private final MiscDispatcher miscDispatcher = new MiscDispatcher(ontConfig, db);
+
+	
+
 
 	private final UriResolver uriResolver = new UriResolver(ontConfig, db, ontGraph);
 	
+	//
+	// NOTE: Refactoring underway
+	// I keep both instances of UriResolver and the new UriResolver2.
+	// uriResolver2 is used only when the parameter "ur2" is included in the request
+	private final UriResolver2 uriResolver2 = new UriResolver2(ontConfig, db, ontGraph);
 	
 	/**
 	 * A request object.
@@ -50,20 +62,26 @@ public class OntServlet extends HttpServlet {
 		
 		final List<String> userAgentList;
 		
+		final Accept accept;
+		
+		
 		Request(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) {
 			this.servletContext = servletContext;
 			this.request = request;
 			this.response = response;
 			
 			userAgentList = Util.getHeader(request, "user-agent");
+			accept = new Accept(request);
 			
 			if ( log.isDebugEnabled() ) {
 				String fullRequestedUri = request.getRequestURL().toString();
 				List<String> pcList = Util.getHeader(request, "PC-Remote-Addr");
-				log.debug("___ doGet: fullRequestedUri: " +fullRequestedUri);
+				log.debug("__Request: fullRequestedUri: " +fullRequestedUri);
 				log.debug("                 user-agent: " +userAgentList);
 				log.debug("             PC-Remote-Addr: " +pcList);
-				
+				log.debug("             Accept entries: " +accept.getEntries());
+				log.debug("           Dominating entry: \"" +accept.dominating+ "\"");
+
 				// filter out Googlebot?
 				if ( false ) {   // Disabled as the robots.txt is now active.
 					for ( String ua: userAgentList ) {
@@ -121,12 +139,94 @@ public class OntServlet extends HttpServlet {
 		log.info(FULL_TITLE+ ": destroy called.\n\n");
 	}
 	
+	
+	private void dispatch(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Request req = new Request(getServletContext(), request, response);
+		
+		// first, see if there are any testing requests to dispatch 
+		
+		// show request info?
+		if ( Util.yes(req.request, "showreq")  ) {
+			Util.showReq(req.request, req.response);
+			return;
+		} 
+		
+		// dispatch list of ontologies?
+		if ( Util.yes(req.request, "list")  ) {
+			miscDispatcher.listOntologies(req.request, req.response);
+			return;
+		}
+		
+		// dispatch list of vocabularies?
+		if ( Util.yes(req.request, "vocabs")  ) {
+			miscDispatcher.listVocabularies(req.request, req.response);
+			return;
+		}
+		
+		// dispatch list of mappings?
+		if ( Util.yes(req.request, "mappings")  ) {
+			miscDispatcher.listMappings(req.request, req.response);
+			return;
+		}
+		
+		// if the "_lpath" parameter is included, reply with full local path of ontology file
+		// (this is just a quick way to help ontmd to so some of its stuff ;)
+		if ( Util.yes(req.request, "_lpath") ) {
+			miscDispatcher.resolveGetLocalPath(req.request, req.response);
+			return;
+		}
+		
+		// if the "_csv" parameter is included, reply with contents of associated CSV file
+		// (this is just a quick way to help ontmd to so some of its stuff ;)
+		if ( Util.yes(req.request, "_csv") ) {
+			miscDispatcher.resolveGetCsv(req.request, req.response);
+			return;
+		}
+		
+		// if the "_versions" parameter is included, reply with a list of the available
+		// version associated with the req.request
+		if ( Util.yes(req.request, "_versions") ) {
+			miscDispatcher.resolveGetVersions(req.request, req.response);
+			return;
+		}
+		
+		// if the "_debug" parameter is included, show some info about the URI parse
+		// and the ontology from the database (but do not serve the contents)
+		if ( Util.yes(req.request, "_debug") ) {
+			miscDispatcher.resolveUriDebug(req.request, req.response);
+			return;
+		}
+
+		// reload graph?
+		if ( Util.yes(req.request, "_reload")  ) {
+			ontGraph.reinit();
+			return;
+		}
+		
+		// dispatch a db-query?
+		if ( Util.yes(req.request, "dbquery")  ) {
+			Util.doDbQuery(req.request, req.response, db);
+			return;
+		}
+		
+		
+		
+		//////////////////////////////////////////////////////////////////////
+		// now, main dispatcher:
+
+		if ( Util.yes(req.request, "ur2")  ) {
+			uriResolver2.service(req);
+		}
+		else {
+			uriResolver.service(req);
+		}
+	}
+
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Request req = new Request(getServletContext(), request, response);
-		uriResolver.service(req);
+		dispatch(request, response);
 	}
 	
 	/**
@@ -135,11 +235,71 @@ public class OntServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Request req = new Request(getServletContext(), request, response);
-		uriResolver.service(req);
+		dispatch(request, response);
 	}
 	
 	
+	/**
+	 * Gets the output format according to the given MmiUri and other request parameters.
+	 * @param req
+	 * @param mmiUri
+	 * @param log
+	 * @return
+	 */
+	static String getOutFormatForMmiUri(Request req, MmiUri mmiUri, Log log) {
+		// The response type depends (initially) on the following elements:
+		String extension = mmiUri.getExtension();
+		String outFormat = Util.getParam(req.request, "form", "");
+		
+		// NOTE: I use this 'outFormat' variable to handle the extension of the topic as well as the
+		// optional parameter "form".  This parameter, if given, takes precedence over the extension.
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug("===getOutFormatForMmiUri ====== ");
+			log.debug("===extension = \"" +extension+ "\"");
+			log.debug("===form = \"" +outFormat+ "\"");
+		}
+
+		// prepare 'outFormat' according to "form" parameter (if given) and file extension:
+		if ( outFormat.length() == 0 ) {
+			// no "form" parameter given. Ok, use the variable to hold the extension
+			// without any leading dots:
+			outFormat = extension.replaceAll("^\\.+", "");
+		}
+		else {
+			// "form" parameter given. Use it regardless of file extension.
+			if ( log.isDebugEnabled() && extension.length() > 0 ) {
+				log.debug("form param (=" +outFormat+ ") will take precedence over file extension: " +extension);
+			}
+		}
+		
+		assert !outFormat.startsWith(".");
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug("Using outFormat = " +outFormat+ " for format resolution");
+		}
+		
+		return outFormat;
+	}
+
+	/**
+	 * Gets the output format for a NON MmiUri request, so, only based on the "form" parameter.
+	 * @param req
+	 * @param log
+	 * @return
+	 */
+	static String getOutFormatForNonMmiUri(Request req, Log log) {
+		String outFormat = Util.getParam(req.request, "form", "");
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug("===getOutFormatForNonMmiUri ====== ");
+			log.debug("===form = \"" +outFormat+ "\"");
+		}
+		
+		return outFormat;
+	}
+
+
 	
 	/**
 	 * Gets the full path to get to the uploaded ontology file.

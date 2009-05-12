@@ -55,15 +55,12 @@ public class UriResolver {
 
 	private final OntConfig ontConfig;
 	private final Db db;
-	private final OntGraph ontGraph;
 	
 	private final SparqlDispatcher sparqlDispatcher;
 	
 	private final HtmlDispatcher htmlDispatcher;
 	
 	private final ImageDispatcher imgDispatcher;
-	
-	private final MiscDispatcher miscDispatcher;
 	
 	private final RegularFileDispatcher regularFileDispatcher = new RegularFileDispatcher();
 
@@ -79,12 +76,10 @@ public class UriResolver {
 	public UriResolver(OntConfig ontConfig, Db db, OntGraph ontGraph) {
 		this.ontConfig = ontConfig;
 		this.db = db;
-		this.ontGraph = ontGraph;
 
 		sparqlDispatcher = new SparqlDispatcher(ontGraph);
 		htmlDispatcher = new HtmlDispatcher(ontConfig, db);
 		imgDispatcher = new ImageDispatcher(ontConfig, db);
-		miscDispatcher = new MiscDispatcher(ontConfig, db);
 		
 		uriDispatcher = new UriDispatcher(sparqlDispatcher);
 	}
@@ -98,77 +93,12 @@ public class UriResolver {
 		
 		// first, see if there are any testing requests to dispatch 
 		
-		// show request info?
-		if ( Util.yes(req.request, "showreq")  ) {
-			Util.showReq(req.request, req.response);
-			return;
-		} 
-		
-		// dispatch list of ontologies?
-		if ( Util.yes(req.request, "list")  ) {
-			miscDispatcher.listOntologies(req.request, req.response);
-			return;
-		}
-		
-		// dispatch list of vocabularies?
-		if ( Util.yes(req.request, "vocabs")  ) {
-			miscDispatcher.listVocabularies(req.request, req.response);
-			return;
-		}
-		
-		// dispatch list of mappings?
-		if ( Util.yes(req.request, "mappings")  ) {
-			miscDispatcher.listMappings(req.request, req.response);
-			return;
-		}
-		
 		// dispatch a sparql-query?
 		if ( Util.yes(req.request, "sparql")  ) {
 			sparqlDispatcher.execute(req.request, req.response);
 			return;
 		}
 		
-		
-		// reload graph?
-		if ( Util.yes(req.request, "_reload")  ) {
-			ontGraph.reinit();
-			return;
-		}
-		
-		// dispatch a db-query?
-		if ( Util.yes(req.request, "dbquery")  ) {
-			Util.doDbQuery(req.request, req.response, db);
-			return;
-		}
-		
-		
-		// if the "_lpath" parameter is included, reply with full local path of ontology file
-		// (this is just a quick way to help ontmd to so some of its stuff ;)
-		if ( Util.yes(req.request, "_lpath") ) {
-			miscDispatcher.resolveGetLocalPath(req.request, req.response);
-			return;
-		}
-		
-		// if the "_csv" parameter is included, reply with contents of associated CSV file
-		// (this is just a quick way to help ontmd to so some of its stuff ;)
-		if ( Util.yes(req.request, "_csv") ) {
-			miscDispatcher.resolveGetCsv(req.request, req.response);
-			return;
-		}
-		
-		// if the "_versions" parameter is included, reply with a list of the available
-		// version associated with the req.request
-		if ( Util.yes(req.request, "_versions") ) {
-			miscDispatcher.resolveGetVersions(req.request, req.response);
-			return;
-		}
-		
-		// if the "_debug" parameter is included, show some info about the URI parse
-		// and the ontology from the database (but do not serve the contents)
-		if ( Util.yes(req.request, "_debug") ) {
-			miscDispatcher.resolveUriDebug(req.request, req.response);
-			return;
-		}
 		
 		// if the "uri" parameter is included, resolve by the given URI
 		if ( Util.yes(req.request, "uri") ) {
