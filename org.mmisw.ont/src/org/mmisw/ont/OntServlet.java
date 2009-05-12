@@ -27,7 +27,7 @@ public class OntServlet extends HttpServlet {
 	
 	public void init() throws ServletException {
 		log.info("init");
-		uriResolver.init();
+		uriResolver.init(getServletConfig());
 	}
 	
 	public void destroy() {

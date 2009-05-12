@@ -8,6 +8,7 @@ import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -82,6 +83,7 @@ public class UriResolver extends HttpServlet {
 	
 	private List<String> userAgentList;
 	
+	
 	/**
 	 * Initializes this service.
 	 * This basically consists of
@@ -90,11 +92,11 @@ public class UriResolver extends HttpServlet {
 	 * loading of the ontology graph,
 	 * and retrieval of version information.
 	 */
-	public void init() throws ServletException {
+	public void init(ServletConfig servletConfig) throws ServletException {
 		log.info(TITLE+ ": initializing");
 		
 		try {
-			ontConfig.init(getServletConfig());
+			ontConfig.init(servletConfig);
 			
 			VERSION = ontConfig.getProperty(OntConfig.Prop.VERSION)+ " (" +
 			          ontConfig.getProperty(OntConfig.Prop.BUILD)  + ")";
