@@ -2,6 +2,8 @@ package org.mmisw.ont;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.List;
 
 import javax.servlet.ServletConfig;
@@ -15,6 +17,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.util.Accept;
 import org.mmisw.ont.util.Util;
+
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.RDFWriter;
 
 /**
  * The entry point.
@@ -63,6 +68,8 @@ public class OntServlet extends HttpServlet {
 		final List<String> userAgentList;
 		
 		final Accept accept;
+		
+		String outFormat;
 		
 		
 		Request(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) {
@@ -249,7 +256,7 @@ public class OntServlet extends HttpServlet {
 	static String getOutFormatForMmiUri(Request req, MmiUri mmiUri, Log log) {
 		// The response type depends (initially) on the following elements:
 		String extension = mmiUri.getExtension();
-		String outFormat = Util.getParam(req.request, "form", "");
+		req.outFormat = Util.getParam(req.request, "form", "");
 		
 		// NOTE: I use this 'outFormat' variable to handle the extension of the topic as well as the
 		// optional parameter "form".  This parameter, if given, takes precedence over the extension.
@@ -257,29 +264,29 @@ public class OntServlet extends HttpServlet {
 		if ( log.isDebugEnabled() ) {
 			log.debug("===getOutFormatForMmiUri ====== ");
 			log.debug("===extension = \"" +extension+ "\"");
-			log.debug("===form = \"" +outFormat+ "\"");
+			log.debug("===form = \"" +req.outFormat+ "\"");
 		}
 
 		// prepare 'outFormat' according to "form" parameter (if given) and file extension:
-		if ( outFormat.length() == 0 ) {
+		if ( req.outFormat.length() == 0 ) {
 			// no "form" parameter given. Ok, use the variable to hold the extension
 			// without any leading dots:
-			outFormat = extension.replaceAll("^\\.+", "");
+			req.outFormat = extension.replaceAll("^\\.+", "");
 		}
 		else {
 			// "form" parameter given. Use it regardless of file extension.
 			if ( log.isDebugEnabled() && extension.length() > 0 ) {
-				log.debug("form param (=" +outFormat+ ") will take precedence over file extension: " +extension);
+				log.debug("form param (=" +req.outFormat+ ") will take precedence over file extension: " +extension);
 			}
 		}
 		
-		assert !outFormat.startsWith(".");
+		assert !req.outFormat.startsWith(".");
 		
 		if ( log.isDebugEnabled() ) {
-			log.debug("Using outFormat = " +outFormat+ " for format resolution");
+			log.debug("Using outFormat = " +req.outFormat+ " for format resolution");
 		}
 		
-		return outFormat;
+		return req.outFormat;
 	}
 
 	/**
@@ -289,14 +296,14 @@ public class OntServlet extends HttpServlet {
 	 * @return
 	 */
 	static String getOutFormatForNonMmiUri(Request req, Log log) {
-		String outFormat = Util.getParam(req.request, "form", "");
+		req.outFormat = Util.getParam(req.request, "form", "");
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("===getOutFormatForNonMmiUri ====== ");
-			log.debug("===form = \"" +outFormat+ "\"");
+			log.debug("===form = \"" +req.outFormat+ "\"");
 		}
 		
-		return outFormat;
+		return req.outFormat;
 	}
 
 
@@ -332,6 +339,30 @@ public class OntServlet extends HttpServlet {
 
 		return file;
 	}
+
+	/** 
+	 * Gets the serialization of a model in the given language.
+	 * <p>
+	 * (Similar to JenaUtil.getOntModelAsString(OntModel model).) 
+	 */
+	static StringReader serializeModel(Model model, String lang) {
+		StringWriter sw = new StringWriter();
+		String uriForEmptyPrefix = model.getNsPrefixURI("");
+		RDFWriter writer = model.getWriter(lang);
+		String baseUri = null;
+		if ( uriForEmptyPrefix != null ) {
+			baseUri = JenaUtil2.removeTrailingFragment(uriForEmptyPrefix);
+			writer.setProperty("xmlbase", baseUri);
+		}
+		writer.setProperty("showXmlDeclaration", "true");
+		writer.setProperty("relativeURIs", "same-document");
+		writer.setProperty("tab", "4");
+		writer.write(model, sw, baseUri);
+
+		StringReader reader = new StringReader(sw.toString());
+		return reader;
+	}
+
 
 
 }

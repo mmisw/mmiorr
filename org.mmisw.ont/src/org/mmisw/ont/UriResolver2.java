@@ -2,11 +2,14 @@ package org.mmisw.ont;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URISyntaxException;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.OntServlet.Request;
@@ -90,8 +93,33 @@ public class UriResolver2 {
 		}
 		
 		void dispatch() throws IOException {
-			// TODO Auto-generated method stub
+			ServletOutputStream os = req.response.getOutputStream();
+
+			StringReader is = null;
+
+			if ( req.outFormat.equalsIgnoreCase("owl")
+			||   req.outFormat.equalsIgnoreCase("rdf")
+			) {
+				req.response.setContentType("Application/rdf+xml");
+				is = OntServlet.serializeModel(model, "RDF/XML-ABBREV");
+			}
+			else if ( req.outFormat.equalsIgnoreCase("n3") ) {
+				req.response.setContentType("text/plain");
+				is = OntServlet.serializeModel(model, "N3");
+			}
+			else if ( req.outFormat.equalsIgnoreCase("json") ) {
+//				req.response.setContentType("application/json");
+				req.response.setContentType("text/plain");
+				is = OntServlet.serializeModel(model, "N3");
+			}
+			else {
+				req.response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+						"ModelResponse: outFormat " +req.outFormat+ " not recognized"
+				);
+				return;
+			}
 			
+			IOUtils.copy(is, os);
 		}
 		
 	}
@@ -219,7 +247,7 @@ public class UriResolver2 {
 				if ( log.isDebugEnabled() ) {
 					log.debug("No versions found.");
 				}
-				return null;
+				return new NotFoundResponse(mmiUri.getTermUri());
 			}
 		}
 		else {
@@ -236,7 +264,7 @@ public class UriResolver2 {
 			if ( log.isDebugEnabled() ) {
 				log.debug("_getResponseForMmiUri: not dispatched here. mmiUri = " +mmiUri);
 			}
-			return null;
+			return new NotFoundResponse(mmiUri.getTermUri());
 		}
 		
 
