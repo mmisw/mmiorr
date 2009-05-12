@@ -32,15 +32,32 @@ public class ImageDispatcher {
 
 
 	/**
-	 * Not implemented yet.
-	 * @return always false.
+	 * Dispatches a request for an "image" representation of the ontology.
+	 * Only implemented for the graphviz "dot" format, so, instead of an image, the text
+	 * of the dot specification is returned to the client.
+	 * 
+	 * @return true if outFormat equals "dot" ignoring case. false otherwise.
 	 */
 	boolean dispatch(HttpServletRequest request, HttpServletResponse response, 
-			MmiUri mmiUri, boolean unversionedRequest, Ontology ontology) 
+			MmiUri mmiUri, boolean unversionedRequest, Ontology ontology, String outFormat) 
 	throws ServletException, IOException {
 		
-		// this is not implemented yet
-		return false;
+		if ( log.isDebugEnabled() ) {
+			log.debug("dispatch: " +mmiUri+ "  outFormat=" +outFormat);
+		}
+		
+		if ( outFormat.equalsIgnoreCase("dot") ) {
+//			DotGenerator dot = new  DotGenerator(ontology.ge)
+			
+			
+			
+			return true;
+		}
+		
+		else {
+			// this is not implemented yet
+			return false;
+		}
 
 	}
 	
