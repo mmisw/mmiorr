@@ -9,6 +9,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -36,7 +37,7 @@ import edu.drexel.util.rdf.JenaUtil;
  * @author Carlos Rueda
  * @version $Id$
  */
-public class UriResolver extends HttpServlet {
+public class UriResolver {
 	
 	//
 	//
@@ -82,6 +83,8 @@ public class UriResolver extends HttpServlet {
 	
 	
 	private List<String> userAgentList;
+
+	private ServletContext servletContext;
 	
 	
 	/**
@@ -117,6 +120,12 @@ public class UriResolver extends HttpServlet {
 		log.info(FULL_TITLE+ ": destroy called.\n\n");
 	}
 	
+	
+	public void setServletContext(ServletContext servletContext) {
+		this.servletContext = servletContext;
+	}
+
+
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
@@ -241,7 +250,7 @@ public class UriResolver extends HttpServlet {
 		}
 		
 		// Else, try to resolve the requested resource.
-		regularFileDispatcher.dispatch(getServletContext(), request, response);
+		regularFileDispatcher.dispatch(servletContext, request, response);
 	}
 
 	/**
