@@ -5,8 +5,8 @@
 	<display-name>org.mmisw.ont</display-name>
 	<servlet>
 		<description>MMI Ontology and Term URI resolver</description>
-		<servlet-name>uriResolver</servlet-name>
-		<servlet-class>org.mmisw.ont.UriResolver</servlet-class>
+		<servlet-name>ontServlet</servlet-name>
+		<servlet-class>org.mmisw.ont.OntServlet</servlet-class>
 		<init-param>
 			<param-name>ont.app.version</param-name>
 			<param-value>@ont.app.version@</param-value>
@@ -30,7 +30,7 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>uriResolver</servlet-name>
+		<servlet-name>ontServlet</servlet-name>
 		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
 	<resource-ref>

@@ -490,9 +490,11 @@ public class UriResolver extends HttpServlet {
 			return false;   // handle this by saying "not dispatched here."
 		}
 		
-		// some image format, currently only "dot"
-		else if ( outFormat.equalsIgnoreCase("dot") ) {
-			return imgDispatcher.dispatch(request, response, mmiUri, unversionedRequest, mostRecentOntology);
+		// some image format:
+		else if ( outFormat.equalsIgnoreCase("dot")
+		     ||   outFormat.equalsIgnoreCase("png")
+		) {
+			return imgDispatcher.dispatch(request, response, mmiUri, unversionedRequest, mostRecentOntology, outFormat);
 		}
 		
 

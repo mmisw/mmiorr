@@ -4,6 +4,9 @@ $Id$
 
 ChangeLog
 
+2009-09-12
+	- new OntServlet as main entry point and as a preparation to start refactoring oif UriResolver
+	
 2009-09-11
 	- Added config property: aquaportal.voc2rdf.dir
 	- Added internal operation _csv to provide the CSV contents of an ontology
