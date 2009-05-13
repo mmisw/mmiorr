@@ -120,6 +120,7 @@ public class UriResolver2 {
 			}
 			
 			IOUtils.copy(is, os);
+			os.close();
 		}
 		
 	}
@@ -323,12 +324,12 @@ public class UriResolver2 {
 		
 		OntModel model = unversionedModel != null ? unversionedModel : originalModel;
 
-		/////////////////////////////////////////////////////////////////////
-		// Term included?
-		if ( term.length() > 0 ) {
-
+		if ( term.length() == 0 ) {
+			return new OntologyResponse(model);
+		}
+		else {
+			// Term included.
 			Model termModel = TermExtractor.getTermModel(model, mmiUri);
-		
 			if ( termModel != null ) {
 				return new TermResponse(termModel);
 			}

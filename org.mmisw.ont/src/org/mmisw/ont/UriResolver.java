@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.net.URISyntaxException;
 
 import javax.servlet.ServletException;
@@ -23,7 +22,6 @@ import org.mmisw.ont.util.Util;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.RDFWriter;
 
 import edu.drexel.util.rdf.JenaUtil;
 
@@ -472,14 +470,14 @@ public class UriResolver {
 				switch ( ontFormat ) {
 				case RDFXML: {
 					response.setContentType("Application/rdf+xml");
-					StringReader is = _serializeModel(termModel, "RDF/XML-ABBREV");
+					StringReader is = OntServlet.serializeModel(termModel, "RDF/XML-ABBREV");
 					IOUtils.copy(is, os);
 					break;
 				}
 				case N3 : {
 					String contentType = "text/plain";  // NOTE: "text/rdf+n3" is not registered.
 					response.setContentType(contentType);
-					StringReader is = _serializeModel(termModel, "N3");
+					StringReader is = OntServlet.serializeModel(termModel, "N3");
 					IOUtils.copy(is, os);
 					break;
 				}
@@ -511,7 +509,7 @@ public class UriResolver {
 				response.setContentType("Application/rdf+xml");
 				
 				if ( unversionedRequest ) {
-					StringReader is = _serializeModel(unversionedModel, "RDF/XML-ABBREV");
+					StringReader is = OntServlet.serializeModel(unversionedModel, "RDF/XML-ABBREV");
 					IOUtils.copy(is, os);
 				}
 				else {
@@ -525,7 +523,7 @@ public class UriResolver {
 				response.setContentType(contentType);
 				
 				if ( unversionedRequest ) {
-					StringReader is = _serializeModel(unversionedModel, "N3");
+					StringReader is = OntServlet.serializeModel(unversionedModel, "N3");
 					IOUtils.copy(is, os);
 				}
 				else {
@@ -544,31 +542,6 @@ public class UriResolver {
 	}
 	
 	
-
-	/** 
-	 * Gets the serialization of a model in the given language.
-	 * <p>
-	 * (Similar to JenaUtil.getOntModelAsString(OntModel model).) 
-	 */
-	private StringReader _serializeModel(Model model, String lang) {
-		StringWriter sw = new StringWriter();
-		String uriForEmptyPrefix = model.getNsPrefixURI("");
-		RDFWriter writer = model.getWriter(lang);
-		String baseUri = null;
-		if ( uriForEmptyPrefix != null ) {
-			baseUri = JenaUtil2.removeTrailingFragment(uriForEmptyPrefix);
-			writer.setProperty("xmlbase", baseUri);
-		}
-		writer.setProperty("showXmlDeclaration", "true");
-		writer.setProperty("relativeURIs", "same-document");
-		writer.setProperty("tab", "4");
-		writer.write(model, sw, baseUri);
-
-		StringReader reader = new StringReader(sw.toString());
-		return reader;
-	}
-
-
 	/** 
 	 * Creates the N3 version of the model stored in the given file. 
 	 */
@@ -578,7 +551,7 @@ public class UriResolver {
 		String absPath = "file:" + file.getAbsolutePath();
 		model.read(absPath, "", null);
 		
-		return _serializeModel(model, "N3");
+		return OntServlet.serializeModel(model, "N3");
 	}
 
 
