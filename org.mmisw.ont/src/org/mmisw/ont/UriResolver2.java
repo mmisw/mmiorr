@@ -93,6 +93,10 @@ public class UriResolver2 {
 		}
 		
 		void dispatch() throws IOException {
+			
+			if ( log.isDebugEnabled() ) {
+				log.debug(this.getClass().getName()+ ": dispatching with outFormat=" +req.outFormat);
+			}
 			ServletOutputStream os = req.response.getOutputStream();
 
 			StringReader is = null;
@@ -104,11 +108,6 @@ public class UriResolver2 {
 				is = OntServlet.serializeModel(model, "RDF/XML-ABBREV");
 			}
 			else if ( req.outFormat.equalsIgnoreCase("n3") ) {
-				req.response.setContentType("text/plain");
-				is = OntServlet.serializeModel(model, "N3");
-			}
-			else if ( req.outFormat.equalsIgnoreCase("json") ) {
-//				req.response.setContentType("application/json");
 				req.response.setContentType("text/plain");
 				is = OntServlet.serializeModel(model, "N3");
 			}
