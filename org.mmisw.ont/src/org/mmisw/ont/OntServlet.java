@@ -251,9 +251,8 @@ public class OntServlet extends HttpServlet {
 	 * @param req
 	 * @param mmiUri
 	 * @param log
-	 * @return
 	 */
-	static String getOutFormatForMmiUri(Request req, MmiUri mmiUri, Log log) {
+	static void getOutFormatForMmiUri(Request req, MmiUri mmiUri, Log log) {
 		// The response type depends (initially) on the following elements:
 		String extension = mmiUri.getExtension();
 		req.outFormat = Util.getParam(req.request, "form", "");
@@ -285,25 +284,20 @@ public class OntServlet extends HttpServlet {
 		if ( log.isDebugEnabled() ) {
 			log.debug("Using outFormat = " +req.outFormat+ " for format resolution");
 		}
-		
-		return req.outFormat;
 	}
 
 	/**
 	 * Gets the output format for a NON MmiUri request, so, only based on the "form" parameter.
 	 * @param req
 	 * @param log
-	 * @return
 	 */
-	static String getOutFormatForNonMmiUri(Request req, Log log) {
+	static void getOutFormatForNonMmiUri(Request req, Log log) {
 		req.outFormat = Util.getParam(req.request, "form", "");
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("===getOutFormatForNonMmiUri ====== ");
 			log.debug("===form = \"" +req.outFormat+ "\"");
 		}
-		
-		return req.outFormat;
 	}
 
 

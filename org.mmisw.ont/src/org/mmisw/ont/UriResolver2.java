@@ -52,8 +52,24 @@ public class UriResolver2 {
 	 * Represents a response to be sent to the client
 	 */
 	abstract class Response {
-		
+		/** performs the actual response */
 		abstract void dispatch() throws IOException ;
+	}
+	
+	class RedirectResponse extends Response {
+		final String url;
+		
+		RedirectResponse(String url) {
+			this.url = url;
+		}
+		
+		void dispatch() throws IOException {
+			if ( log.isDebugEnabled() ) {
+				log.debug("Redirecting to latest version: " + url);
+			}
+			String redir = req.response.encodeRedirectURL(url);
+			req.response.sendRedirect(redir);
+		}
 	}
 	
 	class NotFoundResponse extends Response {
@@ -154,20 +170,21 @@ public class UriResolver2 {
 			// we have an MmiUri request.
 
 			// get output format to be used:
-			String outFormat = OntServlet.getOutFormatForMmiUri(req, mmiUri, log);
+			OntServlet.getOutFormatForMmiUri(req, mmiUri, log);
 			
-			resp = _getResponseForMmiUri(mmiUri, outFormat);
-			
-			return;
+			resp = _getResponseForMmiUri(mmiUri);
 		}
 		catch (URISyntaxException e) {
 			// NOT a regular MmiUri request.
-			String outFormat = OntServlet.getOutFormatForNonMmiUri(req, log); 
-			resp = _getResponseForNonMmiUri(outFormat);
+			OntServlet.getOutFormatForNonMmiUri(req, log); 
+			resp = _getResponseForNonMmiUri();
 		}
 		
 		if ( resp != null ) {
 			resp.dispatch();
+		}
+		else {
+			req.response.sendError(HttpServletResponse.SC_NOT_FOUND, fullRequestedUri);		
 		}
 	}
 	
@@ -175,7 +192,7 @@ public class UriResolver2 {
 	/**
 	 * Gets the response for a requested MmiUri.
 	 */
-	private Response _getResponseForMmiUri(final MmiUri mmiUri, final String outFormat) throws ServletException, IOException {
+	private Response _getResponseForMmiUri(final MmiUri mmiUri) throws ServletException, IOException {
 		
 		// the ontology we need to access:
 		Ontology ontology = null;
@@ -229,17 +246,8 @@ public class UriResolver2 {
 				else {
 					// request was with version = MmiUri.LATEST_VERSION_INDICATOR.
 					// Use a redirect so the user gets the actual latest version:
-					//
-					final String latestUri = foundMmiUri.getTermUri();
-					return new Response() {
-						void dispatch() throws IOException {
-							if ( log.isDebugEnabled() ) {
-								log.debug("Redirecting to latest version: " + latestUri);
-							}
-							String redir_latestUri = req.response.encodeRedirectURL(latestUri);
-							req.response.sendRedirect(redir_latestUri);
-						}
-					};
+					String latestUri = foundMmiUri.getTermUri();
+					return new RedirectResponse(latestUri);
 				}
 			}
 			else {
@@ -247,7 +255,7 @@ public class UriResolver2 {
 				if ( log.isDebugEnabled() ) {
 					log.debug("No versions found.");
 				}
-				return new NotFoundResponse(mmiUri.getTermUri());
+				return null;
 			}
 		}
 		else {
@@ -264,7 +272,7 @@ public class UriResolver2 {
 			if ( log.isDebugEnabled() ) {
 				log.debug("_getResponseForMmiUri: not dispatched here. mmiUri = " +mmiUri);
 			}
-			return new NotFoundResponse(mmiUri.getTermUri());
+			return null;
 		}
 		
 
@@ -332,17 +340,16 @@ public class UriResolver2 {
 			if ( termModel != null ) {
 				return new TermResponse(termModel);
 			}
+			else {
+				return null;
+			}
 			
 		}
-		
-		// Else: term unexistent: return 404 to client:
-		return new NotFoundResponse(mmiUri.getTermUri());
-
 	}
 
 	
 	
-	private Response _getResponseForNonMmiUri(String outFormat) {
+	private Response _getResponseForNonMmiUri() {
 		// ...   
 		// NOT HANDLED YET -- I'm still testing the main dispatch above so I should be
 		// only making regular MmiUri request for the moment. (see "ur2" in OntServlet)
