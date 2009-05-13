@@ -94,7 +94,7 @@ public class OntServlet extends HttpServlet {
 				// we have an MmiUri request.
 
 				// get output format to be used:
-				outFormatTest = OntServlet.getOutFormatForMmiUri(formParam, mmiUriTest, log);
+				outFormatTest = OntServlet.getOutFormatForMmiUri(formParam, accept, mmiUriTest, log);
 			}
 			catch (URISyntaxException e) {
 				// NOT a regular MmiUri request.
@@ -275,7 +275,7 @@ public class OntServlet extends HttpServlet {
 	 * @param mmiUri
 	 * @param log
 	 */
-	private static String getOutFormatForMmiUri(String formParam, MmiUri mmiUri, Log log) {
+	private static String getOutFormatForMmiUri(String formParam, Accept accept, MmiUri mmiUri, Log log) {
 		// The response type depends (initially) on the following elements:
 		String extension = mmiUri.getExtension();
 		String outFormat = formParam;
@@ -285,8 +285,8 @@ public class OntServlet extends HttpServlet {
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("===getOutFormatForMmiUri ====== ");
-			log.debug("===extension = \"" +extension+ "\"");
-			log.debug("===form = \"" +outFormat+ "\"");
+			log.debug("===file extension = \"" +extension+ "\"");
+			log.debug("===form parameter = \"" +outFormat+ "\"");
 		}
 
 		// prepare 'outFormat' according to "form" parameter (if given) and file extension:
@@ -304,8 +304,43 @@ public class OntServlet extends HttpServlet {
 		
 		assert !outFormat.startsWith(".");
 		
+		if ( outFormat.length() == 0 ) {     
+			// No explicit outFormat.
+			// use content negotiation:
+			
+			log.debug("Not explicit output format given (either file extension or form parameter). " +
+					"Using content negotiation."
+			);
+			
+			
+			// accept empty? --> OWL
+			if ( accept.isEmpty() ) {
+				outFormat = "owl";
+			}
+			
+			// Dominating Accept: application/rdf+xml dominates? --> OWL
+			else if ( accept.getDominating().equalsIgnoreCase("application/rdf+xml") ) {
+				outFormat = "owl";
+			}
+
+			// Dominating Accept contains "xml"? --> OWL
+			else if ( accept.getDominating().indexOf("xml") >= 0 ) {
+				outFormat = "owl";
+			}
+
+			// Dominating Accept: text/html dominates? --> HTML
+			else if ( accept.getDominating().equalsIgnoreCase("text/html") ) {
+				outFormat = "html";
+			}
+
+			// default:
+			else {
+				outFormat = "owl";
+			}
+		}
+		
 		if ( log.isDebugEnabled() ) {
-			log.debug("Using outFormat = " +outFormat+ " for format resolution");
+			log.debug("Using [" +outFormat+ "] for format resolution");
 		}
 		
 		return outFormat;
