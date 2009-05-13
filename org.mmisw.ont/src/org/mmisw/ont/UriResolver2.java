@@ -3,6 +3,7 @@ package org.mmisw.ont;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.URISyntaxException;
 
 import javax.servlet.ServletException;
@@ -13,6 +14,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.OntServlet.Request;
+import org.mmisw.ont.util.DotGenerator;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -126,6 +128,14 @@ public class UriResolver2 {
 			else if ( req.outFormat.equalsIgnoreCase("n3") ) {
 				req.response.setContentType("text/plain");
 				is = OntServlet.serializeModel(model, "N3");
+			}
+			else if ( req.outFormat.equalsIgnoreCase("dot") ) {
+				req.response.setContentType("text/plain");
+				String ontologyUri = req.fullRequestedUri;
+				DotGenerator dot = new DotGenerator(model, ontologyUri);
+				StringWriter sw = new StringWriter();
+				dot.generateDot(sw);
+				is = new StringReader(sw.toString());
 			}
 			else {
 				req.response.sendError(HttpServletResponse.SC_BAD_REQUEST,

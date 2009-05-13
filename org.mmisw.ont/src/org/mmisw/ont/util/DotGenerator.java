@@ -21,6 +21,7 @@ import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -65,9 +66,9 @@ public class DotGenerator {
 		}
 		
 		String ontologyUri = args[0];
-		OntModel ontModel = loadModel(ontologyUri);
+		Model model = loadModel(ontologyUri);
 		
-		DotGenerator dotGenerator = new DotGenerator(ontModel, ontologyUri);
+		DotGenerator dotGenerator = new DotGenerator(model, ontologyUri);
 		
 		PrintWriter pw = new PrintWriter(System.out, true);
 		
@@ -79,7 +80,7 @@ public class DotGenerator {
 	////////////////////
 	// Instance
 
-	private OntModel ontModel;
+	private Model ontModel;
 	private String ontologyUri;
 	private PrintWriter pw;
 	
@@ -90,7 +91,7 @@ public class DotGenerator {
 	 * @param ontModel The model to read
 	 * @param ontologyUri corresponding URI
 	 */
-	public DotGenerator(OntModel ontModel, String ontologyUri) {
+	public DotGenerator(Model ontModel, String ontologyUri) {
 		this.ontModel = ontModel;
 		this.ontologyUri = ontologyUri;
 	}
@@ -238,14 +239,14 @@ public class DotGenerator {
 		return entities;
 	}
 	
-	private void _hierarchy(String baseUri, OntModel ontModel) {
+	private void _hierarchy(String baseUri, Model model) {
 		String SUBCLASS_QUERY = PREFIXES + 
 			"SELECT ?sub ?sup " +
 			"WHERE { ?sub rdfs:subClassOf ?sup . }"
 		;
 		
 		Query query = QueryFactory.create(SUBCLASS_QUERY);
-		QueryExecution qe = QueryExecutionFactory.create(query, ontModel);
+		QueryExecution qe = QueryExecutionFactory.create(query, model);
 		
 		ResultSet results = qe.execSelect();
 		
@@ -280,7 +281,7 @@ public class DotGenerator {
 	}
 
 	
-	private void _objectProperties(String baseUri, OntModel ontModel) {
+	private void _objectProperties(String baseUri, Model model) {
 		final String PROPERTIES_QUERY = PREFIXES + 
 			"SELECT ?domain ?prop ?range " +
 			"WHERE { ?prop rdf:type owl:ObjectProperty . " +
@@ -291,7 +292,7 @@ public class DotGenerator {
 		
 		
 		Query query = QueryFactory.create(PROPERTIES_QUERY);
-		QueryExecution qe = QueryExecutionFactory.create(query, ontModel);
+		QueryExecution qe = QueryExecutionFactory.create(query, model);
 		
 		ResultSet results = qe.execSelect();
 		
@@ -332,7 +333,7 @@ public class DotGenerator {
 	}
 
 
-	private void _addDataProps(String entityUri, EntityInfo entityInfo, OntModel ontModel) {
+	private void _addDataProps(String entityUri, EntityInfo entityInfo, Model model) {
 		final String DATA_PROPS_QUERY_TEMPLATE = PREFIXES +
 			"SELECT ?prop ?range " +
 			"WHERE { ?prop rdf:type owl:DatatypeProperty . " +
@@ -342,7 +343,7 @@ public class DotGenerator {
 		;		
 		String queryStr = DATA_PROPS_QUERY_TEMPLATE.replaceAll("\\{E\\}", entityUri);
 		Query query = QueryFactory.create(queryStr);
-		QueryExecution qe = QueryExecutionFactory.create(query, ontModel);
+		QueryExecution qe = QueryExecutionFactory.create(query, model);
 		
 		ResultSet results = qe.execSelect();
 		
