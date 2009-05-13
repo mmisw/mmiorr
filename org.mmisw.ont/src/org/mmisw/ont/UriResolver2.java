@@ -118,26 +118,48 @@ public class UriResolver2 {
 
 			StringReader is = null;
 
+			///////////////////////////////////////////////////////////////////
+			// OWL
 			if ( req.outFormat.equalsIgnoreCase("owl")
 			||   req.outFormat.equalsIgnoreCase("rdf")
 			) {
 				req.response.setContentType("Application/rdf+xml");
 				is = OntServlet.serializeModel(model, "RDF/XML-ABBREV");
 			}
+			
+			///////////////////////////////////////////////////////////////////
+			// N3
 			else if ( req.outFormat.equalsIgnoreCase("n3") ) {
 				req.response.setContentType("text/plain");
 				is = OntServlet.serializeModel(model, "N3");
 			}
+			
+			///////////////////////////////////////////////////////////////////
+			// HTML
 			else if ( req.outFormat.equalsIgnoreCase("html") ) {
-				String ontologyUri = req.fullRequestedUri;
+				
+				// redirect to the OntMd service.
+				// Note: drop any extension here (the OntMd service will do the appropriate request
+				// back to this Ont service): 
+				String ontologyUri;
+				if ( req.mmiUri != null ) {
+					ontologyUri = req.mmiUri.getOntologyUriWithExtension("");
+				}
+				else {
+					ontologyUri = req.fullRequestedUri;
+				}
+				
 				String url = "http://mmisw.org/ontmd?ontologyUri=" +ontologyUri;
 				if ( log.isDebugEnabled() ) {
-					log.debug("Redirecting to latest html tool: " +url);
+					log.debug("Redirecting to OntMd service: " +url);
 				}
 				String redir = req.response.encodeRedirectURL(url);
 				req.response.sendRedirect(redir);
 				return;
 			}
+			
+			///////////////////////////////////////////////////////////////////
+			// DOT
 			else if ( req.outFormat.equalsIgnoreCase("dot") ) {
 				req.response.setContentType("text/plain");
 				String ontologyUri = req.fullRequestedUri;
@@ -146,6 +168,9 @@ public class UriResolver2 {
 				dot.generateDot(sw);
 				is = new StringReader(sw.toString());
 			}
+			
+			///////////////////////////////////////////////////////////////////
+			// BAD REQUEST
 			else {
 				req.response.sendError(HttpServletResponse.SC_BAD_REQUEST,
 						"ModelResponse: outFormat " +req.outFormat+ " not recognized"
