@@ -128,7 +128,7 @@ public class UriResolver2 {
 				is = OntServlet.serializeModel(model, "N3");
 			}
 			else {
-				req.response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+				req.response.sendError(HttpServletResponse.SC_BAD_REQUEST,
 						"ModelResponse: outFormat " +req.outFormat+ " not recognized"
 				);
 				return;
@@ -140,12 +140,14 @@ public class UriResolver2 {
 		
 	}
 
+	/** Response for a term -- currently it behaves exactly as ModelResponse */
 	class TermResponse extends ModelResponse {
 		TermResponse(Model termModel) {
 			super(termModel);
 		}
 	}
 	
+	/** Response for an ontology -- currently it behaves exactly as ModelResponse */
 	class OntologyResponse extends ModelResponse {
 		OntologyResponse(Model ontologyModel) {
 			super(ontologyModel);
@@ -164,19 +166,11 @@ public class UriResolver2 {
 		
 		final String fullRequestedUri = req.request.getRequestURL().toString();
 		
-		// parse the given URI:
-		try {
-			MmiUri mmiUri = new MmiUri(fullRequestedUri);
-			// we have an MmiUri request.
-
-			// get output format to be used:
-			OntServlet.getOutFormatForMmiUri(req, mmiUri, log);
-			
-			resp = _getResponseForMmiUri(mmiUri);
+		if ( req.mmiUri != null ) {
+			resp = _getResponseForMmiUri();
 		}
-		catch (URISyntaxException e) {
+		else {
 			// NOT a regular MmiUri request.
-			OntServlet.getOutFormatForNonMmiUri(req, log); 
 			resp = _getResponseForNonMmiUri();
 		}
 		
@@ -192,7 +186,7 @@ public class UriResolver2 {
 	/**
 	 * Gets the response for a requested MmiUri.
 	 */
-	private Response _getResponseForMmiUri(final MmiUri mmiUri) throws ServletException, IOException {
+	private Response _getResponseForMmiUri() throws ServletException, IOException {
 		
 		// the ontology we need to access:
 		Ontology ontology = null;
@@ -202,7 +196,7 @@ public class UriResolver2 {
 		boolean unversionedRequest = false;
 		MmiUri foundMmiUri = null;
 		
-		String version = mmiUri.getVersion();
+		String version = req.mmiUri.getVersion();
 		if ( version == null || version.equals(MmiUri.LATEST_VERSION_INDICATOR) ) {
 			
 			//
@@ -210,7 +204,7 @@ public class UriResolver2 {
 			//
 			
 			// Get latest version trying all possible topic extensions:
-			Ontology mostRecentOntology = db.getMostRecentOntologyVersion(mmiUri);
+			Ontology mostRecentOntology = db.getMostRecentOntologyVersion(req.mmiUri);
 
 			if ( mostRecentOntology != null ) {
 				
@@ -219,18 +213,18 @@ public class UriResolver2 {
 					// Note that mostRecentOntology.getUri() won't have the term component.
 					// So, we have to transfer it to foundMmiUri:
 					//
-					foundMmiUri = new MmiUri(mostRecentOntology.getUri()).copyWithTerm(mmiUri.getTerm());
+					foundMmiUri = new MmiUri(mostRecentOntology.getUri()).copyWithTerm(req.mmiUri.getTerm());
 					
 					if ( log.isDebugEnabled() ) {
 						log.debug("Found ontology version: " +mostRecentOntology.getUri());
 
-						if ( ! mmiUri.getExtension().equals(foundMmiUri.getExtension()) ) {
-							log.debug("Restored requested extension to: " +mmiUri);
+						if ( ! req.mmiUri.getExtension().equals(foundMmiUri.getExtension()) ) {
+							log.debug("Restored requested extension to: " +req.mmiUri);
 						}
 					}
 					
 					// also, restore the original requested extension:
-					foundMmiUri = foundMmiUri.copyWithExtension(mmiUri.getExtension());
+					foundMmiUri = foundMmiUri.copyWithExtension(req.mmiUri.getExtension());
 				}
 				catch (URISyntaxException e) {
 					return new InternalErrorResponse("Shouldn't happen", e);
@@ -241,6 +235,9 @@ public class UriResolver2 {
 				if ( version == null ) {
 					// unversioned request.
 					unversionedRequest = true;
+					
+					ontology = mostRecentOntology;
+					
 					// and let the dispatch continue.
 				}
 				else {
@@ -265,20 +262,17 @@ public class UriResolver2 {
 
 		if ( ontology == null ) {
 			// obtain info about the ontology:
-			ontology = db.getOntologyWithExts(mmiUri, null);
+			ontology = db.getOntologyWithExts(req.mmiUri, null);
 		}
 		
 		if ( ontology == null ) {
 			if ( log.isDebugEnabled() ) {
-				log.debug("_getResponseForMmiUri: not dispatched here. mmiUri = " +mmiUri);
+				log.debug("_getResponseForMmiUri: not dispatched here. mmiUri = " +req.mmiUri);
 			}
 			return null;
 		}
 		
-
-		
 		final File file = OntServlet.getFullPath(ontology, ontConfig, log);
-		
 		
 		if ( !file.canRead() ) {
 			// This should not happen.
@@ -307,7 +301,7 @@ public class UriResolver2 {
 		
 		if ( unversionedRequest ) {
 
-			unversionedModel = UnversionedConverter.getUnversionedModel(originalModel, mmiUri);
+			unversionedModel = UnversionedConverter.getUnversionedModel(originalModel, req.mmiUri);
 			
 			if ( unversionedModel != null ) {
 				if ( log.isDebugEnabled() ) {
@@ -322,12 +316,7 @@ public class UriResolver2 {
 			}
 		}
 
-		String term = mmiUri.getTerm();
-		
-		if ( log.isDebugEnabled() ) {
-			log.debug("_getResponseForMmiUri: term=[" +term+ "].");
-		}
-
+		String term = req.mmiUri.getTerm();
 		
 		OntModel model = unversionedModel != null ? unversionedModel : originalModel;
 
@@ -336,14 +325,16 @@ public class UriResolver2 {
 		}
 		else {
 			// Term included.
-			Model termModel = TermExtractor.getTermModel(model, mmiUri);
+			if ( log.isDebugEnabled() ) {
+				log.debug("_getResponseForMmiUri: term=[" +term+ "].");
+			}
+			Model termModel = TermExtractor.getTermModel(model, req.mmiUri);
 			if ( termModel != null ) {
 				return new TermResponse(termModel);
 			}
 			else {
 				return null;
 			}
-			
 		}
 	}
 

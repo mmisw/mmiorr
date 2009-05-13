@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.servlet.ServletConfig;
@@ -69,7 +70,9 @@ public class OntServlet extends HttpServlet {
 		
 		final Accept accept;
 		
-		String outFormat;
+		final String fullRequestedUri;
+		final MmiUri mmiUri;
+		final String outFormat;
 		
 		
 		Request(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) {
@@ -80,8 +83,28 @@ public class OntServlet extends HttpServlet {
 			userAgentList = Util.getHeader(request, "user-agent");
 			accept = new Accept(request);
 			
+			fullRequestedUri = request.getRequestURL().toString();
+			
+			String formParam = Util.getParam(request, "form", "");
+			
+			MmiUri mmiUriTest = null;
+			String outFormatTest;
+			try {
+				mmiUriTest = new MmiUri(fullRequestedUri);
+				// we have an MmiUri request.
+
+				// get output format to be used:
+				outFormatTest = OntServlet.getOutFormatForMmiUri(formParam, mmiUriTest, log);
+			}
+			catch (URISyntaxException e) {
+				// NOT a regular MmiUri request.
+				outFormatTest = OntServlet.getOutFormatForNonMmiUri(formParam, log); 
+			}
+			
+			mmiUri = mmiUriTest;
+			outFormat = outFormatTest;
+
 			if ( log.isDebugEnabled() ) {
-				String fullRequestedUri = request.getRequestURL().toString();
 				List<String> pcList = Util.getHeader(request, "PC-Remote-Addr");
 				log.debug("__Request: fullRequestedUri: " +fullRequestedUri);
 				log.debug("                 user-agent: " +userAgentList);
@@ -252,10 +275,10 @@ public class OntServlet extends HttpServlet {
 	 * @param mmiUri
 	 * @param log
 	 */
-	static void getOutFormatForMmiUri(Request req, MmiUri mmiUri, Log log) {
+	private static String getOutFormatForMmiUri(String formParam, MmiUri mmiUri, Log log) {
 		// The response type depends (initially) on the following elements:
 		String extension = mmiUri.getExtension();
-		req.outFormat = Util.getParam(req.request, "form", "");
+		String outFormat = formParam;
 		
 		// NOTE: I use this 'outFormat' variable to handle the extension of the topic as well as the
 		// optional parameter "form".  This parameter, if given, takes precedence over the extension.
@@ -263,27 +286,29 @@ public class OntServlet extends HttpServlet {
 		if ( log.isDebugEnabled() ) {
 			log.debug("===getOutFormatForMmiUri ====== ");
 			log.debug("===extension = \"" +extension+ "\"");
-			log.debug("===form = \"" +req.outFormat+ "\"");
+			log.debug("===form = \"" +outFormat+ "\"");
 		}
 
 		// prepare 'outFormat' according to "form" parameter (if given) and file extension:
-		if ( req.outFormat.length() == 0 ) {
+		if ( outFormat.length() == 0 ) {
 			// no "form" parameter given. Ok, use the variable to hold the extension
 			// without any leading dots:
-			req.outFormat = extension.replaceAll("^\\.+", "");
+			outFormat = extension.replaceAll("^\\.+", "");
 		}
 		else {
 			// "form" parameter given. Use it regardless of file extension.
 			if ( log.isDebugEnabled() && extension.length() > 0 ) {
-				log.debug("form param (=" +req.outFormat+ ") will take precedence over file extension: " +extension);
+				log.debug("form param (=" +outFormat+ ") will take precedence over file extension: " +extension);
 			}
 		}
 		
-		assert !req.outFormat.startsWith(".");
+		assert !outFormat.startsWith(".");
 		
 		if ( log.isDebugEnabled() ) {
-			log.debug("Using outFormat = " +req.outFormat+ " for format resolution");
+			log.debug("Using outFormat = " +outFormat+ " for format resolution");
 		}
+		
+		return outFormat;
 	}
 
 	/**
@@ -291,13 +316,15 @@ public class OntServlet extends HttpServlet {
 	 * @param req
 	 * @param log
 	 */
-	static void getOutFormatForNonMmiUri(Request req, Log log) {
-		req.outFormat = Util.getParam(req.request, "form", "");
+	private static String getOutFormatForNonMmiUri(String formParam, Log log) {
+		String outFormat = formParam;
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("===getOutFormatForNonMmiUri ====== ");
-			log.debug("===form = \"" +req.outFormat+ "\"");
+			log.debug("===form = \"" +outFormat+ "\"");
 		}
+		
+		return outFormat;
 	}
 
 
