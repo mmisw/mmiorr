@@ -115,7 +115,6 @@ public class UriResolver2 {
 			if ( log.isDebugEnabled() ) {
 				log.debug(this.getClass().getName()+ ": dispatching with outFormat=" +req.outFormat);
 			}
-			ServletOutputStream os = req.response.getOutputStream();
 
 			StringReader is = null;
 
@@ -128,6 +127,16 @@ public class UriResolver2 {
 			else if ( req.outFormat.equalsIgnoreCase("n3") ) {
 				req.response.setContentType("text/plain");
 				is = OntServlet.serializeModel(model, "N3");
+			}
+			else if ( req.outFormat.equalsIgnoreCase("html") ) {
+				String ontologyUri = req.fullRequestedUri;
+				String url = "http://mmisw.org/ontmd?ontologyUri=" +ontologyUri;
+				if ( log.isDebugEnabled() ) {
+					log.debug("Redirecting to latest html tool: " +url);
+				}
+				String redir = req.response.encodeRedirectURL(url);
+				req.response.sendRedirect(redir);
+				return;
 			}
 			else if ( req.outFormat.equalsIgnoreCase("dot") ) {
 				req.response.setContentType("text/plain");
@@ -144,6 +153,7 @@ public class UriResolver2 {
 				return;
 			}
 			
+			ServletOutputStream os = req.response.getOutputStream();
 			IOUtils.copy(is, os);
 			os.close();
 		}

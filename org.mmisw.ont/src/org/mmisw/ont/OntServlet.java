@@ -59,7 +59,7 @@ public class OntServlet extends HttpServlet {
 	private final UriResolver2 uriResolver2 = new UriResolver2(ontConfig, db, ontGraph);
 	
 	/**
-	 * A request object.
+	 * A request object. It keep info associated with the request from the client.
 	 */
 	class Request {
 		final ServletContext servletContext;
@@ -101,6 +101,17 @@ public class OntServlet extends HttpServlet {
 				outFormatTest = OntServlet.getOutFormatForNonMmiUri(formParam, log); 
 			}
 			
+			if ( outFormatTest.length() == 0 ) {     
+				// No explicit outFormat.
+				// use content negotiation:
+				
+				outFormatTest = getOutFormatByContentNegotiation(accept);
+				
+				log.debug("Not explicit output format given (either file extension or form parameter). " +
+						"Using [" +outFormatTest+ "] by content negotiation."
+				);
+			}
+
 			mmiUri = mmiUriTest;
 			outFormat = outFormatTest;
 
@@ -304,47 +315,10 @@ public class OntServlet extends HttpServlet {
 		
 		assert !outFormat.startsWith(".");
 		
-		if ( outFormat.length() == 0 ) {     
-			// No explicit outFormat.
-			// use content negotiation:
-			
-			log.debug("Not explicit output format given (either file extension or form parameter). " +
-					"Using content negotiation."
-			);
-			
-			
-			// accept empty? --> OWL
-			if ( accept.isEmpty() ) {
-				outFormat = "owl";
-			}
-			
-			// Dominating Accept: application/rdf+xml dominates? --> OWL
-			else if ( accept.getDominating().equalsIgnoreCase("application/rdf+xml") ) {
-				outFormat = "owl";
-			}
-
-			// Dominating Accept contains "xml"? --> OWL
-			else if ( accept.getDominating().indexOf("xml") >= 0 ) {
-				outFormat = "owl";
-			}
-
-			// Dominating Accept: text/html dominates? --> HTML
-			else if ( accept.getDominating().equalsIgnoreCase("text/html") ) {
-				outFormat = "html";
-			}
-
-			// default:
-			else {
-				outFormat = "owl";
-			}
-		}
-		
-		if ( log.isDebugEnabled() ) {
-			log.debug("Using [" +outFormat+ "] for format resolution");
-		}
-		
 		return outFormat;
 	}
+	
+	
 
 	/**
 	 * Gets the output format for a NON MmiUri request, so, only based on the "form" parameter.
@@ -362,6 +336,32 @@ public class OntServlet extends HttpServlet {
 		return outFormat;
 	}
 
+	private String getOutFormatByContentNegotiation(Accept accept) {
+		// accept empty? --> OWL
+		if ( accept.isEmpty() ) {
+			return "owl";
+		}
+
+		// Dominating Accept: application/rdf+xml dominates? --> OWL
+		else if ( accept.getDominating().equalsIgnoreCase("application/rdf+xml") ) {
+			return "owl";
+		}
+
+		// Dominating Accept contains "xml"? --> OWL
+		else if ( accept.getDominating().indexOf("xml") >= 0 ) {
+			return "owl";
+		}
+
+		// Dominating Accept: text/html dominates? --> HTML
+		else if ( accept.getDominating().equalsIgnoreCase("text/html") ) {
+			return "html";
+		}
+
+		// default:
+		else {
+			return "owl";
+		}
+	}
 
 	
 	/**
