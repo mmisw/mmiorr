@@ -359,10 +359,26 @@ public class MiscDispatcher {
 			return;
 		}
 		
-		// obtain info about the ontology:
-		String[] foundUri = { null };
-    	Ontology ontology = db.getOntologyWithExts(mmiUri, foundUri);
 		
+		// the ontology that is found and corresponding URI
+		Ontology ontology = null;
+		String ontologyUri = null;
+		
+		String version = mmiUri.getVersion();
+		if ( version == null || version.equals(MmiUri.LATEST_VERSION_INDICATOR) ) {
+			ontology = db.getMostRecentOntologyVersion(mmiUri);
+			if ( ontology != null ) {
+				ontologyUri = ontology.getUri();
+			}
+		}
+		else {
+			String[] foundUri = { null };
+			ontology = db.getOntologyWithExts(mmiUri, foundUri);
+	    	if ( ontology != null ) {
+	    		ontologyUri = foundUri[0];
+	    	}
+		}
+
     	if ( ontology == null ) {
     		out.println("ERROR: " +mmiUri.getOntologyUri()+ ": Not found.");
     		return;
@@ -370,7 +386,6 @@ public class MiscDispatcher {
 
 
     	// get the CSV corresponding to the found URI
-    	String ontologyUri = foundUri[0];
     	log.debug("getOntologyInfoFromRegistry: foundUri=" +ontologyUri);
 
     	String destPathCsv;

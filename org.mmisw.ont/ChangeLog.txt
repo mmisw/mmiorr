@@ -7,6 +7,8 @@ ChangeLog
 2009-09-13
 	- UriResolver2: resolving HTML by redirecting to OntMd service
 	
+	- MiscDispatcher.resolveGetCsv: resolve unversioned request
+	
 2009-09-12
 	Refactoring:
 	- new OntServlet as main entry point and as a preparation to start refactoring of UriResolver
