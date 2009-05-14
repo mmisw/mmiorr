@@ -1,0 +1,11 @@
+<module>
+
+      <!-- Other module inherits                                      -->
+
+
+      <!-- Specify the app entry point class.                         -->
+      <entry-point class='org.mmisw.iserver.gwt.client.IServer'/>
+    
+      <servlet path="/iserverService" class="org.mmisw.iserver.gwt.server.IServerServiceImpl"/>
+	
+</module>
