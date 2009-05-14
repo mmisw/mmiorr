@@ -3,7 +3,7 @@ package org.mmisw.ontmd.gwt.client.voc2rdf;
 import java.util.List;
 import java.util.Map;
 
-import org.mmisw.ontmd.gwt.client.ResourceTypeWidget;
+import org.mmisw.ontmd.gwt.client.metadata.ResourceTypeWidget;
 import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 import org.mmisw.ontmd.gwt.client.util.TLabel;

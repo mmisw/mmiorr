@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.ont.MmiUri;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.ontmd.gwt.client.rpc.AppInfo;
@@ -1267,6 +1269,18 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 
 		}
 		else { // new mechanism
+			
+			// note: make sure we request the OWL format of the ontology, so adjust extension;
+			try {
+				MmiUri mmiUri = new MmiUri(ontologyUri);
+				ontologyUri = mmiUri.getOntologyUriWithExtension(".owl");
+			}
+			catch (URISyntaxException e1) {
+				String error = "shouldn't happen: " +e1.getMessage();
+				log.error(error, e1);
+				ontologyInfo.setError(error);
+				return ontologyInfo;
+			}
 			
 			if ( log.isDebugEnabled() ) {
 				log.debug("getOntologyInfoFromRegistry: ontologyUri=" +ontologyUri);
