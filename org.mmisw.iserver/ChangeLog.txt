@@ -1,3 +1,13 @@
 org.mmisw.iserver 
 Carlos Rueda  -  http://marinemetadata.org
+Created: 2009-05-13
 
+
+2009-05-13
+	Module extracted from vine prototype. The goal is to unify the various operations to the
+	server throwugh this module.
+	Note: this module provides the serializable objects required for the communication and
+	a set of core types to be used on the server side.
+	
+	This is initially to be used by OntMd to provide the "portal" interface. Later,
+	vine itself will be integrated.

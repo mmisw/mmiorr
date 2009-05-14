@@ -67,7 +67,7 @@
 		<arg value="DETAILED"/>
 		<arg value="-out"/>
 		<arg value="www"/>
-		<arg value="org.mmisw.iserver.gwt.Main"/>
+		<arg value="org.mmisw.iserver.gwt.IServer"/>
     </java>
   </target>
 
@@ -125,7 +125,7 @@
 		</copy>
 
         <war warfile="${build.dir}/iserver.war" webxml="${build.dir}/tmp.WebContent/WEB-INF/web.xml">
-                <fileset dir="www/org.mmisw.iserver.gwt.Main" />
+                <fileset dir="www/org.mmisw.iserver.gwt.IServer" />
         	    <fileset dir="${build.dir}/tmp.WebContent" />
                 <lib dir="base_war/WEB-INF/lib" />
         </war>
@@ -161,7 +161,7 @@
 			<arg value="9999"/>
 			<arg value="-out"/>
 			<arg value="www"/>
-			<arg value="org.mmisw.iserver.gwt.Main/index.html"/>
+			<arg value="org.mmisw.iserver.gwt.IServer/index.html"/>
 		</java>
 	</target>
 
