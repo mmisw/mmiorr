@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.RelationInfo;
 
 /**
  * Interface to get info from the server.
@@ -34,12 +33,4 @@ public interface IServer {
 	 */
 	OntologyInfo getEntities(OntologyInfo ontologyInfo);
 
-	/**
-	 * Gets the default list of RelationInfo's.
-	 */
-	List<RelationInfo> getRelationInfos();
-	
-	
-	// TODO Not used; the scheme for the mappings still to be determined
-	String performMapping(List<String> leftTerms, int relationCode, List<String> rightTerms);
 }
