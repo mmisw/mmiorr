@@ -3,6 +3,19 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-05-13
+	- Moved types from ...client related with the proper metadata editor to new package ...client.metadata:
+		MainPanel
+		MetadataGroupPanel
+		MetadataPanel
+		OntologyPanel
+		ResourceTypeWidget
+		
+	- Removed unused types:
+		voc2rdf.rpc.Voc2RdfService
+		voc2rdf.rpc.Voc2RdfServiceAsync
+		
+	
 2009-05-11
 	- Preparations to show ontology data in view only mode.
 		Initially, to show term table for a voc2rdf ontology (based on the associated CSV)
