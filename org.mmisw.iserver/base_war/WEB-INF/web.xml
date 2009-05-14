@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+
+	<servlet>
+		<servlet-name>iserverService</servlet-name>
+		<servlet-class>org.mmisw.iserver.gwt.server.IServerServiceImpl</servlet-class>
+		<init-param>
+			<param-name>iserver.app.version</param-name>
+			<param-value>@iserver.app.version@</param-value>
+		</init-param>
+		<init-param>
+			<param-name>iserver.app.build</param-name>
+			<param-value>@iserver.app.build@</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>iserverService</servlet-name>
+		<url-pattern>/iserverService</url-pattern>
+	</servlet-mapping>
+
+
+</web-app>
