@@ -1,5 +1,6 @@
 package org.mmisw.ontmd.gwt.client;
 
+import org.mmisw.ontmd.gwt.client.metadata.MainPanel;
 import org.mmisw.ontmd.gwt.client.rpc.DataResult;
 import org.mmisw.ontmd.gwt.client.rpc.OntologyInfo;
 import org.mmisw.ontmd.gwt.client.voc2rdf.TermTable;
@@ -22,12 +23,12 @@ public class DataPanel extends VerticalPanel {
 	 * @param mainPanel
 	 * @param editing true for the editing interface; false for the vieweing interface.
 	 */
-	DataPanel(MainPanel mainPanel, boolean editing) {
+	public DataPanel(MainPanel mainPanel, boolean editing) {
 		super();
 		setWidth("800");
 	}
 	
-	void enable(boolean enabled) {
+	public void enable(boolean enabled) {
 		// TODO
 	}
 	
@@ -36,7 +37,7 @@ public class DataPanel extends VerticalPanel {
 	 * Updates this panel with the data associated to the given ontology 
 	 * @param ontologyInfo
 	 */
-	void updateWith(OntologyInfo ontologyInfo) {
+	public void updateWith(OntologyInfo ontologyInfo) {
 		
 		this.clear();
 		

@@ -2,6 +2,7 @@ package org.mmisw.ontmd.gwt.client;
 
 import java.util.Map;
 
+import org.mmisw.ontmd.gwt.client.metadata.MainPanel;
 import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -41,7 +42,7 @@ public class UserPanel extends VerticalPanel {
 	private HTML statusLabel = new HTML("");
 	
 	
-	UserPanel(MainPanel mainPanel) {
+	public UserPanel(MainPanel mainPanel) {
 		this.mainPanel = mainPanel;
 		container.setSpacing(4);
 		DecoratorPanel decPanel = new DecoratorPanel();

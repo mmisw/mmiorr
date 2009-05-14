@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import org.mmisw.ontmd.gwt.client.img.OntMdImageBundle;
+import org.mmisw.ontmd.gwt.client.metadata.MainPanel;
 import org.mmisw.ontmd.gwt.client.rpc.AppInfo;
 import org.mmisw.ontmd.gwt.client.rpc.BaseInfo;
 import org.mmisw.ontmd.gwt.client.rpc.OntMdService;
@@ -50,7 +51,7 @@ public class Main implements EntryPoint {
 	
 	static AppInfo appInfo;
 	
-	static BaseInfo baseInfo;
+	public static BaseInfo baseInfo;
 
 	private static boolean includeLog;
 
@@ -119,14 +120,6 @@ public class Main implements EntryPoint {
 			if (_log != null) {
 				includeLog = true;
 				params.remove("_log");
-			}
-			
-			if ( ! launchVoc2rdf ) {
-				String voc2rdf = (String) params.get("voc2rdf");
-				if (voc2rdf != null) {
-					launchVoc2rdf = true;
-					params.remove("voc2rdf");
-				}
 			}
 		}
 		
