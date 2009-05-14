@@ -49,4 +49,13 @@ public interface OntMdServiceAsync {
 	// data
 
 	void getData(OntologyInfo ontologyInfo, AsyncCallback<DataResult> callback);
+
+
+	///////////////////////////////////////////////////////////////////////
+	// Portal
+	
+	void getPortalAppInfo(AsyncCallback<AppInfo> callback);
+	
+	void getPortalBaseInfo(AsyncCallback<PortalBaseInfo> callback);
+	
 }

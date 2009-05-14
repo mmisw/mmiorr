@@ -87,5 +87,15 @@ public interface OntMdService extends RemoteService {
 	 */
 	DataResult getData(OntologyInfo ontologyInfo);
 
+	
+	
+	///////////////////////////////////////////////////////////////////////
+	// Portal
+	
+	AppInfo getPortalAppInfo();
+	
+	PortalBaseInfo getPortalBaseInfo();
+	
+
 
 }

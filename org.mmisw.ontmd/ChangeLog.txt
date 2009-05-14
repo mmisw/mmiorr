@@ -15,6 +15,8 @@ ChangeLog
 		voc2rdf.rpc.Voc2RdfService
 		voc2rdf.rpc.Voc2RdfServiceAsync
 		
+	- Preparing portal dispatch 
+	
 	
 2009-05-11
 	- Preparations to show ontology data in view only mode.

@@ -40,12 +40,14 @@ import org.mmisw.ontmd.gwt.client.rpc.DataResult;
 import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
 import org.mmisw.ontmd.gwt.client.rpc.OntMdService;
 import org.mmisw.ontmd.gwt.client.rpc.OntologyInfo;
+import org.mmisw.ontmd.gwt.client.rpc.PortalBaseInfo;
 import org.mmisw.ontmd.gwt.client.rpc.ReviewResult;
 import org.mmisw.ontmd.gwt.client.rpc.UploadResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrGroup;
+import org.mmisw.ontmd.gwt.server.portal.PortalImpl;
 import org.mmisw.ontmd.gwt.server.voc2rdf.Voc2RdfImpl;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -113,6 +115,9 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			
 			// voc2rdf initialization
 			voc2rdf = new Voc2RdfImpl();
+			
+			// portal initialization
+			portal = new PortalImpl();
 		}
 		catch (Exception ex) {
 			log.error("Cannot initialize: " +ex.getMessage(), ex);
@@ -1424,4 +1429,20 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		
 		return dataResult;
 	}
+	
+	
+	///////////////////////////////////////////////////////////////////////
+	// Portal
+	
+	private PortalImpl portal;
+	
+	public AppInfo getPortalAppInfo() {
+		return portal.getAppInfo();	
+	}
+	
+	public PortalBaseInfo getPortalBaseInfo() {
+		return portal.getBaseInfo();
+	}
+	
+
 }

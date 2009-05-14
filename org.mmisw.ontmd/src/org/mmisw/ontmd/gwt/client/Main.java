@@ -5,6 +5,7 @@ import java.util.Stack;
 
 import org.mmisw.ontmd.gwt.client.img.OntMdImageBundle;
 import org.mmisw.ontmd.gwt.client.metadata.MainPanel;
+import org.mmisw.ontmd.gwt.client.portal.Portal;
 import org.mmisw.ontmd.gwt.client.rpc.AppInfo;
 import org.mmisw.ontmd.gwt.client.rpc.BaseInfo;
 import org.mmisw.ontmd.gwt.client.rpc.OntMdService;
@@ -98,6 +99,9 @@ public class Main implements EntryPoint {
 		baseUrl = baseUrl.replace("/+$", ""); // remove trailing slashes
 		log("baseUrl = " + baseUrl);
 
+		// launch portal?
+		boolean launchPortal = GWT.getHostPageBaseURL().endsWith("/portal/");
+		
 		// launch Voc2RDF?
 		boolean launchVoc2rdf = GWT.getHostPageBaseURL().endsWith("/voc2rdf/");
 		
@@ -125,7 +129,11 @@ public class Main implements EntryPoint {
 		
 		getOntMdService();
 		
-		if ( launchVoc2rdf ) {
+		if ( launchPortal ) {
+			Portal portal = new Portal();
+			portal.launch(this, params);
+		}
+		else if ( launchVoc2rdf ) {
 			Voc2Rdf voc2Rdf = new Voc2Rdf();
 			voc2Rdf.launch(this, params);
 		}
