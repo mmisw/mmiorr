@@ -1,22 +1,16 @@
-package org.mmisw.iserver.gwt.server;
+package org.mmisw.iserver.core;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.servlet.ServletException;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mmisw.iserver.core.Util;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.RelationInfo;
-import org.mmisw.iserver.gwt.client.rpc.IServerService;
-
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 
 
@@ -26,7 +20,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
  * @author Carlos Rueda
  * @version $Id$
  */
-public class IServerServiceImpl extends RemoteServiceServlet implements IServerService {
+public class Server implements IServer {
 	private static final long serialVersionUID = 1L;
 	
 	private static final String ONT = "http://mmisw.org/ont";
@@ -37,13 +31,23 @@ public class IServerServiceImpl extends RemoteServiceServlet implements IServerS
 
 	
 	private final AppInfo appInfo = new AppInfo("MMISW IServer");
-	private final Log log = LogFactory.getLog(IServerServiceImpl.class);
+	private final Log log = LogFactory.getLog(Server.class);
 	
-	public void init() throws ServletException {
-		super.init();
+	
+	private static IServer _instance ;
+	
+	public static IServer getInstance() {
+		if ( _instance == null ) {
+			_instance = new Server();
+		}
+		
+		return _instance;
+	}
+	
+	private Server() {
 		log.info("initializing " +appInfo.getAppName()+ "...");
 		try {
-			Config.getInstance().init(getServletConfig(), log);
+			Config.getInstance();
 			
 			appInfo.setVersion(
 					Config.Prop.VERSION.getValue()+ " (" +
@@ -64,7 +68,6 @@ public class IServerServiceImpl extends RemoteServiceServlet implements IServerS
 	}
 	
 	public void destroy() {
-		super.destroy();
 		log.info(appInfo+ ": destroy called.\n\n");
 	}
 	

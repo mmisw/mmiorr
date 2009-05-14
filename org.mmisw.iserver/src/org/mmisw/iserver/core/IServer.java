@@ -1,10 +1,10 @@
-package org.mmisw.iserver.gwt.client.rpc;
+package org.mmisw.iserver.core;
 
 import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
-
-import com.google.gwt.user.client.rpc.RemoteService;
+import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.RelationInfo;
 
 /**
  * Interface to get info from the server.
@@ -12,7 +12,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
  * @author Carlos Rueda
  * @version $Id$
  */
-public interface IServerService extends RemoteService {
+public interface IServer {
 	
 	/**
 	 * Gets basic application info.
