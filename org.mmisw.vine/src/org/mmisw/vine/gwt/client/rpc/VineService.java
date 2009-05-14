@@ -2,7 +2,8 @@ package org.mmisw.vine.gwt.client.rpc;
 
 import java.util.List;
 
-import org.mmisw.vine.gwt.client.rpc.AppInfo;
+import org.mmisw.iserver.gwt.client.rpc.AppInfo;
+import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 

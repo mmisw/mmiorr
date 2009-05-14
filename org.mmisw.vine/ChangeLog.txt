@@ -3,6 +3,12 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2009-05-13
+	Extracted several server operations into a separate new module org.mmisw.iserver, 
+	which I'm starting to also use to support the portal interface and eventually 
+	other operations as the refactoring progresses.
+	See sibling project org.mmisw.iserver.
+
 2009-05-11
 	- Include trailing slash for the prefixed namespaces so the terms are shown now
 	  with only the <letter>:  prefix (and not <letter>:/)

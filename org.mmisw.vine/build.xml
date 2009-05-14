@@ -25,6 +25,8 @@
 
   	<pathelement path="base_war/WEB-INF/lib/commons-logging.jar"/>
   	<pathelement path="base_war/WEB-INF/lib/log4j-1.2.12.jar"/>
+  	
+  	<pathelement path="base_war/WEB-INF/lib/org.mmisw.iserver.gwt.jar"/>
   </path>
 
 	<target name="init">
@@ -84,6 +86,13 @@
 	<jar destfile="base_war/WEB-INF/lib/org.mmisw.vine.gwt.jar">
   		<fileset dir="${build.dir}/classes">
     		<include name="**/*.class"/>
+  		</fileset>
+  		<fileset dir="src">
+    		<include name="**/*.xml"/>
+    		<include name="**/*.css"/>
+    		<include name="**/*.java"/>
+    		<include name="**/*.png"/>
+    		<include name="**/*.gif"/>
   		</fileset>
 	</jar>
   </target>

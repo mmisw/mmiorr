@@ -10,9 +10,11 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.iserver.core.IServer;
+import org.mmisw.iserver.core.Server;
+import org.mmisw.iserver.gwt.client.rpc.AppInfo;
+import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.vine.core.Util;
-import org.mmisw.vine.gwt.client.rpc.AppInfo;
-import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
 import org.mmisw.vine.gwt.client.rpc.RelationInfo;
 import org.mmisw.vine.gwt.client.rpc.VineService;
 
@@ -38,6 +40,11 @@ public class VineServiceImpl extends RemoteServiceServlet implements VineService
 	
 	private final AppInfo appInfo = new AppInfo("Web VINE");
 	private final Log log = LogFactory.getLog(VineServiceImpl.class);
+	
+	
+	private IServer iserver = Server.getInstance();
+	
+	
 	
 	public void init() throws ServletException {
 		super.init();
@@ -78,39 +85,13 @@ public class VineServiceImpl extends RemoteServiceServlet implements VineService
 	 * 
 	 */
 	public List<OntologyInfo> getAllOntologies() {
-		onts = new ArrayList<OntologyInfo>();
-		
-		String uri = VOCABS;
-		if ( log.isDebugEnabled() ) {
-			log.debug("getAsString. uri= " +uri);
-		}
-		String response;
-		try {
-			response = getAsString(uri, Integer.MAX_VALUE);
-		}
-		catch (Exception e) {
-			// TODO A notification mechanism (like in ontmd) for exceptions
-			e.printStackTrace();
-			return onts;
-		}
-		String[] lines = response.split("\n|\r\n|\r");
-		for ( String line : lines ) {
-			String[] toks = line.split("\\s*,\\s*");
-			OntologyInfo ontologyInfo = new OntologyInfo();
-			ontologyInfo.setUri(toks[0]);
-			ontologyInfo.setDisplayLabel(toks[1]);
-			onts.add(ontologyInfo);
-		}
-		
+		onts = iserver.getAllOntologies();
+	
 		return onts;
 	}
 	
 	public OntologyInfo getEntities(OntologyInfo ontologyInfo) {
-		if ( log.isDebugEnabled() ) {
-			log.debug("getEntities starting");
-		}
-		Util.getEntities(ontologyInfo);
-		return ontologyInfo;
+		return iserver.getEntities(ontologyInfo);
 	}
 
 
@@ -122,24 +103,6 @@ public class VineServiceImpl extends RemoteServiceServlet implements VineService
 
 	
 	
-	private static String getAsString(String uri, int maxlen) throws Exception {
-		HttpClient client = new HttpClient();
-	    GetMethod meth = new GetMethod(uri);
-	    try {
-	        client.executeMethod(meth);
-
-	        if (meth.getStatusCode() == HttpStatus.SC_OK) {
-	            return meth.getResponseBodyAsString(maxlen);
-	        }
-	        else {
-	          throw new Exception("Unexpected failure: " + meth.getStatusLine().toString());
-	        }
-	    }
-	    finally {
-	        meth.releaseConnection();
-	    }
-	}
-
 	public List<RelationInfo> getRelationInfos() {
 		if ( log.isDebugEnabled() ) {
 			log.debug("getRelationInfos starting");
