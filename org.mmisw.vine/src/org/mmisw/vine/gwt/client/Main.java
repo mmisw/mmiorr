@@ -5,9 +5,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mmisw.vine.gwt.client.rpc.AppInfo;
+import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.vine.gwt.client.img.VineImageBundle;
-import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.vine.gwt.client.rpc.VineService;
 import org.mmisw.vine.gwt.client.rpc.VineServiceAsync;
 import org.mmisw.vine.gwt.client.util.Util;

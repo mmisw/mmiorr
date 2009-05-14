@@ -1,6 +1,6 @@
 package org.mmisw.vine.gwt.client;
 
-import org.mmisw.vine.gwt.client.rpc.EntityInfo;
+import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;

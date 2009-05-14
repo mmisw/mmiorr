@@ -2,7 +2,7 @@ package org.mmisw.vine.gwt.client;
 
 import java.util.Set;
 
-import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.vine.gwt.client.rpc.RelationInfo;
 
 import com.google.gwt.user.client.Window;

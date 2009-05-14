@@ -1,6 +1,6 @@
 package org.mmisw.vine.gwt.client;
 
-import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DecoratorPanel;

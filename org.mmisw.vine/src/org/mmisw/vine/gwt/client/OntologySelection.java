@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mmisw.vine.gwt.client.util.TLabel;
-import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;

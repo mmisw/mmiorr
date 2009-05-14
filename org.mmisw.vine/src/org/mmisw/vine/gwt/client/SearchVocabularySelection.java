@@ -3,7 +3,7 @@ package org.mmisw.vine.gwt.client;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.vine.gwt.client.util.TLabel;
 
 import com.google.gwt.user.client.DOM;

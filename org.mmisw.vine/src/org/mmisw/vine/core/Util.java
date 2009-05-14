@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mmisw.vine.gwt.client.rpc.ClassInfo;
-import org.mmisw.vine.gwt.client.rpc.EntityInfo;
-import org.mmisw.vine.gwt.client.rpc.IndividualInfo;
-import org.mmisw.vine.gwt.client.rpc.OntologyInfo;
-import org.mmisw.vine.gwt.client.rpc.PropValue;
-import org.mmisw.vine.gwt.client.rpc.PropertyInfo;
+import org.mmisw.iserver.gwt.client.rpc.ClassInfo;
+import org.mmisw.iserver.gwt.client.rpc.IndividualInfo;
+import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
+import org.mmisw.iserver.gwt.client.rpc.PropValue;
+import org.mmisw.iserver.gwt.client.rpc.PropertyInfo;
 
 import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
