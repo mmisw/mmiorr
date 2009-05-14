@@ -101,3 +101,26 @@ table.inline td {
 }
 
 
+
+.OntologyTable {
+  font-size: small;
+  background-color: #ffffff;
+  border-spacing: 0px;
+  border-collapse: collapse;
+  border: 1px solid #dee7ec;
+}
+
+.OntologyTable-header {
+  font-weight: bold;
+  text-align: center;
+  padding: 3px;
+  border: 1px solid #8cacbb;
+  background-color: #dee7ec;
+}
+
+.OntologyTable-row {
+  text-align: center;
+  padding: 3px;
+  border: 1px solid #dee7ec;
+}
+

@@ -1,8 +1,13 @@
 package org.mmisw.ontmd.gwt.server.portal;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mmisw.ontmd.gwt.client.rpc.AppInfo;
+import org.mmisw.iserver.core.IServer;
+import org.mmisw.iserver.core.Server;
+import org.mmisw.iserver.gwt.client.rpc.AppInfo;
+import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.ontmd.gwt.client.rpc.PortalBaseInfo;
 import org.mmisw.ontmd.gwt.server.Config;
 
@@ -21,6 +26,11 @@ public class PortalImpl  {
 	private final AppInfo appInfo = new AppInfo("MMI Portal");
 	
 	private PortalBaseInfo baseInfo = null;
+	
+	
+	private IServer iserver = Server.getInstance();
+
+
 	
 	
 	public PortalImpl() {
@@ -53,4 +63,8 @@ public class PortalImpl  {
 	}
 	
 	
+	
+	public List<OntologyInfo> getAllOntologies() {
+		return iserver.getAllOntologies();
+	}
 }

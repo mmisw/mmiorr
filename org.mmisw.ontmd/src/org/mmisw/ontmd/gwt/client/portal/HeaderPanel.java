@@ -18,14 +18,13 @@ public class HeaderPanel extends VerticalPanel {
 	HeaderPanel(final Map<String, String> params) {
 		super();
 		
-		VerticalPanel vp = new VerticalPanel();
+		final VerticalPanel vp = new VerticalPanel();
 		vp.add(Main.images.mmior().createImage());
 		
 		DecoratorPanel decPanel = new DecoratorPanel();
 		add(decPanel);
 	    decPanel.setWidget(vp);
 	    
-
 	}
 	
 

@@ -3,7 +3,7 @@ package org.mmisw.ontmd.gwt.client.voc2rdf;
 import java.util.Map;
 
 import org.mmisw.ontmd.gwt.client.Main;
-import org.mmisw.ontmd.gwt.client.rpc.AppInfo;
+import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
 
 import com.google.gwt.user.client.DOM;

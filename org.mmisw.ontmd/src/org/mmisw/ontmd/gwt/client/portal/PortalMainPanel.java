@@ -1,13 +1,13 @@
 package org.mmisw.ontmd.gwt.client.portal;
 
+import java.util.List;
 import java.util.Map;
 
+import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * The main panel.
@@ -19,9 +19,13 @@ public class PortalMainPanel extends VerticalPanel {
 	
 	private LoginResult loginResult;
 	
+	private List<OntologyInfo> ontologyInfos;
 	
-	PortalMainPanel(final Map<String, String> params) {
+	
+	PortalMainPanel(final Map<String, String> params, List<OntologyInfo> ontologyInfos) {
 		super();
+		
+		this.ontologyInfos = ontologyInfos;
 		
 		///////////////////////////////////////////////////////////////////////////
 		// conveniences for testing in development environment
@@ -44,14 +48,13 @@ public class PortalMainPanel extends VerticalPanel {
 
 		
 	    HeaderPanel headerPanel = new HeaderPanel(params); 
-		headerPanel.setWidth("900");
+	    OntologyTable ontologyTable = new OntologyTable(params, this.ontologyInfos);
 
-		Widget body = new HTML("BODY");
-		
-		
+	    headerPanel.setWidth("900");
 		add(headerPanel);
-	    add(body);
-	    
+
+		add(ontologyTable);
+		
 	}
 	
 

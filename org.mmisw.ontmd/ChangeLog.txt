@@ -15,7 +15,10 @@ ChangeLog
 		voc2rdf.rpc.Voc2RdfService
 		voc2rdf.rpc.Voc2RdfServiceAsync
 		
-	- Preparing portal dispatch 
+	- Preparing portal dispatch:
+		I created a new module org.mmisw.iserver, which I'm starting to use here to support
+		the portal interface and eventually other operations as the refactoring progresses.
+		See sibling project org.mmisw.iserver.
 	
 	
 2009-05-11

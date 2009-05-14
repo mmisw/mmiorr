@@ -26,6 +26,7 @@
   	
   	<pathelement path="base_war/WEB-INF/lib/org.mmisw.ont.mmiuri.jar"/>
   	<pathelement path="base_war/WEB-INF/lib/org.mmisw.ont.vocabulary.jar"/>
+  	<pathelement path="base_war/WEB-INF/lib/org.mmisw.iserver.gwt.jar"/>
   	
   	<pathelement path="base_war/WEB-INF/lib/concurrent.jar"/>
   	<pathelement path="base_war/WEB-INF/lib/org.mmi.util.jar"/>
@@ -80,7 +81,7 @@
 		<arg value="-logLevel"/>
 		<arg value="INFO"/>
 		<arg value="-style"/>
-		<arg value="OBF"/>
+		<arg value="DETAILED"/>
 		<arg value="-out"/>
 		<arg value="www"/>
 		<arg value="org.mmisw.ontmd.gwt.Main"/>

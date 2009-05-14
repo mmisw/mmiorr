@@ -11,6 +11,7 @@
       <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
 
       <!-- Other module inherits                                      -->
+      <inherits name='org.mmisw.iserver.gwt.IServer'/>
 
 
       <!-- Specify the app entry point class.                         -->

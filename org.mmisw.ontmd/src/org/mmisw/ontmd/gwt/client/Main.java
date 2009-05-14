@@ -6,7 +6,7 @@ import java.util.Stack;
 import org.mmisw.ontmd.gwt.client.img.OntMdImageBundle;
 import org.mmisw.ontmd.gwt.client.metadata.MainPanel;
 import org.mmisw.ontmd.gwt.client.portal.Portal;
-import org.mmisw.ontmd.gwt.client.rpc.AppInfo;
+import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.ontmd.gwt.client.rpc.BaseInfo;
 import org.mmisw.ontmd.gwt.client.rpc.OntMdService;
 import org.mmisw.ontmd.gwt.client.rpc.OntMdServiceAsync;

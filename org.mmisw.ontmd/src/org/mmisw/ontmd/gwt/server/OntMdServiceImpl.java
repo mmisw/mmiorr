@@ -30,10 +30,10 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.ont.MmiUri;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
-import org.mmisw.ontmd.gwt.client.rpc.AppInfo;
 import org.mmisw.ontmd.gwt.client.rpc.BaseInfo;
 import org.mmisw.ontmd.gwt.client.rpc.BaseResult;
 import org.mmisw.ontmd.gwt.client.rpc.DataResult;
@@ -79,7 +79,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	// TODO read namespaceRoot from a configuration parameter
 	private static final String namespaceRoot = "http://mmisw.org/ont";
 	
-
+	
 	private final AppInfo appInfo = new AppInfo("MMI OntMd");
 	
 	
@@ -1444,5 +1444,9 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		return portal.getBaseInfo();
 	}
 	
+	public List<org.mmisw.iserver.gwt.client.rpc.OntologyInfo> getAllOntologies() {
+		return portal.getAllOntologies();
+	}
+
 
 }

@@ -1,7 +1,9 @@
 package org.mmisw.ontmd.gwt.client.rpc;
 
+import java.util.List;
 import java.util.Map;
 
+import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
@@ -58,4 +60,5 @@ public interface OntMdServiceAsync {
 	
 	void getPortalBaseInfo(AsyncCallback<PortalBaseInfo> callback);
 	
+	void getAllOntologies(AsyncCallback <List<org.mmisw.iserver.gwt.client.rpc.OntologyInfo>> callback);
 }
