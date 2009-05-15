@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.mmisw.ontmd.gwt.client.DataPanel;
+import org.mmisw.ontmd.gwt.client.LoginListener;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.UserPanel;
 import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
@@ -35,7 +36,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author Carlos Rueda
  */
-public class MainPanel extends VerticalPanel {
+public class MainPanel extends VerticalPanel implements LoginListener {
 
 
 	private CellPanel container = new VerticalPanel();

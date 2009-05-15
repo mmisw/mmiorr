@@ -2,7 +2,6 @@ package org.mmisw.ontmd.gwt.client;
 
 import java.util.Map;
 
-import org.mmisw.ontmd.gwt.client.metadata.MainPanel;
 import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -30,7 +29,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class UserPanel extends VerticalPanel {
 
-	private MainPanel mainPanel;
+	private LoginListener loginListener;
 	private CellPanel container = new VerticalPanel();
 	
 	private TextBox userName;
@@ -42,8 +41,8 @@ public class UserPanel extends VerticalPanel {
 	private HTML statusLabel = new HTML("");
 	
 	
-	public UserPanel(MainPanel mainPanel) {
-		this.mainPanel = mainPanel;
+	public UserPanel(LoginListener loginListener) {
+		this.loginListener = loginListener;
 		container.setSpacing(4);
 		DecoratorPanel decPanel = new DecoratorPanel();
 	    decPanel.setWidget(container);
@@ -209,7 +208,7 @@ public class UserPanel extends VerticalPanel {
 				else {
 					Main.log("login ok: " +loginResult);
 					statusMessage("OK");
-					mainPanel.loginOk(loginResult);
+					loginListener.loginOk(loginResult);
 				}
 				loginButton.setEnabled(true);
 //				loginPanel.setLoginResult(loginResult);
