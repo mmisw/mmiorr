@@ -19,6 +19,17 @@ public class OntologyInfo implements Serializable {
 	
 	private List<EntityInfo> entities;
 	
+	
+	private String authority;
+	private String type;
+
+	private String userId;
+
+	private String contactName;
+
+	private String versionNumber;
+
+	private String dateCreated;
 
 	
 	public char getCode() {
@@ -54,5 +65,66 @@ public class OntologyInfo implements Serializable {
 	public int hashCode() {
 		return uri.hashCode();
 	}
+	/**
+	 * @return the authority
+	 */
+	public String getAuthority() {
+		return authority;
+	}
+	/**
+	 * @param authority the authority to set
+	 */
+	public void setAuthority(String authority) {
+		this.authority = authority;
+	}
+	/**
+	 * @return the type
+	 */
+	public String getType() {
+		return type;
+	}
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(String type) {
+		this.type = type;
+	}
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+	public void setContactName(String contactName) {
+		this.contactName = contactName;
+	}
+	public void setVersionNumber(String versionNumber) {
+		this.versionNumber = versionNumber;
+	}
+	public void setDateCreated(String dateCreated) {
+		this.dateCreated = dateCreated;
+	}
+	/**
+	 * @return the userId
+	 */
+	public String getUserId() {
+		return userId;
+	}
+	/**
+	 * @return the contactName
+	 */
+	public String getContactName() {
+		return contactName;
+	}
+	/**
+	 * @return the versionNumber
+	 */
+	public String getVersionNumber() {
+		return versionNumber;
+	}
+	/**
+	 * @return the dateCreated
+	 */
+	public String getDateCreated() {
+		return dateCreated;
+	}
+
 	
 }

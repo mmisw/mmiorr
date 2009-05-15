@@ -25,6 +25,8 @@
 
   	<pathelement path="base_war/WEB-INF/lib/commons-logging.jar"/>
   	<pathelement path="base_war/WEB-INF/lib/log4j-1.2.12.jar"/>
+  	
+  	<pathelement path="base_war/WEB-INF/lib/org.mmisw.ont.mmiuri.jar"/>
   </path>
 
 	<target name="init">

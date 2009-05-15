@@ -1,5 +1,6 @@
 package org.mmisw.iserver.core;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.ont.MmiUri;
 
 
 
@@ -23,8 +25,7 @@ public class Server implements IServer {
 	private static final long serialVersionUID = 1L;
 	
 	private static final String ONT = "http://mmisw.org/ont";
-	private static final String VOCABS = ONT + "?vocabs";
-//	private static final String MAPPINGS = ONT + "?mappings";
+	private static final String LISTALL = ONT + "?listall";
 
 	private static List<OntologyInfo> onts;
 
@@ -82,7 +83,8 @@ public class Server implements IServer {
 	public List<OntologyInfo> getAllOntologies() {
 		onts = new ArrayList<OntologyInfo>();
 		
-		String uri = VOCABS;
+		String uri = LISTALL;
+		
 		if ( log.isDebugEnabled() ) {
 			log.debug("getAsString. uri= " +uri);
 		}
@@ -97,10 +99,29 @@ public class Server implements IServer {
 		}
 		String[] lines = response.split("\n|\r\n|\r");
 		for ( String line : lines ) {
-			String[] toks = line.split("\\s*,\\s*");
+			String[] toks = line.trim().split(" , ");
 			OntologyInfo ontologyInfo = new OntologyInfo();
-			ontologyInfo.setUri(toks[0]);
+			String ontologyUri = toks[0];
+			
+			ontologyInfo.setUri(ontologyUri);
 			ontologyInfo.setDisplayLabel(toks[1]);
+
+			ontologyInfo.setType(toks[2]);
+			
+			ontologyInfo.setUserId(toks[3]);
+			ontologyInfo.setContactName(toks[4]);
+			ontologyInfo.setVersionNumber(toks[5]);
+			ontologyInfo.setDateCreated(toks[6]);
+			
+
+			try {
+				MmiUri mmiUri = new MmiUri(ontologyUri);
+				ontologyInfo.setAuthority(mmiUri.getAuthority());
+			}
+			catch (URISyntaxException e) {
+				log.error("error creating MmiUri from: " +ontologyUri, e);
+			}
+
 			onts.add(ontologyInfo);
 		}
 		
