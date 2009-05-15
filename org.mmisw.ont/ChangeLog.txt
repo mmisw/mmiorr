@@ -4,6 +4,9 @@ $Id$
 
 ChangeLog
 
+2009-09-14
+	- MiscDispatcher.listForPortal: List all entries for use by the iserver
+
 2009-09-13
 	- UriResolver2: resolving HTML by redirecting to OntMd service
 	

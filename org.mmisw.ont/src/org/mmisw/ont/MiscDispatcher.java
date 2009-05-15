@@ -278,6 +278,92 @@ public class MiscDispatcher {
 			}
 		}
 	}
+	
+	
+	
+	
+	/**
+	 * List all entries for use by the iserver
+	 */
+	void listAll(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		boolean unverAndVer = Boolean.valueOf(Util.getParam(request, "uv", "false"));
+		String limit = Util.getParam(request, "limit", "");
+		if ( limit.length() > 0 ) {
+			limit = " limit " +limit;
+		}
+		String table = "v_ncbo_ontology";
+		
+		Connection _con = null;
+		try {
+			_con = db.getConnection();
+			Statement _stmt = _con.createStatement();
+
+			String query = 
+				"select urn, display_label, userId, contact_name, version_number, date_created " +
+				"from " +table+ limit;
+			
+			ResultSet rs = _stmt.executeQuery(query);
+			
+			response.setContentType("text/plain");
+	        PrintWriter out = response.getWriter();
+
+	        while ( rs.next() ) {
+	        	String ontologyUri = rs.getString(1);
+	        	String display_label = rs.getString(2);
+	        	String userId = rs.getString(3);
+	        	String contact_name = rs.getString(4);
+	        	String version_number = rs.getString(5);
+	        	String date_created = rs.getString(6);
+	        	
+	        	try {
+	        		MmiUri mmiUri = new MmiUri(ontologyUri);
+
+	        		String unversionedOntologyUri = mmiUri.copyWithVersion(null).toString();
+
+	        		// always add unversioned one:
+	        		out.println(unversionedOntologyUri
+	        				+ " , " +display_label
+	        				+ " , " +userId
+	        				+ " , " +contact_name
+	        				+ " , " +version_number
+	        				+ " , " +date_created
+	        		);
+	        		
+	        		if ( unverAndVer ) {    
+	        			// add also the versioned one:
+	        			out.println(ontologyUri
+		        				+ " , " +display_label
+		        				+ " , " +userId
+		        				+ " , " +contact_name
+		        				+ " , " +version_number
+		        				+ " , " +date_created
+		        		);
+	        		}
+	        	}
+	    		catch (URISyntaxException e) {
+	    			log.error("Shouldn't happen", e);
+	    			continue;
+	    		}
+	        }
+
+		} 
+		catch (SQLException e) {
+			throw new ServletException(e);
+		}
+		finally {
+			if ( _con != null ) {
+				try {
+					_con.close();
+				}
+				catch (SQLException e) {
+					throw new ServletException(e);
+				}
+			}
+		}
+	}
+
+
 
 	
 	/**

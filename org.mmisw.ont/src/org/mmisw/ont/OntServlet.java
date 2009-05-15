@@ -192,6 +192,12 @@ public class OntServlet extends HttpServlet {
 			return;
 		} 
 		
+		// dispatch list of ontologies for iserver?
+		if ( Util.yes(req.request, "listall")  ) {
+			miscDispatcher.listAll(req.request, req.response);
+			return;
+		}
+		
 		// dispatch list of ontologies?
 		if ( Util.yes(req.request, "list")  ) {
 			miscDispatcher.listOntologies(req.request, req.response);
