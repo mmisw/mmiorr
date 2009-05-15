@@ -300,7 +300,7 @@ public class MiscDispatcher {
 			Statement _stmt = _con.createStatement();
 
 			String query = 
-				"select urn, display_label, userId, contact_name, version_number, date_created " +
+				"select urn, display_label, user_id, contact_name, version_number, date_created " +
 				"from " +table+ limit;
 			
 			ResultSet rs = _stmt.executeQuery(query);
@@ -311,7 +311,7 @@ public class MiscDispatcher {
 	        while ( rs.next() ) {
 	        	String ontologyUri = rs.getString(1);
 	        	String display_label = rs.getString(2);
-	        	String userId = rs.getString(3);
+	        	String user_id = rs.getString(3);
 	        	String contact_name = rs.getString(4);
 	        	String version_number = rs.getString(5);
 	        	String date_created = rs.getString(6);
@@ -319,12 +319,25 @@ public class MiscDispatcher {
 	        	try {
 	        		MmiUri mmiUri = new MmiUri(ontologyUri);
 
+	        		// mapping or vocabulary?
+	        		// TODO: a more robust mechanism to determine the type of an ontology. 
+	        		String type;
+	        		String topic = mmiUri.getTopic().toLowerCase();
+	        		if ( topic.matches(".*_map($|_.*)") ) {
+	        			type = "mapping";
+	        		}
+	        		else {
+	        			type = "vocabulary";
+	        		}
+	        		
+	        		
 	        		String unversionedOntologyUri = mmiUri.copyWithVersion(null).toString();
 
 	        		// always add unversioned one:
 	        		out.println(unversionedOntologyUri
 	        				+ " , " +display_label
-	        				+ " , " +userId
+	        				+ " , " +type
+	        				+ " , " +user_id
 	        				+ " , " +contact_name
 	        				+ " , " +version_number
 	        				+ " , " +date_created
@@ -334,7 +347,8 @@ public class MiscDispatcher {
 	        			// add also the versioned one:
 	        			out.println(ontologyUri
 		        				+ " , " +display_label
-		        				+ " , " +userId
+		        				+ " , " +type
+		        				+ " , " +user_id
 		        				+ " , " +contact_name
 		        				+ " , " +version_number
 		        				+ " , " +date_created
