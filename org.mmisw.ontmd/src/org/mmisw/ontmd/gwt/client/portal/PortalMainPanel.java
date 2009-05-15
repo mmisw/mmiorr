@@ -74,7 +74,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener {
 	    }
 
 		
-
+	    menuBarPanel.setLoginResult(loginResult);
 	    
 	    selTree.update(this.ontologyInfos, loginResult);
 	    ontologyTable.setOntologyInfos(this.ontologyInfos, loginResult);
@@ -162,6 +162,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener {
 	void userSignedOut() {
 		ontologyTable.showProgress();
 	    loginResult = null;
+	    menuBarPanel.setLoginResult(loginResult);
 	    loginControlPanel.update(null);
 	    menuBarPanel.showMenuBar(false);
 	    selTree.update(this.ontologyInfos, loginResult);
@@ -188,6 +189,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener {
 
 	public void loginOk(final LoginResult loginResult) {
 		this.loginResult = loginResult;
+		menuBarPanel.setLoginResult(loginResult);
 		ontologyTable.showProgress();
 		
 		DeferredCommand.addCommand(new Command() {
