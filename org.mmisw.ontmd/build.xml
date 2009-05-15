@@ -81,7 +81,7 @@
 		<arg value="-logLevel"/>
 		<arg value="INFO"/>
 		<arg value="-style"/>
-		<arg value="DETAILED"/>
+		<arg value="${gwt.style}"/>
 		<arg value="-out"/>
 		<arg value="www"/>
 		<arg value="org.mmisw.ontmd.gwt.Main"/>
