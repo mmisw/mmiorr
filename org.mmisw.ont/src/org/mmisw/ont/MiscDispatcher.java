@@ -46,6 +46,9 @@ import edu.drexel.util.rdf.JenaUtil;
  */
 public class MiscDispatcher {
 	
+	private static final String SEP = " , ";
+	
+
 	private final Log log = LogFactory.getLog(MiscDispatcher.class);
 	
 	private OntConfig ontConfig;
@@ -177,11 +180,11 @@ public class MiscDispatcher {
 	        		String unversionedOntologyUri = mmiUri.copyWithVersion(null).toString();
 
 	        		// always add unversioned one:
-	        		out.println(unversionedOntologyUri+ " , " +display_label);
+	        		out.println(unversionedOntologyUri+ SEP +display_label);
 	        		
 	        		if ( unverAndVer ) {    
 	        			// add also the versioned one:
-	        			out.println(ontologyUri+ " , " +display_label);
+	        			out.println(ontologyUri+ SEP +display_label);
 	        		}
 	        	}
 	    		catch (URISyntaxException e) {
@@ -250,11 +253,11 @@ public class MiscDispatcher {
 	        		String unversionedOntologyUri = mmiUri.copyWithVersion(null).toString();
 
 	        		// always add unversioned one:
-	        		out.println(unversionedOntologyUri+ " , " +display_label);
+	        		out.println(unversionedOntologyUri+ SEP +display_label);
 	        		
 	        		if ( unverAndVer ) {    
 	        			// add also the versioned one:
-	        			out.println(ontologyUri+ " , " +display_label);
+	        			out.println(ontologyUri+ SEP +display_label);
 	        		}
 	        	}
 	    		catch (URISyntaxException e) {
@@ -335,23 +338,23 @@ public class MiscDispatcher {
 
 	        		// always add unversioned one:
 	        		out.println(unversionedOntologyUri
-	        				+ " , " +display_label
-	        				+ " , " +type
-	        				+ " , " +user_id
-	        				+ " , " +contact_name
-	        				+ " , " +version_number
-	        				+ " , " +date_created
+	        				+ SEP +display_label
+	        				+ SEP +type
+	        				+ SEP +user_id
+	        				+ SEP +contact_name
+	        				+ SEP +version_number
+	        				+ SEP +date_created
 	        		);
 	        		
 	        		if ( unverAndVer ) {    
 	        			// add also the versioned one:
 	        			out.println(ontologyUri
-		        				+ " , " +display_label
-		        				+ " , " +type
-		        				+ " , " +user_id
-		        				+ " , " +contact_name
-		        				+ " , " +version_number
-		        				+ " , " +date_created
+		        				+ SEP +display_label
+		        				+ SEP +type
+		        				+ SEP +user_id
+		        				+ SEP +contact_name
+		        				+ SEP +version_number
+		        				+ SEP +date_created
 		        		);
 	        		}
 	        	}
