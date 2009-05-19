@@ -1222,7 +1222,6 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			// some of the associated attributes.
 
 			File file;
-
 			try {
 				file = getLocalOntologyFile(ontologyUri);
 			}
@@ -1232,23 +1231,23 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 				ontologyInfo.setError(error);
 				return ontologyInfo;
 			}
-
-			try {
-				ontologyInfo.setRdf(readRdf(file));
-			}
-			catch (Throwable e) {
-				String error = "Cannot read RDF model: " +file+ " : " +e.getMessage();
-				log.info(error);
-				ontologyInfo.setError(error);
-				return ontologyInfo;
-			}
-
 			String error = prepareOntologyInfo(file, ontologyInfo);
 			if ( error != null ) {
 				ontologyInfo.setError(error);
 				return ontologyInfo;
 			}
+
 			
+			try {
+				ontologyInfo.setRdf(readRdf(file));
+			}
+			catch (Throwable e) {
+				 error = "Cannot read RDF model: " +file+ " : " +e.getMessage();
+				log.info(error);
+				ontologyInfo.setError(error);
+				return ontologyInfo;
+			}
+
 			///////////////////////////////////////////////////////////////////////////////
 			// .csv
 			String destPathCsv;
@@ -1275,13 +1274,31 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		}
 		else { // new mechanism
 			
+			
+			File file;
+			try {
+				file = getLocalOntologyFile(ontologyUri);
+			}
+			catch (Exception ex) {
+				String error = ex.getClass().getName()+ " : " +ex.getMessage();
+				log.info(error);
+				ontologyInfo.setError(error);
+				return ontologyInfo;
+			}
+			String error = prepareOntologyInfo(file, ontologyInfo);
+			if ( error != null ) {
+				ontologyInfo.setError(error);
+				return ontologyInfo;
+			}
+			
+			
 			// note: make sure we request the OWL format of the ontology, so adjust extension;
 			try {
 				MmiUri mmiUri = new MmiUri(ontologyUri);
 				ontologyUri = mmiUri.getOntologyUriWithExtension(".owl");
 			}
 			catch (URISyntaxException e1) {
-				String error = "shouldn't happen: " +e1.getMessage();
+				error = "shouldn't happen: " +e1.getMessage();
 				log.error(error, e1);
 				ontologyInfo.setError(error);
 				return ontologyInfo;
@@ -1298,14 +1315,14 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 				IOUtils.copy(is, os);
 				ontologyInfo.setRdf(os.toString());
 				
-				String error = prepareOntologyInfoFromUri(ontologyUri, ontologyInfo);
+				error = prepareOntologyInfoFromUri(ontologyUri, ontologyInfo);
 				if ( error != null ) {
 					ontologyInfo.setError(error);
 					return ontologyInfo;
 				}
 			}
 			catch (Exception e) {
-				String error = "Cannot read RDF model: " +ontologyUri+ " : " +e.getMessage();
+				error = "Cannot read RDF model: " +ontologyUri+ " : " +e.getMessage();
 				log.info(error);
 				ontologyInfo.setError(error);
 				return ontologyInfo;

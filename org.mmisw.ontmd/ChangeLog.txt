@@ -3,6 +3,10 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-05-18
+	- OntMdServiceImpl: fixed a recently introduced bug in getOntologyInfoFromRegistry:
+		prepareOntologyInfo was not called in the "new mechanism"
+	
 2009-05-13
 	- Moved types from ...client related with the proper metadata editor to new package ...client.metadata:
 		MainPanel
