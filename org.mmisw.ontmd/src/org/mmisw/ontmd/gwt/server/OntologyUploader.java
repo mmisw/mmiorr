@@ -84,6 +84,13 @@ class OntologyUploader {
 	 * @throws Exception
 	 */
 	String create()	throws Exception {
+		
+		log.info("zz create: userId=" +userId);
+		if ( userId.equals("1051") ) {
+			userId = "1002";
+		}
+		log.info("zz create: userId=" +userId);
+		
 		PostMethod post = new PostMethod(ONTOLOGIES);
 		try {
 			List<Part> partList = new ArrayList<Part>();
