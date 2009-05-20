@@ -163,9 +163,9 @@ public class UriResolver2 {
 			else if ( req.outFormat.equalsIgnoreCase("dot") ) {
 				req.response.setContentType("text/plain");
 				String ontologyUri = req.fullRequestedUri;
-				DotGenerator dot = new DotGenerator(model, ontologyUri);
+				DotGenerator dot = new DotGenerator(model);
 				StringWriter sw = new StringWriter();
-				dot.generateDot(sw);
+				dot.generateDot(sw, "Input: " +ontologyUri);
 				is = new StringReader(sw.toString());
 			}
 			

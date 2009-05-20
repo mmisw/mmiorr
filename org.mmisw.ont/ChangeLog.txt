@@ -4,22 +4,26 @@ $Id$
 
 ChangeLog
 
-2009-09-14
+2009-05-20
+	- DotGenerator: no dependency on base URI--always use local name of RDFNode
+	  TODO: handle (potentially) different namespaces.
+	  
+2009-05-14
 	- MiscDispatcher.listForPortal: List all entries for use by the iserver
 
-2009-09-13
+2009-05-13
 	- UriResolver2: resolving HTML by redirecting to OntMd service
 	
 	- MiscDispatcher.resolveGetCsv: resolve unversioned request
 	
-2009-09-12
+2009-05-12
 	Refactoring:
 	- new OntServlet as main entry point and as a preparation to start refactoring of UriResolver
 	- new UriResolver2 as a support for the incremental refactoring
 	- UriResolver2: preliminary dispatch;
 	- OntServlet: calls uriResolver2 (and not uriResolver) if special developer parameter "ur2" is included in the request.
 	
-2009-09-11
+2009-05-11
 	- Added config property: aquaportal.voc2rdf.dir
 	- Added internal operation _csv to provide the CSV contents of an ontology
 	- TODO remove the "_lpath" operation in "Ont"
