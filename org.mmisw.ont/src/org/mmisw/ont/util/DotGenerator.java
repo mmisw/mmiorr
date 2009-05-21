@@ -10,11 +10,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mmisw.ont.JenaUtil2;
-
-import com.hp.hpl.jena.ontology.OntDocumentManager;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -23,9 +18,9 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.OWL;
 
 
 /**
@@ -45,43 +40,6 @@ public class DotGenerator {
 		"PREFIX owl: <http://www.w3.org/2002/07/owl#>\n"
 	;
 
-
-	/**
-	 * Test program.
-	 * @param args  An argument indicating the URI of the ontology, or "--help"
-	 */
-	public static void main(String[] args) {
-		
-		if (args.length == 0 ) {
-			args = new String[] {
-					"http://mmisw.org/ont/mmi/device"
-//					"file:///Users/carueda/mmiworkspace/mmisw/device.owl"
-//					"file:///Users/carueda/Desktop/OntDev/mmisw/device.owl"
-//					"http://mmisw.org/ont/mmi/20090512T011137/device"
-//					"http://mmisw.org/ont/univmemphis/20090422T011238/sensor"
-//					"file:///Users/carueda/Desktop/instv0.2.owl"
-//					"http://sweet.jpl.nasa.gov/1.1/units.owl"
-			};
-		}
-		else if ( args[0].equals("--help") ) {
-			System.out.println("USAGE: Dot <ontology-uri>");
-			return;
-		}
-		
-		String uriModel = args[0];
-		Model model = loadModel(uriModel);
-		
-		DotGenerator dotGenerator = new DotGenerator(model);
-		
-		PrintWriter pw = new PrintWriter(System.out, true);
-		
-		dotGenerator.generateDot(pw, "Input: " +uriModel);
-		
-	}
-	
-	
-	////////////////////
-	// Instance
 
 	private Model ontModel;
 	private PrintWriter pw;
@@ -268,7 +226,12 @@ public class DotGenerator {
 					Resource rsr = (Resource) rdfNode;
 					
 					if ( ! rsr.isAnon() ) {
-						//					String ns = rsr.getNameSpace();
+						
+						if ( OWL.Thing.getURI().equals(rsr.getURI()) ) {
+							continue;
+						}
+						
+//						String ns = rsr.getNameSpace();
 						String localName = rsr.getLocalName();
 
 						entityInfo.setLocalName(localName);
@@ -320,6 +283,11 @@ public class DotGenerator {
 				}
 				else if ( rdfNode.isResource() ) {
 					Resource rsr = (Resource) rdfNode;
+					
+					if ( OWL.Thing.getURI().equals(rsr.getURI()) ) {
+						continue;
+					}
+
 					localName = rsr.getLocalName();
 				}
 				else {
@@ -483,23 +451,6 @@ public class DotGenerator {
 		}
 	}
 
-	
-	private static OntModel loadModel(String uriModel) {
-		OntModel model = createDefaultOntModel();
-		uriModel = JenaUtil2.removeTrailingFragment(uriModel);
-		model.read(uriModel);
-		return model;
-	}
-	
-	private static OntModel createDefaultOntModel() {
-		OntModelSpec spec = new OntModelSpec(OntModelSpec.OWL_MEM);
-		OntDocumentManager docMang = new OntDocumentManager();
-		spec.setDocumentManager(docMang);
-		OntModel model = ModelFactory.createOntologyModel(spec, null);
-		// removeNotNeccesaryNamespaces(model);
-
-		return model;
-	}
 	
 	
 }

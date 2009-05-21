@@ -4,6 +4,10 @@ $Id$
 
 ChangeLog
 
+2009-05-21
+	- DotGenerator now ignores owl:Thing to reduce cluttering the diagram
+	- New DotGeneratorProgram with a main program to exercise DotGenerator.
+	
 2009-05-20
 	- DotGenerator: no dependency on base URI--always use local name of RDFNode
 	  TODO: handle (potentially) different namespaces.
