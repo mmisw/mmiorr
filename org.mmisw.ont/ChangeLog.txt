@@ -4,6 +4,9 @@ $Id$
 
 ChangeLog
 
+2009-05-22
+	MisDispatcher: include username in listall response.
+	
 2009-05-21
 	- DotGenerator now ignores owl:Thing to reduce cluttering the diagram
 	- New DotGeneratorProgram with a main program to exercise DotGenerator.

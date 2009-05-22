@@ -290,21 +290,15 @@ public class MiscDispatcher {
 	 */
 	void listAll(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		boolean unverAndVer = Boolean.valueOf(Util.getParam(request, "uv", "false"));
-		String limit = Util.getParam(request, "limit", "");
-		if ( limit.length() > 0 ) {
-			limit = " limit " +limit;
-		}
-		String table = "v_ncbo_ontology";
-		
 		Connection _con = null;
 		try {
 			_con = db.getConnection();
 			Statement _stmt = _con.createStatement();
 
 			String query = 
-				"select urn, display_label, user_id, contact_name, version_number, date_created " +
-				"from " +table+ limit;
+				"select o.urn, o.display_label, o.user_id, o.contact_name, o.version_number, o.date_created, u.username " +
+				"from v_ncbo_ontology o, ncbo_user u " +
+				"where o.user_id = u.id";
 			
 			ResultSet rs = _stmt.executeQuery(query);
 			
@@ -318,6 +312,7 @@ public class MiscDispatcher {
 	        	String contact_name = rs.getString(4);
 	        	String version_number = rs.getString(5);
 	        	String date_created = rs.getString(6);
+	        	String username = rs.getString(7);
 	        	
 	        	try {
 	        		MmiUri mmiUri = new MmiUri(ontologyUri);
@@ -344,19 +339,9 @@ public class MiscDispatcher {
 	        				+ SEP +contact_name
 	        				+ SEP +version_number
 	        				+ SEP +date_created
+	        				+ SEP +username
 	        		);
 	        		
-	        		if ( unverAndVer ) {    
-	        			// add also the versioned one:
-	        			out.println(ontologyUri
-		        				+ SEP +display_label
-		        				+ SEP +type
-		        				+ SEP +user_id
-		        				+ SEP +contact_name
-		        				+ SEP +version_number
-		        				+ SEP +date_created
-		        		);
-	        		}
 	        	}
 	    		catch (URISyntaxException e) {
 	    			log.error("Shouldn't happen", e);
