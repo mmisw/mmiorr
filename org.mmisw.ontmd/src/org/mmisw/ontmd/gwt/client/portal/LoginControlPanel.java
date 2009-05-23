@@ -23,7 +23,7 @@ public class LoginControlPanel extends HorizontalPanel {
 	private HTML signOutButton = new HTML("<u>Sign out</u>");
 	
 	private HTML helpButton = new HTML(
-			"<a target=\"_blank\" href=\"http://marinemetadata.org/vine\">Help</a>");
+			"<a target=\"_blank\" href=\"http://marinemetadata.org/or\">Help</a>");
 
 	
 	/**
