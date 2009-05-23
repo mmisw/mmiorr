@@ -10,6 +10,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
+import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.ont.MmiUri;
 
@@ -76,6 +77,14 @@ public class Server implements IServer {
 	}
 	
 
+	public List<EntityInfo> getEntities(String ontologyUri) {
+		if ( log.isDebugEnabled() ) {
+			log.debug("getEntities(String) starting");
+		}
+		return  Util.getEntities(ontologyUri);
+	}
+
+
 	
 	/**
 	 * 
@@ -131,7 +140,7 @@ public class Server implements IServer {
 	
 	public OntologyInfo getEntities(OntologyInfo ontologyInfo) {
 		if ( log.isDebugEnabled() ) {
-			log.debug("getEntities starting");
+			log.debug("getEntities(OntologyInfo) starting");
 		}
 		Util.getEntities(ontologyInfo);
 		return ontologyInfo;

@@ -68,14 +68,14 @@ public class Util {
 	
 	
 	/**
-	 * Populates the list of entities associated with the given ontology. 
-	 * @param ontologyInfo
-	 * @return the given argument
+	 * Gets the list of entities associated with the given ontology. 
+	 * @param ontologyUri URI of the desired ontology.
+	 * @return list of entities
 	 */
-	public static OntologyInfo getEntities(OntologyInfo ontologyInfo) {
-		String ontologyUri = ontologyInfo.getUri();
+	public static List<EntityInfo> getEntities(String ontologyUri) {
+		
 		OntModel ontModel = loadModel(ontologyUri);
-
+		
 		List<EntityInfo> entities = new ArrayList<EntityInfo>();
 		
 		// individuals:
@@ -86,7 +86,22 @@ public class Util {
 
 		// classes:
 		addClasses(entities, ontModel, ontologyUri);
+		
+		return entities;
+	}
+	
+	
+	
+	/**
+	 * Populates the list of entities associated with the given ontology. 
+	 * @param ontologyInfo
+	 * @return the given argument
+	 */
+	public static OntologyInfo getEntities(OntologyInfo ontologyInfo) {
+		String ontologyUri = ontologyInfo.getUri();
 
+		List<EntityInfo> entities = getEntities(ontologyUri);
+		
 		ontologyInfo.setEntities(entities);
 		return ontologyInfo;
 	}

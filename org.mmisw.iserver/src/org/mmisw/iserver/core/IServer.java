@@ -3,6 +3,7 @@ package org.mmisw.iserver.core;
 import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
+import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 
 /**
@@ -17,6 +18,14 @@ public interface IServer {
 	 * Gets basic application info.
 	 */
 	AppInfo getAppInfo();
+	
+	/**
+	 * Gets the list of entities associated with the given ontology. 
+	 * @param ontologyUri URI of the desired ontology.
+	 * @return list of entities
+	 */
+	public List<EntityInfo> getEntities(String ontologyUri);
+	
 	
 	/**
 	 * Gets the vocabularies.
