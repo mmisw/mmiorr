@@ -112,6 +112,7 @@ public class Server implements IServer {
 			ontologyInfo.setContactName(toks[4]);
 			ontologyInfo.setVersionNumber(toks[5]);
 			ontologyInfo.setDateCreated(toks[6]);
+			ontologyInfo.setUsername(toks[7]);
 			
 
 			try {

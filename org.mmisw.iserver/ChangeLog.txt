@@ -2,7 +2,9 @@ org.mmisw.iserver
 Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 
-
+2009-05-22
+	Added username attribute to OntologyInfo
+	 
 2009-05-13
 	Module extracted from vine prototype. The goal is to unify the various operations to the
 	server throwugh this module.

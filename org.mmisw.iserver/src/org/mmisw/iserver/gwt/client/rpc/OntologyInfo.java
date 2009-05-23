@@ -24,6 +24,7 @@ public class OntologyInfo implements Serializable {
 	private String type;
 
 	private String userId;
+	private String username;
 
 	private String contactName;
 
@@ -124,6 +125,18 @@ public class OntologyInfo implements Serializable {
 	 */
 	public String getDateCreated() {
 		return dateCreated;
+	}
+	/**
+	 * @return the username
+	 */
+	public String getUsername() {
+		return username;
+	}
+	/**
+	 * @param username the username to set
+	 */
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	
