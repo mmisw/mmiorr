@@ -1,36 +1,43 @@
 package org.mmisw.ontmd.gwt.client.portal;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.ontmd.gwt.client.LoginListener;
+import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.UserPanel;
+import org.mmisw.ontmd.gwt.client.metadata.MainPanel;
+import org.mmisw.ontmd.gwt.client.rpc.BaseInfo;
 import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.ui.DecoratorPanel;
-import com.google.gwt.user.client.ui.HorizontalSplitPanel;
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.HistoryListener;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.KeyboardListener;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * The main panel.
  * 
  * @author Carlos Rueda
  */
-public class PortalMainPanel extends VerticalPanel implements LoginListener {
+public class PortalMainPanel extends VerticalPanel implements LoginListener, HistoryListener {
 
 	private final LoginControlPanel loginControlPanel = new LoginControlPanel(this);
+	
 	private final HeaderPanel headerPanel = new HeaderPanel(loginControlPanel); 
 
-	private final MenuBarPanel menuBarPanel = new MenuBarPanel();
-	private final SelectionTree selTree = new SelectionTree(this);
-	private final OntologyTable ontologyTable = new OntologyTable();
+	private final VerticalPanel bodyPanel = new VerticalPanel();
+	private final BrowsePanel browsePanel;
 
 
 	private UserPanel userPanel;
@@ -39,20 +46,14 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener {
 	private MyDialog signInPopup;
 
 	
-	// all the ontologies from the registry
-	private List<OntologyInfo> ontologyInfos;
+	static Map<String, Object> historyTokenMap = new HashMap<String, Object>();
 	
-	// the current displayed elements
-	private final List<OntologyInfo> selectedOntologyInfos = new ArrayList<OntologyInfo>();
-
-	
-	private HorizontalSplitPanel hSplit = new HorizontalSplitPanel();
 	
 	
 	PortalMainPanel(final Map<String, String> params, List<OntologyInfo> ontologyInfos) {
 		super();
 		
-		this.ontologyInfos = ontologyInfos;
+		History.addHistoryListener(this);
 		
 		///////////////////////////////////////////////////////////////////////////
 		// conveniences for testing in development environment
@@ -73,100 +74,25 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener {
 	    	loginResult.setUserId(params.get("userId"));
 	    }
 
+	    browsePanel = new BrowsePanel(ontologyInfos, loginResult);
+	    loginControlPanel.update(loginResult);
+	    
 		
-	    menuBarPanel.setLoginResult(loginResult);
-	    
-	    selTree.update(this.ontologyInfos, loginResult);
-	    ontologyTable.setOntologyInfos(this.ontologyInfos, loginResult);
-	    
-	    
 	    this.add(headerPanel);
 	    
-	    
-	    this.add(menuBarPanel);
-	    
-	    menuBarPanel.showMenuBar(loginResult != null);
-	    loginControlPanel.update(loginResult);
-	    	
-	    
-	    hSplit.setLeftWidget(selTree);
-	    hSplit.setRightWidget(ontologyTable);
-		
-	    hSplit.setSplitPosition("200px");
-	    hSplit.setHeight("500px");
-	    
-	    
-		DecoratorPanel decPanel = new DecoratorPanel();
-		this.add(decPanel);
-	    decPanel.setWidget(hSplit);
+	    this.add(bodyPanel);
 
-	    hSplit.setWidth("1200px");
+	    bodyPanel.add(browsePanel);
 
 	}
 	
 	
-	void allSelected() {
-		ontologyTable.showProgress();
-		ontologyTable.setOntologyInfos(ontologyInfos, loginResult);
-	}
-		
-	void authorSelected(final String userId) {
-		ontologyTable.showProgress();
-		
-		DeferredCommand.addCommand(new Command() {
-			public void execute() {
-				selectedOntologyInfos.clear();
-				for ( OntologyInfo oi : ontologyInfos ) {
-					if ( userId.equalsIgnoreCase(oi.getUserId()) ) {
-						selectedOntologyInfos.add(oi);
-					}
-				}
-				ontologyTable.setOntologyInfos(selectedOntologyInfos, loginResult);
-			}
-		});
-	}
-
-	void authoritySelected(final String auth) {
-		ontologyTable.showProgress();
-		
-		DeferredCommand.addCommand(new Command() {
-			public void execute() {
-				selectedOntologyInfos.clear();
-				for ( OntologyInfo oi : ontologyInfos ) {
-					if ( auth.equalsIgnoreCase(oi.getAuthority()) ) {
-						selectedOntologyInfos.add(oi);
-					}
-				}
-				ontologyTable.setOntologyInfos(selectedOntologyInfos, loginResult);
-			}
-		});
-	}
-
-	void typeSelected(final String type) {
-		ontologyTable.showProgress();
-		DeferredCommand.addCommand(new Command() {
-			public void execute() {
-				selectedOntologyInfos.clear();
-				for ( OntologyInfo oi : ontologyInfos ) {
-					if ( type.equalsIgnoreCase(oi.getType()) ) {
-						selectedOntologyInfos.add(oi);
-					}
-				}
-				ontologyTable.setOntologyInfos(selectedOntologyInfos, loginResult);
-			}
-		});
-		
-	}
-
-
 	void userSignedOut() {
-		ontologyTable.showProgress();
+		browsePanel.ontologyTable.showProgress();
 	    loginResult = null;
-	    menuBarPanel.setLoginResult(loginResult);
+	    browsePanel.setLoginResult(loginResult);
 	    loginControlPanel.update(null);
-	    menuBarPanel.showMenuBar(false);
-	    selTree.update(this.ontologyInfos, loginResult);
-	    ontologyTable.setOntologyInfos(ontologyInfos, loginResult);
+	    
 	}
 	
 	void userToSignIn() {
@@ -189,21 +115,68 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener {
 
 	public void loginOk(final LoginResult loginResult) {
 		this.loginResult = loginResult;
-		menuBarPanel.setLoginResult(loginResult);
-		ontologyTable.showProgress();
+		browsePanel.ontologyTable.showProgress();
 		
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
-				menuBarPanel.showMenuBar(loginResult != null);
+				browsePanel.setLoginResult(loginResult);
 				loginControlPanel.update(loginResult);
 				if ( signInPopup != null ) {
 					signInPopup.hide();
 				}
-				selTree.update(ontologyInfos, loginResult);
-				ontologyTable.setOntologyInfos(ontologyInfos, loginResult);
 			}
 		});
 	    
+	}
+
+
+	public void onHistoryChanged(String historyToken) {
+		
+		Main.log("onHistoryChanged: " +historyToken);
+		
+		Object obj = historyTokenMap.get(historyToken);
+		if ( obj instanceof OntologyInfo ) {
+			OntologyInfo oi = (OntologyInfo) obj;
+			
+			Main.log("onHistoryChanged: OntologyInfo: " +oi.getUri());
+			
+			Map<String, String> params = new HashMap<String, String>();
+			
+			params.put("ontologyUri", oi.getUri());
+			
+			getBaseInfo(params);
+		}
+		
+	}
+
+	
+	private void getBaseInfo(final Map<String, String> params) {
+		AsyncCallback<BaseInfo> callback = new AsyncCallback<BaseInfo>() {
+			public void onFailure(Throwable thr) {
+				String error = thr.toString();
+				while ( ( thr = thr.getCause()) != null ) {
+					error += "\n" + thr.toString();
+				}
+				RootPanel.get().add(new Label(error));
+			}
+
+			public void onSuccess(BaseInfo bInfo) {
+				String error = bInfo.getError();
+				if ( error != null ) {
+					RootPanel.get().add(new Label(error));
+				}
+				else {
+					Main.baseInfo = bInfo;
+					Widget mainPanel = new MainPanel(params);
+					
+					bodyPanel.clear();
+					bodyPanel.add(mainPanel);
+				}
+			}
+		};
+
+		Main.log("Getting base info ...");
+		Main.ontmdService.getBaseInfo(params, callback);
 	}
 
 

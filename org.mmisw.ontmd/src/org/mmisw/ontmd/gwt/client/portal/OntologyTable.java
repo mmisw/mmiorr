@@ -15,6 +15,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -25,6 +26,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class OntologyTable extends FlexTable {
 
+	private static final boolean HYPERLINK = true;
 	private List<OntologyInfo> ontologyInfos;
 	private LoginResult loginResult;
 	private final FlexTable flexPanel = this;
@@ -177,19 +179,30 @@ public class OntologyTable extends FlexTable {
 			String author = oi.getContactName();
 			String date = oi.getDateCreated();
 			
-			String link = createLink(uri);
-
-			HTML html = new HTML("<a target=\"_blank\" href=\"" +link+ "\">" +name+ "</a>");
-			
 			String tooltip = uri;
 			
-			if ( loginResult != null ) {
-				// TODO show username instead of userId
-				tooltip += " (uploaded by " +oi.getUserId()+ ")";
-			}
-			html.setTitle(tooltip);
+			Widget nameWidget;
 			
-			flexPanel.setWidget(row, 0, html);
+			if ( HYPERLINK ) {
+				PortalMainPanel.historyTokenMap.put(uri, oi);
+				Hyperlink hlink = new Hyperlink(name, uri);
+				nameWidget = hlink;
+			}
+			else {
+				String link = createLink(uri);
+
+				HTML html = new HTML("<a target=\"_blank\" href=\"" +link+ "\">" +name+ "</a>");
+				if ( loginResult != null ) {
+					// TODO show username instead of userId
+					tooltip += " (uploaded by " +oi.getUserId()+ ")";
+				}
+				nameWidget = html;
+			}
+			
+			nameWidget.setTitle(tooltip);
+			
+			
+			flexPanel.setWidget(row, 0, nameWidget);
 			flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
 					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 			);

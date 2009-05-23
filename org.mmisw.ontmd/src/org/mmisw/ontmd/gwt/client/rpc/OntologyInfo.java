@@ -28,6 +28,7 @@ public class OntologyInfo implements IsSerializable {
 	
 	/** aquaportal ontology ID used, if not null, to create a new version */
 	private String ontologyId = null;
+	private String ontologyUserId = null;
 
 	
 	/** original values -- once assigned, shouldn't be changed */
@@ -112,10 +113,16 @@ public class OntologyInfo implements IsSerializable {
 		return ontologyId;
 	}
 
+	/** @returns the aquaportal userId of the ontology ID used to create a new version */
+	public String getOntologyUserId() {
+		return ontologyUserId;
+	}
+
 
 	/** sets the aquaportal ontology ID used, if not null, to create a new version */
-	public void setOntologyId(String ontologyId) {
+	public void setOntologyId(String ontologyId, String ontologyUserId) {
 		this.ontologyId = ontologyId;
+		this.ontologyUserId = ontologyUserId;
 	}
 
 	/**

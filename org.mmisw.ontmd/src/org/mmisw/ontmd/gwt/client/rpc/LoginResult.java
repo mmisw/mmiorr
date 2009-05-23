@@ -12,6 +12,7 @@ public class LoginResult extends BaseResult implements IsSerializable {
 	private String sessionId;
 	private String userId;
 	private String userName;
+	private String userRole;
 
 	public String getSessionId() {
 		return sessionId;
@@ -34,8 +35,22 @@ public class LoginResult extends BaseResult implements IsSerializable {
 	}
 	
 
+	/**
+	 * @return true if the role of this user indicates administrator
+	 */
+	public boolean isAdministrator() {
+		return userRole != null && userRole.toLowerCase().indexOf("administrator") >= 0 ;
+	}
+	/**
+	 * @param userRole the userRole to set
+	 */
+	public void setUserRole(String userRole) {
+		this.userRole = userRole;
+	}
+	
+	
 	public String toString() {
-		return "LoginResult{userId=" +userId+", sessionId=" +sessionId+", error=" +error+ "}";
+		return "LoginResult{userId=" +userId+", sessionId=" +sessionId+", role=" +userRole+ ", error=" +error+ "}";
 	}
 
 }

@@ -110,6 +110,7 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 	
 	// aquaportal ontology id used to create a new version
 	private String ontologyId;
+	private String ontologyUserId;
 	
 	
 	
@@ -128,6 +129,7 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 		editRequestedOntology = false;
 		
 		ontologyId = null;
+		ontologyUserId = null;
 		
 		
 		///////////////////////////////////////////////////////////////////////////
@@ -139,6 +141,7 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 				loginResult.setSessionId("22222222222222222");
 				loginResult.setUserId("1002");
 				loginResult.setUserName("carueda");
+				loginResult.setUserRole("ROLE_ADMINISTRATOR");
 				loginFromParams = true;
 			}
 			
@@ -164,6 +167,7 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 			                      || editNewVersion;
 			
 			ontologyId = params.get("ontologyId");
+			ontologyUserId = params.get("ontologyUserId");
 		}
 		
 		else if ( params.get("_voc2rdf") != null ) {
@@ -490,7 +494,7 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 		
 		
 		// set the ontologyId in case a new version has been requested:
-		ontologyInfo.setOntologyId(ontologyId);
+		ontologyInfo.setOntologyId(ontologyId, ontologyUserId);
 
 		
 		final MyDialog popup = new MyDialog(null);

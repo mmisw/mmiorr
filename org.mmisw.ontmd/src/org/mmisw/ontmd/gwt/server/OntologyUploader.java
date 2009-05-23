@@ -19,6 +19,7 @@ import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.vocabulary.Omv;
+import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
 
 import com.hp.hpl.jena.vocabulary.DC;
 
@@ -38,9 +39,10 @@ class OntologyUploader {
 	
 	private PartSource partSource;
 	private String uri;
-	private String userId;
-	private String sessionId;
+	private LoginResult loginResult;
+	
 	private String ontologyId;
+	private String ontologyUserId;
 
 	private Map<String, String> values;
 	
@@ -59,17 +61,17 @@ class OntologyUploader {
 	 * @throws Exception
 	 */
 	OntologyUploader(String uri, String fileName, String RDF, 
-			String userId, String sessionId,
-			String ontologyId,
+			LoginResult loginResult,
+			String ontologyId, String ontologyUserId,
 			Map<String, String> values
 	) throws Exception {
 		PartSource partSource = new ByteArrayPartSource(fileName, RDF.getBytes());
 		
 		this.partSource = partSource;
 		this.uri = uri;
-		this.userId = userId;
-		this.sessionId = sessionId;
+		this.loginResult = loginResult;
 		this.ontologyId = ontologyId;
+		this.ontologyUserId = ontologyUserId;
 		this.values = values;
 	}
 	
@@ -85,11 +87,7 @@ class OntologyUploader {
 	 */
 	String create()	throws Exception {
 		
-		log.info("zz create: userId=" +userId);
-		if ( userId.equals("1051") ) {
-			userId = "1002";
-		}
-		log.info("zz create: userId=" +userId);
+		String sessionId = loginResult.getSessionId();
 		
 		PostMethod post = new PostMethod(ONTOLOGIES);
 		try {
@@ -97,13 +95,30 @@ class OntologyUploader {
 			
 			partList.add(new FilePart("filePath", partSource));
 			partList.add(new StringPart("sessionid", sessionId));
-			partList.add(new StringPart("userId", userId));
 			
 			
 			// aquaportal version handling:
 			if (  ontologyId != null ) {
+				// put the ontologyId as reference for the creation of the new version
 				partList.add(new StringPart("ontologyId", ontologyId));
 			}
+				
+			
+			// if the user logged in is an administrator and ontologyUserId is not null,
+			// then use the given ontologyUserId instead of the administrator:
+			if ( loginResult.isAdministrator() && ontologyUserId != null ) {
+				//
+				// TODO: NOTE that this is possible because the back-end does not check
+				// that the session has to be used in combination with the logged in user. 
+				// So, the overall mechanism should be revisited later, especially if we upgrade.
+				//
+				partList.add(new StringPart("userId", ontologyUserId));
+			}
+			else {
+				// otherwise just use the user logged in:
+				partList.add(new StringPart("userId", loginResult.getUserId()));
+			}
+
 			
 			partList.add(new StringPart("urn", uri));
 			
@@ -181,7 +196,7 @@ class OntologyUploader {
 			int status = client.executeMethod(post);
 			if (status == HttpStatus.SC_OK) {
 				msg = post.getResponseBodyAsString();
-				log.info("Upload complete, response=" + msg);
+//				log.info("Upload complete, response=" + msg);
 				msg = "OK:" +msg;
 			} 
 			else {

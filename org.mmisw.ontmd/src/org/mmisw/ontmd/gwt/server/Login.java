@@ -25,6 +25,18 @@ class Login {
 	private static final String REST     = SERVER+ "/bioportal/rest";
 	private static final String AUTH     = REST+ "/auth";
 
+	// get sessionId, userId, username, role
+	private static final Pattern AUTH_RESPONSE_PATTERN = Pattern.compile(
+			".*<sessionId>([^<]+)</sessionId>" +
+			".*<id>([^>]+)</id>" +
+			".*" +
+			".*<username>([^>]+)</username>" +
+			".*" +
+			".*<roles>(ROLE_[^>]+)</roles>" +
+			".*"
+	);
+	
+
 	private final Log log = LogFactory.getLog(Login.class);
 	
 	private String userName;
@@ -113,24 +125,15 @@ class Login {
 			return;
 		}
 		
-		// get sessionId, userId, and username
-		
-		Pattern pat = Pattern.compile(
-				".*<sessionId>([^<]+)</sessionId>" +
-				".*<id>([^>]+)</id>" +
-				".*" +
-				".*<username>([^>]+)</username>" +
-				".*"
-		);
-		
-		Matcher matcher = pat.matcher(response);
+		Matcher matcher = AUTH_RESPONSE_PATTERN.matcher(response);
 		if ( matcher.find() ) {
 			loginResult.setSessionId(matcher.group(1));
 			loginResult.setUserId(matcher.group(2));
 			loginResult.setUserName(matcher.group(3));
+			loginResult.setUserRole(matcher.group(4));
 		}
 		else {
-			loginResult.setError("Could not parse response from registry server Please try again later.");
+			loginResult.setError("Could not parse response from registry server. Please try again later.");
 		}
 	}
 

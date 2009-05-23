@@ -1093,14 +1093,13 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		String uri = reviewResult.getUri();
 		
 		log.info(": uploading ...");
-		String userId = loginResult.getUserId();
-		String sessionId = loginResult.getSessionId();
-		assert userId != null;
-		assert sessionId != null;
+		assert loginResult.getUserId() != null;
+		assert loginResult.getSessionId() != null;
 		
 		String ontologyId = ontologyInfo.getOntologyId();
+		String ontologyUserId = ontologyInfo.getOntologyUserId();
 		if ( ontologyId != null ) {
-			log.info("Will create a new version for ontologyId = " +ontologyId);
+			log.info("Will create a new version for ontologyId = " +ontologyId+ ", userId=" +ontologyUserId);
 		}
 		
 		try {
@@ -1139,8 +1138,8 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 
 			// OK, now do the actual upload:
 			OntologyUploader createOnt = new OntologyUploader(uri, fileName, rdf, 
-					userId, sessionId,
-					ontologyId,
+					loginResult,
+					ontologyId, ontologyUserId,
 					newValues
 			);
 			String res = createOnt.create();
