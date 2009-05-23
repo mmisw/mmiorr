@@ -2,7 +2,9 @@ package org.mmisw.ontmd.gwt.client.portal;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
@@ -18,19 +20,33 @@ import com.google.gwt.user.client.ui.TreeListener;
  */
 public class SelectionTree extends Tree implements TreeListener {
 
-	private final PortalMainPanel portalMainPanel;
+	private static final String ALL = "-All-";
+	private final BrowsePanel browsePanel;
 	private final Tree tree = this;
 	
 	private TreeItem authorMenu;
 	
-	private class AuthorItem extends TreeItem {
-		String userId;
+	private class AuthorItem extends TreeItem implements Comparable<AuthorItem> {
+		private String userId;
 		AuthorItem(String name, String userId) {
 			super(name);
 			this.userId = userId;
 		}
 		String getUserId() {
 			return userId;
+		}
+		
+		public boolean equals(Object other) {
+			return other instanceof AuthorItem
+			    && ((AuthorItem) other).userId.equals(this.userId);
+		}
+		
+		public int hashCode() {
+			return userId.hashCode();
+		}
+		
+		public int compareTo(AuthorItem o) {
+			return userId.compareTo(o.userId);
 		}
 		
 	}
@@ -47,9 +63,9 @@ public class SelectionTree extends Tree implements TreeListener {
 		}
 	}
 	
-	SelectionTree(PortalMainPanel portalMainPanel) {
+	SelectionTree(BrowsePanel browsePanel) {
 		super();
-		this.portalMainPanel = portalMainPanel;
+		this.browsePanel = browsePanel;
 		
 		initTree();
 		tree.addTreeListener(this);
@@ -66,16 +82,18 @@ public class SelectionTree extends Tree implements TreeListener {
 	void update(List<OntologyInfo> ontologyInfos, LoginResult loginResult) {
 		initTree();
 		
-		authorMenu.addItem(new TreeItem("All"));
-		if ( loginResult != null ) {
-			authorMenu.addItem(new AuthorItem(loginResult.getUserName(), loginResult.getUserId()));
-		}
-		authorMenu.setState(true);
+		// {username -> userId} map
+		Map<String,String> authors = new HashMap<String,String>();
 		
-		List<String> auths = new ArrayList<String>();
+		List<String> authorities = new ArrayList<String>();
 		List<String> types = new ArrayList<String>();
 		
 		for ( OntologyInfo oi : ontologyInfos ) {
+
+			String username = oi.getUsername();
+			if ( ! authors.containsKey(username) ) {
+				authors.put(username, oi.getUserId());
+			}
 
 			String type = oi.getType().toLowerCase();
 			if ( ! types.contains(type) ) {
@@ -83,11 +101,22 @@ public class SelectionTree extends Tree implements TreeListener {
 			}
 
 			String auth = oi.getAuthority().toLowerCase();
-			if ( ! auths.contains(auth) ) {
-				auths.add(auth);
+			if ( ! authorities.contains(auth) ) {
+				authorities.add(auth);
 			}
 			
 		}
+		
+		authorMenu.addItem(new TreeItem(ALL));
+		if ( loginResult != null ) {
+			List<String> usernames = new ArrayList<String>();
+			usernames.addAll(authors.keySet());
+			Collections.sort(usernames);
+			for ( String author : usernames ) {
+				authorMenu.addItem(new AuthorItem(author, authors.get(author)));	
+			}
+		}
+		authorMenu.setState(true);
 		
 		if ( types.size() > 0 ) {
 			Collections.sort(types);
@@ -99,11 +128,11 @@ public class SelectionTree extends Tree implements TreeListener {
 			typeItem.setState(true);
 		}
 		
-		if ( auths.size() > 0 ) {
-			Collections.sort(auths);
+		if ( authorities.size() > 0 ) {
+			Collections.sort(authorities);
 			TreeItem authItem = new TreeItem("Authority");
 			tree.addItem(authItem);
-			for ( String auth : auths ) {
+			for ( String auth : authorities ) {
 				authItem.addItem(new AuthorityItem(auth));
 			}
 		}
@@ -114,20 +143,20 @@ public class SelectionTree extends Tree implements TreeListener {
 		
 		if ( item instanceof AuthorItem ) {
 			String userId = ((AuthorItem) item).getUserId();
-			portalMainPanel.authorSelected(userId);
+			browsePanel.authorSelected(userId);
 		}
 		else if ( item instanceof AuthorityItem ) {
 			String authority = item.getText();
-			portalMainPanel.authoritySelected(authority);
+			browsePanel.authoritySelected(authority);
 		}
 		else if ( item instanceof TypeItem ) {
 			String type = item.getText();
-			portalMainPanel.typeSelected(type);
+			browsePanel.typeSelected(type);
 		}
 		else {
 			String text = item.getText();
-			if ( text.equalsIgnoreCase("all") ) {
-				portalMainPanel.allSelected();
+			if ( text.equalsIgnoreCase(ALL) ) {
+				browsePanel.allSelected();
 			}
 		}
 	}
