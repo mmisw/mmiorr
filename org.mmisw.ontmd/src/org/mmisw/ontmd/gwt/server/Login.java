@@ -28,11 +28,9 @@ class Login {
 	// get sessionId, userId, username, role
 	private static final Pattern AUTH_RESPONSE_PATTERN = Pattern.compile(
 			".*<sessionId>([^<]+)</sessionId>" +
-			".*<id>([^>]+)</id>" +
-			".*" +
-			".*<username>([^>]+)</username>" +
-			".*" +
-			".*<roles>(ROLE_[^>]+)</roles>" +
+			".*<id>([^<]+)</id>" +
+			".*<username>([^<]+)</username>" +
+			".*<roles>.*(ROLE_[^<]*)" +
 			".*"
 	);
 	
