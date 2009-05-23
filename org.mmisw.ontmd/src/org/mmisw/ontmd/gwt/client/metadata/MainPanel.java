@@ -7,8 +7,9 @@ import org.mmisw.ontmd.gwt.client.DataPanel;
 import org.mmisw.ontmd.gwt.client.LoginListener;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.UserPanel;
+import org.mmisw.ontmd.gwt.client.portal.IOntologyPanel;
 import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
-import org.mmisw.ontmd.gwt.client.rpc.OntologyInfo;
+import org.mmisw.ontmd.gwt.client.rpc.OntologyInfoPre;
 import org.mmisw.ontmd.gwt.client.rpc.ReviewResult;
 import org.mmisw.ontmd.gwt.client.rpc.UploadResult;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
@@ -36,7 +37,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author Carlos Rueda
  */
-public class MainPanel extends VerticalPanel implements LoginListener {
+public class MainPanel extends VerticalPanel implements LoginListener, IOntologyPanel {
 
 
 	private CellPanel container = new VerticalPanel();
@@ -44,7 +45,7 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 	
 	// created depending on whether a given ontology from registry has been
 	// passed
-	private OntologyPanel ontologyPanel;
+	private UploadOntologyPanel uploadOntologyPanel;
 
 	// created depending on type of interface: editing or viewwing
 	private MetadataPanel metadataPanel;
@@ -103,7 +104,7 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 	// true iff login session given from parameters
 	private boolean loginFromParams;
 
-	private OntologyInfo ontologyInfo;
+	private OntologyInfoPre ontologyInfoPre;
 	
 	private ReviewResult reviewResult;
 	
@@ -114,8 +115,8 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 	
 	
 	
-	OntologyInfo getOntologyInfo() {
-		return ontologyInfo;
+	public OntologyInfoPre getOntologyInfo() {
+		return ontologyInfoPre;
 	}
 
 
@@ -281,10 +282,10 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 	}
 	
 	private void getOntologyInfoFromRegistry(String ontologyUri) {
-		AsyncCallback<OntologyInfo> callback = new AsyncCallback<OntologyInfo>() {
+		AsyncCallback<OntologyInfoPre> callback = new AsyncCallback<OntologyInfoPre>() {
 			public void onFailure(Throwable thr) {
-				if  (ontologyPanel != null ) {
-					ontologyPanel.onFailure(thr);
+				if  (uploadOntologyPanel != null ) {
+					uploadOntologyPanel.onFailure(thr);
 				}
 				else {
 					String error = thr.getClass().getName()+ ": " +thr.getMessage();
@@ -298,11 +299,11 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 				}
 			}
 
-			public void onSuccess(OntologyInfo ontologyInfo) {
-				if  (ontologyPanel != null ) {
-					ontologyPanel.onSuccess(ontologyInfo);
+			public void onSuccess(OntologyInfoPre ontologyInfoPre) {
+				if  (uploadOntologyPanel != null ) {
+					uploadOntologyPanel.onSuccess(ontologyInfoPre);
 				}
-				String error = ontologyInfo.getError();
+				String error = ontologyInfoPre.getError();
 				if ( error != null ) {
 					if ( ! editRequestedOntology ) {
 						metadataPanel.showProgressMessage(error);
@@ -311,10 +312,10 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 				}
 				else {
 					boolean link = !editRequestedOntology;
-					metadataPanel.resetToOriginalValues(ontologyInfo, null, false, link);
+					metadataPanel.resetToOriginalValues(ontologyInfoPre, null, false, link);
 					
 					if ( dataPanel != null ) {
-						dataPanel.updateWith(ontologyInfo);
+						dataPanel.updateWith(ontologyInfoPre);
 					}
 				}
 			}
@@ -329,10 +330,10 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 
 
 	private void getOntologyInfoFromFileOnServer(String full_path) {
-		AsyncCallback<OntologyInfo> callback = new AsyncCallback<OntologyInfo>() {
+		AsyncCallback<OntologyInfoPre> callback = new AsyncCallback<OntologyInfoPre>() {
 			public void onFailure(Throwable thr) {
-				if  (ontologyPanel != null ) {
-					ontologyPanel.onFailure(thr);
+				if  (uploadOntologyPanel != null ) {
+					uploadOntologyPanel.onFailure(thr);
 				}
 				else {
 					String error = thr.getClass().getName()+ ": " +thr.getMessage();
@@ -343,19 +344,19 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 				}
 			}
 
-			public void onSuccess(OntologyInfo ontologyInfo) {
-				if  (ontologyPanel != null ) {
-					ontologyPanel.onSuccess(ontologyInfo);
+			public void onSuccess(OntologyInfoPre ontologyInfoPre) {
+				if  (uploadOntologyPanel != null ) {
+					uploadOntologyPanel.onSuccess(ontologyInfoPre);
 				}
-				String error = ontologyInfo.getError();
+				String error = ontologyInfoPre.getError();
 				if ( error != null ) {
 					Window.alert(error);
 				}
 				else {
-					metadataPanel.resetToOriginalValues(ontologyInfo, null, false, false);
+					metadataPanel.resetToOriginalValues(ontologyInfoPre, null, false, false);
 					
 					if ( dataPanel != null ) {
-						dataPanel.updateWith(ontologyInfo);
+						dataPanel.updateWith(ontologyInfoPre);
 					}
 				}
 			}
@@ -373,7 +374,7 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 	private Widget prepareEditingInterface(boolean allowLoadOptions) {
 		
 		// create ontologyPanel
-		ontologyPanel = new OntologyPanel(this, allowLoadOptions);
+		uploadOntologyPanel = new UploadOntologyPanel(this, allowLoadOptions);
 		
 		
 		// create metadata panel for editing:
@@ -398,7 +399,7 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 		flexPanel.setWidget(row, 0, tabPanel);
 	    
 	    
-	    tabPanel.add(ontologyPanel, "Ontology");
+	    tabPanel.add(uploadOntologyPanel, "Ontology");
 	    
 	    tabPanel.add(metadataPanel, "Metadata");
 	    
@@ -460,11 +461,11 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 	}
 
 	void doReview() {
-		if ( ontologyInfo == null ) {
+		if ( ontologyInfoPre == null ) {
 			Window.alert("Please, load an ontology first");
 			return;
 		}
-		if ( ontologyInfo.getError() != null ) {
+		if ( ontologyInfoPre.getError() != null ) {
 			Window.alert("Please, retry the loading of the ontology");
 			return;
 		}
@@ -486,7 +487,7 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 		}
 		
 		// Ok, put the new values in the ontologyInfo object:
-		ontologyInfo.setNewValues(newValues);
+		ontologyInfoPre.setNewValues(newValues);
 		for ( String uri : newValues.keySet() ) {
 			String value = newValues.get(uri);
 			newValues.put(uri, value);
@@ -494,7 +495,7 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 		
 		
 		// set the ontologyId in case a new version has been requested:
-		ontologyInfo.setOntologyId(ontologyId, ontologyUserId);
+		ontologyInfoPre.setOntologyId(ontologyId, ontologyUserId);
 
 		
 		final MyDialog popup = new MyDialog(null);
@@ -519,7 +520,7 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 			}
 		};
 
-		Main.ontmdService.review(ontologyInfo, loginResult, callback);
+		Main.ontmdService.review(ontologyInfoPre, loginResult, callback);
 	}
 
 	private void reviewCompleted(MyDialog popup , ReviewResult reviewResult) {
@@ -542,7 +543,7 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 			
 			vp.add(new Label("Contents:"));
 			
-			metadataPanel.resetToNewValues(ontologyInfo, reviewResult, false, false);
+			metadataPanel.resetToNewValues(ontologyInfoPre, reviewResult, false, false);
 			
 			sb.append(reviewResult.getRdf());
 		}
@@ -580,11 +581,11 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 	}
 
 	void doUpload() {
-		if ( ontologyInfo == null ) {
+		if ( ontologyInfoPre == null ) {
 			Window.alert("Please, load an ontology first");
 			return;
 		}
-		if ( ontologyInfo.getError() != null ) {
+		if ( ontologyInfoPre.getError() != null ) {
 			Window.alert("Please, retry the loading of the ontology");
 			return;
 		}
@@ -612,7 +613,7 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 		}
 		
 		// Ok, put the values in the ontologyInfo object:
-		ontologyInfo.setNewValues(newValues);
+		ontologyInfoPre.setNewValues(newValues);
 		for ( String uri : newValues.keySet() ) {
 			String value = newValues.get(uri);
 			newValues.put(uri, value);
@@ -629,7 +630,7 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 
 		AsyncCallback<UploadResult> callback = new AsyncCallback<UploadResult>() {
 			public void onFailure(Throwable thr) {
-				ontologyInfo = null;
+				ontologyInfoPre = null;
 				reenableButton(uploadButton, null, true);
 				container.clear();				
 				container.add(new HTML(thr.toString()));
@@ -654,7 +655,7 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 		vp.setSpacing(6);
 		
 		if ( error == null ) {
-			metadataPanel.resetToNewValues(ontologyInfo, reviewResult, false, true);
+			metadataPanel.resetToNewValues(ontologyInfoPre, reviewResult, false, true);
 
 			String uri = result.getUri();
 
@@ -684,7 +685,7 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 			// and, disable all editing fields/buttons:
 			// (user will have to start from the "load" step)
 			enable(false);
-			ontologyInfo = null;
+			ontologyInfoPre = null;
 			reviewResult = null;
 		}
 		else {
@@ -719,7 +720,7 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 		if ( confirm && ! Window.confirm("This action will replace the current values in all sections") ) {
 			return;
 		}
-		String error = ontologyInfo.getError();
+		String error = ontologyInfoPre.getError();
 		if ( error != null ) {
 			enable(false);
 			Window.alert(error);
@@ -734,31 +735,31 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 		if ( confirm && ! Window.confirm("This action will replace the current values in all sections") ) {
 			return;
 		}
-		String error = ontologyInfo.getError();
+		String error = ontologyInfoPre.getError();
 		if ( error != null ) {
 			enable(false);
 			Window.alert(error);
 		}
 		else {
 			enable(true);
-			metadataPanel.resetToOriginalValues(ontologyInfo, reviewResult, false, false);
+			metadataPanel.resetToOriginalValues(ontologyInfoPre, reviewResult, false, false);
 		}
 	}
 	
 
-	void setPreloadedOntologyInfo(OntologyInfo ontologyInfo, boolean confirm) {
+	void setPreloadedOntologyInfo(OntologyInfoPre ontologyInfoPre, boolean confirm) {
 		if ( confirm && ! Window.confirm("This action will replace the current values in all sections") ) {
 			return;
 		}
-		String error = ontologyInfo.getError();
+		String error = ontologyInfoPre.getError();
 		if ( error != null ) {
 			enable(false);
 			Window.alert(error);
 		}
 		else {
-			this.ontologyInfo = ontologyInfo;
+			this.ontologyInfoPre = ontologyInfoPre;
 			enable(true);
-			metadataPanel.resetToOriginalValues(ontologyInfo, reviewResult, false, false);
+			metadataPanel.resetToOriginalValues(ontologyInfoPre, reviewResult, false, false);
 		}
 	}
 	
@@ -772,7 +773,7 @@ public class MainPanel extends VerticalPanel implements LoginListener {
 
 
 	public void showDetails() {
-		String details = ontologyInfo.getDetails();
+		String details = ontologyInfoPre.getDetails();
 		String[] lines = details == null ? null : details.split("\n|\r\n|\r");
 		if ( lines == null || lines.length == 0 ) {
 			Window.alert("No details are available");

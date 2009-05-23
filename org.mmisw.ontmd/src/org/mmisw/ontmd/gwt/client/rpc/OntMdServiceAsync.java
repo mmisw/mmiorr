@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
+import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
+import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
@@ -26,13 +28,13 @@ public interface OntMdServiceAsync {
 	
 	void login(String userName, String userPassword, AsyncCallback<LoginResult> callback);
 	
-	void getOntologyInfoFromRegistry(String ontologyUri, AsyncCallback<OntologyInfo> callback);
+	void getOntologyInfoFromRegistry(String ontologyUri, AsyncCallback<OntologyInfoPre> callback);
 	
-	void getOntologyInfoFromPreLoaded(String uploadResults, AsyncCallback<OntologyInfo> callback);
+	void getOntologyInfoFromPreLoaded(String uploadResults, AsyncCallback<OntologyInfoPre> callback);
 	
-	void getOntologyInfoFromFileOnServer(String fullPath, AsyncCallback<OntologyInfo> callback);
+	void getOntologyInfoFromFileOnServer(String fullPath, AsyncCallback<OntologyInfoPre> callback);
 	
-	void review(OntologyInfo ontologyInfo, LoginResult loginResult, AsyncCallback<ReviewResult> callback);
+	void review(OntologyInfoPre ontologyInfoPre, LoginResult loginResult, AsyncCallback<ReviewResult> callback);
 	
 	void upload(ReviewResult reviewResult, LoginResult loginResult, AsyncCallback<UploadResult> callback);
 	
@@ -50,8 +52,11 @@ public interface OntMdServiceAsync {
 	///////////////////////////////////////////////////////////////////////
 	// data
 
-	void getData(OntologyInfo ontologyInfo, AsyncCallback<DataResult> callback);
+	@Deprecated
+	void getData(OntologyInfoPre ontologyInfoPre, AsyncCallback<DataResult> callback);
 
+	void getEntities(String ontologyUri, AsyncCallback<List<EntityInfo>> callback);
+	
 
 	///////////////////////////////////////////////////////////////////////
 	// Portal
@@ -60,5 +65,5 @@ public interface OntMdServiceAsync {
 	
 	void getPortalBaseInfo(AsyncCallback<PortalBaseInfo> callback);
 	
-	void getAllOntologies(AsyncCallback <List<org.mmisw.iserver.gwt.client.rpc.OntologyInfo>> callback);
+	void getAllOntologies(AsyncCallback <List<OntologyInfo>> callback);
 }

@@ -31,6 +31,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
+import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.ont.MmiUri;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
@@ -39,7 +40,7 @@ import org.mmisw.ontmd.gwt.client.rpc.BaseResult;
 import org.mmisw.ontmd.gwt.client.rpc.DataResult;
 import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
 import org.mmisw.ontmd.gwt.client.rpc.OntMdService;
-import org.mmisw.ontmd.gwt.client.rpc.OntologyInfo;
+import org.mmisw.ontmd.gwt.client.rpc.OntologyInfoPre;
 import org.mmisw.ontmd.gwt.client.rpc.PortalBaseInfo;
 import org.mmisw.ontmd.gwt.client.rpc.ReviewResult;
 import org.mmisw.ontmd.gwt.client.rpc.UploadResult;
@@ -141,7 +142,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		// from the client, always re-create the base info:
 		
 		// include version if parameter/value "_xv=y" is given:
-		boolean includeVersion = "y".equals(params.get("_xv"));
+		boolean includeVersion = params != null && "y".equals(params.get("_xv"));
 		try {
 			prepareBaseInfo(includeVersion);
 		}
@@ -196,8 +197,8 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	
 
 	
-	public OntologyInfo getOntologyInfoFromPreLoaded(String uploadResults) {
-		OntologyInfo ontologyInfo = new OntologyInfo();
+	public OntologyInfoPre getOntologyInfoFromPreLoaded(String uploadResults) {
+		OntologyInfoPre ontologyInfoPre = new OntologyInfoPre();
 		
 		uploadResults = uploadResults.replaceAll("&lt;", "<").replaceAll("&gt;", ">");
 		log.info("getOntologyInfo: " +uploadResults);
@@ -205,15 +206,15 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		
 		if ( uploadResults.matches(".*<error>.*") ) {
 			log.info("<error>");
-			ontologyInfo.setError(uploadResults);
-			return ontologyInfo;
+			ontologyInfoPre.setError(uploadResults);
+			return ontologyInfoPre;
 		}
 		
 		if ( false && !uploadResults.matches(".*success.*") ) {
 			log.info("Not <success> !");
 			// unexpected response.
-			ontologyInfo.setError("Error while loading ontology. Please try again later.");
-			return ontologyInfo;
+			ontologyInfoPre.setError("Error while loading ontology. Please try again later.");
+			return ontologyInfoPre;
 		}
 		
 
@@ -226,30 +227,30 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		}
 		else {
 			log.info("Could not parse uploadResults.");
-			ontologyInfo.setError("Could not parse uploadResults.");
-			return ontologyInfo;
+			ontologyInfoPre.setError("Could not parse uploadResults.");
+			return ontologyInfoPre;
 		}
 
 		
 		File file = new File(full_path);
 		
 		try {
-			ontologyInfo.setRdf(readRdf(file));
+			ontologyInfoPre.setRdf(readRdf(file));
 		}
 		catch (Throwable e) {
 			String error = "Cannot read RDF model: " +full_path+ " : " +e.getMessage();
 			log.info(error);
-			ontologyInfo.setError(error);
-			return ontologyInfo;
+			ontologyInfoPre.setError(error);
+			return ontologyInfoPre;
 		}
 
 		// prepare the rest of the ontology info:
-		String error = prepareOntologyInfo(file, ontologyInfo);
+		String error = prepareOntologyInfo(file, ontologyInfoPre);
 		if ( error != null ) {
-			ontologyInfo.setError(error);
+			ontologyInfoPre.setError(error);
 		}
 	
-		return ontologyInfo;
+		return ontologyInfoPre;
 	}
 
 	
@@ -264,25 +265,25 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	 * except the Rdf string and the new values map.
 	 * 
 	 * @param file  The ontology file.
-	 * @param ontologyInfo  The object to be completed
+	 * @param ontologyInfoPre  The object to be completed
 	 */
-	private String prepareOntologyInfo(File file, OntologyInfo ontologyInfo) {
+	private String prepareOntologyInfo(File file, OntologyInfoPre ontologyInfoPre) {
 		String full_path = file.getAbsolutePath();
-		ontologyInfo.setFullPath(full_path);
+		ontologyInfoPre.setFullPath(full_path);
 		
 		String uriFile = file.toURI().toString();
 		log.info("Loading model: " +uriFile);
 
-		return prepareOntologyInfoFromUri(uriFile, ontologyInfo);
+		return prepareOntologyInfoFromUri(uriFile, ontologyInfoPre);
 	}
 	
 	/**
 	 * Does the preparation by reading the model from the given URI.
 	 * @param uriModel URI of the model to be loaded
-	 * @param ontologyInfo  The object to be completed
+	 * @param ontologyInfoPre  The object to be completed
 	 * @return
 	 */
-	private String prepareOntologyInfoFromUri(String uriModel, OntologyInfo ontologyInfo) {
+	private String prepareOntologyInfoFromUri(String uriModel, OntologyInfoPre ontologyInfoPre) {
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("prepareOntologyInfoFromUri: uriModel=" +uriModel);
@@ -395,22 +396,22 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		
 		// add the new details if any:
 		if ( moreDetails.length() > 0 ) {
-			String details = ontologyInfo.getDetails();
+			String details = ontologyInfoPre.getDetails();
 			if ( details == null ) {
-				ontologyInfo.setDetails(moreDetails.toString());
+				ontologyInfoPre.setDetails(moreDetails.toString());
 			}
 			else {
-				ontologyInfo.setDetails(details + "\n" +moreDetails.toString());
+				ontologyInfoPre.setDetails(details + "\n" +moreDetails.toString());
 			}
 		}
 		
-		ontologyInfo.setOriginalValues(originalValues);
+		ontologyInfoPre.setOriginalValues(originalValues);
 		
 		// associate the original base URI:
 		String uri = model.getNsPrefixURI("");
 		if ( uri != null ) {
 			String base_ = JenaUtil2.removeTrailingFragment(uri);
-			ontologyInfo.setUri(base_);
+			ontologyInfoPre.setUri(base_);
 		}
 
 		// OK:
@@ -537,21 +538,21 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	 * (see {@link #upload(ReviewResult, LoginResult)})
 	 * in the repository.
 	 * 
-	 * @param OntologyInfo General info about the ontology that is intended to be registered.
+	 * @param OntologyInfoPre General info about the ontology that is intended to be registered.
 	 * 
 	 * @param LoginResult Login information
 	 * 
 	 * @return the result of the review.
 	 */
-	public ReviewResult review(OntologyInfo ontologyInfo, LoginResult loginResult) {
+	public ReviewResult review(OntologyInfoPre ontologyInfoPre, LoginResult loginResult) {
 		
 		_getBaseInfoIfNull();
 		
 		ReviewResult reviewResult = new ReviewResult();
-		reviewResult.setOntologyInfo(ontologyInfo);
+		reviewResult.setOntologyInfo(ontologyInfoPre);
 		
 		
-		Map<String, String> newValues = ontologyInfo.getNewValues();
+		Map<String, String> newValues = ontologyInfoPre.getNewValues();
 		
 		////////////////////////////////////////////
 		// check for errors
@@ -568,8 +569,8 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			return reviewResult;
 		}
 		
-		if ( ontologyInfo.getError() != null ) {
-			String error = "there was an error while loading the ontology: " +ontologyInfo.getError();
+		if ( ontologyInfoPre.getError() != null ) {
+			String error = "there was an error while loading the ontology: " +ontologyInfoPre.getError();
 			reviewResult.setError(error );
 			log.info(error);
 			return reviewResult;
@@ -600,7 +601,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		
 		// to check if this is going to be a new submission (ontologyId == null) or, 
 		// otherwise, a new version.
-		String ontologyId = ontologyInfo.getOntologyId();
+		String ontologyId = ontologyInfoPre.getOntologyId();
 
 		if ( ontologyId == null ) {
 			// This is a new submission. We need to check for any conflict with a preexisting
@@ -615,7 +616,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			// We need to check the shortName+orgAbbreviation combination as any changes here
 			// would imply a *new* ontology, not a new version.
 			//
-			Map<String, String> originalValues = ontologyInfo.getOriginalValues();
+			Map<String, String> originalValues = ontologyInfoPre.getOriginalValues();
 			String originalOrgAbbreviation = originalValues.get(OmvMmi.origMaintainerCode.getURI());
 			String originalShortName = originalValues.get(Omv.acronym.getURI());
 			
@@ -629,7 +630,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		////////////////////////////////////////////
 		// load pre-uploaded model
 
-		String full_path = ontologyInfo.getFullPath();
+		String full_path = ontologyInfoPre.getFullPath();
 		log.info("Loading model: " +full_path);
 		
 		File file = new File(full_path);
@@ -1027,11 +1028,11 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			return uploadResult;
 		}
 		
-		OntologyInfo ontologyInfo = reviewResult.getOntologyInfo();
+		OntologyInfoPre ontologyInfoPre = reviewResult.getOntologyInfo();
 
 		// the "new" values in the ontologyInfo are used to fill in some of the
 		// fields required by the bioportal back-end
-		Map<String, String> newValues = ontologyInfo.getNewValues();
+		Map<String, String> newValues = ontologyInfoPre.getNewValues();
 		
 		uploadResult.setUri(reviewResult.getUri());
 		
@@ -1096,8 +1097,8 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		assert loginResult.getUserId() != null;
 		assert loginResult.getSessionId() != null;
 		
-		String ontologyId = ontologyInfo.getOntologyId();
-		String ontologyUserId = ontologyInfo.getOntologyUserId();
+		String ontologyId = ontologyInfoPre.getOntologyId();
+		String ontologyUserId = ontologyInfoPre.getOntologyUserId();
 		if ( ontologyId != null ) {
 			log.info("Will create a new version for ontologyId = " +ontologyId+ ", userId=" +ontologyUserId);
 		}
@@ -1210,8 +1211,8 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	}
 	
 	
-	public OntologyInfo getOntologyInfoFromRegistry(String ontologyUri) {
-		OntologyInfo ontologyInfo = new OntologyInfo();
+	public OntologyInfoPre getOntologyInfoFromRegistry(String ontologyUri) {
+		OntologyInfoPre ontologyInfoPre = new OntologyInfoPre();
 		
 		
 		if ( false ) {        // TODO remove this previous mechanism
@@ -1227,24 +1228,24 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			catch (Exception ex) {
 				String error = ex.getClass().getName()+ " : " +ex.getMessage();
 				log.info(error);
-				ontologyInfo.setError(error);
-				return ontologyInfo;
+				ontologyInfoPre.setError(error);
+				return ontologyInfoPre;
 			}
-			String error = prepareOntologyInfo(file, ontologyInfo);
+			String error = prepareOntologyInfo(file, ontologyInfoPre);
 			if ( error != null ) {
-				ontologyInfo.setError(error);
-				return ontologyInfo;
+				ontologyInfoPre.setError(error);
+				return ontologyInfoPre;
 			}
 
 			
 			try {
-				ontologyInfo.setRdf(readRdf(file));
+				ontologyInfoPre.setRdf(readRdf(file));
 			}
 			catch (Throwable e) {
 				 error = "Cannot read RDF model: " +file+ " : " +e.getMessage();
 				log.info(error);
-				ontologyInfo.setError(error);
-				return ontologyInfo;
+				ontologyInfoPre.setError(error);
+				return ontologyInfoPre;
 			}
 
 			///////////////////////////////////////////////////////////////////////////////
@@ -1255,7 +1256,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 				destPathCsv = destPathCsv.replaceAll("/|\\\\", "_") + ".csv";
 				File fileCsv = new File(Config.Prop.ONTMD_VOC2RDF_DIR.getValue() + destPathCsv);
 				if ( fileCsv.exists() ) {
-					ontologyInfo.setFullPathCsv(fileCsv.getAbsolutePath());
+					ontologyInfoPre.setFullPathCsv(fileCsv.getAbsolutePath());
 				}
 				
 				if ( log.isDebugEnabled() ) {
@@ -1265,31 +1266,21 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			}
 			catch (MalformedURLException e) {
 				log.error("shouldn't happen", e);
-				ontologyInfo.setError(e.getMessage());
-				return ontologyInfo;
+				ontologyInfoPre.setError(e.getMessage());
+				return ontologyInfoPre;
 			}
 			///////////////////////////////////////////////////////////////////////////////
 
 		}
 		else { // new mechanism
 			
+			String error;
 			
-			File file;
-			try {
-				file = getLocalOntologyFile(ontologyUri);
-			}
-			catch (Exception ex) {
-				String error = ex.getClass().getName()+ " : " +ex.getMessage();
-				log.info(error);
-				ontologyInfo.setError(error);
-				return ontologyInfo;
-			}
-			String error = prepareOntologyInfo(file, ontologyInfo);
+			error = prepareOntologyInfoFromUri(ontologyUri, ontologyInfoPre);
 			if ( error != null ) {
-				ontologyInfo.setError(error);
-				return ontologyInfo;
+				ontologyInfoPre.setError(error);
+				return ontologyInfoPre;
 			}
-			
 			
 			// note: make sure we request the OWL format of the ontology, so adjust extension;
 			try {
@@ -1299,8 +1290,8 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			catch (URISyntaxException e1) {
 				error = "shouldn't happen: " +e1.getMessage();
 				log.error(error, e1);
-				ontologyInfo.setError(error);
-				return ontologyInfo;
+				ontologyInfoPre.setError(error);
+				return ontologyInfoPre;
 			}
 			
 			if ( log.isDebugEnabled() ) {
@@ -1312,26 +1303,26 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 				InputStream is = url.openStream();
 				StringWriter os = new StringWriter();
 				IOUtils.copy(is, os);
-				ontologyInfo.setRdf(os.toString());
+				ontologyInfoPre.setRdf(os.toString());
 				
-				error = prepareOntologyInfoFromUri(ontologyUri, ontologyInfo);
+				error = prepareOntologyInfoFromUri(ontologyUri, ontologyInfoPre);
 				if ( error != null ) {
-					ontologyInfo.setError(error);
-					return ontologyInfo;
+					ontologyInfoPre.setError(error);
+					return ontologyInfoPre;
 				}
 			}
 			catch (Exception e) {
 				error = "Cannot read RDF model: " +ontologyUri+ " : " +e.getMessage();
 				log.info(error);
-				ontologyInfo.setError(error);
-				return ontologyInfo;
+				ontologyInfoPre.setError(error);
+				return ontologyInfoPre;
 			}
 			
 			// CSV not prepared here.  See getData
 			
 		}
 		
-		return ontologyInfo;
+		return ontologyInfoPre;
 	}
 	
 	
@@ -1344,7 +1335,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	 * 
 	 * @param path the path to the file. 
 	 */
-	public OntologyInfo getOntologyInfoFromFileOnServer(String path) {
+	public OntologyInfoPre getOntologyInfoFromFileOnServer(String path) {
 		log.info("getOntologyInfoFromFileOnServer: local path: " +path);
 		File file = new File(path);
 		
@@ -1365,30 +1356,30 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 
 		String full_path = file.getAbsolutePath();
 		
-		OntologyInfo ontologyInfo = new OntologyInfo();
+		OntologyInfoPre ontologyInfoPre = new OntologyInfoPre();
 		
 		try {
-			ontologyInfo.setRdf(readRdf(file));
+			ontologyInfoPre.setRdf(readRdf(file));
 		}
 		catch (Throwable e) {
 			String error = "Cannot read RDF model: " +full_path+ " : " +e.getMessage();
 			log.info(error);
-			ontologyInfo.setError(error);
-			return ontologyInfo;
+			ontologyInfoPre.setError(error);
+			return ontologyInfoPre;
 		}
 
-		String error = prepareOntologyInfo(file, ontologyInfo);
+		String error = prepareOntologyInfo(file, ontologyInfoPre);
 		if ( error == null ) {
 			if ( fileCsv != null ) {
 				String fullPathCsv = fileCsv.getAbsolutePath();
-				ontologyInfo.setFullPathCsv(fullPathCsv);
+				ontologyInfoPre.setFullPathCsv(fullPathCsv);
 			}
 		}
 		else {
-			ontologyInfo.setError(error);
+			ontologyInfoPre.setError(error);
 		}
 		
-		return ontologyInfo;
+		return ontologyInfoPre;
 	}
 
 	///////////////////////////////////////////////////////////////////////
@@ -1413,11 +1404,11 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	///////////////////////////////////////////////////////////////////////
 	// data
 	
-	public DataResult getData(OntologyInfo ontologyInfo) {
+	public DataResult getData(OntologyInfoPre ontologyInfoPre) {
 		DataResult dataResult = new DataResult();
-		dataResult.setOntologyInfo(ontologyInfo);
+		dataResult.setOntologyInfo(ontologyInfoPre);
 		
-		String ontologyUri = ontologyInfo.getUri();
+		String ontologyUri = ontologyInfoPre.getUri();
 		if ( log.isDebugEnabled() ) {
 			log.debug("getData: ontologyUri=" +ontologyUri);
 		}
@@ -1464,5 +1455,10 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		return portal.getAllOntologies();
 	}
 
+	public List<EntityInfo> getEntities(String ontologyUri) {
+		return portal.getEntities(ontologyUri);
+	}
+
+	
 
 }

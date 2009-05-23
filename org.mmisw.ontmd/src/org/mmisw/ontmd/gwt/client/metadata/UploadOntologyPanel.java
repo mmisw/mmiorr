@@ -1,7 +1,7 @@
 package org.mmisw.ontmd.gwt.client.metadata;
 
 import org.mmisw.ontmd.gwt.client.Main;
-import org.mmisw.ontmd.gwt.client.rpc.OntologyInfo;
+import org.mmisw.ontmd.gwt.client.rpc.OntologyInfoPre;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 
 import com.google.gwt.core.client.GWT;
@@ -32,7 +32,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author Carlos Rueda
  */
-class OntologyPanel extends VerticalPanel {
+class UploadOntologyPanel extends VerticalPanel {
 	
 	// "load registry file" is not yet implemented here directly.
 	// Instead, the user would use the main front-end to choose a
@@ -68,7 +68,7 @@ class OntologyPanel extends VerticalPanel {
 	 * @param mainPanel
 	 * @param allowLoadOptions  true to include buttons to load an ontology;
 	 */
-	OntologyPanel(MainPanel mainPanel, boolean allowLoadOptions) {
+	UploadOntologyPanel(MainPanel mainPanel, boolean allowLoadOptions) {
 		this.mainPanel = mainPanel;
 		setWidth("850");
 		
@@ -294,13 +294,13 @@ class OntologyPanel extends VerticalPanel {
 	
 	
 	private void getOntologyInfoFromPreLoaded(String uploadResults) {
-		AsyncCallback<OntologyInfo> callback = new AsyncCallback<OntologyInfo>() {
+		AsyncCallback<OntologyInfoPre> callback = new AsyncCallback<OntologyInfoPre>() {
 			public void onFailure(Throwable thr) {
-				OntologyPanel.this.onFailure(thr);
+				UploadOntologyPanel.this.onFailure(thr);
 			}
 
-			public void onSuccess(OntologyInfo ontologyInfo) {
-				OntologyPanel.this.onSuccess(ontologyInfo);
+			public void onSuccess(OntologyInfoPre ontologyInfoPre) {
+				UploadOntologyPanel.this.onSuccess(ontologyInfoPre);
 			}
 		};
 
@@ -321,8 +321,8 @@ class OntologyPanel extends VerticalPanel {
 		Window.alert(error);
 	}
 
-	void onSuccess(OntologyInfo ontologyInfo) {
-		ontologyInfoObtained(ontologyInfo);
+	void onSuccess(OntologyInfoPre ontologyInfoPre) {
+		ontologyInfoObtained(ontologyInfoPre);
 	}
 
 	
@@ -369,8 +369,8 @@ class OntologyPanel extends VerticalPanel {
 	}
 
 	
-	private void ontologyInfoObtained(OntologyInfo ontologyInfo) {
-		String error = ontologyInfo.getError();
+	private void ontologyInfoObtained(OntologyInfoPre ontologyInfoPre) {
+		String error = ontologyInfoPre.getError();
 		if ( error != null ) {
 			statusLoad.setHTML("<font color=\"red\">Error</font>");
 			textArea.setText("Error reading file. Make sure it is an RDF file.\n" +
@@ -379,9 +379,9 @@ class OntologyPanel extends VerticalPanel {
 			return;
 		}
 		statusLoad.setHTML("<font color=\"green\">Ontology loaded into editor</font>");
-		statusField2.setText("Original base URI: " +ontologyInfo.getUri());
-		mainPanel.setPreloadedOntologyInfo(ontologyInfo, false);
-		String rdf = ontologyInfo.getRdf();
+		statusField2.setText("Original base URI: " +ontologyInfoPre.getUri());
+		mainPanel.setPreloadedOntologyInfo(ontologyInfoPre, false);
+		String rdf = ontologyInfoPre.getRdf();
 		if ( rdf != null ) {
 			textArea.setText(rdf);
 		}
@@ -398,7 +398,7 @@ class OntologyPanel extends VerticalPanel {
 				"Use the Details button to see an initial evaluation of the " +
 				"current metadata."));
 		final MyDialog popup = new MyDialog(vp);
-		popup.setText(ontologyInfo.getUri());
+		popup.setText(ontologyInfoPre.getUri());
 		popup.center();
 		popup.show();
 	}

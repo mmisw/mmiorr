@@ -8,7 +8,6 @@ import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.ontmd.gwt.client.LoginListener;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.UserPanel;
-import org.mmisw.ontmd.gwt.client.metadata.MainPanel;
 import org.mmisw.ontmd.gwt.client.rpc.BaseInfo;
 import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
@@ -132,25 +131,33 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 
 	public void onHistoryChanged(String historyToken) {
 		
-		Main.log("onHistoryChanged: " +historyToken);
-		
 		Object obj = historyTokenMap.get(historyToken);
+		
+		if ( obj == null ) {
+			// for simplicity, always handle this by dispatching the main page:
+			dispatchMainPanel();
+			return;
+		}
+		
 		if ( obj instanceof OntologyInfo ) {
 			OntologyInfo oi = (OntologyInfo) obj;
+			String ontologyUri = oi.getUri();
 			
-			Main.log("onHistoryChanged: OntologyInfo: " +oi.getUri());
+			Main.log("onHistoryChanged: OntologyUri: " +ontologyUri);
 			
-			Map<String, String> params = new HashMap<String, String>();
-			
-			params.put("ontologyUri", oi.getUri());
-			
-			getBaseInfo(params);
+			dispatchOntologyPanel(ontologyUri);
+			return;
 		}
 		
 	}
 
 	
-	private void getBaseInfo(final Map<String, String> params) {
+	private void dispatchMainPanel() {
+		bodyPanel.clear();
+		bodyPanel.add(browsePanel);
+	}
+	
+	private void dispatchOntologyPanel(final String ontologyUri) {
 		AsyncCallback<BaseInfo> callback = new AsyncCallback<BaseInfo>() {
 			public void onFailure(Throwable thr) {
 				String error = thr.toString();
@@ -167,16 +174,16 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 				}
 				else {
 					Main.baseInfo = bInfo;
-					Widget mainPanel = new MainPanel(params);
+					Widget ontologyPanel = new OntologyPanel(ontologyUri);
 					
 					bodyPanel.clear();
-					bodyPanel.add(mainPanel);
+					bodyPanel.add(ontologyPanel);
 				}
 			}
 		};
 
 		Main.log("Getting base info ...");
-		Main.ontmdService.getBaseInfo(params, callback);
+		Main.ontmdService.getBaseInfo(null, callback);
 	}
 
 

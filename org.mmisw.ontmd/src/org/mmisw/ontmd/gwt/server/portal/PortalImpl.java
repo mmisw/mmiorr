@@ -7,6 +7,7 @@ import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.IServer;
 import org.mmisw.iserver.core.Server;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
+import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.ontmd.gwt.client.rpc.PortalBaseInfo;
 import org.mmisw.ontmd.gwt.server.Config;
@@ -67,4 +68,10 @@ public class PortalImpl  {
 	public List<OntologyInfo> getAllOntologies() {
 		return iserver.getAllOntologies();
 	}
+	
+	
+	public List<EntityInfo> getEntities(String ontologyUri) {
+		return iserver.getEntities(ontologyUri);
+	}
+
 }

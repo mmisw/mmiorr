@@ -6,6 +6,9 @@ ChangeLog
 2009-05-22
 	- Author subtree now includes all usernames (if user is logged)
 	
+	- DataPanel now using the iserver-based getEntities operation
+	
+	
 2009-05-18
 	- OntMdServiceImpl: fixed a recently introduced bug in getOntologyInfoFromRegistry:
 		prepareOntologyInfo was not called in the "new mechanism"

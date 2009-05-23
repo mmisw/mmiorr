@@ -16,7 +16,11 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * 
  * @author Carlos Rueda
  */
-public class OntologyInfo implements IsSerializable {
+//
+// NOTE: This used to be called OntologyInfo, but was renamed to OntologyInfoPre to avoid conflicts
+// with different class OntologyInfo in iserver module
+//
+public class OntologyInfoPre implements IsSerializable {
 
 	private String error = null;
 	private String fullPath;
@@ -41,7 +45,7 @@ public class OntologyInfo implements IsSerializable {
 	private Map<String,String> newValues;
 	
 	
-	public OntologyInfo () {
+	public OntologyInfoPre () {
 	}
 	
 	public Map<String, String> getOriginalValues() {

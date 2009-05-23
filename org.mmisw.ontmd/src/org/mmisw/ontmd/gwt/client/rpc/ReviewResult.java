@@ -13,19 +13,19 @@ public class ReviewResult extends BaseResult implements IsSerializable {
 	private String fullPath;
 	private String rdf = null;
 	
-	private OntologyInfo ontologyInfo;
+	private OntologyInfoPre ontologyInfoPre;
 
 
 	public ReviewResult() {
 	}
 
 	
-	public OntologyInfo getOntologyInfo() {
-		return ontologyInfo;
+	public OntologyInfoPre getOntologyInfo() {
+		return ontologyInfoPre;
 	}
 
-	public void setOntologyInfo(OntologyInfo ontologyInfo) {
-		this.ontologyInfo = ontologyInfo;
+	public void setOntologyInfo(OntologyInfoPre ontologyInfoPre) {
+		this.ontologyInfoPre = ontologyInfoPre;
 	}
 
 	public String getRdf() {

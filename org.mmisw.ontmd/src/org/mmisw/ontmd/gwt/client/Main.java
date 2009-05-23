@@ -18,6 +18,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.WindowCloseListener;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -180,6 +181,8 @@ public class Main implements EntryPoint {
 
 		Window.addWindowCloseListener(leavePage);
 		leavePage.pushMsg("(If any, all edits will be lost.)");
+		
+		History.newItem("", false);
 	}
 
 	private static void getOntMdService() {

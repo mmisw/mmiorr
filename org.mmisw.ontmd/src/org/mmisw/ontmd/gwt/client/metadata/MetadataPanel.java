@@ -3,7 +3,8 @@ package org.mmisw.ontmd.gwt.client.metadata;
 import java.util.Map;
 
 import org.mmisw.ontmd.gwt.client.Main;
-import org.mmisw.ontmd.gwt.client.rpc.OntologyInfo;
+import org.mmisw.ontmd.gwt.client.portal.IOntologyPanel;
+import org.mmisw.ontmd.gwt.client.rpc.OntologyInfoPre;
 import org.mmisw.ontmd.gwt.client.rpc.ReviewResult;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrGroup;
@@ -86,7 +87,7 @@ private static final String INFO =
 	 * @param mainPanel
 	 * @param editing true for the editing interface; false for the vieweing interface.
 	 */
-	MetadataPanel(MainPanel mainPanel, boolean editing) {
+	public MetadataPanel(IOntologyPanel mainPanel, boolean editing) {
 		super();
 		setWidth("800");
 		this.editing = editing;
@@ -150,7 +151,7 @@ private static final String INFO =
 	
 	
 	/** Basically for viewing-only mode */
-	void showProgressMessage(String msg) {
+	public void showProgressMessage(String msg) {
 		newUri.showProgressMessage(msg);
 	}
 	
@@ -164,7 +165,7 @@ private static final String INFO =
 		}
 	}
 	
-	String putValues(Map<String, String> values) {
+	public String putValues(Map<String, String> values) {
 		for ( int i = 0, c = tabPanel.getWidgetCount(); i < c; i++ ) {
 			Widget w = tabPanel.getWidget(i);
 			if ( w instanceof MetadataGroupPanel ) {
@@ -177,7 +178,7 @@ private static final String INFO =
 		return null;
 	}
 	
-	void example(boolean confirm) {
+	public void example(boolean confirm) {
 		for ( int i = 0, c = tabPanel.getWidgetCount(); i < c; i++ ) {
 			Widget w = tabPanel.getWidget(i);
 			if ( w instanceof MetadataGroupPanel ) {
@@ -189,7 +190,7 @@ private static final String INFO =
 	/** Delegates to the metadata group panels and
 	 * updates the internal 'enabled' flag.
 	 */
-	void enable(boolean enabled) {
+	public void enable(boolean enabled) {
 		for ( int i = 0, c = tabPanel.getWidgetCount(); i < c; i++ ) {
 			Widget w = tabPanel.getWidget(i);
 			if ( w instanceof MetadataGroupPanel ) {
@@ -204,21 +205,21 @@ private static final String INFO =
 	}
 
 
-	void resetToOriginalValues(OntologyInfo ontologyInfo, ReviewResult reviewResult, boolean confirm, boolean link) {
-		resetToOriginalOrNewValues(ontologyInfo, true, reviewResult, confirm, link);
+	public void resetToOriginalValues(OntologyInfoPre ontologyInfoPre, ReviewResult reviewResult, boolean confirm, boolean link) {
+		resetToOriginalOrNewValues(ontologyInfoPre, true, reviewResult, confirm, link);
 	}
 	
-	void resetToNewValues(OntologyInfo ontologyInfo, ReviewResult reviewResult, boolean confirm, boolean link) {
-		resetToOriginalOrNewValues(ontologyInfo, false, reviewResult, confirm, link);
+	void resetToNewValues(OntologyInfoPre ontologyInfoPre, ReviewResult reviewResult, boolean confirm, boolean link) {
+		resetToOriginalOrNewValues(ontologyInfoPre, false, reviewResult, confirm, link);
 	}
 	
-	private void resetToOriginalOrNewValues(OntologyInfo ontologyInfo, boolean originalVals, 
+	private void resetToOriginalOrNewValues(OntologyInfoPre ontologyInfoPre, boolean originalVals, 
 			ReviewResult reviewResult, boolean confirm, boolean link) 
 	{
 		for ( int i = 0, c = tabPanel.getWidgetCount(); i < c; i++ ) {
 			Widget w = tabPanel.getWidget(i);
 			if ( w instanceof MetadataGroupPanel ) {
-				((MetadataGroupPanel) w).resetToOriginalOrNewValues(ontologyInfo, originalVals, confirm);
+				((MetadataGroupPanel) w).resetToOriginalOrNewValues(ontologyInfoPre, originalVals, confirm);
 			}
 		}
 		
@@ -230,7 +231,7 @@ private static final String INFO =
 			}
 		}
 		else if ( ! editing ) {
-			newUri.setUri(ontologyInfo.getUri(), link);
+			newUri.setUri(ontologyInfoPre.getUri(), link);
 		}
 	}
 	

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
+import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
+import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
 import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
@@ -44,23 +46,23 @@ public interface OntMdService extends RemoteService {
 	 * Gets ontology info from an ontology that can be resolved by the Ont service
 	 * (ie., from the MMI registry).
 	 */
-	OntologyInfo getOntologyInfoFromRegistry(String ontologyUri);
+	OntologyInfoPre getOntologyInfoFromRegistry(String ontologyUri);
 
 	/**
 	 * Gets ontology info from a pre-loaded file.
 	 */
-	OntologyInfo getOntologyInfoFromPreLoaded(String uploadResults);
+	OntologyInfoPre getOntologyInfoFromPreLoaded(String uploadResults);
 
 	/**
 	 * Gets ontology info from a file located in the server.
 	 * The main "client" for this service is Voc2Rdf
 	 */
-	OntologyInfo getOntologyInfoFromFileOnServer(String fullPath);
+	OntologyInfoPre getOntologyInfoFromFileOnServer(String fullPath);
 
 	/**
 	 * Reviews the pre-loaded model with the associated new values.
 	 */
-	ReviewResult review(OntologyInfo ontologyInfo, LoginResult loginResult);
+	ReviewResult review(OntologyInfoPre ontologyInfoPre, LoginResult loginResult);
 
 	/**
 	 * Uploads a reviewed model to the MMI Registry.
@@ -87,8 +89,16 @@ public interface OntMdService extends RemoteService {
 	/**
 	 * Reviews the pre-loaded model with the associated new values.
 	 */
-	DataResult getData(OntologyInfo ontologyInfo);
+	@Deprecated
+	DataResult getData(OntologyInfoPre ontologyInfoPre);
 
+	
+	/**
+	 * Gets the list of entities associated with the given ontology. 
+	 * @param ontologyUri URI of the desired ontology.
+	 * @return list of entities
+	 */
+	public List<EntityInfo> getEntities(String ontologyUri);
 	
 	
 	///////////////////////////////////////////////////////////////////////
@@ -99,6 +109,6 @@ public interface OntMdService extends RemoteService {
 	PortalBaseInfo getPortalBaseInfo();
 	
 
-	public List<org.mmisw.iserver.gwt.client.rpc.OntologyInfo> getAllOntologies();
+	public List<OntologyInfo> getAllOntologies();
 
 }

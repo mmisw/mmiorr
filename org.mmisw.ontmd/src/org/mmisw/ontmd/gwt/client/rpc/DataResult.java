@@ -11,19 +11,19 @@ public class DataResult extends BaseResult implements IsSerializable {
 
 	private String csv = null;
 	
-	private OntologyInfo ontologyInfo;
+	private OntologyInfoPre ontologyInfoPre;
 
 
 	public DataResult() {
 	}
 
 	
-	public OntologyInfo getOntologyInfo() {
-		return ontologyInfo;
+	public OntologyInfoPre getOntologyInfo() {
+		return ontologyInfoPre;
 	}
 
-	public void setOntologyInfo(OntologyInfo ontologyInfo) {
-		this.ontologyInfo = ontologyInfo;
+	public void setOntologyInfo(OntologyInfoPre ontologyInfoPre) {
+		this.ontologyInfoPre = ontologyInfoPre;
 	}
 
 	public String getCsv() {

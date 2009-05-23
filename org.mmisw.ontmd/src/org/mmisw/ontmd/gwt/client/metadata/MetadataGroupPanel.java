@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.mmisw.ontmd.gwt.client.Main;
-import org.mmisw.ontmd.gwt.client.rpc.OntologyInfo;
+import org.mmisw.ontmd.gwt.client.portal.IOntologyPanel;
+import org.mmisw.ontmd.gwt.client.rpc.OntologyInfoPre;
 import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
 import org.mmisw.ontmd.gwt.client.util.Util;
@@ -46,7 +47,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 	}
 	
 	
-	private MainPanel mainPanel;
+	private IOntologyPanel mainPanel;
 	
 	private AttrGroup attrGroup;
 	
@@ -60,9 +61,9 @@ public class MetadataGroupPanel extends VerticalPanel {
 
 	private PushButton resetButton = new PushButton("Reset", new ClickListener() {
 		public void onClick(Widget sender) {
-			OntologyInfo ontologyInfo = mainPanel.getOntologyInfo();
-			if ( ontologyInfo != null && ontologyInfo.getError() == null ) {
-				resetToOriginalOrNewValues(ontologyInfo,true, true);
+			OntologyInfoPre ontologyInfoPre = mainPanel.getOntologyInfo();
+			if ( ontologyInfoPre != null && ontologyInfoPre.getError() == null ) {
+				resetToOriginalOrNewValues(ontologyInfoPre,true, true);
 			}
 			else {
 				Window.alert("No ontology information available for this operation");
@@ -80,7 +81,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 
 
 	
-	MetadataGroupPanel(MainPanel mainPanel, AttrGroup attrGroup, boolean editing) {
+	MetadataGroupPanel(IOntologyPanel mainPanel, AttrGroup attrGroup, boolean editing) {
 		this.mainPanel = mainPanel;
 		this.attrGroup = attrGroup;
 		
@@ -374,13 +375,13 @@ public class MetadataGroupPanel extends VerticalPanel {
 
 	}
 	
-	void resetToOriginalOrNewValues(OntologyInfo ontologyInfo, boolean originalVals, boolean confirm) {
+	void resetToOriginalOrNewValues(OntologyInfoPre ontologyInfoPre, boolean originalVals, boolean confirm) {
 		if ( confirm && ! Window.confirm("This action will replace the current values in this section") ) {
 			return;
 		}
 		resetToEmpty();
 		Map<String, String> originalValues = 
-			originalVals ? ontologyInfo.getOriginalValues() :  ontologyInfo.getNewValues();
+			originalVals ? ontologyInfoPre.getOriginalValues() :  ontologyInfoPre.getNewValues();
 		
 		for ( Elem elem : widgets.values() ) {
 			String uri = elem.attr.getUri();

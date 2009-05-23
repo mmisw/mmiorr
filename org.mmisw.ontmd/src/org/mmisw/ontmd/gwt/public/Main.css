@@ -124,3 +124,26 @@ table.inline td {
   border: 1px solid #dee7ec;
 }
 
+
+.DataTable {
+  font-size: small;
+  background-color: #ffffff;
+  border-spacing: 0px;
+  border-collapse: collapse;
+  border: 1px solid #dee7ec;
+}
+
+.DataTable-header {
+  font-weight: bold;
+  text-align: center;
+  padding: 3px;
+  border: 1px solid #8cacbb;
+  background-color: #dee7ec;
+}
+
+.DataTable-row {
+  text-align: center;
+  padding: 3px;
+  border: 1px solid #dee7ec;
+}
+
