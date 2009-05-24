@@ -11,8 +11,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
+import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.ont.MmiUri;
+import org.mmisw.ont.vocabulary.Omv;
+
+import com.hp.hpl.jena.ontology.OntModel;
 
 
 
@@ -77,11 +82,34 @@ public class Server implements IServer {
 	}
 	
 
+	private MetadataBaseInfo metadataBaseInfo = null;
+	
+	public MetadataBaseInfo getMetadataBaseInfo(
+			boolean includeVersion, String resourceTypeClassUri,
+			String authorityClassUri) {
+		
+		log.info("preparing base info ...");
+		
+		if ( metadataBaseInfo == null ) {
+			metadataBaseInfo = new MetadataBaseInfo();
+			
+			metadataBaseInfo.setResourceTypeUri(Omv.acronym.getURI());
+			
+			MdHelper.prepareGroups(includeVersion, resourceTypeClassUri, authorityClassUri);
+			AttrGroup[] attrGroups = MdHelper.getAttrGroups();
+			metadataBaseInfo.setAttrGroups(attrGroups);
+			log.info("preparing base info ... DONE");
+
+		}
+		
+		return metadataBaseInfo;
+	}
+
 	public List<EntityInfo> getEntities(String ontologyUri) {
 		if ( log.isDebugEnabled() ) {
 			log.debug("getEntities(String) starting");
 		}
-		return  Util.getEntities(ontologyUri);
+		return  Util.getEntities(ontologyUri, null);
 	}
 
 
@@ -142,7 +170,7 @@ public class Server implements IServer {
 		if ( log.isDebugEnabled() ) {
 			log.debug("getEntities(OntologyInfo) starting");
 		}
-		Util.getEntities(ontologyInfo);
+		Util.getEntities(ontologyInfo, null);
 		return ontologyInfo;
 	}
 
@@ -164,5 +192,36 @@ public class Server implements IServer {
 	        meth.releaseConnection();
 	    }
 	}
+	
+	
+	
+	
+	public OntologyInfo getOntologyContents(OntologyInfo ontologyInfo) {
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug("getOntologyContents(OntologyInfo): loading model");
+		}
+		
+		OntModel ontModel = Util.loadModel(ontologyInfo.getUri());
+
+		// Metadata:
+		if ( log.isDebugEnabled() ) {
+			log.debug("getOntologyContents(OntologyInfo): getting metadata");
+		}
+		MetadataExtractor.prepareOntologyMetadata(metadataBaseInfo, ontModel, ontologyInfo);
+
+		
+		// Data
+		if ( log.isDebugEnabled() ) {
+			log.debug("getOntologyContents(OntologyInfo): getting entities");
+		}
+		Util.getEntities(ontologyInfo, ontModel);
+		
+		
+		return ontologyInfo;
+	
+	}
+
+	
 
 }

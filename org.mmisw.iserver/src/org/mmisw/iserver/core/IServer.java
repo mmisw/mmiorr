@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
+import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 
 /**
@@ -41,5 +42,21 @@ public interface IServer {
 	 * @return ontologyInfo
 	 */
 	OntologyInfo getEntities(OntologyInfo ontologyInfo);
+	
+	
+	
+	
+	public MetadataBaseInfo getMetadataBaseInfo(boolean includeVersion, 
+			String resourceTypeClassUri, String authorityClassUri);
+	
+	
+	
+	/**
+	 * Gets both the metadata and the entities.
+	 * 
+	 * @param ontologyInfo
+	 * @return
+	 */
+	public OntologyInfo getOntologyContents(OntologyInfo ontologyInfo);
 
 }

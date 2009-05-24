@@ -27,6 +27,10 @@
   	<pathelement path="base_war/WEB-INF/lib/log4j-1.2.12.jar"/>
   	
   	<pathelement path="base_war/WEB-INF/lib/org.mmisw.ont.mmiuri.jar"/>
+  	<pathelement path="base_war/WEB-INF/lib/org.mmisw.ont.vocabulary.jar"/>
+  	
+  	<pathelement path="base_war/WEB-INF/lib/org.mmi.util.jar"/>
+  	<pathelement path="base_war/WEB-INF/lib/org.mmi.ont.util.jar"/>
   </path>
 
 	<target name="init">

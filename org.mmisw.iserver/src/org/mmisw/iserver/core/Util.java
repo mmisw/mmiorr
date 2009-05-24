@@ -72,9 +72,11 @@ public class Util {
 	 * @param ontologyUri URI of the desired ontology.
 	 * @return list of entities
 	 */
-	public static List<EntityInfo> getEntities(String ontologyUri) {
+	public static List<EntityInfo> getEntities(String ontologyUri, OntModel ontModel) {
 		
-		OntModel ontModel = loadModel(ontologyUri);
+		if ( ontModel == null ) {
+			ontModel = loadModel(ontologyUri);
+		}
 		
 		List<EntityInfo> entities = new ArrayList<EntityInfo>();
 		
@@ -97,10 +99,10 @@ public class Util {
 	 * @param ontologyInfo
 	 * @return the given argument
 	 */
-	public static OntologyInfo getEntities(OntologyInfo ontologyInfo) {
+	public static OntologyInfo getEntities(OntologyInfo ontologyInfo, OntModel ontModel) {
 		String ontologyUri = ontologyInfo.getUri();
 
-		List<EntityInfo> entities = getEntities(ontologyUri);
+		List<EntityInfo> entities = getEntities(ontologyUri, ontModel);
 		
 		ontologyInfo.setEntities(entities);
 		return ontologyInfo;
@@ -338,13 +340,13 @@ public class Util {
 	/** see JenaUtil2 */
 	private static final String FRAG_SEPARATOR = "/" ;
 
-	private static String getURIForBase(String uri) {
+	static String removeTrailingFragment(String uri) {
 		return uri.replaceAll(FRAG_SEPARATOR + "+$", "");
 	}
 	
-	private static OntModel loadModel(String uriModel) {
+	public static OntModel loadModel(String uriModel) {
 		OntModel model = createDefaultOntModel();
-		uriModel = getURIForBase(uriModel);
+		uriModel = removeTrailingFragment(uriModel);
 		model.read(uriModel);
 		return model;
 	}

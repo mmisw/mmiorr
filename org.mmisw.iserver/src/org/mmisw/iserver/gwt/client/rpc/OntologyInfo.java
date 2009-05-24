@@ -11,12 +11,28 @@ import java.util.List;
 public class OntologyInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	private String error = null;
+	
+	
 	// used only on the client side
 	private transient char code;
 	
 	private String uri;
 	private String displayLabel;
 	
+	
+	private OntologyMetadata ontologyMetadata;
+	
+	/**
+	 * @return the ontologyMetadata
+	 */
+	public OntologyMetadata getOntologyMetadata() {
+		if ( ontologyMetadata == null ) {
+			ontologyMetadata = new OntologyMetadata();
+		}
+		return ontologyMetadata;
+	}
+
 	private List<EntityInfo> entities;
 	
 	
@@ -40,6 +56,15 @@ public class OntologyInfo implements Serializable {
 		this.code = code;
 	}
 	
+	public String getError() {
+		return error;
+	}
+
+	public void setError(String error) {
+		this.error = error;
+	}
+
+
 	public String getUri() {
 		return uri;
 	}

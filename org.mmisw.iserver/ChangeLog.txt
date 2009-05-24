@@ -2,6 +2,9 @@ org.mmisw.iserver
 Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 
+2009-05-23
+	- included most of metadata management here (from ontmd module)
+
 2009-05-22
 	- Added username attribute to OntologyInfo
 	
