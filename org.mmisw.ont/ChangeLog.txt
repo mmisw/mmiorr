@@ -4,6 +4,11 @@ $Id$
 
 ChangeLog
 
+2009-05-23
+	- Omv: added: usedOntologyEngineeringTool
+	- OmvMmi: added: voc2rdf, vine
+	
+	  
 2009-05-22
 	MisDispatcher: include username in listall response.
 	

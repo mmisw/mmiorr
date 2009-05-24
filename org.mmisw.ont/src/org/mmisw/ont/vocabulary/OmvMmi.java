@@ -100,4 +100,9 @@ public class OmvMmi {
     public static final Property origMaintainerCode = m_model.createProperty( NS , "origMaintainerCode" );
     
 
+    /** Instance of {@link Omv#usedOntologyEngineeringTool} */  
+    public static final Property voc2rdf = m_model.createProperty( NS , "voc2rdf" );
+
+    /** Instance of {@link Omv#usedOntologyEngineeringTool} */  
+    public static final Property vine = m_model.createProperty( NS , "vine" );
 }

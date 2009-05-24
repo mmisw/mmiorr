@@ -76,4 +76,5 @@ public class Omv {
     public static final Property hasPriorVersion = m_model.createProperty( NS , "hasPriorVersion" );
     
 
+    public static final Property usedOntologyEngineeringTool = m_model.createProperty( NS , "usedOntologyEngineeringTool" );
 }
