@@ -8,6 +8,7 @@ import org.mmisw.iserver.core.IServer;
 import org.mmisw.iserver.core.Server;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
+import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.ontmd.gwt.client.rpc.PortalBaseInfo;
 import org.mmisw.ontmd.gwt.server.Config;
@@ -15,7 +16,7 @@ import org.mmisw.ontmd.gwt.server.Config;
 
 
 /**
- * The main Voc2Rdf back-end operations. 
+ * portal operations. 
  * 
  * @author Carlos Rueda
  * @version $Id$
@@ -74,4 +75,16 @@ public class PortalImpl  {
 		return iserver.getEntities(ontologyUri);
 	}
 
+	
+	public MetadataBaseInfo getMetadataBaseInfo(boolean includeVersion) {
+		String resourceTypeClassUri = Config.Prop.RESOURCE_TYPE_CLASS.getValue();
+		String authorityClassUri = Config.Prop.AUTHORITY_CLASS.getValue();
+		
+		return iserver.getMetadataBaseInfo(includeVersion, resourceTypeClassUri, authorityClassUri);
+	}
+	
+	
+	public OntologyInfo getOntologyContents(OntologyInfo ontologyInfo) {
+		return iserver.getOntologyContents(ontologyInfo);
+	}
 }

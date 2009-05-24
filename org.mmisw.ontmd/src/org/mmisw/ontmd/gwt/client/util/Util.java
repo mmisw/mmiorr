@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mmisw.ontmd.gwt.client.Main;
-import org.mmisw.ontmd.gwt.client.vocabulary.Option;
+import org.mmisw.iserver.gwt.client.vocabulary.Option;
 
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.DOM;

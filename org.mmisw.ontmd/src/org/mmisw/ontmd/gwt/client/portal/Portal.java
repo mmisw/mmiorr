@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
+import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.rpc.PortalBaseInfo;
@@ -49,17 +50,38 @@ public class Portal {
 				appInfo = aInfo;
 				Main.log("Getting application info: " +appInfo);
 				main.footer = appInfo.toString();
-				getAllOntologies(params);
+				getMetadataBaseInfo(params);
 			}
 		};
 
-		Main.log("Getting application info ...");
+		Main.log("Portal.getAppInfo: Getting application info ...");
 		Main.ontmdService.getPortalAppInfo(callback);
+	}
+	
+	private void getMetadataBaseInfo(final Map<String, String> params) {
+		boolean includeVersion = params != null && "y".equals(params.get("_xv"));
+		
+		Main.log("Portal.getMetadataBaseInfo: includeVersion= " +includeVersion+ " ...");
+		
+		AsyncCallback<MetadataBaseInfo> callback = new AsyncCallback<MetadataBaseInfo>() {
+
+			public void onFailure(Throwable thr) {
+				removeLoadingMessage();
+				RootPanel.get().add(new HTML(thr.toString()));
+			}
+
+			public void onSuccess(MetadataBaseInfo result) {
+				Main.metadataBaseInfo = result;
+				getAllOntologies(params);
+			}
+			
+		};
+		Main.ontmdService.getMetadataBaseInfo(includeVersion, callback);
 	}
 	
 	private void getAllOntologies(final Map<String, String> params) {
 		
-		Main.log("Getting application info ...");
+		Main.log("Portal.getAllOntologies ... ...");
 		AsyncCallback<List<OntologyInfo>> callback = new AsyncCallback<List<OntologyInfo>>() {
 
 			public void onFailure(Throwable thr) {
@@ -91,7 +113,7 @@ public class Portal {
 			}
 		};
 
-		Main.log("Getting base info ...");
+		Main.log("Portal.getPortalBaseInfo ...");
 		Main.ontmdService.getPortalBaseInfo(callback);
 	}
 

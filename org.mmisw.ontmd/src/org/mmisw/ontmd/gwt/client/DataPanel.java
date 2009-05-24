@@ -7,16 +7,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
+import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
-import org.mmisw.ontmd.gwt.client.portal.IOntologyPanel;
-import org.mmisw.ontmd.gwt.client.rpc.DataResult;
-import org.mmisw.ontmd.gwt.client.rpc.OntologyInfoPre;
-import org.mmisw.ontmd.gwt.client.voc2rdf.TermTable;
-import org.mmisw.ontmd.gwt.client.voc2rdf.TermTableCreator;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Label;
@@ -32,10 +26,9 @@ public class DataPanel extends VerticalPanel {
 
 	/**
 	 * Creates the metadata panel
-	 * @param mainPanel
 	 * @param editing true for the editing interface; false for the vieweing interface.
 	 */
-	public DataPanel(IOntologyPanel mainPanel, boolean editing) {
+	public DataPanel(boolean editing) {
 		super();
 		setWidth("800");
 	}
@@ -49,37 +42,10 @@ public class DataPanel extends VerticalPanel {
 	 * Updates this panel with the data associated to the given ontology 
 	 * @param ontologyInfoPre
 	 */
-	public void updateWith(OntologyInfoPre ontologyInfoPre) {
+	public void updateWith(OntologyInfo ontologyInfo) {
 		
-		if ( false ) {
-			updateWith2(ontologyInfoPre);
-		}
-		else {
-			updateWith(ontologyInfoPre.getUri());
-		}
-	}
-	
-	
-	private void updateWith(final String ontologyUri) {
 		this.clear();
-		
-		AsyncCallback<List<EntityInfo>> callback = new AsyncCallback<List<EntityInfo>>() {
-			public void onFailure(Throwable thr) {
-				add(new Label(thr.getMessage()));
-			}
-
-			public void onSuccess(List<EntityInfo> entities) {
-				_doUpdate(ontologyUri, entities);
-			}
-		};
-
-		Main.log("DataPanel.updateWith: getEntities" +ontologyUri);
-		Main.ontmdService.getEntities(ontologyUri, callback);
-
-	}
-
-	
-	private void _doUpdate(String ontologyUri, List<EntityInfo> entities) {
+		List<EntityInfo> entities = ontologyInfo.getEntities();
 		
 		Set<String> header = new HashSet<String>();
 		
@@ -130,48 +96,6 @@ public class DataPanel extends VerticalPanel {
 		}
 
 		add(flexPanel);
-	}
-	
-	private void updateWith2(OntologyInfoPre ontologyInfoPre) {
-		this.clear();
-		
-		AsyncCallback<DataResult> callback = new AsyncCallback<DataResult>() {
-			public void onFailure(Throwable thr) {
-				add(new Label(thr.getMessage()));
-			}
-
-			public void onSuccess(DataResult dataResult) {
-				_doUpdate2(dataResult);
-			}
-		};
-
-		Main.log("DataPanel.updateWith: " +ontologyInfoPre);
-		Main.ontmdService.getData(ontologyInfoPre, callback);
-	}
-	
-	private void _doUpdate2(DataResult dataResult) {
-		String error = dataResult.getError();
-		if ( error != null ) {
-			add(new Label(error));
-			return;
-		}
-		
-		String contents = dataResult.getCsv();
-		
-		StringBuffer errorMsg = new StringBuffer();
-		TermTable termTable = TermTableCreator.createTermTable(',', contents, true, errorMsg);
-		
-		if ( errorMsg.length() > 0 ) {
-			add(new HTML("<font color=\"red\">" +errorMsg+ "</font>"));
-			return;
-		}
-		
-		// OK:
-		add(termTable);
-//		ScrollPanel tableScroll = new ScrollPanel();
-//		tableScroll.setWidget(termTable);
-//		termTable.setScrollPanel(tableScroll);
-		
 	}
 
 }

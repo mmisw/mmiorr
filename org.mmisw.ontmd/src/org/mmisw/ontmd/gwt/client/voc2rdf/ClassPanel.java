@@ -8,7 +8,7 @@ import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
 import org.mmisw.ontmd.gwt.client.voc2rdf.VocabPanel.CheckError;
-import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
+import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;

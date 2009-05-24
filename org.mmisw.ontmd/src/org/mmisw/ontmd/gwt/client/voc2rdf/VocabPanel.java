@@ -9,7 +9,7 @@ import org.mmisw.ontmd.gwt.client.util.MyDialog;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
 import org.mmisw.ontmd.gwt.client.util.Util;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
-import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
+import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;

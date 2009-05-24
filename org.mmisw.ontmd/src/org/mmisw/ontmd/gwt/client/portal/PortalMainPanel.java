@@ -8,7 +8,6 @@ import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.ontmd.gwt.client.LoginListener;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.UserPanel;
-import org.mmisw.ontmd.gwt.client.rpc.BaseInfo;
 import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 
@@ -17,10 +16,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.HistoryListener;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.KeyboardListener;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -140,12 +136,11 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		}
 		
 		if ( obj instanceof OntologyInfo ) {
-			OntologyInfo oi = (OntologyInfo) obj;
-			String ontologyUri = oi.getUri();
+			OntologyInfo ontologyInfo = (OntologyInfo) obj;
 			
-			Main.log("onHistoryChanged: OntologyUri: " +ontologyUri);
+			Main.log("onHistoryChanged: OntologyUri: " +ontologyInfo.getUri());
 			
-			dispatchOntologyPanel(ontologyUri);
+			dispatchOntologyPanel(ontologyInfo);
 			return;
 		}
 		
@@ -157,33 +152,14 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		bodyPanel.add(browsePanel);
 	}
 	
-	private void dispatchOntologyPanel(final String ontologyUri) {
-		AsyncCallback<BaseInfo> callback = new AsyncCallback<BaseInfo>() {
-			public void onFailure(Throwable thr) {
-				String error = thr.toString();
-				while ( ( thr = thr.getCause()) != null ) {
-					error += "\n" + thr.toString();
-				}
-				RootPanel.get().add(new Label(error));
-			}
+	private void dispatchOntologyPanel(final OntologyInfo ontologyInfo) {
+		String ontologyUri = ontologyInfo.getUri();
 
-			public void onSuccess(BaseInfo bInfo) {
-				String error = bInfo.getError();
-				if ( error != null ) {
-					RootPanel.get().add(new Label(error));
-				}
-				else {
-					Main.baseInfo = bInfo;
-					Widget ontologyPanel = new OntologyPanel(ontologyUri);
-					
-					bodyPanel.clear();
-					bodyPanel.add(ontologyPanel);
-				}
-			}
-		};
+		Main.log("dispatchOntologyPanel:  ontologyUri=" +ontologyUri);
+		Widget ontologyPanel = new OntologyPanel(ontologyInfo);
 
-		Main.log("Getting base info ...");
-		Main.ontmdService.getBaseInfo(null, callback);
+		bodyPanel.clear();
+		bodyPanel.add(ontologyPanel);
 	}
 
 

@@ -7,8 +7,8 @@ import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
 import org.mmisw.ontmd.gwt.client.util.Util;
-import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
-import org.mmisw.ontmd.gwt.client.vocabulary.Option;
+import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
+import org.mmisw.iserver.gwt.client.vocabulary.Option;
 
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;

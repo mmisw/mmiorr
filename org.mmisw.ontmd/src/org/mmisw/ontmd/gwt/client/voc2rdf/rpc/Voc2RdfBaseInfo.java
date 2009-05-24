@@ -3,7 +3,7 @@ package org.mmisw.ontmd.gwt.client.voc2rdf.rpc;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
+import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 

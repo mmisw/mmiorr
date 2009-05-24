@@ -11,9 +11,9 @@ import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
-import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
+import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.server.Config;
-import org.mmisw.ontmd.gwt.server.MdHelper;
+import org.mmisw.ontmd.gwt.server.MdHelper_OLD;
 
 
 
@@ -58,13 +58,13 @@ public class Voc2RdfImpl  {
 		log.info("preparing base info ...");
 		
 		// prepare all the information (as in ontmd) even that voc2rdf is just going to use a few of the attributes:
-		MdHelper.prepareGroups(false);
+		MdHelper_OLD.prepareGroups(false);
 		
 		baseInfo = new Voc2RdfBaseInfo();
-		baseInfo.setResourceTypeAttrDef(MdHelper.getResourceTypeAttrDef());
+		baseInfo.setResourceTypeAttrDef(MdHelper_OLD.getResourceTypeAttrDef());
 		
 		Map<String,AttrDef> attrDefMap = new HashMap<String,AttrDef>();
-		Map<String, AttrDef> uriAttrDefMap = MdHelper.getAttrDefMap();
+		Map<String, AttrDef> uriAttrDefMap = MdHelper_OLD.getAttrDefMap();
 		attrDefMap.put("fullTitle", uriAttrDefMap.get(Omv.name.getURI()));
 		attrDefMap.put("creator", uriAttrDefMap.get(Omv.hasCreator.getURI()));
 		attrDefMap.put("description", uriAttrDefMap.get(Omv.description.getURI()));

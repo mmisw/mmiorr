@@ -5,10 +5,11 @@ import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
+import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
-import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
+import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -24,7 +25,7 @@ public interface OntMdServiceAsync {
 	
 	void refreshOptions(AttrDef attrDef, AsyncCallback<AttrDef> callback);
 	
-	void getBaseInfo(Map<String, String> params, AsyncCallback<BaseInfo> callback);
+	void getBaseInfo(Map<String, String> params, AsyncCallback<MetadataBaseInfo> callback);
 	
 	void login(String userName, String userPassword, AsyncCallback<LoginResult> callback);
 	
@@ -66,4 +67,8 @@ public interface OntMdServiceAsync {
 	void getPortalBaseInfo(AsyncCallback<PortalBaseInfo> callback);
 	
 	void getAllOntologies(AsyncCallback <List<OntologyInfo>> callback);
+	
+	void getMetadataBaseInfo(boolean includeVersion, AsyncCallback<MetadataBaseInfo> callback);
+	
+	void getOntologyContents(OntologyInfo ontologyInfo, AsyncCallback<OntologyInfo> callback);
 }

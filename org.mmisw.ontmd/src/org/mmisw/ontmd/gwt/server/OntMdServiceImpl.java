@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -30,12 +29,16 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.iserver.core.MdHelper;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
+import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
+import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
+import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.ont.MmiUri;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
-import org.mmisw.ontmd.gwt.client.rpc.BaseInfo;
 import org.mmisw.ontmd.gwt.client.rpc.BaseResult;
 import org.mmisw.ontmd.gwt.client.rpc.DataResult;
 import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
@@ -46,8 +49,6 @@ import org.mmisw.ontmd.gwt.client.rpc.ReviewResult;
 import org.mmisw.ontmd.gwt.client.rpc.UploadResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
-import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
-import org.mmisw.ontmd.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.ontmd.gwt.server.portal.PortalImpl;
 import org.mmisw.ontmd.gwt.server.voc2rdf.Voc2RdfImpl;
 
@@ -94,7 +95,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	
 	private final Log log = LogFactory.getLog(OntMdServiceImpl.class);
 	
-	private BaseInfo baseInfo = null;
+	private MetadataBaseInfo metadataBaseInfo = null;
 	
 	
 	public void init() throws ServletException {
@@ -136,7 +137,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		return appInfo;
 	}
 	
-	public BaseInfo getBaseInfo(Map<String, String> params) {
+	public MetadataBaseInfo getBaseInfo(Map<String, String> params) {
 		log.info("getBaseInfo: params=" + params);
 		
 		// from the client, always re-create the base info:
@@ -148,15 +149,15 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		}
 		catch (Throwable thr) {
 			thr.printStackTrace();
-			baseInfo.setError(thr.toString());
+			metadataBaseInfo.setError(thr.toString());
 		}
-		return baseInfo;
+		return metadataBaseInfo;
 	}
 	
 	
 	/** prepares the baseInfo only if not already prepared */
 	private void _getBaseInfoIfNull() {
-		if ( baseInfo == null ) {
+		if ( metadataBaseInfo == null ) {
 			prepareBaseInfo(false);
 		}
 	}
@@ -164,19 +165,19 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	/** always re-creates the baseInfo */
 	private void prepareBaseInfo(boolean includeVersion) {
 		log.info("preparing base info ...");
-		baseInfo = new BaseInfo();
+		metadataBaseInfo = new MetadataBaseInfo();
 		
-		baseInfo.setResourceTypeUri(Omv.acronym.getURI());
+		metadataBaseInfo.setResourceTypeUri(Omv.acronym.getURI());
 		
-		MdHelper.prepareGroups(includeVersion);
-		AttrGroup[] attrGroups = MdHelper.getAttrGroups();
-		baseInfo.setAttrGroups(attrGroups);
+		MdHelper_OLD.prepareGroups(includeVersion);
+		AttrGroup[] attrGroups = MdHelper_OLD.getAttrGroups();
+		metadataBaseInfo.setAttrGroups(attrGroups);
 		log.info("preparing base info ... DONE");
 	}
 
 	
 	public AttrDef refreshOptions(AttrDef attrDef) {
-		return MdHelper.refreshOptions(attrDef);
+		return MdHelper_OLD.refreshOptions(attrDef);
 	}
 
 
@@ -317,7 +318,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			//
 			// Get values from the existing ontology resource
 			//
-			for ( AttrGroup attrGroup : baseInfo.getAttrGroups() ) {
+			for ( AttrGroup attrGroup : metadataBaseInfo.getAttrGroups() ) {
 				for ( AttrDef attrDef : attrGroup.getAttrDefs() ) {
 					
 					// get value of MMI property:
@@ -383,7 +384,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			//
 			// No ontology resource. Check required attributes to report in the details:
 			//
-			for ( AttrGroup attrGroup : baseInfo.getAttrGroups() ) {
+			for ( AttrGroup attrGroup : metadataBaseInfo.getAttrGroups() ) {
 				for ( AttrDef attrDef : attrGroup.getAttrDefs() ) {
 					if ( attrDef.isRequired() && ! attrDef.isInternal() ) {
 						Property mmiProp = uriPropMap.get(attrDef.getUri());
@@ -405,7 +406,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			}
 		}
 		
-		ontologyInfoPre.setOriginalValues(originalValues);
+		ontologyInfoPre.getOntologyMetadata().setOriginalValues(originalValues);
 		
 		// associate the original base URI:
 		String uri = model.getNsPrefixURI("");
@@ -552,7 +553,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		reviewResult.setOntologyInfo(ontologyInfoPre);
 		
 		
-		Map<String, String> newValues = ontologyInfoPre.getNewValues();
+		Map<String, String> newValues = ontologyInfoPre.getOntologyMetadata().getNewValues();
 		
 		////////////////////////////////////////////
 		// check for errors
@@ -616,7 +617,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			// We need to check the shortName+orgAbbreviation combination as any changes here
 			// would imply a *new* ontology, not a new version.
 			//
-			Map<String, String> originalValues = ontologyInfoPre.getOriginalValues();
+			Map<String, String> originalValues = ontologyInfoPre.getOntologyMetadata().getOriginalValues();
 			String originalOrgAbbreviation = originalValues.get(OmvMmi.origMaintainerCode.getURI());
 			String originalShortName = originalValues.get(Omv.acronym.getURI());
 			
@@ -1032,7 +1033,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 
 		// the "new" values in the ontologyInfo are used to fill in some of the
 		// fields required by the bioportal back-end
-		Map<String, String> newValues = ontologyInfoPre.getNewValues();
+		Map<String, String> newValues = ontologyInfoPre.getOntologyMetadata().getNewValues();
 		
 		uploadResult.setUri(reviewResult.getUri());
 		
@@ -1180,147 +1181,56 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	}
 
 	
-//	private String getOntologyOwl(String ontologyUri) {
-//		
-//		URL url = new URL(ontologyUri);
-//	}
-	
-	
-	private File getLocalOntologyFile(String ontologyUri) throws Exception {
-		String ontologyUri_lpath = ontologyUri+ "?_lpath";
-		
-		URL url = new URL(ontologyUri_lpath);
-
-		InputStream is = url.openStream();
-		BufferedReader br = new BufferedReader(new InputStreamReader(is));
-		String full_path = br.readLine();
-
-		if ( full_path.startsWith("ERROR") ) {
-			String error = "Getting local path returned: " +full_path;
-			log.info(error);
-			throw new Exception(error);
-		}
-		
-		// full_path should be ok here.
-		
-		log.info("getLocalOntologyFile: local path: " +full_path);
-		
-		File file = new File(full_path);
-		
-		return file;
-	}
-	
-	
 	public OntologyInfoPre getOntologyInfoFromRegistry(String ontologyUri) {
 		OntologyInfoPre ontologyInfoPre = new OntologyInfoPre();
 		
 		
-		if ( false ) {        // TODO remove this previous mechanism
-			
-			// Note: we assume this ontmd service is located in the same server as the "ont" service.
-			// We request the local path and then directly load the ontology to obtain
-			// some of the associated attributes.
+		String error;
 
-			File file;
-			try {
-				file = getLocalOntologyFile(ontologyUri);
-			}
-			catch (Exception ex) {
-				String error = ex.getClass().getName()+ " : " +ex.getMessage();
-				log.info(error);
-				ontologyInfoPre.setError(error);
-				return ontologyInfoPre;
-			}
-			String error = prepareOntologyInfo(file, ontologyInfoPre);
-			if ( error != null ) {
-				ontologyInfoPre.setError(error);
-				return ontologyInfoPre;
-			}
-
-			
-			try {
-				ontologyInfoPre.setRdf(readRdf(file));
-			}
-			catch (Throwable e) {
-				 error = "Cannot read RDF model: " +file+ " : " +e.getMessage();
-				log.info(error);
-				ontologyInfoPre.setError(error);
-				return ontologyInfoPre;
-			}
-
-			///////////////////////////////////////////////////////////////////////////////
-			// .csv
-			String destPathCsv;
-			try {
-				destPathCsv = new URL(ontologyUri).getPath();
-				destPathCsv = destPathCsv.replaceAll("/|\\\\", "_") + ".csv";
-				File fileCsv = new File(Config.Prop.ONTMD_VOC2RDF_DIR.getValue() + destPathCsv);
-				if ( fileCsv.exists() ) {
-					ontologyInfoPre.setFullPathCsv(fileCsv.getAbsolutePath());
-				}
-				
-				if ( log.isDebugEnabled() ) {
-					log.debug("getOntologyInfoFromRegistry: fileCsv=" +fileCsv+ " exists=" +fileCsv.exists());
-				}
-
-			}
-			catch (MalformedURLException e) {
-				log.error("shouldn't happen", e);
-				ontologyInfoPre.setError(e.getMessage());
-				return ontologyInfoPre;
-			}
-			///////////////////////////////////////////////////////////////////////////////
-
+		error = prepareOntologyInfoFromUri(ontologyUri, ontologyInfoPre);
+		if ( error != null ) {
+			ontologyInfoPre.setError(error);
+			return ontologyInfoPre;
 		}
-		else { // new mechanism
-			
-			String error;
-			
+
+		// note: make sure we request the OWL format of the ontology, so adjust extension;
+		try {
+			MmiUri mmiUri = new MmiUri(ontologyUri);
+			ontologyUri = mmiUri.getOntologyUriWithExtension(".owl");
+		}
+		catch (URISyntaxException e1) {
+			error = "shouldn't happen: " +e1.getMessage();
+			log.error(error, e1);
+			ontologyInfoPre.setError(error);
+			return ontologyInfoPre;
+		}
+
+		if ( log.isDebugEnabled() ) {
+			log.debug("getOntologyInfoFromRegistry: ontologyUri=" +ontologyUri);
+		}
+
+		try {
+			URL url = new URL(ontologyUri);
+			InputStream is = url.openStream();
+			StringWriter os = new StringWriter();
+			IOUtils.copy(is, os);
+			ontologyInfoPre.setRdf(os.toString());
+
 			error = prepareOntologyInfoFromUri(ontologyUri, ontologyInfoPre);
 			if ( error != null ) {
 				ontologyInfoPre.setError(error);
 				return ontologyInfoPre;
 			}
-			
-			// note: make sure we request the OWL format of the ontology, so adjust extension;
-			try {
-				MmiUri mmiUri = new MmiUri(ontologyUri);
-				ontologyUri = mmiUri.getOntologyUriWithExtension(".owl");
-			}
-			catch (URISyntaxException e1) {
-				error = "shouldn't happen: " +e1.getMessage();
-				log.error(error, e1);
-				ontologyInfoPre.setError(error);
-				return ontologyInfoPre;
-			}
-			
-			if ( log.isDebugEnabled() ) {
-				log.debug("getOntologyInfoFromRegistry: ontologyUri=" +ontologyUri);
-			}
-			
-			try {
-				URL url = new URL(ontologyUri);
-				InputStream is = url.openStream();
-				StringWriter os = new StringWriter();
-				IOUtils.copy(is, os);
-				ontologyInfoPre.setRdf(os.toString());
-				
-				error = prepareOntologyInfoFromUri(ontologyUri, ontologyInfoPre);
-				if ( error != null ) {
-					ontologyInfoPre.setError(error);
-					return ontologyInfoPre;
-				}
-			}
-			catch (Exception e) {
-				error = "Cannot read RDF model: " +ontologyUri+ " : " +e.getMessage();
-				log.info(error);
-				ontologyInfoPre.setError(error);
-				return ontologyInfoPre;
-			}
-			
-			// CSV not prepared here.  See getData
-			
 		}
+		catch (Exception e) {
+			error = "Cannot read RDF model: " +ontologyUri+ " : " +e.getMessage();
+			log.info(error);
+			ontologyInfoPre.setError(error);
+			return ontologyInfoPre;
+		}
+
+		// CSV not prepared here.  See getData
+			
 		
 		return ontologyInfoPre;
 	}
@@ -1451,7 +1361,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		return portal.getBaseInfo();
 	}
 	
-	public List<org.mmisw.iserver.gwt.client.rpc.OntologyInfo> getAllOntologies() {
+	public List<OntologyInfo> getAllOntologies() {
 		return portal.getAllOntologies();
 	}
 
@@ -1460,5 +1370,12 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	}
 
 	
+	public MetadataBaseInfo getMetadataBaseInfo(boolean includeVersion) {
+		return portal.getMetadataBaseInfo(includeVersion);
+	}
+
+	public OntologyInfo getOntologyContents(OntologyInfo ontologyInfo) {
+		return portal.getOntologyContents(ontologyInfo);
+	}
 
 }

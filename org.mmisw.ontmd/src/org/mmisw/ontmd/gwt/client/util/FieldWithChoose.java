@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.mmisw.ontmd.gwt.client.Main;
-import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
-import org.mmisw.ontmd.gwt.client.vocabulary.Option;
+import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
+import org.mmisw.iserver.gwt.client.vocabulary.Option;
 
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;

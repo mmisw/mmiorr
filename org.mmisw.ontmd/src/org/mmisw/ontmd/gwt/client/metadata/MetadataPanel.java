@@ -2,12 +2,14 @@ package org.mmisw.ontmd.gwt.client.metadata;
 
 import java.util.Map;
 
+import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.portal.IOntologyPanel;
 import org.mmisw.ontmd.gwt.client.rpc.OntologyInfoPre;
 import org.mmisw.ontmd.gwt.client.rpc.ReviewResult;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
-import org.mmisw.ontmd.gwt.client.vocabulary.AttrGroup;
+import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
 
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.DockPanel;
@@ -92,11 +94,12 @@ private static final String INFO =
 		setWidth("800");
 		this.editing = editing;
 		
-//		this.mainPanel = mainPanel;
-		
 		int row = 0;
-		
-		container.setSize("850", "350");
+
+//		setBorderWidth(1);
+//		container.setBorderWidth(1);
+		container.setWidth("1000px");
+//		container.setSize("850px", "350px");
 		
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
@@ -124,7 +127,6 @@ private static final String INFO =
 			row++;
 		}
 
-//		container.setBorderWidth(1);
 		this.getFlexCellFormatter().setColSpan(row,0, 2);
 		this.setWidget(row, 0, container);
 		this.getFlexCellFormatter().setAlignment(row, 0, 
@@ -140,7 +142,7 @@ private static final String INFO =
 		dockPanel.add(tabPanel, DockPanel.NORTH);
 	    container.add(dockPanel, DockPanel.CENTER);
 	    
-		for ( AttrGroup attrGroup: Main.baseInfo.getAttrGroups() ) {
+		for ( AttrGroup attrGroup: Main.metadataBaseInfo.getAttrGroups() ) {
 			CellPanel groupPanel = new MetadataGroupPanel(mainPanel, attrGroup, editing);
 			tabPanel.add(groupPanel, attrGroup.getName());
 		}
@@ -204,22 +206,36 @@ private static final String INFO =
 		return enabled;
 	}
 
+	
+	public void resetToOriginalValues(OntologyInfo ontologyInfo, ReviewResult reviewResult, boolean confirm, boolean link) {
+		OntologyMetadata ontologyMetadata = ontologyInfo.getOntologyMetadata();
+		String ontologyUri = ontologyInfo.getUri();
+		resetToOriginalOrNewValues(ontologyUri, ontologyMetadata, true, reviewResult, confirm, link);
+	}
+	
 
 	public void resetToOriginalValues(OntologyInfoPre ontologyInfoPre, ReviewResult reviewResult, boolean confirm, boolean link) {
-		resetToOriginalOrNewValues(ontologyInfoPre, true, reviewResult, confirm, link);
+		OntologyMetadata ontologyMetadata = ontologyInfoPre.getOntologyMetadata();
+		String ontologyUri = ontologyInfoPre.getUri();
+		resetToOriginalOrNewValues(ontologyUri, ontologyMetadata, true, reviewResult, confirm, link);
 	}
 	
 	void resetToNewValues(OntologyInfoPre ontologyInfoPre, ReviewResult reviewResult, boolean confirm, boolean link) {
-		resetToOriginalOrNewValues(ontologyInfoPre, false, reviewResult, confirm, link);
+		OntologyMetadata ontologyMetadata = ontologyInfoPre.getOntologyMetadata();
+		String ontologyUri = ontologyInfoPre.getUri();
+		resetToOriginalOrNewValues(ontologyUri, ontologyMetadata, false, reviewResult, confirm, link);
 	}
 	
-	private void resetToOriginalOrNewValues(OntologyInfoPre ontologyInfoPre, boolean originalVals, 
+	private void resetToOriginalOrNewValues(
+			String ontologyUri, OntologyMetadata ontologyMetadata, 
+			boolean originalVals, 
 			ReviewResult reviewResult, boolean confirm, boolean link) 
 	{
+		
 		for ( int i = 0, c = tabPanel.getWidgetCount(); i < c; i++ ) {
 			Widget w = tabPanel.getWidget(i);
 			if ( w instanceof MetadataGroupPanel ) {
-				((MetadataGroupPanel) w).resetToOriginalOrNewValues(ontologyInfoPre, originalVals, confirm);
+				((MetadataGroupPanel) w).resetToOriginalOrNewValues(ontologyMetadata, originalVals, confirm);
 			}
 		}
 		
@@ -231,7 +247,7 @@ private static final String INFO =
 			}
 		}
 		else if ( ! editing ) {
-			newUri.setUri(ontologyInfoPre.getUri(), link);
+			newUri.setUri(ontologyUri, link);
 		}
 	}
 	

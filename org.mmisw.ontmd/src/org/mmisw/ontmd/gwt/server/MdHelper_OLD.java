@@ -9,9 +9,9 @@ import java.util.Map;
 
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
-import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
-import org.mmisw.ontmd.gwt.client.vocabulary.AttrGroup;
-import org.mmisw.ontmd.gwt.client.vocabulary.Option;
+import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
+import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
+import org.mmisw.iserver.gwt.client.vocabulary.Option;
 
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.vocabulary.DC;
@@ -23,8 +23,8 @@ import com.hp.hpl.jena.vocabulary.DC;
  * 
  * @author Carlos Rueda
  */
-public class MdHelper {
-	private MdHelper() { }
+public class MdHelper_OLD {
+	private MdHelper_OLD() { }
 
 	
 	public static final String RESOURCE_TYPE_TOOLTIP =

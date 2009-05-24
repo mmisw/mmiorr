@@ -7,12 +7,12 @@ import org.mmisw.ontmd.gwt.client.img.OntMdImageBundle;
 import org.mmisw.ontmd.gwt.client.metadata.MainPanel;
 import org.mmisw.ontmd.gwt.client.portal.Portal;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
-import org.mmisw.ontmd.gwt.client.rpc.BaseInfo;
+import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.ontmd.gwt.client.rpc.OntMdService;
 import org.mmisw.ontmd.gwt.client.rpc.OntMdServiceAsync;
 import org.mmisw.ontmd.gwt.client.util.Util;
 import org.mmisw.ontmd.gwt.client.voc2rdf.Voc2Rdf;
-import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
+import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -53,7 +53,7 @@ public class Main implements EntryPoint {
 	
 	static AppInfo appInfo;
 	
-	public static BaseInfo baseInfo;
+	public static MetadataBaseInfo metadataBaseInfo;
 
 	private static boolean includeLog;
 
@@ -213,13 +213,13 @@ public class Main implements EntryPoint {
 			}
 		};
 
-		log("Getting application info ...");
+		log("Main.getAppInfo: Getting application info ...");
 		ontmdService.getAppInfo(callback);
 	}
 
 	
 	private void getBaseInfo(final Map<String, String> params) {
-		AsyncCallback<BaseInfo> callback = new AsyncCallback<BaseInfo>() {
+		AsyncCallback<MetadataBaseInfo> callback = new AsyncCallback<MetadataBaseInfo>() {
 			public void onFailure(Throwable thr) {
 				removeLoadingMessage();
 				String error = thr.toString();
@@ -229,21 +229,21 @@ public class Main implements EntryPoint {
 				RootPanel.get().add(new Label(error));
 			}
 
-			public void onSuccess(BaseInfo bInfo) {
+			public void onSuccess(MetadataBaseInfo bInfo) {
 				removeLoadingMessage();
 				String error = bInfo.getError();
 				if ( error != null ) {
 					RootPanel.get().add(new Label(error));
 				}
 				else {
-					baseInfo = bInfo;
+					metadataBaseInfo = bInfo;
 					Widget mainPanel = new MainPanel(params);
 					startGui(params, mainPanel);
 				}
 			}
 		};
 
-		log("Getting base info ...");
+		log("Main.Getting base info ...");
 		ontmdService.getBaseInfo(params, callback);
 	}
 

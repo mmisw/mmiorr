@@ -5,10 +5,11 @@ import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
+import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
-import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 
@@ -28,7 +29,7 @@ public interface OntMdService extends RemoteService {
 	/**
 	 * Gets the base information (metadata attribute definitions).
 	 */
-	BaseInfo getBaseInfo(Map<String, String> params);
+	MetadataBaseInfo getBaseInfo(Map<String, String> params);
 	
 	/**
 	 * Refreshes the options of the given attribute.
@@ -104,11 +105,16 @@ public interface OntMdService extends RemoteService {
 	///////////////////////////////////////////////////////////////////////
 	// Portal
 	
-	AppInfo getPortalAppInfo();
+	public AppInfo getPortalAppInfo();
 	
-	PortalBaseInfo getPortalBaseInfo();
+	public PortalBaseInfo getPortalBaseInfo();
 	
 
 	public List<OntologyInfo> getAllOntologies();
+	
+	
+	public MetadataBaseInfo getMetadataBaseInfo(boolean includeVersion);
+	
+	public OntologyInfo getOntologyContents(OntologyInfo ontologyInfo);
 
 }

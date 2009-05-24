@@ -4,15 +4,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.portal.IOntologyPanel;
-import org.mmisw.ontmd.gwt.client.rpc.OntologyInfoPre;
 import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
 import org.mmisw.ontmd.gwt.client.util.Util;
-import org.mmisw.ontmd.gwt.client.vocabulary.AttrDef;
-import org.mmisw.ontmd.gwt.client.vocabulary.AttrGroup;
-import org.mmisw.ontmd.gwt.client.vocabulary.Option;
+import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
+import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
+import org.mmisw.iserver.gwt.client.vocabulary.Option;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CellPanel;
@@ -47,7 +47,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 	}
 	
 	
-	private IOntologyPanel mainPanel;
+	private IOntologyPanel ontologyPanel;
 	
 	private AttrGroup attrGroup;
 	
@@ -61,9 +61,10 @@ public class MetadataGroupPanel extends VerticalPanel {
 
 	private PushButton resetButton = new PushButton("Reset", new ClickListener() {
 		public void onClick(Widget sender) {
-			OntologyInfoPre ontologyInfoPre = mainPanel.getOntologyInfo();
-			if ( ontologyInfoPre != null && ontologyInfoPre.getError() == null ) {
-				resetToOriginalOrNewValues(ontologyInfoPre,true, true);
+			OntologyMetadata ontologyMetadata = ontologyPanel.getOntologyMetadata();
+			
+			if ( ontologyMetadata != null && ontologyMetadata.getError() == null ) {
+				resetToOriginalOrNewValues(ontologyMetadata,true, true);
 			}
 			else {
 				Window.alert("No ontology information available for this operation");
@@ -82,7 +83,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 
 	
 	MetadataGroupPanel(IOntologyPanel mainPanel, AttrGroup attrGroup, boolean editing) {
-		this.mainPanel = mainPanel;
+		this.ontologyPanel = mainPanel;
 		this.attrGroup = attrGroup;
 		
 		add(createForm(editing));
@@ -141,7 +142,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 			if ( editing &&  // not listBoxes if we are just viewing 
 					options.size() > 0 ) {
 				
-				if ( Main.baseInfo.getResourceTypeUri().equals(attr.getUri()) ) {
+				if ( Main.metadataBaseInfo.getResourceTypeUri().equals(attr.getUri()) ) {
 					// the special case for the "resourceType"
 					widget = resourceTypeWidget = new ResourceTypeWidget(attr, editing, true,
 						new ChangeListener () {
@@ -375,13 +376,15 @@ public class MetadataGroupPanel extends VerticalPanel {
 
 	}
 	
-	void resetToOriginalOrNewValues(OntologyInfoPre ontologyInfoPre, boolean originalVals, boolean confirm) {
+	void resetToOriginalOrNewValues(OntologyMetadata ontologyMetadata, boolean originalVals, boolean confirm) {
 		if ( confirm && ! Window.confirm("This action will replace the current values in this section") ) {
 			return;
 		}
 		resetToEmpty();
 		Map<String, String> originalValues = 
-			originalVals ? ontologyInfoPre.getOriginalValues() :  ontologyInfoPre.getNewValues();
+			originalVals 
+			? ontologyMetadata.getOriginalValues() 
+			: ontologyMetadata.getNewValues();
 		
 		for ( Elem elem : widgets.values() ) {
 			String uri = elem.attr.getUri();
@@ -394,7 +397,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 			Main.log("resetToOriginalOrNewValues: uri: " +uri+ " = " +value);
 
 			// Special case: Omv.acronym/OmvMmi.shortNameUri
-			if ( Main.baseInfo.getResourceTypeUri().equals(uri) ) {
+			if ( Main.metadataBaseInfo.getResourceTypeUri().equals(uri) ) {
 				List<AttrDef> relatedAttrs = elem.attr.getRelatedAttrs();
 				assert relatedAttrs != null && relatedAttrs.size() > 0 ;
 				String relatedUri = relatedAttrs.get(0).getUri();

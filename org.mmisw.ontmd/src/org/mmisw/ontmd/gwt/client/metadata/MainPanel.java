@@ -3,7 +3,7 @@ package org.mmisw.ontmd.gwt.client.metadata;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.mmisw.ontmd.gwt.client.DataPanel;
+import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
 import org.mmisw.ontmd.gwt.client.LoginListener;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.UserPanel;
@@ -49,9 +49,6 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 
 	// created depending on type of interface: editing or viewwing
 	private MetadataPanel metadataPanel;
-	
-	// created ONLY in viewing mode
-	private DataPanel dataPanel;
 	
 	
 	private UserPanel userInfoPanel = new UserPanel(this);
@@ -117,6 +114,11 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 	
 	public OntologyInfoPre getOntologyInfo() {
 		return ontologyInfoPre;
+	}
+	
+	
+	public OntologyMetadata getOntologyMetadata() {
+		return ontologyInfoPre.getOntologyMetadata();
 	}
 
 
@@ -271,11 +273,8 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 		// create metadata panel for vieweing:
 		metadataPanel = new MetadataPanel(this, false);
 
-		dataPanel = new DataPanel(this, false);
-		
 		CellPanel panel = new VerticalPanel();
 		panel.add(metadataPanel);
-		panel.add(dataPanel);
 		
 		return panel;
 //	    return metadataPanel;
@@ -313,10 +312,6 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 				else {
 					boolean link = !editRequestedOntology;
 					metadataPanel.resetToOriginalValues(ontologyInfoPre, null, false, link);
-					
-					if ( dataPanel != null ) {
-						dataPanel.updateWith(ontologyInfoPre);
-					}
 				}
 			}
 		};
@@ -354,10 +349,6 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 				}
 				else {
 					metadataPanel.resetToOriginalValues(ontologyInfoPre, null, false, false);
-					
-					if ( dataPanel != null ) {
-						dataPanel.updateWith(ontologyInfoPre);
-					}
 				}
 			}
 		};
@@ -487,7 +478,7 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 		}
 		
 		// Ok, put the new values in the ontologyInfo object:
-		ontologyInfoPre.setNewValues(newValues);
+		ontologyInfoPre.getOntologyMetadata().setNewValues(newValues);
 		for ( String uri : newValues.keySet() ) {
 			String value = newValues.get(uri);
 			newValues.put(uri, value);
@@ -613,7 +604,7 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 		}
 		
 		// Ok, put the values in the ontologyInfo object:
-		ontologyInfoPre.setNewValues(newValues);
+		ontologyInfoPre.getOntologyMetadata().setNewValues(newValues);
 		for ( String uri : newValues.keySet() ) {
 			String value = newValues.get(uri);
 			newValues.put(uri, value);
@@ -710,9 +701,6 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 		resetAllButton.setEnabled(enabled);
 		if ( metadataPanel != null ) {
 			metadataPanel.enable(enabled);
-		}
-		if ( dataPanel != null ) {
-			dataPanel.enable(enabled);
 		}
 	}
 

@@ -14,7 +14,7 @@ import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.ontmd.gwt.server.Config;
 import org.mmisw.ontmd.gwt.server.JenaUtil2;
-import org.mmisw.ontmd.gwt.server.MdHelper;
+import org.mmisw.iserver.core.MdHelper;
 import org.mmisw.voc2rdf.transf.StringManipulationUtil;
 
 import com.hp.hpl.jena.ontology.DatatypeProperty;

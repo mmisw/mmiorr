@@ -3,6 +3,19 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-05-23
+	- Moved most of metadata management to iserver ontmd module.
+	- Integrated retrieval of metadata and data: operation getOntologyContents
+	Basic functionality in place. Note that all contents are retrieven in a single call;
+	TODO: implement a paging mechanism.
+	
+	Next: display data in appropriate format according to "type" of ontology; we basically
+	have the following cases: vocabulary (a la voc2rdf), mapping (a la vine), and the others.
+	I'm planning on using the omv:usedOntologyEngineeringTool property to explicitly
+	assign it to ontologies created by voc2rdf and vine (I just created the related resources
+	in the Omv and OmvMmi vocabularies (see ont module).
+	
+	
 2009-05-22
 	- Author subtree now includes all usernames (if user is logged)
 	

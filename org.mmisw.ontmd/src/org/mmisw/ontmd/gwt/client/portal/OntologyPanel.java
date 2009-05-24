@@ -1,5 +1,7 @@
 package org.mmisw.ontmd.gwt.client.portal;
 
+import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
 import org.mmisw.ontmd.gwt.client.DataPanel;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.metadata.MetadataPanel;
@@ -28,22 +30,22 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	private DataPanel dataPanel;
 	
 	
-	/** URI of requested ontology from a parameter, if any. */
-	private String requestedOntologyUri;
+	/** Ontology to be dispatched */
+	private OntologyInfo ontologyInfo;
 	
 	
 	private OntologyInfoPre ontologyInfoPre;
 	
 	
-	public OntologyInfoPre getOntologyInfo() {
-		return ontologyInfoPre;
+	public OntologyMetadata getOntologyMetadata() {
+		return ontologyInfoPre.getOntologyMetadata();
 	}
 
 
-	public OntologyPanel(String requestedOntologyUri) {
+	public OntologyPanel(OntologyInfo ontologyInfo) {
 		super();
 		
-		this.requestedOntologyUri = requestedOntologyUri;
+		this.ontologyInfo = ontologyInfo;
 		
 //		container.setSize("800px", "450px");
 		DecoratorPanel decPanel = new DecoratorPanel();
@@ -53,7 +55,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	    enable(false);
 	    
 
-	    if ( requestedOntologyUri != null ) {
+	    if ( ontologyInfo != null ) {
 	    	container.add(prepareViewingInterface());
 	    }
 	    
@@ -62,9 +64,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	
 	
 	private void dispatchInitialRequest() {
-	    if ( requestedOntologyUri != null ) {
-	    	getOntologyInfoFromRegistry(requestedOntologyUri);
-	    }
+		getOntologyContents();
 	}
 	
 
@@ -73,18 +73,18 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		// create metadata panel for vieweing:
 		metadataPanel = new MetadataPanel(this, false);
 
-		dataPanel = new DataPanel(this, false);
+		dataPanel = new DataPanel(false);
 		
 		CellPanel panel = new VerticalPanel();
 		panel.add(metadataPanel);
 		panel.add(dataPanel);
 		
 		return panel;
-//	    return metadataPanel;
 	}
 	
-	private void getOntologyInfoFromRegistry(String ontologyUri) {
-		AsyncCallback<OntologyInfoPre> callback = new AsyncCallback<OntologyInfoPre>() {
+	private void getOntologyContents() {
+		
+		AsyncCallback<OntologyInfo> callback = new AsyncCallback<OntologyInfo>() {
 			public void onFailure(Throwable thr) {
 				String error = thr.getClass().getName()+ ": " +thr.getMessage();
 				while ( (thr = thr.getCause()) != null ) {
@@ -93,25 +93,25 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 				Window.alert(error);
 			}
 
-			public void onSuccess(OntologyInfoPre ontologyInfoPre) {
-				String error = ontologyInfoPre.getError();
+			public void onSuccess(OntologyInfo ontologyInfo) {
+				String error = ontologyInfo.getError();
 				if ( error != null ) {
 					Window.alert(error);
 				}
 				else {
 					boolean link = true;
-					metadataPanel.resetToOriginalValues(ontologyInfoPre, null, false, link);
+					metadataPanel.resetToOriginalValues(ontologyInfo, null, false, link);
 					
 					if ( dataPanel != null ) {
-						dataPanel.updateWith(ontologyInfoPre);
+						dataPanel.updateWith(ontologyInfo);
 					}
 				}
 			}
 		};
 
-		metadataPanel.showProgressMessage("Loading metadata. Please wait...");
-		Main.log("getOntologyInfoFromRegistry: ontologyUri = " +ontologyUri);
-		Main.ontmdService.getOntologyInfoFromRegistry(ontologyUri, callback);
+		metadataPanel.showProgressMessage("Loading contents. Please wait...");
+		Main.log("getOntologyContents: ontologyUri = " +ontologyInfo.getUri());
+		Main.ontmdService.getOntologyContents(ontologyInfo, callback);
 	}
 
 

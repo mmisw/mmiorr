@@ -1,6 +1,6 @@
 package org.mmisw.ontmd.gwt.client.rpc;
 
-import java.util.Map;
+import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -35,37 +35,28 @@ public class OntologyInfoPre implements IsSerializable {
 	private String ontologyUserId = null;
 
 	
-	/** original values -- once assigned, shouldn't be changed */
-	private Map<String,String> originalValues;
-
 	
-	/** New values assigned during editing; these are values
-	 * used by the review process
+	private OntologyMetadata ontologyMetadata;
+	
+	/**
+	 * @return the ontologyMetadata
 	 */
-	private Map<String,String> newValues;
-	
-	
-	public OntologyInfoPre () {
+	public OntologyMetadata getOntologyMetadata() {
+		if ( ontologyMetadata == null ) {
+			ontologyMetadata = new OntologyMetadata();
+		}
+		return ontologyMetadata;
+	}
+
+
+
+
+
+	public OntologyInfoPre() {
 	}
 	
-	public Map<String, String> getOriginalValues() {
-		return originalValues;
-	}
 
 
-	public void setOriginalValues(Map<String, String> values) {
-		this.originalValues = values;
-	}
-
-	
-	public Map<String, String> getNewValues() {
-		return newValues;
-	}
-
-
-	public void setNewValues(Map<String, String> values) {
-		this.newValues = values;
-	}
 
 	
 	public void setUri(String uri) {
