@@ -289,6 +289,8 @@ public class MiscDispatcher {
 	 * List all ontologies (versioned form) for use by the iserver module.
 	 */
 	void listAll(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+		final String sep = "'|'";
 		
 		Connection _con = null;
 		try {
@@ -331,14 +333,17 @@ public class MiscDispatcher {
 	        		
 	        		
 	        		// always VERSIONED form:
-	        		out.println(ontologyUri
-	        				+ SEP +display_label
-	        				+ SEP +type
-	        				+ SEP +user_id
-	        				+ SEP +contact_name
-	        				+ SEP +version_number
-	        				+ SEP +date_created
-	        				+ SEP +username
+	        		out.println(
+	        				"'"
+	        				+ ontologyUri
+	        				+ sep +display_label
+	        				+ sep +type
+	        				+ sep +user_id
+	        				+ sep +contact_name
+	        				+ sep +version_number
+	        				+ sep +date_created
+	        				+ sep +username
+	        				+ "'"
 	        		);
 	        		
 	        	}
