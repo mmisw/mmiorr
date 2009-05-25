@@ -29,11 +29,16 @@ public interface IServer {
 	
 	
 	/**
-	 * Gets the vocabularies.
-	 * Only the basic information about each ontology is obtained.
-	 * Call {@link #getEntities(OntologyInfo)} to obtain the entities of an ontology.
+	 * Gets all (latest versions of the) ontologies in the registry.
+	 * 
+	 * <p>
+	 * Note that the all corresponding URIs are in versioned form.
+	 * 
+	 * @param includePriorVersions true to include the prior versions for each element
+	 * @return
+	 * @throws Exception
 	 */
-	List<OntologyInfo> getAllOntologies();
+	List<OntologyInfo> getAllOntologies(boolean includePriorVersions) throws Exception;
 	
 	
 	/**

@@ -1,6 +1,7 @@
 package org.mmisw.iserver.gwt.client.rpc;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,16 +24,6 @@ public class OntologyInfo implements Serializable {
 	
 	private OntologyMetadata ontologyMetadata;
 	
-	/**
-	 * @return the ontologyMetadata
-	 */
-	public OntologyMetadata getOntologyMetadata() {
-		if ( ontologyMetadata == null ) {
-			ontologyMetadata = new OntologyMetadata();
-		}
-		return ontologyMetadata;
-	}
-
 	private List<EntityInfo> entities;
 	
 	
@@ -47,6 +38,9 @@ public class OntologyInfo implements Serializable {
 	private String versionNumber;
 
 	private String dateCreated;
+	
+	
+	private List<OntologyInfo> priorVersions;
 
 	
 	public char getCode() {
@@ -164,5 +158,25 @@ public class OntologyInfo implements Serializable {
 		this.username = username;
 	}
 
+	/**
+	 * @return the ontologyMetadata
+	 */
+	public OntologyMetadata getOntologyMetadata() {
+		if ( ontologyMetadata == null ) {
+			ontologyMetadata = new OntologyMetadata();
+		}
+		return ontologyMetadata;
+	}
 	
+	/**
+	 * @return the priorVersions
+	 */
+	public List<OntologyInfo> getPriorVersions() {
+		if ( priorVersions == null ) {
+			priorVersions = new ArrayList<OntologyInfo>();
+		}
+		return priorVersions;
+	}
+
+
 }

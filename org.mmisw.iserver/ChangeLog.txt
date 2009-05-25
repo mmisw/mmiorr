@@ -2,6 +2,12 @@ org.mmisw.iserver
 Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 
+2009-05-24
+	- getAllOntologies now return only the latest versions of all ontologies as the main entries
+	  of the list; and, optionally, the prior versiones will be included in the internal property
+	  priorVersions.
+	  
+	  
 2009-05-23
 	- included most of metadata management here (from ontmd module)
 

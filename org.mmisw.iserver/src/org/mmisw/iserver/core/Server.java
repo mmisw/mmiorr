@@ -2,7 +2,11 @@ package org.mmisw.iserver.core;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
@@ -32,8 +36,6 @@ public class Server implements IServer {
 	
 	private static final String ONT = "http://mmisw.org/ont";
 	private static final String LISTALL = ONT + "?listall";
-
-	private static List<OntologyInfo> onts;
 
 	
 	private final AppInfo appInfo = new AppInfo("MMISW IServer");
@@ -117,26 +119,31 @@ public class Server implements IServer {
 	/**
 	 * 
 	 */
-	public List<OntologyInfo> getAllOntologies() {
-		onts = new ArrayList<OntologyInfo>();
+	public List<OntologyInfo> getAllOntologies(boolean includePriorVersions) throws Exception {
+		
+		//
+		// strategy
+		// - for each unversioned URI, collect all related, versioned ontologies 
+		// - then populate list to be returned with the latest version of each group
+		// - if includePriorVersions is true, add the prior versions to each main entry
+		//
+		
+		// unversionedUri -> list of versioned URIs
+		Map<String, List<OntologyInfo>> unversionedToVersioned = new LinkedHashMap<String, List<OntologyInfo>>();
 		
 		String uri = LISTALL;
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("getAsString. uri= " +uri);
 		}
-		String response;
-		try {
-			response = getAsString(uri, Integer.MAX_VALUE);
-		}
-		catch (Exception e) {
-			// TODO A notification mechanism (like in ontmd) for exceptions
-			e.printStackTrace();
-			return onts;
-		}
+
+		String response = getAsString(uri, Integer.MAX_VALUE);
+		
 		String[] lines = response.split("\n|\r\n|\r");
 		for ( String line : lines ) {
-			String[] toks = line.trim().split(" , ");
+			// remove leading and trailing quote:
+			line = line.replaceAll("^'|'$", "");
+			String[] toks = line.trim().split("'\\|'");
 			OntologyInfo ontologyInfo = new OntologyInfo();
 			String ontologyUri = toks[0];
 			
@@ -151,17 +158,56 @@ public class Server implements IServer {
 			ontologyInfo.setDateCreated(toks[6]);
 			ontologyInfo.setUsername(toks[7]);
 			
-
+			String unversionedUri;
+			
 			try {
 				MmiUri mmiUri = new MmiUri(ontologyUri);
 				ontologyInfo.setAuthority(mmiUri.getAuthority());
+				
+				unversionedUri = mmiUri.copyWithVersion(null).getOntologyUri();
+				
 			}
 			catch (URISyntaxException e) {
+				// shouldn't happen.
 				log.error("error creating MmiUri from: " +ontologyUri, e);
+				continue;
 			}
 
+			
+			List<OntologyInfo> versionedList = unversionedToVersioned.get(unversionedUri);
+			if ( versionedList == null ) {
+				versionedList = new ArrayList<OntologyInfo>();
+				unversionedToVersioned.put(unversionedUri, versionedList);
+			}
+			versionedList.add(ontologyInfo);
+			
+			
+		}
+		
+		List<OntologyInfo> onts = new ArrayList<OntologyInfo>();
+		
+		for ( List<OntologyInfo> versionedList : unversionedToVersioned.values() ) {
+			// sort in descending versionNumber
+			Collections.sort(versionedList, new Comparator<OntologyInfo>() {
+				public int compare(OntologyInfo arg0, OntologyInfo arg1) {
+					return - arg0.getVersionNumber().compareTo(arg1.getVersionNumber());
+				}
+			});
+			
+			// extract first element, ie., most recent ontology version
+			OntologyInfo ontologyInfo = versionedList.remove(0);
+
+			// if requested, include prior versions in the priorVersions property 
+			if ( includePriorVersions ) {
+				ontologyInfo.getPriorVersions().addAll(versionedList);
+			}
+			
+			// add it to returned list:
 			onts.add(ontologyInfo);
 		}
+		
+		
+
 		
 		return onts;
 	}
