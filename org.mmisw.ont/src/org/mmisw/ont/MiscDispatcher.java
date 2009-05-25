@@ -298,7 +298,8 @@ public class MiscDispatcher {
 			String query = 
 				"select o.urn, o.display_label, o.user_id, o.contact_name, o.version_number, o.date_created, u.username " +
 				"from v_ncbo_ontology o, ncbo_user u " +
-				"where o.user_id = u.id";
+				"where o.user_id = u.id " +
+				"order by o.ontology_id, o.version_number";
 			
 			ResultSet rs = _stmt.executeQuery(query);
 			

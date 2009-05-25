@@ -4,6 +4,9 @@ $Id$
 
 ChangeLog
 
+2009-05-24
+	- listall: order by o.ontology_id, o.version_number
+	
 2009-05-23
 	- Omv: added: usedOntologyEngineeringTool
 	- OmvMmi: added: voc2rdf, vine
