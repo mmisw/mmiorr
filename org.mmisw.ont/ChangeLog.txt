@@ -5,7 +5,8 @@ $Id$
 ChangeLog
 
 2009-05-24
-	- listall: order by o.ontology_id, o.version_number
+	- listall: order by o.ontology_id, o.version_number.  The ontology URIs are shown in
+	  versioned form.
 	
 2009-05-23
 	- Omv: added: usedOntologyEngineeringTool

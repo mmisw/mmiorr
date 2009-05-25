@@ -286,7 +286,7 @@ public class MiscDispatcher {
 	
 	
 	/**
-	 * List all entries for use by the iserver
+	 * List all ontologies (versioned form) for use by the iserver module.
 	 */
 	void listAll(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
@@ -330,10 +330,8 @@ public class MiscDispatcher {
 	        		}
 	        		
 	        		
-	        		String unversionedOntologyUri = mmiUri.copyWithVersion(null).toString();
-
-	        		// always add unversioned one:
-	        		out.println(unversionedOntologyUri
+	        		// always VERSIONED form:
+	        		out.println(ontologyUri
 	        				+ SEP +display_label
 	        				+ SEP +type
 	        				+ SEP +user_id
