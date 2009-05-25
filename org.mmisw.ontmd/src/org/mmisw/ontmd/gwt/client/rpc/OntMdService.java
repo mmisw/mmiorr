@@ -110,7 +110,7 @@ public interface OntMdService extends RemoteService {
 	public PortalBaseInfo getPortalBaseInfo();
 	
 
-	public List<OntologyInfo> getAllOntologies();
+	public List<OntologyInfo> getAllOntologies(boolean includePriorVersions);
 	
 	
 	public MetadataBaseInfo getMetadataBaseInfo(boolean includeVersion);

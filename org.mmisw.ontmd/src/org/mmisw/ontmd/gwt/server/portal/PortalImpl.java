@@ -66,8 +66,8 @@ public class PortalImpl  {
 	
 	
 	
-	public List<OntologyInfo> getAllOntologies() {
-		return iserver.getAllOntologies();
+	public List<OntologyInfo> getAllOntologies(boolean includePriorVersions) throws Exception {
+		return iserver.getAllOntologies(includePriorVersions);
 	}
 	
 	

@@ -92,6 +92,8 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	private static final Pattern VERSION_PATTERN = 
 				Pattern.compile("^\\d{4}(\\d{2}(\\d{2})?)?(T\\d{2})?(\\d{2}(\\d{2})?)?$");
 
+	private static final List<OntologyInfo> EMPTY_ONTOLOGY_INFO_LIST = new ArrayList<OntologyInfo>();
+
 	
 	private final Log log = LogFactory.getLog(OntMdServiceImpl.class);
 	
@@ -1361,8 +1363,14 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		return portal.getBaseInfo();
 	}
 	
-	public List<OntologyInfo> getAllOntologies() {
-		return portal.getAllOntologies();
+	public List<OntologyInfo> getAllOntologies(boolean includePriorVersions) {
+		try {
+			return portal.getAllOntologies(includePriorVersions);
+		}
+		catch (Exception e) {
+			log.error("error getting list of ontologies", e);
+			return EMPTY_ONTOLOGY_INFO_LIST;
+		}
 	}
 
 	public List<EntityInfo> getEntities(String ontologyUri) {

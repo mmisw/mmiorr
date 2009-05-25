@@ -33,7 +33,7 @@ public class OntologyTable extends FlexTable {
 
 	private HTML nameHeaderHtml = new HTML("Name");
 	private HTML authorHeaderHtml = new HTML("Author");
-	private HTML dateHeaderHtml = new HTML("Date");
+	private HTML dateHeaderHtml = new HTML("Version");
 	
 	private String sortColumn = "name";
 	
@@ -51,9 +51,9 @@ public class OntologyTable extends FlexTable {
 				s1 = o1.getContactName();
 				s2 = o2.getContactName();
 			}
-			else if ( sortColumn.equalsIgnoreCase("date") ) {
-				s1 = o1.getDateCreated();
-				s2 = o2.getDateCreated();
+			else if ( sortColumn.equalsIgnoreCase("version") ) {
+				s1 = o1.getVersionNumber();
+				s2 = o2.getVersionNumber();
 			}
 			else {
 				s1 = o1.getDisplayLabel();
@@ -176,16 +176,17 @@ public class OntologyTable extends FlexTable {
 			
 			String name = oi.getDisplayLabel();
 			String uri = oi.getUri();
+			String unversionedUri = oi.getUnversionedUri();
 			String author = oi.getContactName();
-			String date = oi.getDateCreated();
+			String version = oi.getVersionNumber();
 			
-			String tooltip = uri;
+			String tooltip = unversionedUri;
 			
 			Widget nameWidget;
 			
 			if ( HYPERLINK ) {
-				PortalMainPanel.historyTokenMap.put(uri, oi);
-				Hyperlink hlink = new Hyperlink(name, uri);
+				PortalMainPanel.historyTokenMap.put(unversionedUri, oi);
+				Hyperlink hlink = new Hyperlink(name, unversionedUri);
 				nameWidget = hlink;
 			}
 			else {
@@ -193,8 +194,7 @@ public class OntologyTable extends FlexTable {
 
 				HTML html = new HTML("<a target=\"_blank\" href=\"" +link+ "\">" +name+ "</a>");
 				if ( loginResult != null ) {
-					// TODO show username instead of userId
-					tooltip += " (uploaded by " +oi.getUserId()+ ")";
+					tooltip += " (uploaded by " +oi.getUsername()+ ")";
 				}
 				nameWidget = html;
 			}
@@ -212,7 +212,7 @@ public class OntologyTable extends FlexTable {
 					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 			);
 			
-			flexPanel.setWidget(row, 2, new Label(date));
+			flexPanel.setWidget(row, 2, new Label(version));
 			flexPanel.getFlexCellFormatter().setAlignment(row, 2, 
 					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 			);

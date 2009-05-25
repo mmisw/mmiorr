@@ -3,10 +3,18 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-05-24
+	- Per update in iserver module, ontology browse list now shows only the latest versions;
+	  each entry contains the prior versions of the ontology, but these are not shown yet.
+	  
+	  Note that unversioned URIs should be shown in general for the UI in the read-only mode;
+	  For editing, it should show versioned URIs.
+	   
+
 2009-05-23
 	- Moved most of metadata management to iserver ontmd module.
 	- Integrated retrieval of metadata and data: operation getOntologyContents
-	Basic functionality in place. Note that all contents are retrieven in a single call;
+	Basic functionality in place. Note that all contents are retrieved in a single call;
 	TODO: implement a paging mechanism.
 	
 	Next: display data in appropriate format according to "type" of ontology; we basically

@@ -23,6 +23,10 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public class Portal {
 
+	// for getAllOntologies
+	boolean includePriorVersions = true;
+
+
 	static String baseUrl;
 
 	public static AppInfo appInfo = new AppInfo("MMI Portal");
@@ -81,7 +85,7 @@ public class Portal {
 	
 	private void getAllOntologies(final Map<String, String> params) {
 		
-		Main.log("Portal.getAllOntologies ... ...");
+		Main.log("Portal.getAllOntologies, includePriorVersions= " +includePriorVersions+ " ...");
 		AsyncCallback<List<OntologyInfo>> callback = new AsyncCallback<List<OntologyInfo>>() {
 
 			public void onFailure(Throwable thr) {
@@ -95,7 +99,7 @@ public class Portal {
 			}
 			
 		};
-		Main.ontmdService.getAllOntologies(callback );
+		Main.ontmdService.getAllOntologies(includePriorVersions, callback );
 	}
 	
 	private void startApplication(final Map<String, String> params) {
