@@ -3,6 +3,10 @@ Carlos Rueda - MMI / MBARI
 
 ChangeLog
 
+2009-05-24
+	- minor updates per changes in iserver
+	(note that this project may be eventually be merged into the main portal)
+	
 2009-05-13
 	Extracted several server operations into a separate new module org.mmisw.iserver, 
 	which I'm starting to also use to support the portal interface and eventually 

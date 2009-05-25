@@ -5,16 +5,12 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.IServer;
 import org.mmisw.iserver.core.Server;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
-import org.mmisw.vine.core.Util;
 import org.mmisw.vine.gwt.client.rpc.RelationInfo;
 import org.mmisw.vine.gwt.client.rpc.VineService;
 
@@ -31,11 +27,11 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class VineServiceImpl extends RemoteServiceServlet implements VineService {
 	private static final long serialVersionUID = 1L;
 	
-	private static final String ONT = "http://mmisw.org/ont";
-	private static final String VOCABS = ONT + "?vocabs";
+//	private static final String ONT = "http://mmisw.org/ont";
+//	private static final String VOCABS = ONT + "?vocabs";
 //	private static final String MAPPINGS = ONT + "?mappings";
 
-	private static List<OntologyInfo> onts;
+	private static final List<OntologyInfo> EMPTY_ONTOLOGY_INFO_LIST = new ArrayList<OntologyInfo>();
 
 	
 	private final AppInfo appInfo = new AppInfo("Web VINE");
@@ -85,9 +81,13 @@ public class VineServiceImpl extends RemoteServiceServlet implements VineService
 	 * 
 	 */
 	public List<OntologyInfo> getAllOntologies() {
-		onts = iserver.getAllOntologies();
-	
-		return onts;
+		try {
+			return iserver.getAllOntologies(false);
+		}
+		catch (Exception e) {
+			log.error("error getting list of ontologies", e);
+			return EMPTY_ONTOLOGY_INFO_LIST;
+		}
 	}
 	
 	public OntologyInfo getEntities(OntologyInfo ontologyInfo) {
