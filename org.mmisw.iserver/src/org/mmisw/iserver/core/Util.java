@@ -368,7 +368,14 @@ public class Util {
 			Iterator<?> varNames = sol.varNames();
 			while ( varNames.hasNext() ) {
 				String varName = String.valueOf(varNames.next());
-				String varValue = String.valueOf(sol.get(varName));
+
+				RDFNode rdfNode = sol.get(varName);
+				
+				if ( rdfNode.isAnon() ) {
+					continue;
+				}
+				
+				String varValue = String.valueOf(rdfNode);
 				
 				if ( varValue == null ) {
 					continue;
@@ -444,7 +451,14 @@ public class Util {
 			Iterator<?> varNames = sol.varNames();
 			while ( varNames.hasNext() ) {
 				String varName = String.valueOf(varNames.next());
-				String varValue = String.valueOf(sol.get(varName));
+
+				RDFNode rdfNode = sol.get(varName);
+				
+				if ( rdfNode.isAnon() ) {
+					continue;
+				}
+				
+				String varValue = String.valueOf(rdfNode);
 				
 				if ( varValue == null ) {
 					continue;
@@ -520,8 +534,14 @@ public class Util {
 			Iterator<?> varNames = sol.varNames();
 			while ( varNames.hasNext() ) {
 				String varName = String.valueOf(varNames.next());
-				String entityUri = String.valueOf(sol.get(varName));
 				
+				RDFNode rdfNode = sol.get(varName);
+				
+				if ( rdfNode.isAnon() ) {
+					continue;
+				}
+				
+				String entityUri = String.valueOf(rdfNode);
 				if ( entityUri == null ) {
 					continue;
 				}
