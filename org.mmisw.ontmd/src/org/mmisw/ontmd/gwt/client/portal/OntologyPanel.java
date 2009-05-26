@@ -2,7 +2,7 @@ package org.mmisw.ontmd.gwt.client.portal;
 
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
-import org.mmisw.ontmd.gwt.client.DataPanel;
+import org.mmisw.ontmd.gwt.client.ViewDataPanel;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.metadata.MetadataPanel;
 import org.mmisw.ontmd.gwt.client.rpc.OntologyInfoPre;
@@ -27,7 +27,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	private MetadataPanel metadataPanel;
 	
 	// created ONLY in viewing mode
-	private DataPanel dataPanel;
+	private ViewDataPanel viewDataPanel;
 	
 	
 	/** Ontology to be dispatched */
@@ -73,11 +73,11 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		// create metadata panel for vieweing:
 		metadataPanel = new MetadataPanel(this, false);
 
-		dataPanel = new DataPanel(false);
+		viewDataPanel = new ViewDataPanel();
 		
 		CellPanel panel = new VerticalPanel();
 		panel.add(metadataPanel);
-		panel.add(dataPanel);
+		panel.add(viewDataPanel);
 		
 		return panel;
 	}
@@ -102,8 +102,8 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 					boolean link = true;
 					metadataPanel.resetToOriginalValues(ontologyInfo, null, false, link);
 					
-					if ( dataPanel != null ) {
-						dataPanel.updateWith(ontologyInfo);
+					if ( viewDataPanel != null ) {
+						viewDataPanel.updateWith(ontologyInfo);
 					}
 				}
 			}
@@ -120,8 +120,8 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		if ( metadataPanel != null ) {
 			metadataPanel.enable(enabled);
 		}
-		if ( dataPanel != null ) {
-			dataPanel.enable(enabled);
+		if ( viewDataPanel != null ) {
+			viewDataPanel.enable(enabled);
 		}
 	}
 

@@ -3,6 +3,12 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-05-25
+	- Different types of ontology data are now handled, see ViewDataPanel:
+		Vocabulary: for each class in the ontology, a table of corresponding datatype properties is shown.
+		Mapping: not dispatched yet
+		"Other": a synopsis of the classes, properties, and individuals is shown.
+	
 2009-05-24
 	- Per update in iserver module, ontology browse list now shows only the latest versions;
 	  each entry contains the prior versions of the ontology, but these are not shown yet.

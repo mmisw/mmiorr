@@ -29,11 +29,15 @@ public class OntologyTable extends FlexTable {
 	private static final boolean HYPERLINK = true;
 	private List<OntologyInfo> ontologyInfos;
 	private LoginResult loginResult;
+	
+	private boolean isAdmin = false;
+	
 	private final FlexTable flexPanel = this;
 
 	private HTML nameHeaderHtml = new HTML("Name");
 	private HTML authorHeaderHtml = new HTML("Author");
-	private HTML dateHeaderHtml = new HTML("Version");
+	private HTML versionHeaderHtml = new HTML("Version");
+	private HTML submitterHeaderHtml = new HTML("Submitter");
 	
 	private String sortColumn = "name";
 	
@@ -54,6 +58,10 @@ public class OntologyTable extends FlexTable {
 			else if ( sortColumn.equalsIgnoreCase("version") ) {
 				s1 = o1.getVersionNumber();
 				s2 = o2.getVersionNumber();
+			}
+			else if ( sortColumn.equalsIgnoreCase("submitter") ) {
+				s1 = o1.getUsername();
+				s2 = o2.getUsername();
 			}
 			else {
 				s1 = o1.getDisplayLabel();
@@ -88,13 +96,14 @@ public class OntologyTable extends FlexTable {
 	OntologyTable() {
 		super();
 		
-//		flexPanel.setBorderWidth(1);
+		flexPanel.setBorderWidth(1);
 		flexPanel.setWidth("100%");
 		flexPanel.setStylePrimaryName("OntologyTable");
 		
 		nameHeaderHtml.addClickListener(columnHeaderClickListener);
 		authorHeaderHtml.addClickListener(columnHeaderClickListener);
-		dateHeaderHtml.addClickListener(columnHeaderClickListener);
+		versionHeaderHtml.addClickListener(columnHeaderClickListener);
+		submitterHeaderHtml.addClickListener(columnHeaderClickListener);
 		
 		prepareHeader();
 	}
@@ -133,10 +142,17 @@ public class OntologyTable extends FlexTable {
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 
-		flexPanel.setWidget(row, 2, dateHeaderHtml);
+		flexPanel.setWidget(row, 2, versionHeaderHtml);
 		flexPanel.getFlexCellFormatter().setAlignment(row, 2, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
+
+		if ( isAdmin ) {
+			flexPanel.setWidget(row, 3, submitterHeaderHtml);
+			flexPanel.getFlexCellFormatter().setAlignment(row, 3, 
+					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+			);
+		}
 
 		row++;
 	}
@@ -144,6 +160,7 @@ public class OntologyTable extends FlexTable {
 	void setOntologyInfos(final List<OntologyInfo> ontologyInfos, LoginResult loginResult) {
 		this.ontologyInfos = ontologyInfos;
 		this.loginResult = loginResult;
+		this.isAdmin = loginResult != null && loginResult.isAdministrator();
 		
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
@@ -193,14 +210,10 @@ public class OntologyTable extends FlexTable {
 				String link = createLink(uri);
 
 				HTML html = new HTML("<a target=\"_blank\" href=\"" +link+ "\">" +name+ "</a>");
-				if ( loginResult != null ) {
-					tooltip += " (uploaded by " +oi.getUsername()+ ")";
-				}
 				nameWidget = html;
 			}
-			
+
 			nameWidget.setTitle(tooltip);
-			
 			
 			flexPanel.setWidget(row, 0, nameWidget);
 			flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
@@ -216,6 +229,15 @@ public class OntologyTable extends FlexTable {
 			flexPanel.getFlexCellFormatter().setAlignment(row, 2, 
 					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 			);
+			
+			if ( isAdmin ) {
+				flexPanel.setWidget(row, 3, new Label(oi.getUsername()));
+				flexPanel.getFlexCellFormatter().setAlignment(row, 3, 
+						HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+				);
+			}
+
+
 			row++;
 		}
 

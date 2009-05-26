@@ -39,7 +39,9 @@ public class LoginResult extends BaseResult implements IsSerializable {
 	 * @return true if the role of this user indicates administrator
 	 */
 	public boolean isAdministrator() {
-		return userRole != null && userRole.toLowerCase().indexOf("administrator") >= 0 ;
+		return (userRole != null && userRole.toLowerCase().indexOf("administrator") >= 0 )
+		    || "orr".equalsIgnoreCase(userName)
+		;
 	}
 	/**
 	 * @param userRole the userRole to set
