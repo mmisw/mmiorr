@@ -18,14 +18,19 @@ public class OntologyInfo implements Serializable {
 	// used only on the client side
 	private transient char code;
 	
+	// original, versioned URI
 	private String uri;
 	private String displayLabel;
 	
+
+	// UNversioned URI
+	private String unversionedUri;
 	
+
 	private OntologyMetadata ontologyMetadata;
 	
-	private List<EntityInfo> entities;
-	
+	private OntologyData ontologyData;
+
 	
 	private String authority;
 	private String type;
@@ -42,6 +47,9 @@ public class OntologyInfo implements Serializable {
 	
 	private List<OntologyInfo> priorVersions;
 
+	
+	public OntologyInfo() {
+	}
 	
 	public char getCode() {
 		return code;
@@ -70,12 +78,6 @@ public class OntologyInfo implements Serializable {
 	}
 	public void setDisplayLabel(String displayLabel) {
 		this.displayLabel = displayLabel;
-	}
-	public List<EntityInfo> getEntities() {
-		return entities;
-	}
-	public void setEntities(List<EntityInfo> entities) {
-		this.entities = entities;
 	}
 	
 	
@@ -168,6 +170,21 @@ public class OntologyInfo implements Serializable {
 		return ontologyMetadata;
 	}
 	
+	
+	
+	/**
+	 * @param ontologyData the ontologyData to set
+	 */
+	public void setOntologyData(OntologyData ontologyData) {
+		this.ontologyData = ontologyData;
+	}
+	/**
+	 * @return the ontologyData. null if setOntologyData hasn't been called with a non-null arg
+	 */
+	public OntologyData getOntologyData() {
+		return ontologyData;
+	}
+	
 	/**
 	 * @return the priorVersions
 	 */
@@ -176,6 +193,19 @@ public class OntologyInfo implements Serializable {
 			priorVersions = new ArrayList<OntologyInfo>();
 		}
 		return priorVersions;
+	}
+	
+	/**
+	 * @return the unversionedUri
+	 */
+	public String getUnversionedUri() {
+		return unversionedUri;
+	}
+	/**
+	 * @param unversionedUri the unversionedUri to set
+	 */
+	public void setUnversionedUri(String unversionedUri) {
+		this.unversionedUri = unversionedUri;
 	}
 
 

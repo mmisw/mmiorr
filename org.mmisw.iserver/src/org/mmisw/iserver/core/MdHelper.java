@@ -7,11 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mmisw.ont.vocabulary.Omv;
-import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.iserver.gwt.client.vocabulary.Option;
+import org.mmisw.ont.vocabulary.Omv;
+import org.mmisw.ont.vocabulary.OmvMmi;
 
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.vocabulary.DC;

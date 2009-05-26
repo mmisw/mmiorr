@@ -2,6 +2,13 @@ org.mmisw.iserver
 Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 
+2009-05-25
+	- Support to handle different types of ontology data: vocabulary, mapping, and other, although
+	  this is based on some heuristics; a better mechanism should be implemented (idea is to use
+	  a particular ontology metadata property that indicates the type of ontology, for example
+	  omv:usedOntologyEngineeringTool.
+	
+	
 2009-05-24
 	- getAllOntologies now return only the latest versions of all ontologies as the main entries
 	  of the list; and, optionally, the prior versiones will be included in the internal property
@@ -18,7 +25,7 @@ Created: 2009-05-13
 	 
 2009-05-13
 	Module extracted from vine prototype. The goal is to unify the various operations to the
-	server throwugh this module.
+	server through this module.
 	Note: this module provides the serializable objects required for the communication and
 	a set of core types to be used on the server side.
 	

@@ -10,7 +10,7 @@
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/arq-extra.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/arq.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/iri.jar"/>
-	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena.jar"/>
+	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena.jar" sourcepath="/org.mmi.ont.jenas"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jenatest.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/icu4j_3_4.jar"/>

@@ -10,4 +10,50 @@ import java.io.Serializable;
 public class PropertyInfo extends EntityInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	private String domainUri;
+	private boolean isDatatypeProperty;
+	private boolean isObjectProperty;
+	
+	
+	public PropertyInfo() {
+		
+	}
+
+	/**
+	 * @return the isDatatypeProperty
+	 */
+	public boolean isDatatypeProperty() {
+		return isDatatypeProperty;
+	}
+
+	/**
+	 * @param isDatatypeProperty the isDatatypeProperty to set
+	 */
+	public void setDatatypeProperty(boolean isDatatypeProperty) {
+		this.isDatatypeProperty = isDatatypeProperty;
+	}
+
+	/**
+	 * @return the isObjectProperty
+	 */
+	public boolean isObjectProperty() {
+		return isObjectProperty;
+	}
+
+	/**
+	 * @param isObjectProperty the isObjectProperty to set
+	 */
+	public void setObjectProperty(boolean isObjectProperty) {
+		this.isObjectProperty = isObjectProperty;
+	}
+
+	public void setDomainUri(String domainUri) {
+		this.domainUri = domainUri;
+	}
+
+	public String getDomainUri() {
+		return domainUri;
+	}
+
+	
 }

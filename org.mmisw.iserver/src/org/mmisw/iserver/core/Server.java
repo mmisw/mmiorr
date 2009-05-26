@@ -186,7 +186,10 @@ public class Server implements IServer {
 		
 		List<OntologyInfo> onts = new ArrayList<OntologyInfo>();
 		
-		for ( List<OntologyInfo> versionedList : unversionedToVersioned.values() ) {
+		for ( String unversionedUri : unversionedToVersioned.keySet() ) {
+
+			List<OntologyInfo> versionedList = unversionedToVersioned.get(unversionedUri);
+			
 			// sort in descending versionNumber
 			Collections.sort(versionedList, new Comparator<OntologyInfo>() {
 				public int compare(OntologyInfo arg0, OntologyInfo arg1) {
@@ -194,8 +197,12 @@ public class Server implements IServer {
 				}
 			});
 			
-			// extract first element, ie., most recent ontology version
+			// extract first element, ie., most recent ontology version, which will be added
+			// to the returned list:
 			OntologyInfo ontologyInfo = versionedList.remove(0);
+			
+			// assign UNversioned URI just to this main entry:
+			ontologyInfo.setUnversionedUri(unversionedUri);
 
 			// if requested, include prior versions in the priorVersions property 
 			if ( includePriorVersions ) {
@@ -205,9 +212,6 @@ public class Server implements IServer {
 			// add it to returned list:
 			onts.add(ontologyInfo);
 		}
-		
-		
-
 		
 		return onts;
 	}
