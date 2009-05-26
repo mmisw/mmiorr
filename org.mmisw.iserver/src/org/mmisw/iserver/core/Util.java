@@ -489,8 +489,6 @@ public class Util {
 				String localName = entityUri.substring(ontologyUri.length());
 				localName = localName.replaceAll("^/+", "");
 				entityInfo.setLocalName(localName);
-
-				_addProps(entityUri, entityInfo, ontModel);
 			}
 			else {
 				// use the given entityUri as the local name.
@@ -554,8 +552,6 @@ public class Util {
 					String localName = entityUri.substring(ontologyUri.length());
 					localName = localName.replaceAll("^/+", "");
 					entityInfo.setLocalName(localName);
-					
-					_addProps(entityUri, entityInfo, ontModel);
 				}
 				else {
 					// use the given entityUri as the local name.
