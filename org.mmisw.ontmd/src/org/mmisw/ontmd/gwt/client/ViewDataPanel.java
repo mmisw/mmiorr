@@ -17,7 +17,9 @@ import org.mmisw.iserver.gwt.client.rpc.OtherOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData.ClassData;
+import org.mmisw.ontmd.gwt.client.util.ViewTable;
 
+import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -160,30 +162,92 @@ public class ViewDataPanel extends VerticalPanel {
 	}
 
 	
+	@SuppressWarnings("unchecked")
 	private Widget _createOtherWidget(OtherOntologyData ontologyData) {
 		
 		Main.log("Creating OtherWidget");
 
 		BaseOntologyData baseData = ontologyData.getBaseOntologyData();
 		
-		List<EntityInfo> entities = new ArrayList<EntityInfo>(); 
-		
-		entities.addAll(baseData.getIndividuals());
-		entities.addAll(baseData.getProperties());
-		entities.addAll(baseData.getClasses());
-		
 		VerticalPanel vp = new VerticalPanel();
 		vp.setSpacing(4);
 		
-		vp.add(_createOtherWidget(ontologyData, "Classes", baseData.getClasses()));
-		vp.add(_createOtherWidget(ontologyData, "Properties", baseData.getProperties()));
-		vp.add(_createOtherWidget(ontologyData, "Individuals", baseData.getIndividuals()));
+		Object[] entityGroups = {  
+				"Classes", baseData.getClasses(),
+				"Properties", baseData.getProperties(),
+				"Individuals", baseData.getIndividuals(),
+		};
+
+		for (int i = 0; i < entityGroups.length; i += 2) {
+			String title = entityGroups[i].toString();
+			List<?extends EntityInfo> entities = (List<?extends EntityInfo>) entityGroups[i + 1];
+			
+			title += " (" +entities.size()+ ")";
+			
+			DisclosurePanel disclosure = new DisclosurePanel(title);
+			disclosure.setAnimationEnabled(true);
+			
+			Widget entsWidget = _createOtherWidgetForEntities(ontologyData, entities);
+			
+			disclosure.setContent(entsWidget);
+			
+			vp.add(disclosure);
+			
+		}
 		
 		return vp;
 	}
 	
-	private Widget _createOtherWidget(OtherOntologyData ontologyData, 
-			String title, List<? extends EntityInfo> entities) {
+	private Widget _createOtherWidgetForEntities(OtherOntologyData ontologyData, 
+			List<? extends EntityInfo> entities) {
+
+		
+		if ( entities.size() == 0 ) {
+			return new HTML();
+		}
+		
+		Set<String> header = new HashSet<String>();
+		
+		for ( EntityInfo entity : entities ) {
+			List<PropValue> props = entity.getProps();
+			for ( PropValue pv : props ) {
+				header.add(pv.getPropName());
+			}
+		}
+		
+		List<String> colNames = new ArrayList<String>();
+		colNames.addAll(header);
+		colNames.add(0, "Name");
+
+		ViewTable viewTable = new ViewTable(colNames);
+
+		List<ViewTable.IRow> rows = new ArrayList<ViewTable.IRow>();
+		for ( EntityInfo entity : entities ) {
+			final Map<String, String> vals = new HashMap<String, String>();
+			List<PropValue> props = entity.getProps();
+			for ( PropValue pv : props ) {
+				vals.put(pv.getPropName(), pv.getValueName());
+			}
+
+			vals.put("Name", entity.getLocalName());
+			
+			rows.add(new ViewTable.IRow() {
+				public String getColValue(String sortColumn) {
+					return vals.get(sortColumn);
+				}
+			});
+		}
+
+		viewTable.setRows(rows);
+		
+		return viewTable.getWidget();
+	}
+
+	
+	
+	
+	private Widget _createOtherWidgetForEntities_pre(OtherOntologyData ontologyData, 
+			List<? extends EntityInfo> entities) {
 
 		Set<String> header = new HashSet<String>();
 		
@@ -205,13 +269,6 @@ public class ViewDataPanel extends VerticalPanel {
 		colNames.add(0, "Name");
 
 		int row = 0;
-		
-		// TITLE
-		flexPanel.getRowFormatter().setStylePrimaryName(row, "DataTable-row");
-		cf.setColSpan(row, 0, colNames.size());
-		flexPanel.setWidget(row, 0, new HTML("<b>" +title+ "</b> (" +entities.size()+ ")"));
-		cf.setAlignment(row, 0, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE);
-		row++;
 		
 		if ( entities.size() > 0 ) {
 			// HEADER
@@ -255,8 +312,22 @@ public class ViewDataPanel extends VerticalPanel {
 	private Widget _createMappingWidget(MappingOntologyData ontologyData) {
 		Main.log("Creating MappingWidget");
 
-		// TODO Auto-generated method stub
-		return new HTML("(<i>Mapping display not implemented</i>)");
+		
+		ViewTable viewTable = new ViewTable("one", "two", "three");
+		
+		List<ViewTable.IRow> rows = new ArrayList<ViewTable.IRow>();
+		for ( int i = 0; i < 20; i++ ) {
+			final int k = i;
+			rows.add(new ViewTable.IRow() {
+				public String getColValue(String sortColumn) {
+					return sortColumn+ "_" +k;
+				}
+			});
+		}
+		
+		viewTable.setRows(rows);
+		
+		return viewTable.getWidget();
 	}
 
 }

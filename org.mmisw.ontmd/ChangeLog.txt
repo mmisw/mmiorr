@@ -3,6 +3,10 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-05-26
+	- DisclosurePanels used for metadata and components in synopsis of ontology
+	- ViewTable with column sorting capability
+	
 2009-05-25
 	- Different types of ontology data are now handled, see ViewDataPanel:
 		Vocabulary: for each class in the ontology, a table of corresponding datatype properties is shown.

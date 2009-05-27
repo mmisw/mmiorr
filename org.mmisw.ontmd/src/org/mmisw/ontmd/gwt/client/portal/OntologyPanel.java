@@ -11,6 +11,9 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.DecoratorPanel;
+import com.google.gwt.user.client.ui.DisclosurePanel;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -22,6 +25,10 @@ import com.google.gwt.user.client.ui.Widget;
 public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 
 	private CellPanel container = new VerticalPanel();
+
+	
+	private HeaderPanel headerPanel = new HeaderPanel();
+
 
 	// created depending on type of interface: editing or viewwing
 	private MetadataPanel metadataPanel;
@@ -75,8 +82,18 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 
 		viewDataPanel = new ViewDataPanel();
 		
+		DisclosurePanel disclosure = new DisclosurePanel("Metadata details");
+		disclosure.setAnimationEnabled(true);
+		
+		disclosure.setContent(metadataPanel);
+		
 		CellPanel panel = new VerticalPanel();
-		panel.add(metadataPanel);
+		
+		panel.add(headerPanel);
+		
+//		panel.add(metadataPanel);
+		panel.add(disclosure);
+		
 		panel.add(viewDataPanel);
 		
 		return panel;
@@ -99,22 +116,37 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 					Window.alert(error);
 				}
 				else {
-					boolean link = true;
-					metadataPanel.resetToOriginalValues(ontologyInfo, null, false, link);
-					
-					if ( viewDataPanel != null ) {
-						viewDataPanel.updateWith(ontologyInfo);
-					}
+					ontologyLoaded(ontologyInfo);
 				}
 			}
 		};
 
+		headerPanel.showProgressMessage("Loading " +ontologyInfo.getUri()+ ". Please wait...");
 		metadataPanel.showProgressMessage("Loading contents. Please wait...");
 		Main.log("getOntologyContents: ontologyUri = " +ontologyInfo.getUri());
 		Main.ontmdService.getOntologyContents(ontologyInfo, callback);
 	}
 
 
+	private void ontologyLoaded(OntologyInfo ontologyInfo) {
+		String error = ontologyInfo.getError();
+		if ( error != null ) {
+			headerPanel.updateHtml(error);
+		}
+		else {
+			headerPanel.updateHtml(
+					  "Ontology URI: " +ontologyInfo.getUri()+ "<br/>"
+					+ "Title: " +ontologyInfo.getDisplayLabel()+ "<br/>"
+			);
+			
+			boolean link = true;
+			metadataPanel.resetToOriginalValues(ontologyInfo, null, false, link);
+			
+			if ( viewDataPanel != null ) {
+				viewDataPanel.updateWith(ontologyInfo);
+			}
+		}
+	}
 	
 	private void enable(boolean enabled) {
 		if ( metadataPanel != null ) {
@@ -124,5 +156,28 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			viewDataPanel.enable(enabled);
 		}
 	}
+
+	
+	/** Shows header information
+	 */
+	private static class HeaderPanel extends HorizontalPanel {
+		private HTML html = new HTML();
+		HeaderPanel() {
+			setSpacing(5);
+			setVerticalAlignment(ALIGN_MIDDLE);
+			setWidth("600");
+//			setBorderWidth(1);
+			add(html);
+		}
+		
+		void updateHtml(String text) {
+			html.setHTML(text);
+		}
+		
+		void showProgressMessage(String msg) {
+			html.setHTML("<img src=\"../images/loading.gif\"> <i>" +msg+ "</i>");
+		}
+	}
+
 
 }
