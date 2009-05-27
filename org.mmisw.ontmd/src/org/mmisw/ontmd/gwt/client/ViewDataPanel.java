@@ -20,14 +20,10 @@ import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData.ClassData;
 import org.mmisw.ontmd.gwt.client.util.ViewTable;
 
 import com.google.gwt.user.client.ui.DisclosurePanel;
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 
 /**
  * The main data panel.
@@ -96,67 +92,42 @@ public class ViewDataPanel extends VerticalPanel {
 			String classUri = classData.getClassUri();
 			List<String> classHeader = classData.getDatatypeProperties();
 
-			FlexTable flexPanel = new FlexTable();
-			flexPanel.setStylePrimaryName("DataTable");
-			flexPanel.setBorderWidth(1);
-			flexPanel.setCellSpacing(4);
-			FlexCellFormatter cf = flexPanel.getFlexCellFormatter();
+			String className = classUri;  // TODO just the name, not the whole URI
 			
-			int row = 0;
+			VerticalPanel tp = new VerticalPanel();
+			tp.add(new Label("Class: " +className));
 			
 			String[] colNames = classHeader.toArray(new String[classHeader.size()]);
+			
+			ViewTable viewTable = new ViewTable(colNames);
+			tp.add(viewTable.getWidget());
 
-			// CLASS NAME:
-			String className = classUri;  // TODO just the name, not the whole URI
-			cf.setColSpan(row, 0, colNames.length);
-			flexPanel.setWidget(row, 0, new Label("Class: " +className));
-			cf.setAlignment(row, 0, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE);
-			row++;
-			
-			// HEADER
-			flexPanel.getRowFormatter().setStylePrimaryName(row, "DataTable-header");
-			for ( int i = 0; i < colNames.length; i++ ) {
-				String colName = colNames[i];
-				flexPanel.setWidget(row, i, new Label(colName));
-				cf.setAlignment(row, i, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
-			}
-			row++;
-			
-			// CONTENTS:
-			
 			List<IndividualInfo> individuals = classData.getIndividuals();
-			
 			Main.log("num individuals: " +individuals.size());
 			
-			
-			for ( IndividualInfo individualInfo : individuals ) {
+			List<ViewTable.IRow> rows = new ArrayList<ViewTable.IRow>();
+			for ( IndividualInfo entity : individuals ) {
 				
-				flexPanel.getRowFormatter().setStylePrimaryName(row, "DataTable-row");
-				Map<String, String> vals = new HashMap<String, String>();
-				List<PropValue> props = individualInfo.getProps();
+				final Map<String, String> vals = new HashMap<String, String>();
+				List<PropValue> props = entity.getProps();
 				for ( PropValue pv : props ) {
 					vals.put(pv.getPropName(), pv.getValueName());
 				}
+
+				vals.put("Name", entity.getLocalName());
 				
-				for ( int i = 0; i < colNames.length; i++ ) {
-					String colName = colNames[i];
-					String colValue = vals.get(colName);
-					if ( colValue == null ) {
-						colValue = "";
+				rows.add(new ViewTable.IRow() {
+					public String getColValue(String sortColumn) {
+						return vals.get(sortColumn);
 					}
-					flexPanel.setWidget(row, i, new Label(colValue));
-					cf.setAlignment(row, i, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE);
-				}
-				row++;
+				});
 			}
 			
+			viewTable.setRows(rows);
 			
-			vp.add(flexPanel);
+			vp.add(tp);
 			
 		}
-
-		
-		
 		
 		return vp;
 	}
@@ -220,7 +191,6 @@ public class ViewDataPanel extends VerticalPanel {
 		colNames.add(0, "Name");
 
 		ViewTable viewTable = new ViewTable(colNames);
-
 		List<ViewTable.IRow> rows = new ArrayList<ViewTable.IRow>();
 		for ( EntityInfo entity : entities ) {
 			final Map<String, String> vals = new HashMap<String, String>();
@@ -237,7 +207,6 @@ public class ViewDataPanel extends VerticalPanel {
 				}
 			});
 		}
-
 		viewTable.setRows(rows);
 		
 		return viewTable.getWidget();
@@ -245,89 +214,11 @@ public class ViewDataPanel extends VerticalPanel {
 
 	
 	
-	
-	private Widget _createOtherWidgetForEntities_pre(OtherOntologyData ontologyData, 
-			List<? extends EntityInfo> entities) {
-
-		Set<String> header = new HashSet<String>();
-		
-		for ( EntityInfo entity : entities ) {
-			List<PropValue> props = entity.getProps();
-			for ( PropValue pv : props ) {
-				header.add(pv.getPropName());
-			}
-		}
-
-		FlexTable flexPanel = new FlexTable();
-		flexPanel.setStylePrimaryName("DataTable");
-		flexPanel.setBorderWidth(1);
-		flexPanel.setCellSpacing(4);
-		FlexCellFormatter cf = flexPanel.getFlexCellFormatter();
-		
-		List<String> colNames = new ArrayList<String>();
-		colNames.addAll(header);
-		colNames.add(0, "Name");
-
-		int row = 0;
-		
-		if ( entities.size() > 0 ) {
-			// HEADER
-			flexPanel.getRowFormatter().setStylePrimaryName(row, "DataTable-header");
-			for ( int i = 0; i < colNames.size(); i++ ) {
-				String colName = colNames.get(i);
-				flexPanel.setWidget(row, i, new Label(colName));
-				cf.setAlignment(row, i, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
-			}
-			row++;
-			
-			
-			// CONTENTS:
-			for ( EntityInfo entity : entities ) {
-				flexPanel.getRowFormatter().setStylePrimaryName(row, "DataTable-row");
-				Map<String, String> vals = new HashMap<String, String>();
-				List<PropValue> props = entity.getProps();
-				for ( PropValue pv : props ) {
-					vals.put(pv.getPropName(), pv.getValueName());
-				}
-				
-				vals.put("Name", entity.getLocalName());
-				
-				for ( int i = 0; i < colNames.size(); i++ ) {
-					String colName = colNames.get(i);
-					String colValue = vals.get(colName);
-					if ( colValue == null ) {
-						colValue = "";
-					}
-					flexPanel.setWidget(row, i, new Label(colValue));
-					cf.setAlignment(row, i, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE);
-				}
-				row++;
-			}
-		}
-		
-		return flexPanel;
-	}
-
 	
 	private Widget _createMappingWidget(MappingOntologyData ontologyData) {
 		Main.log("Creating MappingWidget");
 
-		
-		ViewTable viewTable = new ViewTable("one", "two", "three");
-		
-		List<ViewTable.IRow> rows = new ArrayList<ViewTable.IRow>();
-		for ( int i = 0; i < 20; i++ ) {
-			final int k = i;
-			rows.add(new ViewTable.IRow() {
-				public String getColValue(String sortColumn) {
-					return sortColumn+ "_" +k;
-				}
-			});
-		}
-		
-		viewTable.setRows(rows);
-		
-		return viewTable.getWidget();
+		return new HTML("<i>not implemented yet</i>");
 	}
 
 }

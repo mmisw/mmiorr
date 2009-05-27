@@ -2,18 +2,18 @@ package org.mmisw.ontmd.gwt.client.portal;
 
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
-import org.mmisw.ontmd.gwt.client.ViewDataPanel;
 import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.ViewDataPanel;
 import org.mmisw.ontmd.gwt.client.metadata.MetadataPanel;
 import org.mmisw.ontmd.gwt.client.rpc.OntologyInfoPre;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -88,6 +88,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		disclosure.setContent(metadataPanel);
 		
 		CellPanel panel = new VerticalPanel();
+		panel.setSpacing(5);
 		
 		panel.add(headerPanel);
 		
@@ -121,7 +122,9 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			}
 		};
 
-		headerPanel.showProgressMessage("Loading " +ontologyInfo.getUri()+ ". Please wait...");
+		headerPanel.updateTitle("<b>" +ontologyInfo.getDisplayLabel()+ "</b> "+ontologyInfo.getUri()+ "<br/>");
+		headerPanel.showProgressMessage("Loading contents. Please wait...");
+
 		metadataPanel.showProgressMessage("Loading contents. Please wait...");
 		Main.log("getOntologyContents: ontologyUri = " +ontologyInfo.getUri());
 		Main.ontmdService.getOntologyContents(ontologyInfo, callback);
@@ -131,13 +134,11 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	private void ontologyLoaded(OntologyInfo ontologyInfo) {
 		String error = ontologyInfo.getError();
 		if ( error != null ) {
-			headerPanel.updateHtml(error);
+			headerPanel.updateDescription("<font color=\"red\">" +error+ "</font>");
 		}
 		else {
-			headerPanel.updateHtml(
-					  "Ontology URI: " +ontologyInfo.getUri()+ "<br/>"
-					+ "Title: " +ontologyInfo.getDisplayLabel()+ "<br/>"
-			);
+			// TODO put more info in the description
+			headerPanel.updateDescription("");
 			
 			boolean link = true;
 			metadataPanel.resetToOriginalValues(ontologyInfo, null, false, link);
@@ -160,22 +161,28 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	
 	/** Shows header information
 	 */
-	private static class HeaderPanel extends HorizontalPanel {
-		private HTML html = new HTML();
+	private static class HeaderPanel extends VerticalPanel {
+		private HTML titleHtml = new HTML();
+		private HTML descriptionHtml = new HTML();
 		HeaderPanel() {
 			setSpacing(5);
 			setVerticalAlignment(ALIGN_MIDDLE);
 			setWidth("600");
 //			setBorderWidth(1);
-			add(html);
+			add(titleHtml);
+			add(descriptionHtml);
 		}
 		
-		void updateHtml(String text) {
-			html.setHTML(text);
+		void updateTitle(String text) {
+			titleHtml.setHTML(text);
+		}
+		
+		void updateDescription(String text) {
+			descriptionHtml.setHTML(text);
 		}
 		
 		void showProgressMessage(String msg) {
-			html.setHTML("<img src=\"../images/loading.gif\"> <i>" +msg+ "</i>");
+			descriptionHtml.setHTML("<img src=\"" +GWT.getModuleBaseURL()+ "images/loading.gif\"> <i>" +msg+ "</i>");
 		}
 	}
 

@@ -181,6 +181,6 @@ public class ViewTable {
 	public Widget getWidget() {
 		return flexPanel;
 	}
-	
+
 
 }
