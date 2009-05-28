@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mmisw.ontmd.gwt.client.metadata.ResourceTypeWidget;
+import org.mmisw.ontmd.gwt.client.portal.IVocabPanel;
 import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
@@ -113,13 +114,13 @@ public class ClassPanel extends VerticalPanel {
 	private PushButton importCsvButton;
 	private PushButton exportCsvButton;
 	
-	private VocabPanel vocabPanel;
+	private IVocabPanel vocabPanel;
 	
-	ClassPanel(VocabPanel vocabPanel) {
+	public ClassPanel(IVocabPanel vocabPanel) {
 		this.vocabPanel = vocabPanel;
 		setWidth("1000");
 
-		resourceTypeAttrDef = Voc2Rdf.baseInfo.getResourceTypeAttrDef();
+		resourceTypeAttrDef = vocabPanel.getResourceTypeAttrDef();
 		add(createForm());
 		updateContents(CONTENTS_DEFAULT);
 	}
@@ -408,8 +409,8 @@ public class ClassPanel extends VerticalPanel {
 			tableScroll.setWidget(termTable);
 			termTable.setScrollPanel(tableScroll);
 
-			vocabPanel.statusPanel.setWaiting(false);
-			vocabPanel.statusPanel.setHTML("");
+			vocabPanel.statusPanelsetWaiting(false);
+			vocabPanel.statusPanelsetHtml("");
 			vocabPanel.enable(true);
 		}
 		
@@ -511,8 +512,8 @@ public class ClassPanel extends VerticalPanel {
 				HTML statusHtml = new HTML(importingHtml);
 				tableScroll.setWidget(statusHtml);
 				termTable = null;
-				vocabPanel.statusPanel.setWaiting(true);
-				vocabPanel.statusPanel.setHTML(importingHtml);
+				vocabPanel.statusPanelsetWaiting(true);
+				vocabPanel.statusPanelsetHtml(importingHtml);
 				vocabPanel.enable(false);
 
 				char separator = separatorPanel.separator.charAt(0);

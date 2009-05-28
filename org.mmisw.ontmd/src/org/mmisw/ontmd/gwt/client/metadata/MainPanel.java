@@ -228,7 +228,7 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 	    
 	    // not logged in but request to edit?
 	    else if ( editRequestedOntology ) {
-	    	container.add(userInfoPanel);
+	    	container.add(userInfoPanel.getWidget());
 	    	return;   // loginOk will dispatch any initial request.
 	    }
 	    
@@ -240,7 +240,7 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 	    // no basic initialization params at all?.
 	    else {
 	    	// then, start with the user panel:
-	    	container.add(userInfoPanel);
+	    	container.add(userInfoPanel.getWidget());
 	    	return;   // loginOk will dispatch any initial request.
 	    }
 	    

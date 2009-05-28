@@ -26,6 +26,8 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class OntologyTable extends FlexTable {
 
+// TODO Use utility ViewTable 
+
 	private static final boolean HYPERLINK = true;
 	private List<OntologyInfo> ontologyInfos;
 	private LoginResult loginResult;

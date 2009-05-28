@@ -36,8 +36,8 @@ public class UploadPanel extends VerticalPanel {
 		this.setCellHorizontalAlignment(form, ALIGN_CENTER);
 		
 		userInfoPanel = new UserPanel(mainPanel);
-		add(userInfoPanel);
-		this.setCellHorizontalAlignment(userInfoPanel, ALIGN_CENTER);
+		add(userInfoPanel.getWidget());
+		this.setCellHorizontalAlignment(userInfoPanel.getWidget(), ALIGN_CENTER);
 		
 		add(buttons);
 	}

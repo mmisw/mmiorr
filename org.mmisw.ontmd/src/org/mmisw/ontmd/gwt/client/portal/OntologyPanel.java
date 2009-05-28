@@ -11,7 +11,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CellPanel;
-import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -51,13 +50,18 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 
 	public OntologyPanel(OntologyInfo ontologyInfo) {
 		super();
+		setWidth("100%");
+		container.setWidth("100%");
+//		container.setSize("800px", "450px");
+//		container.setBorderWidth(1);
 		
 		this.ontologyInfo = ontologyInfo;
 		
-//		container.setSize("800px", "450px");
-		DecoratorPanel decPanel = new DecoratorPanel();
-	    decPanel.setWidget(container);
-	    add(decPanel);
+		add(container);
+		
+//		DecoratorPanel decPanel = new DecoratorPanel();
+//	    decPanel.setWidget(container);
+//	    add(decPanel);
 
 	    enable(false);
 	    

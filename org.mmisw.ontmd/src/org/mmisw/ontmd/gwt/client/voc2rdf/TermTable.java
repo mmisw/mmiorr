@@ -50,7 +50,7 @@ public class TermTable extends VerticalPanel {
 	 * Create a editable table for the terms.
 	 * @param cols number of desired columns
 	 */
-	TermTable(int cols, boolean readOnly) {
+	public TermTable(int cols, boolean readOnly) {
 		this.add(flexTable);
 		this.readOnly = readOnly;
 		

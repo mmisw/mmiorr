@@ -91,7 +91,7 @@ private static final String INFO =
 	 */
 	public MetadataPanel(IOntologyPanel mainPanel, boolean editing) {
 		super();
-		setWidth("800");
+		setWidth("100%");
 		this.editing = editing;
 		
 		int row = 0;

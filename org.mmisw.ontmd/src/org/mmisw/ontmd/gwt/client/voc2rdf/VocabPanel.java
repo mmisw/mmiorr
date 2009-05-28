@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.portal.IVocabPanel;
 import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
@@ -37,7 +38,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author Carlos Rueda
  */
-public class VocabPanel extends VerticalPanel {
+public class VocabPanel extends VerticalPanel implements IVocabPanel {
 
 	private static final String NAMESPACE_ROOT = "http://mmisw.org/ont";
 
@@ -646,12 +647,25 @@ public class VocabPanel extends VerticalPanel {
 
 	}
 
-	void enable(boolean enabled) {
+	public void enable(boolean enabled) {
 		authorityField.enable(enabled);
 		convertButton.setEnabled(enabled);
 		exampleButton.setEnabled(enabled);
 		resetButton.setEnabled(enabled);
 		classPanel.enable(enabled);
+	}
+
+	public void statusPanelsetHtml(String str) {
+		statusPanel.setHTML(str);
+		
+	}
+
+	public void statusPanelsetWaiting(boolean waiting) {
+		statusPanel.setWaiting(waiting);
+	}
+
+	public AttrDef getResourceTypeAttrDef() {
+		return Voc2Rdf.baseInfo.getResourceTypeAttrDef();
 	}
 
 }

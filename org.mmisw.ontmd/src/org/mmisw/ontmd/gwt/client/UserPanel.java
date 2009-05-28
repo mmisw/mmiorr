@@ -27,8 +27,10 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author Carlos Rueda
  */
-public class UserPanel extends VerticalPanel {
+public class UserPanel {
 
+	private VerticalPanel widget = new VerticalPanel();
+	
 	private LoginListener loginListener;
 	private CellPanel container = new VerticalPanel();
 	
@@ -46,7 +48,7 @@ public class UserPanel extends VerticalPanel {
 		container.setSpacing(4);
 		DecoratorPanel decPanel = new DecoratorPanel();
 	    decPanel.setWidget(container);
-	    add(decPanel);
+	    widget.add(decPanel);
 
 	    container.add(createForm());
 	    
@@ -63,6 +65,10 @@ public class UserPanel extends VerticalPanel {
 	    };
 	    userName.addKeyboardListener(kl);
 	    userPassword.addKeyboardListener(kl);
+	}
+	
+	public Widget getWidget() {
+		return widget;
 	}
 
 	private Widget createForm() {
@@ -126,6 +132,11 @@ public class UserPanel extends VerticalPanel {
 		return panel;
 	}
 	
+	public void logout() {
+		userPassword.setText("");
+		statusMessage("");
+	}
+	
 	private CellPanel createButtons() {
 		CellPanel panel = new HorizontalPanel();
 		panel.setSpacing(2);
@@ -166,6 +177,11 @@ public class UserPanel extends VerticalPanel {
 		statusLabel.setHTML("<font color=\"green\">" +msg+ "</font>");
 	}
 
+	public void getFocus() {
+		userName.setFocus(true);
+		userName.selectAll();
+	}
+	
 	private void statusError(String error) {
 		statusLabel.setHTML("<font color=\"red\">" +error+ "</font>");
 		userName.setFocus(true);

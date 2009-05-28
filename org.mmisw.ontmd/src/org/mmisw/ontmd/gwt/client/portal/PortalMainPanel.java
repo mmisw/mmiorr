@@ -16,6 +16,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.HistoryListener;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -111,6 +112,9 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	}
 	
 	void userSignedOut() {
+		if ( userPanel != null ) {
+			userPanel.logout();
+		}
 		PortalControl.loginResult = null;
 		menuBarPanel.showMenuBar(interfaceType);
 		browsePanel.ontologyTable.showProgress();
@@ -122,7 +126,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	void userToSignIn() {
 		if ( userPanel == null ) {
 			userPanel = new UserPanel(this);
-			signInPopup = new MyDialog(userPanel) {
+			signInPopup = new MyDialog(userPanel.getWidget()) {
 				public boolean onKeyUpPreview(char key, int modifiers) {
 					// avoid ENTER close the popup
 					if ( key == KeyboardListener.KEY_ESCAPE  ) {
@@ -131,9 +135,20 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 					}
 					return true;
 				}
+				
+				public void show() {
+					// use a timer to make the userPanel focused (there must be a better way)
+					new Timer() {
+						public void run() {
+							userPanel.getFocus();
+						}
+					}.schedule(700);
+					super.show();
+				}
 			};
 		}
 		signInPopup.setText("Sign in");
+		signInPopup.center();
 		signInPopup.show();
 	}
 
@@ -161,11 +176,11 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		}
 		
 		if ( obj instanceof OntologyInfo ) {
-			OntologyInfo ontologyInfo = (OntologyInfo) obj;
+			PortalControl.ontologyInfo = (OntologyInfo) obj;
 			
-			Main.log("onHistoryChanged: OntologyUri: " +ontologyInfo.getUri());
+			Main.log("onHistoryChanged: OntologyUri: " +PortalControl.ontologyInfo.getUri());
 			
-			dispatchOntologyPanel(ontologyInfo);
+			dispatchOntologyPanel(PortalControl.ontologyInfo);
 			return;
 		}
 		

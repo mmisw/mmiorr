@@ -17,7 +17,12 @@ import org.mmisw.iserver.gwt.client.rpc.OtherOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData.ClassData;
+import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
+import org.mmisw.ontmd.gwt.client.portal.IVocabPanel;
 import org.mmisw.ontmd.gwt.client.util.ViewTable;
+import org.mmisw.ontmd.gwt.client.voc2rdf.ClassPanel;
+import org.mmisw.ontmd.gwt.client.voc2rdf.TermTable;
+import org.mmisw.ontmd.gwt.client.voc2rdf.Voc2Rdf;
 
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -26,16 +31,42 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Main panel for viewing data.
+ * Main panel for editing data.
  * 
  * @author Carlos Rueda
  */
-public class ViewDataPanel extends VerticalPanel {
+public class EditDataPanel extends VerticalPanel {
 
+	// created during refactoring process -- may be removed later
+	private class MyVocabPanel implements IVocabPanel {
+
+		public AttrDef getResourceTypeAttrDef() {
+			// FIXME:  need to get it the right way !
+			return Voc2Rdf.baseInfo.getResourceTypeAttrDef();
+		}
+
+		public void enable(boolean enabled) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void statusPanelsetHtml(String str) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void statusPanelsetWaiting(boolean waiting) {
+			// TODO Auto-generated method stub
+			
+		}
+	}
+	
+	private MyVocabPanel myVocabPanel = new  MyVocabPanel();
+	
 	/**
 	 * Creates the data panel
 	 */
-	public ViewDataPanel() {
+	public EditDataPanel() {
 		super();
 		setWidth("100%");
 	}
@@ -99,8 +130,11 @@ public class ViewDataPanel extends VerticalPanel {
 			
 			String[] colNames = classHeader.toArray(new String[classHeader.size()]);
 			
-			ViewTable viewTable = new ViewTable(colNames);
-			tp.add(viewTable.getWidget());
+			
+			ClassPanel classPanel = new ClassPanel(myVocabPanel);
+			tp.add(classPanel);
+//			ViewTable viewTable = new ViewTable(colNames);
+//			tp.add(viewTable.getWidget());
 
 			List<IndividualInfo> individuals = classData.getIndividuals();
 			Main.log("num individuals: " +individuals.size());
@@ -123,7 +157,7 @@ public class ViewDataPanel extends VerticalPanel {
 				});
 			}
 			
-			viewTable.setRows(rows);
+//			viewTable.setRows(rows);
 			
 			vp.add(tp);
 			

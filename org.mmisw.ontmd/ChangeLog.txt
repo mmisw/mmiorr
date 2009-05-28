@@ -5,7 +5,9 @@ ChangeLog
 
 2009-05-27
 	- Unifying interface; menuBar set-up depending on interface type; new controller PortalController
-	  to improve MVC design 
+	  to improve MVC design.  Better general layout.
+	 
+	- new EditDataPanel, preparing for editing vocabulary ...
 	
 2009-05-26
 	- DisclosurePanels used for metadata and components in synopsis of ontology

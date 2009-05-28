@@ -113,22 +113,18 @@ public class MenuBarPanel extends HorizontalPanel {
 		});
 	}
 	
-	private static class DownloadOntologyAs extends MenuItem {
-
-		public DownloadOntologyAs(final String text) {
-			super(text, new Command() {
-				public void execute() {
-					PortalControl.downloadOntologyAs(text);
-				}
-			});
+	private static Command nullCmd = new Command() {
+		public void execute() {
+			// nothing
 		}
-	}
+	};
 	
 	private MenuBar _createMenuBarDownloadOntologyAs() {
+		// use a nullCmd as i'm not sure addItem accepts a null command
 		MenuBar mb = new MenuBar(true);
-		mb.addItem(new DownloadOntologyAs("RDF"));
-		mb.addItem(new DownloadOntologyAs("N3"));
-
+		for (PortalControl.DownloadOption dopc : PortalControl.DownloadOption.values() ) {
+			mb.addItem(dopc.getHtml(), true, nullCmd);
+		}
 		return mb;
 	}
 }

@@ -18,8 +18,6 @@ public class LoginControlPanel extends HorizontalPanel {
 	
 	private HTML signInButton = new HTML("<u>Sign in</u>");
 
-	private HTML registerButton = new HTML("<u>Register</u>");
-
 	private HTML signOutButton = new HTML("<u>Sign out</u>");
 	
 	private HTML helpButton = new HTML(
@@ -43,11 +41,6 @@ public class LoginControlPanel extends HorizontalPanel {
 			}
 		});
 
-		registerButton.addClickListener(new ClickListener() {
-			public void onClick(Widget sender) {
-				_register();
-			}
-		});
 
 		signOutButton.addClickListener(new ClickListener() {
 			public void onClick(Widget sender) {
@@ -61,18 +54,12 @@ public class LoginControlPanel extends HorizontalPanel {
 		clear();
 		if ( loginResult == null ) {
 			add(signInButton);
-			add(registerButton);
 		}
 		else {
 			add(new Label(loginResult.getUserName()));
 			add(signOutButton);
 		}
 		add(helpButton);
-	}
-
-	private void _register() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	private void _signOut() {

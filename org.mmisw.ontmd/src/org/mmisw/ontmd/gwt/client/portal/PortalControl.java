@@ -1,5 +1,6 @@
 package org.mmisw.ontmd.gwt.client.portal;
 
+import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
 
 import com.google.gwt.core.client.GWT;
@@ -14,6 +15,9 @@ public class PortalControl {
 	
 	
 	static LoginResult loginResult;
+	
+	static OntologyInfo ontologyInfo;
+	
 	
 	public static void launchCreateVocabulary() {
 		String url = createLinkVoc2Rdf();
@@ -74,8 +78,32 @@ public class PortalControl {
 		Window.alert("sorry, not implemented yet");		
 	}
 
-	public static void downloadOntologyAs(String text) {
-		Window.alert("DownloadOntologyAs " +text+ ": sorry, not implemented yet");		
+	public static enum DownloadOption {
+		RDFXML("RDF/XML", "rdf"),
+		N3("N3", "n3"),
+		;
+		
+		private String name;
+		private String format;
+		
+		private DownloadOption(String name, String format) {
+			this.name = name;
+			this.format = format;
+		}
+		
+		public String toString() {
+			return name;
+		}
+		
+		public String getFormat() {
+			return format;
+		}
+		
+		public String getHtml() {
+			String url = ontologyInfo.getUri() + "?form=" +getFormat();
+			return "<a target=\"_blank\" href=\"" +url+ "\">" +name+ "</a>";
+		}
 	}
+	
 
 }
