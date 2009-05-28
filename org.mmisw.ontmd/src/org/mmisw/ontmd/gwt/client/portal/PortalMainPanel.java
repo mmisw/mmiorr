@@ -27,16 +27,23 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class PortalMainPanel extends VerticalPanel implements LoginListener, HistoryListener {
 
+	public enum InterfaceType { BROWSE, ONTOLOGY, SEARCH };
+	
+
 	private final LoginControlPanel loginControlPanel = new LoginControlPanel(this);
 	
 	private final HeaderPanel headerPanel = new HeaderPanel(loginControlPanel); 
 
+	private final MenuBarPanel menuBarPanel = new MenuBarPanel();
+
 	private final VerticalPanel bodyPanel = new VerticalPanel();
+	
 	private final BrowsePanel browsePanel;
 
 
+	private InterfaceType interfaceType = InterfaceType.BROWSE;
+	
 	private UserPanel userPanel;
-	private LoginResult loginResult;
 	
 	private MyDialog signInPopup;
 
@@ -49,6 +56,8 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		super();
 		
 		History.addHistoryListener(this);
+		
+		LoginResult loginResult = null;
 		
 		///////////////////////////////////////////////////////////////////////////
 		// conveniences for testing in development environment
@@ -69,12 +78,22 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	    	loginResult.setSessionId(params.get("sessionId"));
 	    	loginResult.setUserId(params.get("userId"));
 	    }
+	    
+	    PortalControl.loginResult = loginResult;
 
+	    menuBarPanel.showMenuBar(interfaceType);
+	    
 	    browsePanel = new BrowsePanel(ontologyInfos, loginResult);
+	    this.setWidth("100%");
+	    bodyPanel.setWidth("100%");
 	    loginControlPanel.update(loginResult);
 	    
+//	    bodyPanel.setBorderWidth(1);
 		
+	    
 	    this.add(headerPanel);
+	    
+	    this.add(menuBarPanel);
 	    
 	    this.add(bodyPanel);
 
@@ -82,11 +101,20 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 
 	}
 	
+	private void userSignedIn() {
+		menuBarPanel.showMenuBar(interfaceType);
+		browsePanel.setLoginResult(PortalControl.loginResult);
+		loginControlPanel.update(PortalControl.loginResult);
+		if ( signInPopup != null ) {
+			signInPopup.hide();
+		}
+	}
 	
 	void userSignedOut() {
+		PortalControl.loginResult = null;
+		menuBarPanel.showMenuBar(interfaceType);
 		browsePanel.ontologyTable.showProgress();
-	    loginResult = null;
-	    browsePanel.setLoginResult(loginResult);
+	    browsePanel.setLoginResult(PortalControl.loginResult);
 	    loginControlPanel.update(null);
 	    
 	}
@@ -110,16 +138,12 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	}
 
 	public void loginOk(final LoginResult loginResult) {
-		this.loginResult = loginResult;
+		PortalControl.loginResult = loginResult;
 		browsePanel.ontologyTable.showProgress();
 		
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
-				browsePanel.setLoginResult(loginResult);
-				loginControlPanel.update(loginResult);
-				if ( signInPopup != null ) {
-					signInPopup.hide();
-				}
+				userSignedIn();
 			}
 		});
 	    
@@ -149,11 +173,17 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 
 	
 	private void dispatchMainPanel() {
-		bodyPanel.clear();
+		interfaceType = InterfaceType.BROWSE;
+	    menuBarPanel.showMenuBar(interfaceType);
+
+	    bodyPanel.clear();
 		bodyPanel.add(browsePanel);
 	}
 	
 	private void dispatchOntologyPanel(final OntologyInfo ontologyInfo) {
+		interfaceType = InterfaceType.ONTOLOGY;
+	    menuBarPanel.showMenuBar(interfaceType);
+
 		String ontologyUri = ontologyInfo.getUri();
 
 		Main.log("dispatchOntologyPanel:  ontologyUri=" +ontologyUri);

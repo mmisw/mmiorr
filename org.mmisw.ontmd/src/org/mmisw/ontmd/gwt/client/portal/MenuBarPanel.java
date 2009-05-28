@@ -1,101 +1,132 @@
 package org.mmisw.ontmd.gwt.client.portal;
 
-import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
+import org.mmisw.ontmd.gwt.client.portal.PortalMainPanel.InterfaceType;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
+ * Menu bar for the portal application.
  * 
  * @author Carlos Rueda
  */
-public class MenuBarPanel extends VerticalPanel {
-
-	private LoginResult loginResult;
-	private MenuBar mb = null;
+public class MenuBarPanel extends HorizontalPanel {
 
 	/** Initially the menu bar is not shown */
 	MenuBarPanel() {
-
+		setWidth("100%");
 	}
 
-	void setLoginResult(LoginResult loginResult) {
-		this.loginResult = loginResult;
-	}
-
-	void showMenuBar(boolean show) {
+	private void _clear() {
 		clear();
-		if (show) {
-			if (mb == null) {
-				createMenuBar();
-			}
+	}
+
+	void showMenuBar(InterfaceType type) {
+		_clear();
+		_createMenuBar(type);
+	}
+	
+	private void _createMenuBar(InterfaceType type) {
+		MenuBar mb = null;
+		switch ( type ) {
+		case BROWSE:
+			mb = _createMenuBarBrowse();
+			break;
+		case ONTOLOGY:
+			mb = _createMenuBarOntology();
+			break;
+		}
+		
+		if ( mb != null ) {
 			add(mb);
 		}
 	}
 
-	
-	private String createLinkVoc2Rdf() {
-		String link = GWT.getModuleBaseURL()+ "voc2rdf/";
-		if ( GWT.isClient() ) {
-			link += "index.html";
-		}
-		if ( loginResult != null ) {
-			link += "?userId=" +loginResult.getUserId();
-			link += "&sessionid=" +loginResult.getSessionId();
-		}
-		return link;
-	}
-	
-	private String createLinkVine() {
-		String link = "http://mmisw.org/vine/";
-		if ( loginResult != null ) {
-			link += "?userId=" +loginResult.getUserId();
-			link += "&sessionid=" +loginResult.getSessionId();
-		}
-		return link;
-	}
+	private MenuBar _createMenuBarBrowse() {
+		MenuBar mb = new MenuBar();
 
-	private String createLinkUpload() {
-		String link = GWT.getModuleBaseURL()+ "?_edit=y";
-		if ( loginResult != null ) {
-			link += "&userId=" +loginResult.getUserId();
-			link += "&sessionid=" +loginResult.getSessionId();
-		}
-		return link;
-	}
-
-	private void createMenuBar() {
-		mb = new MenuBar();
-
-		// New
 		MenuBar new_mb = new MenuBar(true);
-		new_mb.addItem(new MenuItem("Vocabulary (Voc2RDF)", new Command() {
-			public void execute() {
-				String url = createLinkVoc2Rdf();
-				String features = null;
-				Window.open(url, "_blank", features);
-			}
-		}));
-		new_mb.addItem(new MenuItem("Mapping (Vine)", new Command() {
-			public void execute() {
-				String url = createLinkVine();
-				String features = null;
-				Window.open(url, "_blank", features);
-			}
-		}));
+		new_mb.addItem(_createNewMenuItemVocabulary());
+		new_mb.addItem(_createNewMenuItemMapping());
+		new_mb.addItem(_createNewMenuItemUpload());
 		mb.addItem(new MenuItem("New", new_mb));
+		
+		return mb;
+	}
 
-		mb.addItem(new MenuItem("Upload", new Command() {
+	private MenuBar _createMenuBarOntology() {
+
+		MenuBar ont_mb = new MenuBar(true);
+		ont_mb.addItem(_createMenuItemCreateNewVersion());
+		ont_mb.addItem("Download as", _createMenuBarDownloadOntologyAs());
+		ont_mb.addSeparator();
+		ont_mb.addItem(_createMenuItemVersions());
+		
+		MenuBar mb = new MenuBar();
+		mb.addItem(new MenuItem("Ontology", ont_mb));
+		return mb;
+	}
+
+	
+	private MenuItem _createNewMenuItemUpload() {
+		return new MenuItem("Upload", new Command() {
 			public void execute() {
-				String url = createLinkUpload();
-				String features = null;
-				Window.open(url, "_blank", features);
+				PortalControl.launchCreateUpload();
 			}
-		}));
+		});
+	}
 
+	private MenuItem _createNewMenuItemMapping() {
+		return new MenuItem("Mapping", new Command() {
+			public void execute() {
+				PortalControl.launchCreateMapping();
+			}
+		});
+	}
+
+	private MenuItem _createNewMenuItemVocabulary() {
+		return new MenuItem("Vocabulary", new Command() {
+			public void execute() {
+				PortalControl.launchCreateVocabulary();
+			}
+		});
+	}
+
+
+	private MenuItem _createMenuItemCreateNewVersion() {
+		return new MenuItem("Edit new version", new Command() {
+			public void execute() {
+				PortalControl.editNewVersion();
+			}
+		});
+	}
+	
+	private MenuItem _createMenuItemVersions() {
+		return new MenuItem("Versions", new Command() {
+			public void execute() {
+				PortalControl.editShowVersions();
+			}
+		});
+	}
+	
+	private static class DownloadOntologyAs extends MenuItem {
+
+		public DownloadOntologyAs(final String text) {
+			super(text, new Command() {
+				public void execute() {
+					PortalControl.downloadOntologyAs(text);
+				}
+			});
+		}
+	}
+	
+	private MenuBar _createMenuBarDownloadOntologyAs() {
+		MenuBar mb = new MenuBar(true);
+		mb.addItem(new DownloadOntologyAs("RDF"));
+		mb.addItem(new DownloadOntologyAs("N3"));
+
+		return mb;
 	}
 }

@@ -134,7 +134,8 @@ public class ClassPanel extends VerticalPanel {
 		
 		FlexTable flexPanel = new FlexTable();
 //		flexPanel.setBorderWidth(1);
-		flexPanel.setWidth("850");
+//		flexPanel.setWidth("850");
+		flexPanel.setWidth("100%");
 		int row = 0;
 		
 		// general information 

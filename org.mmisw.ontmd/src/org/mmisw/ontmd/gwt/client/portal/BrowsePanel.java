@@ -8,7 +8,10 @@ import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.WindowResizeListener;
 import com.google.gwt.user.client.ui.DecoratorPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.HorizontalSplitPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -19,7 +22,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class BrowsePanel extends VerticalPanel {
 
-	private final MenuBarPanel menuBarPanel = new MenuBarPanel();
 	private final SelectionTree selTree = new SelectionTree(this);
 	final OntologyTable ontologyTable = new OntologyTable();
 
@@ -42,15 +44,9 @@ public class BrowsePanel extends VerticalPanel {
 		this.ontologyInfos = ontologyInfos;
 		this.loginResult = loginResult;
 		
-	    menuBarPanel.setLoginResult(loginResult);
-	    
 	    selTree.update(this.ontologyInfos, loginResult);
 	    ontologyTable.setOntologyInfos(this.ontologyInfos, loginResult);
 	    
-	    
-	    this.add(menuBarPanel);
-	    
-	    menuBarPanel.showMenuBar(loginResult != null);
 	    
 	    hSplit.setLeftWidget(selTree);
 	    hSplit.setRightWidget(ontologyTable);
@@ -58,13 +54,40 @@ public class BrowsePanel extends VerticalPanel {
 	    hSplit.setSplitPosition("200px");
 	    hSplit.setHeight("500px");
 	    
+	    _setSplitWidth100();
 	    
-		DecoratorPanel decPanel = new DecoratorPanel();
-		this.add(decPanel);
+	    DecoratorPanel decPanel = new DecoratorPanel();
 	    decPanel.setWidget(hSplit);
-
-	    hSplit.setWidth("1200px");
-
+	    
+	    HorizontalPanel hp = new HorizontalPanel();
+//	    hp.setBorderWidth(1);
+	    hp.setWidth("100%");
+	    hp.add(decPanel);
+	    
+//	    this.add(decPanel);
+	    this.add(hp);
+	}
+	
+	/**
+	 * Makes hSplit's width 100%.  
+	 * Ideally hSplit.setWidth("100%") should work, but this is workaround to a GWT bug:
+	 * http://code.google.com/p/google-web-toolkit/issues/detail?id=1599
+	 */
+	private void _setSplitWidth100() {
+//		hSplit.setWidth("100%");
+	    _setSplitWidth();
+	    Window.addWindowResizeListener(new WindowResizeListener() {
+			public void onWindowResized(int width, int height) {
+				_setSplitWidth();
+			}
+	    });
+	}
+	private void _setSplitWidth() {
+	    int clientWidth = (int) (0.99 * Window.getClientWidth());
+	    if ( clientWidth < 400 ) {
+	    	clientWidth = 400;
+	    }
+	    hSplit.setWidth(clientWidth+ "px");
 	}
 	
 	
@@ -123,7 +146,6 @@ public class BrowsePanel extends VerticalPanel {
 
 	void setLoginResult(LoginResult loginResult) {
 		this.loginResult = loginResult;
-		menuBarPanel.showMenuBar(loginResult != null);
 		selTree.update(ontologyInfos, loginResult);
 		ontologyTable.setOntologyInfos(ontologyInfos, loginResult);
 	}

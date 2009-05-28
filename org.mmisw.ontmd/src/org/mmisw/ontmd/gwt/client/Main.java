@@ -3,16 +3,16 @@ package org.mmisw.ontmd.gwt.client;
 import java.util.Map;
 import java.util.Stack;
 
+import org.mmisw.iserver.gwt.client.rpc.AppInfo;
+import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
+import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.client.img.OntMdImageBundle;
 import org.mmisw.ontmd.gwt.client.metadata.MainPanel;
 import org.mmisw.ontmd.gwt.client.portal.Portal;
-import org.mmisw.iserver.gwt.client.rpc.AppInfo;
-import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.ontmd.gwt.client.rpc.OntMdService;
 import org.mmisw.ontmd.gwt.client.rpc.OntMdServiceAsync;
 import org.mmisw.ontmd.gwt.client.util.Util;
 import org.mmisw.ontmd.gwt.client.voc2rdf.Voc2Rdf;
-import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -25,12 +25,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.ButtonBase;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -145,14 +142,15 @@ public class Main implements EntryPoint {
 
 	public void startGui(final Map<String, String> params, Widget mainPanel) {
 
-		Panel panel = new VerticalPanel();
+		VerticalPanel panel = new VerticalPanel();
+//		panel.setBorderWidth(1);
+		panel.setWidth("100%");
 		RootPanel.get().add(panel);
-		Grid hpanel = new Grid(1, 1);
-		hpanel.getCellFormatter().setAlignment(0,0, HasHorizontalAlignment.ALIGN_CENTER,
-				HasVerticalAlignment.ALIGN_MIDDLE);
+
+		HorizontalPanel hpanel = new HorizontalPanel();
 		panel.add(hpanel);
-		
-		hpanel.setWidget(0, 0, mainPanel);
+		hpanel.setWidth("100%");
+		hpanel.add(mainPanel);
 
 		if (includeLog) {
 			final HTML logLabel = Util.createHtml("", 10);

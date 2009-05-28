@@ -90,7 +90,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		CellPanel panel = new VerticalPanel();
 		panel.setSpacing(5);
 		
-		panel.add(headerPanel);
+		panel.add(headerPanel.getWidget());
 		
 //		panel.add(metadataPanel);
 		panel.add(disclosure);
@@ -122,7 +122,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			}
 		};
 
-		headerPanel.updateTitle("<b>" +ontologyInfo.getDisplayLabel()+ "</b> "+ontologyInfo.getUri()+ "<br/>");
+		headerPanel.updateTitle("<b>" +ontologyInfo.getDisplayLabel()+ "</b> - "+ontologyInfo.getUri()+ "<br/>");
 		headerPanel.showProgressMessage("Loading contents. Please wait...");
 
 		metadataPanel.showProgressMessage("Loading contents. Please wait...");
@@ -161,16 +161,28 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	
 	/** Shows header information
 	 */
-	private static class HeaderPanel extends VerticalPanel {
+	private static class HeaderPanel {
+		
+		private final Widget widget;
+
 		private HTML titleHtml = new HTML();
 		private HTML descriptionHtml = new HTML();
 		HeaderPanel() {
-			setSpacing(5);
-			setVerticalAlignment(ALIGN_MIDDLE);
-			setWidth("600");
-//			setBorderWidth(1);
-			add(titleHtml);
-			add(descriptionHtml);
+			VerticalPanel vp = new VerticalPanel();
+			vp.setWidth("100%");
+			vp.setSpacing(5);
+			vp.setVerticalAlignment(ALIGN_MIDDLE);
+//			vp.setBorderWidth(1);
+			vp.add(titleHtml);
+			vp.add(descriptionHtml);
+			
+//			widget = new CaptionPanel("caption);
+//			widget.setContentWidget(vp);
+			widget = vp;
+		}
+		
+		Widget getWidget() {
+			return widget;
 		}
 		
 		void updateTitle(String text) {
