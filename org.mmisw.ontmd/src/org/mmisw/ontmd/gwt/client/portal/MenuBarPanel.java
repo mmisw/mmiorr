@@ -25,7 +25,9 @@ public class MenuBarPanel extends HorizontalPanel {
 
 	void showMenuBar(InterfaceType type) {
 		_clear();
-		_createMenuBar(type);
+		if ( PortalControl.loginResult != null ) {
+			_createMenuBar(type);
+		}
 	}
 	
 	private void _createMenuBar(InterfaceType type) {
