@@ -14,6 +14,8 @@ import com.google.gwt.user.client.ui.MenuItem;
  */
 public class MenuBarPanel extends HorizontalPanel {
 
+	PortalControl pctrl = PortalControl.getInstance();
+	
 	/** Initially the menu bar is not shown */
 	MenuBarPanel() {
 		setWidth("100%");
@@ -25,7 +27,7 @@ public class MenuBarPanel extends HorizontalPanel {
 
 	void showMenuBar(InterfaceType type) {
 		_clear();
-		if ( PortalControl.loginResult != null ) {
+		if ( pctrl.getLoginResult() != null ) {
 			_createMenuBar(type);
 		}
 	}
@@ -36,8 +38,11 @@ public class MenuBarPanel extends HorizontalPanel {
 		case BROWSE:
 			mb = _createMenuBarBrowse();
 			break;
-		case ONTOLOGY:
-			mb = _createMenuBarOntology();
+		case ONTOLOGY_VIEW:
+			mb = _createMenuBarOntologyView();
+			break;
+		case ONTOLOGY_EDIT:
+			mb = _createMenuBarOntologyEdit();
 			break;
 		}
 		
@@ -46,6 +51,10 @@ public class MenuBarPanel extends HorizontalPanel {
 		}
 	}
 
+	private static String _menuTitle(String title) {
+		return "<u>" +title+ "</u>";
+//		return title+ " <img src=\"" +GWT.getModuleBaseURL()+ "images/tridown.png\">";
+	}
 	private MenuBar _createMenuBarBrowse() {
 		MenuBar mb = new MenuBar();
 
@@ -53,12 +62,12 @@ public class MenuBarPanel extends HorizontalPanel {
 		new_mb.addItem(_createNewMenuItemVocabulary());
 		new_mb.addItem(_createNewMenuItemMapping());
 		new_mb.addItem(_createNewMenuItemUpload());
-		mb.addItem(new MenuItem("New", new_mb));
+		mb.addItem(new MenuItem(_menuTitle("New"), true, new_mb));
 		
 		return mb;
 	}
 
-	private MenuBar _createMenuBarOntology() {
+	private MenuBar _createMenuBarOntologyView() {
 
 		MenuBar ont_mb = new MenuBar(true);
 		ont_mb.addItem(_createMenuItemCreateNewVersion());
@@ -67,15 +76,34 @@ public class MenuBarPanel extends HorizontalPanel {
 		ont_mb.addItem(_createMenuItemVersions());
 		
 		MenuBar mb = new MenuBar();
-		mb.addItem(new MenuItem("Ontology", ont_mb));
+		mb.addItem(new MenuItem(_menuTitle("Ontology"), true, ont_mb));
 		return mb;
 	}
 
+	private MenuBar _createMenuBarOntologyEdit() {
+		// TODO
+		MenuBar ont_mb = new MenuBar(true);
+		ont_mb.addItem(_createMenuItemCancelEdit());
+		ont_mb.addSeparator();
+		
+		MenuBar mb = new MenuBar();
+		mb.addItem(new MenuItem(_menuTitle("Edit"), true, ont_mb));
+		return mb;
+	}
+
+	private MenuItem _createMenuItemCancelEdit() {
+		return new MenuItem("Cancel", new Command() {
+			public void execute() {
+				pctrl.cancelEdit();
+			}
+		});
+	}
+	
 	
 	private MenuItem _createNewMenuItemUpload() {
 		return new MenuItem("Upload", new Command() {
 			public void execute() {
-				PortalControl.launchCreateUpload();
+				pctrl.launchCreateUpload();
 			}
 		});
 	}
@@ -83,7 +111,7 @@ public class MenuBarPanel extends HorizontalPanel {
 	private MenuItem _createNewMenuItemMapping() {
 		return new MenuItem("Mapping", new Command() {
 			public void execute() {
-				PortalControl.launchCreateMapping();
+				pctrl.launchCreateMapping();
 			}
 		});
 	}
@@ -91,24 +119,24 @@ public class MenuBarPanel extends HorizontalPanel {
 	private MenuItem _createNewMenuItemVocabulary() {
 		return new MenuItem("Vocabulary", new Command() {
 			public void execute() {
-				PortalControl.launchCreateVocabulary();
+				pctrl.launchCreateVocabulary();
 			}
 		});
 	}
 
 
 	private MenuItem _createMenuItemCreateNewVersion() {
-		return new MenuItem("Edit new version", new Command() {
+		return new MenuItem("Edit new version (not fully implemented yet)", new Command() {
 			public void execute() {
-				PortalControl.editNewVersion();
+				pctrl.editNewVersion();
 			}
 		});
 	}
 	
 	private MenuItem _createMenuItemVersions() {
-		return new MenuItem("Versions", new Command() {
+		return new MenuItem("Versions (not implemented yet)", new Command() {
 			public void execute() {
-				PortalControl.editShowVersions();
+				pctrl.showVersions();
 			}
 		});
 	}
@@ -123,7 +151,7 @@ public class MenuBarPanel extends HorizontalPanel {
 		// use a nullCmd as i'm not sure addItem accepts a null command
 		MenuBar mb = new MenuBar(true);
 		for (PortalControl.DownloadOption dopc : PortalControl.DownloadOption.values() ) {
-			mb.addItem(dopc.getHtml(), true, nullCmd);
+			mb.addItem(pctrl.getDownloadOptionHtml(dopc), true, nullCmd);
 		}
 		return mb;
 	}

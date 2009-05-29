@@ -17,12 +17,9 @@ import org.mmisw.iserver.gwt.client.rpc.OtherOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData.ClassData;
-import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.client.portal.IVocabPanel;
 import org.mmisw.ontmd.gwt.client.util.ViewTable;
-import org.mmisw.ontmd.gwt.client.voc2rdf.ClassPanel;
-import org.mmisw.ontmd.gwt.client.voc2rdf.TermTable;
-import org.mmisw.ontmd.gwt.client.voc2rdf.Voc2Rdf;
+import org.mmisw.ontmd.gwt.client.voc2rdf.VocabClassPanel;
 
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -37,13 +34,12 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class EditDataPanel extends VerticalPanel {
 
+	private static final char SEPARATOR = '|';
+	private static final char QUOTECHAR = '"';
+	
+
 	// created during refactoring process -- may be removed later
 	private class MyVocabPanel implements IVocabPanel {
-
-		public AttrDef getResourceTypeAttrDef() {
-			// FIXME:  need to get it the right way !
-			return Voc2Rdf.baseInfo.getResourceTypeAttrDef();
-		}
 
 		public void enable(boolean enabled) {
 			// TODO Auto-generated method stub
@@ -130,16 +126,25 @@ public class EditDataPanel extends VerticalPanel {
 			
 			String[] colNames = classHeader.toArray(new String[classHeader.size()]);
 			
+			StringBuilder termContents = new StringBuilder();
 			
-			ClassPanel classPanel = new ClassPanel(myVocabPanel);
+			// header line in contents:
+			String _sep = "";
+			for (int i = 0; i < colNames.length; i++) {
+				termContents.append(_sep + QUOTECHAR +colNames[i]+ QUOTECHAR);
+				_sep = String.valueOf(SEPARATOR);
+			}
+			termContents.append("\n");
+			
+			VocabClassPanel classPanel = new VocabClassPanel(myVocabPanel);
 			tp.add(classPanel);
 //			ViewTable viewTable = new ViewTable(colNames);
 //			tp.add(viewTable.getWidget());
+			
 
 			List<IndividualInfo> individuals = classData.getIndividuals();
 			Main.log("num individuals: " +individuals.size());
 			
-			List<ViewTable.IRow> rows = new ArrayList<ViewTable.IRow>();
 			for ( IndividualInfo entity : individuals ) {
 				
 				final Map<String, String> vals = new HashMap<String, String>();
@@ -150,14 +155,21 @@ public class EditDataPanel extends VerticalPanel {
 
 				vals.put("Name", entity.getLocalName());
 				
-				rows.add(new ViewTable.IRow() {
-					public String getColValue(String sortColumn) {
-						return vals.get(sortColumn);
+				_sep = "";
+				for (int i = 0; i < colNames.length; i++) {
+					String val = vals.get(colNames[i]);
+					if ( val == null ) {
+						val = "";
 					}
-				});
+					termContents.append(_sep + QUOTECHAR +val+ QUOTECHAR);
+					_sep = String.valueOf(SEPARATOR);
+				}
+				
+				termContents.append("\n");
 			}
 			
 //			viewTable.setRows(rows);
+			classPanel.importContents(SEPARATOR, termContents.toString());
 			
 			vp.add(tp);
 			

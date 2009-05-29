@@ -3,13 +3,11 @@ package org.mmisw.ontmd.gwt.client.voc2rdf;
 import java.util.List;
 import java.util.Map;
 
-import org.mmisw.ontmd.gwt.client.metadata.ResourceTypeWidget;
 import org.mmisw.ontmd.gwt.client.portal.IVocabPanel;
-import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
+import org.mmisw.ontmd.gwt.client.util.Util;
 import org.mmisw.ontmd.gwt.client.voc2rdf.VocabPanel.CheckError;
-import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
@@ -30,15 +28,19 @@ import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Form elements for the contents of the vocabulary.
+ * Panel for showing/capturing the definition of a class of terms in a vocabulary.
+ * 
+ * <p>
+ * Adapted (simplified) from ClassPanel
  * 
  * @author Carlos Rueda
  */
-public class ClassPanel extends VerticalPanel {
+public class VocabClassPanel extends VerticalPanel {
 
 	private static final String CLASS_TOOTIP =
 		"The class for the terms defined in this vocabulary; should be a singular noun. " +
@@ -48,11 +50,12 @@ public class ClassPanel extends VerticalPanel {
 		"of these vocabularies, talk to MMI folks about how to make this change. " +
 		"(It involves editing the resulting ontology.)";
 	
-	private static final String CLASS_URI_TOOTIP =
-		"Ideally the class is selected from, and described in, a controlled vocabulary with URIs " +
-		"defined. If so, enter the URI naming the term in this field. " +
-		"If the term is in a controlled vocabulary but does not have its own URI, enter the " +
-		"controlled vocabulary URI. Otherwise, leave this field blank.";
+		// TODO do we still want the classUri?
+//	private static final String CLASS_URI_TOOTIP =
+//		"Ideally the class is selected from, and described in, a controlled vocabulary with URIs " +
+//		"defined. If so, enter the URI naming the term in this field. " +
+//		"If the term is in a controlled vocabulary but does not have its own URI, enter the " +
+//		"controlled vocabulary URI. Otherwise, leave this field blank.";
 		
 	private static final String CONTENTS_TOOTIP =
 		"The 'words' (concepts, labels, unique IDs or code, or similar unique tags) of your vocabulary. " +
@@ -81,6 +84,7 @@ public class ClassPanel extends VerticalPanel {
 		" , \n"
 		;
 
+	private static final String CLASS_NAME_EXAMPLE = "MyParameter";
 	private static final String CONTENTS_EXAMPLE = 
 		"name,description,comment\n" +
 		"sea surface salinity, sea water salinity, salinity at the sea surface (above 3m.)\n" +
@@ -88,26 +92,23 @@ public class ClassPanel extends VerticalPanel {
 		"depth, measurement depth, derived from pressure\n"
 		;
 
-	private static final String INTRO = 
-		"The class refers to the main theme associated with your vocabulary. " +
-		"Each term is considered an instance of this class. " +
-		"The terms are the 'words' (concepts, labels, unique IDs or code, or similar unique tags) of your vocabulary. " +
-		"CLick the cells of the table for editing the contents. " +
-		"The CSV button display the contents of the table in CSV format allowing direct editing on the text format. " 
-//		"You can manually type in the contents of your vocabulary or paste it from " +
-//		"your original text file. Use the check box at the bottom for a convenient " +
-//		"(read-only) tabular view of the contents. Uncheck it to continue editing. " +
-//		"The Example button will fill in the vocabulary contents with an example."
-		;
+//	private static final String INTRO = 
+//		"The class refers to the main theme associated with your vocabulary. " +
+//		"Each term is considered an instance of this class. " +
+//		"The terms are the 'words' (concepts, labels, unique IDs or code, or similar unique tags) of your vocabulary. " +
+//		"CLick the cells of the table for editing the contents. " +
+//		"The CSV button display the contents of the table in CSV format allowing direct editing on the text format. " 
+//		;
+
 
 	private CellPanel contentsContainer = new VerticalPanel();
 	
 
-	// resourceType
-	private AttrDef resourceTypeAttrDef;
-	private ResourceTypeWidget resourceTypeWidget;
+	private TextBoxBase classNameTextBox;
 
-	private ScrollPanel tableScroll = new ScrollPanel();
+	private final boolean useTableScroll = false;
+	
+	private ScrollPanel tableScroll = useTableScroll ? new ScrollPanel() : null;
 	
 	private TermTable termTable;
 	
@@ -116,11 +117,11 @@ public class ClassPanel extends VerticalPanel {
 	
 	private IVocabPanel vocabPanel;
 	
-	public ClassPanel(IVocabPanel vocabPanel) {
+	
+	public VocabClassPanel(IVocabPanel vocabPanel) {
 		this.vocabPanel = vocabPanel;
 		setWidth("1000");
 
-		resourceTypeAttrDef = Voc2Rdf.baseInfo.getResourceTypeAttrDef();
 		add(createForm());
 		updateContents(CONTENTS_DEFAULT);
 	}
@@ -129,9 +130,11 @@ public class ClassPanel extends VerticalPanel {
 	 * Creates the main form
 	 */
 	private Widget createForm() {
-		contentsContainer.setBorderWidth(1);
+//		contentsContainer.setBorderWidth(1);
 
-		tableScroll.setSize("1000", "180");
+		if ( useTableScroll ) {
+			tableScroll.setSize("1000", "180");
+		}
 		
 		FlexTable flexPanel = new FlexTable();
 //		flexPanel.setBorderWidth(1);
@@ -140,49 +143,44 @@ public class ClassPanel extends VerticalPanel {
 		int row = 0;
 		
 		// general information 
-		HTML infoLabel = new HTML(INTRO);
-		flexPanel.getFlexCellFormatter().setColSpan(row, 0, 4);
-		flexPanel.setWidget(row, 0, infoLabel);
-		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
-				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
-		);
-		row++;
-		
-		
-		
-		// NOTE 3/21/09: use my CLASS_TOOLTIP instead of the original "resourceType" one
-		resourceTypeAttrDef.setTooltip(CLASS_TOOTIP);
-		resourceTypeAttrDef.setLabel("Class");
-		
-		resourceTypeAttrDef.getRelatedAttrs().get(0).setTooltip(CLASS_URI_TOOTIP);
-		resourceTypeAttrDef.getRelatedAttrs().get(0).setLabel("URI of class");
-		
-		
-		boolean editing = true;
-		resourceTypeWidget = new ResourceTypeWidget(resourceTypeAttrDef, editing, 
-				new ChangeListener () {
-					public void onChange(Widget sender) {
-//						statusLabel.setText("");
-					}
-				}
-		);
-		
-		String label = resourceTypeAttrDef.getLabel();
-		String tooltip = "<b>" +label+ "</b>:<br/>" + 
-		                  resourceTypeAttrDef.getTooltip() +
-		                  "<br/><br/><div align=\"right\">(" +resourceTypeAttrDef.getUri()+ ")</div>";
-		flexPanel.setWidget(row, 0, new TLabel(label, true, tooltip));
-		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
-				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
-		);
-
-		flexPanel.getFlexCellFormatter().setColSpan(row, 1, 2);
-		flexPanel.setWidget(row, 1, resourceTypeWidget);
-		flexPanel.getFlexCellFormatter().setAlignment(row, 1, 
-				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
-		);
+//		HTML infoLabel = new HTML(INTRO);
+//		flexPanel.getFlexCellFormatter().setColSpan(row, 0, 4);
+//		flexPanel.setWidget(row, 0, infoLabel);
+//		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
+//				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+//		);
 //		row++;
+		
+		
+		
+		ChangeListener cl = null;
+		classNameTextBox = Util.createTextBoxBase(1, "200", cl );
+		
+		String label = "Class name";
+		String tooltip = "<b>" +label+ "</b>:<br/>" +CLASS_TOOTIP;
 
+		HorizontalPanel classNamePanel = new HorizontalPanel();
+		classNamePanel.add(new TLabel(label, true, tooltip));
+		classNamePanel.add(classNameTextBox);
+		
+		flexPanel.getFlexCellFormatter().setColSpan(row, 0, 4);
+		flexPanel.setWidget(row, 0, classNamePanel);
+//		flexPanel.setWidget(row, 0, new TLabel(label, true, tooltip));
+		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+
+//		flexPanel.setWidget(row, 1, classNameTextBox);
+//		flexPanel.getFlexCellFormatter().setAlignment(row, 1, 
+//				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+//		);
+		row++;
+
+		flexPanel.setWidget(row, 0, new TLabel("Terms:", true, "<b>Terms</b>:<br/>" +CONTENTS_TOOTIP));
+		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		
 		HorizontalPanel exPanel = new HorizontalPanel();
 		exPanel.add(_createCsvButtons());
 		flexPanel.setWidget(row, 2, exPanel);
@@ -191,19 +189,16 @@ public class ClassPanel extends VerticalPanel {
 		);
 		row++;
 
-		
-		
-		flexPanel.setWidget(row, 0, new TLabel("Terms:", true, "<b>Terms</b>:<br/>" +CONTENTS_TOOTIP));
-		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
-				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
-		);
-
 //		contentsContainer.setSize("600", "200");
 		
-		contentsContainer.add(tableScroll);
-		flexPanel.getFlexCellFormatter().setColSpan(row, 1, 3);
-		flexPanel.setWidget(row, 1, contentsContainer);
-		flexPanel.getFlexCellFormatter().setAlignment(row, 1, 
+		if ( useTableScroll ) {
+			contentsContainer.add(tableScroll);
+		}
+		
+		
+		flexPanel.getFlexCellFormatter().setColSpan(row, 0, 4);
+		flexPanel.setWidget(row, 0, contentsContainer);
+		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		row++;
@@ -236,12 +231,8 @@ public class ClassPanel extends VerticalPanel {
 	}
 	
 	
-	FieldWithChoose getFieldWithChoose() {
-		return resourceTypeWidget.resourceTypeFieldWithChoose;
-	}
-	
 	String getClassName() {
-		String primaryClass = resourceTypeWidget.resourceTypeFieldWithChoose.getValue().trim();
+		String primaryClass = classNameTextBox.getText().trim();
 		return primaryClass;
 	}
 
@@ -254,10 +245,11 @@ public class ClassPanel extends VerticalPanel {
 			return new CheckError("Please, select a class for the terms in your vocabulary");
 		}
 		
-		String classUri = resourceTypeWidget.getRelatedValue().trim();
-		if ( classUri.length() > 0 ) {
-			values.put("classUri", classUri);
-		}
+		// TODO do we still want the classUri ?
+//		String classUri = resourceTypeWidget.getRelatedValue().trim();
+//		if ( classUri.length() > 0 ) {
+//			values.put("classUri", classUri);
+//		}
 		
 		VocabPanel.CheckError error = termTable.check();
 
@@ -298,8 +290,15 @@ public class ClassPanel extends VerticalPanel {
 		
 		// OK:
 		termTable = tt;
-		tableScroll.setWidget(termTable);
-		termTable.setScrollPanel(tableScroll);
+		
+		if ( useTableScroll ) {
+			tableScroll.setWidget(termTable);
+			termTable.setScrollPanel(tableScroll);
+		}
+		else {
+			contentsContainer.clear();
+			contentsContainer.add(termTable);
+		}
 	}
 
 	
@@ -308,7 +307,7 @@ public class ClassPanel extends VerticalPanel {
 	void reset() {
 //		statusLabel.setText("");
 
-		resourceTypeWidget.reset();
+		classNameTextBox.setText("");
 		updateContents(CONTENTS_DEFAULT);
 	}
 
@@ -377,7 +376,6 @@ public class ClassPanel extends VerticalPanel {
 					return true;
 				}
 				
-				// row = row in termTable:
 				rowInTermTable = -1;
 
 				currFromRow = 1;
@@ -395,7 +393,7 @@ public class ClassPanel extends VerticalPanel {
 		}
 		
 		private void updateStatus() {
-			statusHtml.setHTML("<font color=\"blue\">Importing ... (" +
+			statusHtml.setHTML("<font color=\"blue\">Preparing ... (" +
 					(1+rowInTermTable)+ ")" + "</font>");
 		}
 		
@@ -406,8 +404,14 @@ public class ClassPanel extends VerticalPanel {
 		}
 		
 		private void done() {
-			tableScroll.setWidget(termTable);
-			termTable.setScrollPanel(tableScroll);
+			if ( useTableScroll ) {
+				tableScroll.setWidget(termTable);
+				termTable.setScrollPanel(tableScroll);
+			}
+			else {
+				contentsContainer.clear();
+				contentsContainer.add(termTable);
+			}
 
 			vocabPanel.statusPanelsetWaiting(false);
 			vocabPanel.statusPanelsetHtml("");
@@ -526,8 +530,14 @@ public class ClassPanel extends VerticalPanel {
 	 */
 	public void importContents(char separator, String text) {
 		String importingHtml = "<font color=\"blue\">" + "Importing ..." + "</font>";
+		
 		HTML statusHtml = new HTML(importingHtml);
-		tableScroll.setWidget(statusHtml);
+		
+		// if using tableScroll
+//		tableScroll.setWidget(statusHtml);
+		
+		contentsContainer.add(statusHtml);
+		
 		termTable = null;
 		vocabPanel.statusPanelsetWaiting(true);
 		vocabPanel.statusPanelsetHtml(importingHtml);
@@ -614,14 +624,14 @@ public class ClassPanel extends VerticalPanel {
 	void example() {
 //		statusLabel.setText("");
 
-		resourceTypeWidget.setExample();
+		classNameTextBox.setText(CLASS_NAME_EXAMPLE);
 
 		updateContents(CONTENTS_EXAMPLE);
 	}
 	
 	
 	void enable(boolean enabled) {
-		resourceTypeWidget.enable(enabled);
+		classNameTextBox.setReadOnly(!enabled);
 		importCsvButton.setEnabled(enabled);
 		exportCsvButton.setEnabled(enabled);
 	}

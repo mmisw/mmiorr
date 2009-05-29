@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
@@ -155,32 +156,97 @@ public class ViewTable {
 		if ( rows == null ) {
 			return;
 		}
-		int row = 1;
 		
-		for ( IRow irow : rows ) {
-			flexPanel.getRowFormatter().setStylePrimaryName(row, "OntologyTable-row");
-			
-			for ( int i = 0, count = headerHtmls.size(); i < count; i++ ) {
-				HTML html = headerHtmls.get(i);
-				String name = html.getText();
-				
-				String value = irow.getColValue(name);
-				if ( value == null ) value = "";
-				
-				HTML valHtml = new HTML(value);
-				flexPanel.setWidget(row, i, valHtml);
-				flexPanel.getFlexCellFormatter().setAlignment(row, i, 
-						HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
-				);
-			}
-			row++;
+		if ( true ) {
+			// incrementally update the interface (preferred):
+			UpdateCommand cmd = new UpdateCommand(0);
+			DeferredCommand.addCommand(cmd);			
 		}
-
+		else {
+			// old mechanism (one single interface update -- the script may be stopped)
+			int row = 1;
+			for ( IRow irow : rows ) {
+				_setRow(row, irow);
+				row++;
+			}
+		}
 	}
 
+	/**
+	 * 
+	 * @param row Row in the flexTable
+	 * @param irow
+	 */
+	private void _setRow(int row, IRow irow) {
+		flexPanel.getRowFormatter().setStylePrimaryName(row, "OntologyTable-row");
+		
+		for ( int i = 0, count = headerHtmls.size(); i < count; i++ ) {
+			HTML html = headerHtmls.get(i);
+			String name = html.getText();
+			
+			String value = irow.getColValue(name);
+			if ( value == null ) value = "";
+			
+			HTML valHtml = new HTML(value);
+			flexPanel.setWidget(row, i, valHtml);
+			flexPanel.getFlexCellFormatter().setAlignment(row, i, 
+					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+			);
+		}
+	}
+	
 	public Widget getWidget() {
 		return flexPanel;
 	}
 
 
+	/**
+	 * Incremental command to create the resulting table.
+	 */
+	private class UpdateCommand implements IncrementalCommand {
+		private static final int rowIncrement = 34;
+
+		private int currFromRow;
+		
+		private boolean preDone;
+
+		UpdateCommand(int fromRow) {
+			currFromRow = fromRow;
+		}
+		
+		public boolean execute() {
+			if ( preDone ) {
+				done();
+				return false;
+			}
+			
+			// add a chunk of rows:
+			if ( _addRows(currFromRow, currFromRow + rowIncrement) ) {
+				preDone();
+			}
+			else {
+				currFromRow += rowIncrement;
+			}
+			return true;
+		}
+		
+		private void preDone() {
+			preDone = true;
+		}
+
+		private void done() {
+		}
+		
+		private boolean _addRows(int fromRow, int toRow) {
+			int row = fromRow;
+			for ( int count = rows.size(); row < count && row < toRow; row++ ) {
+				
+				IRow irow = rows.get(row);
+				_setRow(row + 1, irow );
+	
+			}
+			
+			return row >= rows.size();
+		}
+	}
 }

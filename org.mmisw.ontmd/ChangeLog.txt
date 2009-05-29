@@ -3,6 +3,18 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-05-28
+	- continuing preparations for editing vocabulary
+	- view only vocabulary table now created incrementally (especially useful for large tables, eg., CF)
+	- Started implementation of Edit with VocabClassPanel/TermTable. In general, this shows 2 major limitations:
+		- slow for big vocabularies
+		- fixed column width
+	  So, perhaps:
+	  	- Disable in-place editing of the table (instead, include a direct import from a local file and process
+	  	  the CSV in the back-end for checking, and then update view-only-table for visual feed-back
+		- or, allow in-place editing but only for small vocabularies (say with no more than a couple hundred terms);
+		  direct the user to the import mechanism above in case of bigger vocabs.		
+			
 2009-05-27
 	- Unifying interface; menuBar set-up depending on interface type; new controller PortalController
 	  to improve MVC design.  Better general layout.

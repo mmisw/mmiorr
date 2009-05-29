@@ -19,7 +19,6 @@ import com.google.gwt.user.client.HistoryListener;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * The main panel.
@@ -28,8 +27,10 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class PortalMainPanel extends VerticalPanel implements LoginListener, HistoryListener {
 
-	public enum InterfaceType { BROWSE, ONTOLOGY, SEARCH };
+	public enum InterfaceType { BROWSE, ONTOLOGY_VIEW, ONTOLOGY_EDIT, SEARCH };
 	
+	
+	private final PortalControl pctrl;
 
 	private final LoginControlPanel loginControlPanel = new LoginControlPanel(this);
 	
@@ -56,6 +57,9 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	PortalMainPanel(final Map<String, String> params, List<OntologyInfo> ontologyInfos) {
 		super();
 		
+		pctrl = PortalControl.getInstance();
+		pctrl.setPortalMainPanel(this);
+		
 		History.addHistoryListener(this);
 		
 		LoginResult loginResult = null;
@@ -80,7 +84,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	    	loginResult.setUserId(params.get("userId"));
 	    }
 	    
-	    PortalControl.loginResult = loginResult;
+	    pctrl.setLoginResult(loginResult);
 
 	    menuBarPanel.showMenuBar(interfaceType);
 	    
@@ -104,8 +108,8 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	
 	private void userSignedIn() {
 		menuBarPanel.showMenuBar(interfaceType);
-		browsePanel.setLoginResult(PortalControl.loginResult);
-		loginControlPanel.update(PortalControl.loginResult);
+		browsePanel.setLoginResult(pctrl.getLoginResult());
+		loginControlPanel.update(pctrl.getLoginResult());
 		if ( signInPopup != null ) {
 			signInPopup.hide();
 		}
@@ -115,10 +119,10 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		if ( userPanel != null ) {
 			userPanel.logout();
 		}
-		PortalControl.loginResult = null;
+		pctrl.setLoginResult(null);
 		menuBarPanel.showMenuBar(interfaceType);
 		browsePanel.ontologyTable.showProgress();
-	    browsePanel.setLoginResult(PortalControl.loginResult);
+	    browsePanel.setLoginResult(pctrl.getLoginResult());
 	    loginControlPanel.update(null);
 	    
 	}
@@ -153,7 +157,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	}
 
 	public void loginOk(final LoginResult loginResult) {
-		PortalControl.loginResult = loginResult;
+		pctrl.setLoginResult(loginResult);
 		browsePanel.ontologyTable.showProgress();
 		
 		DeferredCommand.addCommand(new Command() {
@@ -176,11 +180,12 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		}
 		
 		if ( obj instanceof OntologyInfo ) {
-			PortalControl.ontologyInfo = (OntologyInfo) obj;
+			OntologyInfo ontologyInfo = (OntologyInfo) obj;
+			pctrl.setOntologyInfo(ontologyInfo);
 			
-			Main.log("onHistoryChanged: OntologyUri: " +PortalControl.ontologyInfo.getUri());
+			Main.log("onHistoryChanged: OntologyUri: " +ontologyInfo.getUri());
 			
-			dispatchOntologyPanel(PortalControl.ontologyInfo);
+			dispatchOntologyPanel(ontologyInfo);
 			return;
 		}
 		
@@ -196,16 +201,32 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	}
 	
 	private void dispatchOntologyPanel(final OntologyInfo ontologyInfo) {
-		interfaceType = InterfaceType.ONTOLOGY;
+		interfaceType = InterfaceType.ONTOLOGY_VIEW;
 	    menuBarPanel.showMenuBar(interfaceType);
 
 		String ontologyUri = ontologyInfo.getUri();
 
 		Main.log("dispatchOntologyPanel:  ontologyUri=" +ontologyUri);
-		Widget ontologyPanel = new OntologyPanel(ontologyInfo);
+		OntologyPanel ontologyPanel = new OntologyPanel(ontologyInfo);
 
 		bodyPanel.clear();
 		bodyPanel.add(ontologyPanel);
+		
+		pctrl.setOntologyPanel(ontologyPanel);
+	}
+
+	public void editNewVersion(OntologyPanel ontologyPanel) {
+		interfaceType = InterfaceType.ONTOLOGY_EDIT;
+	    menuBarPanel.showMenuBar(interfaceType);
+		
+		ontologyPanel.setEditingInterface();
+	}
+
+	public void cancelEdit(OntologyPanel ontologyPanel) {
+		interfaceType = InterfaceType.ONTOLOGY_VIEW;
+	    menuBarPanel.showMenuBar(interfaceType);
+		
+		ontologyPanel.setViewingInterface();
 	}
 
 

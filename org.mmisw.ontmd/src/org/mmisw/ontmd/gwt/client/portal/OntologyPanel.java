@@ -2,10 +2,10 @@ package org.mmisw.ontmd.gwt.client.portal;
 
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
+import org.mmisw.ontmd.gwt.client.EditDataPanel;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.ViewDataPanel;
 import org.mmisw.ontmd.gwt.client.metadata.MetadataPanel;
-import org.mmisw.ontmd.gwt.client.rpc.OntologyInfoPre;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
@@ -29,22 +29,25 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	private HeaderPanel headerPanel = new HeaderPanel();
 
 
+	private DisclosurePanel mdDisclosure = new DisclosurePanel("Metadata details");
+	
 	// created depending on type of interface: editing or viewwing
 	private MetadataPanel metadataPanel;
 	
-	// created ONLY in viewing mode
+	// created for viewing data mode
 	private ViewDataPanel viewDataPanel;
+	
+	// created for editing data mode
+	private EditDataPanel editDataPanel;
 	
 	
 	/** Ontology to be dispatched */
 	private OntologyInfo ontologyInfo;
 	
 	
-	private OntologyInfoPre ontologyInfoPre;
-	
 	
 	public OntologyMetadata getOntologyMetadata() {
-		return ontologyInfoPre.getOntologyMetadata();
+		return ontologyInfo.getOntologyMetadata();
 	}
 
 
@@ -59,14 +62,14 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		
 		add(container);
 		
-//		DecoratorPanel decPanel = new DecoratorPanel();
-//	    decPanel.setWidget(container);
-//	    add(decPanel);
+		mdDisclosure = new DisclosurePanel("Metadata details");
+		mdDisclosure.setAnimationEnabled(true);
+		
 
 	    enable(false);
 	    
 
-	    if ( ontologyInfo != null ) {
+	    if ( this.ontologyInfo != null ) {
 	    	container.add(prepareViewingInterface());
 	    }
 	    
@@ -81,25 +84,60 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 
 	
 	private Widget prepareViewingInterface() {
-		// create metadata panel for vieweing:
+		// create metadata panel for viewing:
 		metadataPanel = new MetadataPanel(this, false);
 
+		editDataPanel = null;
+		
+		// create data panel for viewing:
 		viewDataPanel = new ViewDataPanel();
 		
-		DisclosurePanel disclosure = new DisclosurePanel("Metadata details");
-		disclosure.setAnimationEnabled(true);
-		
-		disclosure.setContent(metadataPanel);
+		mdDisclosure.setContent(metadataPanel);
 		
 		CellPanel panel = new VerticalPanel();
 		panel.setSpacing(5);
 		
 		panel.add(headerPanel.getWidget());
 		
-//		panel.add(metadataPanel);
-		panel.add(disclosure);
+		panel.add(mdDisclosure);
 		
 		panel.add(viewDataPanel);
+		
+		return panel;
+	}
+	
+	void setViewingInterface() {
+		container.clear();
+		container.add(prepareViewingInterface());
+		getOntologyContents();
+		
+	}
+
+	void setEditingInterface() {
+		container.clear();
+		container.add(prepareEditingInterface());
+		
+		ontologyLoaded(ontologyInfo);
+		enable(true);
+	}
+
+	private Widget prepareEditingInterface() {
+		metadataPanel = new MetadataPanel(this, true);
+
+		viewDataPanel = null;
+		editDataPanel = new EditDataPanel();
+		
+		mdDisclosure.setContent(metadataPanel);
+		
+		
+		CellPanel panel = new VerticalPanel();
+		panel.setSpacing(5);
+		
+		panel.add(headerPanel.getWidget());
+		
+		panel.add(mdDisclosure);
+		
+		panel.add(editDataPanel);
 		
 		return panel;
 	}
@@ -136,6 +174,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 
 
 	private void ontologyLoaded(OntologyInfo ontologyInfo) {
+		this.ontologyInfo = ontologyInfo;
 		String error = ontologyInfo.getError();
 		if ( error != null ) {
 			headerPanel.updateDescription("<font color=\"red\">" +error+ "</font>");
@@ -150,6 +189,9 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			if ( viewDataPanel != null ) {
 				viewDataPanel.updateWith(ontologyInfo);
 			}
+			else if ( editDataPanel != null ) {
+				editDataPanel.updateWith(ontologyInfo);
+			}
 		}
 	}
 	
@@ -159,6 +201,9 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		}
 		if ( viewDataPanel != null ) {
 			viewDataPanel.enable(enabled);
+		}
+		if ( editDataPanel != null ) {
+			editDataPanel.enable(enabled);
 		}
 	}
 
