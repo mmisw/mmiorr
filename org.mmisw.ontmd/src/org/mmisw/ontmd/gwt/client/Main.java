@@ -123,6 +123,14 @@ public class Main implements EntryPoint {
 				includeLog = true;
 				params.remove("_log");
 			}
+			
+			// temporary: if param _ontmd=y is passed, then launch old ontmd, not the portal
+			String _ontmd = (String) params.get("_ontmd");
+			if (_ontmd != null) {
+				launchPortal = false;
+				params.remove("_ontmd");
+			}
+			
 		}
 		
 		getOntMdService();

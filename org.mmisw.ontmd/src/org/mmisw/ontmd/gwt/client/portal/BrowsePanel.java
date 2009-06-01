@@ -70,7 +70,28 @@ public class BrowsePanel extends VerticalPanel {
 	
 	
 	public void setOntologyInfos(List<OntologyInfo> ontologyInfos) {
-		this.ontologyInfos = ontologyInfos;
+		updatedOntologyInfosAndLogin(ontologyInfos, loginResult);
+	}
+	
+	
+	public void updatedOntologyInfosAndLogin(List<OntologyInfo> ontologyInfos, LoginResult loginResult) {
+		this.loginResult = loginResult;
+		
+		if ( loginResult != null && loginResult.isAdministrator() ) {
+			this.ontologyInfos = ontologyInfos;
+		}
+		else {
+			// remove entries with "test"-like name in the authority:
+			this.ontologyInfos = new ArrayList<OntologyInfo>();
+			for ( OntologyInfo oi : ontologyInfos ) {
+				String authority = oi.getAuthority();
+				if ( ! authority.equalsIgnoreCase("mmitest")
+				&&   ! authority.equalsIgnoreCase("testing")
+				) {
+					this.ontologyInfos.add(oi);
+				}
+			}
+		}
 		
 	    selTree.update(this.ontologyInfos, loginResult);
 	    ontologyTable.setOntologyInfos(this.ontologyInfos, loginResult);
@@ -152,10 +173,8 @@ public class BrowsePanel extends VerticalPanel {
 		
 	}
 
-	void setLoginResult(LoginResult loginResult_Old) {
-		this.loginResult = loginResult_Old;
-		selTree.update(ontologyInfos, loginResult_Old);
-		ontologyTable.setOntologyInfos(ontologyInfos, loginResult_Old);
+	void setLoginResult(LoginResult loginResult) {
+		updatedOntologyInfosAndLogin(ontologyInfos, loginResult);
 	}
 
 

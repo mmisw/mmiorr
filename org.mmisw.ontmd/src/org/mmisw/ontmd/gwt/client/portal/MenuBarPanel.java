@@ -126,7 +126,7 @@ public class MenuBarPanel extends HorizontalPanel {
 
 
 	private MenuItem _createMenuItemCreateNewVersion() {
-		return new MenuItem("Edit new version (not fully implemented yet)", new Command() {
+		return new MenuItem("Edit new version", new Command() {
 			public void execute() {
 				pctrl.editNewVersion();
 			}
@@ -134,7 +134,7 @@ public class MenuBarPanel extends HorizontalPanel {
 	}
 	
 	private MenuItem _createMenuItemVersions() {
-		return new MenuItem("Versions (not implemented yet)", new Command() {
+		return new MenuItem("Versions", new Command() {
 			public void execute() {
 				pctrl.showVersions();
 			}

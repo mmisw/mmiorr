@@ -75,7 +75,7 @@ public class PortalControl {
 	}
 
 	private String createLinkUpload() {
-		String link = GWT.getModuleBaseURL()+ "?_edit=y";
+		String link = GWT.getModuleBaseURL()+ "?_ontmd=y&_edit=y";
 		if ( loginResult != null ) {
 			link += "&userId=" +loginResult.getUserId();
 			link += "&sessionid=" +loginResult.getSessionId();

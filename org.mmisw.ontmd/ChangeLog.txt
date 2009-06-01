@@ -9,6 +9,13 @@ ChangeLog
 	  the list of all ontologies. However, the hyperlink for the newly created version does not
 	  resolve immediately; it seems the history token is added but the notification does not happen
 	  immediately?
+	  
+	- Filtering out ontologies with authority "mmitest" and "testing"; these are included only when
+	  an adminsitrator is logged in.
+	  
+	- Quick adjustments to the "New" options (Vocabulary, Mapping, Uplaod) to at least launch the 
+	  not-yet-integrated mechanisms.
+	
 	
 2009-05-28
 	- continuing preparations for editing vocabulary
