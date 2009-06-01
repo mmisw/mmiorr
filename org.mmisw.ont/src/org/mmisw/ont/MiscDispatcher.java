@@ -298,7 +298,8 @@ public class MiscDispatcher {
 			Statement _stmt = _con.createStatement();
 
 			String query = 
-				"select o.urn, o.display_label, o.user_id, o.contact_name, o.version_number, o.date_created, u.username " +
+				"select o.urn, o.display_label, o.user_id, o.contact_name, o.version_number, " +
+				"       o.date_created, u.username, o.ontology_id " +
 				"from v_ncbo_ontology o, ncbo_user u " +
 				"where o.user_id = u.id " +
 				"order by o.ontology_id, o.version_number";
@@ -316,6 +317,7 @@ public class MiscDispatcher {
 	        	String version_number = rs.getString(5);
 	        	String date_created = rs.getString(6);
 	        	String username = rs.getString(7);
+	        	String ontology_id = rs.getString(8);
 	        	
 	        	try {
 	        		MmiUri mmiUri = new MmiUri(ontologyUri);
@@ -343,6 +345,7 @@ public class MiscDispatcher {
 	        				+ sep +version_number
 	        				+ sep +date_created
 	        				+ sep +username
+	        				+ sep +ontology_id
 	        				+ "'"
 	        		);
 	        		
