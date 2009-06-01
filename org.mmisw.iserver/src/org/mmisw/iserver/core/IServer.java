@@ -3,9 +3,14 @@ package org.mmisw.iserver.core;
 import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
+import org.mmisw.iserver.gwt.client.rpc.BasicOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.CreateVocabularyInfo;
+import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
+import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.UploadOntologyResult;
 
 /**
  * Interface to get info from the server.
@@ -63,5 +68,11 @@ public interface IServer {
 	 * @return
 	 */
 	public OntologyInfo getOntologyContents(OntologyInfo ontologyInfo);
+	
+	
+	
+	public CreateOntologyResult createVocabulary(BasicOntologyInfo basicOntologyInfo, CreateVocabularyInfo createOntologyInfo) ;
 
+	
+	public UploadOntologyResult uploadOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult) ;
 }

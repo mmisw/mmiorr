@@ -15,6 +15,7 @@ public class VocabularyOntologyData extends OntologyData {
 		private static final long serialVersionUID = 1L;
 	
 		private String classUri;
+		private ClassInfo classInfo;
 		
 		private List<String> datatypeProperties;
 		
@@ -52,7 +53,16 @@ public class VocabularyOntologyData extends OntologyData {
 		public void setIndividuals(List<IndividualInfo> individuals) {
 			this.individuals = individuals;
 		}
-		
+
+
+		public void setClassInfo(ClassInfo classInfo) {
+			this.classInfo = classInfo;
+		}
+
+
+		public ClassInfo getClassInfo() {
+			return classInfo;
+		}
 		
 	}
 	

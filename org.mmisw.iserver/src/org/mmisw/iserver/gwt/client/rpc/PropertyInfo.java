@@ -10,7 +10,12 @@ import java.io.Serializable;
 public class PropertyInfo extends EntityInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	/** URI of the domain class */
 	private String domainUri;
+	
+	/** corresponding classInfo object */
+	private ClassInfo domainClassInfo;
+	
 	private boolean isDatatypeProperty;
 	private boolean isObjectProperty;
 	
@@ -53,6 +58,17 @@ public class PropertyInfo extends EntityInfo implements Serializable {
 
 	public String getDomainUri() {
 		return domainUri;
+	}
+
+	public void setDomainClassInfo(ClassInfo domainClassInfo) {
+		this.domainClassInfo = domainClassInfo;
+	}
+
+	/**
+	 * @return the domainClassInfo
+	 */
+	public ClassInfo getDomainClassInfo() {
+		return domainClassInfo;
 	}
 
 	

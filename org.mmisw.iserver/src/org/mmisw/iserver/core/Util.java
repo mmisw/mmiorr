@@ -147,6 +147,8 @@ public class Util {
 		// classes:
 		List<ClassInfo> classes = _getClasses(null, ontModel, ontologyUri);
 
+		_setDomainClassesForProperties(classes, properties);
+		
 		BaseOntologyData baseOntologyData = new BaseOntologyData();
 		baseOntologyData.setIndividuals(individuals);
 		baseOntologyData.setProperties(properties);
@@ -154,7 +156,7 @@ public class Util {
 		
 		// now, determine the type of ontology data to be created:
 		
-		// TODO: the next search for SKOS relations is not completedl it's just an initial idea.
+		// TODO: the next search for SKOS relations is not complete; it's just an initial idea.
 		boolean containSkos = false;
 		for ( IndividualInfo individualInfo : individuals ) {
 			List<PropValue> indivProps = individualInfo.getProps();
@@ -192,6 +194,35 @@ public class Util {
 	}
 	
 	
+	/**
+	 * It assigns the classInfo corresponding to the domain for each property.
+	 * @param classes      List of known classes
+	 * @param properties   Properties to be updated
+	 */
+	private static void _setDomainClassesForProperties(List<ClassInfo> classes,
+			List<PropertyInfo> properties) {
+
+		for ( PropertyInfo propertyInfo : properties ) {
+			String domainClassUri = propertyInfo.getDomainUri();
+			
+			// search corresponding classInfo in classes:
+			ClassInfo domainClassInfo = null;
+			
+			for ( ClassInfo classInfo : classes ) {
+				if ( domainClassUri.equals(classInfo.getUri()) ) {
+					domainClassInfo = classInfo;
+					break;
+				}
+			}
+			
+			if ( domainClassInfo != null ) {
+				propertyInfo.setDomainClassInfo(domainClassInfo);
+			}
+		}
+	}
+
+
+
 	private static OntologyData _createVocabularyOntologyData(BaseOntologyData baseData) {
 		VocabularyOntologyData ontologyData = new VocabularyOntologyData();
 		
@@ -216,6 +247,7 @@ public class Util {
 				classData = new ClassData();
 				classMap.put(classUri, classData);
 				classData.setClassUri(classUri);
+				classData.setClassInfo(entity.getDomainClassInfo());
 				classData.setDatatypeProperties(new ArrayList<String>());
 			}
 			

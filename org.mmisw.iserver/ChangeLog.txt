@@ -2,6 +2,12 @@ org.mmisw.iserver
 Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 
+2009-05-31
+	- Util.getEntities(OntologyInfo ontologyInfo, OntModel ontModel): assign ClassInfo object 
+	  corresponding to the domain of each property so it's easier to get associated attributes. 
+	  
+	- Many changes for including editing and creation of new version of a vocabulary ontology
+	
 2009-05-25
 	- Support to handle different types of ontology data: vocabulary, mapping, and other, although
 	  this is based on some heuristics; a better mechanism should be implemented (idea is to use

@@ -15,6 +15,12 @@ public class Config {
 		
 		VERSION                       ("iserver.app.version",  "1.5.0.beta0"),
 		BUILD                         ("iserver.app.build",    "buildPend"),
+		
+		/** where the previewed files are stored: */
+		ONTMD_PREVIEW_DIR             ("ontmd.preview.dir", "/Users/Shared/mmiregistry/ontmd/previews/"),
+		
+		ONTMD_VOC2RDF_DIR             ("ontmd.voc2rdf.dir", "/Users/Shared/mmiregistry/ontmd/preuploads/voc2rdf/"),
+		
 		;
 		
 		private final String name;

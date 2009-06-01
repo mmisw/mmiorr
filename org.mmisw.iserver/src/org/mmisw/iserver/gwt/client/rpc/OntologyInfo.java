@@ -1,6 +1,5 @@
 package org.mmisw.iserver.gwt.client.rpc;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,12 +8,9 @@ import java.util.List;
  * 
  * @author Carlos Rueda
  */
-public class OntologyInfo implements Serializable {
+public class OntologyInfo extends BasicOntologyInfo {
 	private static final long serialVersionUID = 1L;
 
-	private String error = null;
-	
-	
 	// used only on the client side
 	private transient char code;
 	
@@ -32,7 +28,6 @@ public class OntologyInfo implements Serializable {
 	private OntologyData ontologyData;
 
 	
-	private String authority;
 	private String type;
 
 	private String userId;
@@ -58,13 +53,6 @@ public class OntologyInfo implements Serializable {
 		this.code = code;
 	}
 	
-	public String getError() {
-		return error;
-	}
-
-	public void setError(String error) {
-		this.error = error;
-	}
 
 
 	public String getUri() {
@@ -87,18 +75,7 @@ public class OntologyInfo implements Serializable {
 	public int hashCode() {
 		return uri.hashCode();
 	}
-	/**
-	 * @return the authority
-	 */
-	public String getAuthority() {
-		return authority;
-	}
-	/**
-	 * @param authority the authority to set
-	 */
-	public void setAuthority(String authority) {
-		this.authority = authority;
-	}
+
 	/**
 	 * @return the type
 	 */
@@ -207,6 +184,5 @@ public class OntologyInfo implements Serializable {
 	public void setUnversionedUri(String unversionedUri) {
 		this.unversionedUri = unversionedUri;
 	}
-
 
 }
