@@ -4,11 +4,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.UploadOntologyResult;
 import org.mmisw.ontmd.gwt.client.LoginListener;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.UserPanel;
-import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 
 import com.google.gwt.core.client.GWT;
@@ -17,6 +18,7 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.HistoryListener;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -156,8 +158,8 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		signInPopup.show();
 	}
 
-	public void loginOk(final LoginResult loginResult) {
-		pctrl.setLoginResult(loginResult);
+	public void loginOk(final LoginResult loginResult_Old) {
+		pctrl.setLoginResult(loginResult_Old);
 		browsePanel.ontologyTable.showProgress();
 		
 		DeferredCommand.addCommand(new Command() {
@@ -171,11 +173,13 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 
 	public void onHistoryChanged(String historyToken) {
 		
+		Main.log("onHistoryChanged: historyToken: " +historyToken);
+		
 		Object obj = historyTokenMap.get(historyToken);
 		
 		if ( obj == null ) {
 			// for simplicity, always handle this by dispatching the main page:
-			dispatchMainPanel();
+			dispatchMainPanel(false);
 			return;
 		}
 		
@@ -192,42 +196,73 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	}
 
 	
-	private void dispatchMainPanel() {
+	private void dispatchMainPanel(boolean reloadList) {
+		
+		OntologyPanel ontologyPanel = pctrl.getOntologyPanel();
+		if ( ontologyPanel != null ) {
+			ontologyPanel.cancel();
+			pctrl.setOntologyPanel(null);
+		}
+		
 		interfaceType = InterfaceType.BROWSE;
 	    menuBarPanel.showMenuBar(interfaceType);
 
 	    bodyPanel.clear();
-		bodyPanel.add(browsePanel);
+
+	    if ( reloadList ) {
+	    	bodyPanel.add(new HTML("<i>Refreshing...</i>"));
+	    	Portal portal = pctrl.getPortal();
+	    	portal.refreshListAllOntologies();
+	    }
+	    else {
+	    	bodyPanel.add(browsePanel);
+	    }
 	}
 	
 	private void dispatchOntologyPanel(final OntologyInfo ontologyInfo) {
+		String ontologyUri = ontologyInfo.getUri();
+		Main.log("dispatchOntologyPanel:  ontologyUri=" +ontologyUri);
+
 		interfaceType = InterfaceType.ONTOLOGY_VIEW;
 	    menuBarPanel.showMenuBar(interfaceType);
 
-		String ontologyUri = ontologyInfo.getUri();
-
-		Main.log("dispatchOntologyPanel:  ontologyUri=" +ontologyUri);
-		OntologyPanel ontologyPanel = new OntologyPanel(ontologyInfo);
-
-		bodyPanel.clear();
-		bodyPanel.add(ontologyPanel);
-		
-		pctrl.setOntologyPanel(ontologyPanel);
+	    bodyPanel.clear();
+	    bodyPanel.add(new HTML("<i>Loading ontology...</i>"));
+	    
+	    DeferredCommand.addCommand(new Command() {
+			public void execute() {
+				OntologyPanel ontologyPanel = new OntologyPanel(ontologyInfo, true);
+				pctrl.setOntologyPanel(ontologyPanel);
+				
+			    bodyPanel.clear();
+				bodyPanel.add(ontologyPanel);
+			}
+	    });
 	}
 
 	public void editNewVersion(OntologyPanel ontologyPanel) {
 		interfaceType = InterfaceType.ONTOLOGY_EDIT;
 	    menuBarPanel.showMenuBar(interfaceType);
 		
-		ontologyPanel.setEditingInterface();
+		ontologyPanel.updateInterface(false);
 	}
 
 	public void cancelEdit(OntologyPanel ontologyPanel) {
 		interfaceType = InterfaceType.ONTOLOGY_VIEW;
 	    menuBarPanel.showMenuBar(interfaceType);
 		
-		ontologyPanel.setViewingInterface();
+	    ontologyPanel.updateInterface(true);
 	}
 
+	public void completedUploadOntologyResult(UploadOntologyResult uploadOntologyResult) {
+		
+		dispatchMainPanel(true);
+	}
+
+	public void refreshedListAllOntologies(List<OntologyInfo> ontologyInfos) {
+		bodyPanel.clear();
+		bodyPanel.add(browsePanel);
+		browsePanel.setOntologyInfos(ontologyInfos);
+	}
 
 }

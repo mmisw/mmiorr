@@ -1,7 +1,7 @@
 package org.mmisw.ontmd.gwt.client;
 
 import org.mmisw.ontmd.gwt.client.metadata.MainPanel;
-import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
+import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.FlexTable;

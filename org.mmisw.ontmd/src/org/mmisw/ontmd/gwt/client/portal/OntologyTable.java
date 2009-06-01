@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
-import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
+import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;

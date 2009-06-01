@@ -1,20 +1,14 @@
 package org.mmisw.ontmd.gwt.client.voc2rdf;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.mmisw.ontmd.gwt.client.Main;
-import org.mmisw.ontmd.gwt.client.util.TLabel;
 import org.mmisw.ontmd.gwt.client.voc2rdf.VocabPanel.CheckError;
 
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusListener;
-import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -23,9 +17,10 @@ import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.SourcesTableEvents;
+import com.google.gwt.user.client.ui.TableListener;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
@@ -35,77 +30,39 @@ import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
  * 
  * @author Carlos Rueda
  */
-public class TermTable extends VerticalPanel {
+public class CopyOfTermTable extends VerticalPanel {
 	
-	private static final String CONTENTS_TOOTIP =
-		"<b>Terms</b>:<br/>" +
-		"The 'words' (concepts, labels, unique IDs or code, or similar unique tags) of your vocabulary. " +
-		"The contents should contain a one line header with the descriptive titles for each column. " +
-		"Each line (row) should contain the unique label for each term followed by a set of values, " +
-		"corresponding to the header descriptive titles. The first column should contain the unique " +
-		"label for each term. It will be used to create a unique identifier. (Typical column titles " +
-		"include Description, Notes, See Also, or others -- these all add information to help " +
-		"describe your terms. These are treated as annotations in the ontology.) " +
-//		"Column values should be separated by comma characters; empty fields are " +
-//		"represented by two commas or tabs in a row. Each record (row) should be separated by a " +
-//		"return or end of line character. " +
-		"All term labels must be unique. " +
-		"<br/>" +
-		"<br/>" +
-		"Type Enter to edit a cell. Type Enter again to complete the change (or just move to a different " +
-		"field in the form using the navigation keys or the mouse). " +
-		"<br/>" +
-		"<br/>" +
-		"Use the Import button to set the contents of the table from CSV formatted text. <br/>" +
-		"Use the Export button to get a text version of the current contents of the table. " 
-		;
-
 	private static final int CONTROL_ROW = 0;
 	private static final int HEADER_ROW = 1;
 	private static final int FIRST_REGULAR_ROW = 2;
 	private static final int CONTROL_COL = 0;
 	private static final int FIRST_REGULAR_COL = 1;
 	
-	// disable this while we better assess peformance impact
-	private static final boolean SET_EVEN_N_ODD_ROW_STYLE = false;
-	
 	private ScrollPanel scrollPanel;
 	private final FlexTable flexTable = new FlexTable();
+	private int currRow;
+	private int currCol;
+	private TableCell currCell;
 	
-//	private int currRow;
-//	private int currCol;
-//	private TableCell currCell;
-	
-	private boolean readOnly;
-	
-	private final TLabel termsTLabel = new TLabel("", false, CONTENTS_TOOTIP);
-
-
-	private Set<Image> imgs = new HashSet<Image>();
-	
-	private TermTableInterface tti;
-	
+	private final boolean readOnly;
 
 	/**
 	 * Create a editable table for the terms.
 	 * @param cols number of desired columns
-	 * @param termsTLabel 
 	 */
-	public TermTable(TermTableInterface tti, int cols, boolean readOnly) {
-		this.tti = tti;
+	public CopyOfTermTable(int cols, boolean readOnly) {
 		this.add(flexTable);
 		this.readOnly = readOnly;
 		
 		flexTable.setBorderWidth(1);
-		flexTable.setWidth("100%");
 		
 		flexTable.setStylePrimaryName("TermTable");
 		
-//		flexTable.addTableListener(new TableListener() {
-//			public void onCellClicked(SourcesTableEvents sender, int row, int col) {
-//				_cellClicked(row, col);
-//			}
-//		});
+		flexTable.addTableListener(new TableListener() {
+			public void onCellClicked(SourcesTableEvents sender, int row, int col) {
+				_cellClicked(row, col);
+			}
+		});
 		
 		addRow(cols);   // control row
 		addRow(cols);   // header row
@@ -116,29 +73,6 @@ public class TermTable extends VerticalPanel {
 
 		_updateStyles(1);
 		_updatePositions(0, 0);
-	}
-	
-	public List<String> getHeaderCols() {
-		List<String> headerCols = new ArrayList<String>();
-		int cols = flexTable.getCellCount(0);
-		for ( int col = CONTROL_COL + 1; col < cols; col++ ) {
-			TableCell html = (TableCell) _getWidget(HEADER_ROW, col);
-			String text = html.getText();
-			headerCols.add(text);
-		}
-		return headerCols;
-	}
-	
-	public void setReadOnly(boolean readOnly) {
-		if ( this.readOnly == readOnly ) {
-			return;
-		}
-		this.readOnly = readOnly;
-		
-		for ( Image img : imgs ) {
-			img.setVisible(!readOnly);
-		}
-		
 	}
 	
 	
@@ -187,21 +121,6 @@ public class TermTable extends VerticalPanel {
 	private Widget _getWidget(int row, int col) {
 		return flexTable.getWidget(row, col);
 	}
-	
-	
-	Image _createMenu(final int row, final int col) {
-		Image img = Main.images.tridown().createImage();
-		img.addClickListener(new ClickListener() {
-			public void onClick(Widget sender) {
-				_cellClicked(row, col);
-			}
-		});
-		img.setVisible(!readOnly);
-		
-		imgs.add(img);
-		
-		return img;
-	}
 
 	/**
 	 * Sets a cell in this table.
@@ -227,15 +146,15 @@ public class TermTable extends VerticalPanel {
 				
 				hp.setCellHorizontalAlignment(html, ALIGN_RIGHT);
 				
-//				if ( readOnly ) {
-//					hp.add(html);
-//					hp.add(filler);
-//					
-//					hp.setCellWidth(html, "80%");
-//					hp.setCellWidth(filler, "20%");
-//				}
-//				else {
-					Image img = _createMenu(row, col);
+				if ( readOnly ) {
+					hp.add(html);
+					hp.add(filler);
+					
+					hp.setCellWidth(html, "80%");
+					hp.setCellWidth(filler, "20%");
+				}
+				else {
+					Image img = Main.images.tridown().createImage();
 					
 					hp.add(img);
 					hp.add(html);
@@ -246,23 +165,13 @@ public class TermTable extends VerticalPanel {
 					hp.setCellWidth(filler, "20%");
 					
 					hp.setCellHorizontalAlignment(img, ALIGN_LEFT);
-//				}
+				}
 			}
-			else { //if ( ! readOnly ) {
-				Image img = _createMenu(row, col);
+			else if ( ! readOnly ) {
+				Image img = Main.images.tridown().createImage();
 				hp.add(img);
 			}
 			
-		}
-		else if ( row == CONTROL_ROW && col == CONTROL_COL ) {
-			HorizontalPanel hp = new HorizontalPanel();
-			hp.setVerticalAlignment(ALIGN_MIDDLE);
-			Image img = _createMenu(row, col);
-			hp.add(img);
-			if ( termsTLabel != null ) {
-				hp.add(termsTLabel);
-			}
-			_setWidget(row, col, hp);	
 		}
 		else {
 			_setWidget(row, col, new HTML(text));
@@ -278,7 +187,7 @@ public class TermTable extends VerticalPanel {
 		
 		for (int row = fromRow, rows = flexTable.getRowCount(); row < rows; ++row) {
 			
-			if ( SET_EVEN_N_ODD_ROW_STYLE && row >= FIRST_REGULAR_ROW ) {
+			if ( row >= FIRST_REGULAR_ROW ) {
 				rf.setStyleName(row, (row % 2) != 0 ? "TermTable-OddRow" : "TermTable-EvenRow");
 			}
 			cf.setAlignment(row, 0, ALIGN_CENTER, ALIGN_MIDDLE);
@@ -298,25 +207,20 @@ public class TermTable extends VerticalPanel {
 			if ( col > 0 ) {
 				_dispatchColumnHeader(col);
 			}
-			else {
-				_dispatchRootCell();
-			}
 		}
 		else {
 			if ( col == 0 ) {
 				_dispatchRowMenu(row);
 			}
-			// No need to set focus regular cell, as each cell here is now a FocusPanel, so it gets
-			// its focus from the system
-//			else {
-//				// dispatch regular cell:
-//				currRow = row;
-//				currCol = col;
-//				currCell = (TableCell) _getWidget(currRow, currCol);
-//				
-//				//_editCell(true);
-//				currCell.setFocus(true);
-//			}
+			else {
+				// dispatch regular cell:
+				currRow = row;
+				currCol = col;
+				currCell = (TableCell) _getWidget(currRow, currCol);
+				
+				//_editCell(true);
+				currCell.setFocus(true);
+			}
 		}
 	}
 	
@@ -324,9 +228,9 @@ public class TermTable extends VerticalPanel {
 	 * 
 	 */
 	private void _dispatchRowMenu(final int row) {
-//		if ( readOnly ) {
-//			return;
-//		}
+		if ( readOnly ) {
+			return;
+		}
 		
 		Widget ww = _getWidget(row, 0);
 		int left = ww.getAbsoluteLeft();
@@ -400,16 +304,10 @@ public class TermTable extends VerticalPanel {
 	}
 
 	
-	private void _dispatchRootCell() {
-
-		Widget ww = _getWidget(CONTROL_COL, CONTROL_ROW);
-		int left = ww.getAbsoluteLeft();
-		int top = ww.getAbsoluteTop();
-		tti.dispatchTableMenu(left, top);
-	}
-	
-	
 	private void _dispatchColumnHeader(final int col) {
+		if ( readOnly ) {
+			return;
+		}
 
 		Widget ww = _getWidget(CONTROL_COL, col);
 		int left = ww.getAbsoluteLeft();
@@ -668,15 +566,11 @@ public class TermTable extends VerticalPanel {
 	}
 	
 	
-	private class TableCell extends HorizontalPanel  {
-//		private TextBox contents = new TextBox();
-		private HTML contents = new HTML();
+	private class TableCell extends HorizontalPanel {
+		private TextBox contents = new TextBox();
 
 		private int actualRow;
 		private int actualCol;
-		
-		private final FocusPanel focusPanel;
-		
 		
 		
 		TableCell(int actualRow, int actualCol, String text) {
@@ -687,25 +581,12 @@ public class TermTable extends VerticalPanel {
 			this.actualRow = row;
 			this.actualCol = col;
 			
-			if ( text.trim().length() > 0 ) {
-				contents.setSize("100%", "100%");
-			}
-			else {
-				contents.setSize("30px", "16px");
-			}
-			contents.setText(text);
-
-			focusPanel = new FocusPanel(contents);
-			focusPanel.setStylePrimaryName("TermTable-termField");
-			focusPanel.setSize("100%", "100%");
+			contents.setStylePrimaryName("TermTable-termField");
+			contents.setReadOnly(true);
+			contents.setWidth("270px");
 			
-			
-			focusPanel.addFocusListener(new FocusListener() {
+			contents.addFocusListener(new FocusListener() {
 				public void onFocus(Widget sender) {
-					if ( readOnly ) {
-						return;
-					}
-					
 					if ( scrollPanel != null ) {
 						if ( actualRow <= FIRST_REGULAR_ROW ) {
 							scrollPanel.scrollToTop();
@@ -714,132 +595,91 @@ public class TermTable extends VerticalPanel {
 							scrollPanel.scrollToLeft();
 						}
 					}
-					focusPanel.addStyleDependentName("focused");
-//					contents.addStyleDependentName("focused");
-//					contents.selectAll();
+					contents.addStyleDependentName("focused");
+					contents.selectAll();
 				}
 
 				public void onLostFocus(Widget sender) {
-					if ( readOnly ) {
-						return;
-					}
-					
-					focusPanel.removeStyleDependentName("focused");
+					contents.removeStyleDependentName("focusedEdit");
+					contents.setReadOnly(true);
+					contents.selectAll();
+
+					contents.removeStyleDependentName("focused");
 				}
 			});
 
-			focusPanel.addKeyboardListener(new KeyboardListenerAdapter() {
-				public void onKeyPress(Widget sender, char keyCode, int modifiers) {
-					
-					if ( readOnly ) {
-						return;
-					}
+			if ( ! readOnly ) {
+				contents.addKeyboardListener(new KeyboardListenerAdapter() {
+					public void onKeyPress(Widget sender, char keyCode, int modifiers) {
 
+						if ( keyCode == KEY_ENTER ) {
+							if ( contents.isReadOnly() ) {
+								contents.setReadOnly(false);
+								contents.addStyleDependentName("focusedEdit");
+								int len = contents.getText().length();
 
-					if ( keyCode == KEY_ENTER ) {
-						_processEnter();
-						return;
-					}
+								contents.setCursorPos(len);
 
-					int row = actualRow;
-					int col = actualCol;
-					if ( keyCode == KEY_DOWN || keyCode == KEY_UP ) {
-						row = actualRow + (keyCode == KEY_DOWN ? 1 : -1);
-//						contents.cancelKey();
-					}
-					else if ( keyCode == KEY_RIGHT || keyCode == KEY_LEFT ) {
-						col = actualCol + (keyCode == KEY_RIGHT ? 1 : -1);
-//						contents.cancelKey();
-					}	
-
-					if ( row == actualRow && col == actualCol ) {
-						return;
-					}
-
-					if ( row < 0 || col < 0 ) {
-						return;
-					}
-
-					if ( row >= flexTable.getRowCount() ) {
-						return;
-					}
-
-					if ( col >= flexTable.getCellCount(row) ) {
-						return;
-					}
-
-					Widget widget = flexTable.getWidget(row, col);
-					if ( widget instanceof FocusPanel ) {
-						Main.log("focusing row,col= " +row+ "," +col);
-						((FocusPanel) widget).setFocus(true);
-					}
-				}
-			});
-
-			
-			add(focusPanel);
-		}
-
-		protected void _processEnter() {
-			
-			DeferredCommand.addCommand(new Command() {
-				public void execute() {
-					final TextArea ta = new TextArea();
-					String text = contents.getText();
-					ta.setText(text.trim());
-					
-					int ww = focusPanel.getOffsetWidth();
-					int hh = (int) (1.3 * focusPanel.getOffsetHeight());
-					
-					hh = Math.max(hh, 40);
-					ww = Math.max(ww, 100);
-					
-//					ta.setHeight(hh+ "px");
-					ta.setSize(ww+ "px", hh+ "px");
-//					ta.setCharacterWidth(text.length());
-					
-					ta.addFocusListener(new FocusListener() {
-						public void onFocus(Widget sender) {
-						}
-						public void onLostFocus(Widget sender) {
-							RootPanel.get().remove(ta);
-							focusPanel.setFocus(true);
-						}
-					});
-
-					ta.addKeyboardListener(new KeyboardListenerAdapter() {
-						public void onKeyPress(Widget sender, char keyCode, int modifiers) {
-
-							if ( keyCode == KEY_ENTER ) {
-								ta.cancelKey();
-								contents.setText(ta.getText());
-								contents.setSize("100%", "100%");
-								RootPanel.get().remove(ta);
-								focusPanel.setFocus(true);
-								return;
 							}
-							if ( keyCode == KEY_ESCAPE ) {
-								RootPanel.get().remove(ta);
-								focusPanel.setFocus(true);
-								return;
+							else {
+								contents.removeStyleDependentName("focusedEdit");
+								contents.setReadOnly(true);
+								contents.selectAll();
 							}
+							return;
 						}
-					});
-					
-					int left = focusPanel.getAbsoluteLeft();
-					int top = focusPanel.getAbsoluteTop();
-					
-					RootPanel.get().add(ta, left, top);
-					ta.setFocus(true);
-					ta.setCursorPos(text.length());
-				}
-			});
+
+						if ( !contents.isReadOnly() ) {
+							return;
+						}
+
+						int row = actualRow;
+						int col = actualCol;
+						if ( keyCode == KEY_DOWN || keyCode == KEY_UP ) {
+							row = actualRow + (keyCode == KEY_DOWN ? 1 : -1);
+							contents.cancelKey();
+						}
+						else if ( keyCode == KEY_RIGHT || keyCode == KEY_LEFT ) {
+							col = actualCol + (keyCode == KEY_RIGHT ? 1 : -1);
+							contents.cancelKey();
+						}	
+
+						if ( row == actualRow && col == actualCol ) {
+							return;
+						}
+
+						if ( row < 0 || col < 0 ) {
+							return;
+						}
+
+						if ( row >= flexTable.getRowCount() ) {
+							return;
+						}
+
+						if ( col >= flexTable.getCellCount(row) ) {
+							return;
+						}
+
+						Widget widget = _getWidget(row, col);
+						if ( ! (widget instanceof TableCell) ) {
+							return;
+						}
+
+						TableCell tcell = (TableCell) widget;
+						if ( tcell != null ) {
+							tcell.setFocus(true);
+						}
+					}
+				});
+			}
+			
+			contents.setText(text);
+			add(contents);
 		}
 
 		
 		public void setFocus(boolean b) {
-//			contents.setFocus(b);
-			focusPanel.setFocus(b);
+			contents.setFocus(b);
 		}
 
 		void updatePosition(int row, int col) {
@@ -854,33 +694,5 @@ public class TermTable extends VerticalPanel {
 		String getText() {
 			return contents.getText();
 		}
-	}
-
-	public int getNumRows() {
-		return flexTable.getRowCount();
-	}
-	
-	public List<List<String>> getRows() {
-		List<List<String>> rows = new ArrayList<List<String>>();
-		
-		for (int rr = FIRST_REGULAR_ROW, numRows = flexTable.getRowCount(); rr < numRows; ++rr) {
-			List<String> row = new ArrayList<String>();
-			
-			for ( int cc = FIRST_REGULAR_COL, numCols = flexTable.getCellCount(rr); cc < numCols; cc++ ) {
-				TableCell html = (TableCell) _getWidget(rr, cc);
-				String text = html.getText();
-				row.add(text);
-			}
-			
-			// add the row only if not empty:
-			for ( String text : row ) {
-				if ( text.trim().length() > 0 ) {
-					rows.add(row);
-					break;
-				}
-			}
-		}
-
-		return rows;
 	}
 }

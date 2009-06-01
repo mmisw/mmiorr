@@ -1,7 +1,10 @@
 package org.mmisw.ontmd.gwt.client.portal;
 
+import java.util.List;
+
+import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
-import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
+import org.mmisw.iserver.gwt.client.rpc.UploadOntologyResult;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
@@ -19,6 +22,7 @@ public class PortalControl {
 		return instance;
 	}
 	
+	private Portal portal;
 	private PortalMainPanel portalMainPanel;
 	
 	private LoginResult loginResult;
@@ -132,10 +136,10 @@ public class PortalControl {
 	}
 
 	/**
-	 * @param loginResult the loginResult to set
+	 * @param loginResult_Old the loginResult to set
 	 */
-	public void setLoginResult(LoginResult loginResult) {
-		this.loginResult = loginResult;
+	public void setLoginResult(LoginResult loginResult_Old) {
+		this.loginResult = loginResult_Old;
 	}
 
 	/**
@@ -157,5 +161,28 @@ public class PortalControl {
 		return ontologyPanel;
 	}
 
+	public void completedUploadOntologyResult(UploadOntologyResult uploadOntologyResult) {
+		
+		portalMainPanel.completedUploadOntologyResult(uploadOntologyResult);
+	}
 
+	public void refreshedListAllOntologies(List<OntologyInfo> ontologyInfos) {
+		portalMainPanel.refreshedListAllOntologies(ontologyInfos);
+	}
+
+	/**
+	 * @return the portal
+	 */
+	public Portal getPortal() {
+		return portal;
+	}
+
+	/**
+	 * @param portal the portal to set
+	 */
+	public void setPortal(Portal portal) {
+		this.portal = portal;
+	}
+
+	
 }

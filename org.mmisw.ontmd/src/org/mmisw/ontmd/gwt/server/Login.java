@@ -11,7 +11,7 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
+import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 
 
 /** 

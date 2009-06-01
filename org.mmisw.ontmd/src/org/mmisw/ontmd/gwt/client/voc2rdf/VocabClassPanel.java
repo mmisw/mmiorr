@@ -3,18 +3,24 @@ package org.mmisw.ontmd.gwt.client.voc2rdf;
 import java.util.List;
 import java.util.Map;
 
+import org.mmisw.iserver.gwt.client.rpc.ClassInfo;
+import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.CreateVocabularyInfo;
+import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData.ClassData;
 import org.mmisw.ontmd.gwt.client.portal.IVocabPanel;
+import org.mmisw.ontmd.gwt.client.util.IRow;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
+import org.mmisw.ontmd.gwt.client.util.StatusPopup;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
 import org.mmisw.ontmd.gwt.client.util.Util;
 import org.mmisw.ontmd.gwt.client.voc2rdf.VocabPanel.CheckError;
 
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CellPanel;
-import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -24,6 +30,10 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.MenuBar;
+import com.google.gwt.user.client.ui.MenuItem;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -40,7 +50,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author Carlos Rueda
  */
-public class VocabClassPanel extends VerticalPanel {
+public class VocabClassPanel extends BaseOntologyPanel implements TermTableInterface {
 
 	private static final String CLASS_TOOTIP =
 		"The class for the terms defined in this vocabulary; should be a singular noun. " +
@@ -57,28 +67,6 @@ public class VocabClassPanel extends VerticalPanel {
 //		"If the term is in a controlled vocabulary but does not have its own URI, enter the " +
 //		"controlled vocabulary URI. Otherwise, leave this field blank.";
 		
-	private static final String CONTENTS_TOOTIP =
-		"The 'words' (concepts, labels, unique IDs or code, or similar unique tags) of your vocabulary. " +
-		"The contents should contain a one line header with the descriptive titles for each column. " +
-		"Each line (row) should contain the unique label for each term followed by a set of values, " +
-		"corresponding to the header descriptive titles. The first column should contain the unique " +
-		"label for each term. It will be used to create a unique identifier. (Typical column titles " +
-		"include Description, Notes, See Also, or others -- these all add information to help " +
-		"describe your terms. These are treated as annotations in the ontology.) " +
-//		"Column values should be separated by comma characters; empty fields are " +
-//		"represented by two commas or tabs in a row. Each record (row) should be separated by a " +
-//		"return or end of line character. " +
-		"All term labels must be unique. " +
-		"<br/>" +
-		"<br/>" +
-		"Type Enter to edit a cell. Type Enter again to complete the change (or just move to a different " +
-		"field in the form using the navigation keys or the mouse). " +
-		"<br/>" +
-		"<br/>" +
-		"Use the Import button to set the contents of the table from CSV formatted text. <br/>" +
-		"Use the Export button to get a text version of the current contents of the table. " 
-		;
-
 	private static final String CONTENTS_DEFAULT = 
 		"name,description\n" +
 		" , \n"
@@ -96,15 +84,22 @@ public class VocabClassPanel extends VerticalPanel {
 //		"The class refers to the main theme associated with your vocabulary. " +
 //		"Each term is considered an instance of this class. " +
 //		"The terms are the 'words' (concepts, labels, unique IDs or code, or similar unique tags) of your vocabulary. " +
-//		"CLick the cells of the table for editing the contents. " +
+//		"Click the cells of the table for editing the contents. " +
 //		"The CSV button display the contents of the table in CSV format allowing direct editing on the text format. " 
 //		;
 
+	
+	private boolean active = true;
+	
+	private VerticalPanel widget = new VerticalPanel();
 
 	private CellPanel contentsContainer = new VerticalPanel();
 	
 
 	private TextBoxBase classNameTextBox;
+	
+	private final StatusPopup statusPopup = new StatusPopup("250px", false);
+
 
 	private final boolean useTableScroll = false;
 	
@@ -117,13 +112,70 @@ public class VocabClassPanel extends VerticalPanel {
 	
 	private IVocabPanel vocabPanel;
 	
+	private final ClassData classData;
 	
-	public VocabClassPanel(IVocabPanel vocabPanel) {
+	private HorizontalPanel classNamePanel;
+	
+	
+	public VocabClassPanel(ClassData classData, IVocabPanel vocabPanel, boolean readOnly) {
+		super(readOnly);
+		this.classData = classData;
 		this.vocabPanel = vocabPanel;
-		setWidth("1000");
+		widget.setWidth("100%");
 
-		add(createForm());
+		widget.add(createForm());
 		updateContents(CONTENTS_DEFAULT);
+	}
+	
+	public void setReadOnly(boolean readOnly) {
+		if ( isReadOnly() == readOnly ) {
+			return;
+		}
+		super.setReadOnly(readOnly);
+		prepareClassNamePanel(classNamePanel);
+		termTable.setReadOnly(readOnly);
+	}
+	
+	private String getClassNameFromClassData() {
+		String classUri = classData.getClassUri();
+		ClassInfo classInfo = classData.getClassInfo();
+		String className;
+		if ( classInfo != null ) {
+			className = classInfo.getLocalName();
+		}
+		else {
+			// should not happen; extract simple name for URI? For now, just use the whole URI:
+			className = classUri; 
+		}
+		return className;
+	}
+	
+	private HorizontalPanel createClassNamePanel() {
+		HorizontalPanel classNamePanel = new HorizontalPanel();
+		classNamePanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		prepareClassNamePanel(classNamePanel);
+		return classNamePanel;
+	}
+	
+	private void prepareClassNamePanel(HorizontalPanel classNamePanel) {
+		String label = "Class name";
+		String tooltip = "<b>" +label+ "</b>:<br/>" +CLASS_TOOTIP;
+
+		String className = getClassNameFromClassData();
+		
+		classNamePanel.clear();
+		classNamePanel.add(new TLabel(label, !isReadOnly(), tooltip));
+		
+		if ( isReadOnly() ) {
+			Label lbl = new Label(className);
+			lbl.setTitle(classData.getClassUri());
+			classNamePanel.add(lbl);
+		}
+		else {
+			classNameTextBox = Util.createTextBoxBase(1, "300", null);
+			classNameTextBox.setText(className);
+			classNamePanel.add(classNameTextBox);
+		}
 	}
 
 	/**
@@ -153,82 +205,95 @@ public class VocabClassPanel extends VerticalPanel {
 		
 		
 		
-		ChangeListener cl = null;
-		classNameTextBox = Util.createTextBoxBase(1, "200", cl );
-		
-		String label = "Class name";
-		String tooltip = "<b>" +label+ "</b>:<br/>" +CLASS_TOOTIP;
+		classNamePanel = createClassNamePanel();
 
-		HorizontalPanel classNamePanel = new HorizontalPanel();
-		classNamePanel.add(new TLabel(label, true, tooltip));
-		classNamePanel.add(classNameTextBox);
 		
-		flexPanel.getFlexCellFormatter().setColSpan(row, 0, 4);
+		flexPanel.getFlexCellFormatter().setColSpan(row, 0, 3);
 		flexPanel.setWidget(row, 0, classNamePanel);
 //		flexPanel.setWidget(row, 0, new TLabel(label, true, tooltip));
 		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 
-//		flexPanel.setWidget(row, 1, classNameTextBox);
-//		flexPanel.getFlexCellFormatter().setAlignment(row, 1, 
-//				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
-//		);
 		row++;
 
-		flexPanel.setWidget(row, 0, new TLabel("Terms:", true, "<b>Terms</b>:<br/>" +CONTENTS_TOOTIP));
-		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
-				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
-		);
-		
-		HorizontalPanel exPanel = new HorizontalPanel();
-		exPanel.add(_createCsvButtons());
-		flexPanel.setWidget(row, 2, exPanel);
-		flexPanel.getFlexCellFormatter().setAlignment(row, 2, 
-				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_BOTTOM
-		);
-		row++;
-
-//		contentsContainer.setSize("600", "200");
 		
 		if ( useTableScroll ) {
 			contentsContainer.add(tableScroll);
 		}
 		
 		
-		flexPanel.getFlexCellFormatter().setColSpan(row, 0, 4);
-		flexPanel.setWidget(row, 0, contentsContainer);
-		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
-				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
-		);
-		row++;
+		if ( true ) {
+			VerticalPanel vp = new VerticalPanel();
+//			vp.setBorderWidth(1);
+			vp.setWidth("100%");
+			vp.add(flexPanel);
+			vp.add(contentsContainer);
 
+			return vp;
+		}
+		else {
+
+			flexPanel.getFlexCellFormatter().setColSpan(row, 0, 4);
+			flexPanel.setWidget(row, 0, contentsContainer);
+			flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
+					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+			);
+			row++;
+
+			return flexPanel;
+		}
 		
-		return flexPanel;
 	}
 	
-	private CellPanel _createCsvButtons() {
-		CellPanel panel = new HorizontalPanel();
-		panel.setSpacing(2);
-		
-		importCsvButton = new PushButton("Import", new ClickListener() {
-			public void onClick(Widget sender) {
+//	private CellPanel _createCsvButtons() {
+//		CellPanel panel = new HorizontalPanel();
+//		panel.setSpacing(2);
+//		
+//		importCsvButton = new PushButton("Import", new ClickListener() {
+//			public void onClick(Widget sender) {
+//				dispatchImportAction();
+//			}
+//		});
+//		importCsvButton.setTitle("Import contents in CSV format");
+//		panel.add(importCsvButton);
+//		
+//		exportCsvButton = new PushButton("Export", new ClickListener() {
+//			public void onClick(Widget sender) {
+//				exportContents();
+//			}
+//		});
+//		exportCsvButton.setTitle("Exports the contents in a CSV format");
+//		panel.add(exportCsvButton);
+//		
+//		return panel;
+//	}
+//	
+	
+	public void dispatchTableMenu(int left, int top) {
+
+	    MenuBar menu = new MenuBar(true);
+	    final PopupPanel menuPopup = new PopupPanel(true);
+	    
+	    menu.addItem(new MenuItem("Import...", new Command() {
+			public void execute() {
+				menuPopup.hide();
 				dispatchImportAction();
 			}
-		});
-		importCsvButton.setTitle("Import contents in CSV format");
-		panel.add(importCsvButton);
-		
-		exportCsvButton = new PushButton("Export", new ClickListener() {
-			public void onClick(Widget sender) {
+	    }));
+	    menu.addItem(new MenuItem("Export...", new Command() {
+			public void execute() {
+				menuPopup.hide();
 				exportContents();
 			}
-		});
-		exportCsvButton.setTitle("Exports the contents in a CSV format");
-		panel.add(exportCsvButton);
-		
-		return panel;
+	    }));
+	    
+	    menuPopup.setWidget(menu);
+	    
+	    menuPopup.setPopupPosition(left, top);
+		menuPopup.show();
 	}
+
 	
 	
 	String getClassName() {
@@ -281,7 +346,7 @@ public class VocabClassPanel extends VerticalPanel {
 	private void updateContents(String contents) {
 		
 		StringBuffer errorMsg = new StringBuffer();
-		TermTable tt = TermTableCreator.createTermTable(',', contents, false, errorMsg);
+		TermTable tt = TermTableCreator.createTermTable(this, ',', contents, false, errorMsg);
 		
 		if ( errorMsg.length() > 0 ) {
 //			statusLabel.setHTML("<font color=\"red\">" +errorMsg+ "</font>");
@@ -307,9 +372,24 @@ public class VocabClassPanel extends VerticalPanel {
 	void reset() {
 //		statusLabel.setText("");
 
-		classNameTextBox.setText("");
+		if ( classNameTextBox != null ) {
+			classNameTextBox.setText("");
+		}
 		updateContents(CONTENTS_DEFAULT);
 	}
+
+	
+	private void insertTermTable() {
+		if ( useTableScroll ) {
+			tableScroll.setWidget(termTable);
+			termTable.setScrollPanel(tableScroll);
+		}
+		else {
+			contentsContainer.clear();
+			contentsContainer.add(termTable);
+		}
+	}
+	
 
 	
 	/**
@@ -321,7 +401,8 @@ public class VocabClassPanel extends VerticalPanel {
 		private char separator;
 		private String text;
 
-		private TermTable incrTermTable;
+//		private TermTable incrTermTable;
+		private boolean firstStep = true;
 
 		private int numHeaderCols;
 
@@ -331,16 +412,13 @@ public class VocabClassPanel extends VerticalPanel {
 		
 		private int currFromRow;
 		
-		private HTML statusHtml;
-		
 		private boolean preDone;
 
 
-		ImportCommand(char separator, String text, HTML statusHtml) {
+		ImportCommand(char separator, String text) {
 			assert text.length() > 0;
 			this.separator = separator;
 			this.text = text;
-			this.statusHtml = statusHtml;
 		}
 
 
@@ -350,26 +428,31 @@ public class VocabClassPanel extends VerticalPanel {
 				return false;
 			}
 				
-			if ( incrTermTable == null ) {
-				// first step.
+			if ( firstStep ) { // if ( incrTermTable == null ) {
+				firstStep = false;
 				
 				lines = text.split("\n|\r\n|\r");
 				if ( lines.length == 0 || lines[0].trim().length() == 0 ) {
 					// A 1-column table to allow the user to insert columns (make column menu will be available)
-					incrTermTable =  new TermTable(1, false);
+//					incrTermTable =  
+					termTable = new TermTable(VocabClassPanel.this, 1, false);
+					insertTermTable();
 					preDone();
 					return true;
 				}
 				
 				List<String> headerCols = TermTableCreator.parseLine(lines[0], separator);
 				numHeaderCols = headerCols.size();
-				incrTermTable = new TermTable(numHeaderCols, false);
+//				incrTermTable = 
+				termTable = new TermTable(VocabClassPanel.this, numHeaderCols, isReadOnly());
 				
 				// header:
 				for ( int c = 0; c < numHeaderCols; c++ ) {
 					String str = headerCols.get(c).trim();
-					incrTermTable.setHeader(c, str);
+//					incrTermTable.
+					termTable.setHeader(c, str);
 				}		
+				insertTermTable();
 				
 				if ( lines.length  == 1 ) {
 					preDone();
@@ -393,26 +476,18 @@ public class VocabClassPanel extends VerticalPanel {
 		}
 		
 		private void updateStatus() {
-			statusHtml.setHTML("<font color=\"blue\">Preparing ... (" +
-					(1+rowInTermTable)+ ")" + "</font>");
+			statusPopup.setStatus("Preparing ... (" +(1+rowInTermTable)+ ")");
 		}
 		
 		private void preDone() {
 			updateStatus();
 			preDone = true;
-			termTable = incrTermTable;
+//			termTable = incrTermTable;
 		}
-		
-		private void done() {
-			if ( useTableScroll ) {
-				tableScroll.setWidget(termTable);
-				termTable.setScrollPanel(tableScroll);
-			}
-			else {
-				contentsContainer.clear();
-				contentsContainer.add(termTable);
-			}
 
+		private void done() {
+//			insertTermTable();
+			statusPopup.hide();
 			vocabPanel.statusPanelsetWaiting(false);
 			vocabPanel.statusPanelsetHtml("");
 			vocabPanel.enable(true);
@@ -439,16 +514,19 @@ public class VocabClassPanel extends VerticalPanel {
 				}
 				
 				rowInTermTable++;
-				incrTermTable.addRow(numCols);
+//				incrTermTable.
+				termTable.addRow(numCols);
 				for ( int c = 0; c < numCols; c++ ) {
 					String str = cols.get(c).trim();
-					incrTermTable.setCell(rowInTermTable, c, str);
+//					incrTermTable.
+					termTable.setCell(rowInTermTable, c, str);
 				}
 				
 				// any missing columns? 
 				if ( numCols < numHeaderCols ) {
 					for ( int c = numCols; c < numHeaderCols; c++ ) {
-						incrTermTable.setCell(rowInTermTable, c, "");
+//						incrTermTable.
+						termTable.setCell(rowInTermTable, c, "");
 					}
 				}
 			}
@@ -528,30 +606,90 @@ public class VocabClassPanel extends VerticalPanel {
 	 * @param separator
 	 * @param text
 	 */
-	public void importContents(char separator, String text) {
-		String importingHtml = "<font color=\"blue\">" + "Importing ..." + "</font>";
+	public void importContents(List<String> headerCols, List<IRow> rows) {
+		IncrementalCommand incrCommand = createImportContentsCommand(headerCols, rows);
 		
-		HTML statusHtml = new HTML(importingHtml);
+		DeferredCommand.addCommand(incrCommand);
+	}
+	
+	
+	private IncrementalCommand createImportContentsCommand(final List<String> headerCols, List<IRow> rows) {
+		String statusMsg = "Starting ...";
+		
+		statusPopup.show(0, 0); // TODO locate statusPopup
+		statusPopup.setStatus(statusMsg);
+
+		int numHeaderCols = headerCols.size();
+		termTable = new TermTable(this, numHeaderCols, isReadOnly());
+		vocabPanel.statusPanelsetWaiting(true);
+		vocabPanel.statusPanelsetHtml(statusMsg);
+		vocabPanel.enable(false);
+		
+		// header:
+		for ( int c = 0; c < numHeaderCols; c++ ) {
+			String str = headerCols.get(c).trim();
+//			incrTermTable.
+			termTable.setHeader(c, str);
+		}		
+		insertTermTable();
+
+		final IncrementalCommand incrCommand = new PopulateTermTableCommand(termTable, rows ) {
+			
+			@Override
+			boolean start() {
+				return true;
+			}
+
+			@Override
+			void done() {
+				statusPopup.hide();
+				vocabPanel.statusPanelsetWaiting(false);
+				vocabPanel.statusPanelsetHtml("");
+				vocabPanel.enable(true);
+			}
+
+			@Override
+			boolean updateStatus() {
+				statusPopup.setStatus(termTable.getNumRows()+ "");
+				return active;
+			}
+
+		};
+		
+		return incrCommand;
+
+	}
+	
+
+	
+	
+	/**
+	 * Imports the given text into the term table.
+	 * @param separator
+	 * @param text
+	 */
+	public void importContents(char separator, String text) {
+		String statusMsg = "Importing ...";
+		
+		statusPopup.show(0, 0); // TODO locate statusPopup
+		statusPopup.setStatus(statusMsg);
 		
 		// if using tableScroll
 //		tableScroll.setWidget(statusHtml);
 		
-		contentsContainer.add(statusHtml);
-		
 		termTable = null;
 		vocabPanel.statusPanelsetWaiting(true);
-		vocabPanel.statusPanelsetHtml(importingHtml);
+		vocabPanel.statusPanelsetHtml(statusMsg);
 		vocabPanel.enable(false);
 
-		final ImportCommand importCommand = new ImportCommand(separator, text, statusHtml);
+		final IncrementalCommand incrCommand = new ImportCommand(separator, text);
 		
 		// the timer is to give a chance for pending UI changes to be reflected (eg., a popup to disappear)
 		new Timer() {
 			public void run() {
-				DeferredCommand.addCommand(importCommand);
+				DeferredCommand.addCommand(incrCommand);
 			}
 		}.schedule(1000);		
-
 	}
 	
 	/**
@@ -624,16 +762,42 @@ public class VocabClassPanel extends VerticalPanel {
 	void example() {
 //		statusLabel.setText("");
 
-		classNameTextBox.setText(CLASS_NAME_EXAMPLE);
+		if ( classNameTextBox != null ) {
+			classNameTextBox.setText(CLASS_NAME_EXAMPLE);
+		}
 
 		updateContents(CONTENTS_EXAMPLE);
 	}
 	
 	
 	void enable(boolean enabled) {
-		classNameTextBox.setReadOnly(!enabled);
+		if ( classNameTextBox != null ) {
+			classNameTextBox.setReadOnly(!enabled);
+		}
 		importCsvButton.setEnabled(enabled);
 		exportCsvButton.setEnabled(enabled);
+	}
+
+	public Widget getWidget() {
+		return widget;
+	}
+
+	@Override
+	public void cancel() {
+		active = false;
+	}
+
+	public CreateOntologyInfo getCreateOntologyInfo() {
+		CreateVocabularyInfo cvi = new CreateVocabularyInfo();
+
+		cvi.setClassName(getClassName());
+		
+		cvi.setColNames(termTable.getHeaderCols());
+		
+		cvi.setRows(termTable.getRows());
+		
+		
+		return cvi;
 	}
 
 }

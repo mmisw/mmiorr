@@ -1,6 +1,6 @@
 package org.mmisw.ontmd.gwt.client.portal;
 
-import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
+import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
@@ -50,13 +50,13 @@ public class LoginControlPanel extends HorizontalPanel {
 		
 	}
 	
-	void update(LoginResult loginResult) {
+	void update(LoginResult loginResult_Old) {
 		clear();
-		if ( loginResult == null ) {
+		if ( loginResult_Old == null ) {
 			add(signInButton);
 		}
 		else {
-			add(new Label(loginResult.getUserName()));
+			add(new Label(loginResult_Old.getUserName()));
 			add(signOutButton);
 		}
 		add(helpButton);

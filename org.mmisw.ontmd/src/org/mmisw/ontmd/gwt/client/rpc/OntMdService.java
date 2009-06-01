@@ -4,9 +4,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
+import org.mmisw.iserver.gwt.client.rpc.BasicOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.CreateVocabularyInfo;
+import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
+import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.UploadOntologyResult;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
@@ -63,12 +68,12 @@ public interface OntMdService extends RemoteService {
 	/**
 	 * Reviews the pre-loaded model with the associated new values.
 	 */
-	ReviewResult review(OntologyInfoPre ontologyInfoPre, LoginResult loginResult);
+	ReviewResult_Old review(OntologyInfoPre ontologyInfoPre, LoginResult loginResult_Old);
 
 	/**
 	 * Uploads a reviewed model to the MMI Registry.
 	 */
-	UploadResult upload(ReviewResult reviewResult, LoginResult loginResult);
+	UploadResult upload(ReviewResult_Old reviewResult_Old, LoginResult loginResult_Old);
 	
 	
 	///////////////////////////////////////////////////////////////////////
@@ -116,5 +121,15 @@ public interface OntMdService extends RemoteService {
 	public MetadataBaseInfo getMetadataBaseInfo(boolean includeVersion);
 	
 	public OntologyInfo getOntologyContents(OntologyInfo ontologyInfo);
+	
+	
+	/**
+	 * Reviews the pre-loaded model with the associated new values.
+	 */
+	public CreateOntologyResult createVocabulary(
+			BasicOntologyInfo basicOntologyInfo, CreateVocabularyInfo createOntologyInfo) ;
 
+
+
+	public UploadOntologyResult uploadOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult);
 }

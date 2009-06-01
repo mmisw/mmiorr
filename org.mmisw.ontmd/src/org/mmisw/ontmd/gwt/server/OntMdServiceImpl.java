@@ -29,11 +29,17 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.iserver.core.JenaUtil2;
 import org.mmisw.iserver.core.MdHelper;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
+import org.mmisw.iserver.gwt.client.rpc.BasicOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.CreateVocabularyInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
+import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.UploadOntologyResult;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.ont.MmiUri;
@@ -41,11 +47,10 @@ import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.ontmd.gwt.client.rpc.BaseResult;
 import org.mmisw.ontmd.gwt.client.rpc.DataResult;
-import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
 import org.mmisw.ontmd.gwt.client.rpc.OntMdService;
 import org.mmisw.ontmd.gwt.client.rpc.OntologyInfoPre;
 import org.mmisw.ontmd.gwt.client.rpc.PortalBaseInfo;
-import org.mmisw.ontmd.gwt.client.rpc.ReviewResult;
+import org.mmisw.ontmd.gwt.client.rpc.ReviewResult_Old;
 import org.mmisw.ontmd.gwt.client.rpc.UploadResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
@@ -538,21 +543,21 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 
 	/**
 	 * Reviews the ontology and associated attributes for a subsequent upload (registration)
-	 * (see {@link #upload(ReviewResult, LoginResult)})
+	 * (see {@link #upload(ReviewResult_Old, LoginResult_Old)})
 	 * in the repository.
 	 * 
 	 * @param OntologyInfoPre General info about the ontology that is intended to be registered.
 	 * 
-	 * @param LoginResult Login information
+	 * @param LoginResult_Old Login information
 	 * 
 	 * @return the result of the review.
 	 */
-	public ReviewResult review(OntologyInfoPre ontologyInfoPre, LoginResult loginResult) {
+	public ReviewResult_Old review(OntologyInfoPre ontologyInfoPre, LoginResult loginResult_Old) {
 		
 		_getBaseInfoIfNull();
 		
-		ReviewResult reviewResult = new ReviewResult();
-		reviewResult.setOntologyInfo(ontologyInfoPre);
+		ReviewResult_Old reviewResult_Old = new ReviewResult_Old();
+		reviewResult_Old.setOntologyInfo(ontologyInfoPre);
 		
 		
 		Map<String, String> newValues = ontologyInfoPre.getOntologyMetadata().getNewValues();
@@ -560,30 +565,30 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		////////////////////////////////////////////
 		// check for errors
 		
-		if ( loginResult == null ) {
-			reviewResult.setError("No login information");
+		if ( loginResult_Old == null ) {
+			reviewResult_Old.setError("No login information");
 		}
-		else if ( loginResult.getError() != null ) {
-			reviewResult.setError("Authentication has errors ");
+		else if ( loginResult_Old.getError() != null ) {
+			reviewResult_Old.setError("Authentication has errors ");
 		}
 		
-		if ( reviewResult.getError() != null ) {
-			log.info(": error: " +reviewResult.getError());
-			return reviewResult;
+		if ( reviewResult_Old.getError() != null ) {
+			log.info(": error: " +reviewResult_Old.getError());
+			return reviewResult_Old;
 		}
 		
 		if ( ontologyInfoPre.getError() != null ) {
 			String error = "there was an error while loading the ontology: " +ontologyInfoPre.getError();
-			reviewResult.setError(error );
+			reviewResult_Old.setError(error );
 			log.info(error);
-			return reviewResult;
+			return reviewResult_Old;
 		}
 		
 		if ( newValues == null ) {
 			String error = "Unexpected: no new values assigned for review. Please report this bug";
-			reviewResult.setError(error );
+			reviewResult_Old.setError(error );
 			log.info(error);
-			return reviewResult;
+			return reviewResult_Old;
 		}
 		
 		final String orgAbbreviation = newValues.get(OmvMmi.origMaintainerCode.getURI());
@@ -592,13 +597,13 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 
 		if ( orgAbbreviation == null ) {
 			log.info("missing origMaintainerCode");
-			reviewResult.setError("missing origMaintainerCode");
-			return reviewResult;
+			reviewResult_Old.setError("missing origMaintainerCode");
+			return reviewResult_Old;
 		}
 		if ( shortName == null ) {
 			log.info("missing acronym");
-			reviewResult.setError("missing acronym");
-			return reviewResult;
+			reviewResult_Old.setError("missing acronym");
+			return reviewResult_Old;
 		}
 
 		
@@ -610,8 +615,8 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			// This is a new submission. We need to check for any conflict with a preexisting
 			// ontology in the repository with the same shortName+orgAbbreviation combination
 			//
-			if ( ! _checkNoPreexistingOntology(orgAbbreviation, shortName, reviewResult) ) {
-				return reviewResult;
+			if ( ! _checkNoPreexistingOntology(orgAbbreviation, shortName, reviewResult_Old) ) {
+				return reviewResult_Old;
 			}
 		}
 		else {
@@ -625,8 +630,8 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			
 			if ( ! _checkUriKeyCombinationForNewVersion(
 					originalOrgAbbreviation, originalShortName, 
-					orgAbbreviation, shortName, reviewResult) ) {
-				return reviewResult;
+					orgAbbreviation, shortName, reviewResult_Old) ) {
+				return reviewResult_Old;
 			}
 		}
 		
@@ -639,8 +644,8 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		File file = new File(full_path);
 		if ( ! file.canRead() ) {
 			log.info("Unexpected: cannot read: " +full_path);
-			reviewResult.setError("Unexpected: cannot read: " +full_path);
-			return reviewResult;
+			reviewResult_Old.setError("Unexpected: cannot read: " +full_path);
+			return reviewResult_Old;
 		}
 		
 		// current date:
@@ -663,8 +668,8 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			if ( ! ok ) {
 				String error = "Given version is invalid: " +version;
 				log.info(error);
-				reviewResult.setError(error);
-				return reviewResult;
+				reviewResult_Old.setError(error);
+				return reviewResult_Old;
 			}
 		}
 		else {
@@ -694,8 +699,8 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		catch ( Throwable ex ) {
 			String error = "Unexpected error: " +ex.getClass().getName()+ " : " +ex.getMessage();
 			log.info(error);
-			reviewResult.setError(error);
-			return reviewResult;
+			reviewResult_Old.setError(error);
+			return reviewResult_Old;
 		}
 		
 		String uriForEmpty = model.getNsPrefixURI("");
@@ -704,8 +709,8 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			// For now, returning error:
 			String error = "Unexpected error: No namespace for prefix \"\"";
 			log.info(error);
-			reviewResult.setError(error);
-			return reviewResult;
+			reviewResult_Old.setError(error);
+			return reviewResult_Old;
 			
 			// This case was manifested with the platform.owl ontology.
 		}
@@ -830,13 +835,13 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		String rdf = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV") ;  // XXX newOntModel);
 		
 		
-		reviewResult.setUri(base_);
+		reviewResult_Old.setUri(base_);
 		
 
 		// write new contents to a new file under previewDir:
 		
 		File reviewedFile = new File(previewDir, file.getName());
-		reviewResult.setFullPath(reviewedFile.getAbsolutePath());
+		reviewResult_Old.setFullPath(reviewedFile.getAbsolutePath());
 
 		PrintWriter os;
 		try {
@@ -844,8 +849,8 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		}
 		catch (FileNotFoundException e) {
 			log.info("Unexpected: file not found: " +reviewedFile);
-			reviewResult.setError("Unexpected: file not found: " +reviewedFile);
-			return reviewResult;
+			reviewResult_Old.setError("Unexpected: file not found: " +reviewedFile);
+			return reviewResult_Old;
 		}
 		StringReader is = new StringReader(rdf);
 		try {
@@ -854,14 +859,14 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		}
 		catch (IOException e) {
 			log.info("Unexpected: IO error while writing to: " +reviewedFile);
-			reviewResult.setError("Unexpected: IO error while writing to: " +reviewedFile);
-			return reviewResult;
+			reviewResult_Old.setError("Unexpected: IO error while writing to: " +reviewedFile);
+			return reviewResult_Old;
 		}
 
 		// Ok, we're done:
-		reviewResult.setRdf(rdf);
+		reviewResult_Old.setRdf(rdf);
 
-		return reviewResult;
+		return reviewResult_Old;
 	}
 	
 	
@@ -1014,39 +1019,39 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	/**
 	 * Does the final upload of the reviewed ontology to the registry.
 	 * 
-	 * @param reviewResult The result of the preceding review operation
+	 * @param reviewResult_Old The result of the preceding review operation
 	 * 
-	 * @param loginResult Login information
+	 * @param loginResult_Old Login information
 	 * 
 	 * @return the result of the upload operation.
 	 */
-	public UploadResult upload(ReviewResult reviewResult, LoginResult loginResult) {
+	public UploadResult upload(ReviewResult_Old reviewResult_Old, LoginResult loginResult_Old) {
 		
 		_getBaseInfoIfNull();
 		
 		UploadResult uploadResult = new UploadResult();
 		
-		if ( reviewResult == null ) {
+		if ( reviewResult_Old == null ) {
 			uploadResult.setError("Please, do the review action first.");
 			return uploadResult;
 		}
 		
-		OntologyInfoPre ontologyInfoPre = reviewResult.getOntologyInfo();
+		OntologyInfoPre ontologyInfoPre = reviewResult_Old.getOntologyInfo();
 
 		// the "new" values in the ontologyInfo are used to fill in some of the
 		// fields required by the bioportal back-end
 		Map<String, String> newValues = ontologyInfoPre.getOntologyMetadata().getNewValues();
 		
-		uploadResult.setUri(reviewResult.getUri());
+		uploadResult.setUri(reviewResult_Old.getUri());
 		
 
 		////////////////////////////////////////////
 		// check for errors
 		
-		if ( loginResult == null ) {
+		if ( loginResult_Old == null ) {
 			uploadResult.setError("No login information");
 		}
-		else if ( loginResult.getError() != null ) {
+		else if ( loginResult_Old.getError() != null ) {
 			uploadResult.setError("Authentication has errors ");
 		}
 		
@@ -1055,16 +1060,16 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			return uploadResult;
 		}
 		
-		if ( reviewResult.getError() != null ) {
-			uploadResult.setError("there was an error while reviewing the ontology: " +reviewResult.getError());
-			log.info(": there was an error while reviewing the ontology: " +reviewResult.getError());
+		if ( reviewResult_Old.getError() != null ) {
+			uploadResult.setError("there was an error while reviewing the ontology: " +reviewResult_Old.getError());
+			log.info(": there was an error while reviewing the ontology: " +reviewResult_Old.getError());
 			return uploadResult;
 		}
 		
 		////////////////////////////////////////////
 		// load the temporary file into a string
 
-		String full_path = reviewResult.getFullPath();
+		String full_path = reviewResult_Old.getFullPath();
 		log.info("Reading in temporary file: " +full_path);
 		
 		File file = new File(full_path);
@@ -1082,7 +1087,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		catch (IOException e) {
 			String error = "Unexpected: IO error while reading from: " +full_path+ " : " +e.getMessage();
 			log.info(error);
-			reviewResult.setError(error);
+			reviewResult_Old.setError(error);
 			return uploadResult;
 		}
 		
@@ -1094,11 +1099,11 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 
 		// Get final URI of resulting model
 		// FIXME this uses the same original URI
-		String uri = reviewResult.getUri();
+		String uri = reviewResult_Old.getUri();
 		
 		log.info(": uploading ...");
-		assert loginResult.getUserId() != null;
-		assert loginResult.getSessionId() != null;
+		assert loginResult_Old.getUserId() != null;
+		assert loginResult_Old.getSessionId() != null;
 		
 		String ontologyId = ontologyInfoPre.getOntologyId();
 		String ontologyUserId = ontologyInfoPre.getOntologyUserId();
@@ -1142,7 +1147,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 
 			// OK, now do the actual upload:
 			OntologyUploader createOnt = new OntologyUploader(uri, fileName, rdf, 
-					loginResult,
+					loginResult_Old,
 					ontologyId, ontologyUserId,
 					newValues
 			);
@@ -1152,7 +1157,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 				uploadResult.setInfo(res);
 				
 				// If there is a corresponding CSV, rename it with a name derived from the URI: 
-				String origPathCsv = reviewResult.getOntologyInfo().getFullPathCsv();
+				String origPathCsv = reviewResult_Old.getOntologyInfo().getFullPathCsv();
 				if ( origPathCsv != null ) {
 					
 					File origFileCsv = new File(origPathCsv);
@@ -1386,4 +1391,14 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		return portal.getOntologyContents(ontologyInfo);
 	}
 
+	
+	public CreateOntologyResult createVocabulary(
+			BasicOntologyInfo basicOntologyInfo, CreateVocabularyInfo createOntologyInfo) {
+		return portal.createVocabulary(basicOntologyInfo, createOntologyInfo);
+	}
+	
+	
+	public UploadOntologyResult uploadOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult) {
+		return portal.uploadOntology(createOntologyResult, loginResult);
+	}
 }

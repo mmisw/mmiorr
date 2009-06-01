@@ -5,29 +5,31 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.mmisw.ontmd.gwt.client.Main;
+
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FocusListener;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * A view table utility.
+ * A table with sortable columns.
  * 
  * @author Carlos Rueda
  */
-public class ViewTable {
+public class UtilTable {
 
-	public static interface IRow {
-
-		String getColValue(String sortColumn);
-		
-	}
-	
+	private boolean editMode;
 	
 	private List<IRow> rows;
 
@@ -80,12 +82,14 @@ public class ViewTable {
 		}
 	};
 
-	public ViewTable(List<String> colNames) {
+	public UtilTable(List<String> colNames) {
 		this(colNames.toArray(new String[colNames.size()]));
 	}
 	
-	public ViewTable(String... colLabels) {
+	public UtilTable(String... colLabels) {
 		super();
+		
+		flexPanel.setCellPadding(4);
 		
 		flexPanel.setBorderWidth(1);
 		flexPanel.setWidth("100%");
@@ -157,39 +161,189 @@ public class ViewTable {
 			return;
 		}
 		
-		if ( true ) {
-			// incrementally update the interface (preferred):
-			UpdateCommand cmd = new UpdateCommand(0);
-			DeferredCommand.addCommand(cmd);			
-		}
-		else {
-			// old mechanism (one single interface update -- the script may be stopped)
-			int row = 1;
-			for ( IRow irow : rows ) {
-				_setRow(row, irow);
-				row++;
-			}
-		}
+		// incrementally update the interface (preferred):
+		UpdateCommand cmd = new UpdateCommand(0);
+		DeferredCommand.addCommand(cmd);			
 	}
 
+	
+	private class Cell {
+		private int actualRow;
+		private int actualCol;
+		private HTML valHtml;
+		private FocusPanel focusPanel;
+		
+		private boolean readOnly = true;
+		
+		Cell(int row, int col, HTML valHtml) {
+			this.actualRow = row;
+			this.actualCol = col;
+			this.valHtml = valHtml;
+			focusPanel = new FocusPanel(valHtml);
+			
+			focusPanel.setStylePrimaryName("TermTable-termField");
+			focusPanel.setSize("100%", "100%");
+			
+			
+			focusPanel.addFocusListener(new FocusListener() {
+				public void onFocus(Widget sender) {
+					if ( editMode ) {
+						focusPanel.addStyleDependentName("focused");
+					}
+				}
+
+				public void onLostFocus(Widget sender) {
+					if ( editMode ) {
+						focusPanel.removeStyleDependentName("focused");
+						readOnly = true;
+					}
+				}
+			});
+			
+			
+			focusPanel.addKeyboardListener(new KeyboardListenerAdapter() {
+				public void onKeyPress(Widget sender, char keyCode, int modifiers) {
+					
+					if ( ! editMode ) {
+						return;
+					}
+
+					if ( keyCode == KEY_ENTER ) {
+						_processEnter();
+						return;
+					}
+
+					if ( ! readOnly ) {
+						return;
+					}
+
+					int row = actualRow;
+					int col = actualCol;
+					if ( keyCode == KEY_DOWN || keyCode == KEY_UP ) {
+						row = actualRow + (keyCode == KEY_DOWN ? 1 : -1);
+//						contents.cancelKey();
+					}
+					else if ( keyCode == KEY_RIGHT || keyCode == KEY_LEFT ) {
+						col = actualCol + (keyCode == KEY_RIGHT ? 1 : -1);
+//						contents.cancelKey();
+					}	
+
+					if ( row == actualRow && col == actualCol ) {
+						return;
+					}
+
+					if ( row < 0 || col < 0 ) {
+						return;
+					}
+
+					if ( row >= flexPanel.getRowCount() ) {
+						return;
+					}
+
+					if ( col >= flexPanel.getCellCount(row) ) {
+						return;
+					}
+
+					Widget widget = flexPanel.getWidget(row, col);
+					if ( widget instanceof FocusPanel ) {
+						Main.log("focusing row,col= " +row+ "," +col);
+						((FocusPanel) widget).setFocus(true);
+					}
+				}
+			});
+		}
+		
+		FocusPanel getWidget() {
+			return focusPanel;
+		}
+
+		protected void _processEnter() {
+			readOnly = ! readOnly;
+			if ( readOnly ) {
+				return;
+			}
+			
+			DeferredCommand.addCommand(new Command() {
+				public void execute() {
+					final TextArea ta = new TextArea();
+					String text = valHtml.getText();
+					ta.setText(text);
+					
+					int ww = focusPanel.getOffsetWidth();
+					int hh = (int) (1.3 * focusPanel.getOffsetHeight());
+					
+					hh = Math.max(hh, 40);
+					ww = Math.max(ww, 100);
+					
+//					ta.setHeight(hh+ "px");
+					ta.setSize(ww+ "px", hh+ "px");
+//					ta.setCharacterWidth(text.length());
+					
+					ta.addFocusListener(new FocusListener() {
+						public void onFocus(Widget sender) {
+						}
+						public void onLostFocus(Widget sender) {
+							RootPanel.get().remove(ta);
+							focusPanel.setFocus(true);
+						}
+					});
+
+					ta.addKeyboardListener(new KeyboardListenerAdapter() {
+						public void onKeyPress(Widget sender, char keyCode, int modifiers) {
+
+							if ( keyCode == KEY_ENTER ) {
+								ta.cancelKey();
+								valHtml.setText(ta.getText());
+								RootPanel.get().remove(ta);
+								focusPanel.setFocus(true);
+								return;
+							}
+							if ( keyCode == KEY_ESCAPE ) {
+								RootPanel.get().remove(ta);
+								focusPanel.setFocus(true);
+								return;
+							}
+						}
+					});
+					
+					int left = focusPanel.getAbsoluteLeft();
+					int top = focusPanel.getAbsoluteTop();
+					
+					RootPanel.get().add(ta, left, top);
+					ta.setFocus(true);
+					ta.setCursorPos(text.length());
+				}
+			});
+		}
+
+	}
+	
 	/**
 	 * 
 	 * @param row Row in the flexTable
 	 * @param irow
 	 */
-	private void _setRow(int row, IRow irow) {
+	private void _setRow(final int row, IRow irow) {
 		flexPanel.getRowFormatter().setStylePrimaryName(row, "OntologyTable-row");
 		
-		for ( int i = 0, count = headerHtmls.size(); i < count; i++ ) {
-			HTML html = headerHtmls.get(i);
+		for ( int col = 0, count = headerHtmls.size(); col < count; col++ ) {
+			HTML html = headerHtmls.get(col);
 			String name = html.getText();
 			
 			String value = irow.getColValue(name);
 			if ( value == null ) value = "";
 			
-			HTML valHtml = new HTML(value);
-			flexPanel.setWidget(row, i, valHtml);
-			flexPanel.getFlexCellFormatter().setAlignment(row, i, 
+			final HTML valHtml = new HTML(value);
+			
+			if ( false ) {
+				flexPanel.setWidget(row, col, valHtml);
+			}
+			else {
+				Cell cell = new Cell(row, col, valHtml);
+				flexPanel.setWidget(row, col, cell.getWidget());
+			}
+
+			flexPanel.getFlexCellFormatter().setAlignment(row, col, 
 					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 			);
 		}

@@ -38,7 +38,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author Carlos Rueda
  */
-public class ClassPanel extends VerticalPanel {
+public class ClassPanel extends VerticalPanel implements TermTableInterface {
 
 	private static final String CLASS_TOOTIP =
 		"The class for the terms defined in this vocabulary; should be a singular noun. " +
@@ -289,7 +289,7 @@ public class ClassPanel extends VerticalPanel {
 	private void updateContents(String contents) {
 		
 		StringBuffer errorMsg = new StringBuffer();
-		TermTable tt = TermTableCreator.createTermTable(',', contents, false, errorMsg);
+		TermTable tt = TermTableCreator.createTermTable(this, ',', contents, false, errorMsg);
 		
 		if ( errorMsg.length() > 0 ) {
 //			statusLabel.setHTML("<font color=\"red\">" +errorMsg+ "</font>");
@@ -357,14 +357,14 @@ public class ClassPanel extends VerticalPanel {
 				lines = text.split("\n|\r\n|\r");
 				if ( lines.length == 0 || lines[0].trim().length() == 0 ) {
 					// A 1-column table to allow the user to insert columns (make column menu will be available)
-					incrTermTable =  new TermTable(1, false);
+					incrTermTable =  new TermTable(ClassPanel.this, 1, false);
 					preDone();
 					return true;
 				}
 				
 				List<String> headerCols = TermTableCreator.parseLine(lines[0], separator);
 				numHeaderCols = headerCols.size();
-				incrTermTable = new TermTable(numHeaderCols, false);
+				incrTermTable = new TermTable(ClassPanel.this, numHeaderCols, false);
 				
 				// header:
 				for ( int c = 0; c < numHeaderCols; c++ ) {
@@ -624,6 +624,11 @@ public class ClassPanel extends VerticalPanel {
 		resourceTypeWidget.enable(enabled);
 		importCsvButton.setEnabled(enabled);
 		exportCsvButton.setEnabled(enabled);
+	}
+
+	public void dispatchTableMenu(int left, int top) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

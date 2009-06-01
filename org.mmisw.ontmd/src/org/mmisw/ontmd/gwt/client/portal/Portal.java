@@ -38,6 +38,10 @@ public class Portal {
 	private List<OntologyInfo> ontologyInfos;
 	
 
+	public Portal() {
+		PortalControl.getInstance().setPortal(this);
+	}
+	
 	public void launch(Main main, Map<String, String> params) {
 		this.main = main;
 		getAppInfo(params);
@@ -121,6 +125,25 @@ public class Portal {
 		Main.ontmdService.getPortalBaseInfo(callback);
 	}
 
+
+	void refreshListAllOntologies() {
+		
+		Main.log("Portal.refreshListAllOntologies, includePriorVersions= " +includePriorVersions+ " ...");
+		AsyncCallback<List<OntologyInfo>> callback = new AsyncCallback<List<OntologyInfo>>() {
+
+			public void onFailure(Throwable thr) {
+				RootPanel.get().add(new HTML(thr.toString()));
+			}
+
+			public void onSuccess(List<OntologyInfo> result) {
+				ontologyInfos = result;
+				PortalControl.getInstance().refreshedListAllOntologies(ontologyInfos);
+			}
+			
+		};
+		Main.ontmdService.getAllOntologies(includePriorVersions, callback );
+	}
+	
 
 	private void removeLoadingMessage() {
     	Element loadingElement = DOM.getElementById("loading");

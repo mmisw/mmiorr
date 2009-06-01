@@ -17,7 +17,8 @@ import org.mmisw.iserver.gwt.client.rpc.OtherOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData.ClassData;
-import org.mmisw.ontmd.gwt.client.util.ViewTable;
+import org.mmisw.ontmd.gwt.client.util.IRow;
+import org.mmisw.ontmd.gwt.client.util.UtilTable;
 
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -99,13 +100,13 @@ public class ViewDataPanel extends VerticalPanel {
 			
 			String[] colNames = classHeader.toArray(new String[classHeader.size()]);
 			
-			ViewTable viewTable = new ViewTable(colNames);
-			tp.add(viewTable.getWidget());
+			UtilTable utilTable = new UtilTable(colNames);
+			tp.add(utilTable.getWidget());
 
 			List<IndividualInfo> individuals = classData.getIndividuals();
 			Main.log("num individuals: " +individuals.size());
 			
-			List<ViewTable.IRow> rows = new ArrayList<ViewTable.IRow>();
+			List<IRow> rows = new ArrayList<IRow>();
 			for ( IndividualInfo entity : individuals ) {
 				
 				final Map<String, String> vals = new HashMap<String, String>();
@@ -116,14 +117,14 @@ public class ViewDataPanel extends VerticalPanel {
 
 				vals.put("Name", entity.getLocalName());
 				
-				rows.add(new ViewTable.IRow() {
+				rows.add(new IRow() {
 					public String getColValue(String sortColumn) {
 						return vals.get(sortColumn);
 					}
 				});
 			}
 			
-			viewTable.setRows(rows);
+			utilTable.setRows(rows);
 			
 			vp.add(tp);
 			
@@ -190,8 +191,8 @@ public class ViewDataPanel extends VerticalPanel {
 		colNames.addAll(header);
 		colNames.add(0, "Name");
 
-		ViewTable viewTable = new ViewTable(colNames);
-		List<ViewTable.IRow> rows = new ArrayList<ViewTable.IRow>();
+		UtilTable utilTable = new UtilTable(colNames);
+		List<IRow> rows = new ArrayList<IRow>();
 		for ( EntityInfo entity : entities ) {
 			final Map<String, String> vals = new HashMap<String, String>();
 			List<PropValue> props = entity.getProps();
@@ -201,15 +202,15 @@ public class ViewDataPanel extends VerticalPanel {
 
 			vals.put("Name", entity.getLocalName());
 			
-			rows.add(new ViewTable.IRow() {
+			rows.add(new IRow() {
 				public String getColValue(String sortColumn) {
 					return vals.get(sortColumn);
 				}
 			});
 		}
-		viewTable.setRows(rows);
+		utilTable.setRows(rows);
 		
-		return viewTable.getWidget();
+		return utilTable.getWidget();
 	}
 
 	

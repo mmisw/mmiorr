@@ -1,6 +1,6 @@
 package org.mmisw.ontmd.gwt.client.voc2rdf;
 
-import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
+import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 
 import com.google.gwt.core.client.GWT;

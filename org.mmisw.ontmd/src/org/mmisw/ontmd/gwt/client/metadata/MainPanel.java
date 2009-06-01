@@ -3,14 +3,14 @@ package org.mmisw.ontmd.gwt.client.metadata;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
 import org.mmisw.ontmd.gwt.client.LoginListener;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.UserPanel;
 import org.mmisw.ontmd.gwt.client.portal.IOntologyPanel;
-import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
 import org.mmisw.ontmd.gwt.client.rpc.OntologyInfoPre;
-import org.mmisw.ontmd.gwt.client.rpc.ReviewResult;
+import org.mmisw.ontmd.gwt.client.rpc.ReviewResult_Old;
 import org.mmisw.ontmd.gwt.client.rpc.UploadResult;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 
@@ -63,7 +63,7 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 
 	private PushButton uploadButton = new PushButton("Upload", new ClickListener() {
 		public void onClick(Widget sender) {
-			if ( reviewResult == null || reviewResult.getError() != null ) {
+			if ( reviewResult_Old == null || reviewResult_Old.getError() != null ) {
 				Window.alert("Please, do the review action first.");
 				return;
 			}
@@ -103,7 +103,7 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 
 	private OntologyInfoPre ontologyInfoPre;
 	
-	private ReviewResult reviewResult;
+	private ReviewResult_Old reviewResult_Old;
 	
 	
 	// aquaportal ontology id used to create a new version
@@ -259,8 +259,8 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 	    }
 	}
 	
-	public void loginOk(LoginResult loginResult) {
-		this.loginResult = loginResult;
+	public void loginOk(LoginResult loginResult_Old) {
+		this.loginResult = loginResult_Old;
 		container.clear();
 		container.add(prepareEditingInterface(requestedOntologyUri == null && requestedOntologyOnServer == null));
 		
@@ -498,14 +498,14 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 		popup.center();
 		popup.show();
 
-		AsyncCallback<ReviewResult> callback = new AsyncCallback<ReviewResult>() {
+		AsyncCallback<ReviewResult_Old> callback = new AsyncCallback<ReviewResult_Old>() {
 			public void onFailure(Throwable thr) {
 				reenableButton(reviewButton, null, true);
 				container.clear();				
 				container.add(new HTML(thr.toString()));
 			}
 
-			public void onSuccess(ReviewResult result) {
+			public void onSuccess(ReviewResult_Old result) {
 				reenableButton(reviewButton, null, true);
 				reviewCompleted(popup, result);
 			}
@@ -514,10 +514,10 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 		Main.ontmdService.review(ontologyInfoPre, loginResult, callback);
 	}
 
-	private void reviewCompleted(MyDialog popup , ReviewResult reviewResult) {
-		this.reviewResult = reviewResult;
+	private void reviewCompleted(MyDialog popup , ReviewResult_Old reviewResult_Old) {
+		this.reviewResult_Old = reviewResult_Old;
 
-		String error = reviewResult.getError();
+		String error = reviewResult_Old.getError();
 		
 		StringBuffer sb = new StringBuffer();
 		
@@ -525,7 +525,7 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 		vp.setSpacing(4);
 
 		if ( error == null ) {
-			vp.add(new Label("Ontology URI: " +reviewResult.getUri()));
+			vp.add(new Label("Ontology URI: " +reviewResult_Old.getUri()));
 			
 			vp.add(new Label("You can now upload your ontology or close this " +
 					"dialog to continue editing the ontology metadata."));
@@ -534,9 +534,9 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 			
 			vp.add(new Label("Contents:"));
 			
-			metadataPanel.resetToNewValues(ontologyInfoPre, reviewResult, false, false);
+			metadataPanel.resetToNewValues(ontologyInfoPre, reviewResult_Old, false, false);
 			
-			sb.append(reviewResult.getRdf());
+			sb.append(reviewResult_Old.getRdf());
 		}
 		else {
 			sb.append(error);
@@ -581,7 +581,7 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 			return;
 		}
 		
-		if ( reviewResult == null ) {
+		if ( reviewResult_Old == null ) {
 			Window.alert("Please, do the review action first.");
 			return;
 		}
@@ -633,7 +633,7 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 			}
 		};
 
-		Main.ontmdService.upload(reviewResult, loginResult, callback);
+		Main.ontmdService.upload(reviewResult_Old, loginResult, callback);
 	}
 
 	
@@ -646,7 +646,7 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 		vp.setSpacing(6);
 		
 		if ( error == null ) {
-			metadataPanel.resetToNewValues(ontologyInfoPre, reviewResult, false, true);
+			metadataPanel.resetToNewValues(ontologyInfoPre, reviewResult_Old, false, true);
 
 			String uri = result.getUri();
 
@@ -677,7 +677,7 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 			// (user will have to start from the "load" step)
 			enable(false);
 			ontologyInfoPre = null;
-			reviewResult = null;
+			reviewResult_Old = null;
 		}
 		else {
 			sb.append(error);
@@ -730,7 +730,7 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 		}
 		else {
 			enable(true);
-			metadataPanel.resetToOriginalValues(ontologyInfoPre, reviewResult, false, false);
+			metadataPanel.resetToOriginalValues(ontologyInfoPre, reviewResult_Old, false, false);
 		}
 	}
 	
@@ -747,7 +747,7 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 		else {
 			this.ontologyInfoPre = ontologyInfoPre;
 			enable(true);
-			metadataPanel.resetToOriginalValues(ontologyInfoPre, reviewResult, false, false);
+			metadataPanel.resetToOriginalValues(ontologyInfoPre, reviewResult_Old, false, false);
 		}
 	}
 	

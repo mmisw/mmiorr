@@ -20,14 +20,15 @@ public class TermTableCreator {
 	 * @param errorMsg Any error is reported here.
 	 * @return
 	 */
-	public static TermTable createTermTable(char separator, String ascii, boolean readOnly, StringBuffer errorMsg) {
+	public static TermTable createTermTable(TermTableInterface tti, 
+			char separator, String ascii, boolean readOnly, StringBuffer errorMsg) {
 		assert ascii.length() > 0;
 
 		String[] lines = ascii.split("\n|\r\n|\r");
 		if ( lines.length == 0 || lines[0].trim().length() == 0 ) {
 			errorMsg.append("Empty vocabulary contents");
 			// A 1-column table to allow the user to insert columns (make column menu will be available)
-			return new TermTable(1, readOnly);
+			return new TermTable(tti, 1, readOnly);
 		}
 		
 		boolean error = false;
@@ -35,7 +36,7 @@ public class TermTableCreator {
 		List<String> headerCols = parseLine(lines[0], separator);
 		final int numHeaderCols = headerCols.size();
 
-		TermTable termTable = new TermTable(numHeaderCols, readOnly);
+		TermTable termTable = new TermTable(tti, numHeaderCols, readOnly);
 		
 		// header:
 		

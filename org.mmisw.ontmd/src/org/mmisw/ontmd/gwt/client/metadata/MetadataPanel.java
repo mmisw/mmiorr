@@ -7,7 +7,7 @@ import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.portal.IOntologyPanel;
 import org.mmisw.ontmd.gwt.client.rpc.OntologyInfoPre;
-import org.mmisw.ontmd.gwt.client.rpc.ReviewResult;
+import org.mmisw.ontmd.gwt.client.rpc.ReviewResult_Old;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
 
@@ -207,29 +207,29 @@ private static final String INFO =
 	}
 
 	
-	public void resetToOriginalValues(OntologyInfo ontologyInfo, ReviewResult reviewResult, boolean confirm, boolean link) {
+	public void resetToOriginalValues(OntologyInfo ontologyInfo, ReviewResult_Old reviewResult_Old, boolean confirm, boolean link) {
 		OntologyMetadata ontologyMetadata = ontologyInfo.getOntologyMetadata();
 		String ontologyUri = ontologyInfo.getUri();
-		resetToOriginalOrNewValues(ontologyUri, ontologyMetadata, true, reviewResult, confirm, link);
+		resetToOriginalOrNewValues(ontologyUri, ontologyMetadata, true, reviewResult_Old, confirm, link);
 	}
 	
 
-	public void resetToOriginalValues(OntologyInfoPre ontologyInfoPre, ReviewResult reviewResult, boolean confirm, boolean link) {
+	public void resetToOriginalValues(OntologyInfoPre ontologyInfoPre, ReviewResult_Old reviewResult_Old, boolean confirm, boolean link) {
 		OntologyMetadata ontologyMetadata = ontologyInfoPre.getOntologyMetadata();
 		String ontologyUri = ontologyInfoPre.getUri();
-		resetToOriginalOrNewValues(ontologyUri, ontologyMetadata, true, reviewResult, confirm, link);
+		resetToOriginalOrNewValues(ontologyUri, ontologyMetadata, true, reviewResult_Old, confirm, link);
 	}
 	
-	void resetToNewValues(OntologyInfoPre ontologyInfoPre, ReviewResult reviewResult, boolean confirm, boolean link) {
+	void resetToNewValues(OntologyInfoPre ontologyInfoPre, ReviewResult_Old reviewResult_Old, boolean confirm, boolean link) {
 		OntologyMetadata ontologyMetadata = ontologyInfoPre.getOntologyMetadata();
 		String ontologyUri = ontologyInfoPre.getUri();
-		resetToOriginalOrNewValues(ontologyUri, ontologyMetadata, false, reviewResult, confirm, link);
+		resetToOriginalOrNewValues(ontologyUri, ontologyMetadata, false, reviewResult_Old, confirm, link);
 	}
 	
 	private void resetToOriginalOrNewValues(
 			String ontologyUri, OntologyMetadata ontologyMetadata, 
 			boolean originalVals, 
-			ReviewResult reviewResult, boolean confirm, boolean link) 
+			ReviewResult_Old reviewResult_Old, boolean confirm, boolean link) 
 	{
 		
 		for ( int i = 0, c = tabPanel.getWidgetCount(); i < c; i++ ) {
@@ -240,8 +240,8 @@ private static final String INFO =
 		}
 		
 		newUri.updateText("");
-		if ( reviewResult != null ) {
-			String new_uri = reviewResult.getUri();
+		if ( reviewResult_Old != null ) {
+			String new_uri = reviewResult_Old.getUri();
 			if ( new_uri != null ) {
 				newUri.setUri(new_uri, link);
 			}
@@ -249,6 +249,12 @@ private static final String INFO =
 		else if ( ! editing ) {
 			newUri.setUri(ontologyUri, link);
 		}
+	}
+
+
+	public void cancel() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

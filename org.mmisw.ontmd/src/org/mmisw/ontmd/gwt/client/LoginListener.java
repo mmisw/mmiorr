@@ -1,6 +1,6 @@
 package org.mmisw.ontmd.gwt.client;
 
-import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
+import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 
 /**
  * 

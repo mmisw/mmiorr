@@ -7,7 +7,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * 
  * @author Carlos Rueda
  */
-public class ReviewResult extends BaseResult implements IsSerializable {
+public class ReviewResult_Old extends BaseResult implements IsSerializable {
 
 	private String uri = null;
 	private String fullPath;
@@ -16,7 +16,7 @@ public class ReviewResult extends BaseResult implements IsSerializable {
 	private OntologyInfoPre ontologyInfoPre;
 
 
-	public ReviewResult() {
+	public ReviewResult_Old() {
 	}
 
 	

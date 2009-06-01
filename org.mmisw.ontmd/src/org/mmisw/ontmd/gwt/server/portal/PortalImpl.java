@@ -7,9 +7,14 @@ import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.IServer;
 import org.mmisw.iserver.core.Server;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
+import org.mmisw.iserver.gwt.client.rpc.BasicOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.CreateVocabularyInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
+import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.UploadOntologyResult;
 import org.mmisw.ontmd.gwt.client.rpc.PortalBaseInfo;
 import org.mmisw.ontmd.gwt.server.Config;
 
@@ -86,5 +91,16 @@ public class PortalImpl  {
 	
 	public OntologyInfo getOntologyContents(OntologyInfo ontologyInfo) {
 		return iserver.getOntologyContents(ontologyInfo);
+	}
+
+	public CreateOntologyResult createVocabulary(
+			BasicOntologyInfo basicOntologyInfo, CreateVocabularyInfo createOntologyInfo) {
+
+		return iserver.createVocabulary(basicOntologyInfo, createOntologyInfo);
+	}
+	
+	
+	public UploadOntologyResult uploadOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult) {
+		return iserver.uploadOntology(createOntologyResult, loginResult);
 	}
 }

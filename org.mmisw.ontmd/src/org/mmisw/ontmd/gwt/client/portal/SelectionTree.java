@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
-import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
+import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
@@ -79,7 +79,7 @@ public class SelectionTree extends Tree implements TreeListener {
 		tree.addItem(authorMenu);
 	}
 	
-	void update(List<OntologyInfo> ontologyInfos, LoginResult loginResult) {
+	void update(List<OntologyInfo> ontologyInfos, LoginResult loginResult_Old) {
 		initTree();
 		
 		// {username -> userId} map
@@ -108,7 +108,7 @@ public class SelectionTree extends Tree implements TreeListener {
 		}
 		
 		authorMenu.addItem(new TreeItem(ALL));
-		if ( loginResult != null ) {
+		if ( loginResult_Old != null ) {
 			List<String> usernames = new ArrayList<String>();
 			usernames.addAll(authors.keySet());
 			Collections.sort(usernames);

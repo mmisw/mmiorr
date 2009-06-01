@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mmisw.iserver.gwt.client.rpc.BaseOntologyData;
+import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.IndividualInfo;
 import org.mmisw.iserver.gwt.client.rpc.MappingOntologyData;
@@ -20,6 +21,7 @@ import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData.ClassData;
 import org.mmisw.ontmd.gwt.client.portal.IVocabPanel;
 import org.mmisw.ontmd.gwt.client.util.IRow;
 import org.mmisw.ontmd.gwt.client.util.UtilTable;
+import org.mmisw.ontmd.gwt.client.voc2rdf.BaseOntologyPanel;
 import org.mmisw.ontmd.gwt.client.voc2rdf.VocabClassPanel;
 
 import com.google.gwt.user.client.ui.DisclosurePanel;
@@ -29,14 +31,14 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Main panel for editing data.
+ * Main panel for viewing/editing data.
  * 
  * @author Carlos Rueda
  */
-public class EditDataPanel extends VerticalPanel {
+public class DataPanel extends VerticalPanel {
 
-	private static final char SEPARATOR = '|';
-	private static final char QUOTECHAR = '"';
+//	private static final char SEPARATOR = '|';
+//	private static final char QUOTECHAR = '"';
 	
 
 	// created during refactoring process -- may be removed later
@@ -60,11 +62,16 @@ public class EditDataPanel extends VerticalPanel {
 	
 	private MyVocabPanel myVocabPanel = new  MyVocabPanel();
 	
+	private boolean readOnly = true;
+	
+	private Set<BaseOntologyPanel> baseOntologyPanels = new HashSet<BaseOntologyPanel>();
+	
 	/**
 	 * Creates the data panel
 	 */
-	public EditDataPanel() {
+	public DataPanel(boolean readOnly) {
 		super();
+		this.readOnly = readOnly;
 		setWidth("100%");
 	}
 	
@@ -77,8 +84,8 @@ public class EditDataPanel extends VerticalPanel {
 	 * Updates this panel with the data associated to the given ontology 
 	 * @param ontologyInfoPre
 	 */
-	public void updateWith(OntologyInfo ontologyInfo) {
-		
+	public void updateWith(OntologyInfo ontologyInfo, boolean readOnly) {
+		this.readOnly = readOnly;
 		this.clear();
 		
 		OntologyData ontologyData = ontologyInfo.getOntologyData();
@@ -105,6 +112,20 @@ public class EditDataPanel extends VerticalPanel {
 		
 		add(vp);
 	}
+	
+	
+	public void setReadOnly(boolean readOnly) {
+		if ( this.readOnly == readOnly ) {
+			return;
+		}
+		this.readOnly = readOnly;
+		
+		for ( BaseOntologyPanel baseOntologyPanel : baseOntologyPanels ) {
+			baseOntologyPanel.setReadOnly(readOnly);
+		}
+	}
+	
+
 
 
 	private Widget _createVocabularyWidget(VocabularyOntologyData ontologyData) {
@@ -117,34 +138,32 @@ public class EditDataPanel extends VerticalPanel {
 		vp.setSpacing(4);
 		
 		for ( ClassData classData : classes ) {
-			String classUri = classData.getClassUri();
 			List<String> classHeader = classData.getDatatypeProperties();
 
-			String className = classUri;  // TODO just the name, not the whole URI
 			
-			VerticalPanel tp = new VerticalPanel();
-			tp.add(new Label("Class: " +className));
+//			String[] colNames = classHeader.toArray(new String[classHeader.size()]);
 			
-			String[] colNames = classHeader.toArray(new String[classHeader.size()]);
+//			StringBuilder termContents = new StringBuilder();
+//			
+//			// header line in contents:
+//			String _sep = "";
+//			for (int i = 0; i < colNames.length; i++) {
+//				termContents.append(_sep + QUOTECHAR +colNames[i]+ QUOTECHAR);
+//				_sep = String.valueOf(SEPARATOR);
+//			}
+//			termContents.append("\n");
 			
-			StringBuilder termContents = new StringBuilder();
+			VocabClassPanel classPanel = new VocabClassPanel(classData, myVocabPanel, readOnly);
+			baseOntologyPanels.add(classPanel);
 			
-			// header line in contents:
-			String _sep = "";
-			for (int i = 0; i < colNames.length; i++) {
-				termContents.append(_sep + QUOTECHAR +colNames[i]+ QUOTECHAR);
-				_sep = String.valueOf(SEPARATOR);
-			}
-			termContents.append("\n");
-			
-			VocabClassPanel classPanel = new VocabClassPanel(classData, myVocabPanel, false);
-			tp.add(classPanel.getWidget());
 //			ViewTable viewTable = new ViewTable(colNames);
 //			tp.add(viewTable.getWidget());
 			
 
 			List<IndividualInfo> individuals = classData.getIndividuals();
 			Main.log("num individuals: " +individuals.size());
+			
+			List<IRow> rows = new ArrayList<IRow>();
 			
 			for ( IndividualInfo entity : individuals ) {
 				
@@ -156,23 +175,31 @@ public class EditDataPanel extends VerticalPanel {
 
 				vals.put("Name", entity.getLocalName());
 				
-				_sep = "";
-				for (int i = 0; i < colNames.length; i++) {
-					String val = vals.get(colNames[i]);
-					if ( val == null ) {
-						val = "";
-					}
-					termContents.append(_sep + QUOTECHAR +val+ QUOTECHAR);
-					_sep = String.valueOf(SEPARATOR);
-				}
+//				_sep = "";
+//				for (int i = 0; i < colNames.length; i++) {
+//					String val = vals.get(colNames[i]);
+//					if ( val == null ) {
+//						val = "";
+//					}
+//					termContents.append(_sep + QUOTECHAR +val+ QUOTECHAR);
+//					_sep = String.valueOf(SEPARATOR);
+//				}
+//				
+//				termContents.append("\n");
 				
-				termContents.append("\n");
+				
+				rows.add(new IRow() {
+					public String getColValue(String sortColumn) {
+						return vals.get(sortColumn);
+					}
+				});
+
 			}
 			
-//			viewTable.setRows(rows);
-			classPanel.importContents(SEPARATOR, termContents.toString());
+			classPanel.importContents(classHeader, rows);
+//			classPanel.importContents(SEPARATOR, termContents.toString());
 			
-			vp.add(tp);
+			vp.add(classPanel.getWidget());
 			
 		}
 		
@@ -266,6 +293,27 @@ public class EditDataPanel extends VerticalPanel {
 		Main.log("Creating MappingWidget");
 
 		return new HTML("<i>not implemented yet</i>");
+	}
+
+	public void cancel() {
+		for ( BaseOntologyPanel baseOntologyPanel : baseOntologyPanels ) {
+			baseOntologyPanel.cancel();
+		}
+	}
+
+	public CreateOntologyInfo getCreateOntologyInfo() {
+		
+		if ( baseOntologyPanels.size() == 0 ) {
+			return null;
+		}
+		BaseOntologyPanel baseOntologyPanel = baseOntologyPanels.iterator().next();
+		if ( ! (baseOntologyPanel instanceof VocabClassPanel) ) {
+			return null;
+		}
+		
+		VocabClassPanel classPanel = (VocabClassPanel) baseOntologyPanel;
+
+		return classPanel.getCreateOntologyInfo();
 	}
 
 }

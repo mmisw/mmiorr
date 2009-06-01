@@ -3,6 +3,13 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-05-31
+	- Many changes for including editing and creation of new version of a vocabulary ontology
+	  TODO: once registered the new version, the browse page is displayed with a reloading of
+	  the list of all ontologies. However, the hyperlink for the newly created version does not
+	  resolve immediately; it seems the history token is added but the notification does not happen
+	  immediately?
+	
 2009-05-28
 	- continuing preparations for editing vocabulary
 	- view only vocabulary table now created incrementally (especially useful for large tables, eg., CF)

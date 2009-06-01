@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
-import org.mmisw.ontmd.gwt.client.rpc.LoginResult;
+import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -41,9 +41,9 @@ public class BrowsePanel extends VerticalPanel {
 	BrowsePanel(List<OntologyInfo> ontologyInfos, LoginResult loginResult) {
 		super();
 		
-		this.ontologyInfos = ontologyInfos;
 		this.loginResult = loginResult;
 		
+		setOntologyInfos(ontologyInfos);
 	    selTree.update(this.ontologyInfos, loginResult);
 	    ontologyTable.setOntologyInfos(this.ontologyInfos, loginResult);
 	    
@@ -66,6 +66,14 @@ public class BrowsePanel extends VerticalPanel {
 	    
 //	    this.add(decPanel);
 	    this.add(hp);
+	}
+	
+	
+	public void setOntologyInfos(List<OntologyInfo> ontologyInfos) {
+		this.ontologyInfos = ontologyInfos;
+		
+	    selTree.update(this.ontologyInfos, loginResult);
+	    ontologyTable.setOntologyInfos(this.ontologyInfos, loginResult);
 	}
 	
 	/**
@@ -144,10 +152,10 @@ public class BrowsePanel extends VerticalPanel {
 		
 	}
 
-	void setLoginResult(LoginResult loginResult) {
-		this.loginResult = loginResult;
-		selTree.update(ontologyInfos, loginResult);
-		ontologyTable.setOntologyInfos(ontologyInfos, loginResult);
+	void setLoginResult(LoginResult loginResult_Old) {
+		this.loginResult = loginResult_Old;
+		selTree.update(ontologyInfos, loginResult_Old);
+		ontologyTable.setOntologyInfos(ontologyInfos, loginResult_Old);
 	}
 
 
