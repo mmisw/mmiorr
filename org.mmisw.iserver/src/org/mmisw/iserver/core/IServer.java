@@ -45,7 +45,11 @@ public interface IServer {
 	 */
 	List<OntologyInfo> getAllOntologies(boolean includePriorVersions) throws Exception;
 	
-	
+	/**
+	 * Gets an ontology from the registry.
+	 */
+	OntologyInfo getOntologyInfo(String ontologyUri);
+
 	/**
 	 * Obtains the entities of an ontology.
 	 * @param ontologyInfo

@@ -249,6 +249,28 @@ public class Server implements IServer {
 		return onts;
 	}
 	
+	
+	public OntologyInfo getOntologyInfo(String ontologyUri) {
+		// simple implementation: get all ontologies an pick the one requested
+		try {
+			List<OntologyInfo> onts = getAllOntologies(false);
+			for ( OntologyInfo oi : onts ) {
+				if ( ontologyUri.equals(oi.getUri()) ) {
+					return oi;
+				}
+			}
+			return null;  // not found
+		}
+		catch (Exception e) {
+			String error = e.getMessage();
+			log.error("Error getting list of all ontologies. ", e);
+			OntologyInfo oi = new OntologyInfo();
+			oi.setError(error);
+			return oi;
+		}
+		
+	}
+
 	public OntologyInfo getEntities(OntologyInfo ontologyInfo) {
 		if ( log.isDebugEnabled() ) {
 			log.debug("getEntities(OntologyInfo) starting");

@@ -2,6 +2,9 @@ org.mmisw.iserver
 Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 
+2009-06-01
+	- Added OntologyInfo getOntologyInfo(String ontologyUri).
+	
 2009-05-31
 	- Util.getEntities(OntologyInfo ontologyInfo, OntModel ontModel): assign ClassInfo object 
 	  corresponding to the domain of each property so it's easier to get associated attributes. 
