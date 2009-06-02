@@ -2,6 +2,15 @@ org.mmisw.iserver
 Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 
+2009-06-02
+	- getAllOntologies(boolean includePriorVersions) and getOntologyInfo(String ontologyUri) complemented
+	  with auxiliary Map<String, List<OntologyInfo>> getUnversionedToOntologyInfoListMap(String onlyThisUnversionedUri).
+	- In particular,
+		- getOntologyInfo(String ontologyUri) now handles versioned and unversioned URI requests.
+		- getAllOntologies(boolean includePriorVersions): main entries in the returned list at UNversioned;
+		  the sublist of priorVersions are in versioned form *including* the most recent.
+		  Elements in the priorVersion list are sorted by descending dataCreated so the most recent is first.
+	
 2009-06-01
 	- Added OntologyInfo getOntologyInfo(String ontologyUri).
 	

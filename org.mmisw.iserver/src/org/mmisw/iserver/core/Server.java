@@ -145,27 +145,58 @@ public class Server implements IServer {
 		return  Util.getEntities(ontologyUri, null);
 	}
 
+	
+	private static OntologyInfo _createOntologyInfo(
+			String ontologyUri,   // = toks[0];
+			String displayLabel,  // = toks[1];
+			String type,          // = toks[2];
+			String userId,        // = toks[3];
+			String contactName,   // = toks[4];
+			String versionNumber, // = toks[5];
+			String dateCreated,   // = toks[6];
+			String userName,      // = toks[7];
+			String ontologyId,     // = toks[8];
+			
+			String unversionedUri,
+			String authority,
+			String shortName
+	) {
+		OntologyInfo ontologyInfo = new OntologyInfo();
+		
+		ontologyInfo.setUri(ontologyUri);
+		ontologyInfo.setDisplayLabel(displayLabel);
+		ontologyInfo.setType(type);
+		ontologyInfo.setUserId(userId);
+		ontologyInfo.setContactName(contactName);
+		ontologyInfo.setVersionNumber(versionNumber);
+		ontologyInfo.setDateCreated(dateCreated);
+		ontologyInfo.setUsername(userName);
+		ontologyInfo.setOntologyId(ontologyId, userId);
+		
+		ontologyInfo.setUnversionedUri(unversionedUri);
+		ontologyInfo.setAuthority(authority);
+		ontologyInfo.setShortName(shortName);
 
+		return ontologyInfo;
+	}
+	
 	
 	/**
+	 * Gets the ontologies from the registry as a map { unversionedUri -> list of OntologyInfos }.
+	 * Elements in each list are sorted by descending versionNumber.
 	 * 
+	 *  @param onlyThisUnversionedUri If this is not null, only this URI (assumed to be unversioned) will be considered,
+	 *         so the returned map will at most contain just that single key,
 	 */
-	public List<OntologyInfo> getAllOntologies(boolean includePriorVersions) throws Exception {
+	private Map<String, List<OntologyInfo>> getUnversionedToOntologyInfoListMap(String onlyThisUnversionedUri) throws Exception {
 		
-		//
-		// strategy
-		// - for each unversioned URI, collect all related, versioned ontologies 
-		// - then populate list to be returned with the latest version of each group
-		// - if includePriorVersions is true, add the prior versions to each main entry
-		//
-		
-		// unversionedUri -> list of versioned URIs
+		// unversionedUri -> list of corresponding OntologyInfos
 		Map<String, List<OntologyInfo>> unversionedToVersioned = new LinkedHashMap<String, List<OntologyInfo>>();
 		
 		String uri = LISTALL;
 		
 		if ( log.isDebugEnabled() ) {
-			log.debug("getAsString. uri= " +uri);
+			log.debug("getUnversionedToVersioned. uri= " +uri);
 		}
 
 		String response = getAsString(uri, Integer.MAX_VALUE);
@@ -175,30 +206,26 @@ public class Server implements IServer {
 			// remove leading and trailing quote:
 			line = line.replaceAll("^'|'$", "");
 			String[] toks = line.trim().split("'\\|'");
-			OntologyInfo ontologyInfo = new OntologyInfo();
-			String ontologyUri = toks[0];
 			
-			ontologyInfo.setUri(ontologyUri);
-			ontologyInfo.setDisplayLabel(toks[1]);
+			String ontologyUri =  toks[0];
+			String displayLabel  = toks[1];
+			String type          = toks[2];
+			String userId        = toks[3];
+			String contactName   = toks[4];
+			String versionNumber = toks[5];
+			String dateCreated   = toks[6];
+			String userName      = toks[7];
+			String ontologyId    = toks[8];
 
-			ontologyInfo.setType(toks[2]);
-			
-			ontologyInfo.setUserId(toks[3]);
-			ontologyInfo.setContactName(toks[4]);
-			ontologyInfo.setVersionNumber(toks[5]);
-			ontologyInfo.setDateCreated(toks[6]);
-			ontologyInfo.setUsername(toks[7]);
-			ontologyInfo.setOntologyId(toks[8], toks[3]);
-			
 			String unversionedUri;
+			String authority;
+			String shortName;
 			
 			try {
 				MmiUri mmiUri = new MmiUri(ontologyUri);
-				ontologyInfo.setAuthority(mmiUri.getAuthority());
-				ontologyInfo.setShortName(mmiUri.getTopic());
-				
+				authority = mmiUri.getAuthority();
+				shortName = mmiUri.getTopic();
 				unversionedUri = mmiUri.copyWithVersion(null).getOntologyUri();
-				
 			}
 			catch (URISyntaxException e) {
 				// shouldn't happen.
@@ -206,43 +233,89 @@ public class Server implements IServer {
 				continue;
 			}
 
+			if ( onlyThisUnversionedUri != null && ! onlyThisUnversionedUri.equals(unversionedUri) ) {
+				continue;
+			}
 			
+			OntologyInfo ontologyInfo = _createOntologyInfo(
+					ontologyUri,
+					displayLabel,
+					type,
+					userId,
+					contactName,
+					versionNumber,
+					dateCreated,
+					userName,
+					ontologyId,
+					
+					unversionedUri,
+					authority,
+					shortName
+			);
+
+
 			List<OntologyInfo> versionedList = unversionedToVersioned.get(unversionedUri);
 			if ( versionedList == null ) {
 				versionedList = new ArrayList<OntologyInfo>();
 				unversionedToVersioned.put(unversionedUri, versionedList);
 			}
 			versionedList.add(ontologyInfo);
-			
+			ontologyInfo.setUnversionedUri(unversionedUri);
 			
 		}
 		
+		// sort all list by descending versionNumber
+		for ( String unversionedUri : unversionedToVersioned.keySet() ) {
+			List<OntologyInfo> versionedList = unversionedToVersioned.get(unversionedUri);
+			Collections.sort(versionedList, new Comparator<OntologyInfo>() {
+				public int compare(OntologyInfo arg0, OntologyInfo arg1) {
+					return - arg0.getVersionNumber().compareTo(arg1.getVersionNumber());
+				}
+			});
+		}
+		
+		return unversionedToVersioned;
+	}
+
+	
+	public List<OntologyInfo> getAllOntologies(boolean includePriorVersions) throws Exception {
+		
+		// {unversionedUri -> list of versioned URIs }  for all unversioned URIs ontologies
+		Map<String, List<OntologyInfo>> unversionedToVersioned = getUnversionedToOntologyInfoListMap(null);
+		
+		// the list to be returned
 		List<OntologyInfo> onts = new ArrayList<OntologyInfo>();
 		
 		for ( String unversionedUri : unversionedToVersioned.keySet() ) {
 
 			List<OntologyInfo> versionedList = unversionedToVersioned.get(unversionedUri);
 			
-			// sort in descending versionNumber
-			Collections.sort(versionedList, new Comparator<OntologyInfo>() {
-				public int compare(OntologyInfo arg0, OntologyInfo arg1) {
-					return - arg0.getVersionNumber().compareTo(arg1.getVersionNumber());
-				}
-			});
+			// copy first element, ie., most recent ontology version, for the entry in the main list;
+			// Note: the Uri of this main entry is set equal to the UnversionedUri property:
 			
-			// extract first element, ie., most recent ontology version, which will be added
-			// to the returned list:
-			OntologyInfo ontologyInfo = versionedList.remove(0);
-			
-			// assign UNversioned URI just to this main entry:
-			ontologyInfo.setUnversionedUri(unversionedUri);
+			OntologyInfo mostRecent = versionedList.get(0);
+			OntologyInfo ontologyInfo = _createOntologyInfo(
+					mostRecent.getUnversionedUri(),      // NOTE: UnversionedURI for the URI
+					mostRecent.getDisplayLabel(),
+					mostRecent.getType(),
+					mostRecent.getUserId(),
+					mostRecent.getContactName(),
+					mostRecent.getVersionNumber(),
+					mostRecent.getDateCreated(),
+					mostRecent.getUsername(),
+					mostRecent.getOntologyId(),
+					
+					mostRecent.getUnversionedUri(),
+					mostRecent.getAuthority(),
+					mostRecent.getShortName()
+			);
 
-			// if requested, include prior versions in the priorVersions property 
+			// if requested, include prior versions: 
 			if ( includePriorVersions ) {
 				ontologyInfo.getPriorVersions().addAll(versionedList);
 			}
 			
-			// add it to returned list:
+			// add this main entry to returned list:
 			onts.add(ontologyInfo);
 		}
 		
@@ -251,15 +324,47 @@ public class Server implements IServer {
 	
 	
 	public OntologyInfo getOntologyInfo(String ontologyUri) {
-		// simple implementation: get all ontologies an pick the one requested
 		try {
-			List<OntologyInfo> onts = getAllOntologies(false);
-			for ( OntologyInfo oi : onts ) {
-				if ( ontologyUri.equals(oi.getUri()) ) {
-					return oi;
-				}
+			MmiUri mmiUri = new MmiUri(ontologyUri);
+			
+			// get elements associated with the unversioned form of the requested URI:
+			String unversOntologyUri = mmiUri.copyWithVersion(null).getOntologyUri();
+			Map<String, List<OntologyInfo>> unversionedToVersioned = getUnversionedToOntologyInfoListMap(unversOntologyUri);
+
+			if ( unversionedToVersioned.isEmpty() ) {
+				return null; // not found
 			}
-			return null;  // not found
+			assert unversionedToVersioned.size() == 1;
+			
+			// get the list of ontologies with same unversioned URI
+			List<OntologyInfo> list = unversionedToVersioned.values().iterator().next();
+			
+			// Two main cases: 
+			//
+			//  a) unversioned URI request -> just return first entry in list, which is the most recent,
+			//     but making the Uri property equal to the UnversionedUri property
+			//
+			//  b) versioned URI request -> search the list for the exact match, if any
+			//
+			
+			
+			if ( ontologyUri.equals(unversOntologyUri) ) {
+				// a) unversioned URI request, eg., http://mmisw.org/ont/seadatanet/qualityFlag
+				// just return first entry in list
+				OntologyInfo oi = list.get(0);
+				oi.setUri(oi.getUnversionedUri());
+				return oi;
+			}
+			else {
+				// b) versioned URI request, eg., http://mmisw.org/ont/seadatanet/20081113T205440/qualityFlag
+				// Search list for exact match
+				for ( OntologyInfo oi : list ) {
+					if ( ontologyUri.equals(oi.getUri()) ) {
+						return oi;
+					}
+				}
+				return null;  // not found
+			}
 		}
 		catch (Exception e) {
 			String error = e.getMessage();

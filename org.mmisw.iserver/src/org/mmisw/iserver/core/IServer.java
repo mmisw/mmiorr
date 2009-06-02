@@ -37,7 +37,11 @@ public interface IServer {
 	 * Gets all (latest versions of the) ontologies in the registry.
 	 * 
 	 * <p>
-	 * Note that the all corresponding URIs are in versioned form.
+	 * Note that the all corresponding URIs (getUri()) of the main entries in the list 
+	 * will be in UNversioned form. The elements in the priorVersion lists will be in
+	 * versioned form.  
+	 * Note that the priorVersion list WILL also contain the main (most recent) element, but in 
+	 * versioned form (that is, getUri() for that element will be versioned.
 	 * 
 	 * @param includePriorVersions true to include the prior versions for each element
 	 * @return
