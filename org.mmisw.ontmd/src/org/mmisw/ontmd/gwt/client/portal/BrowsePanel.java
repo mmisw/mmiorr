@@ -6,6 +6,7 @@ import java.util.List;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.util.Util;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -28,23 +29,32 @@ public class BrowsePanel extends VerticalPanel {
 
 
 	// all the ontologies from the registry
-	private List<OntologyInfo> ontologyInfos;
+	private List<OntologyInfo> allOntologyInfos;
 	
-	private LoginResult loginResult;
+	// working ontologies
+	private List<OntologyInfo> ontologyInfos;
 	
 	// the current displayed elements
 	private final List<OntologyInfo> selectedOntologyInfos = new ArrayList<OntologyInfo>();
 
 	
+	private LoginResult loginResult;
+	
 	private HorizontalSplitPanel hSplit = new HorizontalSplitPanel();
 	
 	
+	/**
+	 * 
+	 * @param ontologyInfos List of all ontologies to be considered. Some of them may be skipped
+	 *             if no user is logged in or is user is not an admin.
+	 * @param loginResult Infor about user logged in, if any.
+	 */
 	BrowsePanel(List<OntologyInfo> ontologyInfos, LoginResult loginResult) {
 		super();
 		
 		this.loginResult = loginResult;
 		
-		setOntologyInfos(ontologyInfos);
+		setAllOntologyInfos(ontologyInfos);
 	    selTree.update(this.ontologyInfos, loginResult);
 	    ontologyTable.setOntologyInfos(this.ontologyInfos, loginResult);
 	    
@@ -70,34 +80,37 @@ public class BrowsePanel extends VerticalPanel {
 	}
 	
 	
-	public void setOntologyInfos(List<OntologyInfo> ontologyInfos) {
-		updatedOntologyInfosAndLogin(ontologyInfos, loginResult);
+	/**
+	 * Sets the list of all ontologies.
+	 * @param ontologyInfos
+	 */
+	public void setAllOntologyInfos(List<OntologyInfo> ontologyInfos) {
+		this.allOntologyInfos = ontologyInfos;
+		updatedAllOntologyInfosAndLogin();
 	}
 	
-	
-	public void updatedOntologyInfosAndLogin(List<OntologyInfo> ontologyInfos, LoginResult loginResult) {
+	/**
+	 * Does updates according to current allOntologyInfos and loginResult
+	 */
+	private void updatedAllOntologyInfosAndLogin() {
 		Main.log("updatedOntologyInfosAndLogin: loginResult=" +loginResult);
 		
-		this.loginResult = loginResult;
-		
 		if ( loginResult != null && loginResult.isAdministrator() ) {
-			this.ontologyInfos = ontologyInfos;
+			// admin? use all ontologies
+			ontologyInfos = allOntologyInfos;
 		}
 		else {
-			// remove entries with "test"-like name in the authority:
-			this.ontologyInfos = new ArrayList<OntologyInfo>();
-			for ( OntologyInfo oi : ontologyInfos ) {
-				String authority = oi.getAuthority();
-				if ( ! authority.equalsIgnoreCase("mmitest")
-				&&   ! authority.equalsIgnoreCase("testing")
-				) {
-					this.ontologyInfos.add(oi);
+			// not admin: remove entries with "test"-like name in the authority:
+			ontologyInfos = new ArrayList<OntologyInfo>();
+			for ( OntologyInfo oi : allOntologyInfos ) {
+				if ( ! Util.isTestingOntology(oi) ) {
+					ontologyInfos.add(oi);
 				}
 			}
 		}
 		
-	    selTree.update(this.ontologyInfos, loginResult);
-	    ontologyTable.setOntologyInfos(this.ontologyInfos, loginResult);
+	    selTree.update(ontologyInfos, loginResult);
+	    ontologyTable.setOntologyInfos(ontologyInfos, loginResult);
 	}
 	
 	/**
@@ -177,7 +190,8 @@ public class BrowsePanel extends VerticalPanel {
 	}
 
 	void setLoginResult(LoginResult loginResult) {
-		updatedOntologyInfosAndLogin(ontologyInfos, loginResult);
+		this.loginResult = loginResult;
+		updatedAllOntologyInfosAndLogin();
 	}
 
 

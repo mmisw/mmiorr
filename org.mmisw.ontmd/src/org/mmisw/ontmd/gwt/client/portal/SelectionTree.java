@@ -75,7 +75,7 @@ public class SelectionTree extends Tree implements TreeListener {
 	
 	private void initTree() {
 		tree.removeItems();
-		authorMenu = new TreeItem("Author");
+		authorMenu = new TreeItem("Submitter");
 		tree.addItem(authorMenu);
 	}
 	

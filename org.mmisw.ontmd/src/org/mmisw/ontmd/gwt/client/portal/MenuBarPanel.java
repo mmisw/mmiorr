@@ -1,11 +1,19 @@
 package org.mmisw.ontmd.gwt.client.portal;
 
+import java.util.List;
+
+import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.ontmd.gwt.client.portal.PortalMainPanel.InterfaceType;
+import org.mmisw.ontmd.gwt.client.util.MyDialog;
 
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Menu bar for the portal application.
@@ -133,13 +141,47 @@ public class MenuBarPanel extends HorizontalPanel {
 		});
 	}
 	
+	
+	private void launchVersions() {
+		List<OntologyInfo> ontologyInfos = pctrl.getVersions();
+		if ( ontologyInfos == null || ontologyInfos.isEmpty() ) {
+			Window.alert("Info about versions not available");
+			return;
+		}
+		
+		VerticalPanel vp = new VerticalPanel();
+		vp.setSpacing(4);
+		vp.setHorizontalAlignment(ALIGN_CENTER);
+
+		final MyDialog popup = new MyDialog(vp);
+		popup.setText("Available versions");
+		OntologyTable ontologyTable = new OntologyTable();
+		
+		// this is to hide the popup when the user clicks one of the links:
+		ontologyTable.addClickListenerToHyperlinks(
+				new ClickListener() {
+					public void onClick(Widget sender) {
+						popup.hide();
+					}
+				}
+		);
+		
+		ontologyTable.setOntologyInfos(ontologyInfos, pctrl.getLoginResult());
+		
+		vp.add(ontologyTable);
+
+		popup.center();
+		popup.show();
+	}
+	
 	private MenuItem _createMenuItemVersions() {
 		return new MenuItem("Versions", new Command() {
 			public void execute() {
-				pctrl.showVersions();
+				launchVersions();
 			}
 		});
 	}
+
 	
 	private static Command nullCmd = new Command() {
 		public void execute() {

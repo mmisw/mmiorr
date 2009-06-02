@@ -307,7 +307,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	public void refreshedListAllOntologies(List<OntologyInfo> ontologyInfos) {
 		bodyPanel.clear();
 		bodyPanel.add(browsePanel);
-		browsePanel.setOntologyInfos(ontologyInfos);
+		browsePanel.setAllOntologyInfos(ontologyInfos);
 	}
 
 	

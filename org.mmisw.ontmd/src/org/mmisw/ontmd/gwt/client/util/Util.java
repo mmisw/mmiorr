@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.iserver.gwt.client.vocabulary.Option;
 
 import com.google.gwt.http.client.URL;
@@ -147,5 +148,9 @@ public class Util {
 		return lb;
 	}
 	
-
+    public static boolean isTestingOntology(OntologyInfo oi) {
+    	String authority = oi.getAuthority();
+    	return authority.equalsIgnoreCase("mmitest")
+		    || authority.equalsIgnoreCase("testing");
+    }
 }

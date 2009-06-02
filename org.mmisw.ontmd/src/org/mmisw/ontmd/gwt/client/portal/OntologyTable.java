@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
+import org.mmisw.ontmd.gwt.client.util.Util;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
@@ -15,6 +16,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
@@ -29,6 +31,7 @@ public class OntologyTable extends FlexTable {
 // TODO Use utility ViewTable 
 
 	private static final boolean HYPERLINK = true;
+	private static final String TESTING_ONT_MARK = "<font color=\"red\">T</font>";
 	private List<OntologyInfo> ontologyInfos;
 	private LoginResult loginResult;
 	
@@ -95,6 +98,10 @@ public class OntologyTable extends FlexTable {
 	};
 
 	
+	/** given by the user */
+	private ClickListener clickListenerToHyperlinks;
+	
+	
 	OntologyTable() {
 		super();
 		
@@ -109,6 +116,16 @@ public class OntologyTable extends FlexTable {
 		
 		prepareHeader();
 	}
+	
+	/**
+	 * For subsequent creation of the entries in the table, the given listener will be
+	 * associated to the corresponding hyperlinks. So, call this before {@link #setOntologyInfos(List, LoginResult)}.
+	 * @param clickListenerToHyperlinks
+	 */
+	public void addClickListenerToHyperlinks(ClickListener clickListenerToHyperlinks) {
+		this.clickListenerToHyperlinks = clickListenerToHyperlinks;
+	}
+
 	
 	public void clear() {
 		super.clear();
@@ -195,18 +212,30 @@ public class OntologyTable extends FlexTable {
 			
 			String name = oi.getDisplayLabel();
 			String uri = oi.getUri();
-			String unversionedUri = oi.getUnversionedUri();
 			String author = oi.getContactName();
 			String version = oi.getVersionNumber();
 			
-			String tooltip = unversionedUri;
+			String tooltip = uri;
 			
 			Widget nameWidget;
 			
 			if ( HYPERLINK ) {
-				PortalMainPanel.historyTokenMap.put(unversionedUri, oi);
-				Hyperlink hlink = new Hyperlink(name, unversionedUri);
-				nameWidget = hlink;
+				PortalMainPanel.historyTokenMap.put(uri, oi);
+				Hyperlink hlink = new Hyperlink(name, uri);
+				if ( Util.isTestingOntology(oi) ) {
+					// add a mark
+					HorizontalPanel hp = new HorizontalPanel();
+					hp.add(hlink);
+					hp.add(new HTML(TESTING_ONT_MARK));
+					nameWidget = hp;
+				}
+				else {
+					nameWidget = hlink;
+				}
+				
+				if ( clickListenerToHyperlinks != null ) {
+					hlink.addClickListener(clickListenerToHyperlinks);
+				}
 			}
 			else {
 				String link = createLink(uri);
@@ -244,6 +273,5 @@ public class OntologyTable extends FlexTable {
 		}
 
 	}
-	
 
 }

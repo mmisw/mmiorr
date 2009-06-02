@@ -3,6 +3,17 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-06-02
+	- fixed: consider all ontologies when an administrator is logged in.
+	- testing ontologies are marked with a T for easy spot
+	
+	- Versions option implemented: it dispatches an OntologyTable object in a popup dialog.
+	  If the user clicks one of the versions, the dialog is closed and the history management
+	  takes care of dispatching the requested ontology. We could make the dialog non-modal
+	  to keep it visible even as the user navigates the versions, but it would be tricker at
+	  this point to control the other possible actions, so safer just to use a modal dialog.
+	   
+
 2009-06-01
 	- better links section (upper right) including "browse" hyperlink
 	- history tokens dispatched: #<ontology-uri>   #browse

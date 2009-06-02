@@ -93,9 +93,6 @@ public class PortalControl {
 		portalMainPanel.cancelEdit(ontologyPanel);
 	}
 	
-	public void showVersions() {
-		Window.alert("sorry, not implemented yet");		
-	}
 
 	public static enum DownloadOption {
 		RDFXML("RDF/XML", "rdf"),
@@ -127,6 +124,13 @@ public class PortalControl {
 		if ( ontologyInfo != null ) {
 			String url = ontologyInfo.getUri() + "?form=" +dopc.getFormat();
 			return "<a target=\"_blank\" href=\"" +url+ "\">" +dopc.getName()+ "</a>";
+		}
+		return null;
+	}
+
+	public List<OntologyInfo> getVersions() {
+		if ( ontologyInfo != null ) {
+			return ontologyInfo.getPriorVersions();
 		}
 		return null;
 	}
