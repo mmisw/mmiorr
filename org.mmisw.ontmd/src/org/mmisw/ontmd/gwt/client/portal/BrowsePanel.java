@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
+import org.mmisw.ontmd.gwt.client.Main;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -75,6 +76,8 @@ public class BrowsePanel extends VerticalPanel {
 	
 	
 	public void updatedOntologyInfosAndLogin(List<OntologyInfo> ontologyInfos, LoginResult loginResult) {
+		Main.log("updatedOntologyInfosAndLogin: loginResult=" +loginResult);
+		
 		this.loginResult = loginResult;
 		
 		if ( loginResult != null && loginResult.isAdministrator() ) {

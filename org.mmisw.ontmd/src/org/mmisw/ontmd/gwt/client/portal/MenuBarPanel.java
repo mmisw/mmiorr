@@ -151,7 +151,10 @@ public class MenuBarPanel extends HorizontalPanel {
 		// use a nullCmd as i'm not sure addItem accepts a null command
 		MenuBar mb = new MenuBar(true);
 		for (PortalControl.DownloadOption dopc : PortalControl.DownloadOption.values() ) {
-			mb.addItem(pctrl.getDownloadOptionHtml(dopc), true, nullCmd);
+			String text = pctrl.getDownloadOptionHtml(dopc);
+			if ( text != null ) {
+				mb.addItem(text, true, nullCmd);
+			}
 		}
 		return mb;
 	}

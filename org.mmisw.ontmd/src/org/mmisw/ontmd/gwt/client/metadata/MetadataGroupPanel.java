@@ -394,7 +394,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 				continue;
 			}
 			
-			Main.log("resetToOriginalOrNewValues: uri: " +uri+ " = " +value);
+//			Main.log("resetToOriginalOrNewValues: uri: " +uri+ " = " +value);
 
 			// Special case: Omv.acronym/OmvMmi.shortNameUri
 			if ( Main.metadataBaseInfo.getResourceTypeUri().equals(uri) ) {

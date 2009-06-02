@@ -360,8 +360,6 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 
 	
 	private void reviewCompleted(final MyDialog popup, final CreateOntologyResult createOntologyResult) {
-//		this.reviewResult_Old = reviewResult_Old;
-
 		String error = createOntologyResult.getError();
 		
 		StringBuffer sb = new StringBuffer();

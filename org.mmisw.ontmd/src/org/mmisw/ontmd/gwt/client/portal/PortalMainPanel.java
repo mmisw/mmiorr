@@ -18,7 +18,11 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.HistoryListener;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.WindowCloseListener;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -34,9 +38,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	
 	private final PortalControl pctrl;
 
-	private final LoginControlPanel loginControlPanel = new LoginControlPanel(this);
-	
-	private final HeaderPanel headerPanel = new HeaderPanel(loginControlPanel); 
+	private final HeaderPanel headerPanel = new HeaderPanel(); 
 
 	private final MenuBarPanel menuBarPanel = new MenuBarPanel();
 
@@ -55,10 +57,26 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	static Map<String, Object> historyTokenMap = new HashMap<String, Object>();
 	
 	
+	/** helps confirm the leave of the current page */
+	private void _setupWindowCloseListener() {
+		Window.addWindowCloseListener(new WindowCloseListener() {
+			public String onWindowClosing() {
+				if ( interfaceType == InterfaceType.ONTOLOGY_EDIT ) {
+					return "If any, all edit will be lost";
+				}
+				return null;
+			}
+			
+			public void onWindowClosed() { /* ignore */  }
+		});
+	}
+	
 	
 	PortalMainPanel(final Map<String, String> params, List<OntologyInfo> ontologyInfos) {
 		super();
-		
+	
+		_setupWindowCloseListener();
+
 		pctrl = PortalControl.getInstance();
 		pctrl.setPortalMainPanel(this);
 		
@@ -88,30 +106,35 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	    
 	    pctrl.setLoginResult(loginResult);
 
-	    menuBarPanel.showMenuBar(interfaceType);
-	    
 	    browsePanel = new BrowsePanel(ontologyInfos, loginResult);
 	    this.setWidth("100%");
 	    bodyPanel.setWidth("100%");
-	    loginControlPanel.update(loginResult);
-	    
-//	    bodyPanel.setBorderWidth(1);
-		
-	    
+
+	    interfaceType = InterfaceType.BROWSE;
+	    headerPanel.updateLinks(interfaceType, loginResult);
+
 	    this.add(headerPanel);
-	    
 	    this.add(menuBarPanel);
-	    
 	    this.add(bodyPanel);
 
-	    bodyPanel.add(browsePanel);
+	    String historyToken = History.getToken();
+	    if ( historyToken != null && historyToken.trim().length() > 0 ) {
+			Main.log("history token = " +historyToken);
+	    	History.fireCurrentHistoryState();
+	    }
+	    else {
+		    menuBarPanel.showMenuBar(interfaceType);
+		    
+		    bodyPanel.add(browsePanel);
+		    
+//			History.newItem("", false);
 
+	    }
 	}
 	
 	private void userSignedIn() {
 		menuBarPanel.showMenuBar(interfaceType);
 		browsePanel.setLoginResult(pctrl.getLoginResult());
-		loginControlPanel.update(pctrl.getLoginResult());
 		if ( signInPopup != null ) {
 			signInPopup.hide();
 		}
@@ -122,10 +145,10 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 			userPanel.logout();
 		}
 		pctrl.setLoginResult(null);
+		headerPanel.updateLinks(interfaceType, pctrl.getLoginResult());
 		menuBarPanel.showMenuBar(interfaceType);
 		browsePanel.ontologyTable.showProgress();
 	    browsePanel.setLoginResult(pctrl.getLoginResult());
-	    loginControlPanel.update(null);
 	    
 	}
 	
@@ -158,9 +181,10 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		signInPopup.show();
 	}
 
-	public void loginOk(final LoginResult loginResult_Old) {
-		pctrl.setLoginResult(loginResult_Old);
+	public void loginOk(final LoginResult loginResult) {
+		pctrl.setLoginResult(loginResult);
 		browsePanel.ontologyTable.showProgress();
+		headerPanel.updateLinks(interfaceType, pctrl.getLoginResult());
 		
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
@@ -178,21 +202,35 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		Object obj = historyTokenMap.get(historyToken);
 		
 		if ( obj == null ) {
-			// for simplicity, always handle this by dispatching the main page:
-			dispatchMainPanel(false);
+
+			if ( historyToken.trim().length() > 0 ) {
+				if ( historyToken.trim().toLowerCase().equals("browse") ) {
+					dispatchMainPanel(false);		
+				}
+				else {
+					String ontologyUri = historyToken.trim();
+					Main.log("onHistoryChanged: URI: " +ontologyUri);
+					getOntologyInfo(ontologyUri);
+				}
+			}
+			else {
+				dispatchMainPanel(false);
+			}
+			
 			return;
 		}
 		
 		if ( obj instanceof OntologyInfo ) {
 			OntologyInfo ontologyInfo = (OntologyInfo) obj;
 			pctrl.setOntologyInfo(ontologyInfo);
-			
-			Main.log("onHistoryChanged: OntologyUri: " +ontologyInfo.getUri());
-			
+			Main.log("onHistoryChanged: OntologyInfo: " +ontologyInfo.getUri());
 			dispatchOntologyPanel(ontologyInfo);
 			return;
 		}
 		
+		
+		// else:
+		dispatchMainPanel(false);
 	}
 
 	
@@ -201,11 +239,13 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		OntologyPanel ontologyPanel = pctrl.getOntologyPanel();
 		if ( ontologyPanel != null ) {
 			ontologyPanel.cancel();
+			pctrl.setOntologyInfo(null);
 			pctrl.setOntologyPanel(null);
 		}
 		
 		interfaceType = InterfaceType.BROWSE;
 	    menuBarPanel.showMenuBar(interfaceType);
+	    headerPanel.updateLinks(interfaceType, pctrl.getLoginResult());
 
 	    bodyPanel.clear();
 
@@ -224,7 +264,6 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		Main.log("dispatchOntologyPanel:  ontologyUri=" +ontologyUri);
 
 		interfaceType = InterfaceType.ONTOLOGY_VIEW;
-	    menuBarPanel.showMenuBar(interfaceType);
 
 	    bodyPanel.clear();
 	    bodyPanel.add(new HTML("<i>Loading ontology...</i>"));
@@ -232,26 +271,32 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	    DeferredCommand.addCommand(new Command() {
 			public void execute() {
 				OntologyPanel ontologyPanel = new OntologyPanel(ontologyInfo, true);
+				pctrl.setOntologyInfo(ontologyInfo);
 				pctrl.setOntologyPanel(ontologyPanel);
+				menuBarPanel.showMenuBar(interfaceType);
+				headerPanel.updateLinks(interfaceType, pctrl.getLoginResult());
 				
 			    bodyPanel.clear();
 				bodyPanel.add(ontologyPanel);
 			}
 	    });
 	}
+	
 
 	public void editNewVersion(OntologyPanel ontologyPanel) {
 		interfaceType = InterfaceType.ONTOLOGY_EDIT;
 	    menuBarPanel.showMenuBar(interfaceType);
-		
+	    headerPanel.updateLinks(interfaceType, pctrl.getLoginResult());
 		ontologyPanel.updateInterface(false);
 	}
 
 	public void cancelEdit(OntologyPanel ontologyPanel) {
 		interfaceType = InterfaceType.ONTOLOGY_VIEW;
 	    menuBarPanel.showMenuBar(interfaceType);
-		
-	    ontologyPanel.updateInterface(true);
+	    headerPanel.updateLinks(interfaceType, pctrl.getLoginResult());
+	    if ( ontologyPanel != null ) {
+	    	ontologyPanel.updateInterface(true);
+	    }
 	}
 
 	public void completedUploadOntologyResult(UploadOntologyResult uploadOntologyResult) {
@@ -264,5 +309,53 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		bodyPanel.add(browsePanel);
 		browsePanel.setOntologyInfos(ontologyInfos);
 	}
+
+	
+	/**
+	 * Requests an ontology to the back-end and dispatches a corresponding
+	 * ontology panel.
+	 * @param ontologyUri
+	 */
+	private void getOntologyInfo(final String ontologyUri) {
+		AsyncCallback<OntologyInfo> callback = new AsyncCallback<OntologyInfo>() {
+			public void onFailure(Throwable thr) {
+				String error = thr.getClass().getName()+ ": " +thr.getMessage();
+				while ( (thr = thr.getCause()) != null ) {
+					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
+				}
+				Window.alert(error);
+			}
+
+			public void onSuccess(OntologyInfo ontologyInfo) {
+				String error = null;
+				if ( ontologyInfo == null ) {
+					error = "<b>" +ontologyUri+ "</b>: " +
+							"<font color=\"red\">" +"Ontology not found by this URI"+ "</font>";
+				}
+				else if ( ontologyInfo.getError() != null ) {
+					error = "<font color=\"red\">" +ontologyInfo.getError()+ "</font>";
+				}
+				
+				if ( error != null ) {
+					VerticalPanel vp = new VerticalPanel();
+					vp.setSpacing(14);
+					vp.add(new HTML(error));
+					vp.add(new Hyperlink("Go to main page", "browse"));
+					bodyPanel.clear();
+				    bodyPanel.add(vp);
+				}
+				else {
+					dispatchOntologyPanel(ontologyInfo);
+				}
+			}
+		};
+
+	    bodyPanel.clear();
+	    bodyPanel.add(new HTML("<i>Loading ontology...</i>"));
+
+		Main.log("getOntologyInfo: ontologyUri = " +ontologyUri);
+		Main.ontmdService.getOntologyInfo(ontologyUri, callback);
+	}
+
 
 }

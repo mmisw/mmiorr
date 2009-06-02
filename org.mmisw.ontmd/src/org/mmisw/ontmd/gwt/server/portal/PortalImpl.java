@@ -75,6 +75,9 @@ public class PortalImpl  {
 		return iserver.getAllOntologies(includePriorVersions);
 	}
 	
+	public OntologyInfo getOntologyInfo(String ontologyUri) {
+		return iserver.getOntologyInfo(ontologyUri);
+	}
 	
 	public List<EntityInfo> getEntities(String ontologyUri) {
 		return iserver.getEntities(ontologyUri);

@@ -3,6 +3,14 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-06-01
+	- better links section (upper right) including "browse" hyperlink
+	- history tokens dispatched: #<ontology-uri>   #browse
+	- close window: warning message only shown when in editing mode
+	- various other code changes
+	- TODO: check filtered out ontologies when administrator is logged in
+	
+	
 2009-05-31
 	- Many changes for including editing and creation of new version of a vocabulary ontology
 	  TODO: once registered the new version, the browse page is displayed with a reloading of

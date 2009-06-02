@@ -71,9 +71,11 @@ public interface OntMdServiceAsync {
 	
 	void getPortalBaseInfo(AsyncCallback<PortalBaseInfo> callback);
 	
-	void getAllOntologies(boolean includePriorVersions, AsyncCallback <List<OntologyInfo>> callback);
-	
 	void getMetadataBaseInfo(boolean includeVersion, AsyncCallback<MetadataBaseInfo> callback);
+
+	void getAllOntologies(boolean includePriorVersions, AsyncCallback <List<OntologyInfo>> callback);
+
+	void getOntologyInfo(String ontologyUri, AsyncCallback<OntologyInfo> callback);
 	
 	void getOntologyContents(OntologyInfo ontologyInfo, AsyncCallback<OntologyInfo> callback);
 	

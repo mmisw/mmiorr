@@ -124,8 +124,11 @@ public class PortalControl {
 	}
 		
 	public String getDownloadOptionHtml(DownloadOption dopc) {
-		String url = ontologyInfo.getUri() + "?form=" +dopc.getFormat();
-		return "<a target=\"_blank\" href=\"" +url+ "\">" +dopc.getName()+ "</a>";
+		if ( ontologyInfo != null ) {
+			String url = ontologyInfo.getUri() + "?form=" +dopc.getFormat();
+			return "<a target=\"_blank\" href=\"" +url+ "\">" +dopc.getName()+ "</a>";
+		}
+		return null;
 	}
 
 	/**
@@ -136,10 +139,10 @@ public class PortalControl {
 	}
 
 	/**
-	 * @param loginResult_Old the loginResult to set
+	 * @param loginResult the loginResult to set
 	 */
-	public void setLoginResult(LoginResult loginResult_Old) {
-		this.loginResult = loginResult_Old;
+	public void setLoginResult(LoginResult loginResult) {
+		this.loginResult = loginResult;
 	}
 
 	/**
@@ -182,6 +185,15 @@ public class PortalControl {
 	 */
 	public void setPortal(Portal portal) {
 		this.portal = portal;
+	}
+
+	public void userToSignIn() {
+		portalMainPanel.userToSignIn();
+	}
+	
+	public void userSignedOut() {
+		portalMainPanel.userSignedOut();
+		cancelEdit();
 	}
 
 	

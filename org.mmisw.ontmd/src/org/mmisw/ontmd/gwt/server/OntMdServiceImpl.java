@@ -1378,6 +1378,10 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		}
 	}
 
+	public OntologyInfo getOntologyInfo(String ontologyUri) {
+		return portal.getOntologyInfo(ontologyUri);
+	}
+	
 	public List<EntityInfo> getEntities(String ontologyUri) {
 		return portal.getEntities(ontologyUri);
 	}

@@ -114,11 +114,16 @@ public interface OntMdService extends RemoteService {
 	
 	public PortalBaseInfo getPortalBaseInfo();
 	
+	public MetadataBaseInfo getMetadataBaseInfo(boolean includeVersion);
 
 	public List<OntologyInfo> getAllOntologies(boolean includePriorVersions);
 	
-	
-	public MetadataBaseInfo getMetadataBaseInfo(boolean includeVersion);
+	/**
+	 * Gets ontology info from an ontology that can be resolved by the Ont service
+	 * (ie., from the MMI registry).
+	 */
+	public OntologyInfo getOntologyInfo(String ontologyUri);
+
 	
 	public OntologyInfo getOntologyContents(OntologyInfo ontologyInfo);
 	
@@ -132,4 +137,6 @@ public interface OntMdService extends RemoteService {
 
 
 	public UploadOntologyResult uploadOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult);
+	
+	
 }

@@ -79,7 +79,7 @@ public class SelectionTree extends Tree implements TreeListener {
 		tree.addItem(authorMenu);
 	}
 	
-	void update(List<OntologyInfo> ontologyInfos, LoginResult loginResult_Old) {
+	void update(List<OntologyInfo> ontologyInfos, LoginResult loginResult) {
 		initTree();
 		
 		// {username -> userId} map
@@ -108,7 +108,7 @@ public class SelectionTree extends Tree implements TreeListener {
 		}
 		
 		authorMenu.addItem(new TreeItem(ALL));
-		if ( loginResult_Old != null ) {
+		if ( loginResult != null ) {
 			List<String> usernames = new ArrayList<String>();
 			usernames.addAll(authors.keySet());
 			Collections.sort(usernames);
