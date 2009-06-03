@@ -32,6 +32,10 @@ import edu.drexel.util.rdf.OwlModel;
  * @author Carlos Rueda
  */
 class UnversionedConverter {
+	
+	// 2009-06-03 Disabling the alteration of attribute values (so the contents will be exactly
+	// as those of the versioned ontology):
+	private static boolean ALTERATE_ANNOTATIONS = false;
 
 	private static final Log log = LogFactory.getLog(UnversionedConverter.class);
 	
@@ -160,24 +164,32 @@ class UnversionedConverter {
 				String newValue = newValues.get(prd.getURI());
 				if ( newValue == null || newValue.trim().length() == 0 ) {
 					// not assigned above.
-					// See if it's one of the ones to be modified:
-					if ( Omv.description.getURI().equals(prd.getURI()) ) {
-						// transfer modified description:
-						String description = 
-							"An unversioned ontology containing the latest terms as of the request time, " +
-							"for the ontology containing: " +st.getObject();
-						log.info("  Transferring modified description: " +st.getSubject()+ " :: " +prd+ " :: " +description);
-						newOntModel.add(ont_, st.getPredicate(), description);
-					}
-					else if ( Omv.name.getURI().equals(prd.getURI()) ) {
-						// transfer modified title:
-						String title = 
-							"Unversioned form of: " +st.getObject();
-						log.info("  Transferring modified title: " +st.getSubject()+ " :: " +prd+ " :: " +title);
-						newOntModel.add(ont_, st.getPredicate(), title);
+					
+					if ( ALTERATE_ANNOTATIONS ) {
+						// See if it's one of the ones to be modified:
+						if ( Omv.description.getURI().equals(prd.getURI()) ) {
+							// transfer modified description:
+							String description = 
+								"An unversioned ontology containing the latest terms as of the request time, " +
+								"for the ontology containing: " +st.getObject();
+							log.info("  Transferring modified description: " +st.getSubject()+ " :: " +prd+ " :: " +description);
+							newOntModel.add(ont_, st.getPredicate(), description);
+						}
+						else if ( Omv.name.getURI().equals(prd.getURI()) ) {
+							// transfer modified title:
+							String title = 
+								"Unversioned form of: " +st.getObject();
+							log.info("  Transferring modified title: " +st.getSubject()+ " :: " +prd+ " :: " +title);
+							newOntModel.add(ont_, st.getPredicate(), title);
+						}
+						else {
+							// transfer as it comes:
+							log.info("  Transferring: " +st.getSubject()+ " :: " +prd+ " :: " +st.getObject());
+							newOntModel.add(ont_, st.getPredicate(), st.getObject());
+						}
 					}
 					else {
-						// transfer as it comes:
+						// just transfer as it comes:
 						log.info("  Transferring: " +st.getSubject()+ " :: " +prd+ " :: " +st.getObject());
 						newOntModel.add(ont_, st.getPredicate(), st.getObject());
 					}

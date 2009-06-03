@@ -4,6 +4,12 @@ $Id$
 
 ChangeLog
 
+2009-06-03 -  version 1.2.2.beta
+	- UnversionedConverter: Disabled the alteration of attribute values, so the contents 
+	  of the unversioned ontology will be exactly as that of the versioned ontology.
+	  TODO: we still need to determine the mechanism to explicitly indicate that the 
+	  "unversioned" response is an unversioned form of the corresponding latest version.
+	  
 2009-05-31
 	- listall: include o.ontology_id
 
