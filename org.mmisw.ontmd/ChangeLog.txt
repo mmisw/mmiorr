@@ -12,6 +12,10 @@ ChangeLog
 	  takes care of dispatching the requested ontology. We could make the dialog non-modal
 	  to keep it visible even as the user navigates the versions, but it would be tricker at
 	  this point to control the other possible actions, so safer just to use a modal dialog.
+	  
+	- QuickInfo menu added for each element in ontology list; this facilitates some actions 
+	  (eg viewing prior version, resolving in RDF, N3, etc.) without having to load the complete
+	  ontology.
 	   
 
 2009-06-01

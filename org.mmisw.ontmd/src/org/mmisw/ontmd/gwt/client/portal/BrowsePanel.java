@@ -3,8 +3,8 @@ package org.mmisw.ontmd.gwt.client.portal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
+import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.util.Util;
 
@@ -25,8 +25,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class BrowsePanel extends VerticalPanel {
 
 	private final SelectionTree selTree = new SelectionTree(this);
-	final OntologyTable ontologyTable = new OntologyTable();
-
+	final OntologyTable ontologyTable = new OntologyTable(PortalControl.getInstance().getQuickInfo());
 
 	// all the ontologies from the registry
 	private List<OntologyInfo> allOntologyInfos;
@@ -95,16 +94,26 @@ public class BrowsePanel extends VerticalPanel {
 	private void updatedAllOntologyInfosAndLogin() {
 		Main.log("updatedOntologyInfosAndLogin: loginResult=" +loginResult);
 		
+		
 		if ( loginResult != null && loginResult.isAdministrator() ) {
 			// admin? use all ontologies
 			ontologyInfos = allOntologyInfos;
 		}
 		else {
-			// not admin: remove entries with "test"-like name in the authority:
+			// not admin: remove entries with "test"-like name in the authority unless is owned
+			// by the logged-in user, if any
+			
 			ontologyInfos = new ArrayList<OntologyInfo>();
+			
 			for ( OntologyInfo oi : allOntologyInfos ) {
 				if ( ! Util.isTestingOntology(oi) ) {
 					ontologyInfos.add(oi);
+				}
+				else {
+					String userId = loginResult != null ? loginResult.getUserId() : null;
+					if ( userId != null && userId.equals(oi.getOntologyUserId()) ) {
+						ontologyInfos.add(oi);	
+					}
 				}
 			}
 		}

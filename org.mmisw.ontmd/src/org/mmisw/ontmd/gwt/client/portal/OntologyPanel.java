@@ -114,7 +114,14 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	}
 	
 	
-	
+	/**
+	 * @return the ontologyInfo
+	 */
+	public OntologyInfo getOntologyInfo() {
+		return ontologyInfo;
+	}
+
+
 	void updateInterface(boolean readOnly) {
 		
 		headerPanel.resetElements(readOnly);

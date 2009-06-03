@@ -5,9 +5,16 @@ import java.util.List;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.UploadOntologyResult;
+import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.portal.OntologyTable.IQuickInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.MenuBar;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * 
@@ -30,6 +37,7 @@ public class PortalControl {
 	private OntologyInfo ontologyInfo;
 	
 	private OntologyPanel ontologyPanel;
+	private MenuBarPanel menuBarPanel;
 	
 	
 	public void launchCreateVocabulary() {
@@ -120,9 +128,13 @@ public class PortalControl {
 		}
 	}
 		
-	public String getDownloadOptionHtml(DownloadOption dopc) {
-		if ( ontologyInfo != null ) {
-			String url = ontologyInfo.getUri() + "?form=" +dopc.getFormat();
+	public String getDownloadOptionHtml(DownloadOption dopc, OntologyInfo oi) {
+		if ( oi == null ) {
+			oi = ontologyInfo;
+		}
+		
+		if ( oi != null ) {
+			String url = oi.getUri() + "?form=" +dopc.getFormat();
 			return "<a target=\"_blank\" href=\"" +url+ "\">" +dopc.getName()+ "</a>";
 		}
 		return null;
@@ -200,5 +212,79 @@ public class PortalControl {
 		cancelEdit();
 	}
 
+	public void setMenuBarPanel(MenuBarPanel menuBarPanel) {
+		this.menuBarPanel = menuBarPanel;
+	}
+
+	public MenuBarPanel getMenuBarPanel() {
+		return menuBarPanel;
+	}
+
 	
+	public String checkCanEditOntology(OntologyInfo oi) {
+		final String NOT_AUTHORIZED = "You are not authorized to edit this ontology";
+
+		if ( oi == null ) {
+			oi = ontologyInfo;
+		}
+		String error = null;
+		
+		if ( loginResult == null ) {
+			error = NOT_AUTHORIZED;
+		}
+		else {
+			if ( loginResult.isAdministrator() ) {
+				// OK.
+			}
+			else if ( oi == null || ! loginResult.getUserId().equals(oi.getOntologyUserId()) ) {
+				error = NOT_AUTHORIZED;
+			}
+		}
+		return error;
+	}
+	
+	
+	private IQuickInfo quickInfo = new IQuickInfo() {
+		
+		public Widget getWidget(final OntologyInfo oi) {
+			
+			if ( true ) {
+				MenuBarPanel menuBarPanel = PortalControl.getInstance().getMenuBarPanel();
+				
+				// TODO do not include Edit option yet
+				MenuBar menu = menuBarPanel.createOntologyMenuBar(oi, false);
+				MenuBar mb = new MenuBar(true);
+//				mb.addItem("<font color=\"blue\">i</font>", true, menu);
+				mb.addItem("", menu);
+				return mb;
+			}
+			else {
+				Image img = Main.images.triright().createImage();
+				img.addClickListener(new ClickListener() {
+					public void onClick(Widget sender) {
+						
+						MenuBarPanel menuBarPanel = PortalControl.getInstance().getMenuBarPanel();
+						
+						MenuBar menu = menuBarPanel.createOntologyMenuBar(oi, false);
+						
+						final PopupPanel menuPopup = new PopupPanel(true);
+					    menuPopup.setWidget(menu);
+					    menuPopup.setPopupPosition(sender.getAbsoluteLeft(), sender.getAbsoluteTop());
+						menuPopup.show();
+					}
+				});
+				return img;
+			}
+		}
+	
+	};
+
+	/**
+	 * @return the quickInfo
+	 */
+	public IQuickInfo getQuickInfo() {
+		return quickInfo;
+	}
+	
+
 }

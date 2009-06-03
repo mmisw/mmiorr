@@ -4,11 +4,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
+import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.ontmd.gwt.client.util.Util;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -27,18 +26,24 @@ import com.google.gwt.user.client.ui.Widget;
  * @author Carlos Rueda
  */
 public class OntologyTable extends FlexTable {
+	private static final String TESTING_ONT_MARK = "<font color=\"red\">T</font>";
 
 // TODO Use utility ViewTable 
+	
+	
+	static interface IQuickInfo {
+		Widget getWidget(OntologyInfo oi);
+	}
+	
+	private IQuickInfo quickInfo;
 
-	private static final boolean HYPERLINK = true;
-	private static final String TESTING_ONT_MARK = "<font color=\"red\">T</font>";
 	private List<OntologyInfo> ontologyInfos;
-	private LoginResult loginResult;
 	
 	private boolean isAdmin = false;
 	
 	private final FlexTable flexPanel = this;
 
+	private HTML quickInfoHeaderHtml = new HTML("");
 	private HTML nameHeaderHtml = new HTML("Name");
 	private HTML authorHeaderHtml = new HTML("Author");
 	private HTML versionHeaderHtml = new HTML("Version");
@@ -103,9 +108,15 @@ public class OntologyTable extends FlexTable {
 	
 	
 	OntologyTable() {
+		this(null);
+	}
+	
+	OntologyTable(IQuickInfo quickInfo) {
 		super();
+		this.quickInfo = quickInfo;
 		
 		flexPanel.setBorderWidth(1);
+		flexPanel.setCellPadding(1);
 		flexPanel.setWidth("100%");
 		flexPanel.setStylePrimaryName("OntologyTable");
 		
@@ -126,7 +137,10 @@ public class OntologyTable extends FlexTable {
 		this.clickListenerToHyperlinks = clickListenerToHyperlinks;
 	}
 
-	
+	public void setQuickInfo(IQuickInfo quickInfo) {
+		this.quickInfo = quickInfo;
+	}
+
 	public void clear() {
 		super.clear();
 		while ( getRowCount() > 0 ) {
@@ -151,24 +165,36 @@ public class OntologyTable extends FlexTable {
 		
 		flexPanel.getRowFormatter().setStylePrimaryName(row, "OntologyTable-header");
 		
-		flexPanel.setWidget(row, 0, nameHeaderHtml);
-		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
-				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
-		);
+		int col = 0;
+		if ( quickInfo != null ) {
+			flexPanel.setWidget(row, col, quickInfoHeaderHtml);
+			flexPanel.getFlexCellFormatter().setAlignment(row, col, 
+					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+			);
+			col++;
+		}
 		
-		flexPanel.setWidget(row, 1, authorHeaderHtml);
-		flexPanel.getFlexCellFormatter().setAlignment(row, 1, 
+		flexPanel.setWidget(row, col, nameHeaderHtml);
+		flexPanel.getFlexCellFormatter().setAlignment(row, col, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
+		col++;
+		
+		flexPanel.setWidget(row, col, authorHeaderHtml);
+		flexPanel.getFlexCellFormatter().setAlignment(row, col, 
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		col++;
 
-		flexPanel.setWidget(row, 2, versionHeaderHtml);
-		flexPanel.getFlexCellFormatter().setAlignment(row, 2, 
+		flexPanel.setWidget(row, col, versionHeaderHtml);
+		flexPanel.getFlexCellFormatter().setAlignment(row, col, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
+		col++;
 
 		if ( isAdmin ) {
-			flexPanel.setWidget(row, 3, submitterHeaderHtml);
-			flexPanel.getFlexCellFormatter().setAlignment(row, 3, 
+			flexPanel.setWidget(row, col, submitterHeaderHtml);
+			flexPanel.getFlexCellFormatter().setAlignment(row, col, 
 					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 			);
 		}
@@ -178,7 +204,6 @@ public class OntologyTable extends FlexTable {
 	
 	void setOntologyInfos(final List<OntologyInfo> ontologyInfos, LoginResult loginResult) {
 		this.ontologyInfos = ontologyInfos;
-		this.loginResult = loginResult;
 		this.isAdmin = loginResult != null && loginResult.isAdministrator();
 		
 		DeferredCommand.addCommand(new Command() {
@@ -187,18 +212,6 @@ public class OntologyTable extends FlexTable {
 				update();
 			}
 		});
-	}
-	
-	private String createLink(String uri) {
-		
-		String link = GWT.getModuleBaseURL()+ "?ontologyUri=" +uri;
-		
-		if ( loginResult != null ) {
-			link += "&userId=" +loginResult.getUserId();
-			link += "&sessionid=" +loginResult.getSessionId();
-		}
-
-		return link;
 	}
 	
 	private void update() {
@@ -219,51 +232,56 @@ public class OntologyTable extends FlexTable {
 			
 			Widget nameWidget;
 			
-			if ( HYPERLINK ) {
-				PortalMainPanel.historyTokenMap.put(uri, oi);
-				Hyperlink hlink = new Hyperlink(name, uri);
-				if ( Util.isTestingOntology(oi) ) {
-					// add a mark
-					HorizontalPanel hp = new HorizontalPanel();
-					hp.add(hlink);
-					hp.add(new HTML(TESTING_ONT_MARK));
-					nameWidget = hp;
-				}
-				else {
-					nameWidget = hlink;
-				}
-				
-				if ( clickListenerToHyperlinks != null ) {
-					hlink.addClickListener(clickListenerToHyperlinks);
-				}
+			PortalMainPanel.historyTokenMap.put(uri, oi);
+			Hyperlink hlink = new Hyperlink(name, uri);
+			if ( Util.isTestingOntology(oi) ) {
+				// add a mark
+				HorizontalPanel hp = new HorizontalPanel();
+				hp.add(hlink);
+				hp.add(new HTML(TESTING_ONT_MARK));
+				nameWidget = hp;
 			}
 			else {
-				String link = createLink(uri);
-
-				HTML html = new HTML("<a target=\"_blank\" href=\"" +link+ "\">" +name+ "</a>");
-				nameWidget = html;
+				nameWidget = hlink;
 			}
+
+			if ( clickListenerToHyperlinks != null ) {
+				hlink.addClickListener(clickListenerToHyperlinks);
+			}
+				
 
 			nameWidget.setTitle(tooltip);
 			
-			flexPanel.setWidget(row, 0, nameWidget);
-			flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
-					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
-			);
+			int col = 0;
+			if ( quickInfo != null ) {
+				flexPanel.setWidget(row, col, quickInfo.getWidget(oi));
+				flexPanel.getFlexCellFormatter().setAlignment(row, col, 
+						HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE
+				);
+				col++;
+			}
 			
-			flexPanel.setWidget(row, 1, new Label(author));
-			flexPanel.getFlexCellFormatter().setAlignment(row, 1, 
+			flexPanel.setWidget(row, col, nameWidget);
+			flexPanel.getFlexCellFormatter().setAlignment(row, col, 
 					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 			);
+			col++;
 			
-			flexPanel.setWidget(row, 2, new Label(version));
-			flexPanel.getFlexCellFormatter().setAlignment(row, 2, 
+			flexPanel.setWidget(row, col, new Label(author));
+			flexPanel.getFlexCellFormatter().setAlignment(row, col, 
 					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 			);
+			col++;
+				
+			flexPanel.setWidget(row, col, new Label(version));
+			flexPanel.getFlexCellFormatter().setAlignment(row, col, 
+					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+			);
+			col++;
 			
 			if ( isAdmin ) {
-				flexPanel.setWidget(row, 3, new Label(oi.getUsername()));
-				flexPanel.getFlexCellFormatter().setAlignment(row, 3, 
+				flexPanel.setWidget(row, col, new Label(oi.getUsername()));
+				flexPanel.getFlexCellFormatter().setAlignment(row, col, 
 						HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 				);
 			}

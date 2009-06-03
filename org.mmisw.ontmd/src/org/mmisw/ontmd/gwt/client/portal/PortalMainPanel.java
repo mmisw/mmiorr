@@ -284,6 +284,14 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	
 
 	public void editNewVersion(OntologyPanel ontologyPanel) {
+		OntologyInfo ontologyInfo = ontologyPanel.getOntologyInfo();
+		String error = pctrl.checkCanEditOntology(ontologyInfo);
+		
+		if ( error != null ) {
+			Window.alert(error);
+			return;
+		}
+			
 		interfaceType = InterfaceType.ONTOLOGY_EDIT;
 	    menuBarPanel.showMenuBar(interfaceType);
 	    headerPanel.updateLinks(interfaceType, pctrl.getLoginResult());

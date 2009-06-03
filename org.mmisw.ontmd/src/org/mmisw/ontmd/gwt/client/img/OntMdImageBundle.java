@@ -25,4 +25,5 @@ public interface OntMdImageBundle extends ImageBundle {
 	
 	
 	public AbstractImagePrototype tridown();
+	public AbstractImagePrototype triright();
 }

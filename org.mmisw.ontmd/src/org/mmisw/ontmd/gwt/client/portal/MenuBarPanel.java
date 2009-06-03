@@ -23,14 +23,19 @@ import com.google.gwt.user.client.ui.Widget;
 public class MenuBarPanel extends HorizontalPanel {
 
 	PortalControl pctrl = PortalControl.getInstance();
+	final MenuBar mb = new MenuBar();
+
 	
 	/** Initially the menu bar is not shown */
 	MenuBarPanel() {
 		setWidth("100%");
+		add(mb);
+		
+		pctrl.setMenuBarPanel(this);
 	}
 
 	private void _clear() {
-		clear();
+		mb.clearItems();
 	}
 
 	void showMenuBar(InterfaceType type) {
@@ -41,21 +46,16 @@ public class MenuBarPanel extends HorizontalPanel {
 	}
 	
 	private void _createMenuBar(InterfaceType type) {
-		MenuBar mb = null;
 		switch ( type ) {
 		case BROWSE:
-			mb = _createMenuBarBrowse();
+			_prepareMenuBarBrowse();
 			break;
 		case ONTOLOGY_VIEW:
-			mb = _createMenuBarOntologyView();
+			_prepareMenuBarOntologyView();
 			break;
 		case ONTOLOGY_EDIT:
-			mb = _createMenuBarOntologyEdit();
+			_prepareMenuBarOntologyEdit();
 			break;
-		}
-		
-		if ( mb != null ) {
-			add(mb);
 		}
 	}
 
@@ -63,40 +63,48 @@ public class MenuBarPanel extends HorizontalPanel {
 		return "<u>" +title+ "</u>";
 //		return title+ " <img src=\"" +GWT.getModuleBaseURL()+ "images/tridown.png\">";
 	}
-	private MenuBar _createMenuBarBrowse() {
-		MenuBar mb = new MenuBar();
-
+	private void _prepareMenuBarBrowse() {
 		MenuBar new_mb = new MenuBar(true);
 		new_mb.addItem(_createNewMenuItemVocabulary());
 		new_mb.addItem(_createNewMenuItemMapping());
 		new_mb.addItem(_createNewMenuItemUpload());
 		mb.addItem(new MenuItem(_menuTitle("New"), true, new_mb));
-		
-		return mb;
 	}
 
-	private MenuBar _createMenuBarOntologyView() {
-
+	
+	MenuBar createOntologyMenuBar(OntologyInfo oi, boolean includeEdit) {
 		MenuBar ont_mb = new MenuBar(true);
-		ont_mb.addItem(_createMenuItemCreateNewVersion());
-		ont_mb.addItem("Download as", _createMenuBarDownloadOntologyAs());
-		ont_mb.addSeparator();
-		ont_mb.addItem(_createMenuItemVersions());
 		
-		MenuBar mb = new MenuBar();
+		if ( includeEdit && pctrl.checkCanEditOntology(oi) == null ) {
+			ont_mb.addItem(_createMenuItemCreateNewVersion());
+		}
+		
+		ont_mb.addItem("Download as", _createMenuBarDownloadOntologyAs(oi));
+		
+		if ( oi != null && oi.getPriorVersions() != null && oi.getPriorVersions().size() > 0 ) {
+			ont_mb.addSeparator();
+			ont_mb.addItem(_createMenuItemVersions(oi));
+		}
+		
+		return ont_mb;
+	}
+	
+	
+	private MenuBar _prepareMenuBarOntologyView() {
+		MenuBar ont_mb = createOntologyMenuBar(null, true);
+		
 		mb.addItem(new MenuItem(_menuTitle("Ontology"), true, ont_mb));
+		
 		return mb;
 	}
 
-	private MenuBar _createMenuBarOntologyEdit() {
+	private void _prepareMenuBarOntologyEdit() {
 		// TODO
 		MenuBar ont_mb = new MenuBar(true);
 		ont_mb.addItem(_createMenuItemCancelEdit());
 		ont_mb.addSeparator();
 		
-		MenuBar mb = new MenuBar();
 		mb.addItem(new MenuItem(_menuTitle("Edit"), true, ont_mb));
-		return mb;
 	}
 
 	private MenuItem _createMenuItemCancelEdit() {
@@ -142,8 +150,9 @@ public class MenuBarPanel extends HorizontalPanel {
 	}
 	
 	
-	private void launchVersions() {
-		List<OntologyInfo> ontologyInfos = pctrl.getVersions();
+	private void launchVersions(OntologyInfo oi) {
+		List<OntologyInfo> ontologyInfos = oi != null ? oi.getPriorVersions() : pctrl.getVersions();
+		
 		if ( ontologyInfos == null || ontologyInfos.isEmpty() ) {
 			Window.alert("Info about versions not available");
 			return;
@@ -155,7 +164,7 @@ public class MenuBarPanel extends HorizontalPanel {
 
 		final MyDialog popup = new MyDialog(vp);
 		popup.setText("Available versions");
-		OntologyTable ontologyTable = new OntologyTable();
+		OntologyTable ontologyTable = new OntologyTable(PortalControl.getInstance().getQuickInfo());
 		
 		// this is to hide the popup when the user clicks one of the links:
 		ontologyTable.addClickListenerToHyperlinks(
@@ -174,10 +183,10 @@ public class MenuBarPanel extends HorizontalPanel {
 		popup.show();
 	}
 	
-	private MenuItem _createMenuItemVersions() {
+	private MenuItem _createMenuItemVersions(final OntologyInfo oi) {
 		return new MenuItem("Versions", new Command() {
 			public void execute() {
-				launchVersions();
+				launchVersions(oi);
 			}
 		});
 	}
@@ -189,15 +198,16 @@ public class MenuBarPanel extends HorizontalPanel {
 		}
 	};
 	
-	private MenuBar _createMenuBarDownloadOntologyAs() {
+	private MenuBar _createMenuBarDownloadOntologyAs(OntologyInfo oi) {
 		// use a nullCmd as i'm not sure addItem accepts a null command
 		MenuBar mb = new MenuBar(true);
 		for (PortalControl.DownloadOption dopc : PortalControl.DownloadOption.values() ) {
-			String text = pctrl.getDownloadOptionHtml(dopc);
+			String text = pctrl.getDownloadOptionHtml(dopc, oi);
 			if ( text != null ) {
 				mb.addItem(text, true, nullCmd);
 			}
 		}
 		return mb;
 	}
+	
 }
