@@ -40,9 +40,7 @@ public class MenuBarPanel extends HorizontalPanel {
 
 	void showMenuBar(InterfaceType type) {
 		_clear();
-		if ( pctrl.getLoginResult() != null ) {
-			_createMenuBar(type);
-		}
+		_createMenuBar(type);
 	}
 	
 	private void _createMenuBar(InterfaceType type) {
@@ -64,11 +62,13 @@ public class MenuBarPanel extends HorizontalPanel {
 //		return title+ " <img src=\"" +GWT.getModuleBaseURL()+ "images/tridown.png\">";
 	}
 	private void _prepareMenuBarBrowse() {
-		MenuBar new_mb = new MenuBar(true);
-		new_mb.addItem(_createNewMenuItemVocabulary());
-		new_mb.addItem(_createNewMenuItemMapping());
-		new_mb.addItem(_createNewMenuItemUpload());
-		mb.addItem(new MenuItem(_menuTitle("New"), true, new_mb));
+		if ( pctrl.getLoginResult() != null ) {
+			MenuBar new_mb = new MenuBar(true);
+			new_mb.addItem(_createNewMenuItemVocabulary());
+			new_mb.addItem(_createNewMenuItemMapping());
+			new_mb.addItem(_createNewMenuItemUpload());
+			mb.addItem(new MenuItem(_menuTitle("New"), true, new_mb));
+		}
 	}
 
 	
@@ -80,6 +80,10 @@ public class MenuBarPanel extends HorizontalPanel {
 		}
 		
 		ont_mb.addItem("Download as", _createMenuBarDownloadOntologyAs(oi));
+		
+		if ( oi == null ) {
+			oi = pctrl.getOntologyInfo();
+		}
 		
 		if ( oi != null && oi.getPriorVersions() != null && oi.getPriorVersions().size() > 0 ) {
 			ont_mb.addSeparator();
@@ -99,12 +103,14 @@ public class MenuBarPanel extends HorizontalPanel {
 	}
 
 	private void _prepareMenuBarOntologyEdit() {
-		// TODO
-		MenuBar ont_mb = new MenuBar(true);
-		ont_mb.addItem(_createMenuItemCancelEdit());
-		ont_mb.addSeparator();
-		
-		mb.addItem(new MenuItem(_menuTitle("Edit"), true, ont_mb));
+		if ( pctrl.getLoginResult() != null ) {
+			// TODO
+			MenuBar ont_mb = new MenuBar(true);
+			ont_mb.addItem(_createMenuItemCancelEdit());
+			ont_mb.addSeparator();
+
+			mb.addItem(new MenuItem(_menuTitle("Edit"), true, ont_mb));
+		}
 	}
 
 	private MenuItem _createMenuItemCancelEdit() {

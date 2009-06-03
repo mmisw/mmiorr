@@ -285,6 +285,10 @@ public class PortalControl {
 	public IQuickInfo getQuickInfo() {
 		return quickInfo;
 	}
+
+	public OntologyInfo getOntologyInfo() {
+		return ontologyInfo;
+	}
 	
 
 }
