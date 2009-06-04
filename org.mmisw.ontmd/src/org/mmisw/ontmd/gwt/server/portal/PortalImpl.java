@@ -8,8 +8,8 @@ import org.mmisw.iserver.core.IServer;
 import org.mmisw.iserver.core.Server;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.BasicOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
-import org.mmisw.iserver.gwt.client.rpc.CreateVocabularyInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
@@ -96,10 +96,10 @@ public class PortalImpl  {
 		return iserver.getOntologyContents(ontologyInfo);
 	}
 
-	public CreateOntologyResult createVocabulary(
-			BasicOntologyInfo basicOntologyInfo, CreateVocabularyInfo createOntologyInfo) {
+	public CreateOntologyResult createOntology(
+			BasicOntologyInfo basicOntologyInfo, CreateOntologyInfo createOntologyInfo) {
 
-		return iserver.createVocabulary(basicOntologyInfo, createOntologyInfo);
+		return iserver.createOntology(basicOntologyInfo, createOntologyInfo);
 	}
 	
 	

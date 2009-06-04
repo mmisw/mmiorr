@@ -9,6 +9,7 @@ import org.mmisw.ontmd.gwt.client.LoginListener;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.UserPanel;
 import org.mmisw.ontmd.gwt.client.portal.IOntologyPanel;
+import org.mmisw.ontmd.gwt.client.portal.PortalControl;
 import org.mmisw.ontmd.gwt.client.rpc.OntologyInfoPre;
 import org.mmisw.ontmd.gwt.client.rpc.ReviewResult_Old;
 import org.mmisw.ontmd.gwt.client.rpc.UploadResult;
@@ -96,7 +97,6 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 	/** Was "newversion" given? */
 	private boolean editNewVersion;
 	
-	private LoginResult loginResult;
 	
 	// true iff login session given from parameters
 	private boolean loginFromParams;
@@ -125,7 +125,6 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 	public MainPanel(final Map<String, String> params) {
 		super();
 		
-		loginResult = null;
 		loginFromParams = false;
 		requestedOntologyUri = null;
 		requestedOntologyOnServer = null;
@@ -140,12 +139,17 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 		if ( ! GWT.isScript() ) {
 			
 			if ( true ) {    // true for auto-login
-				loginResult = new LoginResult();
-				loginResult.setSessionId("22222222222222222");
-				loginResult.setUserId("1002");
-				loginResult.setUserName("carueda");
-				loginResult.setUserRole("ROLE_ADMINISTRATOR");
-				loginFromParams = true;
+				LoginResult loginResult = PortalControl.getInstance().getLoginResult();
+				if ( true && loginResult == null ) {    // true for auto-login
+					loginResult = new LoginResult();
+					loginResult.setSessionId("22222222222222222");
+					loginResult.setUserId("1002");
+					loginResult.setUserName("carueda");
+					loginResult.setUserRole("ROLE_ADMINISTRATOR");
+					loginFromParams = true;
+					
+					PortalControl.getInstance().setLoginResult(loginResult);
+				}
 			}
 			
 			if ( false ) {
@@ -178,7 +182,7 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 			editRequestedOntology = "y".equalsIgnoreCase(params.get("_edit"));
 		}
 		
-		
+		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
 	    if ( loginResult == null && params.get("sessionId") != null && params.get("userId") != null ) {
 	    	loginResult = new LoginResult();
 	    	loginResult.setSessionId(params.get("sessionId"));
@@ -189,6 +193,12 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 	    	}
 	    	loginResult.setUserName(userName);
 	    	loginFromParams = true;
+	    	
+	    	PortalControl.getInstance().setLoginResult(loginResult);
+	    	Main.log("login info obtained from parmeters");
+	    }
+	    else {
+	    	Main.log("login info = " +loginResult+ " params=" +params);
 	    }
 	    
 	    
@@ -259,8 +269,8 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 	    }
 	}
 	
-	public void loginOk(LoginResult loginResult_Old) {
-		this.loginResult = loginResult_Old;
+	public void loginOk(LoginResult loginResult) {
+		PortalControl.getInstance().setLoginResult(loginResult);
 		container.clear();
 		container.add(prepareEditingInterface(requestedOntologyUri == null && requestedOntologyOnServer == null));
 		
@@ -405,8 +415,10 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 		panel.setSpacing(2);
 		
 		// do not show username if loginFromParams
-		if ( ! loginFromParams && loginResult != null ) {
-			String userName = loginResult.getUserName();
+		if ( ! loginFromParams && 
+			 PortalControl.getInstance().getLoginResult() != null ) {
+			
+			String userName = PortalControl.getInstance().getLoginResult().getUserName();
 			if ( userName == null ) {
 				userName = "?";
 			}
@@ -436,7 +448,7 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 	
 	
 	public void logout() {
-		loginResult = null;
+		PortalControl.getInstance().setLoginResult(null);
 //		loginPanel.setLoginResult(null);
 	}
 
@@ -461,6 +473,7 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 			return;
 		}
 		
+		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
 		if ( loginResult == null ) {
 			Window.alert("Please, login");
 			return;
@@ -586,7 +599,7 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 			return;
 		}
 
-
+		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
 		if ( loginResult == null ) {
 			Window.alert("Please, login");
 			return;

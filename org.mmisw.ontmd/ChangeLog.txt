@@ -3,6 +3,14 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-06-03
+	- Creation of vocabulary completed. Need more testing.
+	- Validation of term table re-enabled and improved.
+	- Hiding the option to create mapping (not implemented yet)
+	- fixed params to properly launch external tool for uploading an ontology from disk
+	  Next: include this option within the portal itself. 
+	
+	
 2009-06-02
 	- fixed: consider all ontologies when an administrator is logged in.
 	- testing ontologies are marked with a T for easy spot

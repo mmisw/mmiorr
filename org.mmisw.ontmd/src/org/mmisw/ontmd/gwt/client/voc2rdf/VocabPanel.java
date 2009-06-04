@@ -574,17 +574,6 @@ public class VocabPanel extends VerticalPanel implements IVocabPanel {
 		ontologyUriPanel.update();
 	}
 	
-	static class CheckError {
-		String msg;
-		CheckError(String msg) {
-			super();
-			this.msg = msg;
-		}
-		public String toString() {
-			return msg;
-		}
-	}
-	
 	/**
 	 * Runs the "test conversion" on the vocabulary contents and with
 	 * ad hoc metadata atttributes.

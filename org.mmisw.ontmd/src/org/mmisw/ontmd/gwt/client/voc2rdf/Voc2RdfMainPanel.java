@@ -35,7 +35,7 @@ public class Voc2RdfMainPanel extends VerticalPanel {
 	private VocabPanel vocabPanel = new VocabPanel(this);
 	private ConversionPanel conversionPanel = new ConversionPanel(this);
 	
-	private LoginResult loginResult_Old;
+	private LoginResult loginResult;
 	
 	
 	Voc2RdfMainPanel(final Map<String, String> params) {
@@ -46,18 +46,18 @@ public class Voc2RdfMainPanel extends VerticalPanel {
 		if ( ! GWT.isScript() ) {
 			
 			if ( true ) {    // true for auto-login
-				loginResult_Old = new LoginResult();
-				loginResult_Old.setSessionId("22222222222222222");
-				loginResult_Old.setUserId("1002");
-				loginResult_Old.setUserName("carueda");
+				loginResult = new LoginResult();
+				loginResult.setSessionId("22222222222222222");
+				loginResult.setUserId("1002");
+				loginResult.setUserName("carueda");
 			}
 		}
 		
 		
-	    if ( loginResult_Old == null && params.get("sessionId") != null && params.get("userId") != null ) {
-	    	loginResult_Old = new LoginResult();
-	    	loginResult_Old.setSessionId(params.get("sessionId"));
-	    	loginResult_Old.setUserId(params.get("userId"));
+	    if ( loginResult == null && params.get("sessionId") != null && params.get("userId") != null ) {
+	    	loginResult = new LoginResult();
+	    	loginResult.setSessionId(params.get("sessionId"));
+	    	loginResult.setUserId(params.get("userId"));
 	    }
 
 		
@@ -92,7 +92,7 @@ public class Voc2RdfMainPanel extends VerticalPanel {
 	}
 	
 	void conversionOk(ConversionResult conversionResult) {
-		conversionPanel.updateForm(conversionResult, loginResult_Old);
+		conversionPanel.updateForm(conversionResult, loginResult);
 		
 		final MyDialog popup = new MyDialog(conversionPanel);
 		popup.setText("Conversion complete");

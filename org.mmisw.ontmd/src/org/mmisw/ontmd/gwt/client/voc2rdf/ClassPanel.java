@@ -8,7 +8,6 @@ import org.mmisw.ontmd.gwt.client.portal.IVocabPanel;
 import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
-import org.mmisw.ontmd.gwt.client.voc2rdf.VocabPanel.CheckError;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 
 import com.google.gwt.user.client.DeferredCommand;
@@ -259,7 +258,7 @@ public class ClassPanel extends VerticalPanel implements TermTableInterface {
 			values.put("classUri", classUri);
 		}
 		
-		VocabPanel.CheckError error = termTable.check();
+		CheckError error = termTable.check();
 
 		if ( error != null ) {
 			return error;

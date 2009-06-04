@@ -29,12 +29,12 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mmisw.iserver.core.JenaUtil2;
+import org.mmisw.iserver.core.util.JenaUtil2;
 import org.mmisw.iserver.core.MdHelper;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.BasicOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
-import org.mmisw.iserver.gwt.client.rpc.CreateVocabularyInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
@@ -1396,9 +1396,9 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	}
 
 	
-	public CreateOntologyResult createVocabulary(
-			BasicOntologyInfo basicOntologyInfo, CreateVocabularyInfo createOntologyInfo) {
-		return portal.createVocabulary(basicOntologyInfo, createOntologyInfo);
+	public CreateOntologyResult createOntology(
+			BasicOntologyInfo basicOntologyInfo, CreateOntologyInfo createOntologyInfo) {
+		return portal.createOntology(basicOntologyInfo, createOntologyInfo);
 	}
 	
 	

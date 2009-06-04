@@ -304,7 +304,7 @@ class UploadOntologyPanel extends VerticalPanel {
 			}
 		};
 
-		Main.log("getOntologyInfo: uploadResults = " +uploadResults);
+		Main.log("calling getOntologyInfoFromPreLoaded ... ");
 		Main.ontmdService.getOntologyInfoFromPreLoaded(uploadResults, callback);
 
 	}

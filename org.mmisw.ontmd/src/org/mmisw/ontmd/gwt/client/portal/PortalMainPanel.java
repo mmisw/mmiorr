@@ -33,7 +33,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class PortalMainPanel extends VerticalPanel implements LoginListener, HistoryListener {
 
-	public enum InterfaceType { BROWSE, ONTOLOGY_VIEW, ONTOLOGY_EDIT, SEARCH };
+	public enum InterfaceType { BROWSE, ONTOLOGY_VIEW, ONTOLOGY_EDIT_NEW_VERSION, ONTOLOGY_EDIT_NEW, SEARCH };
 	
 	
 	private final PortalControl pctrl;
@@ -61,7 +61,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	private void _setupWindowCloseListener() {
 		Window.addWindowCloseListener(new WindowCloseListener() {
 			public String onWindowClosing() {
-				if ( interfaceType == InterfaceType.ONTOLOGY_EDIT ) {
+				if ( interfaceType == InterfaceType.ONTOLOGY_EDIT_NEW_VERSION ) {
 					return "If any, all edit will be lost";
 				}
 				return null;
@@ -282,7 +282,26 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	    });
 	}
 	
+	// FIXME under implementation
+	public void createNewVocabulary() {
+		OntologyInfo ontologyInfo = new OntologyInfo();
+		OntologyPanel ontologyPanel = new OntologyPanel(ontologyInfo, false);
 
+		pctrl.setOntologyInfo(ontologyInfo);
+		pctrl.setOntologyPanel(ontologyPanel);
+		
+		interfaceType = InterfaceType.ONTOLOGY_EDIT_NEW;
+	    menuBarPanel.showMenuBar(interfaceType);
+	    headerPanel.updateLinks(interfaceType, pctrl.getLoginResult());
+		ontologyPanel.updateInterface(interfaceType);
+		
+	    bodyPanel.clear();
+		bodyPanel.add(ontologyPanel);
+	}
+
+
+	
+	
 	public void editNewVersion(OntologyPanel ontologyPanel) {
 		OntologyInfo ontologyInfo = ontologyPanel.getOntologyInfo();
 		String error = pctrl.checkCanEditOntology(ontologyInfo);
@@ -292,10 +311,10 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 			return;
 		}
 			
-		interfaceType = InterfaceType.ONTOLOGY_EDIT;
+		interfaceType = InterfaceType.ONTOLOGY_EDIT_NEW_VERSION;
 	    menuBarPanel.showMenuBar(interfaceType);
 	    headerPanel.updateLinks(interfaceType, pctrl.getLoginResult());
-		ontologyPanel.updateInterface(false);
+		ontologyPanel.updateInterface(interfaceType);
 	}
 
 	public void cancelEdit(OntologyPanel ontologyPanel) {
@@ -303,7 +322,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	    menuBarPanel.showMenuBar(interfaceType);
 	    headerPanel.updateLinks(interfaceType, pctrl.getLoginResult());
 	    if ( ontologyPanel != null ) {
-	    	ontologyPanel.updateInterface(true);
+	    	ontologyPanel.updateInterface(interfaceType);
 	    }
 	}
 

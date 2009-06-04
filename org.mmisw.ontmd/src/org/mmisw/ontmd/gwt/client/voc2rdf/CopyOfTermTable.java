@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.mmisw.ontmd.gwt.client.Main;
-import org.mmisw.ontmd.gwt.client.voc2rdf.VocabPanel.CheckError;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.FlexTable;

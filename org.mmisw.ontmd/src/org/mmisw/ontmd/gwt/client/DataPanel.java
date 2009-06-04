@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mmisw.iserver.gwt.client.rpc.BaseOntologyData;
-import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.IndividualInfo;
 import org.mmisw.iserver.gwt.client.rpc.MappingOntologyData;
@@ -126,6 +126,16 @@ public class DataPanel extends VerticalPanel {
 	}
 	
 
+	public String checkData() {
+		for ( BaseOntologyPanel baseOntologyPanel : baseOntologyPanels ) {
+			String error = baseOntologyPanel.checkData();
+			if ( error != null ) {
+				return error;
+			}
+		}
+		
+		return null;
+	}
 
 
 	private Widget _createVocabularyWidget(VocabularyOntologyData ontologyData) {
@@ -136,6 +146,34 @@ public class DataPanel extends VerticalPanel {
 		
 		VerticalPanel vp = new VerticalPanel();
 		vp.setSpacing(4);
+		
+		if ( classes == null || classes.size() == 0 ) {
+			// empty data - we must be creating a new vocabulary
+			// insert a default contents to initialize the table
+			ClassData classData = new ClassData();
+			
+//			classData.setClassUri("");
+			
+//			List<String> classHeader = new ArrayList<String>();
+//			classHeader.add("name");
+//			classHeader.add("definition");
+//			
+//			List<IRow> rows = new ArrayList<IRow>();
+//			rows.add(new IRow() {
+//				public String getColValue(String sortColumn) {
+//					return "";
+//				}
+//			});
+
+			VocabClassPanel classPanel = new VocabClassPanel(classData, myVocabPanel, readOnly);
+			baseOntologyPanels.add(classPanel);
+
+//			classPanel.importContents(classHeader, rows);
+			
+			vp.add(classPanel.getWidget());
+			
+			return vp;
+		}
 		
 		for ( ClassData classData : classes ) {
 			List<String> classHeader = classData.getDatatypeProperties();
@@ -301,7 +339,7 @@ public class DataPanel extends VerticalPanel {
 		}
 	}
 
-	public CreateOntologyInfo getCreateOntologyInfo() {
+	public DataCreationInfo getCreateOntologyInfo() {
 		
 		if ( baseOntologyPanels.size() == 0 ) {
 			return null;
@@ -311,9 +349,9 @@ public class DataPanel extends VerticalPanel {
 			return null;
 		}
 		
-		VocabClassPanel classPanel = (VocabClassPanel) baseOntologyPanel;
+		VocabClassPanel vocabClassPanel = (VocabClassPanel) baseOntologyPanel;
 
-		return classPanel.getCreateOntologyInfo();
+		return vocabClassPanel.getCreateOntologyInfo();
 	}
 
 }

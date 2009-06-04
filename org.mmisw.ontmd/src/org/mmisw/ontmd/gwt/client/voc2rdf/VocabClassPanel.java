@@ -1,11 +1,9 @@
 package org.mmisw.ontmd.gwt.client.voc2rdf;
 
 import java.util.List;
-import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.ClassInfo;
-import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.CreateVocabularyInfo;
+import org.mmisw.iserver.gwt.client.rpc.VocabularyDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData.ClassData;
 import org.mmisw.ontmd.gwt.client.portal.IVocabPanel;
 import org.mmisw.ontmd.gwt.client.util.IRow;
@@ -13,7 +11,6 @@ import org.mmisw.ontmd.gwt.client.util.MyDialog;
 import org.mmisw.ontmd.gwt.client.util.StatusPopup;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
 import org.mmisw.ontmd.gwt.client.util.Util;
-import org.mmisw.ontmd.gwt.client.voc2rdf.VocabPanel.CheckError;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -301,13 +298,11 @@ public class VocabClassPanel extends BaseOntologyPanel implements TermTableInter
 		return primaryClass;
 	}
 
-	CheckError putValues(Map<String, String> values) {
+	public String checkData() {
 
-		// NOTE 3/21/09: take class name from the resourcetype field
-//		String primaryClass = classNameTb.getText().trim();
 		String primaryClass = getClassName();
 		if ( primaryClass.length() == 0 ) {
-			return new CheckError("Please, select a class for the terms in your vocabulary");
+			return "Please, select a class for the terms in your vocabulary";
 		}
 		
 		// TODO do we still want the classUri ?
@@ -316,25 +311,12 @@ public class VocabClassPanel extends BaseOntologyPanel implements TermTableInter
 //			values.put("classUri", classUri);
 //		}
 		
-		VocabPanel.CheckError error = termTable.check();
+		CheckError error = termTable.check();
 
 		if ( error != null ) {
-			return error;
+			return error.toString();
 		}
 			
-		// NOTE: Need to put "" for the missing values so the original
-		// voc2rdf scheme to make the conversion (which is based on the com.infomata.data library)
-		// works with no ArrayOutOfBoundsException's.  
-		String csv = termTable.getCsv("\"\"", ",");
-		values.put("ascii", csv);
-		
-		// always comma now.
-		values.put("fieldSeparator", "csv"); 
-//				fieldSeparator_lb.getValue(fieldSeparator_lb.getSelectedIndex()));
-		
-		
-		values.put("primaryClass", primaryClass);
-		
 		return null;
 	}
 
@@ -787,8 +769,8 @@ public class VocabClassPanel extends BaseOntologyPanel implements TermTableInter
 		active = false;
 	}
 
-	public CreateOntologyInfo getCreateOntologyInfo() {
-		CreateVocabularyInfo cvi = new CreateVocabularyInfo();
+	public VocabularyDataCreationInfo getCreateOntologyInfo() {
+		VocabularyDataCreationInfo cvi = new VocabularyDataCreationInfo();
 
 		cvi.setClassName(getClassName());
 		

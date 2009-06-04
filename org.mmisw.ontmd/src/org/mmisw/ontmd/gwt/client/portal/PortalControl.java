@@ -8,7 +8,6 @@ import org.mmisw.iserver.gwt.client.rpc.UploadOntologyResult;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.portal.OntologyTable.IQuickInfo;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Image;
@@ -25,7 +24,7 @@ public class PortalControl {
 	
 	private static final PortalControl instance = new PortalControl();
 	
-	static PortalControl getInstance() {
+	public static PortalControl getInstance() {
 		return instance;
 	}
 	
@@ -40,12 +39,6 @@ public class PortalControl {
 	private MenuBarPanel menuBarPanel;
 	
 	
-	public void launchCreateVocabulary() {
-		String url = createLinkVoc2Rdf();
-		String features = null;
-		Window.open(url, "_blank", features);
-	}
-
 	public void launchCreateMapping() {
 		String url = createLinkVine();
 		String features = null;
@@ -61,18 +54,6 @@ public class PortalControl {
 	
 	
 	
-	private String createLinkVoc2Rdf() {
-		String link = GWT.getModuleBaseURL()+ "voc2rdf/";
-		if ( GWT.isClient() ) {
-			link += "index.html";
-		}
-		if ( loginResult != null ) {
-			link += "?userId=" +loginResult.getUserId();
-			link += "&sessionid=" +loginResult.getSessionId();
-		}
-		return link;
-	}
-	
 	private String createLinkVine() {
 		String link = "http://mmisw.org/vine/";
 		if ( loginResult != null ) {
@@ -83,13 +64,39 @@ public class PortalControl {
 	}
 
 	private String createLinkUpload() {
-		String link = GWT.getModuleBaseURL()+ "?_ontmd=y&_edit=y";
+//		String link = GWT.getModuleBaseURL()+ "?_ontmd=y&_edit=y";
+		String link = "http://mmisw.org/ontmd/?_edit=y";
 		if ( loginResult != null ) {
 			link += "&userId=" +loginResult.getUserId();
-			link += "&sessionid=" +loginResult.getSessionId();
+			link += "&sessionId=" +loginResult.getSessionId();
+			link += "&userName=" +loginResult.getUserName();
 		}
 		return link;
 	}
+
+	public void createNewVocabulary() {
+		// Old:
+//		String url = createLinkVoc2Rdf();
+//		String features = null;
+//		Window.open(url, "_blank", features);
+
+		portalMainPanel.createNewVocabulary();
+	}
+
+	// Old:
+//	private String createLinkVoc2Rdf() {
+//		String link = GWT.getModuleBaseURL()+ "voc2rdf/";
+//		if ( GWT.isClient() ) {
+//			link += "index.html";
+//		}
+//		if ( loginResult != null ) {
+//			link += "?userId=" +loginResult.getUserId();
+//			link += "&sessionid=" +loginResult.getSessionId();
+//		}
+//		return link;
+//	}
+//	
+
 
 	public void editNewVersion() {
 		if ( ontologyPanel != null ) {

@@ -38,5 +38,11 @@ public abstract class BaseOntologyPanel {
 	public abstract void cancel();
 	
 	
+	/**
+	 * Checks the data.
+	 * 
+	 * @return null if OK.  Otherwise an error message that can be displayed to the user.
+	 */
+	public abstract String checkData();
 
 }

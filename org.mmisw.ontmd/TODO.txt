@@ -4,10 +4,6 @@ Carlos Rueda - MMI / MBARI
 (p: Paul;  j: John;  c: carlos)
 
 
-c: Get the original ns when model.getNsPrefixURI("") returns null			
-This case was manifested with the platform.owl ontology.
-
-
 j: The ontology in Ontology tab should be clearly identified as the original
 ontology. Then there should be a window (maybe under that one?) that shows the
 uploaded ontology. So the two can be inspected together.

@@ -3,15 +3,19 @@ package org.mmisw.ontmd.gwt.client.portal;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mmisw.iserver.gwt.client.rpc.BaseOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
-import org.mmisw.iserver.gwt.client.rpc.CreateVocabularyInfo;
+import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
 import org.mmisw.iserver.gwt.client.rpc.UploadOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.VocabularyDataCreationInfo;
+import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData;
 import org.mmisw.ontmd.gwt.client.DataPanel;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.metadata.MetadataPanel;
+import org.mmisw.ontmd.gwt.client.portal.PortalMainPanel.InterfaceType;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 
 import com.google.gwt.core.client.GWT;
@@ -110,7 +114,10 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		
 	    container.add(panel);
 	    
-	    getOntologyContents(readOnly);
+	    if ( this.ontologyInfo.getUri() != null ) {
+	    	getOntologyContents(readOnly);
+	    }
+	    // if Uri is null, then this is a new ontology being created in the interface.
 	}
 	
 	
@@ -120,9 +127,49 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	public OntologyInfo getOntologyInfo() {
 		return ontologyInfo;
 	}
+	
+	
+	private void updateInterfaceCreateNewVocabulary() {
+		
+		ontologyInfo.setDisplayLabel("(creating new ontology)");
+		ontologyInfo.setUri("");
+		headerPanel.resetElements(false);
+		headerPanel.updateTitle("<b>" +ontologyInfo.getDisplayLabel()+ "</b> - "+ontologyInfo.getUri()+ "<br/>");
+		metadataPanel = new MetadataPanel(this, true);
+		mdDisclosure.setContent(metadataPanel);
+
+		
+		////////////////////////////////////
+		// data:
+		
+		// create (empty) data for the ontologyInfo
+		VocabularyOntologyData ontologyData = new VocabularyOntologyData();
+		BaseOntologyData baseOntologyData = null;
+		ontologyData.setBaseOntologyData(baseOntologyData);
+		ontologyData.setClasses(null);
+		ontologyInfo.setOntologyData(ontologyData);
+
+		// create dataPanel
+		dataPanel = new DataPanel(false);
+		dataPanel.updateWith(ontologyInfo, false);
+		dataDisclosure.setContent(dataPanel);
+		
+		enable(true);
+	}
 
 
-	void updateInterface(boolean readOnly) {
+	
+	
+
+
+	void updateInterface(InterfaceType interfaceType) {
+		
+		if ( interfaceType == InterfaceType.ONTOLOGY_EDIT_NEW ) {
+			updateInterfaceCreateNewVocabulary();
+			return;
+		}
+		
+		boolean readOnly = interfaceType == InterfaceType.BROWSE || interfaceType == InterfaceType.ONTOLOGY_VIEW;
 		
 		headerPanel.resetElements(readOnly);
 		metadataPanel = new MetadataPanel(this, !readOnly);
@@ -241,10 +288,10 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 					});
 					reviewButton.setTitle("Checks the contents " +
 						"and prepares the ontology for subsequent upload to the MMI Registry");
-
 				}
-				
-				widget.add(reviewButton);
+				HorizontalPanel hp = new HorizontalPanel();
+				hp.add(reviewButton);
+				widget.add(hp);
 				
 			}
 		}
@@ -283,16 +330,6 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 
 	
 	private void review(boolean confirm) {
-		String error = metadataPanel.putValues(null); // null = just check
-		if ( error != null ) {
-			Window.alert(error);
-			return;
-		}
-		
-		doReview();
-	}
-
-	void doReview() {
 		if ( ontologyInfo == null ) {
 			Window.alert("Please, load an ontology first");
 			return;
@@ -302,6 +339,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			return;
 		}
 		
+		// check metadata values:
 		Map<String, String> newValues = new HashMap<String, String>();
 		String error = metadataPanel.putValues(newValues);
 		if ( error != null ) {
@@ -309,16 +347,55 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			return;
 		}
 		
-		// Ok, put the new values in the ontologyInfo object:
-		ontologyInfo.getOntologyMetadata().setNewValues(newValues);
-		for ( String uri : newValues.keySet() ) {
-			String value = newValues.get(uri);
-			newValues.put(uri, value);
+		// check data values
+		error = dataPanel.checkData();
+		if ( error != null ) {
+			Window.alert(error);
+			return;
 		}
 		
-		CreateOntologyInfo createOntologyInfo = dataPanel.getCreateOntologyInfo();
+		DataCreationInfo dataCreationInfo = dataPanel.getCreateOntologyInfo();
 		
-		if ( createOntologyInfo instanceof CreateVocabularyInfo ) {
+
+		
+		
+		
+		//
+		// refactoring
+		// TODO clean-up the replication of info in the ontologyInfo and createOntologyInfo.
+		//
+		
+		// Ok, put the new values in the ontologyInfo object:
+		ontologyInfo.getOntologyMetadata().setNewValues(newValues);
+//		for ( String uri : newValues.keySet() ) {        // TODO remove unnecesary code (surely remanents of prior code changes)
+//			String value = newValues.get(uri);
+//			newValues.put(uri, value);
+//		}
+		
+		// prepare info for creation of the ontology:
+		CreateOntologyInfo createOntologyInfo = new CreateOntologyInfo();
+		
+		createOntologyInfo.setMetadataValues(newValues);
+		
+		createOntologyInfo.setAuthority(ontologyInfo.getAuthority());
+		createOntologyInfo.setShortName(ontologyInfo.getShortName());
+
+		String authority = createOntologyInfo.getAuthority();
+		String shortName = createOntologyInfo.getShortName();
+		
+		if ( authority == null || authority.trim().length() == 0 ) {
+			authority = "mmitest";  // TODO
+			createOntologyInfo.setAuthority(authority);
+		}
+		
+		if ( shortName == null || shortName.trim().length() == 0 ) {
+			shortName = "shorttest";  // TODO
+			createOntologyInfo.setShortName(shortName);
+		}
+		
+		createOntologyInfo.setDataCreationInfo(dataCreationInfo);
+		
+		if ( dataCreationInfo instanceof VocabularyDataCreationInfo ) {
 			// OK: continue
 		}
 		else {
@@ -326,9 +403,6 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			return;
 		}
 		
-		createOntologyInfo.setAuthority(ontologyInfo.getAuthority());
-		createOntologyInfo.setShortName(ontologyInfo.getShortName());
-
 		
 		final MyDialog popup = new MyDialog(null);
 		popup.addTextArea(null).setSize("600", "150");
@@ -352,17 +426,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			}
 		};
 
-		createOntologyInfo.setMetadataValues(newValues);
-		
-		
-		
-		if ( createOntologyInfo instanceof CreateVocabularyInfo ) {
-			CreateVocabularyInfo cvi = (CreateVocabularyInfo) createOntologyInfo;
-			Main.ontmdService.createVocabulary(ontologyInfo, cvi, callback);
-		}
-		else {
-			assert false;  // see check above
-		}
+		Main.ontmdService.createOntology(ontologyInfo, createOntologyInfo, callback);
 	}
 
 	
@@ -381,7 +445,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 					"dialog to continue editing the contents."));
 			
 			// prepare uploadButton
-			PushButton uploadButton = new PushButton("Upload", new ClickListener() {
+			PushButton uploadButton = new PushButton("Register", new ClickListener() {
 				public void onClick(Widget sender) {
 					upload(popup, true, createOntologyResult);
 				}

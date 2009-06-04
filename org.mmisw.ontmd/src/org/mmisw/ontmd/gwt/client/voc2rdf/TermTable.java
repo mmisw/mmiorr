@@ -7,7 +7,6 @@ import java.util.Set;
 
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
-import org.mmisw.ontmd.gwt.client.voc2rdf.VocabPanel.CheckError;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -589,21 +588,36 @@ public class TermTable extends VerticalPanel {
 	public TermError check() {
 		int rows = flexTable.getRowCount();
 		
+		// to check for duplicate header labels, and then for duplicate keys (values in first column):
+		Set<String> keys = new HashSet<String>();
+		
+
 		// header
 		int cols = flexTable.getCellCount(0);
 		for ( int col = CONTROL_COL + 1; col < cols; col++ ) {
 			TableCell tcell = (TableCell) _getWidget(HEADER_ROW, col);
 			String text = tcell.getText().trim();
+			
+			// missing label?
 			if ( text.length() == 0 ) {
 				tcell.setFocus(true);
 				return new TermError(0, col, "Missing column header in term table");
 			}
+			
+			// duplicate label?
+			if ( keys.contains(text) ) {
+				tcell.setFocus(true);
+				return new TermError((HEADER_ROW + 1), col, "Duplicate label in term table: " +text);
+			}
+			else {
+				keys.add(text);
+			}
 		}
 
-		int actualRowsWithContents = 0;
 		
-		// to check for duplicate keys
-		Set<String> keys = new HashSet<String>();
+		keys.clear();
+		
+		int actualRowsWithContents = 0;
 		
 		// terms:
 		for ( int row = FIRST_REGULAR_ROW; row < rows; row++ ) {

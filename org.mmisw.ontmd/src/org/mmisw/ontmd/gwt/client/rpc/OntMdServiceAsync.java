@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.BasicOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.CreateVocabularyInfo;
+import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
@@ -80,7 +80,7 @@ public interface OntMdServiceAsync {
 	void getOntologyContents(OntologyInfo ontologyInfo, AsyncCallback<OntologyInfo> callback);
 	
 	
-	void createVocabulary(BasicOntologyInfo basicOntologyInfo, CreateVocabularyInfo createOntologyInfo, 
+	void createOntology(BasicOntologyInfo basicOntologyInfo, CreateOntologyInfo createOntologyInfo, 
 			AsyncCallback<CreateOntologyResult> callback);
 	
 	

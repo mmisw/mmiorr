@@ -51,7 +51,8 @@ public class MenuBarPanel extends HorizontalPanel {
 		case ONTOLOGY_VIEW:
 			_prepareMenuBarOntologyView();
 			break;
-		case ONTOLOGY_EDIT:
+		case ONTOLOGY_EDIT_NEW_VERSION:
+		case ONTOLOGY_EDIT_NEW:
 			_prepareMenuBarOntologyEdit();
 			break;
 		}
@@ -65,7 +66,7 @@ public class MenuBarPanel extends HorizontalPanel {
 		if ( pctrl.getLoginResult() != null ) {
 			MenuBar new_mb = new MenuBar(true);
 			new_mb.addItem(_createNewMenuItemVocabulary());
-			new_mb.addItem(_createNewMenuItemMapping());
+//			new_mb.addItem(_createNewMenuItemMapping());  TODO not implemented
 			new_mb.addItem(_createNewMenuItemUpload());
 			mb.addItem(new MenuItem(_menuTitle("New"), true, new_mb));
 		}
@@ -141,7 +142,7 @@ public class MenuBarPanel extends HorizontalPanel {
 	private MenuItem _createNewMenuItemVocabulary() {
 		return new MenuItem("Vocabulary", new Command() {
 			public void execute() {
-				pctrl.launchCreateVocabulary();
+				pctrl.createNewVocabulary();
 			}
 		});
 	}
