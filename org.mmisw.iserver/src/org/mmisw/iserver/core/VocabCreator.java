@@ -11,8 +11,12 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.iserver.core.util.JenaUtil2;
+import org.mmisw.iserver.core.util.StringManipulationUtil;
+import org.mmisw.iserver.core.util.Util2;
 import org.mmisw.iserver.gwt.client.rpc.BasicOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.CreateVocabularyInfo;
+import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.VocabularyDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
@@ -46,8 +50,8 @@ public class VocabCreator {
 	// TODO take this location from a config parameter:
 	private static final String tmp = "/Users/Shared/registry/tmp/";
 
-	private final String orgAbbreviation;
-	private final String shortName;
+	private String orgAbbreviation;
+	private String shortName;
 
 	private String ascii;
 	private String fieldSeparator;
@@ -111,7 +115,7 @@ public class VocabCreator {
 	//////////////////////////////////////////////////////////////////////////////////////
 	
 	
-	private String _createAscii(CreateVocabularyInfo createOntologyInfo) {
+	private String _createAscii(VocabularyDataCreationInfo createOntologyInfo) {
 
 		final String SEPARATOR = ",";
 		final String QUOTE = "\"";
@@ -156,9 +160,17 @@ public class VocabCreator {
 		return _convertToUtf8(ascii);
 	}
 	
+	
+	/**
+	 * 
+	 * @param basicOntologyInfo
+	 * @param createOntologyInfo      Metadata for the ontology
+	 * @param vocabularyDataCreationInfo    Data for the ontology
+	 */
 	public VocabCreator(
 			BasicOntologyInfo basicOntologyInfo, 
-			CreateVocabularyInfo createOntologyInfo
+			CreateOntologyInfo createOntologyInfo,
+			VocabularyDataCreationInfo vocabularyDataCreationInfo
 	) {
 		
 		
@@ -168,12 +180,21 @@ public class VocabCreator {
 		this.namespaceRoot = Util2.namespaceRoot;
 		this.orgAbbreviation = createOntologyInfo.getAuthority();
 		this.shortName = createOntologyInfo.getShortName();
-		this.primaryClass = createOntologyInfo.getClassName();
-		this.ascii = _createAscii(createOntologyInfo);
+		
+		this.primaryClass = vocabularyDataCreationInfo.getClassName();
+		this.ascii = _createAscii(vocabularyDataCreationInfo);
 		this.values = values;
 		
 		log.info("!!!!!!!!!!!!!!!! VocabCreator: values = " +values);
 		log.info("setting primary class " + primaryClass);
+		
+		if ( orgAbbreviation == null ) {
+			orgAbbreviation = values.get(OmvMmi.origMaintainerCode.getURI());
+		}
+		
+		if ( shortName == null ) {
+			shortName = values.get(Omv.acronym.getURI());
+		}
 		
 	}
 	

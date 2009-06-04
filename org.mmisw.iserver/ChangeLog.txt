@@ -2,6 +2,16 @@ org.mmisw.iserver
 Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 
+2009-06-03
+	- Instead of using CreateOntologyInfo as a base class for the various types of ontologies to be
+	  created (currently only "vocabulary", but later "mapping" and "regular externally given ontology"),
+	  it now contains a DataCreationInfo member. This DataCreationInfo will serve as the basis for extension
+	  fot the various types of ontologies.
+	  
+	- fixed issue #140: "ontologies with no declared namespace for empty prefix are not accepted"
+	  If default namespace is not defined, try using xml:base's URI. TODO: test!
+	  
+	  
 2009-06-02
 	- getAllOntologies(boolean includePriorVersions) and getOntologyInfo(String ontologyUri) complemented
 	  with auxiliary Map<String, List<OntologyInfo>> getUnversionedToOntologyInfoListMap(String onlyThisUnversionedUri).

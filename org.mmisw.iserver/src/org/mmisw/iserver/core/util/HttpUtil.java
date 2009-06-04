@@ -1,4 +1,4 @@
-package org.mmisw.iserver.core;
+package org.mmisw.iserver.core.util;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;

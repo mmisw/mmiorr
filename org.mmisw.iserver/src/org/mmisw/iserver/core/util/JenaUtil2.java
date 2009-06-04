@@ -1,4 +1,4 @@
-package org.mmisw.iserver.core;
+package org.mmisw.iserver.core.util;
 
 import java.io.StringWriter;
 import java.util.HashSet;

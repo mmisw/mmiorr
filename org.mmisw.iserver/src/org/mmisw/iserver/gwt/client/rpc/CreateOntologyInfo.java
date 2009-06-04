@@ -13,8 +13,9 @@ public class CreateOntologyInfo implements Serializable {
 	private String authority;
 	private String shortName;
 	
-
 	private Map<String,String> metadataValues;
+	
+	private DataCreationInfo dataCreationInfo;
 	
 	
 	public CreateOntologyInfo() {
@@ -65,6 +66,22 @@ public class CreateOntologyInfo implements Serializable {
 	 */
 	public void setMetadataValues(Map<String, String> metadataValues) {
 		this.metadataValues = metadataValues;
+	}
+
+
+	/**
+	 * @return the dataCreationInfo
+	 */
+	public DataCreationInfo getDataCreationInfo() {
+		return dataCreationInfo;
+	}
+
+
+	/**
+	 * @param dataCreationInfo the dataCreationInfo to set
+	 */
+	public void setDataCreationInfo(DataCreationInfo dataCreationInfo) {
+		this.dataCreationInfo = dataCreationInfo;
 	}
 
 	

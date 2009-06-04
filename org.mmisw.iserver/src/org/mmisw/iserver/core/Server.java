@@ -1,14 +1,10 @@
 package org.mmisw.iserver.core;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -28,16 +24,20 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.iserver.core.util.JenaUtil2;
+import org.mmisw.iserver.core.util.Util;
+import org.mmisw.iserver.core.util.Util2;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.BasicOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
-import org.mmisw.iserver.gwt.client.rpc.CreateVocabularyInfo;
+import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.UploadOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.VocabularyDataCreationInfo;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.ont.MmiUri;
 import org.mmisw.ont.vocabulary.Omv;
@@ -443,12 +443,28 @@ public class Server implements IServer {
 	////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
 	
-	public CreateOntologyResult createVocabulary(
-			BasicOntologyInfo basicOntologyInfo, CreateVocabularyInfo createOntologyInfo) {
+	public CreateOntologyResult createOntology(
+			BasicOntologyInfo basicOntologyInfo, 
+			CreateOntologyInfo createOntologyInfo
+	) {
+			
+		CreateOntologyResult createVocabResult = new CreateOntologyResult();
 		
+		DataCreationInfo dataCreationInfo = createOntologyInfo.getDataCreationInfo();
+		if ( dataCreationInfo == null ) {
+			createVocabResult.setError("No data creation info provided! (please report this bug)");
+			return createVocabResult;
+		}
+		
+		if ( !(dataCreationInfo instanceof VocabularyDataCreationInfo) ) {
+			createVocabResult.setError("Sorry, creation of " +dataCreationInfo.getClass().getSimpleName()+ " not implemented yet");
+			return createVocabResult;
+		}
+		
+		VocabularyDataCreationInfo vocabularyDataCreationInfo = (VocabularyDataCreationInfo) dataCreationInfo;
+			
 //		_getBaseInfoIfNull();
 		
-		CreateOntologyResult createVocabResult = new CreateOntologyResult();
 		createVocabResult.setBasicOntologyInfo(basicOntologyInfo);
 		createVocabResult.setCreateOntologyInfo(createOntologyInfo);
 		
@@ -522,7 +538,7 @@ public class Server implements IServer {
 		}
 		
 		
-		_createTempVocabularyOntology(basicOntologyInfo, createOntologyInfo, createVocabResult);
+		_createTempVocabularyOntology(basicOntologyInfo, createOntologyInfo, vocabularyDataCreationInfo, createVocabResult);
 		if ( createVocabResult.getError() != null ) {
 			return createVocabResult;
 		}
@@ -595,19 +611,14 @@ public class Server implements IServer {
 			return createVocabResult;
 		}
 		
-		String uriForEmpty = model.getNsPrefixURI("");
-		if ( uriForEmpty == null ) {
-			// FIXME Get the original ns when model.getNsPrefixURI("") returns null
-			// For now, returning error:
-			String error = "Unexpected error: No namespace for prefix \"\"";
-			log.info(error);
-			createVocabResult.setError(error);
-			return createVocabResult;
+		String uriForEmpty = Util2.getDefaultNamespace(model, file, createVocabResult);
 			
-			// This case was manifested with the platform.owl ontology.
+		if ( uriForEmpty == null ) {
+			return createVocabResult;
 		}
+
 		
-		log.info("review: model.getNsPrefixURI(\"\") = " +uriForEmpty);
+		log.info("createOntology: using '" +uriForEmpty+ "' as default namespace");
 		
 		// Why using JenaUtil.getURIForNS(uriForEmpty) to get the namespace?
 		// model.getNsPrefixURI("") should provide the base namespace, in fact,
@@ -767,11 +778,12 @@ public class Server implements IServer {
 	 */
 	private void _createTempVocabularyOntology(
 			BasicOntologyInfo basicOntologyInfo, 
-			CreateVocabularyInfo createOntologyInfo,
+			CreateOntologyInfo createOntologyInfo,
+			VocabularyDataCreationInfo vocabularyCreationInfo,
 			CreateOntologyResult createVocabResult
 	) {
 		
-		VocabCreator vocabCreator = new VocabCreator(basicOntologyInfo, createOntologyInfo);
+		VocabCreator vocabCreator = new VocabCreator(basicOntologyInfo, createOntologyInfo, vocabularyCreationInfo);
 		
 		vocabCreator.createOntology(createVocabResult);
 	}
@@ -797,7 +809,7 @@ public class Server implements IServer {
 		// Get resulting model:
 		String rdf;
 		try {
-			rdf = readRdf(file);
+			rdf = Util2.readRdf(file);
 		}
 		catch (IOException e) {
 			String error = "Unexpected: IO error while reading from: " +full_path+ " : " +e.getMessage();
@@ -854,18 +866,13 @@ public class Server implements IServer {
 			// reducing the chances of that event.
 			if ( ontologyId == null ) {
 				
-				String originalOrgAbbreviation = basicOntologyInfo.getAuthority();
-				String originalShortName = basicOntologyInfo.getShortName();
-
 				final String orgAbbreviation = newValues.get(OmvMmi.origMaintainerCode.getURI());
 				final String shortName = newValues.get(Omv.acronym.getURI());
 
-				if ( ! Util2.checkUriKeyCombinationForNewVersion(
-						originalOrgAbbreviation, originalShortName, 
-						orgAbbreviation, shortName, uploadOntologyResult) ) {
+				if ( ! Util2.checkNoPreexistingOntology(orgAbbreviation, shortName, uploadOntologyResult) ) {
 					return uploadOntologyResult;
 				}
-				
+
 			}
 			else {
 				// This is a submission of a *new version* of an existing ontology.
@@ -900,48 +907,6 @@ public class Server implements IServer {
 
 		
 		return uploadOntologyResult;
-	}
-	
-	
-	/**
-	 * Reads an RDF file.
-	 * @param file the file to read in
-	 * @return the contents of the text file.
-	 * @throws IOException 
-	 */
-	private String readRdf(File file) throws IOException {
-		
-		// make sure the file can be loaded as a model:
-		String uriFile = file.toURI().toString();
-		try {
-			JenaUtil.loadModel(uriFile, false);
-		}
-		catch (Throwable ex) {
-			String error = ex.getClass().getName()+ " : " +ex.getMessage();
-			throw new IOException(error);
-		}
-		
-
-		
-		BufferedReader is = null;
-		try {
-			is = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-			StringWriter sw = new StringWriter();
-			PrintWriter os = new PrintWriter(sw);
-			IOUtils.copy(is, os);
-			os.flush();
-			String rdf = sw.toString();
-			return rdf;
-		}
-		finally {
-			if ( is != null ) {
-				try {
-					is.close();
-				}
-				catch(IOException ignore) {
-				}
-			}
-		}
 	}
 
 }

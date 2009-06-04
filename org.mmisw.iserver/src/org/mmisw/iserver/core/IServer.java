@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.BasicOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.CreateVocabularyInfo;
+import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
@@ -79,7 +79,10 @@ public interface IServer {
 	
 	
 	
-	public CreateOntologyResult createVocabulary(BasicOntologyInfo basicOntologyInfo, CreateVocabularyInfo createOntologyInfo) ;
+	public CreateOntologyResult createOntology(
+			BasicOntologyInfo basicOntologyInfo, 
+			CreateOntologyInfo createOntologyInfo
+	) ;
 
 	
 	public UploadOntologyResult uploadOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult) ;

@@ -1,12 +1,24 @@
-package org.mmisw.iserver.core;
+package org.mmisw.iserver.core.util;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.iserver.core.MdHelper;
 import org.mmisw.iserver.gwt.client.rpc.BaseResult;
+import org.xml.sax.InputSource;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.Ontology;
@@ -25,7 +37,7 @@ public class Util2 {
 	
 	/** Ontology URI prefix including root: */
 	// TODO read namespaceRoot from a configuration parameter
-	static final String namespaceRoot = "http://mmisw.org/ont";
+	public static final String namespaceRoot = "http://mmisw.org/ont";
 
 	
 	/**
@@ -41,7 +53,7 @@ public class Util2 {
 	 * @return true if there is NO existing ontology with the given parameters; false if there IS an existing
 	 *            ontology OR some error occurred.  If false is returned, result.getError() will be non-null.
 	 */
-	static boolean checkNoPreexistingOntology(String orgAbbreviation, String shortName, BaseResult result) {
+	public static boolean checkNoPreexistingOntology(String orgAbbreviation, String shortName, BaseResult result) {
 		// See issue 63: http://code.google.com/p/mmisw/issues/detail?id=63
 		
 		// the (unversioned) URI to check for preexisting ontology:
@@ -108,7 +120,7 @@ public class Util2 {
 	 * @return true if OK. 
 	 *         false if there IS any error (result.getError() will be non-null).
 	 */
-	static boolean checkUriKeyCombinationForNewVersion(
+	public static boolean checkUriKeyCombinationForNewVersion(
 			String originalOrgAbbreviation, String originalShortName, 
 			String orgAbbreviation, String shortName, BaseResult result) {
 		
@@ -171,7 +183,7 @@ public class Util2 {
 	 * @param newNameSpace
 	 */
 	// TODO: Use function from "ont" project (the utility is replicated here for the moment)
-	static void replaceNameSpace(OntModel model, String oldNameSpace, String newNameSpace) {
+	public static void replaceNameSpace(OntModel model, String oldNameSpace, String newNameSpace) {
 		
 		//log.info(" REPLACING NS " +oldNameSpace+ " WITH " +newNameSpace);
 		
@@ -226,7 +238,7 @@ public class Util2 {
 	/**
 	 * Sets the missing DC attrs that have defined equivalent MMI attrs: 
 	 */
-	static void setDcAttributes(Ontology ont_) {
+	public static void setDcAttributes(Ontology ont_) {
 		for ( Property dcProp : MdHelper.getDcPropertiesWithMmiEquivalences() ) {
 			
 			// does dcProp already have an associated value?
@@ -247,4 +259,88 @@ public class Util2 {
 		}
 	}
 
+	
+	/**
+	 * Reads an RDF file.
+	 * @param file the file to read in
+	 * @return the contents of the text file.
+	 * @throws IOException 
+	 */
+	public static String readRdf(File file) throws IOException {
+		
+		// make sure the file can be loaded as a model:
+		String uriFile = file.toURI().toString();
+		try {
+			JenaUtil.loadModel(uriFile, false);
+		}
+		catch (Throwable ex) {
+			String error = ex.getClass().getName()+ " : " +ex.getMessage();
+			throw new IOException(error);
+		}
+		
+
+		
+		BufferedReader is = null;
+		try {
+			is = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+			StringWriter sw = new StringWriter();
+			PrintWriter os = new PrintWriter(sw);
+			IOUtils.copy(is, os);
+			os.flush();
+			String rdf = sw.toString();
+			return rdf;
+		}
+		finally {
+			if ( is != null ) {
+				try {
+					is.close();
+				}
+				catch(IOException ignore) {
+				}
+			}
+		}
+	}
+
+	/**
+	 * Returns <code>model.getNsPrefixURI("")</code> if it's non-null; otherwise the URI
+	 * associated with xml:base.
+	 * 
+	 * @param model  to call <code>model.getNsPrefixURI("")</code>
+	 * @param file   to obtain xml:base if necessary.
+	 * @param baseResult  setError(e) will be called if not value can be obtained
+	 * @return  the namespace.  null in case of not finding any value.
+	 */
+	public static String getDefaultNamespace(OntModel model, File file, BaseResult baseResult) {
+
+		String namespace = model.getNsPrefixURI("");
+		if ( namespace == null ) {
+			// issue #140: "ontologies with no declared namespace for empty prefix are not accepted"
+
+			// fix: use xml:base's URI
+
+			try {
+				String rdf;
+				rdf = readRdf(file);
+				URI xmlBaseUri = XmlBaseExtractor.getXMLBase(new InputSource(new StringReader(rdf)));
+				if ( xmlBaseUri != null ) {
+					namespace = xmlBaseUri.toString();
+				}
+				else {
+					// give up    (TODO there may be other things to try -- but later)
+					String error = "Error: Ontology does not define a default namespace nor a URI for xml:base";
+					log.info(error);
+					baseResult.setError(error);
+					return null;
+				}
+			}
+			catch (Exception e) {
+				String error = "error while trying to read xml:base attribute: " +e.getMessage();
+				log.info(error, e);
+				baseResult.setError(error);
+				return null;
+			}
+		}
+		
+		return namespace;
+	}
 }

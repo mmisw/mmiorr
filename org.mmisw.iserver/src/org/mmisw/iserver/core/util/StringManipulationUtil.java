@@ -32,7 +32,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *********************************************************************************/
 
-package org.mmisw.iserver.core;
+package org.mmisw.iserver.core.util;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

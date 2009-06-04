@@ -1,4 +1,4 @@
-package org.mmisw.iserver.core;
+package org.mmisw.iserver.core.util;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -682,7 +682,7 @@ public class Util {
 	/** see JenaUtil2 */
 	private static final String FRAG_SEPARATOR = "/" ;
 
-	static String removeTrailingFragment(String uri) {
+	public static String removeTrailingFragment(String uri) {
 		return uri.replaceAll(FRAG_SEPARATOR + "+$", "");
 	}
 	

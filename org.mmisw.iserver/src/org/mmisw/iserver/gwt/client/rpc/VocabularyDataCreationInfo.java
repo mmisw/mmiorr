@@ -3,10 +3,10 @@ package org.mmisw.iserver.gwt.client.rpc;
 import java.util.List;
 
 /**
- * Info to create a vocabulary.
+ * Data Info for the creation of a vocabulary.
  * @author Carlos Rueda
  */
-public class CreateVocabularyInfo extends CreateOntologyInfo {
+public class VocabularyDataCreationInfo extends DataCreationInfo {
 	private static final long serialVersionUID = 1L;
 	
 	private String className;
