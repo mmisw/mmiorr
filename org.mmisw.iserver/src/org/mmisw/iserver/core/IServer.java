@@ -11,6 +11,7 @@ import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.UploadOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 
 /**
  * Interface to get info from the server.
@@ -86,4 +87,7 @@ public interface IServer {
 
 	
 	public UploadOntologyResult uploadOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult) ;
+	
+	
+	public TempOntologyInfo getTempOntologyInfo(String uploadResults);
 }

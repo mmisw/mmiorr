@@ -25,6 +25,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.util.JenaUtil2;
+import org.mmisw.iserver.core.util.TempOntologyHelper;
 import org.mmisw.iserver.core.util.Util;
 import org.mmisw.iserver.core.util.Util2;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
@@ -36,6 +37,7 @@ import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.UploadOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyDataCreationInfo;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
@@ -909,4 +911,18 @@ public class Server implements IServer {
 		return uploadOntologyResult;
 	}
 
+	
+	
+	
+	public TempOntologyInfo getTempOntologyInfo(String uploadResults) {
+		TempOntologyInfo tempOntologyInfo = new TempOntologyInfo();
+		
+		if ( metadataBaseInfo == null ) {
+			tempOntologyInfo.setError("IServer not properly initialized!");
+			return tempOntologyInfo;
+		}
+		
+		TempOntologyHelper tempOntologyHelper = new TempOntologyHelper(metadataBaseInfo);
+		return tempOntologyHelper.getTempOntologyInfo(uploadResults, tempOntologyInfo);
+	}
 }

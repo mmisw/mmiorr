@@ -43,19 +43,24 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 public class Util {
 	
 	/** Query to obtain the individuals in a model */
-	private static final String INDIVIDUALS_QUERY =
+	private static final String QUERY_PREFIXES =
 		"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
-		"PREFIX owl: <http://www.w3.org/2002/07/owl#>" +
+		"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+		"PREFIX owl: <http://www.w3.org/2002/07/owl#> "
+	;
+	
+	/** Query to obtain the individuals in a model */
+	private static final String INDIVIDUALS_QUERY = 
+		QUERY_PREFIXES +
 		"SELECT ?instance ?class " +
-		"WHERE { ?class rdf:type owl:Class ." +
+		"WHERE {    { ?class rdf:type owl:Class }" +
+		"     UNION { ?class rdf:type rdfs:Class }  ." +
 		"        ?instance rdf:type ?class . }"
 	;
 	
 	/** Query to obtain the datatype properties in a model */
 	private static final String DATATYPE_PROPERTIES_QUERY =
-		"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
-		"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
-		"PREFIX owl: <http://www.w3.org/2002/07/owl#> " +
+		QUERY_PREFIXES +
 		"SELECT ?prop ?domain " +
 		"WHERE { ?prop rdf:type owl:DatatypeProperty. " +
 		        "?prop rdfs:domain ?domain ." +
@@ -64,9 +69,7 @@ public class Util {
 	
 	/** Query to obtain the object properties in a model */
 	private static final String OBJECT_PROPERTIES_QUERY =
-		"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
-		"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
-		"PREFIX owl: <http://www.w3.org/2002/07/owl#> " +
+		QUERY_PREFIXES +
 		"SELECT ?prop ?domain " +
 		"WHERE { ?prop rdf:type owl:ObjectProperty . " +
 		        "?prop rdfs:domain ?domain ." +
@@ -75,10 +78,10 @@ public class Util {
 	
 	/** Query to obtain the classes in a model */
 	private static final String CLASSES_QUERY =
-		"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
-		"PREFIX owl: <http://www.w3.org/2002/07/owl#>" +
+		QUERY_PREFIXES +
 		"SELECT ?class " +
-		"WHERE { ?class rdf:type owl:Class . }"
+		"WHERE {    { ?class rdf:type owl:Class }" +
+		"     UNION { ?class rdf:type rdfs:Class }  . }"
 	;
 	
 	/** Query template to obtain all properties associated with an entity */

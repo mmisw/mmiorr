@@ -2,6 +2,12 @@ org.mmisw.iserver
 Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 
+2009-06-04
+	- Implemented the "loading" of local file into working space. This is capture in a TempOntologyInfo.
+	  (note the uploading operation is still implemented in the ontmd module).
+	- Other preparations for registration on an "other" ontology (not vine, nor voc2rdf).
+	
+	
 2009-06-03
 	- Instead of using CreateOntologyInfo as a base class for the various types of ontologies to be
 	  created (currently only "vocabulary", but later "mapping" and "regular externally given ontology"),
