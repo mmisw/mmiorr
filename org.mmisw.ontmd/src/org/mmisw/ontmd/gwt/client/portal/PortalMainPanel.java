@@ -111,7 +111,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	    bodyPanel.setWidth("100%");
 
 	    interfaceType = InterfaceType.BROWSE;
-	    headerPanel.updateLinks(interfaceType, loginResult);
+	    headerPanel.updateLinks(interfaceType);
 
 	    this.add(headerPanel);
 	    this.add(menuBarPanel);
@@ -145,7 +145,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 			userPanel.logout();
 		}
 		pctrl.setLoginResult(null);
-		headerPanel.updateLinks(interfaceType, pctrl.getLoginResult());
+		headerPanel.updateLinks(interfaceType);
 		menuBarPanel.showMenuBar(interfaceType);
 		browsePanel.ontologyTable.showProgress();
 	    browsePanel.setLoginResult(pctrl.getLoginResult());
@@ -184,7 +184,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	public void loginOk(final LoginResult loginResult) {
 		pctrl.setLoginResult(loginResult);
 		browsePanel.ontologyTable.showProgress();
-		headerPanel.updateLinks(interfaceType, pctrl.getLoginResult());
+		headerPanel.updateLinks(interfaceType);
 		
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
@@ -245,7 +245,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		
 		interfaceType = InterfaceType.BROWSE;
 	    menuBarPanel.showMenuBar(interfaceType);
-	    headerPanel.updateLinks(interfaceType, pctrl.getLoginResult());
+	    headerPanel.updateLinks(interfaceType);
 
 	    bodyPanel.clear();
 
@@ -274,15 +274,33 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 				pctrl.setOntologyInfo(ontologyInfo);
 				pctrl.setOntologyPanel(ontologyPanel);
 				menuBarPanel.showMenuBar(interfaceType);
-				headerPanel.updateLinks(interfaceType, pctrl.getLoginResult());
+				headerPanel.updateLinks(interfaceType);
 				
 			    bodyPanel.clear();
 				bodyPanel.add(ontologyPanel);
 			}
 	    });
 	}
+
 	
-	// FIXME under implementation
+	public void createNewFromFile() {
+		OntologyInfo ontologyInfo = new OntologyInfo();
+		OntologyPanel ontologyPanel = new OntologyPanel(ontologyInfo, false);
+
+		pctrl.setOntologyInfo(ontologyInfo);
+		pctrl.setOntologyPanel(ontologyPanel);
+		
+		interfaceType = InterfaceType.ONTOLOGY_EDIT_NEW;
+	    menuBarPanel.showMenuBar(interfaceType);
+	    headerPanel.updateLinks(interfaceType);
+		ontologyPanel.createNewFromFile();
+		
+	    bodyPanel.clear();
+		bodyPanel.add(ontologyPanel);
+	}
+
+	
+	
 	public void createNewVocabulary() {
 		OntologyInfo ontologyInfo = new OntologyInfo();
 		OntologyPanel ontologyPanel = new OntologyPanel(ontologyInfo, false);
@@ -292,8 +310,8 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		
 		interfaceType = InterfaceType.ONTOLOGY_EDIT_NEW;
 	    menuBarPanel.showMenuBar(interfaceType);
-	    headerPanel.updateLinks(interfaceType, pctrl.getLoginResult());
-		ontologyPanel.updateInterface(interfaceType);
+	    headerPanel.updateLinks(interfaceType);
+		ontologyPanel.createNewVocabulary();
 		
 	    bodyPanel.clear();
 		bodyPanel.add(ontologyPanel);
@@ -313,17 +331,34 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 			
 		interfaceType = InterfaceType.ONTOLOGY_EDIT_NEW_VERSION;
 	    menuBarPanel.showMenuBar(interfaceType);
-	    headerPanel.updateLinks(interfaceType, pctrl.getLoginResult());
+	    headerPanel.updateLinks(interfaceType);
 		ontologyPanel.updateInterface(interfaceType);
 	}
 
 	public void cancelEdit(OntologyPanel ontologyPanel) {
-		interfaceType = InterfaceType.ONTOLOGY_VIEW;
-	    menuBarPanel.showMenuBar(interfaceType);
-	    headerPanel.updateLinks(interfaceType, pctrl.getLoginResult());
-	    if ( ontologyPanel != null ) {
-	    	ontologyPanel.updateInterface(interfaceType);
-	    }
+		if ( ! Window.confirm("Any edits will be lost") ) {
+			return;
+		}
+		switch ( interfaceType ) {
+			case ONTOLOGY_EDIT_NEW_VERSION:
+				interfaceType = InterfaceType.ONTOLOGY_VIEW;
+			    menuBarPanel.showMenuBar(interfaceType);
+			    headerPanel.updateLinks(interfaceType);
+			    if ( ontologyPanel != null ) {
+			    	ontologyPanel.updateInterface(interfaceType);
+			    }
+				break;
+			case ONTOLOGY_EDIT_NEW:
+				interfaceType = InterfaceType.BROWSE;
+			    menuBarPanel.showMenuBar(interfaceType);
+			    headerPanel.updateLinks(interfaceType);
+			    bodyPanel.clear();
+			    bodyPanel.add(browsePanel);
+				break;
+			default:
+				// shouldn't happen. just return;
+				return;
+		}
 	}
 
 	public void completedUploadOntologyResult(UploadOntologyResult uploadOntologyResult) {

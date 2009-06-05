@@ -66,7 +66,11 @@ public class MenuBarPanel extends HorizontalPanel {
 		if ( pctrl.getLoginResult() != null ) {
 			MenuBar new_mb = new MenuBar(true);
 			new_mb.addItem(_createNewMenuItemVocabulary());
-//			new_mb.addItem(_createNewMenuItemMapping());  TODO not implemented
+			
+			if ( false ) {  //TODO not implemented
+				new_mb.addItem(_createNewMenuItemMapping());
+			}
+			
 			new_mb.addItem(_createNewMenuItemUpload());
 			mb.addItem(new MenuItem(_menuTitle("New"), true, new_mb));
 		}
@@ -124,9 +128,9 @@ public class MenuBarPanel extends HorizontalPanel {
 	
 	
 	private MenuItem _createNewMenuItemUpload() {
-		return new MenuItem("Upload", new Command() {
+		return new MenuItem("Upload local file", new Command() {
 			public void execute() {
-				pctrl.launchCreateUpload();
+				pctrl.createNewFromFile();
 			}
 		});
 	}

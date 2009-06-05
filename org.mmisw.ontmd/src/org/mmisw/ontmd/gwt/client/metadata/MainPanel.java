@@ -454,7 +454,7 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 
 	
 	private void review(boolean confirm) {
-		String error = metadataPanel.putValues(null); // null = just check
+		String error = metadataPanel.putValues(null, true); // just check
 		if ( error != null ) {
 			Window.alert(error);
 			return;
@@ -484,7 +484,7 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 		}
 		
 		Map<String, String> newValues = new HashMap<String, String>();
-		String error = metadataPanel.putValues(newValues);
+		String error = metadataPanel.putValues(newValues, true);
 		if ( error != null ) {
 			Window.alert(error);
 			return;
@@ -571,7 +571,7 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 	
 	
 	private void upload(boolean confirm) {
-		String error = metadataPanel.putValues(null); // null = just check
+		String error = metadataPanel.putValues(null, true); // just check
 		if ( error != null ) {
 			Window.alert(error);
 			return;
@@ -610,7 +610,7 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 		}
 		
 		Map<String, String> newValues = new HashMap<String, String>();
-		String error = metadataPanel.putValues(newValues);
+		String error = metadataPanel.putValues(newValues, true);
 		if ( error != null ) {
 			Window.alert(error);
 			return;

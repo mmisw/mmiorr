@@ -7,9 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.mmisw.iserver.gwt.client.rpc.BaseOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
-import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.IndividualInfo;
 import org.mmisw.iserver.gwt.client.rpc.MappingOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.OntologyData;
@@ -18,13 +16,13 @@ import org.mmisw.iserver.gwt.client.rpc.OtherOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData.ClassData;
+import org.mmisw.ontmd.gwt.client.portal.BaseOntologyContentsPanel;
 import org.mmisw.ontmd.gwt.client.portal.IVocabPanel;
+import org.mmisw.ontmd.gwt.client.portal.OtherOntologyContentsPanel;
+import org.mmisw.ontmd.gwt.client.portal.TempOntologyInfoListener;
 import org.mmisw.ontmd.gwt.client.util.IRow;
-import org.mmisw.ontmd.gwt.client.util.UtilTable;
-import org.mmisw.ontmd.gwt.client.voc2rdf.BaseOntologyPanel;
 import org.mmisw.ontmd.gwt.client.voc2rdf.VocabClassPanel;
 
-import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -62,15 +60,19 @@ public class DataPanel extends VerticalPanel {
 	
 	private MyVocabPanel myVocabPanel = new  MyVocabPanel();
 	
+	
+	private TempOntologyInfoListener tempOntologyInfoListener;
+	
 	private boolean readOnly = true;
 	
-	private Set<BaseOntologyPanel> baseOntologyPanels = new HashSet<BaseOntologyPanel>();
+	private Set<BaseOntologyContentsPanel> baseOntologyContentsPanels = new HashSet<BaseOntologyContentsPanel>();
 	
 	/**
 	 * Creates the data panel
 	 */
-	public DataPanel(boolean readOnly) {
+	public DataPanel(boolean readOnly, TempOntologyInfoListener tempOntologyInfoListener) {
 		super();
+		this.tempOntologyInfoListener = tempOntologyInfoListener;
 		this.readOnly = readOnly;
 		setWidth("100%");
 	}
@@ -80,6 +82,7 @@ public class DataPanel extends VerticalPanel {
 	}
 	
 	
+
 	/**
 	 * Updates this panel with the data associated to the given ontology 
 	 * @param ontologyInfoPre
@@ -120,15 +123,15 @@ public class DataPanel extends VerticalPanel {
 		}
 		this.readOnly = readOnly;
 		
-		for ( BaseOntologyPanel baseOntologyPanel : baseOntologyPanels ) {
-			baseOntologyPanel.setReadOnly(readOnly);
+		for ( BaseOntologyContentsPanel baseOntologyContentsPanel : baseOntologyContentsPanels ) {
+			baseOntologyContentsPanel.setReadOnly(readOnly);
 		}
 	}
 	
 
 	public String checkData() {
-		for ( BaseOntologyPanel baseOntologyPanel : baseOntologyPanels ) {
-			String error = baseOntologyPanel.checkData();
+		for ( BaseOntologyContentsPanel baseOntologyContentsPanel : baseOntologyContentsPanels ) {
+			String error = baseOntologyContentsPanel.checkData();
 			if ( error != null ) {
 				return error;
 			}
@@ -166,7 +169,7 @@ public class DataPanel extends VerticalPanel {
 //			});
 
 			VocabClassPanel classPanel = new VocabClassPanel(classData, myVocabPanel, readOnly);
-			baseOntologyPanels.add(classPanel);
+			baseOntologyContentsPanels.add(classPanel);
 
 //			classPanel.importContents(classHeader, rows);
 			
@@ -192,7 +195,7 @@ public class DataPanel extends VerticalPanel {
 //			termContents.append("\n");
 			
 			VocabClassPanel classPanel = new VocabClassPanel(classData, myVocabPanel, readOnly);
-			baseOntologyPanels.add(classPanel);
+			baseOntologyContentsPanels.add(classPanel);
 			
 //			ViewTable viewTable = new ViewTable(colNames);
 //			tp.add(viewTable.getWidget());
@@ -245,87 +248,17 @@ public class DataPanel extends VerticalPanel {
 	}
 
 	
-	@SuppressWarnings("unchecked")
 	private Widget _createOtherWidget(OtherOntologyData ontologyData) {
 		
 		Main.log("Creating OtherWidget");
+		
+		OtherOntologyContentsPanel otherOntologyContentsPanel = new OtherOntologyContentsPanel(
+				ontologyData, tempOntologyInfoListener, readOnly);
 
-		BaseOntologyData baseData = ontologyData.getBaseOntologyData();
+		baseOntologyContentsPanels.add(otherOntologyContentsPanel);
 		
-		VerticalPanel vp = new VerticalPanel();
-		vp.setSpacing(4);
-		
-		Object[] entityGroups = {  
-				"Classes", baseData.getClasses(),
-				"Properties", baseData.getProperties(),
-				"Individuals", baseData.getIndividuals(),
-		};
-
-		for (int i = 0; i < entityGroups.length; i += 2) {
-			String title = entityGroups[i].toString();
-			List<?extends EntityInfo> entities = (List<?extends EntityInfo>) entityGroups[i + 1];
-			
-			title += " (" +entities.size()+ ")";
-			
-			DisclosurePanel disclosure = new DisclosurePanel(title);
-			disclosure.setAnimationEnabled(true);
-			
-			Widget entsWidget = _createOtherWidgetForEntities(ontologyData, entities);
-			
-			disclosure.setContent(entsWidget);
-			
-			vp.add(disclosure);
-			
-		}
-		
-		return vp;
+		return otherOntologyContentsPanel.getWidget();
 	}
-	
-	private Widget _createOtherWidgetForEntities(OtherOntologyData ontologyData, 
-			List<? extends EntityInfo> entities) {
-
-		
-		if ( entities.size() == 0 ) {
-			return new HTML();
-		}
-		
-		Set<String> header = new HashSet<String>();
-		
-		for ( EntityInfo entity : entities ) {
-			List<PropValue> props = entity.getProps();
-			for ( PropValue pv : props ) {
-				header.add(pv.getPropName());
-			}
-		}
-		
-		List<String> colNames = new ArrayList<String>();
-		colNames.addAll(header);
-		colNames.add(0, "Name");
-
-		UtilTable utilTable = new UtilTable(colNames);
-		List<IRow> rows = new ArrayList<IRow>();
-		for ( EntityInfo entity : entities ) {
-			final Map<String, String> vals = new HashMap<String, String>();
-			List<PropValue> props = entity.getProps();
-			for ( PropValue pv : props ) {
-				vals.put(pv.getPropName(), pv.getValueName());
-			}
-
-			vals.put("Name", entity.getLocalName());
-			
-			rows.add(new IRow() {
-				public String getColValue(String sortColumn) {
-					return vals.get(sortColumn);
-				}
-			});
-		}
-		utilTable.setRows(rows);
-		
-		return utilTable.getWidget();
-	}
-
-	
-	
 	
 	private Widget _createMappingWidget(MappingOntologyData ontologyData) {
 		Main.log("Creating MappingWidget");
@@ -334,24 +267,30 @@ public class DataPanel extends VerticalPanel {
 	}
 
 	public void cancel() {
-		for ( BaseOntologyPanel baseOntologyPanel : baseOntologyPanels ) {
-			baseOntologyPanel.cancel();
+		for ( BaseOntologyContentsPanel baseOntologyContentsPanel : baseOntologyContentsPanels ) {
+			baseOntologyContentsPanel.cancel();
 		}
 	}
 
 	public DataCreationInfo getCreateOntologyInfo() {
 		
-		if ( baseOntologyPanels.size() == 0 ) {
+		if ( baseOntologyContentsPanels.size() == 0 ) {
 			return null;
 		}
-		BaseOntologyPanel baseOntologyPanel = baseOntologyPanels.iterator().next();
-		if ( ! (baseOntologyPanel instanceof VocabClassPanel) ) {
-			return null;
+		BaseOntologyContentsPanel baseOntologyContentsPanel = baseOntologyContentsPanels.iterator().next();
+
+		if ( baseOntologyContentsPanel instanceof VocabClassPanel ) {
+			VocabClassPanel vocabClassPanel = (VocabClassPanel) baseOntologyContentsPanel;
+			
+			return vocabClassPanel.getCreateOntologyInfo();
+		}
+		else if ( baseOntologyContentsPanel instanceof OtherOntologyContentsPanel ) {
+			OtherOntologyContentsPanel otherOntologyContentsPanel = (OtherOntologyContentsPanel) baseOntologyContentsPanel;
+			
+			return otherOntologyContentsPanel.getCreateOntologyInfo();
 		}
 		
-		VocabClassPanel vocabClassPanel = (VocabClassPanel) baseOntologyPanel;
-
-		return vocabClassPanel.getCreateOntologyInfo();
+		return null;
 	}
 
 }

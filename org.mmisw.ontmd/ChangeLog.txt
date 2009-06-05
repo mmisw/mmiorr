@@ -1,7 +1,20 @@
-org.mmisw.ontmd: Ontology Metadata Manager and Voc2RDF
+org.mmisw.ontmd: MMI Portal
 Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
+
+2009-06-04
+	- Including management of uploading of local file in the panel for "other" (not vine/voc2rdf) ontology. 
+	- Notification to the metadataPanel included (note: when the user loads a local file
+	  for purposes of updating the contents (dataPanel) of the ontology to be submitted, we need
+	  to notify the metadataPanel to handle any existing attributes in the uploaded file).
+	- Basic functionality of the local file uploading into the working space ready. This includes a 
+	  new checking for any possible overwriting of fields already filled in in the metadata panel; the
+	  user can decide whether replace of keey the values in the panel. See issue #143
+	  
+	Next: complete creation of ontology from local file and the associated action when creating
+	a new version.
+	
 
 2009-06-03
 	- Creation of vocabulary completed. Need more testing.

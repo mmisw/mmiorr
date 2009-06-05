@@ -51,6 +51,7 @@ import org.mmisw.ontmd.gwt.client.rpc.OntMdService;
 import org.mmisw.ontmd.gwt.client.rpc.OntologyInfoPre;
 import org.mmisw.ontmd.gwt.client.rpc.PortalBaseInfo;
 import org.mmisw.ontmd.gwt.client.rpc.ReviewResult_Old;
+import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.ontmd.gwt.client.rpc.UploadResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
@@ -1404,5 +1405,10 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	
 	public UploadOntologyResult uploadOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult) {
 		return portal.uploadOntology(createOntologyResult, loginResult);
+	}
+	
+	
+	public TempOntologyInfo getTempOntologyInfo(String uploadResults) {
+		return portal.getTempOntologyInfo(uploadResults);
 	}
 }

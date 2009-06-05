@@ -1,4 +1,6 @@
-package org.mmisw.ontmd.gwt.client.voc2rdf;
+package org.mmisw.ontmd.gwt.client.portal;
+
+import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
 
 import com.google.gwt.user.client.ui.Widget;
 
@@ -7,17 +9,19 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author Carlos Rueda
  */
-public abstract class BaseOntologyPanel {
+public abstract class BaseOntologyContentsPanel {
 	
 	private boolean readOnly = true;
 	
-	protected BaseOntologyPanel(boolean readOnly) {
+	protected BaseOntologyContentsPanel(boolean readOnly) {
 		this.readOnly = readOnly;
 	}
 
 	public abstract Widget getWidget();
 	
+	public abstract DataCreationInfo getCreateOntologyInfo();
 
+	
 	/**
 	 * @return the readOnly
 	 */

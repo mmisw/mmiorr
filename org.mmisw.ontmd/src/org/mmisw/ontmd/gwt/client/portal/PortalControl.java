@@ -45,10 +45,14 @@ public class PortalControl {
 		Window.open(url, "_blank", features);
 	}
 
-	public void launchCreateUpload() {
-		String url = createLinkUpload();
-		String features = null;
-		Window.open(url, "_blank", features);
+	public void createNewFromFile() {
+		// Old:
+//		String url = createLinkUpload();
+//		String features = null;
+//		Window.open(url, "_blank", features);
+		
+		
+		portalMainPanel.createNewFromFile();
 	}
 
 	
@@ -63,16 +67,17 @@ public class PortalControl {
 		return link;
 	}
 
-	private String createLinkUpload() {
-//		String link = GWT.getModuleBaseURL()+ "?_ontmd=y&_edit=y";
-		String link = "http://mmisw.org/ontmd/?_edit=y";
-		if ( loginResult != null ) {
-			link += "&userId=" +loginResult.getUserId();
-			link += "&sessionId=" +loginResult.getSessionId();
-			link += "&userName=" +loginResult.getUserName();
-		}
-		return link;
-	}
+	// Old
+//	private String createLinkUpload() {
+////		String link = GWT.getModuleBaseURL()+ "?_ontmd=y&_edit=y";
+//		String link = "http://mmisw.org/ontmd/?_edit=y";
+//		if ( loginResult != null ) {
+//			link += "&userId=" +loginResult.getUserId();
+//			link += "&sessionId=" +loginResult.getSessionId();
+//			link += "&userName=" +loginResult.getUserName();
+//		}
+//		return link;
+//	}
 
 	public void createNewVocabulary() {
 		// Old:

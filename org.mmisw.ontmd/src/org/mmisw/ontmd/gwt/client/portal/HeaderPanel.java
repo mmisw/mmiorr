@@ -77,7 +77,9 @@ public class HeaderPanel extends FlexTable {
 
 	}
 	
-	void updateLinks(InterfaceType type, LoginResult loginResult) {
+	void updateLinks(InterfaceType type) {
+		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
+	
 		List<Widget> widgets = new ArrayList<Widget>();
 		
 		if ( loginResult != null ) {

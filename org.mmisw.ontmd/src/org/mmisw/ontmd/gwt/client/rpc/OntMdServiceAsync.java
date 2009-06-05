@@ -11,6 +11,7 @@ import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.UploadOntologyResult;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
@@ -86,4 +87,7 @@ public interface OntMdServiceAsync {
 	
 	void uploadOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult,
 			AsyncCallback<UploadOntologyResult> callback) ;
+	
+	
+	void getTempOntologyInfo(String uploadResults, AsyncCallback<TempOntologyInfo> callback);
 }

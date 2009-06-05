@@ -14,6 +14,7 @@ import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.UploadOntologyResult;
 import org.mmisw.ontmd.gwt.client.rpc.PortalBaseInfo;
 import org.mmisw.ontmd.gwt.server.Config;
@@ -105,5 +106,10 @@ public class PortalImpl  {
 	
 	public UploadOntologyResult uploadOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult) {
 		return iserver.uploadOntology(createOntologyResult, loginResult);
+	}
+	
+	
+	public TempOntologyInfo getTempOntologyInfo(String uploadResults) {
+		return iserver.getTempOntologyInfo(uploadResults);
 	}
 }

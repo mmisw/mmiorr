@@ -5,6 +5,7 @@ import java.util.List;
 import org.mmisw.iserver.gwt.client.rpc.ClassInfo;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData.ClassData;
+import org.mmisw.ontmd.gwt.client.portal.BaseOntologyContentsPanel;
 import org.mmisw.ontmd.gwt.client.portal.IVocabPanel;
 import org.mmisw.ontmd.gwt.client.util.IRow;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
@@ -47,7 +48,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author Carlos Rueda
  */
-public class VocabClassPanel extends BaseOntologyPanel implements TermTableInterface {
+public class VocabClassPanel extends BaseOntologyContentsPanel implements TermTableInterface {
 
 	private static final String CLASS_TOOTIP =
 		"The class for the terms defined in this vocabulary; should be a singular noun. " +

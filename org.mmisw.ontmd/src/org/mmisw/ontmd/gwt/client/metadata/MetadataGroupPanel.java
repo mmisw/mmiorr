@@ -232,16 +232,30 @@ public class MetadataGroupPanel extends VerticalPanel {
 	}
 
 	/**
-	 * Puts the non-empty values in the given map, if not null.
-	 * @param values null to just do the checking of required attributes.
-	 * @return null if OK; otherwise a message about the missing required attribute.
+	 * Puts the value in the map, only if value is not null and not empty.
 	 */
-	String putValues(Map<String, String> values) {
+	private static void _putValueIfNonEmpty(Map<String, String> values, String key, String value) {
+		if ( value != null && value.trim().length() > 0 ) {
+			values.put(key, value);
+		}
+	}
+
+	/**
+	 * Puts the non-empty values in the given map, if not null.
+	 * 
+	 * @param values null to just do the checking of required attributes.
+	 * @param checkMissing true to do the checking. So, if just want to get the current values without
+	 *         complains about missing values, pass a non-null values map and set checkMissing == false.
+	 *         
+	 * @return Only non-null then called with checkMissing == true and there is some missing required attribute.
+	 */
+	String putValues(Map<String, String> values, boolean checkMissing) {
 		
 		// special case:
 		if ( resourceTypeWidget != null && resourceTypeWidget.resourceTypeAttrDef != null ) {
 			String value = resourceTypeWidget.resourceTypeFieldWithChoose.getTextBox().getText().trim();
-			if ( value.length() == 0 ) {
+			
+			if ( checkMissing && value.length() == 0 ) {
 				String error = "Please provide a value for the field with label: " +
 							resourceTypeWidget.resourceTypeAttrDef.getLabel();
 				return error;
@@ -250,13 +264,11 @@ public class MetadataGroupPanel extends VerticalPanel {
 			if ( values != null ) {
 				// do actual assignment
 				String uri = resourceTypeWidget.resourceTypeAttrDef.getUri();
-				values.put(uri, value);
-				Main.log("assigned: " +uri+ " = " +value);
+				_putValueIfNonEmpty(values, uri, value);
 				
 				String relatedUri = resourceTypeWidget.resourceTypeAttrDef.getRelatedAttrs().get(0).getUri();
 				String relatedValue = resourceTypeWidget.resourceTypeRelatedField.getText();
-				values.put(relatedUri, relatedValue);
-				Main.log("assigned: " +uri+ " = " +value);
+				_putValueIfNonEmpty(values, relatedUri, relatedValue);
 			}
 		}
 		
@@ -280,7 +292,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 			if ( value.trim().length() == 0 
 			||   value.startsWith("--")
 			) {
-				if ( elem.attr.isRequired() ) {
+				if ( checkMissing && elem.attr.isRequired() ) {
 					String error = "Please provide a value for the field with label: " +
 						elem.attr.getLabel();
 					return error;
@@ -291,8 +303,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 				value = value.trim();
 				if ( values != null ) {
 					// do actual assignment
-					values.put(uri, value);
-					Main.log("assigned: " +uri+ " = " +value);
+					_putValueIfNonEmpty(values, uri, value);
 				}
 			}
 		}
