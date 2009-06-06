@@ -4,16 +4,16 @@ Carlos Rueda  -  http://marinemetadata.org
 ChangeLog
 
 2009-06-06
+	Issue #145: "Null response when uploading IOC "
+	Issue #43: "Handle non-UTF8 inputs"
 	- Included chardet.jar in build, as iserver is now doing verification of UTF-8. 
 	  In summary, an error will be reported whenever some external contents, which will be
 	  eventually incorporated in the registry, is not in UTF-8.
-	  Note: No attempts to make any automated conversion in case the verification fails; the user
-	  will have to make the conversion, or perhaps ask the registry admins for help.
+	  Note: No attempts to make any automated conversion in case the verification fails.
  
 	
 2009-06-05
 	- Main: logging buffer allocated only if _log parameter is given (less memory for regular use).
-	- UploadServlet: issue #143: TODO test explicit UTF-8 indication in the output stream (seems insufficient)
 	- UploadLocalOntologyPanel: fixed upload form action location.
 	
 	- several adjustments as the main operations are completed along with iserver module

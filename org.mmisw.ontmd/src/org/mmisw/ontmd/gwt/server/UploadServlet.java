@@ -136,8 +136,7 @@ public class UploadServlet extends HttpServlet {
 			File file = File.createTempFile("ontmd_" +sessionId+"_", ".tmp", preUploadsDir );
 			String filename = file.getAbsolutePath();
 			InputStream is = item.getInputStream();
-			// issue #143 fixed by explicitly indicating UTF-8 in the output stream
-			PrintWriter os = new PrintWriter(file, "UTF-8");
+			PrintWriter os = new PrintWriter(file);
 			IOUtils.copy(is, os);
 			
 			os.flush();
