@@ -235,11 +235,10 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 				Main.log("RET getOntologyContents: ontologyUri = " +ontologyInfo.getUri());
 				String error = ontologyInfo.getError();
 				if ( error != null ) {
-					Window.alert(error);
+					Main.log("RET getOntologyContents: error = " +error);
 				}
-				else {
-					ontologyContentsRetrieved(ontologyInfo, readOnly);
-				}
+				
+				ontologyContentsRetrieved(ontologyInfo, readOnly);
 			}
 		};
 

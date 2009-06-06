@@ -3,6 +3,14 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-06-06
+	- Included chardet.jar in build, as iserver is now doing verification of UTF-8. 
+	  In summary, an error will be reported whenever some external contents, which will be
+	  eventually incorporated in the registry, is not in UTF-8.
+	  Note: No attempts to make any automated conversion in case the verification fails; the user
+	  will have to make the conversion, or perhaps ask the registry admins for help.
+ 
+	
 2009-06-05
 	- Main: logging buffer allocated only if _log parameter is given (less memory for regular use).
 	- UploadServlet: issue #143: TODO test explicit UTF-8 indication in the output stream (seems insufficient)

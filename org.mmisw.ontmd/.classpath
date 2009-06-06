@@ -24,5 +24,6 @@
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmisw.ont.mmiuri.jar" sourcepath="/org.mmisw.ont"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmisw.ont.vocabulary.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmisw.iserver.gwt.jar"/>
+	<classpathentry kind="lib" path="base_war/WEB-INF/lib/chardet.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
