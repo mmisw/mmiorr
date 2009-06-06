@@ -12,7 +12,7 @@ import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.IndividualInfo;
 import org.mmisw.iserver.gwt.client.rpc.MappingOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.OntologyData;
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.OtherOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData;
@@ -50,7 +50,7 @@ public class ViewDataPanel extends VerticalPanel {
 	 * Updates this panel with the data associated to the given ontology 
 	 * @param ontologyInfoPre
 	 */
-	public void updateWith(OntologyInfo ontologyInfo) {
+	public void updateWith(RegisteredOntologyInfo ontologyInfo) {
 		
 		this.clear();
 		

@@ -35,8 +35,10 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class UploadLocalOntologyPanel extends VerticalPanel {
 	
-	private static final String UPLOAD_ACTION = 
-		GWT.isScript() ? "/ontmd/upload" : "/upload";
+	private static final String UPLOAD_ACTION = GWT.getModuleBaseURL() + "upload";
+
+	// false: do not retrieve RDF contents from server.
+	private static final boolean INCLUDE_RDF = false;
 	
 	
 	private TempOntologyInfoListener tempOntologyInfoListener;
@@ -49,7 +51,7 @@ public class UploadLocalOntologyPanel extends VerticalPanel {
 	private HTML statusLoad = new HTML();
 	private TextBox statusField2 = new TextBox();
 	
-	private final TextArea textArea = new TextArea();
+	private final TextArea textArea = INCLUDE_RDF ? new TextArea() : null;
 	
 	private PushButton loadButton;
 	
@@ -78,7 +80,6 @@ public class UploadLocalOntologyPanel extends VerticalPanel {
 
 		statusLoad.setText("");
 		statusField2.setText("");
-		textArea.setText("");
 
 		if ( allowLoadOptions ) {
 			createLoadButton();
@@ -163,18 +164,19 @@ public class UploadLocalOntologyPanel extends VerticalPanel {
 		row++;
 
 		
-		CellPanel resultPanel = new VerticalPanel();
-		textArea.setReadOnly(true);
-	    textArea.setSize("400px", "100px");
-	    
-	    panel.getFlexCellFormatter().setColSpan(row, 0, 2);
-		panel.setWidget(row, 0, resultPanel);
-		
-		DecoratorPanel decPanel = new DecoratorPanel();
-	    decPanel.setWidget(textArea);
-	    resultPanel.add(decPanel);
-	    row++;
+		if ( INCLUDE_RDF ) {
+			CellPanel resultPanel = new VerticalPanel();
+			textArea.setReadOnly(true);
+			textArea.setSize("400px", "100px");
 
+			panel.getFlexCellFormatter().setColSpan(row, 0, 2);
+			panel.setWidget(row, 0, resultPanel);
+
+			DecoratorPanel decPanel = new DecoratorPanel();
+			decPanel.setWidget(textArea);
+			resultPanel.add(decPanel);
+			row++;
+		}
 
 		return panel;
 	}
@@ -257,8 +259,11 @@ public class UploadLocalOntologyPanel extends VerticalPanel {
 				String results = event.getResults();
 				Main.log("onSubmitComplete: " +results);
 				if ( results != null ) {
-					textArea.setText(results);
 					getTempOntologyInfo(results);
+				}
+				else {
+					statusLoad.setHTML("<font color=\"red\">Unexpected null response from server." +
+							"Please try again later.</font>");
 				}
 			}
 			
@@ -282,7 +287,7 @@ public class UploadLocalOntologyPanel extends VerticalPanel {
 		};
 
 		Main.log("calling getTempOntologyInfo ... ");
-		Main.ontmdService.getTempOntologyInfo(uploadResults, callback);
+		Main.ontmdService.getTempOntologyInfo(uploadResults, true, INCLUDE_RDF, callback);
 
 	}
 	
@@ -393,18 +398,18 @@ public class UploadLocalOntologyPanel extends VerticalPanel {
 		String error = tempOntologyInfo.getError();
 		if ( error != null ) {
 			statusLoad.setHTML("<font color=\"red\">Error</font>");
-			textArea.setText("Error reading file. Make sure it is an RDF file.\n" +
+			Window.alert("Error reading file. Make sure it is an RDF file.\n" +
 					"Server reports:\n\n" +error);
-			Window.alert(error);
 			return;
 		}
 		statusLoad.setHTML("<font color=\"green\">Ontology loaded into editor</font>");
 		statusField2.setText("Original base URI: " +tempOntologyInfo.getUri());
 		
-		
-		String rdf = tempOntologyInfo.getRdf();
-		if ( rdf != null ) {
-			textArea.setText(rdf);
+		if ( INCLUDE_RDF ) {
+			String rdf = tempOntologyInfo.getRdf();
+			if ( rdf != null ) {
+				textArea.setText(rdf);
+			}
 		}
 		
 		details = tempOntologyInfo.getDetails();

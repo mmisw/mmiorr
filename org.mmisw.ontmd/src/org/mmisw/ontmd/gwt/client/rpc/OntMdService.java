@@ -4,15 +4,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
-import org.mmisw.iserver.gwt.client.rpc.BasicOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.UploadOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
@@ -117,27 +116,36 @@ public interface OntMdService extends RemoteService {
 	
 	public MetadataBaseInfo getMetadataBaseInfo(boolean includeVersion);
 
-	public List<OntologyInfo> getAllOntologies(boolean includePriorVersions);
+	public List<RegisteredOntologyInfo> getAllOntologies(boolean includePriorVersions);
 	
 	/**
 	 * Gets ontology info from an ontology that can be resolved by the Ont service
 	 * (ie., from the MMI registry).
 	 */
-	public OntologyInfo getOntologyInfo(String ontologyUri);
+	public RegisteredOntologyInfo getOntologyInfo(String ontologyUri);
 
 	
-	public OntologyInfo getOntologyContents(OntologyInfo ontologyInfo);
+	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo ontologyInfo);
 	
 	
 	/**
 	 * Creates an ontology.
+	 * 
+	 * @param createOntologyInfo
+	 * @return result of the creation
 	 */
-	public CreateOntologyResult createOntology(
-			BasicOntologyInfo basicOntologyInfo, CreateOntologyInfo createOntologyInfo) ;
+	public CreateOntologyResult createOntology(CreateOntologyInfo createOntologyInfo) ;
 
 
 
-	public UploadOntologyResult uploadOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult);
+	/**
+	 * Registers an ontology.
+	 * 
+	 * @param createOntologyResult Indicates the ontology to be registered.
+	 * @param loginResult
+	 * @return Result of the registration
+	 */
+	public RegisterOntologyResult registerOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult);
 	
 
 	
@@ -145,7 +153,8 @@ public interface OntMdService extends RemoteService {
 	/**
 	 * Gets ontology info from a pre-loaded file.
 	 */
-	public TempOntologyInfo getTempOntologyInfo(String uploadResults);
+	public TempOntologyInfo getTempOntologyInfo(String uploadResults, boolean includeContents,
+			boolean includeRdf);
 
 
 }

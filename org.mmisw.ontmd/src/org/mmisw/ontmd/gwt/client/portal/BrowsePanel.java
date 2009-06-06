@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.util.Util;
 
@@ -28,13 +28,13 @@ public class BrowsePanel extends VerticalPanel {
 	final OntologyTable ontologyTable = new OntologyTable(PortalControl.getInstance().getQuickInfo());
 
 	// all the ontologies from the registry
-	private List<OntologyInfo> allOntologyInfos;
+	private List<RegisteredOntologyInfo> allOntologyInfos;
 	
 	// working ontologies
-	private List<OntologyInfo> ontologyInfos;
+	private List<RegisteredOntologyInfo> ontologyInfos;
 	
 	// the current displayed elements
-	private final List<OntologyInfo> selectedOntologyInfos = new ArrayList<OntologyInfo>();
+	private final List<RegisteredOntologyInfo> selectedOntologyInfos = new ArrayList<RegisteredOntologyInfo>();
 
 	
 	private LoginResult loginResult;
@@ -48,7 +48,7 @@ public class BrowsePanel extends VerticalPanel {
 	 *             if no user is logged in or is user is not an admin.
 	 * @param loginResult Infor about user logged in, if any.
 	 */
-	BrowsePanel(List<OntologyInfo> ontologyInfos, LoginResult loginResult) {
+	BrowsePanel(List<RegisteredOntologyInfo> ontologyInfos, LoginResult loginResult) {
 		super();
 		
 		this.loginResult = loginResult;
@@ -83,7 +83,7 @@ public class BrowsePanel extends VerticalPanel {
 	 * Sets the list of all ontologies.
 	 * @param ontologyInfos
 	 */
-	public void setAllOntologyInfos(List<OntologyInfo> ontologyInfos) {
+	public void setAllOntologyInfos(List<RegisteredOntologyInfo> ontologyInfos) {
 		this.allOntologyInfos = ontologyInfos;
 		updatedAllOntologyInfosAndLogin();
 	}
@@ -103,9 +103,9 @@ public class BrowsePanel extends VerticalPanel {
 			// not admin: remove entries with "test"-like name in the authority unless is owned
 			// by the logged-in user, if any
 			
-			ontologyInfos = new ArrayList<OntologyInfo>();
+			ontologyInfos = new ArrayList<RegisteredOntologyInfo>();
 			
-			for ( OntologyInfo oi : allOntologyInfos ) {
+			for ( RegisteredOntologyInfo oi : allOntologyInfos ) {
 				if ( ! Util.isTestingOntology(oi) ) {
 					ontologyInfos.add(oi);
 				}
@@ -156,7 +156,7 @@ public class BrowsePanel extends VerticalPanel {
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
 				selectedOntologyInfos.clear();
-				for ( OntologyInfo oi : ontologyInfos ) {
+				for ( RegisteredOntologyInfo oi : ontologyInfos ) {
 					if ( userId.equalsIgnoreCase(oi.getUserId()) ) {
 						selectedOntologyInfos.add(oi);
 					}
@@ -172,7 +172,7 @@ public class BrowsePanel extends VerticalPanel {
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
 				selectedOntologyInfos.clear();
-				for ( OntologyInfo oi : ontologyInfos ) {
+				for ( RegisteredOntologyInfo oi : ontologyInfos ) {
 					if ( auth.equalsIgnoreCase(oi.getAuthority()) ) {
 						selectedOntologyInfos.add(oi);
 					}
@@ -187,7 +187,7 @@ public class BrowsePanel extends VerticalPanel {
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
 				selectedOntologyInfos.clear();
-				for ( OntologyInfo oi : ontologyInfos ) {
+				for ( RegisteredOntologyInfo oi : ontologyInfos ) {
 					if ( type.equalsIgnoreCase(oi.getType()) ) {
 						selectedOntologyInfos.add(oi);
 					}

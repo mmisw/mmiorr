@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.mmisw.iserver.gwt.client.rpc.BaseOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
+import org.mmisw.iserver.gwt.client.rpc.OntologyData;
 import org.mmisw.iserver.gwt.client.rpc.OtherDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.OtherOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
@@ -33,24 +34,32 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class OtherOntologyContentsPanel extends BaseOntologyContentsPanel {
 
-	private OtherOntologyData ontologyData;
-	private TempOntologyInfoListener tempOntologyInfoListener;
+	private UploadLocalOntologyPanel uploadLocalOntologyPanel;
+	private Widget contents;
+	private final VerticalPanel widget = new VerticalPanel();
 	
 	private TempOntologyInfo tempOntologyInfo;
 	
-	private final VerticalPanel widget = new VerticalPanel();
+	/** the "client" listener, which will be notified after my own listener below */
+	private TempOntologyInfoListener tempOntologyInfoListener;
 	
-	private UploadLocalOntologyPanel uploadLocalOntologyPanel;
-	private Widget contents;
-
+	
+	private TempOntologyInfoListener myTempOntologyInfoListener;
+	
 	
 	public OtherOntologyContentsPanel(OtherOntologyData ontologyData, 
 			TempOntologyInfoListener tempOntologyInfoListener,
 			boolean readOnly
 	) {
 		super(readOnly);
-		this.ontologyData = ontologyData;
 		this.tempOntologyInfoListener = tempOntologyInfoListener;
+		
+		this.myTempOntologyInfoListener = new TempOntologyInfoListener() {
+			public void tempOntologyInfoObtained(TempOntologyInfo tempOntologyInfo) {
+				// update my own data and then notify the client listener
+				_tempOntologyInfoObtained(tempOntologyInfo);
+			}
+		};
 		
 		
 		BaseOntologyData baseData = ontologyData.getBaseOntologyData();
@@ -61,12 +70,34 @@ public class OtherOntologyContentsPanel extends BaseOntologyContentsPanel {
 		_updateInterface();
 	}
 	
+	private void _tempOntologyInfoObtained(TempOntologyInfo tempOntologyInfo) {
+		
+		Main.log("OtherOntologyContentsPanel: _tempOntologyInfoObtained: " +tempOntologyInfo);
+		
+		this.tempOntologyInfo = tempOntologyInfo;
+		
+		OntologyData ontologyData = tempOntologyInfo.getOntologyData();
+		BaseOntologyData baseData = ontologyData.getBaseOntologyData();
+		if ( baseData != null ) {
+			contents = _prepareOtherWidgetForExistingBaseData(ontologyData);
+		}
+
+		_updateInterface();
+
+
+		// notify client:
+		if ( tempOntologyInfoListener != null ) {
+			tempOntologyInfoListener.tempOntologyInfoObtained(tempOntologyInfo);
+		}
+		
+	}
+	
 	private void _updateInterface() {
 		widget.clear();
 		
 		if ( !isReadOnly() ) {
 			if ( uploadLocalOntologyPanel == null ) {
-				uploadLocalOntologyPanel = new UploadLocalOntologyPanel(tempOntologyInfoListener, true);
+				uploadLocalOntologyPanel = new UploadLocalOntologyPanel(myTempOntologyInfoListener, true);
 			}
 			widget.add(uploadLocalOntologyPanel);
 		}
@@ -99,15 +130,13 @@ public class OtherOntologyContentsPanel extends BaseOntologyContentsPanel {
 	}
 
 	@Override
-	public void cancel() {
-		// TODO Auto-generated method stub
-		Main.log("TODO OtherOntologyContentsPanel cancel");
-	}
-
-	@Override
 	public String checkData() {
-		// TODO Auto-generated method stub
-		Main.log("TODO OtherOntologyContentsPanel checkData");
+		if ( tempOntologyInfo == null ) {
+			return "No ontology has been uploaded into working space yet";
+		}
+		if ( tempOntologyInfo.getError() != null ) {
+			return "There was a previous error with the uploading of the file (" +tempOntologyInfo.getError()+ ")";
+		}
 		return null;
 	}
 
@@ -116,8 +145,11 @@ public class OtherOntologyContentsPanel extends BaseOntologyContentsPanel {
 		return widget;
 	}
 	
+	//
+	// TODO use IncrementalCommand's
+	//
 	@SuppressWarnings("unchecked")
-	private Widget _prepareOtherWidgetForExistingBaseData(OtherOntologyData ontologyData) {
+	private Widget _prepareOtherWidgetForExistingBaseData(OntologyData ontologyData) {
 		BaseOntologyData baseData = ontologyData.getBaseOntologyData();
 		
 		VerticalPanel vp = new VerticalPanel();
@@ -150,7 +182,7 @@ public class OtherOntologyContentsPanel extends BaseOntologyContentsPanel {
 	}
 
 
-	private Widget _createOtherWidgetForEntities(OtherOntologyData ontologyData, 
+	private Widget _createOtherWidgetForEntities(OntologyData ontologyData, 
 			List<? extends EntityInfo> entities) {
 
 		

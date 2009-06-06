@@ -2,7 +2,7 @@ package org.mmisw.ontmd.gwt.client.portal;
 
 import java.util.List;
 
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.ontmd.gwt.client.portal.PortalMainPanel.InterfaceType;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 
@@ -77,7 +77,7 @@ public class MenuBarPanel extends HorizontalPanel {
 	}
 
 	
-	MenuBar createOntologyMenuBar(OntologyInfo oi, boolean includeEdit) {
+	MenuBar createOntologyMenuBar(RegisteredOntologyInfo oi, boolean includeEdit) {
 		MenuBar ont_mb = new MenuBar(true);
 		
 		if ( includeEdit && pctrl.checkCanEditOntology(oi) == null ) {
@@ -161,8 +161,8 @@ public class MenuBarPanel extends HorizontalPanel {
 	}
 	
 	
-	private void launchVersions(OntologyInfo oi) {
-		List<OntologyInfo> ontologyInfos = oi != null ? oi.getPriorVersions() : pctrl.getVersions();
+	private void launchVersions(RegisteredOntologyInfo oi) {
+		List<RegisteredOntologyInfo> ontologyInfos = oi != null ? oi.getPriorVersions() : pctrl.getVersions();
 		
 		if ( ontologyInfos == null || ontologyInfos.isEmpty() ) {
 			Window.alert("Info about versions not available");
@@ -194,7 +194,7 @@ public class MenuBarPanel extends HorizontalPanel {
 		popup.show();
 	}
 	
-	private MenuItem _createMenuItemVersions(final OntologyInfo oi) {
+	private MenuItem _createMenuItemVersions(final RegisteredOntologyInfo oi) {
 		return new MenuItem("Versions", new Command() {
 			public void execute() {
 				launchVersions(oi);
@@ -209,7 +209,7 @@ public class MenuBarPanel extends HorizontalPanel {
 		}
 	};
 	
-	private MenuBar _createMenuBarDownloadOntologyAs(OntologyInfo oi) {
+	private MenuBar _createMenuBarDownloadOntologyAs(RegisteredOntologyInfo oi) {
 		// use a nullCmd as i'm not sure addItem accepts a null command
 		MenuBar mb = new MenuBar(true);
 		for (PortalControl.DownloadOption dopc : PortalControl.DownloadOption.values() ) {

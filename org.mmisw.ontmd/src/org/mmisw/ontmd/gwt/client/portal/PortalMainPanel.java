@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.UploadOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.ontmd.gwt.client.LoginListener;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.UserPanel;
@@ -72,7 +72,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	}
 	
 	
-	PortalMainPanel(final Map<String, String> params, List<OntologyInfo> ontologyInfos) {
+	PortalMainPanel(final Map<String, String> params, List<RegisteredOntologyInfo> ontologyInfos) {
 		super();
 	
 		_setupWindowCloseListener();
@@ -220,8 +220,8 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 			return;
 		}
 		
-		if ( obj instanceof OntologyInfo ) {
-			OntologyInfo ontologyInfo = (OntologyInfo) obj;
+		if ( obj instanceof RegisteredOntologyInfo ) {
+			RegisteredOntologyInfo ontologyInfo = (RegisteredOntologyInfo) obj;
 			pctrl.setOntologyInfo(ontologyInfo);
 			Main.log("onHistoryChanged: OntologyInfo: " +ontologyInfo.getUri());
 			dispatchOntologyPanel(ontologyInfo);
@@ -259,7 +259,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	    }
 	}
 	
-	private void dispatchOntologyPanel(final OntologyInfo ontologyInfo) {
+	private void dispatchOntologyPanel(final RegisteredOntologyInfo ontologyInfo) {
 		String ontologyUri = ontologyInfo.getUri();
 		Main.log("dispatchOntologyPanel:  ontologyUri=" +ontologyUri);
 
@@ -284,7 +284,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 
 	
 	public void createNewFromFile() {
-		OntologyInfo ontologyInfo = new OntologyInfo();
+		RegisteredOntologyInfo ontologyInfo = new RegisteredOntologyInfo();
 		OntologyPanel ontologyPanel = new OntologyPanel(ontologyInfo, false);
 
 		pctrl.setOntologyInfo(ontologyInfo);
@@ -302,7 +302,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	
 	
 	public void createNewVocabulary() {
-		OntologyInfo ontologyInfo = new OntologyInfo();
+		RegisteredOntologyInfo ontologyInfo = new RegisteredOntologyInfo();
 		OntologyPanel ontologyPanel = new OntologyPanel(ontologyInfo, false);
 
 		pctrl.setOntologyInfo(ontologyInfo);
@@ -321,7 +321,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	
 	
 	public void editNewVersion(OntologyPanel ontologyPanel) {
-		OntologyInfo ontologyInfo = ontologyPanel.getOntologyInfo();
+		RegisteredOntologyInfo ontologyInfo = ontologyPanel.getOntologyInfo();
 		String error = pctrl.checkCanEditOntology(ontologyInfo);
 		
 		if ( error != null ) {
@@ -361,12 +361,12 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		}
 	}
 
-	public void completedUploadOntologyResult(UploadOntologyResult uploadOntologyResult) {
+	public void completedRegisterOntologyResult(RegisterOntologyResult registerOntologyResult) {
 		
 		dispatchMainPanel(true);
 	}
 
-	public void refreshedListAllOntologies(List<OntologyInfo> ontologyInfos) {
+	public void refreshedListAllOntologies(List<RegisteredOntologyInfo> ontologyInfos) {
 		bodyPanel.clear();
 		bodyPanel.add(browsePanel);
 		browsePanel.setAllOntologyInfos(ontologyInfos);
@@ -379,7 +379,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	 * @param ontologyUri
 	 */
 	private void getOntologyInfo(final String ontologyUri) {
-		AsyncCallback<OntologyInfo> callback = new AsyncCallback<OntologyInfo>() {
+		AsyncCallback<RegisteredOntologyInfo> callback = new AsyncCallback<RegisteredOntologyInfo>() {
 			public void onFailure(Throwable thr) {
 				String error = thr.getClass().getName()+ ": " +thr.getMessage();
 				while ( (thr = thr.getCause()) != null ) {
@@ -388,7 +388,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 				Window.alert(error);
 			}
 
-			public void onSuccess(OntologyInfo ontologyInfo) {
+			public void onSuccess(RegisteredOntologyInfo ontologyInfo) {
 				String error = null;
 				if ( ontologyInfo == null ) {
 					error = "<b>" +ontologyUri+ "</b>: " +

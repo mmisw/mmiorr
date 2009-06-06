@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 
 import com.google.gwt.user.client.ui.Tree;
@@ -79,7 +79,7 @@ public class SelectionTree extends Tree implements TreeListener {
 		tree.addItem(authorMenu);
 	}
 	
-	void update(List<OntologyInfo> ontologyInfos, LoginResult loginResult) {
+	void update(List<RegisteredOntologyInfo> ontologyInfos, LoginResult loginResult) {
 		initTree();
 		
 		// {username -> userId} map
@@ -88,7 +88,7 @@ public class SelectionTree extends Tree implements TreeListener {
 		List<String> authorities = new ArrayList<String>();
 		List<String> types = new ArrayList<String>();
 		
-		for ( OntologyInfo oi : ontologyInfos ) {
+		for ( RegisteredOntologyInfo oi : ontologyInfos ) {
 
 			String username = oi.getUsername();
 			if ( ! authors.containsKey(username) ) {

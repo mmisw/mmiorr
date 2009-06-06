@@ -7,11 +7,11 @@ import org.mmisw.iserver.gwt.client.rpc.BaseOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
 import org.mmisw.iserver.gwt.client.rpc.OtherDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.OtherOntologyData;
-import org.mmisw.iserver.gwt.client.rpc.UploadOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData;
 import org.mmisw.ontmd.gwt.client.DataPanel;
@@ -66,7 +66,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 
 	
 	/** Ontology to be dispatched */
-	private OntologyInfo ontologyInfo;
+	private RegisteredOntologyInfo ontologyInfo;
 	
 	
 	
@@ -81,7 +81,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	 * @param ontologyInfo
 	 * @param readOly the initial mode
 	 */
-	public OntologyPanel(OntologyInfo ontologyInfo, boolean readOnly) {
+	public OntologyPanel(RegisteredOntologyInfo ontologyInfo, boolean readOnly) {
 		super();
 		setWidth("100%");
 		container.setWidth("100%");
@@ -126,7 +126,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	/**
 	 * @return the ontologyInfo
 	 */
-	public OntologyInfo getOntologyInfo() {
+	public RegisteredOntologyInfo getOntologyInfo() {
 		return ontologyInfo;
 	}
 	
@@ -222,7 +222,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 
 	private void getOntologyContents(final boolean readOnly) {
 		
-		AsyncCallback<OntologyInfo> callback = new AsyncCallback<OntologyInfo>() {
+		AsyncCallback<RegisteredOntologyInfo> callback = new AsyncCallback<RegisteredOntologyInfo>() {
 			public void onFailure(Throwable thr) {
 				String error = thr.getClass().getName()+ ": " +thr.getMessage();
 				while ( (thr = thr.getCause()) != null ) {
@@ -231,7 +231,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 				Window.alert(error);
 			}
 
-			public void onSuccess(OntologyInfo ontologyInfo) {
+			public void onSuccess(RegisteredOntologyInfo ontologyInfo) {
 				Main.log("RET getOntologyContents: ontologyUri = " +ontologyInfo.getUri());
 				String error = ontologyInfo.getError();
 				if ( error != null ) {
@@ -252,7 +252,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	}
 
 
-	private void ontologyContentsRetrieved(OntologyInfo ontologyInfo, boolean readOnly) {
+	private void ontologyContentsRetrieved(RegisteredOntologyInfo ontologyInfo, boolean readOnly) {
 		this.ontologyInfo = ontologyInfo;
 		String error = ontologyInfo.getError();
 		if ( error != null ) {
@@ -312,7 +312,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 				if ( reviewButton == null ) {
 					reviewButton = new PushButton("Review and Register", new ClickListener() {
 						public void onClick(Widget sender) {
-							review(true);
+							reviewAndRegister(true);
 						}
 					});
 					reviewButton.setTitle("Checks the contents " +
@@ -358,7 +358,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 
 
 	
-	private void review(boolean confirm) {
+	private void reviewAndRegister(boolean confirm) {
 		if ( ontologyInfo == null ) {
 			Window.alert("Please, load an ontology first");
 			return;
@@ -372,6 +372,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		Map<String, String> newValues = new HashMap<String, String>();
 		String error = metadataPanel.putValues(newValues, true);
 		if ( error != null ) {
+			mdDisclosure.setOpen(true);
 			Window.alert(error);
 			return;
 		}
@@ -379,6 +380,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		// check data values
 		error = dataPanel.checkData();
 		if ( error != null ) {
+			dataDisclosure.setOpen(true);
 			Window.alert(error);
 			return;
 		}
@@ -401,10 +403,14 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		// prepare info for creation of the ontology:
 		CreateOntologyInfo createOntologyInfo = new CreateOntologyInfo();
 		
-		createOntologyInfo.setMetadataValues(newValues);
-		
+		// transfer info about prior ontology, if any, for eventual creation of new version:
+		createOntologyInfo.setOntologyId(ontologyInfo.getOntologyId());
+		createOntologyInfo.setOntologyUserId(ontologyInfo.getOntologyUserId());
 		createOntologyInfo.setAuthority(ontologyInfo.getAuthority());
 		createOntologyInfo.setShortName(ontologyInfo.getShortName());
+		
+		createOntologyInfo.setMetadataValues(newValues);
+		
 
 		String authority = createOntologyInfo.getAuthority();
 		String shortName = createOntologyInfo.getShortName();
@@ -454,7 +460,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			}
 		};
 
-		Main.ontmdService.createOntology(ontologyInfo, createOntologyInfo, callback);
+		Main.ontmdService.createOntology(createOntologyInfo, callback);
 	}
 
 	
@@ -528,21 +534,21 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		popup.show();
 
 
-		AsyncCallback<UploadOntologyResult> callback = new AsyncCallback<UploadOntologyResult>() {
+		AsyncCallback<RegisterOntologyResult> callback = new AsyncCallback<RegisterOntologyResult>() {
 			public void onFailure(Throwable thr) {
 				container.clear();				
 				container.add(new HTML(thr.toString()));
 			}
 
-			public void onSuccess(UploadOntologyResult result) {
+			public void onSuccess(RegisterOntologyResult result) {
 				registrationCompleted(popup, result);
 			}
 		};
 
-		Main.ontmdService.uploadOntology(createOntologyResult, PortalControl.getInstance().getLoginResult(), callback);
+		Main.ontmdService.registerOntology(createOntologyResult, PortalControl.getInstance().getLoginResult(), callback);
 	}
 
-	private void registrationCompleted(MyDialog registrationPopup, final UploadOntologyResult uploadOntologyResult) {
+	private void registrationCompleted(MyDialog registrationPopup, final RegisterOntologyResult uploadOntologyResult) {
 		
 		registrationPopup.hide();
 		
@@ -594,7 +600,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		
 		popup.addPopupListener(new PopupListener() {
 			public void onPopupClosed(PopupPanel sender, boolean autoClosed) {
-				PortalControl.getInstance().completedUploadOntologyResult(uploadOntologyResult);
+				PortalControl.getInstance().completedRegisterOntologyResult(uploadOntologyResult);
 			}
 		});
 		popup.show();

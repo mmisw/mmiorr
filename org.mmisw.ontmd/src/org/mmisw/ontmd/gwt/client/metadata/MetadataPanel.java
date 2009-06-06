@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
@@ -20,6 +20,7 @@ import org.mmisw.ontmd.gwt.client.util.TLabel;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CellPanel;
+import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
@@ -222,6 +223,9 @@ private static final String INFO =
 		}
 
 		if ( ! commonKeysWithDiffValues.isEmpty() ) {
+			
+			// prompt the user for the action to take:
+			
 			String confirmationMsg = 
 				"There are different values in the uploaded file for " +commonKeysWithDiffValues.size()+ " of the " +
 				"non-empty attributes in the metadata editor. " +
@@ -247,6 +251,17 @@ private static final String INFO =
 				}
 			}
 			
+			if ( true ) {  // this block is just a quick way to open the enclosing DisclosurePanel, if any
+				Widget parent = this.getParent();
+				while ( parent != null ) {
+					if ( parent instanceof DisclosurePanel ) {
+						((DisclosurePanel) parent).setOpen(true);
+						break;
+					}
+					parent = parent.getParent();
+				}
+			}
+
 			if ( Window.confirm(confirmationMsg) ) {
 				// replace common attributes with values from the file.
 				// Keep tempValues map as it is. See below.
@@ -315,7 +330,7 @@ private static final String INFO =
 	}
 
 	
-	public void resetToOriginalValues(OntologyInfo ontologyInfo, ReviewResult_Old reviewResult_Old, boolean confirm, boolean link) {
+	public void resetToOriginalValues(RegisteredOntologyInfo ontologyInfo, ReviewResult_Old reviewResult_Old, boolean confirm, boolean link) {
 		OntologyMetadata ontologyMetadata = ontologyInfo.getOntologyMetadata();
 		String ontologyUri = ontologyInfo.getUri();
 		resetToOriginalOrNewValues(ontologyUri, ontologyMetadata, true, reviewResult_Old, confirm, link);

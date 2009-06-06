@@ -3,6 +3,19 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-06-05
+	- Main: logging buffer allocated only if _log parameter is given (less memory for regular use).
+	- UploadServlet: issue #143: TODO test explicit UTF-8 indication in the output stream (seems insufficient)
+	- UploadLocalOntologyPanel: fixed upload form action location.
+	
+	- several adjustments as the main operations are completed along with iserver module
+	- removed several interim dependencies
+	- some renamings of types and operations
+	- support for registering an uploaded file completed.  Various tests OK. TODO more tests!
+	 
+
+	
+	
 2009-06-04
 	- Including management of uploading of local file in the panel for "other" (not vine/voc2rdf) ontology. 
 	- Notification to the metadataPanel included (note: when the user loads a local file
@@ -10,7 +23,7 @@ ChangeLog
 	  to notify the metadataPanel to handle any existing attributes in the uploaded file).
 	- Basic functionality of the local file uploading into the working space ready. This includes a 
 	  new checking for any possible overwriting of fields already filled in in the metadata panel; the
-	  user can decide whether replace of keey the values in the panel. See issue #143
+	  user can decide whether replace or keep the values in the panel. See issue #143
 	  
 	Next: complete creation of ontology from local file and the associated action when creating
 	a new version.

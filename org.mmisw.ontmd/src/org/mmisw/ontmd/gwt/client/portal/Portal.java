@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.rpc.PortalBaseInfo;
 
@@ -35,7 +35,7 @@ public class Portal {
 	private Main main;
 
 	
-	private List<OntologyInfo> ontologyInfos;
+	private List<RegisteredOntologyInfo> ontologyInfos;
 	
 
 	public Portal() {
@@ -90,14 +90,14 @@ public class Portal {
 	private void getAllOntologies(final Map<String, String> params) {
 		
 		Main.log("Portal.getAllOntologies, includePriorVersions= " +includePriorVersions+ " ...");
-		AsyncCallback<List<OntologyInfo>> callback = new AsyncCallback<List<OntologyInfo>>() {
+		AsyncCallback<List<RegisteredOntologyInfo>> callback = new AsyncCallback<List<RegisteredOntologyInfo>>() {
 
 			public void onFailure(Throwable thr) {
 				removeLoadingMessage();
 				RootPanel.get().add(new HTML(thr.toString()));
 			}
 
-			public void onSuccess(List<OntologyInfo> result) {
+			public void onSuccess(List<RegisteredOntologyInfo> result) {
 				ontologyInfos = result;
 				startApplication(params);
 			}
@@ -129,13 +129,13 @@ public class Portal {
 	void refreshListAllOntologies() {
 		
 		Main.log("Portal.refreshListAllOntologies, includePriorVersions= " +includePriorVersions+ " ...");
-		AsyncCallback<List<OntologyInfo>> callback = new AsyncCallback<List<OntologyInfo>>() {
+		AsyncCallback<List<RegisteredOntologyInfo>> callback = new AsyncCallback<List<RegisteredOntologyInfo>>() {
 
 			public void onFailure(Throwable thr) {
 				RootPanel.get().add(new HTML(thr.toString()));
 			}
 
-			public void onSuccess(List<OntologyInfo> result) {
+			public void onSuccess(List<RegisteredOntologyInfo> result) {
 				ontologyInfos = result;
 				PortalControl.getInstance().refreshedListAllOntologies(ontologyInfos);
 			}

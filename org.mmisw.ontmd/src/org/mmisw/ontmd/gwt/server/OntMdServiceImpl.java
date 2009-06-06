@@ -32,14 +32,13 @@ import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.util.JenaUtil2;
 import org.mmisw.iserver.core.MdHelper;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
-import org.mmisw.iserver.gwt.client.rpc.BasicOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.UploadOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.ont.MmiUri;
@@ -98,7 +97,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	private static final Pattern VERSION_PATTERN = 
 				Pattern.compile("^\\d{4}(\\d{2}(\\d{2})?)?(T\\d{2})?(\\d{2}(\\d{2})?)?$");
 
-	private static final List<OntologyInfo> EMPTY_ONTOLOGY_INFO_LIST = new ArrayList<OntologyInfo>();
+	private static final List<RegisteredOntologyInfo> EMPTY_ONTOLOGY_INFO_LIST = new ArrayList<RegisteredOntologyInfo>();
 
 	
 	private final Log log = LogFactory.getLog(OntMdServiceImpl.class);
@@ -1369,7 +1368,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		return portal.getBaseInfo();
 	}
 	
-	public List<OntologyInfo> getAllOntologies(boolean includePriorVersions) {
+	public List<RegisteredOntologyInfo> getAllOntologies(boolean includePriorVersions) {
 		try {
 			return portal.getAllOntologies(includePriorVersions);
 		}
@@ -1379,7 +1378,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		}
 	}
 
-	public OntologyInfo getOntologyInfo(String ontologyUri) {
+	public RegisteredOntologyInfo getOntologyInfo(String ontologyUri) {
 		return portal.getOntologyInfo(ontologyUri);
 	}
 	
@@ -1392,23 +1391,23 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		return portal.getMetadataBaseInfo(includeVersion);
 	}
 
-	public OntologyInfo getOntologyContents(OntologyInfo ontologyInfo) {
+	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo ontologyInfo) {
 		return portal.getOntologyContents(ontologyInfo);
 	}
 
 	
-	public CreateOntologyResult createOntology(
-			BasicOntologyInfo basicOntologyInfo, CreateOntologyInfo createOntologyInfo) {
-		return portal.createOntology(basicOntologyInfo, createOntologyInfo);
+	public CreateOntologyResult createOntology(CreateOntologyInfo createOntologyInfo) {
+		return portal.createOntology(createOntologyInfo);
 	}
 	
 	
-	public UploadOntologyResult uploadOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult) {
-		return portal.uploadOntology(createOntologyResult, loginResult);
+	public RegisterOntologyResult registerOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult) {
+		return portal.registerOntology(createOntologyResult, loginResult);
 	}
 	
 	
-	public TempOntologyInfo getTempOntologyInfo(String uploadResults) {
-		return portal.getTempOntologyInfo(uploadResults);
+	public TempOntologyInfo getTempOntologyInfo(String uploadResults, boolean includeContents,
+			boolean includeRdf) {
+		return portal.getTempOntologyInfo(uploadResults, includeContents, includeRdf);
 	}
 }

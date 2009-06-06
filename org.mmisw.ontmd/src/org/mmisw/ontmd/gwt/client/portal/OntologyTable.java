@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.ontmd.gwt.client.util.Util;
 
 import com.google.gwt.user.client.Command;
@@ -32,12 +32,12 @@ public class OntologyTable extends FlexTable {
 	
 	
 	static interface IQuickInfo {
-		Widget getWidget(OntologyInfo oi);
+		Widget getWidget(RegisteredOntologyInfo oi);
 	}
 	
 	private IQuickInfo quickInfo;
 
-	private List<OntologyInfo> ontologyInfos;
+	private List<RegisteredOntologyInfo> ontologyInfos;
 	
 	private boolean isAdmin = false;
 	
@@ -53,8 +53,8 @@ public class OntologyTable extends FlexTable {
 	
 	private int sortFactor = 1;
 	
-	private Comparator<OntologyInfo> cmp = new Comparator<OntologyInfo>() {
-		public int compare(OntologyInfo o1, OntologyInfo o2) {
+	private Comparator<RegisteredOntologyInfo> cmp = new Comparator<RegisteredOntologyInfo>() {
+		public int compare(RegisteredOntologyInfo o1, RegisteredOntologyInfo o2) {
 			String s1 = o1.getDisplayLabel();
 			String s2 = o2.getDisplayLabel();
 			if ( sortColumn.equalsIgnoreCase("name") ) {
@@ -202,7 +202,7 @@ public class OntologyTable extends FlexTable {
 		row++;
 	}
 	
-	void setOntologyInfos(final List<OntologyInfo> ontologyInfos, LoginResult loginResult) {
+	void setOntologyInfos(final List<RegisteredOntologyInfo> ontologyInfos, LoginResult loginResult) {
 		this.ontologyInfos = ontologyInfos;
 		this.isAdmin = loginResult != null && loginResult.isAdministrator();
 		
@@ -220,7 +220,7 @@ public class OntologyTable extends FlexTable {
 		prepareHeader();
 		int row = 1;
 		
-		for ( OntologyInfo oi : ontologyInfos ) {
+		for ( RegisteredOntologyInfo oi : ontologyInfos ) {
 			flexPanel.getRowFormatter().setStylePrimaryName(row, "OntologyTable-row");
 			
 			String name = oi.getDisplayLabel();

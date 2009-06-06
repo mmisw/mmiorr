@@ -11,6 +11,8 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public abstract class BaseOntologyContentsPanel {
 	
+	private boolean active = true;
+	
 	private boolean readOnly = true;
 	
 	protected BaseOntologyContentsPanel(boolean readOnly) {
@@ -36,12 +38,21 @@ public abstract class BaseOntologyContentsPanel {
 		this.readOnly = readOnly;
 	}
 
-	/** Called to indicate that this panel is no longer active.
-	 * In particular, the panel should stop any execution of commands.
+	/** Called to indicate that this panel should stop any command at the next available chance.
+	 * See {@link #cancelRequested()}.
 	 */
-	public abstract void cancel();
-	
-	
+	public void cancel() {
+		active = false;
+	}
+
+	/**
+	 * A subclass should call this method at approrpiate places, particularly during the execution of
+	 * incremental commands and stop activity if this returns true.
+	 */
+	public boolean cancelRequested() {
+		return ! active;
+	}
+
 	/**
 	 * Checks the data.
 	 * 

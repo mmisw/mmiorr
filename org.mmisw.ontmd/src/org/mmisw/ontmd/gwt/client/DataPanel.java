@@ -11,7 +11,7 @@ import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.IndividualInfo;
 import org.mmisw.iserver.gwt.client.rpc.MappingOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.OntologyData;
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.OtherOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData;
@@ -34,10 +34,6 @@ import com.google.gwt.user.client.ui.Widget;
  * @author Carlos Rueda
  */
 public class DataPanel extends VerticalPanel {
-
-//	private static final char SEPARATOR = '|';
-//	private static final char QUOTECHAR = '"';
-	
 
 	// created during refactoring process -- may be removed later
 	private class MyVocabPanel implements IVocabPanel {
@@ -87,7 +83,7 @@ public class DataPanel extends VerticalPanel {
 	 * Updates this panel with the data associated to the given ontology 
 	 * @param ontologyInfoPre
 	 */
-	public void updateWith(OntologyInfo ontologyInfo, boolean readOnly) {
+	public void updateWith(RegisteredOntologyInfo ontologyInfo, boolean readOnly) {
 		this.readOnly = readOnly;
 		this.clear();
 		
@@ -104,9 +100,12 @@ public class DataPanel extends VerticalPanel {
 			type = "Mapping contents:";
 			widget = _createMappingWidget((MappingOntologyData) ontologyData);
 		}
-		else {
+		else if ( ontologyData instanceof OtherOntologyData ) {
 			type = "Synopsis of ontology contents:";
 			widget = _createOtherWidget((OtherOntologyData) ontologyData);
+		}
+		else {
+			throw new AssertionError();
 		}
 		
 		VerticalPanel vp = new VerticalPanel();
@@ -180,19 +179,6 @@ public class DataPanel extends VerticalPanel {
 		
 		for ( ClassData classData : classes ) {
 			List<String> classHeader = classData.getDatatypeProperties();
-
-			
-//			String[] colNames = classHeader.toArray(new String[classHeader.size()]);
-			
-//			StringBuilder termContents = new StringBuilder();
-//			
-//			// header line in contents:
-//			String _sep = "";
-//			for (int i = 0; i < colNames.length; i++) {
-//				termContents.append(_sep + QUOTECHAR +colNames[i]+ QUOTECHAR);
-//				_sep = String.valueOf(SEPARATOR);
-//			}
-//			termContents.append("\n");
 			
 			VocabClassPanel classPanel = new VocabClassPanel(classData, myVocabPanel, readOnly);
 			baseOntologyContentsPanels.add(classPanel);
@@ -216,29 +202,15 @@ public class DataPanel extends VerticalPanel {
 
 				vals.put("Name", entity.getLocalName());
 				
-//				_sep = "";
-//				for (int i = 0; i < colNames.length; i++) {
-//					String val = vals.get(colNames[i]);
-//					if ( val == null ) {
-//						val = "";
-//					}
-//					termContents.append(_sep + QUOTECHAR +val+ QUOTECHAR);
-//					_sep = String.valueOf(SEPARATOR);
-//				}
-//				
-//				termContents.append("\n");
-				
-				
 				rows.add(new IRow() {
-					public String getColValue(String sortColumn) {
-						return vals.get(sortColumn);
+					public String getColValue(String colName) {
+						return vals.get(colName);
 					}
 				});
 
 			}
 			
 			classPanel.importContents(classHeader, rows);
-//			classPanel.importContents(SEPARATOR, termContents.toString());
 			
 			vp.add(classPanel.getWidget());
 			
@@ -277,6 +249,8 @@ public class DataPanel extends VerticalPanel {
 		if ( baseOntologyContentsPanels.size() == 0 ) {
 			return null;
 		}
+		
+		// TODO why check only the first element?
 		BaseOntologyContentsPanel baseOntologyContentsPanel = baseOntologyContentsPanels.iterator().next();
 
 		if ( baseOntologyContentsPanel instanceof VocabClassPanel ) {

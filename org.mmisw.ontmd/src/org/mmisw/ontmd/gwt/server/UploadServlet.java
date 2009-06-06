@@ -121,9 +121,12 @@ public class UploadServlet extends HttpServlet {
 	private void processUploadedFile(HttpServletRequest request, HttpServletResponse response,
 			FileItem item) 
 	throws IOException {
-		log.info("processUploadedFile: " +item);
+		
 		String ct = item.getContentType();
-		log.info("getContentType: " +ct);
+		if ( log.isDebugEnabled() ) {
+			log.debug("processUploadedFile: item=" +item);
+			log.debug("getContentType=" +ct);
+		}
 		
 		PrintWriter out = response.getWriter();
 		response.setContentType("text/plain");
@@ -133,16 +136,22 @@ public class UploadServlet extends HttpServlet {
 			File file = File.createTempFile("ontmd_" +sessionId+"_", ".tmp", preUploadsDir );
 			String filename = file.getAbsolutePath();
 			InputStream is = item.getInputStream();
-			PrintWriter os = new PrintWriter(file);
+			// issue #143 fixed by explicitly indicating UTF-8 in the output stream
+			PrintWriter os = new PrintWriter(file, "UTF-8");
 			IOUtils.copy(is, os);
 			
 			os.flush();
 			os.close();
 			
 			out.println("<success><filename>" +filename+ "</filename></success>");
+			if ( log.isDebugEnabled() ) {
+				log.debug("temporary file: " +filename);
+			}
+			
 		}
 		catch (Exception ex) {
 			out.println("<error>" +ex.getMessage()+ "</error>");
+			log.error("Error while creating temporary file: " +ex.getMessage(), ex);
 		}
 		
 	}

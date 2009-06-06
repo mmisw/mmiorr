@@ -3,8 +3,8 @@ package org.mmisw.ontmd.gwt.client.portal;
 import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.UploadOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.portal.OntologyTable.IQuickInfo;
 
@@ -33,7 +33,7 @@ public class PortalControl {
 	
 	private LoginResult loginResult;
 	
-	private OntologyInfo ontologyInfo;
+	private RegisteredOntologyInfo ontologyInfo;
 	
 	private OntologyPanel ontologyPanel;
 	private MenuBarPanel menuBarPanel;
@@ -140,7 +140,7 @@ public class PortalControl {
 		}
 	}
 		
-	public String getDownloadOptionHtml(DownloadOption dopc, OntologyInfo oi) {
+	public String getDownloadOptionHtml(DownloadOption dopc, RegisteredOntologyInfo oi) {
 		if ( oi == null ) {
 			oi = ontologyInfo;
 		}
@@ -152,7 +152,7 @@ public class PortalControl {
 		return null;
 	}
 
-	public List<OntologyInfo> getVersions() {
+	public List<RegisteredOntologyInfo> getVersions() {
 		if ( ontologyInfo != null ) {
 			return ontologyInfo.getPriorVersions();
 		}
@@ -176,7 +176,7 @@ public class PortalControl {
 	/**
 	 * @param ontologyInfo the ontologyInfo to set
 	 */
-	public void setOntologyInfo(OntologyInfo ontologyInfo) {
+	public void setOntologyInfo(RegisteredOntologyInfo ontologyInfo) {
 		this.ontologyInfo = ontologyInfo;
 	}
 
@@ -192,12 +192,12 @@ public class PortalControl {
 		return ontologyPanel;
 	}
 
-	public void completedUploadOntologyResult(UploadOntologyResult uploadOntologyResult) {
+	public void completedRegisterOntologyResult(RegisterOntologyResult registerOntologyResult) {
 		
-		portalMainPanel.completedUploadOntologyResult(uploadOntologyResult);
+		portalMainPanel.completedRegisterOntologyResult(registerOntologyResult);
 	}
 
-	public void refreshedListAllOntologies(List<OntologyInfo> ontologyInfos) {
+	public void refreshedListAllOntologies(List<RegisteredOntologyInfo> ontologyInfos) {
 		portalMainPanel.refreshedListAllOntologies(ontologyInfos);
 	}
 
@@ -233,7 +233,7 @@ public class PortalControl {
 	}
 
 	
-	public String checkCanEditOntology(OntologyInfo oi) {
+	public String checkCanEditOntology(RegisteredOntologyInfo oi) {
 		final String NOT_AUTHORIZED = "You are not authorized to edit this ontology";
 
 		if ( oi == null ) {
@@ -258,7 +258,7 @@ public class PortalControl {
 	
 	private IQuickInfo quickInfo = new IQuickInfo() {
 		
-		public Widget getWidget(final OntologyInfo oi) {
+		public Widget getWidget(final RegisteredOntologyInfo oi) {
 			
 			if ( true ) {
 				MenuBarPanel menuBarPanel = PortalControl.getInstance().getMenuBarPanel();
@@ -298,7 +298,7 @@ public class PortalControl {
 		return quickInfo;
 	}
 
-	public OntologyInfo getOntologyInfo() {
+	public RegisteredOntologyInfo getOntologyInfo() {
 		return ontologyInfo;
 	}
 	

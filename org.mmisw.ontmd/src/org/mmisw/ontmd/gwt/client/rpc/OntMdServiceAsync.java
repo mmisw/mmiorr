@@ -4,15 +4,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
-import org.mmisw.iserver.gwt.client.rpc.BasicOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.UploadOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
@@ -74,20 +73,20 @@ public interface OntMdServiceAsync {
 	
 	void getMetadataBaseInfo(boolean includeVersion, AsyncCallback<MetadataBaseInfo> callback);
 
-	void getAllOntologies(boolean includePriorVersions, AsyncCallback <List<OntologyInfo>> callback);
+	void getAllOntologies(boolean includePriorVersions, AsyncCallback <List<RegisteredOntologyInfo>> callback);
 
-	void getOntologyInfo(String ontologyUri, AsyncCallback<OntologyInfo> callback);
+	void getOntologyInfo(String ontologyUri, AsyncCallback<RegisteredOntologyInfo> callback);
 	
-	void getOntologyContents(OntologyInfo ontologyInfo, AsyncCallback<OntologyInfo> callback);
-	
-	
-	void createOntology(BasicOntologyInfo basicOntologyInfo, CreateOntologyInfo createOntologyInfo, 
-			AsyncCallback<CreateOntologyResult> callback);
+	void getOntologyContents(RegisteredOntologyInfo ontologyInfo, AsyncCallback<RegisteredOntologyInfo> callback);
 	
 	
-	void uploadOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult,
-			AsyncCallback<UploadOntologyResult> callback) ;
+	void createOntology(CreateOntologyInfo createOntologyInfo, AsyncCallback<CreateOntologyResult> callback);
 	
 	
-	void getTempOntologyInfo(String uploadResults, AsyncCallback<TempOntologyInfo> callback);
+	void registerOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult,
+			AsyncCallback<RegisterOntologyResult> callback) ;
+	
+	
+	void getTempOntologyInfo(String uploadResults, boolean includeContents,
+			boolean includeRdf, AsyncCallback<TempOntologyInfo> callback);
 }

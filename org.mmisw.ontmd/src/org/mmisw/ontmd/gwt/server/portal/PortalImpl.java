@@ -7,15 +7,14 @@ import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.IServer;
 import org.mmisw.iserver.core.Server;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
-import org.mmisw.iserver.gwt.client.rpc.BasicOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.UploadOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.ontmd.gwt.client.rpc.PortalBaseInfo;
 import org.mmisw.ontmd.gwt.server.Config;
 
@@ -72,11 +71,11 @@ public class PortalImpl  {
 	
 	
 	
-	public List<OntologyInfo> getAllOntologies(boolean includePriorVersions) throws Exception {
+	public List<RegisteredOntologyInfo> getAllOntologies(boolean includePriorVersions) throws Exception {
 		return iserver.getAllOntologies(includePriorVersions);
 	}
 	
-	public OntologyInfo getOntologyInfo(String ontologyUri) {
+	public RegisteredOntologyInfo getOntologyInfo(String ontologyUri) {
 		return iserver.getOntologyInfo(ontologyUri);
 	}
 	
@@ -93,23 +92,22 @@ public class PortalImpl  {
 	}
 	
 	
-	public OntologyInfo getOntologyContents(OntologyInfo ontologyInfo) {
+	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo ontologyInfo) {
 		return iserver.getOntologyContents(ontologyInfo);
 	}
 
-	public CreateOntologyResult createOntology(
-			BasicOntologyInfo basicOntologyInfo, CreateOntologyInfo createOntologyInfo) {
-
-		return iserver.createOntology(basicOntologyInfo, createOntologyInfo);
+	public CreateOntologyResult createOntology(CreateOntologyInfo createOntologyInfo) {
+		return iserver.createOntology(createOntologyInfo);
 	}
 	
 	
-	public UploadOntologyResult uploadOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult) {
-		return iserver.uploadOntology(createOntologyResult, loginResult);
+	public RegisterOntologyResult registerOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult) {
+		return iserver.registerOntology(createOntologyResult, loginResult);
 	}
 	
 	
-	public TempOntologyInfo getTempOntologyInfo(String uploadResults) {
-		return iserver.getTempOntologyInfo(uploadResults);
+	public TempOntologyInfo getTempOntologyInfo(String uploadResults, boolean includeContents,
+			boolean includeRdf) {
+		return iserver.getTempOntologyInfo(uploadResults, includeContents, includeRdf);
 	}
 }

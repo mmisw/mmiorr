@@ -87,8 +87,6 @@ public class VocabClassPanel extends BaseOntologyContentsPanel implements TermTa
 //		;
 
 	
-	private boolean active = true;
-	
 	private VerticalPanel widget = new VerticalPanel();
 
 	private CellPanel contentsContainer = new VerticalPanel();
@@ -634,7 +632,7 @@ public class VocabClassPanel extends BaseOntologyContentsPanel implements TermTa
 			@Override
 			boolean updateStatus() {
 				statusPopup.setStatus(termTable.getNumRows()+ "");
-				return active;
+				return ! cancelRequested();
 			}
 
 		};
@@ -763,11 +761,6 @@ public class VocabClassPanel extends BaseOntologyContentsPanel implements TermTa
 
 	public Widget getWidget() {
 		return widget;
-	}
-
-	@Override
-	public void cancel() {
-		active = false;
 	}
 
 	public VocabularyDataCreationInfo getCreateOntologyInfo() {

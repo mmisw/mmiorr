@@ -48,7 +48,9 @@ public class Main implements EntryPoint {
 	
 	public static MetadataBaseInfo metadataBaseInfo;
 
-	private static boolean includeLog;
+	// buffer for logging in the client interface; used only if a certain parameter is given
+	private static StringBuffer logBuffer;
+
 
 	public static OntMdServiceAsync ontmdService;
 	
@@ -89,7 +91,7 @@ public class Main implements EntryPoint {
 		if (params != null) {
 			String _log = (String) params.get("_log");
 			if (_log != null) {
-				includeLog = true;
+				logBuffer = new StringBuffer();
 				params.remove("_log");
 			}
 			
@@ -129,27 +131,25 @@ public class Main implements EntryPoint {
 		hpanel.setWidth("100%");
 		hpanel.add(mainPanel);
 
-		if (includeLog) {
+		if ( logBuffer != null ) {
 			final HTML logLabel = Util.createHtml("", 10);
 			ButtonBase buttonLog = Util.createButton("Refresh Log",
 					"Refresh log info", new ClickListener() {
 						public void onClick(Widget sender) {
-							logLabel.setHTML("<pre>" + log.toString()
+							logLabel.setHTML("<pre>" + logBuffer.toString()
 									+ "</pre>");
 						}
 					});
 			ButtonBase buttonClear = Util.createButton("Clear Log",
 					"Clear log info", new ClickListener() {
 						public void onClick(Widget sender) {
-							log.setLength(0);
+							logBuffer.setLength(0);
 							logLabel.setHTML("");
 						}
 					});
 			panel.add(buttonLog);
 			panel.add(buttonClear);
 			panel.add(logLabel);
-		} else {
-			log.setLength(0);
 		}
 		
 		panel.add(Util.createHtml("<font color=\"gray\">" +footer+ "</font><br/><br/>", 10));
@@ -226,11 +226,10 @@ public class Main implements EntryPoint {
 	}
     
 
-	// always write to this buffer, but show contents if includeLog is true
-	private static final StringBuffer log = new StringBuffer();
-
 	public static void log(String msg) {
-		log.append(msg + "\n");
+		if ( logBuffer != null ) {
+			logBuffer.append(msg + "\n");
+		}
 		GWT.log(msg, null);
 	}
 
