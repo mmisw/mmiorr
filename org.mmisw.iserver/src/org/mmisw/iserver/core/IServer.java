@@ -3,15 +3,14 @@ package org.mmisw.iserver.core;
 import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
-import org.mmisw.iserver.gwt.client.rpc.BasicOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.UploadOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 
 /**
  * Interface to get info from the server.
@@ -48,19 +47,19 @@ public interface IServer {
 	 * @return
 	 * @throws Exception
 	 */
-	List<OntologyInfo> getAllOntologies(boolean includePriorVersions) throws Exception;
+	List<RegisteredOntologyInfo> getAllOntologies(boolean includePriorVersions) throws Exception;
 	
 	/**
 	 * Gets an ontology from the registry.
 	 */
-	OntologyInfo getOntologyInfo(String ontologyUri);
+	RegisteredOntologyInfo getOntologyInfo(String ontologyUri);
 
 	/**
 	 * Obtains the entities of an ontology.
-	 * @param ontologyInfo
+	 * @param registeredOntologyInfo
 	 * @return ontologyInfo
 	 */
-	OntologyInfo getEntities(OntologyInfo ontologyInfo);
+	RegisteredOntologyInfo getEntities(RegisteredOntologyInfo registeredOntologyInfo);
 	
 	
 	
@@ -73,21 +72,32 @@ public interface IServer {
 	/**
 	 * Gets both the metadata and the entities.
 	 * 
-	 * @param ontologyInfo
+	 * @param registeredOntologyInfo
 	 * @return
 	 */
-	public OntologyInfo getOntologyContents(OntologyInfo ontologyInfo);
+	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo registeredOntologyInfo);
 	
 	
-	
-	public CreateOntologyResult createOntology(
-			BasicOntologyInfo basicOntologyInfo, 
-			CreateOntologyInfo createOntologyInfo
-	) ;
+	/**
+	 * Prepares a new ontology with the given information. The resulting ontology will be stored
+	 * in a temporary space. A subsequent call to {@link #registerOntology(CreateOntologyResult, LoginResult)}
+	 * will register the ontology.
+	 * 
+	 * @param createOntologyInfo
+	 * @return
+	 */
+	public CreateOntologyResult createOntology(CreateOntologyInfo createOntologyInfo) ;
 
 	
-	public UploadOntologyResult uploadOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult) ;
+	public RegisterOntologyResult registerOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult) ;
 	
 	
-	public TempOntologyInfo getTempOntologyInfo(String uploadResults);
+	/**
+	 * 
+	 * @param uploadResults Result from the UploadServlet
+	 * @param includeContents  get also metadata and data?
+	 * @param includeRdf       include the text of the RDF
+	 * @return
+	 */
+	public TempOntologyInfo getTempOntologyInfo(String uploadResults, boolean includeContents, boolean includeRdf);
 }

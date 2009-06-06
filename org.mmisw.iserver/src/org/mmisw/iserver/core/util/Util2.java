@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -343,4 +344,31 @@ public class Util2 {
 		
 		return namespace;
 	}
+	
+	/**
+	 * Converts the string to UTF-8 encoding.
+	 * FIXME implementation may be too simplistic, just
+	 * <code>return new String(str.getBytes(), "UTF-8"))</code>.
+	 * A better approach would be to determine the actual original charset and
+	 * then do the conversion to UTF-8.
+	 */
+	public static String convertToUtf8(String str, Log log) {
+		try {
+			byte[] bytes = str.getBytes();
+			String utf8_str = new String(bytes, "UTF-8");
+			return utf8_str;
+		}
+		catch (UnsupportedEncodingException e) {
+			if ( log != null ) {
+				log.warn("Cannot convert to UTF-8. " +e.toString(),  e);
+			}
+			else {
+				e.printStackTrace();
+			}
+		}
+		return str;
+	}
+
+
+
 }

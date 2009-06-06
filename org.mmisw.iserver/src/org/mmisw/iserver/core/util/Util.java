@@ -1,5 +1,6 @@
 package org.mmisw.iserver.core.util;
 
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -9,12 +10,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.BaseOntologyData;
+import org.mmisw.iserver.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.ClassInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.IndividualInfo;
 import org.mmisw.iserver.gwt.client.rpc.MappingOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.OntologyData;
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.OtherOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
 import org.mmisw.iserver.gwt.client.rpc.PropertyInfo;
@@ -123,11 +124,11 @@ public class Util {
 	
 	/**
 	 * Populates the list of entities associated with the given ontology. 
-	 * @param ontologyInfo
+	 * @param baseOntologyInfo
 	 * @return the given argument
 	 */
-	public static OntologyInfo getEntities(OntologyInfo ontologyInfo, OntModel ontModel) {
-		String ontologyUri = ontologyInfo.getUri();
+	public static BaseOntologyInfo getEntities(BaseOntologyInfo baseOntologyInfo, OntModel ontModel) {
+		String ontologyUri = baseOntologyInfo.getUri();
 
 		
 		if ( ontModel == null ) {
@@ -178,22 +179,22 @@ public class Util {
 		// Pending: use omv:useOntologyEngineeringTool for example.
 		
 		if ( classes.size() == 1 && individuals.size() > 0 && containDatatype ) {
-			ontologyInfo.setType("vocabulary");
+			baseOntologyInfo.setType("vocabulary");
 			ontologyData = _createVocabularyOntologyData(baseOntologyData);
 		}
 		else if ( containSkos ) {
-			ontologyInfo.setType("mapping");
+			baseOntologyInfo.setType("mapping");
 			ontologyData = _createMappingOntologyData(baseOntologyData);
 		}
 		else {
-			ontologyInfo.setType("other");
+			baseOntologyInfo.setType("other");
 			ontologyData = _createOtherOntologyData(baseOntologyData);
 		}
 		
 		ontologyData.setBaseOntologyData(baseOntologyData);
-		ontologyInfo.setOntologyData(ontologyData);
+		baseOntologyInfo.setOntologyData(ontologyData);
 		
-		return ontologyInfo;
+		return baseOntologyInfo;
 	}
 	
 	
@@ -679,19 +680,21 @@ public class Util {
 		}
 	}
 
-	
-	
-
-	/** see JenaUtil2 */
-	private static final String FRAG_SEPARATOR = "/" ;
-
-	public static String removeTrailingFragment(String uri) {
-		return uri.replaceAll(FRAG_SEPARATOR + "+$", "");
+	/**
+	 * Creates a default model, calls model.read(is, base) and returns the resulting model.
+	 */
+	public static OntModel loadModel(InputStream is, String base) {
+		OntModel model = createDefaultOntModel();
+		model.read(is, base);
+		return model;
 	}
 	
+
+	
+
 	public static OntModel loadModel(String uriModel) {
 		OntModel model = createDefaultOntModel();
-		uriModel = removeTrailingFragment(uriModel);
+		uriModel = JenaUtil2.removeTrailingFragment(uriModel);
 		model.read(uriModel);
 		return model;
 	}

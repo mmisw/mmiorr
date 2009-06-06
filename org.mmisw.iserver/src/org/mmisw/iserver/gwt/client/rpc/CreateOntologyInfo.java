@@ -17,7 +17,14 @@ public class CreateOntologyInfo implements Serializable {
 	
 	private DataCreationInfo dataCreationInfo;
 	
+	/** aquaportal ontology ID used, if not null, to create a new version */
+	private String ontologyId = null;
+	private String ontologyUserId = null;
 	
+
+	/**
+	 * ctor.
+	 */
 	public CreateOntologyInfo() {
 		
 	}
@@ -82,6 +89,42 @@ public class CreateOntologyInfo implements Serializable {
 	 */
 	public void setDataCreationInfo(DataCreationInfo dataCreationInfo) {
 		this.dataCreationInfo = dataCreationInfo;
+	}
+
+
+	/**
+	 * Gets the ID of the ontology base for the creation of a new version.
+	 * @return the ontologyId. null for the case of a brand new ontology.
+	 */
+	public String getOntologyId() {
+		return ontologyId;
+	}
+
+
+	/**
+	 * Sets the ID of the ontology base for the creation of a new version.
+	 * @param ontologyId the ontologyId to set
+	 */
+	public void setOntologyId(String ontologyId) {
+		this.ontologyId = ontologyId;
+	}
+
+
+	/**
+	 * Gets the ID of user associated with the ontology base for the creation of a new version.
+	 * @return the ontologyUserId
+	 */
+	public String getOntologyUserId() {
+		return ontologyUserId;
+	}
+
+
+	/**
+	 * Sets the ID of user associated with the ontology base for the creation of a new version.
+	 * @param ontologyUserId the ontologyUserId to set
+	 */
+	public void setOntologyUserId(String ontologyUserId) {
+		this.ontologyUserId = ontologyUserId;
 	}
 
 	

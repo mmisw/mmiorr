@@ -29,16 +29,16 @@ import org.mmisw.iserver.core.util.TempOntologyHelper;
 import org.mmisw.iserver.core.util.Util;
 import org.mmisw.iserver.core.util.Util2;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
-import org.mmisw.iserver.gwt.client.rpc.BasicOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.OtherDataCreationInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.UploadOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyDataCreationInfo;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.ont.MmiUri;
@@ -60,7 +60,7 @@ import edu.drexel.util.rdf.OwlModel;
 
 
 /**
- * Implementation of IServerService. 
+ * Implementation of IServer. 
  * 
  * @author Carlos Rueda
  * @version $Id$
@@ -148,7 +148,7 @@ public class Server implements IServer {
 	}
 
 	
-	private static OntologyInfo _createOntologyInfo(
+	private static RegisteredOntologyInfo _createOntologyInfo(
 			String ontologyUri,   // = toks[0];
 			String displayLabel,  // = toks[1];
 			String type,          // = toks[2];
@@ -163,23 +163,23 @@ public class Server implements IServer {
 			String authority,
 			String shortName
 	) {
-		OntologyInfo ontologyInfo = new OntologyInfo();
+		RegisteredOntologyInfo registeredOntologyInfo = new RegisteredOntologyInfo();
 		
-		ontologyInfo.setUri(ontologyUri);
-		ontologyInfo.setDisplayLabel(displayLabel);
-		ontologyInfo.setType(type);
-		ontologyInfo.setUserId(userId);
-		ontologyInfo.setContactName(contactName);
-		ontologyInfo.setVersionNumber(versionNumber);
-		ontologyInfo.setDateCreated(dateCreated);
-		ontologyInfo.setUsername(userName);
-		ontologyInfo.setOntologyId(ontologyId, userId);
+		registeredOntologyInfo.setUri(ontologyUri);
+		registeredOntologyInfo.setDisplayLabel(displayLabel);
+		registeredOntologyInfo.setType(type);
+		registeredOntologyInfo.setUserId(userId);
+		registeredOntologyInfo.setContactName(contactName);
+		registeredOntologyInfo.setVersionNumber(versionNumber);
+		registeredOntologyInfo.setDateCreated(dateCreated);
+		registeredOntologyInfo.setUsername(userName);
+		registeredOntologyInfo.setOntologyId(ontologyId, userId);
 		
-		ontologyInfo.setUnversionedUri(unversionedUri);
-		ontologyInfo.setAuthority(authority);
-		ontologyInfo.setShortName(shortName);
+		registeredOntologyInfo.setUnversionedUri(unversionedUri);
+		registeredOntologyInfo.setAuthority(authority);
+		registeredOntologyInfo.setShortName(shortName);
 
-		return ontologyInfo;
+		return registeredOntologyInfo;
 	}
 	
 	
@@ -190,10 +190,10 @@ public class Server implements IServer {
 	 *  @param onlyThisUnversionedUri If this is not null, only this URI (assumed to be unversioned) will be considered,
 	 *         so the returned map will at most contain just that single key,
 	 */
-	private Map<String, List<OntologyInfo>> getUnversionedToOntologyInfoListMap(String onlyThisUnversionedUri) throws Exception {
+	private Map<String, List<RegisteredOntologyInfo>> getUnversionedToOntologyInfoListMap(String onlyThisUnversionedUri) throws Exception {
 		
 		// unversionedUri -> list of corresponding OntologyInfos
-		Map<String, List<OntologyInfo>> unversionedToVersioned = new LinkedHashMap<String, List<OntologyInfo>>();
+		Map<String, List<RegisteredOntologyInfo>> unversionedToVersioned = new LinkedHashMap<String, List<RegisteredOntologyInfo>>();
 		
 		String uri = LISTALL;
 		
@@ -239,7 +239,7 @@ public class Server implements IServer {
 				continue;
 			}
 			
-			OntologyInfo ontologyInfo = _createOntologyInfo(
+			RegisteredOntologyInfo registeredOntologyInfo = _createOntologyInfo(
 					ontologyUri,
 					displayLabel,
 					type,
@@ -256,21 +256,21 @@ public class Server implements IServer {
 			);
 
 
-			List<OntologyInfo> versionedList = unversionedToVersioned.get(unversionedUri);
+			List<RegisteredOntologyInfo> versionedList = unversionedToVersioned.get(unversionedUri);
 			if ( versionedList == null ) {
-				versionedList = new ArrayList<OntologyInfo>();
+				versionedList = new ArrayList<RegisteredOntologyInfo>();
 				unversionedToVersioned.put(unversionedUri, versionedList);
 			}
-			versionedList.add(ontologyInfo);
-			ontologyInfo.setUnversionedUri(unversionedUri);
+			versionedList.add(registeredOntologyInfo);
+			registeredOntologyInfo.setUnversionedUri(unversionedUri);
 			
 		}
 		
 		// sort all list by descending versionNumber
 		for ( String unversionedUri : unversionedToVersioned.keySet() ) {
-			List<OntologyInfo> versionedList = unversionedToVersioned.get(unversionedUri);
-			Collections.sort(versionedList, new Comparator<OntologyInfo>() {
-				public int compare(OntologyInfo arg0, OntologyInfo arg1) {
+			List<RegisteredOntologyInfo> versionedList = unversionedToVersioned.get(unversionedUri);
+			Collections.sort(versionedList, new Comparator<RegisteredOntologyInfo>() {
+				public int compare(RegisteredOntologyInfo arg0, RegisteredOntologyInfo arg1) {
 					return - arg0.getVersionNumber().compareTo(arg1.getVersionNumber());
 				}
 			});
@@ -280,23 +280,23 @@ public class Server implements IServer {
 	}
 
 	
-	public List<OntologyInfo> getAllOntologies(boolean includePriorVersions) throws Exception {
+	public List<RegisteredOntologyInfo> getAllOntologies(boolean includePriorVersions) throws Exception {
 		
 		// {unversionedUri -> list of versioned URIs }  for all unversioned URIs ontologies
-		Map<String, List<OntologyInfo>> unversionedToVersioned = getUnversionedToOntologyInfoListMap(null);
+		Map<String, List<RegisteredOntologyInfo>> unversionedToVersioned = getUnversionedToOntologyInfoListMap(null);
 		
 		// the list to be returned
-		List<OntologyInfo> onts = new ArrayList<OntologyInfo>();
+		List<RegisteredOntologyInfo> onts = new ArrayList<RegisteredOntologyInfo>();
 		
 		for ( String unversionedUri : unversionedToVersioned.keySet() ) {
 
-			List<OntologyInfo> versionedList = unversionedToVersioned.get(unversionedUri);
+			List<RegisteredOntologyInfo> versionedList = unversionedToVersioned.get(unversionedUri);
 			
 			// copy first element, ie., most recent ontology version, for the entry in the main list;
 			// Note: the Uri of this main entry is set equal to the UnversionedUri property:
 			
-			OntologyInfo mostRecent = versionedList.get(0);
-			OntologyInfo ontologyInfo = _createOntologyInfo(
+			RegisteredOntologyInfo mostRecent = versionedList.get(0);
+			RegisteredOntologyInfo registeredOntologyInfo = _createOntologyInfo(
 					mostRecent.getUnversionedUri(),      // NOTE: UnversionedURI for the URI
 					mostRecent.getDisplayLabel(),
 					mostRecent.getType(),
@@ -314,24 +314,24 @@ public class Server implements IServer {
 
 			// if requested, include prior versions: 
 			if ( includePriorVersions ) {
-				ontologyInfo.getPriorVersions().addAll(versionedList);
+				registeredOntologyInfo.getPriorVersions().addAll(versionedList);
 			}
 			
 			// add this main entry to returned list:
-			onts.add(ontologyInfo);
+			onts.add(registeredOntologyInfo);
 		}
 		
 		return onts;
 	}
 	
 	
-	public OntologyInfo getOntologyInfo(String ontologyUri) {
+	public RegisteredOntologyInfo getOntologyInfo(String ontologyUri) {
 		try {
 			MmiUri mmiUri = new MmiUri(ontologyUri);
 			
 			// get elements associated with the unversioned form of the requested URI:
 			String unversOntologyUri = mmiUri.copyWithVersion(null).getOntologyUri();
-			Map<String, List<OntologyInfo>> unversionedToVersioned = getUnversionedToOntologyInfoListMap(unversOntologyUri);
+			Map<String, List<RegisteredOntologyInfo>> unversionedToVersioned = getUnversionedToOntologyInfoListMap(unversOntologyUri);
 
 			if ( unversionedToVersioned.isEmpty() ) {
 				return null; // not found
@@ -339,7 +339,7 @@ public class Server implements IServer {
 			assert unversionedToVersioned.size() == 1;
 			
 			// get the list of ontologies with same unversioned URI
-			List<OntologyInfo> list = unversionedToVersioned.values().iterator().next();
+			List<RegisteredOntologyInfo> list = unversionedToVersioned.values().iterator().next();
 			
 			// Two main cases: 
 			//
@@ -353,14 +353,14 @@ public class Server implements IServer {
 			if ( ontologyUri.equals(unversOntologyUri) ) {
 				// a) unversioned URI request, eg., http://mmisw.org/ont/seadatanet/qualityFlag
 				// just return first entry in list
-				OntologyInfo oi = list.get(0);
+				RegisteredOntologyInfo oi = list.get(0);
 				oi.setUri(oi.getUnversionedUri());
 				return oi;
 			}
 			else {
 				// b) versioned URI request, eg., http://mmisw.org/ont/seadatanet/20081113T205440/qualityFlag
 				// Search list for exact match
-				for ( OntologyInfo oi : list ) {
+				for ( RegisteredOntologyInfo oi : list ) {
 					if ( ontologyUri.equals(oi.getUri()) ) {
 						return oi;
 					}
@@ -371,19 +371,19 @@ public class Server implements IServer {
 		catch (Exception e) {
 			String error = e.getMessage();
 			log.error("Error getting list of all ontologies. ", e);
-			OntologyInfo oi = new OntologyInfo();
+			RegisteredOntologyInfo oi = new RegisteredOntologyInfo();
 			oi.setError(error);
 			return oi;
 		}
 		
 	}
 
-	public OntologyInfo getEntities(OntologyInfo ontologyInfo) {
+	public RegisteredOntologyInfo getEntities(RegisteredOntologyInfo registeredOntologyInfo) {
 		if ( log.isDebugEnabled() ) {
 			log.debug("getEntities(OntologyInfo) starting");
 		}
-		Util.getEntities(ontologyInfo, null);
-		return ontologyInfo;
+		Util.getEntities(registeredOntologyInfo, null);
+		return registeredOntologyInfo;
 	}
 
 
@@ -408,29 +408,29 @@ public class Server implements IServer {
 	
 	
 	
-	public OntologyInfo getOntologyContents(OntologyInfo ontologyInfo) {
+	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo registeredOntologyInfo) {
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("getOntologyContents(OntologyInfo): loading model");
 		}
 		
-		OntModel ontModel = Util.loadModel(ontologyInfo.getUri());
+		OntModel ontModel = Util.loadModel(registeredOntologyInfo.getUri());
 
 		// Metadata:
 		if ( log.isDebugEnabled() ) {
 			log.debug("getOntologyContents(OntologyInfo): getting metadata");
 		}
-		MetadataExtractor.prepareOntologyMetadata(metadataBaseInfo, ontModel, ontologyInfo);
+		MetadataExtractor.prepareOntologyMetadata(metadataBaseInfo, ontModel, registeredOntologyInfo);
 
 		
 		// Data
 		if ( log.isDebugEnabled() ) {
 			log.debug("getOntologyContents(OntologyInfo): getting entities");
 		}
-		Util.getEntities(ontologyInfo, ontModel);
+		Util.getEntities(registeredOntologyInfo, ontModel);
 		
 		
-		return ontologyInfo;
+		return registeredOntologyInfo;
 	
 	}
 
@@ -445,30 +445,20 @@ public class Server implements IServer {
 	////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
 	
-	public CreateOntologyResult createOntology(
-			BasicOntologyInfo basicOntologyInfo, 
-			CreateOntologyInfo createOntologyInfo
-	) {
+	public CreateOntologyResult createOntology(CreateOntologyInfo createOntologyInfo) {
 			
-		CreateOntologyResult createVocabResult = new CreateOntologyResult();
+		log.info("createOntology: called.");
+		
+		CreateOntologyResult createOntologyResult = new CreateOntologyResult();
 		
 		DataCreationInfo dataCreationInfo = createOntologyInfo.getDataCreationInfo();
 		if ( dataCreationInfo == null ) {
-			createVocabResult.setError("No data creation info provided! (please report this bug)");
-			return createVocabResult;
+			createOntologyResult.setError("No data creation info provided! (please report this bug)");
+			return createOntologyResult;
 		}
 		
-		if ( !(dataCreationInfo instanceof VocabularyDataCreationInfo) ) {
-			createVocabResult.setError("Sorry, creation of " +dataCreationInfo.getClass().getSimpleName()+ " not implemented yet");
-			return createVocabResult;
-		}
-		
-		VocabularyDataCreationInfo vocabularyDataCreationInfo = (VocabularyDataCreationInfo) dataCreationInfo;
-			
-//		_getBaseInfoIfNull();
-		
-		createVocabResult.setBasicOntologyInfo(basicOntologyInfo);
-		createVocabResult.setCreateOntologyInfo(createOntologyInfo);
+
+		createOntologyResult.setCreateOntologyInfo(createOntologyInfo);
 		
 		
 		Map<String, String> newValues = createOntologyInfo.getMetadataValues();
@@ -476,23 +466,17 @@ public class Server implements IServer {
 		////////////////////////////////////////////
 		// check for errors
 		
-		if ( createVocabResult.getError() != null ) {
-			log.info(": error: " +createVocabResult.getError());
-			return createVocabResult;
+		if ( createOntologyResult.getError() != null ) {
+			log.info(": error: " +createOntologyResult.getError());
+			return createOntologyResult;
 		}
 		
-		if ( basicOntologyInfo.getError() != null ) {
-			String error = "there was an error while loading the ontology: " +basicOntologyInfo.getError();
-			createVocabResult.setError(error );
-			log.info(error);
-			return createVocabResult;
-		}
 		
 		if ( newValues == null ) {
 			String error = "Unexpected: no new values assigned for review. Please report this bug";
-			createVocabResult.setError(error );
+			createOntologyResult.setError(error );
 			log.info(error);
-			return createVocabResult;
+			return createOntologyResult;
 		}
 		
 		
@@ -502,26 +486,26 @@ public class Server implements IServer {
 
 		if ( orgAbbreviation == null ) {
 			log.info("missing origMaintainerCode");
-			createVocabResult.setError("missing origMaintainerCode");
-			return createVocabResult;
+			createOntologyResult.setError("missing origMaintainerCode");
+			return createOntologyResult;
 		}
 		if ( shortName == null ) {
 			log.info("missing acronym");
-			createVocabResult.setError("missing acronym");
-			return createVocabResult;
+			createOntologyResult.setError("missing acronym");
+			return createOntologyResult;
 		}
 
 		
 		// to check if this is going to be a new submission (ontologyId == null) or, 
 		// otherwise, a new version.
-		String ontologyId = basicOntologyInfo.getOntologyId();
+		String ontologyId = createOntologyInfo.getOntologyId();
 
 		if ( ontologyId == null ) {
 			// This is a new submission. We need to check for any conflict with a preexisting
 			// ontology in the repository with the same shortName+orgAbbreviation combination
 			//
-			if ( ! Util2.checkNoPreexistingOntology(orgAbbreviation, shortName, createVocabResult) ) {
-				return createVocabResult;
+			if ( ! Util2.checkNoPreexistingOntology(orgAbbreviation, shortName, createOntologyResult) ) {
+				return createOntologyResult;
 			}
 		}
 		else {
@@ -529,33 +513,57 @@ public class Server implements IServer {
 			// We need to check the shortName+orgAbbreviation combination as any changes here
 			// would imply a *new* ontology, not a new version.
 			//
-			String originalOrgAbbreviation = basicOntologyInfo.getAuthority();
-			String originalShortName = basicOntologyInfo.getShortName();
+			String originalOrgAbbreviation = createOntologyInfo.getAuthority();
+			String originalShortName = createOntologyInfo.getShortName();
 			
 			if ( ! Util2.checkUriKeyCombinationForNewVersion(
 					originalOrgAbbreviation, originalShortName, 
-					orgAbbreviation, shortName, createVocabResult) ) {
-				return createVocabResult;
+					orgAbbreviation, shortName, createOntologyResult) ) {
+				return createOntologyResult;
 			}
 		}
 		
+		////////////////////////////////////////////////////////////////////////////
+		// section to create the ontology the base:
 		
-		_createTempVocabularyOntology(basicOntologyInfo, createOntologyInfo, vocabularyDataCreationInfo, createVocabResult);
-		if ( createVocabResult.getError() != null ) {
-			return createVocabResult;
+		if ( dataCreationInfo instanceof VocabularyDataCreationInfo ) {
+			// vocabulary (voc2rdf) case:
+			
+			VocabularyDataCreationInfo vocabularyDataCreationInfo = (VocabularyDataCreationInfo) dataCreationInfo;
+			
+			_createTempVocabularyOntology(createOntologyInfo, vocabularyDataCreationInfo, createOntologyResult);
+			if ( createOntologyResult.getError() != null ) {
+				return createOntologyResult;
+			}
 		}
+		else if (  dataCreationInfo instanceof OtherDataCreationInfo) {
+			// external ontology case: the base ontology is already available, just use it
+			// by setting the full path in the createOntologyResult:
+			
+			OtherDataCreationInfo otherDataCreationInfo = (OtherDataCreationInfo) dataCreationInfo;
+			TempOntologyInfo tempOntologyInfo = otherDataCreationInfo.getTempOntologyInfo();
+			
+			String full_path = tempOntologyInfo.getFullPath();
+			createOntologyResult.setFullPath(full_path);
+		}
+		else {
+			createOntologyResult.setError("Sorry, creation of " +dataCreationInfo.getClass().getSimpleName()+ " not implemented yet");
+			return createOntologyResult;
+		}
+
+		
 		
 		////////////////////////////////////////////
 		// load  model
 
-		String full_path = createVocabResult.getFullPath();
+		String full_path = createOntologyResult.getFullPath();
 		log.info("Loading model: " +full_path);
 		
 		File file = new File(full_path);
 		if ( ! file.canRead() ) {
 			log.info("Unexpected: cannot read: " +full_path);
-			createVocabResult.setError("Unexpected: cannot read: " +full_path);
-			return createVocabResult;
+			createOntologyResult.setError("Unexpected: cannot read: " +full_path);
+			return createOntologyResult;
 		}
 		
 		// current date:
@@ -578,8 +586,8 @@ public class Server implements IServer {
 			if ( ! ok ) {
 				String error = "Given version is invalid: " +version;
 				log.info(error);
-				createVocabResult.setError(error);
-				return createVocabResult;
+				createOntologyResult.setError(error);
+				return createOntologyResult;
 			}
 		}
 		else {
@@ -609,14 +617,14 @@ public class Server implements IServer {
 		catch ( Throwable ex ) {
 			String error = "Unexpected error: " +ex.getClass().getName()+ " : " +ex.getMessage();
 			log.info(error);
-			createVocabResult.setError(error);
-			return createVocabResult;
+			createOntologyResult.setError(error);
+			return createOntologyResult;
 		}
 		
-		String uriForEmpty = Util2.getDefaultNamespace(model, file, createVocabResult);
+		String uriForEmpty = Util2.getDefaultNamespace(model, file, createOntologyResult);
 			
 		if ( uriForEmpty == null ) {
-			return createVocabResult;
+			return createOntologyResult;
 		}
 
 		
@@ -740,13 +748,13 @@ public class Server implements IServer {
 		String rdf = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV") ;  // XXX newOntModel);
 		
 		
-		createVocabResult.setUri(base_);
+		createOntologyResult.setUri(base_);
 		
 
 		// write new contents to a new file under previewDir:
 		
 		File reviewedFile = new File(previewDir , file.getName());
-		createVocabResult.setFullPath(reviewedFile.getAbsolutePath());
+		createOntologyResult.setFullPath(reviewedFile.getAbsolutePath());
 
 		PrintWriter os;
 		try {
@@ -754,8 +762,8 @@ public class Server implements IServer {
 		}
 		catch (FileNotFoundException e) {
 			log.info("Unexpected: file not found: " +reviewedFile);
-			createVocabResult.setError("Unexpected: file not found: " +reviewedFile);
-			return createVocabResult;
+			createOntologyResult.setError("Unexpected: file not found: " +reviewedFile);
+			return createOntologyResult;
 		}
 		StringReader is = new StringReader(rdf);
 		try {
@@ -764,28 +772,28 @@ public class Server implements IServer {
 		}
 		catch (IOException e) {
 			log.info("Unexpected: IO error while writing to: " +reviewedFile);
-			createVocabResult.setError("Unexpected: IO error while writing to: " +reviewedFile);
-			return createVocabResult;
+			createOntologyResult.setError("Unexpected: IO error while writing to: " +reviewedFile);
+			return createOntologyResult;
 		}
 
 		// Done.
 
-		return createVocabResult;
+		return createOntologyResult;
 	}
 
 	/**
-	 * This creates a new vocabulary ontology under the previewDir direcory with the given info.
+	 * This creates a new vocabulary ontology under the previewDir directory with the given info.
 	 * @param createOntologyInfo
+	 * @param vocabularyCreationInfo
 	 * @param createVocabResult 
 	 */
 	private void _createTempVocabularyOntology(
-			BasicOntologyInfo basicOntologyInfo, 
 			CreateOntologyInfo createOntologyInfo,
 			VocabularyDataCreationInfo vocabularyCreationInfo,
 			CreateOntologyResult createVocabResult
 	) {
 		
-		VocabCreator vocabCreator = new VocabCreator(basicOntologyInfo, createOntologyInfo, vocabularyCreationInfo);
+		VocabCreator vocabCreator = new VocabCreator(createOntologyInfo, vocabularyCreationInfo);
 		
 		vocabCreator.createOntology(createVocabResult);
 	}
@@ -793,19 +801,20 @@ public class Server implements IServer {
 	
 	
 	
-	public UploadOntologyResult uploadOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult)  {
-		UploadOntologyResult uploadOntologyResult = new UploadOntologyResult();
+	public RegisterOntologyResult registerOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult)  {
+		RegisterOntologyResult registerOntologyResult = new RegisterOntologyResult();
 		
 		
 		String full_path = createOntologyResult.getFullPath();
 		
-		log.info("Reading in temporary file: " +full_path);
+		log.info("registerOntology: Reading in temporary file: " +full_path);
 		
 		File file = new File(full_path);
 		if ( ! file.canRead() ) {
-			log.info("Unexpected: cannot read: " +full_path);
-			uploadOntologyResult.setError("Unexpected: cannot read: " +full_path);
-			return uploadOntologyResult;
+			String error = "Unexpected: cannot read: " +full_path;
+			log.info(error);
+			registerOntologyResult.setError(error);
+			return registerOntologyResult;
 		}
 		
 		// Get resulting model:
@@ -816,15 +825,15 @@ public class Server implements IServer {
 		catch (IOException e) {
 			String error = "Unexpected: IO error while reading from: " +full_path+ " : " +e.getMessage();
 			log.info(error);
-			uploadOntologyResult.setError(error);
-			return uploadOntologyResult;
+			registerOntologyResult.setError(error);
+			return registerOntologyResult;
 		}
 		
 		// ok, we have our ontology:
 		
 		
 		//////////////////////////////////////////////////////////////////////////
-		// finally, do actual upload to MMI registry
+		// finally, do actual registration to MMI registry
 
 		// Get final URI of resulting model
 		// FIXME this uses the same original URI
@@ -833,17 +842,18 @@ public class Server implements IServer {
 		assert loginResult.getUserId() != null;
 		assert loginResult.getSessionId() != null;
 		
-		log.info(": uploading ...");
+		log.info(": registering ...");
 
-		BasicOntologyInfo basicOntologyInfo = createOntologyResult.getBasicOntologyInfo();
-		String ontologyId = basicOntologyInfo.getOntologyId();
-		String ontologyUserId = basicOntologyInfo.getOntologyUserId();
+		CreateOntologyInfo createOntologyInfo = createOntologyResult.getCreateOntologyInfo();
+
+		String ontologyId = createOntologyInfo.getOntologyId();
+		String ontologyUserId = createOntologyInfo.getOntologyUserId();
+		
 		if ( ontologyId != null ) {
 			log.info("Will create a new version for ontologyId = " +ontologyId+ ", userId=" +ontologyUserId);
 		}
 		
 		
-		CreateOntologyInfo createOntologyInfo = createOntologyResult.getCreateOntologyInfo();
 		Map<String, String> newValues = createOntologyInfo .getMetadataValues();
 		
 
@@ -856,11 +866,11 @@ public class Server implements IServer {
 			// to add that fixed extension in some operations (at least in the parse operation)
 			//
 			if ( ! fileName.toLowerCase().endsWith(".owl") ) {
-				log.info("upload: setting file extension to .owl per aquaportal requirement.");
+				log.info("register: setting file extension to .owl per aquaportal requirement.");
 				fileName += ".owl";
 			}
 			
-			// We are about to do the actual upload. But first, re-check that there is NO a preexisting
+			// We are about to do the actual registration. But first, re-check that there is NO a preexisting
 			// ontology that may conflict with this one.
 			// NOTE: this check has been done already in the review operation; however, we repeat it here
 			// in case there is a new registration done by other user in the meantime. Of course, we
@@ -871,8 +881,8 @@ public class Server implements IServer {
 				final String orgAbbreviation = newValues.get(OmvMmi.origMaintainerCode.getURI());
 				final String shortName = newValues.get(Omv.acronym.getURI());
 
-				if ( ! Util2.checkNoPreexistingOntology(orgAbbreviation, shortName, uploadOntologyResult) ) {
-					return uploadOntologyResult;
+				if ( ! Util2.checkNoPreexistingOntology(orgAbbreviation, shortName, registerOntologyResult) ) {
+					return registerOntologyResult;
 				}
 
 			}
@@ -884,7 +894,7 @@ public class Server implements IServer {
 				// do the "review" operation, which already takes care of that check.
 			}
 
-			// OK, now do the actual upload:
+			// OK, now do the actual registration:
 			OntologyUploader createOnt = new OntologyUploader(uri, fileName, rdf, 
 					loginResult,
 					ontologyId, ontologyUserId,
@@ -893,28 +903,30 @@ public class Server implements IServer {
 			String res = createOnt.create();
 			
 			if ( res.startsWith("OK") ) {
-				uploadOntologyResult.setUri(uri);
-				uploadOntologyResult.setInfo(res);
+				registerOntologyResult.setUri(uri);
+				registerOntologyResult.setInfo(res);
 			}
 			else {
-				uploadOntologyResult.setError(res);
+				registerOntologyResult.setError(res);
 			}
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
-			uploadOntologyResult.setError(ex.getClass().getName()+ ": " +ex.getMessage());
+			registerOntologyResult.setError(ex.getClass().getName()+ ": " +ex.getMessage());
 		}
 		
-		log.info("uploadOntologyResult = " +uploadOntologyResult);
+		log.info("registerOntologyResult = " +registerOntologyResult);
 
 		
-		return uploadOntologyResult;
+		return registerOntologyResult;
 	}
 
 	
 	
 	
-	public TempOntologyInfo getTempOntologyInfo(String uploadResults) {
+	public TempOntologyInfo getTempOntologyInfo(String uploadResults, boolean includeContents,
+			boolean includeRdf
+	) {
 		TempOntologyInfo tempOntologyInfo = new TempOntologyInfo();
 		
 		if ( metadataBaseInfo == null ) {
@@ -923,6 +935,61 @@ public class Server implements IServer {
 		}
 		
 		TempOntologyHelper tempOntologyHelper = new TempOntologyHelper(metadataBaseInfo);
-		return tempOntologyHelper.getTempOntologyInfo(uploadResults, tempOntologyInfo);
+		tempOntologyHelper.getTempOntologyInfo(uploadResults, tempOntologyInfo, includeRdf);
+		
+		if ( tempOntologyInfo.getError() != null ) {
+			return tempOntologyInfo;
+		}
+		
+		if ( includeContents ) {
+			_getOntologyContents(tempOntologyInfo);
+		}
+		
+		return tempOntologyInfo;
 	}
+	
+	/** similar to {@link #getOntologyContents(RegisteredOntologyInfo)} but reading the model
+	 * from the internal path.
+	 */
+	private TempOntologyInfo _getOntologyContents(TempOntologyInfo tempOntologyInfo) {
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug("_getOntologyContents(TempOntologyInfo): loading model");
+		}
+		
+		String full_path = tempOntologyInfo.getFullPath();
+		File file = new File(full_path );
+		String uriFile = file.toURI().toString();
+		log.info("Loading model: " +uriFile);
+
+		OntModel ontModel;
+		try {
+			ontModel = JenaUtil.loadModel(uriFile, false);
+		}
+		catch (Throwable ex) {
+			String error = "Unexpected error: " +ex.getClass().getName()+ " : " +ex.getMessage();
+			log.info(error);
+			tempOntologyInfo.setError(error);
+			return tempOntologyInfo;
+		}
+
+
+		// Metadata:
+		if ( log.isDebugEnabled() ) {
+			log.debug("_getOntologyContents(TempOntologyInfo): getting metadata");
+		}
+		MetadataExtractor.prepareOntologyMetadata(metadataBaseInfo, ontModel, tempOntologyInfo);
+
+		
+		// Data
+		if ( log.isDebugEnabled() ) {
+			log.debug("_getOntologyContents(TempOntologyInfo): getting entities");
+		}
+		Util.getEntities(tempOntologyInfo, ontModel);
+		
+		
+		return tempOntologyInfo;
+	
+	}
+
 }

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
@@ -14,10 +13,9 @@ import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.util.JenaUtil2;
 import org.mmisw.iserver.core.util.StringManipulationUtil;
 import org.mmisw.iserver.core.util.Util2;
-import org.mmisw.iserver.gwt.client.rpc.BasicOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.VocabularyDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.VocabularyDataCreationInfo;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
 
@@ -47,7 +45,7 @@ import edu.drexel.util.rdf.OwlModel;
  */
 public class VocabCreator {
 
-	// TODO take this location from a config parameter:
+	// TODO take this from a config parameter:
 	private static final String tmp = "/Users/Shared/registry/tmp/";
 
 	private String orgAbbreviation;
@@ -56,6 +54,7 @@ public class VocabCreator {
 	private String ascii;
 	private String fieldSeparator;
 
+	// TODO take this from a config parameter:
 	private String namespaceRoot = "http://mmisw.org/ont";
 	
 	// To set TransProperties.NS
@@ -157,18 +156,16 @@ public class VocabCreator {
 		}
 		
 		String ascii = sb.toString();
-		return _convertToUtf8(ascii);
+		return Util2.convertToUtf8(ascii, log);
 	}
 	
 	
 	/**
 	 * 
-	 * @param basicOntologyInfo
 	 * @param createOntologyInfo      Metadata for the ontology
 	 * @param vocabularyDataCreationInfo    Data for the ontology
 	 */
 	public VocabCreator(
-			BasicOntologyInfo basicOntologyInfo, 
 			CreateOntologyInfo createOntologyInfo,
 			VocabularyDataCreationInfo vocabularyDataCreationInfo
 	) {
@@ -198,28 +195,6 @@ public class VocabCreator {
 		
 	}
 	
-	/**
-	 * Converts the string to UTF-8 encoding.
-	 * FIXME implementation is rather simplistic, just
-	 * <code>return new String(str.getBytes(), "UTF-8"))</code>.
-	 * A better approach is to determine the actual original charset and
-	 * then do the conversion to UTF-8.
-	 */
-	private String _convertToUtf8(String str) {
-		try {
-			byte[] bytes = str.getBytes();
-			String utf8_str = new String(bytes, "UTF-8");
-			return utf8_str;
-		}
-		catch (UnsupportedEncodingException e) {
-			log.warn("Cannot convert to UTF-8. " +e.toString());
-			e.printStackTrace();
-		}
-
-		return str;
-	}
-
-
 
 	public void createOntology(CreateOntologyResult createVocabResult) {
 		if ( log.isDebugEnabled() ) {

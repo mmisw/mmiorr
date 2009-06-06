@@ -42,7 +42,9 @@ public class TempOntologyHelper {
 	}
 
 
-	public TempOntologyInfo getTempOntologyInfo(String uploadResults, TempOntologyInfo tempOntologyInfo) {
+	public TempOntologyInfo getTempOntologyInfo(String uploadResults, TempOntologyInfo tempOntologyInfo,
+			boolean includeRdf
+	) {
 		
 		uploadResults = uploadResults.replaceAll("&lt;", "<").replaceAll("&gt;", ">");
 		log.info("getOntologyInfo: " +uploadResults);
@@ -78,14 +80,16 @@ public class TempOntologyHelper {
 		
 		File file = new File(full_path);
 		
-		try {
-			tempOntologyInfo.setRdf(Util2.readRdf(file));
-		}
-		catch (Throwable e) {
-			String error = "Cannot read RDF model: " +full_path+ " : " +e.getMessage();
-			log.info(error);
-			tempOntologyInfo.setError(error);
-			return tempOntologyInfo;
+		if ( includeRdf ) {
+			try {
+				tempOntologyInfo.setRdf(Util2.readRdf(file));
+			}
+			catch (Throwable e) {
+				String error = "Cannot read RDF model: " +full_path+ " : " +e.getMessage();
+				log.info(error);
+				tempOntologyInfo.setError(error);
+				return tempOntologyInfo;
+			}
 		}
 
 		// prepare the rest of the ontology info:
@@ -103,25 +107,25 @@ public class TempOntologyHelper {
 	 * except the Rdf string and the new values map.
 	 * 
 	 * @param file  The ontology file.
-	 * @param ontologyInfoPre  The object to be completed
+	 * @param tempOntologyInfo  The object to be completed
 	 */
-	private String prepareOntologyInfo(File file, TempOntologyInfo ontologyInfoPre) {
+	private String prepareOntologyInfo(File file, TempOntologyInfo tempOntologyInfo) {
 		String full_path = file.getAbsolutePath();
-		ontologyInfoPre.setFullPath(full_path);
+		tempOntologyInfo.setFullPath(full_path);
 		
 		String uriFile = file.toURI().toString();
 		log.info("Loading model: " +uriFile);
 
-		return prepareOntologyInfoFromUri(uriFile, ontologyInfoPre);
+		return prepareOntologyInfoFromUri(uriFile, tempOntologyInfo);
 	}
 	
 	/**
 	 * Does the preparation by reading the model from the given URI.
 	 * @param uriModel URI of the model to be loaded
-	 * @param ontologyInfoPre  The object to be completed
+	 * @param tempOntologyInfo  The object to be completed
 	 * @return
 	 */
-	private String prepareOntologyInfoFromUri(String uriModel, TempOntologyInfo ontologyInfoPre) {
+	private String prepareOntologyInfoFromUri(String uriModel, TempOntologyInfo tempOntologyInfo) {
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("prepareOntologyInfoFromUri: uriModel=" +uriModel);
@@ -141,6 +145,9 @@ public class TempOntologyHelper {
 		if ( false && log.isDebugEnabled() ) {
 			debugOntModel(model);
 		}
+		
+		// set URI equal to the full path:
+		tempOntologyInfo.setUri(uriModel);
 
 		Resource ontRes = JenaUtil.getFirstIndividual(model, OWL.Ontology);
 		
@@ -234,22 +241,22 @@ public class TempOntologyHelper {
 		
 		// add the new details if any:
 		if ( moreDetails.length() > 0 ) {
-			String details = ontologyInfoPre.getDetails();
+			String details = tempOntologyInfo.getDetails();
 			if ( details == null ) {
-				ontologyInfoPre.setDetails(moreDetails.toString());
+				tempOntologyInfo.setDetails(moreDetails.toString());
 			}
 			else {
-				ontologyInfoPre.setDetails(details + "\n" +moreDetails.toString());
+				tempOntologyInfo.setDetails(details + "\n" +moreDetails.toString());
 			}
 		}
 		
-		ontologyInfoPre.getOntologyMetadata().setOriginalValues(originalValues);
+		tempOntologyInfo.getOntologyMetadata().setOriginalValues(originalValues);
 		
 		// associate the original base URI:
 		String uri = model.getNsPrefixURI("");
 		if ( uri != null ) {
 			String base_ = JenaUtil2.removeTrailingFragment(uri);
-			ontologyInfoPre.setUri(base_);
+			tempOntologyInfo.setUri(base_);
 		}
 
 		// OK:

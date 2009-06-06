@@ -2,14 +2,14 @@ package org.mmisw.iserver.gwt.client.rpc;
 
 
 /**
- * Info about the result of creating a vocabulary
+ * Info about the result of creating a vocabulary, which means preparing the ontology
+ * in the working space for subsequent registration.
  * 
  * @author Carlos Rueda
  */
 public class CreateOntologyResult extends BaseResult {
 	private static final long serialVersionUID = 1L;
 	
-	private BasicOntologyInfo basicOntologyInfo;
 	private CreateOntologyInfo createOntologyInfo;
 	
 	private String uri = null;
@@ -42,23 +42,6 @@ public class CreateOntologyResult extends BaseResult {
 		this.fullPath = fullPath;
 	}
 
-
-
-	/**
-	 * @return the basicOntologyInfo
-	 */
-	public BasicOntologyInfo getBasicOntologyInfo() {
-		return basicOntologyInfo;
-	}
-
-
-
-	/**
-	 * @param basicOntologyInfo the basicOntologyInfo to set
-	 */
-	public void setBasicOntologyInfo(BasicOntologyInfo basicOntologyInfo) {
-		this.basicOntologyInfo = basicOntologyInfo;
-	}
 
 
 	/**

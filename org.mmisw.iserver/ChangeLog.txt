@@ -2,10 +2,16 @@ org.mmisw.iserver
 Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 
+2009-06-05
+	- several adjustments as the main operations are completed
+	- removed several interim dependencies
+	- some renamings of types and operations
+	- support for registering an uploaded file completed
+
 2009-06-04
 	- Implemented the "loading" of local file into working space. This is capture in a TempOntologyInfo.
 	  (note the uploading operation is still implemented in the ontmd module).
-	- Other preparations for registration on an "other" ontology (not vine, nor voc2rdf).
+	- Other preparations for registration of an "other" ontology (not vine, nor voc2rdf).
 	
 	
 2009-06-03

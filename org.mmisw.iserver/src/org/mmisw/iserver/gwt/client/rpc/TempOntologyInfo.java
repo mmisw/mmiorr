@@ -1,8 +1,5 @@
 package org.mmisw.iserver.gwt.client.rpc;
 
-import java.io.Serializable;
-
-import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
 
 /**
  * Info about a "temporary" ontology. This means, an ontology that has been loaded
@@ -11,48 +8,26 @@ import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
  * 
  * @author Carlos Rueda
  */
-public class TempOntologyInfo implements Serializable {
+public class TempOntologyInfo extends BaseOntologyInfo {
 	private static final long serialVersionUID = 1L;
 
-	private String error = null;
+	/** location of the ontology file on the server */
 	private String fullPath;
-	private String uri;
+	
+	/** string with the rdf contents */
 	private String rdf;
+	
+	/** message to describe details about the metadata contents of the ontology */
 	private String details;
 	
-	private OntologyMetadata ontologyMetadata;
 	
 	public TempOntologyInfo() {
 	}
 	
 	
-	public OntologyMetadata getOntologyMetadata() {
-		if ( ontologyMetadata == null ) {
-			ontologyMetadata = new OntologyMetadata();
-		}
-		return ontologyMetadata;
-	}
-
-	
-	public void setUri(String uri) {
-		this.uri = uri;
-	}
-	
-	public String getUri() {
-		return uri;
-	}
-
 	/** @returns The full path of the ontology file on the server */
 	public String getFullPath() {
 		return fullPath;
-	}
-
-	public String getError() {
-		return error;
-	}
-
-	public void setError(String error) {
-		this.error = error;
 	}
 
 	/** sets the full path of the ontology file on the server */

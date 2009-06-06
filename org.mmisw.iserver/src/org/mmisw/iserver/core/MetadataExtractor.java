@@ -5,9 +5,9 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mmisw.iserver.core.util.Util;
+import org.mmisw.iserver.core.util.JenaUtil2;
+import org.mmisw.iserver.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
@@ -39,7 +39,7 @@ class MetadataExtractor {
 	 */
 	static String prepareOntologyMetadata(
 			MetadataBaseInfo metadataBaseInfo,
-			OntModel model, OntologyInfo ontologyInfo) {
+			OntModel model, BaseOntologyInfo ontologyInfo) {
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("prepareOntologyMetadata: ontologyUri=" +ontologyInfo.getUri());
@@ -151,7 +151,7 @@ class MetadataExtractor {
 		// associate the original base URI:
 		String uri = model.getNsPrefixURI("");
 		if ( uri != null ) {
-			String base_ = Util.removeTrailingFragment(uri);
+			String base_ = JenaUtil2.removeTrailingFragment(uri);
 			ontologyInfo.setUri(base_);
 		}
 
