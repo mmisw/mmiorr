@@ -80,13 +80,23 @@ public class TempOntologyHelper {
 		
 		File file = new File(full_path);
 		
+		try {
+			Utf8Util.verifyUtf8(file);
+		}
+		catch (Exception e) {
+			String error = "Error in file: " +e.getMessage();
+			log.error(error, e);
+			tempOntologyInfo.setError(error);
+			return tempOntologyInfo;
+		}
+		
 		if ( includeRdf ) {
 			try {
 				tempOntologyInfo.setRdf(Util2.readRdf(file));
 			}
 			catch (Throwable e) {
 				String error = "Cannot read RDF model: " +full_path+ " : " +e.getMessage();
-				log.info(error);
+				log.info(error, e);
 				tempOntologyInfo.setError(error);
 				return tempOntologyInfo;
 			}

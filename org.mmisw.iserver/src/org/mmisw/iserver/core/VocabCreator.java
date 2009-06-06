@@ -12,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.util.JenaUtil2;
 import org.mmisw.iserver.core.util.StringManipulationUtil;
+import org.mmisw.iserver.core.util.Utf8Util;
 import org.mmisw.iserver.core.util.Util2;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
@@ -156,7 +157,7 @@ public class VocabCreator {
 		}
 		
 		String ascii = sb.toString();
-		return Util2.convertToUtf8(ascii, log);
+		return ascii;
 	}
 	
 	
@@ -164,11 +165,12 @@ public class VocabCreator {
 	 * 
 	 * @param createOntologyInfo      Metadata for the ontology
 	 * @param vocabularyDataCreationInfo    Data for the ontology
+	 * @throws Exception If verification of UTF-8 fails
 	 */
 	public VocabCreator(
 			CreateOntologyInfo createOntologyInfo,
 			VocabularyDataCreationInfo vocabularyDataCreationInfo
-	) {
+	) throws Exception {
 		
 		
 		Map<String, String> values = createOntologyInfo.getMetadataValues();
@@ -180,6 +182,7 @@ public class VocabCreator {
 		
 		this.primaryClass = vocabularyDataCreationInfo.getClassName();
 		this.ascii = _createAscii(vocabularyDataCreationInfo);
+		Utf8Util.verifyUtf8(this.ascii.getBytes());
 		this.values = values;
 		
 		log.info("!!!!!!!!!!!!!!!! VocabCreator: values = " +values);

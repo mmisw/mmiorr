@@ -2,6 +2,17 @@ org.mmisw.iserver
 Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 
+2009-06-06
+	- Utf8Util: new utilities (based on jchardet) to detect/verify the required UTF-8 charset
+	  for any external stream to be incorporated in the registry (no attempts to do any automated
+	  conversions for the moment).
+	- Applying UTF-8 verification:
+		- when loading a model from the registry: normally, every entry in the registry should be
+		  UTF-8 already; however, this is a general sanity check that can be useful in the case of
+		  any previously registered entry that may not be UTF-8.
+		- before the conversion from CSV in VocabCreator
+		- when trying to create an ontology from an external ontology file 
+
 2009-06-05
 	- several adjustments as the main operations are completed
 	- removed several interim dependencies

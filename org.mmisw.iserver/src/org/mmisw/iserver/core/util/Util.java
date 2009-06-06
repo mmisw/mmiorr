@@ -96,8 +96,9 @@ public class Util {
 	 * Gets the list of entities associated with the given ontology. 
 	 * @param ontologyUri URI of the desired ontology.
 	 * @return list of entities
+	 * @throws Exception 
 	 */
-	public static List<EntityInfo> getEntities(String ontologyUri, OntModel ontModel) {
+	public static List<EntityInfo> getEntities(String ontologyUri, OntModel ontModel) throws Exception {
 		
 		if ( ontModel == null ) {
 			ontModel = loadModel(ontologyUri);
@@ -126,8 +127,9 @@ public class Util {
 	 * Populates the list of entities associated with the given ontology. 
 	 * @param baseOntologyInfo
 	 * @return the given argument
+	 * @throws Exception 
 	 */
-	public static BaseOntologyInfo getEntities(BaseOntologyInfo baseOntologyInfo, OntModel ontModel) {
+	public static BaseOntologyInfo getEntities(BaseOntologyInfo baseOntologyInfo, OntModel ontModel) throws Exception {
 		String ontologyUri = baseOntologyInfo.getUri();
 
 		
@@ -691,14 +693,24 @@ public class Util {
 	
 
 	
-
-	public static OntModel loadModel(String uriModel) {
+	/**
+	 * Loads a model first verifying the source text is in UTF-8.
+	 * @param uriModel
+	 * @return
+	 * @throws Exception
+	 */
+	public static OntModel loadModel(String uriModel) throws Exception {
+		
+		URL url = new URL(uriModel);
+		InputStream is = url.openStream();
+		Utf8Util.verifyUtf8(is);
+		
 		OntModel model = createDefaultOntModel();
 		uriModel = JenaUtil2.removeTrailingFragment(uriModel);
 		model.read(uriModel);
 		return model;
 	}
-	
+
 	private static OntModel createDefaultOntModel() {
 		OntModelSpec spec = new OntModelSpec(OntModelSpec.OWL_MEM);
 		OntDocumentManager docMang = new OntDocumentManager();

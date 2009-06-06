@@ -292,13 +292,7 @@ public class Util2 {
 			return rdf;
 		}
 		finally {
-			if ( is != null ) {
-				try {
-					is.close();
-				}
-				catch(IOException ignore) {
-				}
-			}
+			IOUtils.closeQuietly(is);
 		}
 	}
 
@@ -346,12 +340,11 @@ public class Util2 {
 	}
 	
 	/**
-	 * Converts the string to UTF-8 encoding.
-	 * FIXME implementation may be too simplistic, just
-	 * <code>return new String(str.getBytes(), "UTF-8"))</code>.
-	 * A better approach would be to determine the actual original charset and
+	 * FIXME implementation is incorrect.
+	 * TODO if possible, determine the actual original charset and
 	 * then do the conversion to UTF-8.
 	 */
+	@Deprecated
 	public static String convertToUtf8(String str, Log log) {
 		try {
 			byte[] bytes = str.getBytes();

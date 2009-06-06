@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.util.JenaUtil2;
 import org.mmisw.iserver.core.util.TempOntologyHelper;
+import org.mmisw.iserver.core.util.Utf8Util;
 import org.mmisw.iserver.core.util.Util;
 import org.mmisw.iserver.core.util.Util2;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
@@ -144,7 +145,14 @@ public class Server implements IServer {
 		if ( log.isDebugEnabled() ) {
 			log.debug("getEntities(String) starting");
 		}
-		return  Util.getEntities(ontologyUri, null);
+		try {
+			return  Util.getEntities(ontologyUri, null);
+		}
+		catch (Exception e) {
+			String error = "Error getting entities: " +e.getMessage();
+			log.error(error, e);
+			return null;
+		}
 	}
 
 	
@@ -382,7 +390,17 @@ public class Server implements IServer {
 		if ( log.isDebugEnabled() ) {
 			log.debug("getEntities(OntologyInfo) starting");
 		}
-		Util.getEntities(registeredOntologyInfo, null);
+		
+		try {
+			Util.getEntities(registeredOntologyInfo, null);
+		}
+		catch (Exception e) {
+			String error = "Error loading model: " +e.getMessage();
+			log.error(error, e);
+			registeredOntologyInfo.setError(error);
+			return registeredOntologyInfo;
+		}
+		
 		return registeredOntologyInfo;
 	}
 
@@ -411,24 +429,41 @@ public class Server implements IServer {
 	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo registeredOntologyInfo) {
 		
 		if ( log.isDebugEnabled() ) {
-			log.debug("getOntologyContents(OntologyInfo): loading model");
+			log.debug("getOntologyContents(RegisteredOntologyInfo): loading model");
 		}
 		
-		OntModel ontModel = Util.loadModel(registeredOntologyInfo.getUri());
+		OntModel ontModel;
+		try {
+			ontModel = Util.loadModel(registeredOntologyInfo.getUri());
+		}
+		catch (Exception e) {
+			String error = "Error loading model: " +e.getMessage();
+			log.error(error, e);
+			registeredOntologyInfo.setError(error);
+			return registeredOntologyInfo;
+		}
 
 		// Metadata:
 		if ( log.isDebugEnabled() ) {
-			log.debug("getOntologyContents(OntologyInfo): getting metadata");
+			log.debug("getOntologyContents(RegisteredOntologyInfo): getting metadata");
 		}
 		MetadataExtractor.prepareOntologyMetadata(metadataBaseInfo, ontModel, registeredOntologyInfo);
 
 		
 		// Data
 		if ( log.isDebugEnabled() ) {
-			log.debug("getOntologyContents(OntologyInfo): getting entities");
+			log.debug("getOntologyContents(RegisteredOntologyInfo): getting entities");
 		}
-		Util.getEntities(registeredOntologyInfo, ontModel);
 		
+		try {
+			Util.getEntities(registeredOntologyInfo, ontModel);
+		}
+		catch (Exception e) {
+			String error = "Error getting entities: " +e.getMessage();
+			log.error(error, e);
+			registeredOntologyInfo.setError(error);
+			return registeredOntologyInfo;
+		}
 		
 		return registeredOntologyInfo;
 	
@@ -560,9 +595,13 @@ public class Server implements IServer {
 		log.info("Loading model: " +full_path);
 		
 		File file = new File(full_path);
-		if ( ! file.canRead() ) {
-			log.info("Unexpected: cannot read: " +full_path);
-			createOntologyResult.setError("Unexpected: cannot read: " +full_path);
+		try {
+			Utf8Util.verifyUtf8(file);
+		}
+		catch (Exception e) {
+			String error = "Error reading model: " +e.getMessage();
+			log.error(error, e);
+			createOntologyResult.setError(error);
 			return createOntologyResult;
 		}
 		
@@ -793,7 +832,16 @@ public class Server implements IServer {
 			CreateOntologyResult createVocabResult
 	) {
 		
-		VocabCreator vocabCreator = new VocabCreator(createOntologyInfo, vocabularyCreationInfo);
+		VocabCreator vocabCreator;
+		try {
+			vocabCreator = new VocabCreator(createOntologyInfo, vocabularyCreationInfo);
+		}
+		catch (Exception e) {
+			String error = "Error in conversion to RDF: " +e.getMessage();
+			log.error(error, e);
+			createVocabResult.setError(error);
+			return;
+		}
 		
 		vocabCreator.createOntology(createVocabResult);
 	}
@@ -985,7 +1033,16 @@ public class Server implements IServer {
 		if ( log.isDebugEnabled() ) {
 			log.debug("_getOntologyContents(TempOntologyInfo): getting entities");
 		}
-		Util.getEntities(tempOntologyInfo, ontModel);
+		
+		try {
+			Util.getEntities(tempOntologyInfo, ontModel);
+		}
+		catch (Exception e) {
+			String error = "Error loading model: " +e.getMessage();
+			log.error(error, e);
+			tempOntologyInfo.setError(error);
+			return tempOntologyInfo;
+		}
 		
 		
 		return tempOntologyInfo;
