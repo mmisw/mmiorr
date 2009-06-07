@@ -10,6 +10,17 @@ ChangeLog
 	  In summary, an error will be reported whenever some external contents, which will be
 	  eventually incorporated in the registry, is not in UTF-8.
 	  Note: No attempts to make any automated conversion in case the verification fails.
+	
+	- MetadataPanel: "NewUri" panel removed -not needed anymore  
+	- MetadataGroupPanel: show group info only in editing mode
+	- UploadLocalOntologyPanel: simplified and better control of buttons (en/disable)
+	
+	- See also iserver project for other several adjustments
+	
+	TODO: in general, either have a general mechanism to disable any controls (buttons, menus,..) in
+	the whole interface during  the execution of some task, or use a modal dialog. In any case,
+	also react to Browser events to properly cancel any task or open menu.
+	
  
 	
 2009-06-05

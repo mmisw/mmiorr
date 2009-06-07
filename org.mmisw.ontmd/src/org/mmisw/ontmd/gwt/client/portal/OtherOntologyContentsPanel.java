@@ -19,6 +19,7 @@ import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.util.IRow;
 import org.mmisw.ontmd.gwt.client.util.UtilTable;
 
+import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -99,7 +100,10 @@ public class OtherOntologyContentsPanel extends BaseOntologyContentsPanel {
 			if ( uploadLocalOntologyPanel == null ) {
 				uploadLocalOntologyPanel = new UploadLocalOntologyPanel(myTempOntologyInfoListener, true);
 			}
-			widget.add(uploadLocalOntologyPanel);
+			DecoratorPanel dec = new DecoratorPanel();
+			dec.setWidget(uploadLocalOntologyPanel);
+//			widget.add(uploadLocalOntologyPanel);
+			widget.add(dec);
 		}
 		
 		if ( contents != null ) {
@@ -164,6 +168,10 @@ public class OtherOntologyContentsPanel extends BaseOntologyContentsPanel {
 		for (int i = 0; i < entityGroups.length; i += 2) {
 			String title = entityGroups[i].toString();
 			List<?extends EntityInfo> entities = (List<?extends EntityInfo>) entityGroups[i + 1];
+			
+			if ( entities.size() == 0 ) {
+				continue;
+			}
 			
 			title += " (" +entities.size()+ ")";
 			

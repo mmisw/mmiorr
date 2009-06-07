@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
-import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.ontmd.gwt.client.Main;
@@ -26,8 +26,6 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -49,48 +47,49 @@ private static final String INFO =
 	private boolean enabled = true;
 	
 	
-	private boolean editing;
+//	private boolean editing;
 	
-	/** Little helper to show the ontology URI in two formats: the original
-	 * and the "HTML" one (to be resolved by "Ont").
-	 */
-	private static class NewUri extends HorizontalPanel {
-		private HTML html = new HTML();
-		NewUri() {
-			setSpacing(5);
-			setVerticalAlignment(ALIGN_MIDDLE);
-			setWidth("600");
-//			setBorderWidth(1);
-			add(html);
-		}
-		
-		void updateText(String text) {
-			html.setText(text);
-		}
-		
-		void setUri(String uri, boolean link) {
-			
-			// remove any trailing fragments:
-			uri = uri.replaceAll("(#|/)+$", "");
-			
-			String str;
-			if ( link ) {
-				str = "<a href=\"" +uri+ "\" target=\"_blank\" >" +uri+ "</a>";
-				String htmlLink = uri+ "?form=html";
-				str += " (<a href=\"" +htmlLink+ "\" target=\"_blank\" >Resolve in HTML</a>)";
-			}
-			else {
-				str = "<font color=\"" +"gray"+ "\">" +uri+ "</font>";
-			}
-			html.setHTML(str);
-		}
-		
-		void showProgressMessage(String msg) {
-			html.setHTML("<font color=\"" +"blue"+ "\">" +msg+ "</font>");
-		}
-	}
-
-	private NewUri newUri = new NewUri();
+	//- remove NewUri related stuff
+//	/** Little helper to show the ontology URI in two formats: the original
+//	 * and the "HTML" one (to be resolved by "Ont").
+//	 */
+//	private static class NewUri extends HorizontalPanel {
+//		private HTML html = new HTML();
+//		NewUri() {
+//			setSpacing(5);
+//			setVerticalAlignment(ALIGN_MIDDLE);
+//			setWidth("600");
+////			setBorderWidth(1);
+//			add(html);
+//		}
+//		
+//		void updateText(String text) {
+//			html.setText(text);
+//		}
+//		
+//		void setUri(String uri, boolean link) {
+//			
+//			// remove any trailing fragments:
+//			uri = uri.replaceAll("(#|/)+$", "");
+//			
+//			String str;
+//			if ( link ) {
+//				str = "<a href=\"" +uri+ "\" target=\"_blank\" >" +uri+ "</a>";
+//				String htmlLink = uri+ "?form=html";
+//				str += " (<a href=\"" +htmlLink+ "\" target=\"_blank\" >Resolve in HTML</a>)";
+//			}
+//			else {
+//				str = "<font color=\"" +"gray"+ "\">" +uri+ "</font>";
+//			}
+//			html.setHTML(str);
+//		}
+//		
+//		void showProgressMessage(String msg) {
+//			html.setHTML("<font color=\"" +"blue"+ "\">" +msg+ "</font>");
+//		}
+//	}
+//
+//	private NewUri newUri = new NewUri();
 
 
 	/**
@@ -101,7 +100,7 @@ private static final String INFO =
 	public MetadataPanel(IOntologyPanel mainPanel, boolean editing) {
 		super();
 		setWidth("100%");
-		this.editing = editing;
+//		this.editing = editing;
 		
 		int row = 0;
 
@@ -110,29 +109,31 @@ private static final String INFO =
 		container.setWidth("1000px");
 //		container.setSize("850px", "350px");
 		
-		HorizontalPanel hp = new HorizontalPanel();
-		hp.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-		this.getFlexCellFormatter().setColSpan(row,0, 2);
-		this.setWidget(row, 0, hp);
-		this.getFlexCellFormatter().setAlignment(row, 0, 
-				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP
-		);
+		//- remove NewUri related stuff
+//		HorizontalPanel hp = new HorizontalPanel();
+//		hp.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+//		this.getFlexCellFormatter().setColSpan(row,0, 2);
+//		this.setWidget(row, 0, hp);
+//		this.getFlexCellFormatter().setAlignment(row, 0, 
+//				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP
+//		);
+//		
+//		String tooltip = "The ontology base URI";
+//		if ( editing ) {
+//			tooltip = "Will show the new base URI for the generated ontology";
+//			Label lbl = new Label("New base URI:");
+//			lbl.setTitle(tooltip);
+//			hp.add(lbl);
+//		}
+//		
+//		newUri.setTitle(tooltip);
+//		hp.add(newUri);
 		
-		String tooltip = "The ontology base URI";
-		if ( editing ) {
-			tooltip = "Will show the new base URI for the generated ontology";
-			Label lbl = new Label("New base URI:");
-			lbl.setTitle(tooltip);
-			hp.add(lbl);
-		}
-		newUri.setTitle(tooltip);
-		hp.add(newUri);
 		row++;
 		
 		
 		if ( editing ) {
 			this.setWidget(row, 0, new HTML(INFO));
-
 			row++;
 		}
 
@@ -163,7 +164,8 @@ private static final String INFO =
 	
 	/** Basically for viewing-only mode */
 	public void showProgressMessage(String msg) {
-		newUri.showProgressMessage(msg);
+		//- remove NewUri related stuff
+//		newUri.showProgressMessage(msg);
 	}
 	
 	/** Puts test values */
@@ -215,7 +217,7 @@ private static final String INFO =
 				String valueInEditor = valuesInEditor.get(tempKey);
 				String valueInTemp = tempValues.get(tempKey);
 				if ( ((valueInEditor == null) ^ (valueInTemp == null ))
-						||   ! valueInEditor.equals(valueInTemp) 
+				||   ! valueInEditor.equals(valueInTemp) 
 				) {
 					commonKeysWithDiffValues.add(tempKey);
 				}
@@ -290,12 +292,12 @@ private static final String INFO =
 			}
 		}
 		
-		// TODO review this part
-		newUri.updateText("");
-		String new_uri = tempOntologyInfo.getUri();
-		if ( new_uri != null ) {
-			newUri.setUri(new_uri, false);
-		}
+		//- remove NewUri related stuff
+//		newUri.updateText("");
+//		String new_uri = tempOntologyInfo.getUri();
+//		if ( new_uri != null ) {
+//			newUri.setUri(new_uri, false);
+//		}
 
 	}
 
@@ -362,16 +364,17 @@ private static final String INFO =
 			}
 		}
 		
-		newUri.updateText("");
-		if ( reviewResult_Old != null ) {
-			String new_uri = reviewResult_Old.getUri();
-			if ( new_uri != null ) {
-				newUri.setUri(new_uri, link);
-			}
-		}
-		else if ( ! editing ) {
-			newUri.setUri(ontologyUri, link);
-		}
+		//- remove NewUri related stuff
+//		newUri.updateText("");
+//		if ( reviewResult_Old != null ) {
+//			String new_uri = reviewResult_Old.getUri();
+//			if ( new_uri != null ) {
+//				newUri.setUri(new_uri, link);
+//			}
+//		}
+//		else if ( ! editing ) {
+//			newUri.setUri(ontologyUri, link);
+//		}
 	}
 
 

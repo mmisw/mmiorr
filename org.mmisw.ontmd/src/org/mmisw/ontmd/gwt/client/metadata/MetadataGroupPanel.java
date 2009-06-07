@@ -94,15 +94,17 @@ public class MetadataGroupPanel extends VerticalPanel {
 		
 		int row = 0;
 
-		String grpDescription = attrGroup.getDescription();
-		if ( grpDescription != null && grpDescription.length() > 0 ) {
-			Widget w = new Label(grpDescription);
-			panel.getFlexCellFormatter().setColSpan(row, 0, 2);
-			panel.setWidget(row, 0, w);
-			panel.getFlexCellFormatter().setAlignment(row, 0, 
-					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
-			);
-			row++;
+		if ( editing ) {
+			String grpDescription = attrGroup.getDescription();
+			if ( grpDescription != null && grpDescription.length() > 0 ) {
+				Widget w = new Label(grpDescription);
+				panel.getFlexCellFormatter().setColSpan(row, 0, 2);
+				panel.setWidget(row, 0, w);
+				panel.getFlexCellFormatter().setAlignment(row, 0, 
+						HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+				);
+				row++;
+			}
 		}
 
 		

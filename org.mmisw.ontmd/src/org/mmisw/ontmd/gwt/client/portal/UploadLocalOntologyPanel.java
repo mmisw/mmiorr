@@ -43,13 +43,18 @@ public class UploadLocalOntologyPanel extends VerticalPanel {
 	
 	private TempOntologyInfoListener tempOntologyInfoListener;
 	
+	// note: the 2 radiobuttons were for i) local file and ii) remote (URI) file, as in an previous
+	// version of this utility; I'm only keeping the local file option but didn't clean up everything
+	// yet (the remote option may be re-incorporated).
+	//
 	private RadioButton rb0;
 	private RadioButton rb1;
 
 	private FormPanel formPanel = new FormPanel();
 	private FileUpload upload;
 	private HTML statusLoad = new HTML();
-	private TextBox statusField2 = new TextBox();
+	
+//	private TextBox statusField2 = new TextBox();
 	
 	private final TextArea textArea = INCLUDE_RDF ? new TextArea() : null;
 	
@@ -79,7 +84,7 @@ public class UploadLocalOntologyPanel extends VerticalPanel {
 		createDetailsButton();
 
 		statusLoad.setText("");
-		statusField2.setText("");
+//		statusField2.setText("");
 
 		if ( allowLoadOptions ) {
 			createLoadButton();
@@ -119,9 +124,9 @@ public class UploadLocalOntologyPanel extends VerticalPanel {
 		hp.setSpacing(3);
 		hp.add(statusLoad);
 		
-		if ( allowLoadOptions ) {
-			hp.add(loadButton);
-		}
+//		if ( allowLoadOptions ) {
+//			hp.add(loadButton);
+//		}
 		
 		panel.setWidget(row, 1, hp);
 		panel.getFlexCellFormatter().setAlignment(row, 1, 
@@ -150,17 +155,23 @@ public class UploadLocalOntologyPanel extends VerticalPanel {
 			row++;
 		}
 		
-		statusField2.setWidth("400");
-		statusField2.setReadOnly(true);
-		panel.setWidget(row, 0, statusField2);
+		HorizontalPanel buttons = new HorizontalPanel();
+		buttons.add(loadButton);
+		buttons.add(detailsButton);
+		
+		panel.getFlexCellFormatter().setColSpan(row, 0, 2);
+//		statusField2.setWidth("400");
+//		statusField2.setReadOnly(true);
+//		panel.setWidget(row, 0, statusField2);
+		panel.setWidget(row, 0, buttons);
 		panel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 
-		panel.setWidget(row, 1, detailsButton);
-		panel.getFlexCellFormatter().setAlignment(row, 1, 
-				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
-		);
+//		panel.setWidget(row, 1, detailsButton);
+//		panel.getFlexCellFormatter().setAlignment(row, 1, 
+//				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
+//		);
 		row++;
 
 		
@@ -205,7 +216,7 @@ public class UploadLocalOntologyPanel extends VerticalPanel {
 			private TextBox chooseLabel;
 			public void onClick(Widget sender) {
 				statusLoad.setText("");
-				statusField2.setText("");
+//				statusField2.setText("");
 //				upload.setEnabled(rb0.isChecked());  // --> this method is not available 
 				uploadContainer.clear();
 				if ( rb0.isChecked() ) {
@@ -250,7 +261,7 @@ public class UploadLocalOntologyPanel extends VerticalPanel {
 
 			public void onSubmit(FormSubmitEvent event) {
 				statusLoad.setHTML("<font color=\"blue\">Loading ...</font>");
-				statusField2.setText("");
+//				statusField2.setText("");
 				Main.log("onSubmit.");
 			}
 
@@ -264,6 +275,7 @@ public class UploadLocalOntologyPanel extends VerticalPanel {
 				else {
 					statusLoad.setHTML("<font color=\"red\">Unexpected null response from server." +
 							"Please try again later.</font>");
+					enable(true);
 				}
 			}
 			
@@ -276,11 +288,13 @@ public class UploadLocalOntologyPanel extends VerticalPanel {
 	private void getTempOntologyInfo(String uploadResults) {
 		AsyncCallback<TempOntologyInfo> callback = new AsyncCallback<TempOntologyInfo>() {
 			public void onFailure(Throwable thr) {
+				enable(true);
 				Main.log("calling getTempOntologyInfo ... failure! ");
 				UploadLocalOntologyPanel.this.onFailure(thr);
 			}
 
 			public void onSuccess(TempOntologyInfo tempOntologyInfo) {
+				enable(true);
 				Main.log("calling getTempOntologyInfo ... success!");
 				UploadLocalOntologyPanel.this.onSuccess(tempOntologyInfo);
 			}
@@ -299,7 +313,7 @@ public class UploadLocalOntologyPanel extends VerticalPanel {
 		while ( (thr = thr.getCause()) != null ) {
 			error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
 		}
-		statusField2.setText(error);
+//		statusField2.setText(error);
 		Window.alert(error);
 	}
 
@@ -314,6 +328,7 @@ public class UploadLocalOntologyPanel extends VerticalPanel {
 				String filename = upload.getFilename();
 				if ( rb0.isChecked() ) {
 					if ( filename != null && filename.length() > 0 ) {
+						enable(false); 
 						formPanel.submit();
 					}
 					else {
@@ -327,6 +342,11 @@ public class UploadLocalOntologyPanel extends VerticalPanel {
 		});
 		loadButton.setTitle("Uploads the specified file");
 		
+	}
+	
+	private void enable(boolean enabled) {
+		loadButton.setEnabled(enabled);
+		detailsButton.setEnabled(enabled);
 	}
 	
 	
@@ -403,7 +423,7 @@ public class UploadLocalOntologyPanel extends VerticalPanel {
 			return;
 		}
 		statusLoad.setHTML("<font color=\"green\">Ontology loaded into editor</font>");
-		statusField2.setText("Original base URI: " +tempOntologyInfo.getUri());
+//		statusField2.setText("Original base URI: " +tempOntologyInfo.getUri());
 		
 		if ( INCLUDE_RDF ) {
 			String rdf = tempOntologyInfo.getRdf();
