@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.util.JenaUtil2;
 import org.mmisw.iserver.core.util.TempOntologyHelper;
 import org.mmisw.iserver.core.util.Utf8Util;
-import org.mmisw.iserver.core.util.Util;
+import org.mmisw.iserver.core.util.QueryUtil;
 import org.mmisw.iserver.core.util.Util2;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.OtherDataCreationInfo;
@@ -146,7 +146,7 @@ public class Server implements IServer {
 			log.debug("getEntities(String) starting");
 		}
 		try {
-			return  Util.getEntities(ontologyUri, null);
+			return  QueryUtil.getEntities(ontologyUri, null);
 		}
 		catch (Exception e) {
 			String error = "Error getting entities: " +e.getMessage();
@@ -392,7 +392,7 @@ public class Server implements IServer {
 		}
 		
 		try {
-			Util.getEntities(registeredOntologyInfo, null);
+			QueryUtil.getEntities(registeredOntologyInfo, null);
 		}
 		catch (Exception e) {
 			String error = "Error loading model: " +e.getMessage();
@@ -434,7 +434,7 @@ public class Server implements IServer {
 		
 		OntModel ontModel;
 		try {
-			ontModel = Util.loadModel(registeredOntologyInfo.getUri());
+			ontModel = QueryUtil.loadModel(registeredOntologyInfo.getUri());
 		}
 		catch (Exception e) {
 			String error = "Error loading model: " +e.getMessage();
@@ -456,7 +456,7 @@ public class Server implements IServer {
 		}
 		
 		try {
-			Util.getEntities(registeredOntologyInfo, ontModel);
+			QueryUtil.getEntities(registeredOntologyInfo, ontModel);
 		}
 		catch (Exception e) {
 			String error = "Error getting entities: " +e.getMessage();
@@ -1035,7 +1035,7 @@ public class Server implements IServer {
 		}
 		
 		try {
-			Util.getEntities(tempOntologyInfo, ontModel);
+			QueryUtil.getEntities(tempOntologyInfo, ontModel);
 		}
 		catch (Exception e) {
 			String error = "Error loading model: " +e.getMessage();
