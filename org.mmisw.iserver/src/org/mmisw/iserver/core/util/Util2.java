@@ -298,10 +298,14 @@ public class Util2 {
 
 	/**
 	 * Returns <code>model.getNsPrefixURI("")</code> if it's non-null; otherwise the URI
-	 * associated with xml:base.
+	 * associated with xml:base, if defined in the document. If xml:base is not defined, 
+	 * then it returns file.toURI().toString(). 
+	 * See for example  
+	 * <a href="http://www.w3.org/TR/2003/PR-rdf-syntax-grammar-20031215/#section-Syntax-ID-xml-base"
+	 * >this section in the RDF/XML systax spec</a>.
 	 * 
 	 * @param model  to call <code>model.getNsPrefixURI("")</code>
-	 * @param file   to obtain xml:base if necessary.
+	 * @param file   if necessary, used to obtain xml:base if any, or the URI of the file itself.
 	 * @param baseResult  setError(e) will be called if not value can be obtained
 	 * @return  the namespace.  null in case of not finding any value.
 	 */
@@ -321,11 +325,7 @@ public class Util2 {
 					namespace = xmlBaseUri.toString();
 				}
 				else {
-					// give up    (TODO there may be other things to try -- but later)
-					String error = "Error: Ontology does not define a default namespace nor a URI for xml:base";
-					log.info(error);
-					baseResult.setError(error);
-					return null;
+					return file.toURI().toString();
 				}
 			}
 			catch (Exception e) {

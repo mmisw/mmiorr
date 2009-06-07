@@ -18,6 +18,16 @@ Created: 2009-05-13
 	- XmlBaseExtractor: removed a strange ``throw new SAXException("No xml:base")'' in the original code;
 	  this exception was thrown even when an xml:base element has already been found!
 	  
+	- Fixed issue #140: "ontologies with no declared namespace for empty prefix are not accepted"
+		Util2.getDefaultNamespace(OntModel model, File file, BaseResult baseResult): now return
+		the first non-null value in the following order:
+			- model.getNsPrefixURI("")
+			- XmlBaseExtractor.getXMLBase(...)
+			- file.toURI().toString()
+		See http://www.w3.org/TR/2003/PR-rdf-syntax-grammar-20031215/#section-Syntax-ID-xml-base
+		
+		
+	  
 
 2009-06-05
 	- several adjustments as the main operations are completed
