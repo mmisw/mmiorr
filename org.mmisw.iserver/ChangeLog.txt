@@ -12,6 +12,12 @@ Created: 2009-05-13
 		  any previously registered entry that may not be UTF-8.
 		- before the conversion from CSV in VocabCreator
 		- when trying to create an ontology from an external ontology file 
+		
+	- Util renamed to QueryUtil
+	
+	- XmlBaseExtractor: removed a strange ``throw new SAXException("No xml:base")'' in the original code;
+	  this exception was thrown even when an xml:base element has already been found!
+	  
 
 2009-06-05
 	- several adjustments as the main operations are completed

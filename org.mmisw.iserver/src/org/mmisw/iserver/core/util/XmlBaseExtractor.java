@@ -98,9 +98,11 @@ public class XmlBaseExtractor {
 				}
 				startElement = true;
 			}
-			else {
-				throw new SAXException("No xml:base");
-			}
+			
+// why this in the orginal code? (carueda)
+//			else {
+//				throw new SAXException("No xml:base");
+//			}
 		}
 
 	}
