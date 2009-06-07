@@ -41,7 +41,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  * 
  * @author Carlos Rueda
  */
-public class Util {
+public class QueryUtil {
 	
 	/** Query to obtain the individuals in a model */
 	private static final String QUERY_PREFIXES =
