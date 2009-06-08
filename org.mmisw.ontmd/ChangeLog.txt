@@ -3,6 +3,10 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-06-07
+	- MenuBarPanel renamed to ControlsPanel; this better reflects the (new) actual contents of that
+	  panel, which are buttons and links, but not menus anymore. The buttons and links seem more intuitive.
+	
 2009-06-06
 	Issue #145: "Null response when uploading IOC "
 	Issue #43: "Handle non-UTF8 inputs"

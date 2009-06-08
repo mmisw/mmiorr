@@ -36,7 +36,7 @@ public class PortalControl {
 	private RegisteredOntologyInfo ontologyInfo;
 	
 	private OntologyPanel ontologyPanel;
-	private MenuBarPanel menuBarPanel;
+	private ControlsPanel controlsPanel;
 	
 	
 	public void launchCreateMapping() {
@@ -109,6 +109,10 @@ public class PortalControl {
 		}
 	}
 
+	public void reviewAndRegister() {
+		portalMainPanel.reviewAndRegister(ontologyPanel);
+	}
+	
 	public void cancelEdit() {
 		portalMainPanel.cancelEdit(ontologyPanel);
 	}
@@ -224,12 +228,12 @@ public class PortalControl {
 		cancelEdit();
 	}
 
-	public void setMenuBarPanel(MenuBarPanel menuBarPanel) {
-		this.menuBarPanel = menuBarPanel;
+	public void setMenuBarPanel(ControlsPanel controlsPanel) {
+		this.controlsPanel = controlsPanel;
 	}
 
-	public MenuBarPanel getMenuBarPanel() {
-		return menuBarPanel;
+	public ControlsPanel getMenuBarPanel() {
+		return controlsPanel;
 	}
 
 	
@@ -261,10 +265,10 @@ public class PortalControl {
 		public Widget getWidget(final RegisteredOntologyInfo oi) {
 			
 			if ( true ) {
-				MenuBarPanel menuBarPanel = PortalControl.getInstance().getMenuBarPanel();
+				ControlsPanel controlsPanel = PortalControl.getInstance().getMenuBarPanel();
 				
 				// TODO do not include Edit option yet
-				MenuBar menu = menuBarPanel.createOntologyMenuBar(oi, false);
+				MenuBar menu = controlsPanel.createOntologyMenuBar(oi, false);
 				MenuBar mb = new MenuBar(true);
 //				mb.addItem("<font color=\"blue\">i</font>", true, menu);
 				mb.addItem("", menu);
@@ -275,9 +279,9 @@ public class PortalControl {
 				img.addClickListener(new ClickListener() {
 					public void onClick(Widget sender) {
 						
-						MenuBarPanel menuBarPanel = PortalControl.getInstance().getMenuBarPanel();
+						ControlsPanel controlsPanel = PortalControl.getInstance().getMenuBarPanel();
 						
-						MenuBar menu = menuBarPanel.createOntologyMenuBar(oi, false);
+						MenuBar menu = controlsPanel.createOntologyMenuBar(oi, false);
 						
 						final PopupPanel menuPopup = new PopupPanel(true);
 					    menuPopup.setWidget(menu);
@@ -300,6 +304,12 @@ public class PortalControl {
 
 	public RegisteredOntologyInfo getOntologyInfo() {
 		return ontologyInfo;
+	}
+
+	public void notifyActivity(boolean b) {
+		if ( controlsPanel != null ) {
+			controlsPanel.notifyActivity(b);
+		}
 	}
 	
 

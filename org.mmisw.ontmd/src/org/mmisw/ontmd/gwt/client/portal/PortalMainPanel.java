@@ -40,7 +40,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 
 	private final HeaderPanel headerPanel = new HeaderPanel(); 
 
-	private final MenuBarPanel menuBarPanel = new MenuBarPanel();
+	private final ControlsPanel controlsPanel = new ControlsPanel();
 
 	private final VerticalPanel bodyPanel = new VerticalPanel();
 	
@@ -114,7 +114,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	    headerPanel.updateLinks(interfaceType);
 
 	    this.add(headerPanel);
-	    this.add(menuBarPanel);
+	    this.add(controlsPanel);
 	    this.add(bodyPanel);
 
 	    String historyToken = History.getToken();
@@ -123,7 +123,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	    	History.fireCurrentHistoryState();
 	    }
 	    else {
-		    menuBarPanel.showMenuBar(interfaceType);
+		    controlsPanel.showMenuBar(interfaceType);
 		    
 		    bodyPanel.add(browsePanel);
 		    
@@ -133,7 +133,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	}
 	
 	private void userSignedIn() {
-		menuBarPanel.showMenuBar(interfaceType);
+		controlsPanel.showMenuBar(interfaceType);
 		browsePanel.setLoginResult(pctrl.getLoginResult());
 		if ( signInPopup != null ) {
 			signInPopup.hide();
@@ -146,7 +146,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		}
 		pctrl.setLoginResult(null);
 		headerPanel.updateLinks(interfaceType);
-		menuBarPanel.showMenuBar(interfaceType);
+		controlsPanel.showMenuBar(interfaceType);
 		browsePanel.ontologyTable.showProgress();
 	    browsePanel.setLoginResult(pctrl.getLoginResult());
 	    
@@ -244,7 +244,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		}
 		
 		interfaceType = InterfaceType.BROWSE;
-	    menuBarPanel.showMenuBar(interfaceType);
+	    controlsPanel.showMenuBar(interfaceType);
 	    headerPanel.updateLinks(interfaceType);
 
 	    bodyPanel.clear();
@@ -273,7 +273,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 				OntologyPanel ontologyPanel = new OntologyPanel(ontologyInfo, true);
 				pctrl.setOntologyInfo(ontologyInfo);
 				pctrl.setOntologyPanel(ontologyPanel);
-				menuBarPanel.showMenuBar(interfaceType);
+				controlsPanel.showMenuBar(interfaceType);
 				headerPanel.updateLinks(interfaceType);
 				
 			    bodyPanel.clear();
@@ -291,7 +291,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		pctrl.setOntologyPanel(ontologyPanel);
 		
 		interfaceType = InterfaceType.ONTOLOGY_EDIT_NEW;
-	    menuBarPanel.showMenuBar(interfaceType);
+	    controlsPanel.showMenuBar(interfaceType);
 	    headerPanel.updateLinks(interfaceType);
 		ontologyPanel.createNewFromFile();
 		
@@ -309,7 +309,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		pctrl.setOntologyPanel(ontologyPanel);
 		
 		interfaceType = InterfaceType.ONTOLOGY_EDIT_NEW;
-	    menuBarPanel.showMenuBar(interfaceType);
+	    controlsPanel.showMenuBar(interfaceType);
 	    headerPanel.updateLinks(interfaceType);
 		ontologyPanel.createNewVocabulary();
 		
@@ -330,11 +330,18 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		}
 			
 		interfaceType = InterfaceType.ONTOLOGY_EDIT_NEW_VERSION;
-	    menuBarPanel.showMenuBar(interfaceType);
+	    controlsPanel.showMenuBar(interfaceType);
 	    headerPanel.updateLinks(interfaceType);
 		ontologyPanel.updateInterface(interfaceType);
 	}
 
+	public  void reviewAndRegister(OntologyPanel ontologyPanel) {
+		if ( ontologyPanel != null ) {
+			ontologyPanel.reviewAndRegister();
+		}
+	}
+	
+	
 	public void cancelEdit(OntologyPanel ontologyPanel) {
 		if ( ! Window.confirm("Any edits will be lost") ) {
 			return;
@@ -342,7 +349,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		switch ( interfaceType ) {
 			case ONTOLOGY_EDIT_NEW_VERSION:
 				interfaceType = InterfaceType.ONTOLOGY_VIEW;
-			    menuBarPanel.showMenuBar(interfaceType);
+			    controlsPanel.showMenuBar(interfaceType);
 			    headerPanel.updateLinks(interfaceType);
 			    if ( ontologyPanel != null ) {
 			    	ontologyPanel.updateInterface(interfaceType);
@@ -350,7 +357,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 				break;
 			case ONTOLOGY_EDIT_NEW:
 				interfaceType = InterfaceType.BROWSE;
-			    menuBarPanel.showMenuBar(interfaceType);
+			    controlsPanel.showMenuBar(interfaceType);
 			    headerPanel.updateLinks(interfaceType);
 			    bodyPanel.clear();
 			    bodyPanel.add(browsePanel);

@@ -62,9 +62,6 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 //	private EditDataPanel editDataPanel;
 	
 	
-	private PushButton reviewButton = null;
-
-	
 	/** Ontology to be dispatched */
 	private RegisteredOntologyInfo ontologyInfo;
 	
@@ -307,21 +304,6 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			widget.clear();
 			widget.add(titleHtml);
 			widget.add(descriptionHtml);
-			if ( ! readOnly ) {
-				if ( reviewButton == null ) {
-					reviewButton = new PushButton("Review and Register", new ClickListener() {
-						public void onClick(Widget sender) {
-							reviewAndRegister(true);
-						}
-					});
-					reviewButton.setTitle("Checks the contents " +
-						"and prepares the ontology for subsequent registration");
-				}
-				HorizontalPanel hp = new HorizontalPanel();
-				hp.add(reviewButton);
-				widget.add(hp);
-				
-			}
 		}
 		
 		Widget getWidget() {
@@ -348,16 +330,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	}
 
 
-	private void reenableButton(PushButton button, String text, boolean enabled) {
-		if ( text != null ) {
-			button.setText(text);
-		}
-		button.setEnabled(enabled);
-	}
-
-
-	
-	private void reviewAndRegister(boolean confirm) {
+	void reviewAndRegister() {
 		if ( ontologyInfo == null ) {
 			Window.alert("Please, load an ontology first");
 			return;
@@ -441,20 +414,20 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		popup.addTextArea(null).setSize("600", "150");
 		popup.getTextArea().setText("please wait ...");
 		Main.log("Creating ontology ...");
-		reenableButton(reviewButton, null, false);
+		PortalControl.getInstance().notifyActivity(true);
 		popup.setText("Creating ontology ...");
 		popup.center();
 		popup.show();
 
 		AsyncCallback<CreateOntologyResult> callback = new AsyncCallback<CreateOntologyResult>() {
 			public void onFailure(Throwable thr) {
-				reenableButton(reviewButton, null, true);
+				PortalControl.getInstance().notifyActivity(false);
 				container.clear();				
 				container.add(new HTML(thr.toString()));
 			}
 
 			public void onSuccess(CreateOntologyResult result) {
-				reenableButton(reviewButton, null, true);
+				PortalControl.getInstance().notifyActivity(false);
 				reviewCompleted(popup, result);
 			}
 		};
