@@ -15,6 +15,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.OntServlet.Request;
 import org.mmisw.ont.util.DotGenerator;
+import org.mmisw.ont.util.Util;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -163,7 +164,8 @@ public class UriResolver2 {
 			else if ( req.outFormat.equalsIgnoreCase("dot") ) {
 				req.response.setContentType("text/plain");
 				String ontologyUri = req.fullRequestedUri;
-				DotGenerator dot = new DotGenerator(model);
+				boolean includeLegend = Util.getParam(req.request, "il", null) != null; 
+				DotGenerator dot = new DotGenerator(model, includeLegend);
 				StringWriter sw = new StringWriter();
 				dot.generateDot(sw, "Input: " +ontologyUri);
 				is = new StringReader(sw.toString());

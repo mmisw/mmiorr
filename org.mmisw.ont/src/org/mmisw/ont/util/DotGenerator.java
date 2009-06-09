@@ -52,8 +52,9 @@ public class DotGenerator {
 	 * @param ontModel The model to read
 	 * @param ontologyUri corresponding URI
 	 */
-	public DotGenerator(Model ontModel) {
+	public DotGenerator(Model ontModel, boolean includeLegend) {
 		this.ontModel = ontModel;
+		this.includeLegend = includeLegend;
 	}
 
 	/**
@@ -86,7 +87,6 @@ public class DotGenerator {
 //		pw.println("  rankdir=LR\n");
 
 		if ( includeLegend ) {
-			_outLegend();
 			pw.println(
 					"subgraph clusterContent {\n" +
 					"  color=white\n"
@@ -125,6 +125,7 @@ public class DotGenerator {
 		
 		if ( includeLegend ) {
 			pw.println("}");
+			_outLegend();
 		}
 
 		

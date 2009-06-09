@@ -25,10 +25,12 @@ public class DotGeneratorProgram {
 	 */
 	public static void main(String[] args) {
 		
+		boolean includeLegend = false; // TODO make this a parameter
+		
 		if (args.length == 0 ) {
 			args = new String[] {
 //					"http://mmisw.org/ont/mmi/device"
-//					"file:///Users/carueda/mmiworkspace/mmisw/device.owl"
+					"file:///Users/carueda/mmiworkspace/mmisw/device.owl"
 //					"file:///Users/carueda/Desktop/OntDev/mmisw/device.owl"
 //					"http://mmisw.org/ont/mmi/20090512T011137/device"
 //					"http://mmisw.org/ont/univmemphis/20090422T011238/sensor"
@@ -37,7 +39,10 @@ public class DotGeneratorProgram {
 //					"http://sweet.jpl.nasa.gov/2.0/sciUnits.owl"
 //					"http://mmisw.org/ont/mmitest/unit"
 //					"http://www.w3.org/2005/Incubator/ssn/wiki/images/4/42/SensorOntology20090320.owl.xml"
-					"http://www.cesn.org/sensor/cesn.owl"
+//					"http://www.cesn.org/sensor/cesn.owl"
+//					"file:///Users/carueda/Downloads/BioPortalMetadata_v0.2_v0.2.owl"
+//					"http://ontoware.org/frs/download.php/663/OMV_v2.4.1.owl"
+//					"http://mmisw.org/ont/mmi/20090519T125341/general"
 			};
 		}
 		else if ( args[0].equals("--help") ) {
@@ -48,7 +53,7 @@ public class DotGeneratorProgram {
 		String uriModel = args[0];
 		Model model = loadModel(uriModel);
 		
-		DotGenerator dotGenerator = new DotGenerator(model);
+		DotGenerator dotGenerator = new DotGenerator(model, includeLegend);
 		
 		PrintWriter pw = new PrintWriter(System.out, true);
 		

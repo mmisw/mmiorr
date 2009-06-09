@@ -4,6 +4,10 @@ $Id$
 
 ChangeLog
 
+2009-06-09
+	- DotGenerator and .dot response: just added parameter 'il' for "includeLegend"
+	
+	
 2009-06-03 -  version 1.2.2.beta
 	- UnversionedConverter: Disabled the alteration of attribute values, so the contents 
 	  of the unversioned ontology will be exactly as that of the versioned ontology.
