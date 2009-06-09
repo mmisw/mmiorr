@@ -211,6 +211,12 @@ public class QueryUtil {
 		for ( PropertyInfo propertyInfo : properties ) {
 			String domainClassUri = propertyInfo.getDomainUri();
 			
+			if ( domainClassUri == null ) {
+				// I'm checking for null here to avoid a NPE with http://mmisw.org/ont/univmemphis/sensor
+				// TODO Check why the domain uri has not been assigned for the propertyInfo
+				continue;
+			}
+			
 			// search corresponding classInfo in classes:
 			ClassInfo domainClassInfo = null;
 			

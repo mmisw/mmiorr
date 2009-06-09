@@ -2,6 +2,12 @@ org.mmisw.iserver
 Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 
+2009-06-07
+	- QueryUtil._setDomainClassesForProperties: checking for null to avoid a NPE with 
+	  http://mmisw.org/ont/univmemphis/sensor
+	  TODO Check why the domain uri has not been assigned for the propertyInfo.
+	  
+	  
 2009-06-06
 	- Utf8Util: new utilities (based on jchardet) to detect/verify the required UTF-8 charset
 	  for any external stream to be incorporated in the registry (no attempts to do any automated
