@@ -3,6 +3,20 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-06-09
+	- TermTable2:   (same as TermTable 645 with updates for the following)
+		-  Issue 126: "Immediately enter edit mode when I type in a cell"
+			Regular key now starts editing mode immediately. Note that the key is appended to
+			the current contents of the cell (this contrasts to other systems, eg., google spreadsheet, 
+			where this action replaces the contents). 
+		
+		- issue #127: "Create row automatically"
+			While editing last column and row in term table, KEY_ENTER and KET_TAB will add a new 
+			row and focus its first cell automatically.
+			Note, both KEY_ENTER and KET_TAB accept the text entered (previously, only KEY_ENTER).
+	  BUT: the behaviour is not as expected in firefox! :-(  so, still keeping TermTable as was before these changes.
+	
+	
 2009-06-07
 	- MenuBarPanel renamed to ControlsPanel; this better reflects the (new) actual contents of that
 	  panel, which are buttons and links, but not menus anymore. The buttons and links seem more intuitive.
