@@ -207,7 +207,7 @@ public class UriResolver {
 					// URI for the ontology, so any possible term was ignored. Now getTermUri is used:
 					// fix for issue #150: "file extension is lost in $ request" -> append the
                     // extension
-					String latestUri = foundMmiUri.getTermUri();
+					String latestUri = foundMmiUri.getTermUri() + foundMmiUri.getExtension();
 					if ( log.isDebugEnabled() ) {
 						log.debug("Redirecting to latest version: " + latestUri);
 					}
