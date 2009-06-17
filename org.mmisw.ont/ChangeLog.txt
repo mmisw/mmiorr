@@ -4,6 +4,11 @@ $Id$
 
 ChangeLog
 
+2009-06-17                              
+        - fix for issue #150: "file extension is lost in $ request"
+          UriResolver: append the extension for the URI used in the redicrection.
+          Note the MmiUri.getTermUri() --same for MmiUri.getOntologyUri()-- does not include the extension.
+
 2009-06-09
 	- DotGenerator and .dot response: just added parameter 'il' for "includeLegend"
 	
