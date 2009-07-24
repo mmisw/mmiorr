@@ -30,9 +30,9 @@ public class UploadServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/** Maximum size of an uploaded file */
-	// Was initially set to 2MB, too hort; it's now 200MB.
+	// Was initially set to 2MB, too short; it's now unlimited.
 	// See issue #153 "Large ontology file fails to load"
-	private static final long MAX_FILE_SIZE = 200*1024*1024;
+	private static final long MAX_FILE_SIZE = -1L;
 	
 	
 	private final Log log = LogFactory.getLog(UploadServlet.class);

@@ -4,7 +4,7 @@ Carlos Rueda  -  http://marinemetadata.org
 ChangeLog
 
 2009-07-24
-	- UploadServlet: MAX_FILE_SIZE set to 200MB. See issue #153 "Large ontology file fails to load"
+	- UploadServlet: MAX_FILE_SIZE set to unlimited (-1). See issue #153 "Large ontology file fails to load"
 	
 	
 2009-06-09
