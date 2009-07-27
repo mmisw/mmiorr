@@ -495,6 +495,16 @@ public class Server implements IServer {
 
 		createOntologyResult.setCreateOntologyInfo(createOntologyInfo);
 		
+		//{pons      pons: sections related with preserveOriginalBaseNamespace
+		boolean preserveOriginalBaseNamespace = false;
+		// this flag will be only true in the case where an external ontology is to be registered
+		// and the user indicates that the original base namespace be preserved.
+		if ( dataCreationInfo instanceof OtherDataCreationInfo ) {
+			OtherDataCreationInfo odci = (OtherDataCreationInfo) dataCreationInfo;
+			TempOntologyInfo toi = odci.getTempOntologyInfo();
+			preserveOriginalBaseNamespace = toi != null && toi.isPreserveOriginalBaseNamespace();
+		}
+		//}pons
 		
 		Map<String, String> newValues = createOntologyInfo.getMetadataValues();
 		
@@ -519,44 +529,48 @@ public class Server implements IServer {
 		final String shortName = newValues.get(Omv.acronym.getURI());
 		// TODO: shortName taken NOT from acronym but from a new field explicitly for the shortName piece
 
-		if ( orgAbbreviation == null ) {
-			log.info("missing origMaintainerCode");
-			createOntologyResult.setError("missing origMaintainerCode");
-			return createOntologyResult;
-		}
-		if ( shortName == null ) {
-			log.info("missing acronym");
-			createOntologyResult.setError("missing acronym");
-			return createOntologyResult;
-		}
-
-		
-		// to check if this is going to be a new submission (ontologyId == null) or, 
-		// otherwise, a new version.
-		String ontologyId = createOntologyInfo.getOntologyId();
-
-		if ( ontologyId == null ) {
-			// This is a new submission. We need to check for any conflict with a preexisting
-			// ontology in the repository with the same shortName+orgAbbreviation combination
-			//
-			if ( ! Util2.checkNoPreexistingOntology(orgAbbreviation, shortName, createOntologyResult) ) {
-				return createOntologyResult;
-			}
-		}
-		else {
-			// This is a submission of a *new version* of an existing ontology.
-			// We need to check the shortName+orgAbbreviation combination as any changes here
-			// would imply a *new* ontology, not a new version.
-			//
-			String originalOrgAbbreviation = createOntologyInfo.getAuthority();
-			String originalShortName = createOntologyInfo.getShortName();
+		if ( ! preserveOriginalBaseNamespace ) {
+			//pons: check the following if regular assignment of namespace
 			
-			if ( ! Util2.checkUriKeyCombinationForNewVersion(
-					originalOrgAbbreviation, originalShortName, 
-					orgAbbreviation, shortName, createOntologyResult) ) {
+			if ( orgAbbreviation == null ) {
+				log.info("missing origMaintainerCode");
+				createOntologyResult.setError("missing origMaintainerCode");
 				return createOntologyResult;
 			}
+			if ( shortName == null ) {
+				log.info("missing acronym");
+				createOntologyResult.setError("missing acronym");
+				return createOntologyResult;
+			}
+
+			// to check if this is going to be a new submission (ontologyId == null) or, 
+			// otherwise, a new version.
+			String ontologyId = createOntologyInfo.getOntologyId();
+			
+			if ( ontologyId == null ) {
+				// This is a new submission. We need to check for any conflict with a preexisting
+				// ontology in the repository with the same shortName+orgAbbreviation combination
+				//
+				if ( ! Util2.checkNoPreexistingOntology(orgAbbreviation, shortName, createOntologyResult) ) {
+					return createOntologyResult;
+				}
+			}
+			else {
+				// This is a submission of a *new version* of an existing ontology.
+				// We need to check the shortName+orgAbbreviation combination as any changes here
+				// would imply a *new* ontology, not a new version.
+				//
+				String originalOrgAbbreviation = createOntologyInfo.getAuthority();
+				String originalShortName = createOntologyInfo.getShortName();
+				
+				if ( ! Util2.checkUriKeyCombinationForNewVersion(
+						originalOrgAbbreviation, originalShortName, 
+						orgAbbreviation, shortName, createOntologyResult) ) {
+					return createOntologyResult;
+				}
+			}
 		}
+		
 		
 		////////////////////////////////////////////////////////////////////////////
 		// section to create the ontology the base:
@@ -637,17 +651,6 @@ public class Server implements IServer {
 		}
 		
 		
-		final String finalUri = Util2.namespaceRoot + "/" +
-		                        orgAbbreviation + "/" +
-		                        version + "/" +
-		                        shortName;
-		
-		final String ns_ = JenaUtil2.appendFragment(finalUri);
-		final String base_ = JenaUtil2.removeTrailingFragment(finalUri);
-		
-
-		
-		
 		String uriFile = file.toURI().toString();
 		OntModel model = null;
 		try {
@@ -677,17 +680,39 @@ public class Server implements IServer {
 		//    final String original_ns_ = JenaUtil.getURIForNS(uriForEmpty);
 		// I just take the reported URI as given by model.getNsPrefixURI(""):
 		final String original_ns_ = uriForEmpty;
-		
-		
 		log.info("original namespace: " +original_ns_);
-		log.info("Setting prefix \"\" for URI " + ns_);
-		model.setNsPrefix("", ns_);
-		log.info("     new namespace: " +ns_);
 
 		
-		// Update statements  according to the new namespace:
-		Util2.replaceNameSpace(model, original_ns_, ns_);
+		String ns_;
+		String base_;
 
+		
+		if ( preserveOriginalBaseNamespace ) {
+			//pons:  just use original namespace
+			ns_ = original_ns_;
+			base_ = JenaUtil2.removeTrailingFragment(ns_);
+		}
+		else {
+			
+			final String finalUri = Util2.namespaceRoot + "/" +
+										orgAbbreviation + "/" +
+										version + "/" +
+										shortName;
+										
+			ns_ = JenaUtil2.appendFragment(finalUri);
+			base_ = JenaUtil2.removeTrailingFragment(finalUri);
+			
+			
+			log.info("Setting prefix \"\" for URI " + ns_);
+			model.setNsPrefix("", ns_);
+			log.info("     new namespace: " +ns_);
+			
+			
+			// Update statements  according to the new namespace:
+			Util2.replaceNameSpace(model, original_ns_, ns_);
+			
+		}
+		
 		
 		/////////////////////////////////////////////////////////////////
 		// Is there an existing OWL.Ontology individual?
@@ -786,6 +811,10 @@ public class Server implements IServer {
 		// Get resulting string:
 		String rdf = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV") ;  // XXX newOntModel);
 		
+		//TODO: pons: print result RDF for testing
+		if ( preserveOriginalBaseNamespace ) {
+			System.out.println(rdf);
+		}
 		
 		createOntologyResult.setUri(base_);
 		

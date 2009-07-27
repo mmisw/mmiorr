@@ -2,6 +2,27 @@ org.mmisw.iserver
 Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 
+2009-07-26
+	
+	Preparations for re-hosting of external ontology:
+		"Re-hosting" means that the original base namespace of the submitted ontology is preserved.
+		Basically, the whole ontology is un-changed except for new metadata elements.
+	
+	- TempOntologyInfo: new attribute preserveOriginalBaseNamespace
+	  See ontmd project (portal) for how the flag is captured and included in the corresponding
+	  TempOntologyInfo object.
+	  
+	- Server.createOntology(CreateOntologyInfo): uses the preserveOriginalBaseNamespace flag to
+	  keep original base namespace or apply the regular asssignment of the MMISW-based namespace
+	  as usual.
+	  
+	- Basic submission is now handled. I'm testing this with a simple ontology with base namespace
+	  http://EXAMPLE.org/abc/example
+	  
+	- Next: complement other actions with registered "external" ontology, eg., "resolve" the 
+	  ontology for display purposes ... 
+	
+	
 2009-06-07
 	- QueryUtil._setDomainClassesForProperties: checking for null to avoid a NPE with 
 	  http://mmisw.org/ont/univmemphis/sensor

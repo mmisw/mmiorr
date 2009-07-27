@@ -21,6 +21,9 @@ public class TempOntologyInfo extends BaseOntologyInfo {
 	private String details;
 	
 	
+	private boolean preserveOriginalBaseNamespace;
+	
+	
 	public TempOntologyInfo() {
 	}
 	
@@ -50,6 +53,23 @@ public class TempOntologyInfo extends BaseOntologyInfo {
 
 	public String getDetails() {
 		return details;
+	}
+
+
+	/**
+	 * @return the preserveOriginalBaseNamespace
+	 */
+	public boolean isPreserveOriginalBaseNamespace() {
+		return preserveOriginalBaseNamespace;
+	}
+
+
+	/**
+	 * @param preserveOriginalBaseNamespace the preserveOriginalBaseNamespace to set
+	 */
+	public void setPreserveOriginalBaseNamespace(
+			boolean preserveOriginalBaseNamespace) {
+		this.preserveOriginalBaseNamespace = preserveOriginalBaseNamespace;
 	}
 
 
