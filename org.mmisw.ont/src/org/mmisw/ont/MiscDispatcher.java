@@ -319,41 +319,44 @@ public class MiscDispatcher {
 	        	String username = rs.getString(7);
 	        	String ontology_id = rs.getString(8);
 	        	
+	        	// mapping or vocabulary?
+	        	// TODO: a more robust mechanism to determine the type of an ontology. 
+	        	
+	        	// assume "vocabulary"
+	        	String type = "vocabulary";
+	        	
 	        	try {
 	        		MmiUri mmiUri = new MmiUri(ontologyUri);
 
-	        		// mapping or vocabulary?
-	        		// TODO: a more robust mechanism to determine the type of an ontology. 
-	        		String type;
 	        		String topic = mmiUri.getTopic().toLowerCase();
 	        		if ( topic.matches(".*_map($|_.*)") ) {
 	        			type = "mapping";
 	        		}
-	        		else {
-	        			type = "vocabulary";
-	        		}
-	        		
-	        		
-	        		// always VERSIONED form:
-	        		out.println(
-	        				"'"
-	        				+ ontologyUri
-	        				+ sep +display_label
-	        				+ sep +type
-	        				+ sep +user_id
-	        				+ sep +contact_name
-	        				+ sep +version_number
-	        				+ sep +date_created
-	        				+ sep +username
-	        				+ sep +ontology_id
-	        				+ "'"
-	        		);
-	        		
 	        	}
 	    		catch (URISyntaxException e) {
-	    			log.error("Shouldn't happen", e);
-	    			continue;
+	    			// <re-host> initially, exception ignored as "shouldn't happen"
+	    			//
+	    			//log.error("Shouldn't happen", e);
+	    			// continue;
+	    			//
+	    			// but now, it could be a re-hosted ontology, so let fall through
 	    		}
+	    		
+	    		// always VERSIONED form:
+	    		out.println(
+	    				"'"
+	    				+ ontologyUri
+	    				+ sep +display_label
+	    				+ sep +type
+	    				+ sep +user_id
+	    				+ sep +contact_name
+	    				+ sep +version_number
+	    				+ sep +date_created
+	    				+ sep +username
+	    				+ sep +ontology_id
+	    				+ "'"
+	    		);
+	    		
 	        }
 
 		} 

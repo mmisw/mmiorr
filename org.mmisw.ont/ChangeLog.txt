@@ -9,6 +9,9 @@ ChangeLog
 		- OntGraph._doInitModel: catching URISyntaxException while getting the MmmiUri object
 		  as an indicador of re-hosted ontology.
 		  NOTE: this is just a preliminary mechanism.
+		  
+		- MiscDispatcher.listAll: include non-compliant MmiUri ontologies to provide for
+		  re-hosted ones.
 		
 		
 2009-06-17                              
