@@ -12,6 +12,8 @@ ChangeLog
 		  
 		- MiscDispatcher.listAll: include non-compliant MmiUri ontologies to provide for
 		  re-hosted ones.
+		  
+	- OntServlet now dispatchs the "uri" parameter such that it can dispatch a re-hosted ontology.
 		
 		
 2009-06-17                              

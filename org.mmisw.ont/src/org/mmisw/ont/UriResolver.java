@@ -15,7 +15,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.OntServlet.Request;
-import org.mmisw.ont.sparql.SparqlDispatcher;
 import org.mmisw.ont.util.Accept;
 import org.mmisw.ont.util.Util;
 
@@ -54,16 +53,12 @@ public class UriResolver {
 	private final OntConfig ontConfig;
 	private final Db db;
 	
-	private final SparqlDispatcher sparqlDispatcher;
-	
 	private final HtmlDispatcher htmlDispatcher;
 	
 	private final ImageDispatcher imgDispatcher;
 	
 	private final RegularFileDispatcher regularFileDispatcher = new RegularFileDispatcher();
 
-	private final UriDispatcher uriDispatcher;
-	
 	
 	private enum OntFormat { RDFXML, N3 };
 	
@@ -75,11 +70,8 @@ public class UriResolver {
 		this.ontConfig = ontConfig;
 		this.db = db;
 
-		sparqlDispatcher = new SparqlDispatcher(ontGraph);
 		htmlDispatcher = new HtmlDispatcher(ontConfig, db);
 		imgDispatcher = new ImageDispatcher(ontConfig, db);
-		
-		uriDispatcher = new UriDispatcher(sparqlDispatcher);
 	}
 
 	
@@ -91,20 +83,6 @@ public class UriResolver {
 		
 		// first, see if there are any testing requests to dispatch 
 		
-		// dispatch a sparql-query?
-		if ( Util.yes(req.request, "sparql")  ) {
-			sparqlDispatcher.execute(req.request, req.response);
-			return;
-		}
-		
-		
-		// if the "uri" parameter is included, resolve by the given URI
-		if ( Util.yes(req.request, "uri") ) {
-			uriDispatcher.dispatchUri(req.request, req.response);
-			return;
-		}
-		
-
 		
 		// resolve URI?
 		if ( _resolveUri(req.request, req.response)  ) {

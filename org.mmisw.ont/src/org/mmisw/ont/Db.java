@@ -75,7 +75,7 @@ public class Db {
 	
 	
 	/**
-	 * Obtains the ontology by the given URI.
+	 * Obtains basic ontology info by the given URI.
 	 * 
 	 * This uses the ontologyUri given. To try other file extensions,
 	 * use {@link #getOntologyWithExts(MmiUri, String[])}.
@@ -85,7 +85,7 @@ public class Db {
 	 * @throws ServletException
 	 * @throws SQLException 
 	 */
-	private Ontology getOntology(String ontologyUri) throws ServletException {
+	Ontology getOntology(String ontologyUri) throws ServletException {
 		Connection _con = null;
 		try {
 			_con = getConnection();

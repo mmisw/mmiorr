@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.ont.sparql.SparqlDispatcher;
 import org.mmisw.ont.util.Accept;
 import org.mmisw.ont.util.Util;
 
@@ -47,9 +48,12 @@ public class OntServlet extends HttpServlet {
 	
 	private final MiscDispatcher miscDispatcher = new MiscDispatcher(ontConfig, db);
 
+
+	private final SparqlDispatcher sparqlDispatcher = new SparqlDispatcher(ontGraph);
+
+	private final UriDispatcher uriDispatcher = new UriDispatcher(sparqlDispatcher);
+
 	
-
-
 	private final UriResolver uriResolver = new UriResolver(ontConfig, db, ontGraph);
 	
 	//
@@ -87,12 +91,29 @@ public class OntServlet extends HttpServlet {
 			
 			String formParam = Util.getParam(request, "form", "");
 			
+			//////////////////////////////////////
+			// get the requested MmiUri:
+			
 			MmiUri mmiUriTest = null;
 			String outFormatTest;
+			
 			try {
-				mmiUriTest = new MmiUri(fullRequestedUri);
-				// we have an MmiUri request.
+				if ( Util.yes(request, "uri") ) {
+					// when the "uri" parameter is passed, its value is used.
+					
+					String entityUri = Util.getParam(request, "uri", "");
+//					if ( entityUri.length() == 0 ) {
+//						response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing uri parameter");
+//						return;
+//					}
 
+					mmiUriTest = new MmiUri(entityUri);
+				}
+				else {
+					mmiUriTest = new MmiUri(fullRequestedUri);
+					// we have an MmiUri request.
+					
+				}
 				// get output format to be used:
 				outFormatTest = OntServlet.getOutFormatForMmiUri(formParam, accept, mmiUriTest, log);
 			}
@@ -100,6 +121,7 @@ public class OntServlet extends HttpServlet {
 				// NOT a regular MmiUri request.
 				outFormatTest = OntServlet.getOutFormatForNonMmiUri(formParam, log); 
 			}
+			
 			
 			if ( outFormatTest.length() == 0 ) {     
 				// No explicit outFormat.
@@ -256,6 +278,19 @@ public class OntServlet extends HttpServlet {
 			return;
 		}
 		
+		// if the "uri" parameter is included, resolve by the given URI
+		if ( Util.yes(req.request, "uri") ) {
+			_dispatchUri(req);
+			return;
+		}
+		
+		// dispatch a sparql-query?
+		if ( Util.yes(req.request, "sparql")  ) {
+			sparqlDispatcher.execute(req.request, req.response);
+			return;
+		}
+		
+
 		
 		
 		//////////////////////////////////////////////////////////////////////
@@ -285,6 +320,39 @@ public class OntServlet extends HttpServlet {
 		dispatch(request, response);
 	}
 	
+	
+	/**
+	 * Dispatches the URI indicated with the "uri" parameter in the request.
+	 * If the uri corresponds to a stored ontology, then the ontology is resolved
+	 * as it were a regular self-served ontology.
+	 */
+	private void _dispatchUri(Request req) 
+	throws ServletException, IOException {
+		// get (ontology or entity) URI from the parameter:
+		String ontOrEntUri = Util.getParam(req.request, "uri", "");
+		if ( ontOrEntUri.length() == 0 ) {
+			req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing uri parameter");
+			return;
+		}
+		
+		// see if the given URI corresponds to a stored ontology
+		Ontology ontology = db.getOntology(ontOrEntUri);
+		if ( ontology != null ) {
+			//
+			// yes, it's a stored ontology--dispatch as if it were a regular call to resolve the ontology
+			
+			if ( log.isDebugEnabled() ) {
+				log.debug("dispatching "+ ontOrEntUri+ " as whole ontology (not entotity)");
+			}
+			uriResolver2.service(req);
+		}
+		else {
+			// dispatch entity URI (not complete ontology)
+			uriDispatcher.dispatchUri(req.request, req.response);
+		}
+	}
+
+
 	
 	/**
 	 * Gets the output format according to the given MmiUri and other request parameters.

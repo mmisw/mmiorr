@@ -13,7 +13,12 @@ import org.mmisw.ont.util.Util;
 
 
 /**
- * Resolves term by URN ... TODO
+ * Entity URI resolver using SPARQL.
+ * This is to be used when the "uri" parameter is passed.
+ * However (see {@link OntServlet}), when that uri corresponds to an stored ontology,
+ * then that is dispatched there, not here.
+ * 
+ * TODO rename this class to EntityUriDispatcher.
  * 
  * @author Carlos Rueda
  * @version $Id$
