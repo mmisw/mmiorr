@@ -4,6 +4,13 @@ $Id$
 
 ChangeLog
 
+2009-07-27:
+	Re-hosting:
+		- OntGraph._doInitModel: catching URISyntaxException while getting the MmmiUri object
+		  as an indicador of re-hosted ontology.
+		  NOTE: this is just a preliminary mechanism.
+		
+		
 2009-06-17                              
         - fix for issue #150: "file extension is lost in $ request"
           UriResolver: append the extension for the URI used in the redicrection.

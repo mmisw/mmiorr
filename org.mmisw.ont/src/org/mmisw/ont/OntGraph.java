@@ -114,7 +114,15 @@ public class OntGraph {
 					mmiUri = new MmiUri(ontology.getUri());
 				}
 				catch (URISyntaxException e) {
-					log.error("shouldn't happen", e);
+					// <re-host> The exception was ignored as "shouldn't happen", but now I'm
+					// using this as indication of possibly a re-hosted ontology...
+					//
+					//log.error("shouldn't happen", e);
+					//
+					// ... so, load the original ontology:
+					_model.add(model);
+					// <re-host>
+					
 					continue;
 				}
 				OntModel unversionedModel = UnversionedConverter.getUnversionedModel(model, mmiUri);
