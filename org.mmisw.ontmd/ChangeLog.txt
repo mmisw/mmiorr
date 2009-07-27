@@ -3,6 +3,24 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-07-26
+	
+	Preparations for re-hosting of external ontology:
+		"Re-hosting" means that the original base namespace of the submitted ontology is preserved.
+		Basically, the whole ontology is un-changed except for new metadata elements.
+	
+	- UploadLocalOntologyPanel: new checkbox for preserveOriginalBaseNamespace flag.
+	  
+	- Basic submission is now handled. I'm testing this with a simple ontology with base namespace
+	  http://EXAMPLE.org/abc/example
+	  
+	- Next: complement other actions:
+		- do not capture authority, or, shortName, and the like, associated with MMISW-based namespace
+		- "resolve" the ontology for display purposes. This will require adjustments in call to the "ont"
+		  service... 
+
+
+	  
 2009-07-24
 	- UploadServlet: MAX_FILE_SIZE set to unlimited (-1). See issue #153 "Large ontology file fails to load"
 	

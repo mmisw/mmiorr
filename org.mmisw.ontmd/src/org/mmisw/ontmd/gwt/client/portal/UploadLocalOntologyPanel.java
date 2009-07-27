@@ -8,6 +8,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CellPanel;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.FileUpload;
@@ -66,6 +67,8 @@ public class UploadLocalOntologyPanel extends VerticalPanel {
 	private String registryOntologyUri;
 	private PushButton selectButton;
 	
+	private CheckBox preserveOriginalBaseNamespace;
+	
 
 	/**
 	 * Creates the ontology panel where the initial ontology can be loaded
@@ -99,6 +102,9 @@ public class UploadLocalOntologyPanel extends VerticalPanel {
 			upload.setTitle("The path to the ontology in your local system");
 			upload.setWidth("300");
 			upload.setName("ontologyFile");
+			
+			preserveOriginalBaseNamespace = new CheckBox("Preserve original base namespace");
+			preserveOriginalBaseNamespace.setChecked(false);
 		}
 		
 		clear();
@@ -153,6 +159,14 @@ public class UploadLocalOntologyPanel extends VerticalPanel {
 					HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE
 			);
 			row++;
+			
+			panel.getFlexCellFormatter().setColSpan(row, 0, 2);
+			panel.setWidget(row, 0, preserveOriginalBaseNamespace);
+			panel.getFlexCellFormatter().setAlignment(row, 1, 
+					HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE
+			);
+			row++;
+			
 		}
 		
 		HorizontalPanel buttons = new HorizontalPanel();
@@ -434,6 +448,8 @@ public class UploadLocalOntologyPanel extends VerticalPanel {
 		
 		details = tempOntologyInfo.getDetails();
 		detailsButton.setEnabled(true);
+		
+		tempOntologyInfo.setPreserveOriginalBaseNamespace(preserveOriginalBaseNamespace.isChecked());
 		
 		if ( tempOntologyInfoListener != null ) {
 			tempOntologyInfoListener.tempOntologyInfoObtained(tempOntologyInfo);
