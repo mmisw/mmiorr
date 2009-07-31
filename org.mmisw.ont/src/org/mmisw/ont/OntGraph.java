@@ -120,6 +120,7 @@ public class OntGraph {
 					//log.error("shouldn't happen", e);
 					//
 					// ... so, load the original ontology:
+					log.info("    RH: " +full_path);
 					_model.add(model);
 					// <re-host>
 					
