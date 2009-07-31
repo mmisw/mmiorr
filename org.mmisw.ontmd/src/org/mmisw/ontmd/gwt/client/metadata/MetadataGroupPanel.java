@@ -213,8 +213,11 @@ public class MetadataGroupPanel extends VerticalPanel {
 	}
 	
 	private void formChanged() {
-		// TODO Auto-generated method stub
 		
+		Map<String, String> values = new HashMap<String, String>();
+		putValues(values, false);
+		
+		ontologyPanel.formChanged(values);
 	}
 	
 	/** 
@@ -387,6 +390,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 			resourceTypeWidget.setExample();
 		}
 
+		formChanged();
 	}
 	
 	void resetToOriginalOrNewValues(OntologyMetadata ontologyMetadata, boolean originalVals, boolean confirm) {
@@ -394,6 +398,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 			return;
 		}
 		resetToEmpty();
+		formChanged();
 		Map<String, String> originalValues = 
 			originalVals 
 			? ontologyMetadata.getOriginalValues() 
@@ -443,6 +448,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 			resourceTypeWidget.resetFieldValues(originalValues);
 		}
 
+		formChanged();
 	}
 	
 }
