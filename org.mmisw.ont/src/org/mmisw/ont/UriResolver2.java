@@ -139,18 +139,25 @@ public class UriResolver2 {
 			// HTML
 			else if ( req.outFormat.equalsIgnoreCase("html") ) {
 				
-				// redirect to the OntMd service.
-				// Note: drop any extension here (the OntMd service will do the appropriate request
-				// back to this Ont service): 
+				// Redirect to the appropriate service.
+				
 				String ontologyUri;
-				if ( req.mmiUri != null ) {
+				
+				if ( req.ontology != null ) {
+					ontologyUri = req.ontology.getUri();
+				}
+				else if ( req.mmiUri != null ) {
+					// Note: drop any extension here (the OntMd service will do the appropriate request
+					// back to this Ont service): 
 					ontologyUri = req.mmiUri.getOntologyUriWithExtension("");
 				}
 				else {
 					ontologyUri = req.fullRequestedUri;
 				}
 				
-//				String url = "http://mmisw.org/ontmd?ontologyUri=" +ontologyUri;
+				//the "old" ontmd mechanism:
+				//String url = "http://mmisw.org/ontmd?ontologyUri=" +ontologyUri;
+				
 				String url = "http://mmisw.org/portal/#" +ontologyUri;
 				if ( log.isDebugEnabled() ) {
 					log.debug("REDIRECTING TO: " +url);
