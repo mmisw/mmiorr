@@ -120,6 +120,10 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 	public OntologyMetadata getOntologyMetadata() {
 		return ontologyInfoPre.getOntologyMetadata();
 	}
+	
+	public void formChanged(Map<String, String> values) {
+		// Not implemented
+	}
 
 
 	public MainPanel(final Map<String, String> params) {
