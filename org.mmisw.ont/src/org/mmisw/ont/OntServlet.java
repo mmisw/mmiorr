@@ -348,7 +348,9 @@ public class OntServlet extends HttpServlet {
 				log.debug("dispatching "+ ontOrEntUri+ " as whole ontology (not entity)");
 			}
 			
+			// use ontology member in req and make sure the Uri attribute is set
 			req.ontology = ontology;
+			req.ontology.setUri(ontOrEntUri);
 			uriResolver2.serviceForOntology(req);
 		}
 		else {
