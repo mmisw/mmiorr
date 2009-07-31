@@ -211,7 +211,6 @@ public class UriResolver2 {
 		
 		Response resp = null;
 		
-		final String fullRequestedUri = req.request.getRequestURL().toString();
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("UriResolver2.service: mmiUri = " +req.mmiUri);
@@ -235,6 +234,7 @@ public class UriResolver2 {
 			resp.dispatch();
 		}
 		else {
+			String fullRequestedUri = req.request.getRequestURL().toString();
 			req.response.sendError(HttpServletResponse.SC_NOT_FOUND, fullRequestedUri);		
 		}
 	}
@@ -396,6 +396,51 @@ public class UriResolver2 {
 	}
 
 	
+	/**
+	 * Gets the response for a given ontology
+	 */
+	void serviceForOntology(final Ontology ontology) throws ServletException, IOException {
+		
+		Response resp = null;
+		
+		final File file = OntServlet.getFullPath(ontology, ontConfig, log);
+		
+		if ( !file.canRead() ) {
+			// This should not happen.
+			resp = new InternalErrorResponse(
+					file.getAbsolutePath()+ ": internal error: uploaded file "
+					+ (file.exists() ? "exists but cannot be read." : "not found.")
+					+ "Please, report this bug."
+			);
+		}
+		else {
+			// original model:
+			final String uriFile = file.toURI().toString();
+			final OntModel originalModel = JenaUtil.loadModel(uriFile, false);
+
+			if ( originalModel == null ) {
+				// This should not happen.
+				resp = new InternalErrorResponse(
+						file.getAbsolutePath()+ ": internal error: uploaded file "
+						+ "cannot be read as an ontology model. "
+						+ "Please, report this bug."
+				);
+			}
+
+			OntModel model = originalModel;
+
+			resp = new OntologyResponse(model);
+		}
+		
+		if ( resp != null ) {
+			resp.dispatch();
+		}
+		else {
+			req.response.sendError(HttpServletResponse.SC_NOT_FOUND, ontology.getUri());		
+		}
+
+	}
+
 	
 	private Response _getResponseForNonMmiUri() {
 		// ...   

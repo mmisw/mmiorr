@@ -344,7 +344,8 @@ public class OntServlet extends HttpServlet {
 			if ( log.isDebugEnabled() ) {
 				log.debug("dispatching "+ ontOrEntUri+ " as whole ontology (not entity)");
 			}
-			uriResolver2.service(req);
+			
+			uriResolver2.serviceForOntology(ontology);
 		}
 		else {
 			// dispatch entity URI (not complete ontology)
