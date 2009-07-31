@@ -342,7 +342,7 @@ public class OntServlet extends HttpServlet {
 			// yes, it's a stored ontology--dispatch as if it were a regular call to resolve the ontology
 			
 			if ( log.isDebugEnabled() ) {
-				log.debug("dispatching "+ ontOrEntUri+ " as whole ontology (not entotity)");
+				log.debug("dispatching "+ ontOrEntUri+ " as whole ontology (not entity)");
 			}
 			uriResolver2.service(req);
 		}
