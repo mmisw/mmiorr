@@ -213,11 +213,21 @@ public class UriResolver2 {
 		
 		final String fullRequestedUri = req.request.getRequestURL().toString();
 		
+		if ( log.isDebugEnabled() ) {
+			log.debug("UriResolver2.service: mmiUri = " +req.mmiUri);
+		}
+		
 		if ( req.mmiUri != null ) {
+			if ( log.isDebugEnabled() ) {
+				log.debug("UriResolver2._getResponseForMmiUri.");
+			}
 			resp = _getResponseForMmiUri();
 		}
 		else {
 			// NOT a regular MmiUri request.
+			if ( log.isDebugEnabled() ) {
+				log.debug("UriResolver2._getResponseForNonMmiUri.");
+			}
 			resp = _getResponseForNonMmiUri();
 		}
 		
