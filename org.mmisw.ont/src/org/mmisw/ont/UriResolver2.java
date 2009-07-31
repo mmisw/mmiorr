@@ -399,11 +399,12 @@ public class UriResolver2 {
 	/**
 	 * Gets the response for a given ontology
 	 */
-	void serviceForOntology(final Ontology ontology) throws ServletException, IOException {
+	void serviceForOntology(Request req) throws ServletException, IOException {
+		this.req = req;
 		
 		Response resp = null;
 		
-		final File file = OntServlet.getFullPath(ontology, ontConfig, log);
+		final File file = OntServlet.getFullPath(req.ontology, ontConfig, log);
 		
 		if ( !file.canRead() ) {
 			// This should not happen.
@@ -436,7 +437,7 @@ public class UriResolver2 {
 			resp.dispatch();
 		}
 		else {
-			req.response.sendError(HttpServletResponse.SC_NOT_FOUND, ontology.getUri());		
+			req.response.sendError(HttpServletResponse.SC_NOT_FOUND, req.ontology.getUri());		
 		}
 
 	}

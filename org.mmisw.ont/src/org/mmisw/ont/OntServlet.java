@@ -78,6 +78,9 @@ public class OntServlet extends HttpServlet {
 		final MmiUri mmiUri;
 		final String outFormat;
 		
+		// in case the ontology info is obtained somehow, use it:
+		Ontology ontology;
+		
 		
 		Request(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) {
 			this.servletContext = servletContext;
@@ -345,7 +348,8 @@ public class OntServlet extends HttpServlet {
 				log.debug("dispatching "+ ontOrEntUri+ " as whole ontology (not entity)");
 			}
 			
-			uriResolver2.serviceForOntology(ontology);
+			req.ontology = ontology;
+			uriResolver2.serviceForOntology(req);
 		}
 		else {
 			// dispatch entity URI (not complete ontology)
