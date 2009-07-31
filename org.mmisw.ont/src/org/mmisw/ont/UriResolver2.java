@@ -150,9 +150,10 @@ public class UriResolver2 {
 					ontologyUri = req.fullRequestedUri;
 				}
 				
-				String url = "http://mmisw.org/ontmd?ontologyUri=" +ontologyUri;
+//				String url = "http://mmisw.org/ontmd?ontologyUri=" +ontologyUri;
+				String url = "http://mmisw.org/portal/#" +ontologyUri;
 				if ( log.isDebugEnabled() ) {
-					log.debug("Redirecting to OntMd service: " +url);
+					log.debug("REDIRECTING TO: " +url);
 				}
 				String redir = req.response.encodeRedirectURL(url);
 				req.response.sendRedirect(redir);
