@@ -31,6 +31,9 @@ Created: 2009-05-13
 	
 	- JenaUtil2.removeTrailingFragment: not only / but also trailing # is removed.  This change
 	  responds to the re-hosting request.
+	  
+	- Added createOntologyResult.isPreserveOriginalBaseNamespace for convenience: it's set up in
+	  createOntology and also used in registerOntology
 	
 2009-07-26
 	

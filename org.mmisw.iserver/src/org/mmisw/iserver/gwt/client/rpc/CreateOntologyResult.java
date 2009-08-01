@@ -15,6 +15,8 @@ public class CreateOntologyResult extends BaseResult {
 	private String uri = null;
 	private String fullPath;
 	
+	private boolean preserveOriginalBaseNamespace;
+	
 
 	public CreateOntologyResult() {
 	}
@@ -57,6 +59,23 @@ public class CreateOntologyResult extends BaseResult {
 	 */
 	public void setCreateOntologyInfo(CreateOntologyInfo createOntologyInfo) {
 		this.createOntologyInfo = createOntologyInfo;
+	}
+
+
+	/**
+	 * @return the preserveOriginalBaseNamespace
+	 */
+	public boolean isPreserveOriginalBaseNamespace() {
+		return preserveOriginalBaseNamespace;
+	}
+
+
+	/**
+	 * @param preserveOriginalBaseNamespace the preserveOriginalBaseNamespace to set
+	 */
+	public void setPreserveOriginalBaseNamespace(
+			boolean preserveOriginalBaseNamespace) {
+		this.preserveOriginalBaseNamespace = preserveOriginalBaseNamespace;
 	}
 
 	

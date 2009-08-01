@@ -537,13 +537,13 @@ public class Server implements IServer {
 		createOntologyResult.setCreateOntologyInfo(createOntologyInfo);
 		
 		//{pons      pons: sections related with preserveOriginalBaseNamespace
-		boolean preserveOriginalBaseNamespace = false;
+		createOntologyResult.setPreserveOriginalBaseNamespace(false);
 		// this flag will be only true in the case where an external ontology is to be registered
 		// and the user indicates that the original base namespace be preserved.
 		if ( dataCreationInfo instanceof OtherDataCreationInfo ) {
 			OtherDataCreationInfo odci = (OtherDataCreationInfo) dataCreationInfo;
 			TempOntologyInfo toi = odci.getTempOntologyInfo();
-			preserveOriginalBaseNamespace = toi != null && toi.isPreserveOriginalBaseNamespace();
+			createOntologyResult.setPreserveOriginalBaseNamespace(toi != null && toi.isPreserveOriginalBaseNamespace());
 		}
 		//}pons
 		
@@ -574,7 +574,7 @@ public class Server implements IServer {
 		final String shortName = newValues.get(Omv.acronym.getURI());
 		// TODO: shortName taken NOT from acronym but from a new field explicitly for the shortName piece
 
-		if ( ! preserveOriginalBaseNamespace ) {
+		if ( ! createOntologyResult.isPreserveOriginalBaseNamespace() ) {
 			//pons: check the following if regular assignment of namespace
 			
 			if ( orgAbbreviation == null ) {
@@ -736,7 +736,7 @@ public class Server implements IServer {
 		String base_;
 
 		
-		if ( preserveOriginalBaseNamespace ) {
+		if ( createOntologyResult.isPreserveOriginalBaseNamespace() ) {
 			//pons:  just use original namespace
 			ns_ = original_ns_;
 			base_ = JenaUtil2.removeTrailingFragment(ns_);
@@ -861,8 +861,10 @@ public class Server implements IServer {
 		String rdf = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV") ;  // XXX newOntModel);
 		
 		//TODO: pons: print result RDF for testing
-		if ( preserveOriginalBaseNamespace ) {
-			System.out.println(rdf);
+		if ( log.isDebugEnabled() ) {
+			if ( createOntologyResult.isPreserveOriginalBaseNamespace() ) {
+				log.debug(rdf);
+			}
 		}
 		
 		createOntologyResult.setUri(base_);
@@ -996,34 +998,37 @@ public class Server implements IServer {
 				fileName += ".owl";
 			}
 			
-			// We are about to do the actual registration. But first, re-check that there is NO a preexisting
-			// ontology that may conflict with this one.
-			// NOTE: this check has been done already in the review operation; however, we repeat it here
-			// in case there is a new registration done by other user in the meantime. Of course, we
-			// are NOT completely solving the potential concurrency problem with this re-check; we are just
-			// reducing the chances of that event.
-			if ( ontologyId == null ) {
-				
-				final String namespaceRoot = newValues.get("namespaceRoot") != null 
-						? newValues.get("namespaceRoot")
-						:  DEFAULT_NAMESPACE_ROOT;
-
-				final String orgAbbreviation = newValues.get(OmvMmi.origMaintainerCode.getURI());
-				final String shortName = newValues.get(Omv.acronym.getURI());
-
-				if ( ! Util2.checkNoPreexistingOntology(namespaceRoot, orgAbbreviation, shortName, registerOntologyResult) ) {
-					return registerOntologyResult;
+			
+			if ( ! createOntologyResult.isPreserveOriginalBaseNamespace() ) {
+				// We are about to do the actual registration. But first, re-check that there is NO a preexisting
+				// ontology that may conflict with this one.
+				// NOTE: this check has been done already in the review operation; however, we repeat it here
+				// in case there is a new registration done by other user in the meantime. Of course, we
+				// are NOT completely solving the potential concurrency problem with this re-check; we are just
+				// reducing the chances of that event.
+				if ( ontologyId == null ) {
+					
+					final String namespaceRoot = newValues.get("namespaceRoot") != null 
+							? newValues.get("namespaceRoot")
+							:  DEFAULT_NAMESPACE_ROOT;
+	
+					final String orgAbbreviation = newValues.get(OmvMmi.origMaintainerCode.getURI());
+					final String shortName = newValues.get(Omv.acronym.getURI());
+	
+					if ( ! Util2.checkNoPreexistingOntology(namespaceRoot, orgAbbreviation, shortName, registerOntologyResult) ) {
+						return registerOntologyResult;
+					}
+	
 				}
-
+				else {
+					// This is a submission of a *new version* of an existing ontology.
+					// Nothing needs to be checked here.
+					// NOTE: We don't need to repeat the _checkUriKeyCombinationForNewVersion step here
+					// as any change in the contents of the metadata forces the user to explicitly
+					// do the "review" operation, which already takes care of that check.
+				}
 			}
-			else {
-				// This is a submission of a *new version* of an existing ontology.
-				// Nothing needs to be checked here.
-				// NOTE: We don't need to repeat the _checkUriKeyCombinationForNewVersion step here
-				// as any change in the contents of the metadata forces the user to explicitly
-				// do the "review" operation, which already takes care of that check.
-			}
-
+			
 			// OK, now do the actual registration:
 			OntologyUploader createOnt = new OntologyUploader(uri, fileName, rdf, 
 					loginResult,
