@@ -14,6 +14,16 @@ public class OntServiceUtil {
 	private static final String ONT = "http://mmisw.org/ont";
 	
 	/**
+	 * Returns the URL of the "Ont" service.
+	 * @return the URL of the "Ont" service.
+	 */
+	// TODO perhaps move this to a configuration related class
+	public static String getOntServiceUrl() {
+		return ONT;
+	}
+	
+	
+	/**
 	 * Resolves a URI against the "Ont" service.
 	 * Note that instead of trying to use the uri as given (for auto resolution), the
 	 * "uri" parameter is used. This, in particular, allows to resolve ontologies in the

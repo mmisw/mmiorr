@@ -26,6 +26,8 @@ Created: 2009-05-13
 		Util2: checks for duplicate URI
 		VocabCreator: uses Server.DEFAULT_NAMESPACE_ROOT
 		
+		
+	- new OntServiceUtil.getOntServiceUrl()
 	
 2009-07-26
 	
