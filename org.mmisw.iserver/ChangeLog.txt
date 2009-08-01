@@ -29,6 +29,9 @@ Created: 2009-05-13
 		
 	- new OntServiceUtil.getOntServiceUrl()
 	
+	- JenaUtil2.removeTrailingFragment: not only / but also trailing # is removed.  This change
+	  responds to the re-hosting request.
+	
 2009-07-26
 	
 	Preparations for re-hosting of external ontology:
