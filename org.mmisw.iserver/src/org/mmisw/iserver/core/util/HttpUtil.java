@@ -4,15 +4,23 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 
+/**
+ * HTTP client utilities.
+ * 
+ * @author Carlos Rueda
+ */
 public class HttpUtil {
-	public static String getAsString(String uri) throws Exception {
+	public static String getAsString(String uri, String... acceptEntries) throws Exception {
 		System.out.println("getAsString. uri= " +uri);
-		return getAsString(uri, Integer.MAX_VALUE);
+		return getAsString(uri, Integer.MAX_VALUE, acceptEntries);
 	}
 	
-	public static String getAsString(String uri, int maxlen) throws Exception {
+	private static String getAsString(String uri, int maxlen, String... acceptEntries) throws Exception {
 		HttpClient client = new HttpClient();
 	    GetMethod meth = new GetMethod(uri);
+	    for ( String acceptEntry : acceptEntries ) {
+	    	meth.addRequestHeader("accept", acceptEntry);
+	    }
 	    try {
 	        client.executeMethod(meth);
 
@@ -31,7 +39,7 @@ public class HttpUtil {
 	/** Executes an HTTP GET request.
 	 * @returns the returned status code. 
 	 */
-	public static int httpGet(String uri, String... acceptEntries) throws Exception {
+	public static int httpGetStatusCode(String uri, String... acceptEntries) throws Exception {
 		HttpClient client = new HttpClient();
 	    GetMethod meth = new GetMethod(uri);
 	    for ( String acceptEntry : acceptEntries ) {
