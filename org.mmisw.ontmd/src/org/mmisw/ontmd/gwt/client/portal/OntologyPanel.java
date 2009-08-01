@@ -52,6 +52,11 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	private final DisclosurePanel mdDisclosure = new DisclosurePanel("Metadata details");
 	private final DisclosurePanel dataDisclosure = new DisclosurePanel("Contents");
 	
+	
+	private static final boolean USE_ONTOLOGY_URI_PANEL = false; 
+	private OntologyUriPanel ontologyUriPanel = USE_ONTOLOGY_URI_PANEL? new OntologyUriPanel() : null;
+	
+
 	// re-created depending on type of interface: editing or viewwing
 	private MetadataPanel metadataPanel;
 	
@@ -66,11 +71,22 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	private RegisteredOntologyInfo ontologyInfo;
 	
 	
-	
+	// IOntologyPanel operation
 	public OntologyMetadata getOntologyMetadata() {
 		return ontologyInfo.getOntologyMetadata();
 	}
 
+	// IOntologyPanel operation
+	public void formChanged(Map<String, String> values) {
+		
+		String authority = values.get("http://mmisw.org/ont/mmi/20081020/ontologyMetadata/origMaintainerCode");
+		String shortName = values.get("http://omv.ontoware.org/2005/05/ontology#acronym");
+		
+		if ( USE_ONTOLOGY_URI_PANEL ) {
+			ontologyUriPanel.update(authority, shortName);
+		}
+	}
+	
 
 	/**
 	 * Prepares the overall interface for the given ontology.
@@ -132,7 +148,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		
 		ontologyInfo.setDisplayLabel("(creating new ontology)");
 		ontologyInfo.setUri("");
-		headerPanel.resetElements(false);
+		headerPanel.resetElements(false, true);
 		headerPanel.updateTitle("<b>" +ontologyInfo.getDisplayLabel()+ "</b> - "+ontologyInfo.getUri()+ "<br/>");
 		metadataPanel = new MetadataPanel(this, true);
 		mdDisclosure.setContent(metadataPanel);
@@ -195,7 +211,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		
 		boolean readOnly = interfaceType == InterfaceType.BROWSE || interfaceType == InterfaceType.ONTOLOGY_VIEW;
 		
-		headerPanel.resetElements(readOnly);
+		headerPanel.resetElements(readOnly, interfaceType == InterfaceType.ONTOLOGY_EDIT_NEW);
 		metadataPanel = new MetadataPanel(this, !readOnly);
 		mdDisclosure.setContent(metadataPanel);
 
@@ -292,18 +308,33 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 
 		private HTML titleHtml = new HTML();
 		private HTML descriptionHtml = new HTML();
+		
+		
 		HeaderPanel(boolean readOnly) {
 			widget.setWidth("100%");
 			widget.setSpacing(5);
 			widget.setVerticalAlignment(ALIGN_MIDDLE);
 //			widget.setBorderWidth(1);
-			resetElements(readOnly);
+			
+			if ( USE_ONTOLOGY_URI_PANEL ) {
+			if ( ! readOnly ) {
+				ontologyUriPanel.update();
+			}
+			}
+			
+			resetElements(readOnly, false);
 		}
 		
-		void resetElements(boolean readOnly) {
+		void resetElements(boolean readOnly, boolean newOntology) {
 			widget.clear();
 			widget.add(titleHtml);
 			widget.add(descriptionHtml);
+			
+			if ( USE_ONTOLOGY_URI_PANEL ) {
+			if ( ! readOnly && newOntology ) {
+				widget.add(ontologyUriPanel);
+			}
+			}
 		}
 		
 		Widget getWidget() {
@@ -378,6 +409,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		// transfer info about prior ontology, if any, for eventual creation of new version:
 		createOntologyInfo.setOntologyId(ontologyInfo.getOntologyId());
 		createOntologyInfo.setOntologyUserId(ontologyInfo.getOntologyUserId());
+		createOntologyInfo.setNamespaceRoot(ontologyInfo.getNamespaceRoot());
 		createOntologyInfo.setAuthority(ontologyInfo.getAuthority());
 		createOntologyInfo.setShortName(ontologyInfo.getShortName());
 		

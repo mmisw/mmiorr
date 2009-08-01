@@ -3,6 +3,15 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-07-31  
+	1.5.0.alpha2 - including updates in iserver for re-hosting ontologies
+	
+	- Also, preliminary additions to allow the user indicate the namespaceRoot for a newly
+	  created vocabulary. New class OntologyUriPanel used in OntologyPanel.
+	  This code is disabled in the SVN repository (using flag USE_ONTOLOGY_URI_PANEL).
+		
+
+	
 2009-07-26
 	
 	Preparations for re-hosting of external ontology:
