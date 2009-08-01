@@ -36,14 +36,11 @@ public class Util2 {
 	private static final Log log = LogFactory.getLog(Util2.class);
 	
 	
-	/** Ontology URI prefix including root: */
-	// TODO read namespaceRoot from a configuration parameter
-	public static final String namespaceRoot = "http://mmisw.org/ont";
-
-	
 	/**
 	 * Checks the preexistence of an ontology to determine the possible conflict with an ontology that
 	 * is about to be uploaded as *new*.
+	 * 
+	 * @param namespaceRoot    host-domain + ontologyRoot
 	 * 
 	 * @param orgAbbreviation  Part of the key combination
 	 * @param shortName        Part of the key combination
@@ -54,7 +51,7 @@ public class Util2 {
 	 * @return true if there is NO existing ontology with the given parameters; false if there IS an existing
 	 *            ontology OR some error occurred.  If false is returned, result.getError() will be non-null.
 	 */
-	public static boolean checkNoPreexistingOntology(String orgAbbreviation, String shortName, BaseResult result) {
+	public static boolean checkNoPreexistingOntology(String namespaceRoot, String orgAbbreviation, String shortName, BaseResult result) {
 		// See issue 63: http://code.google.com/p/mmisw/issues/detail?id=63
 		
 		// the (unversioned) URI to check for preexisting ontology:
@@ -69,7 +66,7 @@ public class Util2 {
 		// we just need to know whether this URI resolves:
 		boolean possibleOntologyExists = false;
 		try {
-			int statusCode = HttpUtil.httpGet(possibleOntologyUri, "application/rdf+xml");
+			int statusCode = HttpUtil.httpGetStatusCode(possibleOntologyUri, "application/rdf+xml");
 			if ( log.isDebugEnabled() ) {
 				log.debug("HTTP GET status code: " +statusCode+ ": " +HttpStatus.getStatusText(statusCode));
 			}
@@ -110,6 +107,8 @@ public class Util2 {
 	/**
 	 * Checks the new ontology URI key combination for possible changes.
 	 * 
+	 * @param namespaceRoot    host-domain + ontologyRoot
+	 * 
 	 * @param originalOrgAbbreviation  Part of the original key combination
 	 * @param originalShortName        Part of the original key combination
 	 * 
@@ -122,6 +121,7 @@ public class Util2 {
 	 *         false if there IS any error (result.getError() will be non-null).
 	 */
 	public static boolean checkUriKeyCombinationForNewVersion(
+			String originalNamespaceRoot, String namespaceRoot,
 			String originalOrgAbbreviation, String originalShortName, 
 			String orgAbbreviation, String shortName, BaseResult result) {
 		
@@ -129,7 +129,11 @@ public class Util2 {
 		//               "new version allows the shortName and authority to be changed"
 		
 		
-		if ( originalOrgAbbreviation == null ) {
+		if ( originalNamespaceRoot == null ) {
+			result.setError("No original namespaceRoot given!");
+			return false;
+		}
+		else if ( originalOrgAbbreviation == null ) {
 			result.setError("No original authority given!");
 			return false;
 		}

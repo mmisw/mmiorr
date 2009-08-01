@@ -2,6 +2,31 @@ org.mmisw.iserver
 Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 
+2009-07-31  
+	1.5.0.alpha2
+	Continuing with "re-hosting" feature:
+	
+	- OntServiceUtil: new class with utility to resolve an ontology URI against the "Ont" service
+	  but using the "uri" parameter, instead of trying to use the URI itself.
+	- JenaUtil2.retrieveModel: based on service above.
+	- Server:
+		- getOntologyInfo: handle MmiUri case but also, non MmiUri (as a case of re-hosted ontology).
+		  Note that the same (re-hosted) URI string is handled as both the versioned and unversioned,
+		  TODO define versioning mechanism!
+		- getOntologyContents: now uses JenaUtil2.retrieveModel
+		- Other changes related with namespaceRoot, see below. 
+		
+	  
+	- Some new attributes and various change under experimentation regarding user-given namespaceRoot
+	  to construct the ontology URI:   
+	  (NOTE: all of this may be reverted when general re-hosting mechanism is completed) 
+		CreateOntologyInfo.namespaceRoot
+		RegisteredOntologyInfo.namespaceRoot
+		MetadataBaseInfo.authorityAbbreviationUri
+		Util2: checks for duplicate URI
+		VocabCreator: uses Server.DEFAULT_NAMESPACE_ROOT
+		
+	
 2009-07-26
 	
 	Preparations for re-hosting of external ontology:

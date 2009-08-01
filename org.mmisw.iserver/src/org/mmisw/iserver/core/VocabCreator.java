@@ -13,7 +13,6 @@ import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.util.JenaUtil2;
 import org.mmisw.iserver.core.util.StringManipulationUtil;
 import org.mmisw.iserver.core.util.Utf8Util;
-import org.mmisw.iserver.core.util.Util2;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyDataCreationInfo;
@@ -176,7 +175,7 @@ public class VocabCreator {
 		Map<String, String> values = createOntologyInfo.getMetadataValues();
 		
 		
-		this.namespaceRoot = Util2.namespaceRoot;
+		this.namespaceRoot = Server.DEFAULT_NAMESPACE_ROOT;
 		this.orgAbbreviation = createOntologyInfo.getAuthority();
 		this.shortName = createOntologyInfo.getShortName();
 		

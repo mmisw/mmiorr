@@ -1,6 +1,7 @@
 package org.mmisw.iserver.core.util;
 
 import java.io.InputStream;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.mmisw.iserver.gwt.client.rpc.BaseOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.ClassInfo;
@@ -709,11 +711,18 @@ public class QueryUtil {
 		
 		URL url = new URL(uriModel);
 		InputStream is = url.openStream();
-		Utf8Util.verifyUtf8(is);
+		
+		byte[] bytes = IOUtils.toByteArray(is);
+		Utf8Util.verifyUtf8(bytes);
 		
 		OntModel model = createDefaultOntModel();
 		uriModel = JenaUtil2.removeTrailingFragment(uriModel);
-		model.read(uriModel);
+		
+		StringReader sr = new StringReader(new String(bytes));
+		
+//		model.read(uriModel);
+		model.read(sr, uriModel);
+		
 		return model;
 	}
 

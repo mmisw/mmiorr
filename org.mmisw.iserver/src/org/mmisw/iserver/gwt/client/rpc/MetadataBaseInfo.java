@@ -15,6 +15,7 @@ public class MetadataBaseInfo implements IsSerializable {
 	private AttrGroup[] attrGroups = {};
 	
 	private String resourceTypeUri;
+	private String authorityAbbreviationUri;
 	
 	private String error;
 	
@@ -37,13 +38,23 @@ public class MetadataBaseInfo implements IsSerializable {
 	
 	/**
 	 *  NOTE: this attribute has a special handling in the GUI
-	 * (not very elegant by time contrains force quick solutions!)
 	 */
 	public String getResourceTypeUri() {
 		return resourceTypeUri;
 	}
 	public void setResourceTypeUri(String resourceTypeUri) {
 		this.resourceTypeUri = resourceTypeUri;
+	}
+	
+	/**
+	 *  NOTE: this attribute has a special handling in the GUI
+	 * @return the authorityAbbreviationUri
+	 */
+	public String getAuthorityAbbreviationUri() {
+		return authorityAbbreviationUri;
+	}
+	public void setAuthorityAbbreviationUri(String authorityAbbreviationUri) {
+		this.authorityAbbreviationUri = authorityAbbreviationUri;
 	}
 
 	public void setError(String error) {

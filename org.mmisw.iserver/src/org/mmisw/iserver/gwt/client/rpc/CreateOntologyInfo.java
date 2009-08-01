@@ -10,6 +10,8 @@ import java.util.Map;
 public class CreateOntologyInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	private String namespaceRoot;
+	
 	private String authority;
 	private String shortName;
 	
@@ -30,6 +32,22 @@ public class CreateOntologyInfo implements Serializable {
 	}
 	
 	
+	/**
+	 * @return the namespaceRoot
+	 */
+	public String getNamespaceRoot() {
+		return namespaceRoot;
+	}
+
+
+	/**
+	 * @param namespaceRoot the namespaceRoot to set
+	 */
+	public void setNamespaceRoot(String namespaceRoot) {
+		this.namespaceRoot = namespaceRoot;
+	}
+
+
 	/**
 	 * @return the authority
 	 */

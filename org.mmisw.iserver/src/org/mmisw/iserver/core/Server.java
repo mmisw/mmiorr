@@ -72,7 +72,11 @@ public class Server implements IServer {
 	private static final String ONT = "http://mmisw.org/ont";
 	private static final String LISTALL = ONT + "?listall";
 
-	
+	/** Ontology URI prefix including root: */
+	// TODO read namespaceRoot from a configuration parameter
+	public static final String DEFAULT_NAMESPACE_ROOT = "http://mmisw.org/ont";
+
+
 	private final AppInfo appInfo = new AppInfo("MMISW IServer");
 	private final Log log = LogFactory.getLog(Server.class);
 
@@ -130,6 +134,7 @@ public class Server implements IServer {
 			metadataBaseInfo = new MetadataBaseInfo();
 			
 			metadataBaseInfo.setResourceTypeUri(Omv.acronym.getURI());
+			metadataBaseInfo.setAuthorityAbbreviationUri(OmvMmi.origMaintainerCode.getURI());
 			
 			MdHelper.prepareGroups(includeVersion, resourceTypeClassUri, authorityClassUri);
 			AttrGroup[] attrGroups = MdHelper.getAttrGroups();
@@ -238,9 +243,12 @@ public class Server implements IServer {
 				unversionedUri = mmiUri.copyWithVersion(null).getOntologyUri();
 			}
 			catch (URISyntaxException e) {
-				// shouldn't happen.
-				log.error("error creating MmiUri from: " +ontologyUri, e);
-				continue;
+				
+				// re-hosted
+				// FIXME  setting and hoc values temporarily
+				authority = ontologyUri;
+				shortName = "tempshortname";
+				unversionedUri = ontologyUri;
 			}
 
 			if ( onlyThisUnversionedUri != null && ! onlyThisUnversionedUri.equals(unversionedUri) ) {
@@ -284,6 +292,11 @@ public class Server implements IServer {
 			});
 		}
 		
+		if ( log.isDebugEnabled() ) {
+			log.debug("getUnversionedToOntologyInfoListMap: " +unversionedToVersioned.size()+ " ontologies.");
+		}
+
+
 		return unversionedToVersioned;
 	}
 
@@ -332,58 +345,85 @@ public class Server implements IServer {
 		return onts;
 	}
 	
-	
 	public RegisteredOntologyInfo getOntologyInfo(String ontologyUri) {
 		try {
 			MmiUri mmiUri = new MmiUri(ontologyUri);
 			
-			// get elements associated with the unversioned form of the requested URI:
-			String unversOntologyUri = mmiUri.copyWithVersion(null).getOntologyUri();
-			Map<String, List<RegisteredOntologyInfo>> unversionedToVersioned = getUnversionedToOntologyInfoListMap(unversOntologyUri);
-
-			if ( unversionedToVersioned.isEmpty() ) {
-				return null; // not found
+			// it's an MmiUri. dispatch it as usual:
+			return getOntologyInfoFromMmiUri(ontologyUri, mmiUri);
+		}
+		catch (Exception e) {
+			
+			// re-hosted
+			String unversOntologyUri = ontologyUri;
+			try {
+				return getOntologyInfoUseGivenUnversioned(ontologyUri, unversOntologyUri);
 			}
-			assert unversionedToVersioned.size() == 1;
-			
-			// get the list of ontologies with same unversioned URI
-			List<RegisteredOntologyInfo> list = unversionedToVersioned.values().iterator().next();
-			
-			// Two main cases: 
-			//
-			//  a) unversioned URI request -> just return first entry in list, which is the most recent,
-			//     but making the Uri property equal to the UnversionedUri property
-			//
-			//  b) versioned URI request -> search the list for the exact match, if any
-			//
-			
-			
-			if ( ontologyUri.equals(unversOntologyUri) ) {
-				// a) unversioned URI request, eg., http://mmisw.org/ont/seadatanet/qualityFlag
-				// just return first entry in list
-				RegisteredOntologyInfo oi = list.get(0);
-				oi.setUri(oi.getUnversionedUri());
+			catch (Exception e1) {
+				String error = e.getMessage();
+				log.error("Error getting list of all ontologies. ", e);
+				RegisteredOntologyInfo oi = new RegisteredOntologyInfo();
+				oi.setError(error);
 				return oi;
 			}
-			else {
-				// b) versioned URI request, eg., http://mmisw.org/ont/seadatanet/20081113T205440/qualityFlag
-				// Search list for exact match
-				for ( RegisteredOntologyInfo oi : list ) {
-					if ( ontologyUri.equals(oi.getUri()) ) {
-						return oi;
-					}
-				}
-				return null;  // not found
-			}
+			
+		}
+	}
+
+	private RegisteredOntologyInfo getOntologyInfoFromMmiUri(String ontologyUri, MmiUri mmiUri) {
+		try {	
+			// get elements associated with the unversioned form of the requested URI:
+			String unversOntologyUri = mmiUri.copyWithVersion(null).getOntologyUri();
+			return getOntologyInfoUseGivenUnversioned(ontologyUri, unversOntologyUri);
 		}
 		catch (Exception e) {
 			String error = e.getMessage();
-			log.error("Error getting list of all ontologies. ", e);
+			log.error("getOntologyInfoFromMmiUri: Error.", e);
 			RegisteredOntologyInfo oi = new RegisteredOntologyInfo();
 			oi.setError(error);
 			return oi;
 		}
-		
+	}
+	
+	
+	private RegisteredOntologyInfo getOntologyInfoUseGivenUnversioned(String ontologyUri, String unversOntologyUri) throws Exception {
+
+		Map<String, List<RegisteredOntologyInfo>> unversionedToVersioned = getUnversionedToOntologyInfoListMap(unversOntologyUri);
+
+		if ( unversionedToVersioned.isEmpty() ) {
+			return null; // not found
+		}
+		assert unversionedToVersioned.size() == 1;
+
+		// get the list of ontologies with same unversioned URI
+		List<RegisteredOntologyInfo> list = unversionedToVersioned.values().iterator().next();
+
+		// Two main cases: 
+		//
+		//  a) unversioned URI request -> just return first entry in list, which is the most recent,
+		//     but making the Uri property equal to the UnversionedUri property
+		//
+		//  b) versioned URI request -> search the list for the exact match, if any
+		//
+
+
+		if ( ontologyUri.equals(unversOntologyUri) ) {
+			// a) unversioned URI request, eg., http://mmisw.org/ont/seadatanet/qualityFlag
+			// just return first entry in list
+			RegisteredOntologyInfo oi = list.get(0);
+			oi.setUri(oi.getUnversionedUri());
+			return oi;
+		}
+		else {
+			// b) versioned URI request, eg., http://mmisw.org/ont/seadatanet/20081113T205440/qualityFlag
+			// Search list for exact match
+			for ( RegisteredOntologyInfo oi : list ) {
+				if ( ontologyUri.equals(oi.getUri()) ) {
+					return oi;
+				}
+			}
+			return null;  // not found
+		}
 	}
 
 	public RegisteredOntologyInfo getEntities(RegisteredOntologyInfo registeredOntologyInfo) {
@@ -434,7 +474,8 @@ public class Server implements IServer {
 		
 		OntModel ontModel;
 		try {
-			ontModel = QueryUtil.loadModel(registeredOntologyInfo.getUri());
+//			ontModel = QueryUtil.loadModel(registeredOntologyInfo.getUri());
+			ontModel = JenaUtil2.retrieveModel(registeredOntologyInfo.getUri());
 		}
 		catch (Exception e) {
 			String error = "Error loading model: " +e.getMessage();
@@ -525,6 +566,10 @@ public class Server implements IServer {
 		}
 		
 		
+		final String namespaceRoot = newValues.get("namespaceRoot") != null 
+			? newValues.get("namespaceRoot")
+			:  DEFAULT_NAMESPACE_ROOT;
+		
 		final String orgAbbreviation = newValues.get(OmvMmi.origMaintainerCode.getURI());
 		final String shortName = newValues.get(Omv.acronym.getURI());
 		// TODO: shortName taken NOT from acronym but from a new field explicitly for the shortName piece
@@ -551,7 +596,7 @@ public class Server implements IServer {
 				// This is a new submission. We need to check for any conflict with a preexisting
 				// ontology in the repository with the same shortName+orgAbbreviation combination
 				//
-				if ( ! Util2.checkNoPreexistingOntology(orgAbbreviation, shortName, createOntologyResult) ) {
+				if ( ! Util2.checkNoPreexistingOntology(namespaceRoot, orgAbbreviation, shortName, createOntologyResult) ) {
 					return createOntologyResult;
 				}
 			}
@@ -560,10 +605,14 @@ public class Server implements IServer {
 				// We need to check the shortName+orgAbbreviation combination as any changes here
 				// would imply a *new* ontology, not a new version.
 				//
+				
+				String originalNamespaceRoot = createOntologyInfo.getNamespaceRoot();
+				
 				String originalOrgAbbreviation = createOntologyInfo.getAuthority();
 				String originalShortName = createOntologyInfo.getShortName();
 				
 				if ( ! Util2.checkUriKeyCombinationForNewVersion(
+						originalNamespaceRoot, namespaceRoot,
 						originalOrgAbbreviation, originalShortName, 
 						orgAbbreviation, shortName, createOntologyResult) ) {
 					return createOntologyResult;
@@ -694,7 +743,7 @@ public class Server implements IServer {
 		}
 		else {
 			
-			final String finalUri = Util2.namespaceRoot + "/" +
+			final String finalUri = namespaceRoot + "/" +
 										orgAbbreviation + "/" +
 										version + "/" +
 										shortName;
@@ -955,10 +1004,14 @@ public class Server implements IServer {
 			// reducing the chances of that event.
 			if ( ontologyId == null ) {
 				
+				final String namespaceRoot = newValues.get("namespaceRoot") != null 
+						? newValues.get("namespaceRoot")
+						:  DEFAULT_NAMESPACE_ROOT;
+
 				final String orgAbbreviation = newValues.get(OmvMmi.origMaintainerCode.getURI());
 				final String shortName = newValues.get(Omv.acronym.getURI());
 
-				if ( ! Util2.checkNoPreexistingOntology(orgAbbreviation, shortName, registerOntologyResult) ) {
+				if ( ! Util2.checkNoPreexistingOntology(namespaceRoot, orgAbbreviation, shortName, registerOntologyResult) ) {
 					return registerOntologyResult;
 				}
 
