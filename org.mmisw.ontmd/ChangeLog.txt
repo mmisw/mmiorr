@@ -5,6 +5,7 @@ ChangeLog
 
 2009-07-31  
 	1.5.0.alpha2 - including updates in iserver for re-hosting ontologies
+	- PortalControl: adjusted link to resolve ontology in rdf and n3.
 	
 	- Also, preliminary additions to allow the user indicate the namespaceRoot for a newly
 	  created vocabulary. New class OntologyUriPanel used in OntologyPanel.

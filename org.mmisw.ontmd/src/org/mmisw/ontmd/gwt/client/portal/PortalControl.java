@@ -3,11 +3,12 @@ package org.mmisw.ontmd.gwt.client.portal;
 import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
-import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.portal.OntologyTable.IQuickInfo;
 
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Image;
@@ -150,7 +151,11 @@ public class PortalControl {
 		}
 		
 		if ( oi != null ) {
-			String url = oi.getUri() + "?form=" +dopc.getFormat();
+			// TODO use a param
+			final String ONT = "http://mmisw.org/ont";
+			String ontService = ONT;  // OntServiceUtil.getOntServiceUrl();
+			String ontUri = URL.encode(oi.getUri()).replaceAll("#", "%23");
+			String url = ontService+ "?form=" +dopc.getFormat()+ "&uri=" +ontUri;
 			return "<a target=\"_blank\" href=\"" +url+ "\">" +dopc.getName()+ "</a>";
 		}
 		return null;
