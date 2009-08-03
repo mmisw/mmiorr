@@ -46,13 +46,7 @@ public class PortalControl {
 		Window.open(url, "_blank", features);
 	}
 
-	public void createNewFromFile() {
-		// Old:
-//		String url = createLinkUpload();
-//		String features = null;
-//		Window.open(url, "_blank", features);
-		
-		
+	public void createNewFromFile() {		
 		portalMainPanel.createNewFromFile();
 	}
 
@@ -60,7 +54,7 @@ public class PortalControl {
 	
 	
 	private String createLinkVine() {
-		String link = "http://mmisw.org/vine/";
+		String link = Portal.portalBaseInfo.getVineServiceUrl();
 		if ( loginResult != null ) {
 			link += "?userId=" +loginResult.getUserId();
 			link += "&sessionid=" +loginResult.getSessionId();
@@ -68,41 +62,9 @@ public class PortalControl {
 		return link;
 	}
 
-	// Old
-//	private String createLinkUpload() {
-////		String link = GWT.getModuleBaseURL()+ "?_ontmd=y&_edit=y";
-//		String link = "http://mmisw.org/ontmd/?_edit=y";
-//		if ( loginResult != null ) {
-//			link += "&userId=" +loginResult.getUserId();
-//			link += "&sessionId=" +loginResult.getSessionId();
-//			link += "&userName=" +loginResult.getUserName();
-//		}
-//		return link;
-//	}
-
 	public void createNewVocabulary() {
-		// Old:
-//		String url = createLinkVoc2Rdf();
-//		String features = null;
-//		Window.open(url, "_blank", features);
-
 		portalMainPanel.createNewVocabulary();
 	}
-
-	// Old:
-//	private String createLinkVoc2Rdf() {
-//		String link = GWT.getModuleBaseURL()+ "voc2rdf/";
-//		if ( GWT.isClient() ) {
-//			link += "index.html";
-//		}
-//		if ( loginResult != null ) {
-//			link += "?userId=" +loginResult.getUserId();
-//			link += "&sessionid=" +loginResult.getSessionId();
-//		}
-//		return link;
-//	}
-//	
-
 
 	public void editNewVersion() {
 		if ( ontologyPanel != null ) {
@@ -151,8 +113,7 @@ public class PortalControl {
 		}
 		
 		if ( oi != null ) {
-			// TODO use a param
-			final String ONT = "http://mmisw.org/ont";
+			final String ONT = Portal.portalBaseInfo.getOntServiceUrl();
 			String ontService = ONT;  // OntServiceUtil.getOntServiceUrl();
 			String ontUri = URL.encode(oi.getUri()).replaceAll("#", "%23");
 			String url = ontService+ "?form=" +dopc.getFormat()+ "&uri=" +ontUri;

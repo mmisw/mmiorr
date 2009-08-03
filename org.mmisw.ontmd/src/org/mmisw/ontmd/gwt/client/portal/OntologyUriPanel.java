@@ -19,23 +19,10 @@ import com.google.gwt.user.client.ui.Widget;
  */
 class OntologyUriPanel extends HorizontalPanel {
 
-	// TODO get this from some parameter
-	private static final String DEFAULT_NAMESPACE_ROOT = "http://mmisw.org/ont/";
+	private static String defaultNameSpace;
+	private TLabel tlabel;
 	
-	private TLabel tlabel = new TLabel("", 
-			"This is the URI that will be given to the resulting ontology.<br/> " +
-			"<br/>" +
-			"By default, this URI is automatically composed from the authority and class name fields and according to " +
-			"<a target=\"_blank\" href=\"http://marinemetadata.org/apguides/ontprovidersguide/ontguideconstructinguris\"" +
-			">MMI recommendations</a>.<br/> " +
-			"<br/>" +
-			DEFAULT_NAMESPACE_ROOT+ " will be given as the server and root, and the values<br/> " +
-			"entered in the authority and class name fields will be used to complete the authority and shortName components. <br/>" +
-			"<br/>" +
-			"Use the \"Set\" button if you prefer different server/root values."
-	);
-	
-	private String namespaceRoot = DEFAULT_NAMESPACE_ROOT;
+	private String namespaceRoot;
 	private boolean userGiven = false;
 	
 	private String authority;
@@ -60,7 +47,24 @@ class OntologyUriPanel extends HorizontalPanel {
 
 		userUriButton.setTitle("Allows you to set the URI");
 		DOM.setElementAttribute(userUriButton.getElement(), "id", "my-button-id");
+		
+		if ( defaultNameSpace == null ) {
+			defaultNameSpace = Portal.portalBaseInfo.getOntServiceUrl();
+		}
 
+		tlabel = new TLabel("", 
+				"This is the URI that will be given to the resulting ontology.<br/> " +
+				"<br/>" +
+				"By default, this URI is automatically composed from the authority and class name fields and according to " +
+				"<a target=\"_blank\" href=\"http://marinemetadata.org/apguides/ontprovidersguide/ontguideconstructinguris\"" +
+				">MMI recommendations</a>.<br/> " +
+				"<br/>" +
+				defaultNameSpace+ " will be given as the server and root, and the values<br/> " +
+				"entered in the authority and class name fields will be used to complete the authority and shortName components. <br/>" +
+				"<br/>" +
+				"Use the \"Set\" button if you prefer different server/root values."
+		);
+		
 		HorizontalPanel hp = this;
 		hp.add(tlabel);
 		hp.add(uriHtml);
@@ -110,7 +114,7 @@ class OntologyUriPanel extends HorizontalPanel {
 					new PushButton("Revert to default", new ClickListener() {
 						public void onClick(Widget sender) {
 							userGiven = false;
-							namespaceRoot = DEFAULT_NAMESPACE_ROOT;
+							namespaceRoot = defaultNameSpace;
 							update();
 							popup.hide();
 						}

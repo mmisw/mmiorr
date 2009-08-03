@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="/Users/carueda/Software/apache-tomcat-6.0.18/lib/servlet-api.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/Users/carueda/Software/gwt-mac-1.5.2/gwt-user.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena.jar" sourcepath="/Users/carueda/Software/Jena-2.5.6/src"/>

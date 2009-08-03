@@ -669,9 +669,7 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 
 			vp.add(new HTML("<font color=\"green\">Congratulations!</font> "
 					+ "Your ontology is now registered in the "
-//					+ "<a href=\"" +"http://mmisw.org/or/"+ "\">"
 					+ "MMI Registry and Repository."
-//					+ "</a>"
 			));
 			
 			

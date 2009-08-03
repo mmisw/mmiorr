@@ -78,11 +78,10 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 
 	// IOntologyPanel operation
 	public void formChanged(Map<String, String> values) {
-		
-		String authority = values.get("http://mmisw.org/ont/mmi/20081020/ontologyMetadata/origMaintainerCode");
-		String shortName = values.get("http://omv.ontoware.org/2005/05/ontology#acronym");
-		
 		if ( USE_ONTOLOGY_URI_PANEL ) {
+			// TODO use params or config for these values
+			String authority = values.get("http://mmisw.org/ont/mmi/20081020/ontologyMetadata/origMaintainerCode");
+			String shortName = values.get("http://omv.ontoware.org/2005/05/ontology#acronym");
 			ontologyUriPanel.update(authority, shortName);
 		}
 	}

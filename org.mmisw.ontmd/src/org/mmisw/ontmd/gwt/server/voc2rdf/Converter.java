@@ -51,7 +51,7 @@ public class Converter {
 	private String ascii;
 	private String fieldSeparator;
 
-	private String namespaceRoot = "http://mmisw.org/ont";
+	private String namespaceRoot;
 	
 	// To set TransProperties.NS
 	private String finalUri;
@@ -125,6 +125,8 @@ public class Converter {
 		log.info("!!!!!!!!!!!!!!!! Converter: values = " +values);
 		log.info("setting primary class " + primaryClass);
 		
+		namespaceRoot = Config.Prop.ONT_SERVICE_URL.getValue();
+		log.info("Converter: namespaceRoot = " +namespaceRoot);
 	}
 	
 	/**

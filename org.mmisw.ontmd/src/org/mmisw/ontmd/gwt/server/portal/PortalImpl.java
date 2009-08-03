@@ -32,15 +32,15 @@ public class PortalImpl  {
 	
 	private final AppInfo appInfo = new AppInfo("MMI Portal");
 	
-	private PortalBaseInfo baseInfo = null;
+	private PortalBaseInfo portalBaseInfo = null;
 	
 	
-	private IServer iserver = Server.getInstance();
+	private IServer iserver;
 
 
 	
 	
-	public PortalImpl() {
+	public PortalImpl(String ontServiceUrl, String bioportalRestUrl) {
 		log.info("initializing " +appInfo.getAppName()+ "...");
 		appInfo.setVersion(
 				Config.Prop.VERSION.getValue()+ " (" +
@@ -48,6 +48,8 @@ public class PortalImpl  {
 		);
 
 		log.info(appInfo.toString());
+		
+		iserver = Server.getInstance(ontServiceUrl, bioportalRestUrl);
 	}
 
 	public AppInfo getAppInfo() {
@@ -56,15 +58,20 @@ public class PortalImpl  {
 	
 
 	public PortalBaseInfo getBaseInfo() {
-		if ( baseInfo == null ) {
+		if ( portalBaseInfo == null ) {
 			prepareBaseInfo();
 		}
-		return baseInfo;
+		return portalBaseInfo;
 	}
 	
 	private void prepareBaseInfo() {
 		log.info("preparing base info ...");
 		
+		portalBaseInfo = new PortalBaseInfo();
+		
+		portalBaseInfo.setOntServiceUrl(Config.Prop.ONT_SERVICE_URL.getValue());
+		portalBaseInfo.setPortalServiceUrl(Config.Prop.PORTAL_SERVICE_URL.getValue());
+		portalBaseInfo.setVineServiceUrl(Config.Prop.VINE_SERVICE_URL.getValue());
 
 		log.info("preparing base info ... Done.");
 	}

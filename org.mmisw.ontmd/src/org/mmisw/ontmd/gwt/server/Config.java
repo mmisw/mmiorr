@@ -36,15 +36,37 @@ public class Config {
 		
 		/** URI of the OWL class: authority  */
 		AUTHORITY_CLASS               ("ontmd.authority.class", "http://mmisw.org/ont/mmi/authority/Authority"),
+		
+		
+		APPSERVER_HOST                ("appserver.host", "http://localhost:8080"),
+		
+		/** Base URL of bioportal REST service */
+		BIOPORTAL_REST_URL            ("bioportal.rest.url", "http://localhost:8080/bioportal/rest"),
+		
+		/** URL of "Ont" URI resolution service */
+		ONT_SERVICE_URL                ("ont.service.url", "http://localhost:8080/ont"),
+		
+		/** URL of portal service */
+		PORTAL_SERVICE_URL             ("portal.service.url", "http://localhost:8888/portal", false),
+		
+		/** URL of Vine service */
+		VINE_SERVICE_URL               ("vine.service.url", "http://localhost:8080/vine", false),
+		
 		;
 		
 		private final String name;
 		private final String defValue;
+		private boolean required;
 		private String value;
 
 		Prop(String name, String defValue) {
+			this(name, defValue, true); 
+		}
+		
+		Prop(String name, String defValue, boolean required) {
 			this.name = name; 
 			this.defValue = defValue; 
+			this.required = required;
 		}
 		
 		public String getName() { return name; }
@@ -77,7 +99,7 @@ public class Config {
 	 * call threw any exception.
 	 * 
 	 * @param useDefault true to allow the usage of pre-defined values in the code when the
-	 *        servlet configuration doesn't provide them. If false, any undefined parameter
+	 *        servlet configuration doesn't provide them. If false, any undefined but required parameter,
 	 *        will throw an exception.
 	 * 
 	 * @throws Exception If any required parameter is undefined.
@@ -95,7 +117,7 @@ public class Config {
 							log.debug("Using internal default value for " +prop.getName());
 						}
 					}
-					else {
+					else if ( prop.required ) {
 						throw new Exception("Required init parameter not defined: " +prop.getName());
 					}
 				}
@@ -104,32 +126,12 @@ public class Config {
 					log.debug(prop.getName()+ " = " +value);
 				}
 			}
+			
+			if ( null == Prop.PORTAL_SERVICE_URL.getValue() ) {
+				String contextPath = sc.getServletContext().getContextPath();
+				Prop.PORTAL_SERVICE_URL.setValue(Prop.APPSERVER_HOST.getValue() + contextPath);
+			}
 		}
 	}
-
-	
-	// TODO Remove the following once the above mechanism is completed 
-//	
-//	public static final String ONTMD_WORKSPACE_DIR = "/Users/Shared/mmiregistry/ontmd/";
-//	
-//	// where the pre-loaded files are stored:
-//	public static final String ONTMD_PRE_UPLOADS_DIR = ONTMD_WORKSPACE_DIR+ "preuploads/";
-//	
-//	// where voc2rdf-generated files are stored:
-//	public static final String ONTMD_VOC2RDF_DIR = ONTMD_PRE_UPLOADS_DIR+ "voc2rdf/";
-//	
-//	// where the previewed files are stored:
-//	public static final String ONTMD_PREVIEW_DIR = ONTMD_WORKSPACE_DIR+ "previews/";
-//
-//
-//	// where the resource files are stored:
-//	public static final String ONTMD_RESOURCES_DIR = ONTMD_WORKSPACE_DIR+ "resources/";
-//
-//	
-//	/** URI of the OWL class: resource type */
-//	public static final String RESOURCE_TYPE_CLASS = "http://mmisw.org/ont/mmi/resourcetype/ResourceType";
-//
-//	/** URI of the OWL class: authority  */
-//	public static final String AUTHORITY_CLASS = "http://mmisw.org/ont/mmi/authority/Authority";
 
 }

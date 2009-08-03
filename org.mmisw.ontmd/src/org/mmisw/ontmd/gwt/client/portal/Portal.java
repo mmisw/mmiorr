@@ -30,7 +30,7 @@ public class Portal {
 	static String baseUrl;
 
 	public static AppInfo appInfo = new AppInfo("MMI Portal");
-	public static PortalBaseInfo baseInfo;
+	public static PortalBaseInfo portalBaseInfo;
 
 	private Main main;
 
@@ -115,7 +115,10 @@ public class Portal {
 
 			public void onSuccess(PortalBaseInfo bInfo) {
 				removeLoadingMessage();
-				baseInfo = bInfo;
+				portalBaseInfo = bInfo;
+				Main.log("PortalBaseInfo: Ont service = " +portalBaseInfo.getOntServiceUrl());
+				Main.log("PortalBaseInfo: Portal service = " +portalBaseInfo.getPortalServiceUrl());
+				Main.log("PortalBaseInfo: Vine service = " +portalBaseInfo.getVineServiceUrl());
 				PortalMainPanel portalMainPanel = new PortalMainPanel(params, ontologyInfos);
 				main.startGui(params, portalMainPanel);
 			}

@@ -3,14 +3,15 @@ package org.mmisw.ontmd.gwt.client.voc2rdf;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.portal.IVocabPanel;
+import org.mmisw.ontmd.gwt.client.portal.Portal;
 import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
 import org.mmisw.ontmd.gwt.client.util.Util;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
-import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
@@ -39,8 +40,6 @@ import com.google.gwt.user.client.ui.Widget;
  * @author Carlos Rueda
  */
 public class VocabPanel extends VerticalPanel implements IVocabPanel {
-
-	private static final String NAMESPACE_ROOT = "http://mmisw.org/ont";
 
 	private AttrDef fullTitleAttrDef;
 	private AttrDef creatorAttrDef;
@@ -292,8 +291,7 @@ public class VocabPanel extends VerticalPanel implements IVocabPanel {
 	 */
 	private class OntologyUriPanel extends HorizontalPanel {
 
-		// TODO get this from some parameter
-		private static final String serverAndRoot = "http://mmisw.org/ont/";
+		private final String serverAndRoot = Portal.portalBaseInfo.getOntServiceUrl() + "/";
 		
 		private TLabel tlabel = new TLabel("", 
 				"This is the URI that will be given to the resulting ontology.<br/> " +
@@ -527,7 +525,7 @@ public class VocabPanel extends VerticalPanel implements IVocabPanel {
 		
 		// NOTE 3/21/09: namespaceRoot will be ignored because ontologyUri takes precedence
 		// See Converter.
-		values.put("namespaceRoot", NAMESPACE_ROOT);
+		values.put("namespaceRoot", Portal.portalBaseInfo.getOntServiceUrl());
 
 
 		

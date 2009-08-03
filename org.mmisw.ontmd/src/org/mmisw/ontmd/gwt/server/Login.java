@@ -20,10 +20,8 @@ import org.mmisw.iserver.gwt.client.rpc.LoginResult;
  * @author Carlos Rueda
  */
 class Login {
-	
-	private static final String SERVER   = "http://mmisw.org";
-	private static final String REST     = SERVER+ "/bioportal/rest";
-	private static final String AUTH     = REST+ "/auth";
+	/** the authentication piece for the REST call */
+	private static final String AUTH     = "/auth";
 
 	// get sessionId, userId, username, role
 	private static final Pattern AUTH_RESPONSE_PATTERN = Pattern.compile(
@@ -57,7 +55,11 @@ class Login {
 		String applicationid = "4ea81d74-8960-4525-810b-fa1baab576ff";
 		log.info("authenticating username=" +userName+ " password=" +userPassword);
 		log.info("applicationid=" +applicationid);
-		PostMethod post = new PostMethod(AUTH);
+		
+		String authRestUrl = Config.Prop.BIOPORTAL_REST_URL.getValue() + AUTH;
+		log.info("authentication REST URL =" +authRestUrl);
+		
+		PostMethod post = new PostMethod(authRestUrl);
 		try {
 			NameValuePair[] data = {
 					new NameValuePair("username", userName),

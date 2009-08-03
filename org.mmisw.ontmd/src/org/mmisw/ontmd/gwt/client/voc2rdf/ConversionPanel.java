@@ -15,12 +15,9 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class ConversionPanel extends VerticalPanel {
 	
-	private static final String UPLOAD_ACTION = 
-//		"http://mmisw.org/ont/?showreq";
-		GWT.isScript() ? "/ontmd/" : "/ontmd/";
+	private static final String UPLOAD_ACTION = "/ontmd/";
 
-	private static final String DOWNLOAD_ACTION = 
-		GWT.isScript() ? "/ontmd/download" : "/ontmd/download";
+	private static final String DOWNLOAD_ACTION = "/ontmd/download";
 
 	
 	private  HTML html = new HTML(); 

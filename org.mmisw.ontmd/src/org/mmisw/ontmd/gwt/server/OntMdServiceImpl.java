@@ -83,8 +83,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	private static final long serialVersionUID = 1L;
 
 	/** Ontology URI prefix including root: */
-	// TODO read namespaceRoot from a configuration parameter
-	private static final String namespaceRoot = "http://mmisw.org/ont";
+	private static String namespaceRoot;
 	
 	
 	private final AppInfo appInfo = new AppInfo("MMI OntMd");
@@ -126,7 +125,11 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			voc2rdf = new Voc2RdfImpl();
 			
 			// portal initialization
-			portal = new PortalImpl();
+			String ontServiceUrl = Config.Prop.ONT_SERVICE_URL.getValue();
+			String bioportalRestUrl = Config.Prop.BIOPORTAL_REST_URL.getValue();
+			portal = new PortalImpl(ontServiceUrl, bioportalRestUrl);
+			
+			namespaceRoot = ontServiceUrl;
 		}
 		catch (Exception ex) {
 			log.error("Cannot initialize: " +ex.getMessage(), ex);
