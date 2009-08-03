@@ -100,6 +100,8 @@
 			<filterset>
 				<filter token="ont.app.version" value="${ont.app.version}" />
 				<filter token="ont.app.build"   value="${ont.app.build}" />
+				<filter token="appserver.host"   value="${appserver.host}" />
+				<filter token="portal.service.url"  value="${portal.service.url}" />
 				<filter token="aquaportal.datasource.name" value="${aquaportal.datasource.name}" />
 				<filter token="aquaportal.uploads.directory" value="${aquaportal.uploads.directory}" />
 				<filter token="aquaportal.voc2rdf.dir" value="${aquaportal.voc2rdf.dir}" />

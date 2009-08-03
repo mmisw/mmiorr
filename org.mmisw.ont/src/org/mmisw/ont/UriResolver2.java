@@ -158,7 +158,9 @@ public class UriResolver2 {
 				//the "old" ontmd mechanism:
 				//String url = "http://mmisw.org/ontmd?ontologyUri=" +ontologyUri;
 				
-				String url = "http://mmisw.org/portal/#" +ontologyUri;
+				String portalServiceUrl = ontConfig.getProperty(OntConfig.Prop.PORTAL_SERVICE_URL);
+				
+				String url = portalServiceUrl+ "/#" +ontologyUri;
 				if ( log.isDebugEnabled() ) {
 					log.debug("REDIRECTING TO: " +url);
 				}

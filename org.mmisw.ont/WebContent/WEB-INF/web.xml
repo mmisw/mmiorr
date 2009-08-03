@@ -15,6 +15,17 @@
 			<param-name>ont.app.build</param-name>
 			<param-value>@ont.app.build@</param-value>
 		</init-param>
+		
+		<init-param>
+			<param-name>appserver.host</param-name>
+			<param-value>@appserver.host@</param-value>
+		</init-param>
+		
+		<init-param>
+			<param-name>portal.service.url</param-name>
+			<param-value>@portal.service.url@</param-value>
+		</init-param>
+		
 		<init-param>
 			<param-name>aquaportal.uploads.directory</param-name>
 			<param-value>@aquaportal.uploads.directory@</param-value>

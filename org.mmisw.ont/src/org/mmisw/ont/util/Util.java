@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -83,8 +84,9 @@ public class Util {
 	
 	/**
 	 * Developer option.
+	 * @param httpServlet 
 	 */
-	public static  void showReq(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public static  void showReq(HttpServlet httpServlet, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		response.setContentType("text/html");
         PrintWriter out = response.getWriter();
@@ -95,6 +97,8 @@ public class Util {
         out.println("</head>");
         out.println("<body>");
         out.println("<pre>");
+        
+        out.println("httpServlet.getServletContext().getContextPath()  = " +httpServlet.getServletContext().getContextPath() );
         
         out.println("request.getRequestURL()         = " + request.getRequestURL()  );
         out.println("request.getRequestURI()         = " + request.getRequestURI()  );

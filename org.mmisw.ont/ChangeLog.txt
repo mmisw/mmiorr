@@ -4,6 +4,12 @@ $Id$
 
 ChangeLog
 
+2000-08-01,03:   1.3.0.beta (was 1.2.3.beta)
+	- Added build and configuration params to allow deployment of the service on any machine (while
+	  removing several related hard-coded pieces, in particular about http://mmisw.org...):
+		appserver.host
+		portal.service.url
+		 
 
 2009-07-31  
 	1.2.3.beta

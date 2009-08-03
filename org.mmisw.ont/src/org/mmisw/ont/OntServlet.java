@@ -213,7 +213,7 @@ public class OntServlet extends HttpServlet {
 		
 		// show request info?
 		if ( Util.yes(req.request, "showreq")  ) {
-			Util.showReq(req.request, req.response);
+			Util.showReq(this, req.request, req.response);
 			return;
 		} 
 		

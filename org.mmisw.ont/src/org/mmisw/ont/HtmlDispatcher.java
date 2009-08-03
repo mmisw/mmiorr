@@ -40,12 +40,13 @@ public class HtmlDispatcher {
 	private OntConfig ontConfig;
 	private Db db;
 	
-	// TODO This is hard-coded here:  http://mmisw.org/ont/
-	private String servedRoot = "http://mmisw.org/ont/"; 
+	private String servedRoot; 
 	
-	HtmlDispatcher(OntConfig ontConfig, Db db) { // TODO Remove, MdDispatcher mdDispatcher) {
+	HtmlDispatcher(OntConfig ontConfig, Db db) {
 		this.ontConfig = ontConfig;
 		this.db = db;
+		
+		servedRoot = ontConfig.getProperty(OntConfig.Prop.ONT_SERVICE_URL);
 	}
 
 	void init() {

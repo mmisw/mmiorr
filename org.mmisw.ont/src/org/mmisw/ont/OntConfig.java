@@ -27,12 +27,32 @@ class OntConfig {
 		AQUAPORTAL_DATASOURCE         ("aquaportal.datasource"),
 		
 		AQUAPORTAL_VOC2RDF_DIR        ("aquaportal.voc2rdf.dir"),
+		
+		APPSERVER_HOST                ("appserver.host"),
+		
+		ONT_SERVICE_URL               ("ont.service.url", false),
+		
+		PORTAL_SERVICE_URL            ("portal.service.url"),
+		
 		;
 		
 		private String name;
-		Prop(String name) { this.name = name; };
+		private boolean required;
+		
+		Prop(String name) { 
+			this(name, true);
+		}
+		
+		Prop(String name, boolean required) { 
+			this.name = name; 
+			this.required = required;
+		}
 		
 		public String getName() { return name; }
+		
+		public boolean isRequired() {
+			return required;
+		}
 	}
 	
 	private final Log log = LogFactory.getLog(OntConfig.class);
@@ -60,11 +80,17 @@ class OntConfig {
 		}
 		
 		// check the required properties, ie, the members of the Prop enumeration:
-		for ( Prop parName : Prop.values() ) {
-			if ( ! props.containsKey(parName.getName()) ) {
-				throw new Exception("Required parameter not defined: " +parName.getName());
+		for ( Prop prop : Prop.values() ) {
+			if ( prop.isRequired() && ! props.containsKey(prop.getName()) ) {
+				throw new Exception("Required parameter not defined: " +prop.getName());
 			}
 		}
+		
+		String contextPath = sc.getServletContext().getContextPath();
+		props.setProperty(Prop.ONT_SERVICE_URL.getName(), 
+				props.getProperty(Prop.APPSERVER_HOST.getName()) + contextPath
+		);
+		log.debug(Prop.ONT_SERVICE_URL.getName()+ " = " +props.getProperty(Prop.ONT_SERVICE_URL.getName()));
 	}
 
 	/**
