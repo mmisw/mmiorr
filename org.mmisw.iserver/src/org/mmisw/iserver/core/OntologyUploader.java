@@ -30,9 +30,7 @@ import com.hp.hpl.jena.vocabulary.DC;
  */
 class OntologyUploader {
 	
-	private static String SERVER    = "http://mmisw.org";
-	private static String REST      = SERVER+ "/bioportal/rest";
-	static final String ONTOLOGIES  = REST+ "/ontologies";
+	static final String ONTOLOGIES  = "/ontologies";
 	
 	private final Log log = LogFactory.getLog(OntologyUploader.class);
 	
@@ -89,7 +87,8 @@ class OntologyUploader {
 		
 		String sessionId = loginResult.getSessionId();
 		
-		PostMethod post = new PostMethod(ONTOLOGIES);
+		String ontologiesRestUrl = Config.Prop.BIOPORTAL_REST_URL.getValue() + ONTOLOGIES;
+		PostMethod post = new PostMethod(ontologiesRestUrl);
 		try {
 			List<Part> partList = new ArrayList<Part>();
 			

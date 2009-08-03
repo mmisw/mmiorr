@@ -69,12 +69,10 @@ import edu.drexel.util.rdf.OwlModel;
 public class Server implements IServer {
 	private static final long serialVersionUID = 1L;
 	
-	private static final String ONT = "http://mmisw.org/ont";
-	private static final String LISTALL = ONT + "?listall";
+	private static final String LISTALL = "?listall";
 
 	/** Ontology URI prefix including root: */
-	// TODO read namespaceRoot from a configuration parameter
-	public static final String DEFAULT_NAMESPACE_ROOT = "http://mmisw.org/ont";
+	public static String defaultNamespaceRoot;
 
 
 	private final AppInfo appInfo = new AppInfo("MMISW IServer");
@@ -85,16 +83,17 @@ public class Server implements IServer {
 	
 	private static IServer _instance ;
 	
-	public static IServer getInstance() {
+	public static IServer getInstance(String ontServiceUrl, String bioportalRestUrl) {
 		if ( _instance == null ) {
-			_instance = new Server();
+			_instance = new Server(ontServiceUrl, bioportalRestUrl);
 		}
 		
 		return _instance;
 	}
 	
-	private Server() {
-		log.info("initializing " +appInfo.getAppName()+ "...");
+	private Server(String ontServiceUrl, String bioportalRestUrl) {
+		defaultNamespaceRoot = ontServiceUrl;
+		log.info("basic init " +appInfo.getAppName()+ "...");
 		try {
 			Config.getInstance();
 			
@@ -106,6 +105,9 @@ public class Server implements IServer {
 			log.info(appInfo.toString());
 			
 			previewDir = new File(Config.Prop.ONTMD_PREVIEW_DIR.getValue());
+			
+			Config.Prop.ONT_SERVICE_URL.setValue(ontServiceUrl);
+			log.info("ontServiceUrl = " +ontServiceUrl);
 			
 		}
 		catch (Throwable ex) {
@@ -208,7 +210,7 @@ public class Server implements IServer {
 		// unversionedUri -> list of corresponding OntologyInfos
 		Map<String, List<RegisteredOntologyInfo>> unversionedToVersioned = new LinkedHashMap<String, List<RegisteredOntologyInfo>>();
 		
-		String uri = LISTALL;
+		String uri = Config.Prop.ONT_SERVICE_URL.getValue()+ LISTALL;
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("getUnversionedToVersioned. uri= " +uri);
@@ -568,7 +570,7 @@ public class Server implements IServer {
 		
 		final String namespaceRoot = newValues.get("namespaceRoot") != null 
 			? newValues.get("namespaceRoot")
-			:  DEFAULT_NAMESPACE_ROOT;
+			:  defaultNamespaceRoot;
 		
 		final String orgAbbreviation = newValues.get(OmvMmi.origMaintainerCode.getURI());
 		final String shortName = newValues.get(Omv.acronym.getURI());
@@ -861,12 +863,14 @@ public class Server implements IServer {
 		String rdf = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV") ;  // XXX newOntModel);
 		
 		//TODO: pons: print result RDF for testing
+		System.out.println(rdf);
 		if ( log.isDebugEnabled() ) {
 			if ( createOntologyResult.isPreserveOriginalBaseNamespace() ) {
 				log.debug(rdf);
 			}
 		}
 		
+		log.debug("createOntology: setting URI: " +base_);
 		createOntologyResult.setUri(base_);
 		
 
@@ -1010,7 +1014,7 @@ public class Server implements IServer {
 					
 					final String namespaceRoot = newValues.get("namespaceRoot") != null 
 							? newValues.get("namespaceRoot")
-							:  DEFAULT_NAMESPACE_ROOT;
+							:  defaultNamespaceRoot;
 	
 					final String orgAbbreviation = newValues.get(OmvMmi.origMaintainerCode.getURI());
 					final String shortName = newValues.get(Omv.acronym.getURI());

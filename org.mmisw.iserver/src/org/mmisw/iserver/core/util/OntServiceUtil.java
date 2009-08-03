@@ -2,6 +2,8 @@ package org.mmisw.iserver.core.util;
 
 import java.net.URLEncoder;
 
+import org.mmisw.iserver.core.Config;
+
 
 /**
  * Utilities based on the "Ont" URI resolution service.
@@ -9,19 +11,6 @@ import java.net.URLEncoder;
  * @author Carlos Rueda
  */
 public class OntServiceUtil {
-	
-	// TODO use a param
-	private static final String ONT = "http://mmisw.org/ont";
-	
-	/**
-	 * Returns the URL of the "Ont" service.
-	 * @return the URL of the "Ont" service.
-	 */
-	// TODO perhaps move this to a configuration related class
-	public static String getOntServiceUrl() {
-		return ONT;
-	}
-	
 	
 	/**
 	 * Resolves a URI against the "Ont" service.
@@ -36,8 +25,9 @@ public class OntServiceUtil {
 	 */
 	public static String resolveOntologyUri(String uriModel, String... acceptEntries) throws Exception {
 		
+		String ontServiceUrl = Config.Prop.ONT_SERVICE_URL.getValue();
 		uriModel = URLEncoder.encode(uriModel, "UTF-8");
-		String ontServiceRequest = ONT + "?uri=" +uriModel;
+		String ontServiceRequest = ontServiceUrl + "?uri=" +uriModel;
 		String str = HttpUtil.getAsString(ontServiceRequest, acceptEntries);
 		
 		return str;

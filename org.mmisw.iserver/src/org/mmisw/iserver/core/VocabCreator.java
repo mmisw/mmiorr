@@ -54,8 +54,7 @@ public class VocabCreator {
 	private String ascii;
 	private String fieldSeparator;
 
-	// TODO take this from a config parameter:
-	private String namespaceRoot = "http://mmisw.org/ont";
+	private String namespaceRoot;
 	
 	// To set TransProperties.NS
 	private String finalUri;
@@ -175,7 +174,7 @@ public class VocabCreator {
 		Map<String, String> values = createOntologyInfo.getMetadataValues();
 		
 		
-		this.namespaceRoot = Server.DEFAULT_NAMESPACE_ROOT;
+		this.namespaceRoot = Config.Prop.ONT_SERVICE_URL.getValue();
 		this.orgAbbreviation = createOntologyInfo.getAuthority();
 		this.shortName = createOntologyInfo.getShortName();
 		

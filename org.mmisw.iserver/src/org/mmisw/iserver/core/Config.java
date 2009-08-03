@@ -21,6 +21,9 @@ public class Config {
 		
 		ONTMD_VOC2RDF_DIR             ("ontmd.voc2rdf.dir", "/Users/Shared/mmiregistry/ontmd/preuploads/voc2rdf/"),
 		
+		BIOPORTAL_REST_URL            ("bioportal.rest.url", "http://localhost:8080/bioportal/rest"),
+		
+		ONT_SERVICE_URL               ("ont.service.url", "http://localhost:8080/ont"),
 		;
 		
 		private final String name;
@@ -35,7 +38,7 @@ public class Config {
 
 		public String getValue() { return value; }
 		
-//		private void setValue(String value) { this.value = value; }
+		public void setValue(String value) { this.value = value; }
 	}
 
 	

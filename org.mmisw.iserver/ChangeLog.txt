@@ -2,6 +2,12 @@ org.mmisw.iserver
 Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 
+2000-08-01,03:   1.5.0.alpha3 (was 1.5.0.alpha2)
+	Server.getInstance(String ontServiceUrl, String bioportalRestUrl): now with parameters indicating
+	the "Ont" service URL and the BioPortal REST base URL (these were previously hard-coded).
+		- Config: added corresponding attributes
+		- Corresponding updates in: OntologyUploader, VocabCreator, OntServiceUtil. 
+		
 2009-07-31  
 	1.5.0.alpha2
 	Continuing with "re-hosting" feature:
