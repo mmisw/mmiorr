@@ -3,6 +3,13 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+1.5.0.alpha4 (change in iserver library)
+	- Server.createOntology(CreateOntologyInfo): Do NOT remove "original OWL.Ontology individual"
+	  if where are in re-hosting mode (createOntologyResult.isPreserveOriginalBaseNamespace).
+	  If we did this on a model with the same original namespace, we would remove the owl:Ontology 
+	  entry altogether and get an "rdf:Description" instead.
+	  
+	  
 2000-08-01,03:  1.5.0.alpha3 (was 1.5.0.alpha2)
 	- Added build and configuration params to allow deployment of the service on any machine (while
 	  removing several related hard-coded pieces, in particular about http://mmisw.org...):
