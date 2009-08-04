@@ -4,7 +4,14 @@ $Id$
 
 ChangeLog
 
-2000-08-01,03:   1.3.0.beta (was 1.2.3.beta)
+2009-08-03
+	- OntServlet.getRegisteredOntology(String potentialOntUri) -> Ontology
+	  method to obtain a registered ontology considering the various cases: versioned
+	  and unversioned MmiUri, and other URI. 
+	  This is used when dispatching the "uri" parameter (_dispatchUri).
+	
+	
+2009-08-01,03:   1.3.0.beta (was 1.2.3.beta)
 	- Added build and configuration params to allow deployment of the service on any machine (while
 	  removing several related hard-coded pieces, in particular about http://mmisw.org...):
 		appserver.host

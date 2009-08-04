@@ -338,8 +338,8 @@ public class OntServlet extends HttpServlet {
 			return;
 		}
 		
-		// see if the given URI corresponds to a stored ontology
-		Ontology ontology = db.getOntology(ontOrEntUri);
+		// see if the given URI corresponds to a registered ontology
+		Ontology ontology = getRegisteredOntology(ontOrEntUri);
 		if ( ontology != null ) {
 			//
 			// yes, it's a stored ontology--dispatch as if it were a regular call to resolve the ontology
@@ -359,6 +359,34 @@ public class OntServlet extends HttpServlet {
 		}
 	}
 
+	/**
+	 * Gets a registered ontology
+	 * 
+	 * @param potentialOntUri. The URI that will be used to try to find a corresponding registered
+	 *                     ontology.
+	 * @return the ontology if found; null if not found.
+	 * @throws ServletException
+	 */
+	Ontology getRegisteredOntology(String potentialOntUri) throws ServletException {
+		Ontology ontology = null;
+		try {
+			MmiUri mmiUri = new MmiUri(potentialOntUri);
+			if ( mmiUri.getVersion() == null ) {
+				// unversioned request.  Get most recent
+				ontology = db.getMostRecentOntologyVersion(mmiUri);
+			}
+			else {
+				// versioned request. Just try to use the argument as given:
+				ontology = db.getOntology(potentialOntUri);
+			}
+		}
+		catch (URISyntaxException e) {
+			// Not an MmiUri (likely a Re-hosted ontology). Just try to use the argument as given:
+			ontology = db.getOntology(potentialOntUri);
+		}
+		
+		return ontology;
+	}
 
 	
 	/**
