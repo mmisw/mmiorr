@@ -53,7 +53,7 @@ class Login {
 	/** makes the request and return the response from the server */
 	private String authenticate() throws HttpException, IOException {
 		String applicationid = "4ea81d74-8960-4525-810b-fa1baab576ff";
-		log.info("authenticating username=" +userName+ " password=" +userPassword);
+		log.info("authenticating username=" +userName+ " password=" +userPassword.replaceAll(".", "*"));
 		log.info("applicationid=" +applicationid);
 		
 		String authRestUrl = Config.Prop.BIOPORTAL_REST_URL.getValue() + AUTH;
