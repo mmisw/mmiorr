@@ -60,7 +60,7 @@ public class UriDispatcher {
 			return;
 		}
 		
-		String outFormat = Util.getParam(request, "form", "html");
+		String outFormat = Util.getParam(request, "form", "owl");
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("dispatchUri: [" +entityUri+ "] format=" +outFormat);
