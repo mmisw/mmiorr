@@ -717,6 +717,9 @@ public class Server implements IServer {
 		String uriForEmpty = Util2.getDefaultNamespace(model, file, createOntologyResult);
 			
 		if ( uriForEmpty == null ) {
+			String error = "Cannot get URI for empty namespace";
+			log.info(error);
+			createOntologyResult.setError(error);
 			return createOntologyResult;
 		}
 
@@ -756,7 +759,6 @@ public class Server implements IServer {
 			
 			log.info("Setting prefix \"\" for URI " + ns_);
 			model.setNsPrefix("", ns_);
-			log.info("     new namespace: " +ns_);
 			
 			
 			// Update statements  according to the new namespace:
@@ -824,10 +826,20 @@ public class Server implements IServer {
 				}
 			}	
 			
-			log.info("Removing original OWL.Ontology individual");
-			ontRes.removeProperties();
-			// TODO the following may be unnecesary but doesn't hurt:
-			model.remove(ontRes, RDF.type, OWL.Ontology); 
+			
+			if ( ! createOntologyResult.isPreserveOriginalBaseNamespace() ) {
+				
+				// 
+				// Only, when we're creating a new model, ie., per the new namespace, do the following removals.
+				// (If we did this on a model with the same original namespace, we would remove the owl:Ontology 
+				// entry altogether and get an "rdf:Description" instead.
+				//
+				
+				log.info("Removing original OWL.Ontology individual");
+				ontRes.removeProperties();
+				// TODO the following may be unnecesary but doesn't hurt:
+				model.remove(ontRes, RDF.type, OWL.Ontology); 
+			}
 		}
 
 		
