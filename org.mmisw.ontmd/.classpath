@@ -25,6 +25,6 @@
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmisw.ont.vocabulary.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmisw.iserver.gwt.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/chardet.jar"/>
-	<classpathentry kind="lib" path="/Users/carueda/Software/gwt-mac-1.7.0/gwt-user.jar"/>
+	<classpathentry kind="lib" path="/Users/carueda/Software/gwt-mac-1.5.2/gwt-user.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

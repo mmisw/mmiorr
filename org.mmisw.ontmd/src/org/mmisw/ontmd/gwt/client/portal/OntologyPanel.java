@@ -7,6 +7,7 @@ import org.mmisw.iserver.gwt.client.rpc.BaseOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
+import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
 import org.mmisw.iserver.gwt.client.rpc.OtherDataCreationInfo;
@@ -548,7 +549,8 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			}
 		};
 
-		Main.ontmdService.registerOntology(createOntologyResult, PortalControl.getInstance().getLoginResult(), callback);
+		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
+		Main.ontmdService.registerOntology(createOntologyResult, loginResult , callback);
 	}
 
 	private void registrationCompleted(MyDialog registrationPopup, final RegisterOntologyResult uploadOntologyResult) {

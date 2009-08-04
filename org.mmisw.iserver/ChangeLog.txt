@@ -7,6 +7,12 @@ Created: 2009-05-13
 	  if where are in re-hosting mode (createOntologyResult.isPreserveOriginalBaseNamespace).
 	  If we did this on a model with the same original namespace, we would remove the owl:Ontology 
 	  entry altogether and get an "rdf:Description" instead.
+	  
+	- Having weird RPC-related error "connection refused", which seems clearly a GWT problem:
+	  the asynchronous call registerOntology(CreateOntologyResult, LoginResult) on the client
+	  does not get called to the server side.
+	- I'm trying recompilation from scratch and even with more recent GWT versions including
+	  latest as of today (GWT 1.7.0)
 	
 	
 	
