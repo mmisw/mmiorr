@@ -591,7 +591,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		}
 		
 		String msg = sb.toString();
-		Main.log("Uploading result: " +msg);
+		Main.log("Registration result: " +msg);
 
 		final MyDialog popup = new MyDialog(null);
 		popup.setText(error == null ? "Upload completed sucessfully" : "Error");
