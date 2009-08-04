@@ -13,6 +13,8 @@ Created: 2009-05-13
 	  does not get called to the server side.
 	- I'm trying recompilation from scratch and even with more recent GWT versions including
 	  latest as of today (GWT 1.7.0)
+	  
+	- Config.Prop.BIOPORTAL_REST_URL was not appropriately initialized from Server--fixed.
 	
 	
 	

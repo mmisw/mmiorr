@@ -109,6 +109,9 @@ public class Server implements IServer {
 			Config.Prop.ONT_SERVICE_URL.setValue(ontServiceUrl);
 			log.info("ontServiceUrl = " +ontServiceUrl);
 			
+			Config.Prop.BIOPORTAL_REST_URL.setValue(bioportalRestUrl);
+			log.info("bioportalRestUrl = " +bioportalRestUrl);
+			
 		}
 		catch (Throwable ex) {
 			log.error("Cannot initialize: " +ex.getMessage(), ex);

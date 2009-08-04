@@ -88,6 +88,7 @@ class OntologyUploader {
 		String sessionId = loginResult.getSessionId();
 		
 		String ontologiesRestUrl = Config.Prop.BIOPORTAL_REST_URL.getValue() + ONTOLOGIES;
+		System.out.println("ZZZ ontologiesRestUrl = " +ontologiesRestUrl);
 		PostMethod post = new PostMethod(ontologiesRestUrl);
 		try {
 			List<Part> partList = new ArrayList<Part>();
