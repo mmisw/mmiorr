@@ -3,6 +3,16 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-08-05  1.5.0.alpha5
+	- PortalMainPanel.dispatchMainPanel:  Once a registration was completed, the intended behavior 
+	  is to return to the "browse" list. This was not working, but it's now fixed: 
+	  History.newItem("browse") is called to synchronize the state with the history.
+	  
+	- PortalMainPanel & OntologyTable: historyTokenMap is now not actually updated, so the
+	  RegisteredOntologyInfo objects are not cached. This simplifies things.
+	  TODO: either remove the cache (historyTokenMap) variable or decide how to maintain it.
+	
+	
 1.5.0.alpha4 (change in iserver library)
 	- Server.createOntology(CreateOntologyInfo): Do NOT remove "original OWL.Ontology individual"
 	  if where are in re-hosting mode (createOntologyResult.isPreserveOriginalBaseNamespace).
@@ -10,7 +20,7 @@ ChangeLog
 	  entry altogether and get an "rdf:Description" instead.
 	  
 	  
-2000-08-01,03:  1.5.0.alpha3 (was 1.5.0.alpha2)
+2009-08-01,03:  1.5.0.alpha3 (was 1.5.0.alpha2)
 	- Added build and configuration params to allow deployment of the service on any machine (while
 	  removing several related hard-coded pieces, in particular about http://mmisw.org...):
 		appserver.host

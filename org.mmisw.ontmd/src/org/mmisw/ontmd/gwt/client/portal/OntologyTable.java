@@ -232,7 +232,12 @@ public class OntologyTable extends FlexTable {
 			
 			Widget nameWidget;
 			
-			PortalMainPanel.historyTokenMap.put(uri, oi);
+			// NOTE: Not actually using this cache memory
+//			PortalMainPanel.historyTokenMap.put(uri, oi);
+			// SeePortalMainPanel.onHistoryChanged: the object retieved there will be always
+			// null, so the ontology will be requested every time -- simpler and works 
+			
+			
 			Hyperlink hlink = new Hyperlink(name, uri);
 			if ( Util.isTestingOntology(oi) ) {
 				// add a mark

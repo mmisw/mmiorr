@@ -199,6 +199,8 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		
 		Main.log("onHistoryChanged: historyToken: " +historyToken);
 		
+		// Note: See OntologyTable.update: no actual objects are stored in this cache,
+		// so this will be alwas null.  TODO: Remove the historyTokenMap cache.
 		Object obj = historyTokenMap.get(historyToken);
 		
 		if ( obj == null ) {
@@ -242,6 +244,9 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 			pctrl.setOntologyInfo(null);
 			pctrl.setOntologyPanel(null);
 		}
+		
+		// notify the history that we are now in "browse":
+		History.newItem("browse");
 		
 		interfaceType = InterfaceType.BROWSE;
 	    controlsPanel.showMenuBar(interfaceType);
