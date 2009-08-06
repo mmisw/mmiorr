@@ -91,7 +91,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 			if ( true ) {    // true for auto-login
 				loginResult = new LoginResult();
 				loginResult.setSessionId("22222222222222222");
-				loginResult.setUserId("1002");
+				loginResult.setUserId("1001");
 				loginResult.setUserName("carueda");
 				loginResult.setUserRole("ROLE_ADMINISTRATOR");
 			}
