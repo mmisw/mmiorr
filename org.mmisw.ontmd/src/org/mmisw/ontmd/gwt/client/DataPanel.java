@@ -11,15 +11,14 @@ import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.IndividualInfo;
 import org.mmisw.iserver.gwt.client.rpc.MappingOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.OntologyData;
-import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.OtherOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData.ClassData;
 import org.mmisw.ontmd.gwt.client.portal.BaseOntologyContentsPanel;
 import org.mmisw.ontmd.gwt.client.portal.IVocabPanel;
 import org.mmisw.ontmd.gwt.client.portal.OtherOntologyContentsPanel;
-import org.mmisw.ontmd.gwt.client.portal.TempOntologyInfoListener;
 import org.mmisw.ontmd.gwt.client.util.IRow;
 import org.mmisw.ontmd.gwt.client.voc2rdf.VocabClassPanel;
 
@@ -57,8 +56,6 @@ public class DataPanel extends VerticalPanel {
 	private MyVocabPanel myVocabPanel = new  MyVocabPanel();
 	
 	
-	private TempOntologyInfoListener tempOntologyInfoListener;
-	
 	private boolean readOnly = true;
 	
 	private Set<BaseOntologyContentsPanel> baseOntologyContentsPanels = new HashSet<BaseOntologyContentsPanel>();
@@ -66,9 +63,8 @@ public class DataPanel extends VerticalPanel {
 	/**
 	 * Creates the data panel
 	 */
-	public DataPanel(boolean readOnly, TempOntologyInfoListener tempOntologyInfoListener) {
+	public DataPanel(boolean readOnly) {
 		super();
-		this.tempOntologyInfoListener = tempOntologyInfoListener;
 		this.readOnly = readOnly;
 		setWidth("100%");
 	}
@@ -225,7 +221,7 @@ public class DataPanel extends VerticalPanel {
 		Main.log("Creating OtherWidget");
 		
 		OtherOntologyContentsPanel otherOntologyContentsPanel = new OtherOntologyContentsPanel(
-				ontologyData, tempOntologyInfoListener, readOnly);
+				ontologyData, readOnly);
 
 		baseOntologyContentsPanels.add(otherOntologyContentsPanel);
 		

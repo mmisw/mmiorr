@@ -41,23 +41,18 @@ public class OtherOntologyContentsPanel extends BaseOntologyContentsPanel {
 	
 	private TempOntologyInfo tempOntologyInfo;
 	
-	/** the "client" listener, which will be notified after my own listener below */
-	private TempOntologyInfoListener tempOntologyInfoListener;
-	
 	
 	private TempOntologyInfoListener myTempOntologyInfoListener;
 	
 	
 	public OtherOntologyContentsPanel(OtherOntologyData ontologyData, 
-			TempOntologyInfoListener tempOntologyInfoListener,
 			boolean readOnly
 	) {
 		super(readOnly);
-		this.tempOntologyInfoListener = tempOntologyInfoListener;
 		
 		this.myTempOntologyInfoListener = new TempOntologyInfoListener() {
 			public void tempOntologyInfoObtained(TempOntologyInfo tempOntologyInfo) {
-				// update my own data and then notify the client listener
+				// update my own data and then notify any interested "external" listener:
 				_tempOntologyInfoObtained(tempOntologyInfo);
 			}
 		};
@@ -86,11 +81,11 @@ public class OtherOntologyContentsPanel extends BaseOntologyContentsPanel {
 		_updateInterface();
 
 
-		// notify client:
+		// notify any interested "external" listener:
+		TempOntologyInfoListener tempOntologyInfoListener = PortalControl.getInstance().getTempOntologyInfoListener();
 		if ( tempOntologyInfoListener != null ) {
 			tempOntologyInfoListener.tempOntologyInfoObtained(tempOntologyInfo);
 		}
-		
 	}
 	
 	private void _updateInterface() {

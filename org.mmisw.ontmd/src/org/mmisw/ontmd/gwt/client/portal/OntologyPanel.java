@@ -72,6 +72,10 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	private RegisteredOntologyInfo ontologyInfo;
 	
 	
+	public MetadataPanel getMetadataPanel() { 
+		return metadataPanel; 
+	}
+
 	// IOntologyPanel operation
 	public OntologyMetadata getOntologyMetadata() {
 		return ontologyInfo.getOntologyMetadata();
@@ -110,7 +114,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		metadataPanel = new MetadataPanel(this, !readOnly);
 		mdDisclosure.setContent(metadataPanel);
 
-		dataPanel = new DataPanel(readOnly, metadataPanel);
+		dataPanel = new DataPanel(readOnly);
 		dataDisclosure.setContent(dataPanel);
 		
 		
@@ -169,7 +173,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		ontologyInfo.setOntologyData(vocababularyOntologyData);
 
 		// create dataPanel
-		dataPanel = new DataPanel(false, metadataPanel);
+		dataPanel = new DataPanel(false);
 		dataPanel.updateWith(ontologyInfo, false);
 		dataDisclosure.setContent(dataPanel);
 		
@@ -191,7 +195,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		ontologyInfo.setOntologyData(otherOntologyData);
 
 		// create dataPanel
-		dataPanel = new DataPanel(false, metadataPanel);
+		dataPanel = new DataPanel(false);
 		
 		dataPanel.updateWith(ontologyInfo, false);
 		

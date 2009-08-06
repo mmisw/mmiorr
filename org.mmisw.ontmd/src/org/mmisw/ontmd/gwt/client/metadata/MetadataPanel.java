@@ -36,7 +36,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class MetadataPanel extends FlexTable implements TempOntologyInfoListener {
 
-private static final String INFO = 
+	private static final String INFO = 
 					"Fields marked " +TLabel.requiredHtml+ " are required. " +
 					"Use commas to separate values in multi-valued fields.";
 
@@ -45,6 +45,9 @@ private static final String INFO =
 	private TabPanel tabPanel = new TabPanel();
 	
 	private boolean enabled = true;
+	
+	
+	private IOntologyPanel ontologyPanel;
 	
 	
 //	private boolean editing;
@@ -94,11 +97,12 @@ private static final String INFO =
 
 	/**
 	 * Creates the metadata panel
-	 * @param mainPanel
+	 * @param ontologyPanel
 	 * @param editing true for the editing interface; false for the vieweing interface.
 	 */
-	public MetadataPanel(IOntologyPanel mainPanel, boolean editing) {
+	public MetadataPanel(IOntologyPanel ontologyPanel, boolean editing) {
 		super();
+		this.ontologyPanel = ontologyPanel;
 		setWidth("100%");
 //		this.editing = editing;
 		
@@ -153,7 +157,7 @@ private static final String INFO =
 	    container.add(dockPanel, DockPanel.CENTER);
 	    
 		for ( AttrGroup attrGroup: Main.metadataBaseInfo.getAttrGroups() ) {
-			CellPanel groupPanel = new MetadataGroupPanel(mainPanel, attrGroup, editing);
+			CellPanel groupPanel = new MetadataGroupPanel(this, attrGroup, editing);
 			tabPanel.add(groupPanel, attrGroup.getName());
 		}
 		
@@ -162,6 +166,14 @@ private static final String INFO =
 	}
 	
 	
+	/**
+	 * @return the ontologyPanel
+	 */
+	public IOntologyPanel getOntologyPanel() {
+		return ontologyPanel;
+	}
+
+
 	/** Basically for viewing-only mode */
 	public void showProgressMessage(String msg) {
 		//- remove NewUri related stuff

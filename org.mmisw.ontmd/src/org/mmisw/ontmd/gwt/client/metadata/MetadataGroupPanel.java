@@ -5,14 +5,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
-import org.mmisw.ontmd.gwt.client.Main;
-import org.mmisw.ontmd.gwt.client.portal.IOntologyPanel;
-import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
-import org.mmisw.ontmd.gwt.client.util.TLabel;
-import org.mmisw.ontmd.gwt.client.util.Util;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.iserver.gwt.client.vocabulary.Option;
+import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
+import org.mmisw.ontmd.gwt.client.util.TLabel;
+import org.mmisw.ontmd.gwt.client.util.Util;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CellPanel;
@@ -47,7 +46,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 	}
 	
 	
-	private IOntologyPanel ontologyPanel;
+	private MetadataPanel metadataPanel;
 	
 	private AttrGroup attrGroup;
 	
@@ -61,7 +60,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 
 	private PushButton resetButton = new PushButton("Reset", new ClickListener() {
 		public void onClick(Widget sender) {
-			OntologyMetadata ontologyMetadata = ontologyPanel.getOntologyMetadata();
+			OntologyMetadata ontologyMetadata = metadataPanel.getOntologyPanel().getOntologyMetadata();
 			
 			if ( ontologyMetadata != null && ontologyMetadata.getError() == null ) {
 				resetToOriginalOrNewValues(ontologyMetadata,true, true);
@@ -82,8 +81,8 @@ public class MetadataGroupPanel extends VerticalPanel {
 
 
 	
-	MetadataGroupPanel(IOntologyPanel mainPanel, AttrGroup attrGroup, boolean editing) {
-		this.ontologyPanel = mainPanel;
+	MetadataGroupPanel(MetadataPanel metadataPanel, AttrGroup attrGroup, boolean editing) {
+		this.metadataPanel = metadataPanel;
 		this.attrGroup = attrGroup;
 		
 		add(createForm(editing));
@@ -217,7 +216,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 		Map<String, String> values = new HashMap<String, String>();
 		putValues(values, false);
 		
-		ontologyPanel.formChanged(values);
+		metadataPanel.getOntologyPanel().formChanged(values);
 	}
 	
 	/** 

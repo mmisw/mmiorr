@@ -3,6 +3,12 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2009-08-05  1.5.0.alpha6
+	- Fixed issue #160 Loading an ontology file does not update associated metadata in the editor
+		Problem was that the listener registered with the DataPanel was not updated when the mode
+		changed from view-only to edit-new-version, so the wrong, obsolete object was notified
+		of the load. Now, the listener is retrieved from the PortalControl instance.
+
 2009-08-05  1.5.0.alpha5
 	- PortalMainPanel.dispatchMainPanel:  Once a registration was completed, the intended behavior 
 	  is to return to the "browse" list. This was not working, but it's now fixed: 
@@ -15,7 +21,7 @@ ChangeLog
 	
 1.5.0.alpha4 (change in iserver library)
 	- Server.createOntology(CreateOntologyInfo): Do NOT remove "original OWL.Ontology individual"
-	  if where are in re-hosting mode (createOntologyResult.isPreserveOriginalBaseNamespace).
+	  if we are in re-hosting mode (createOntologyResult.isPreserveOriginalBaseNamespace).
 	  If we did this on a model with the same original namespace, we would remove the owl:Ontology 
 	  entry altogether and get an "rdf:Description" instead.
 	  

@@ -40,6 +40,14 @@ public class PortalControl {
 	private ControlsPanel controlsPanel;
 	
 	
+	/**
+	 * @return <code>{@link #getOntologyPanel()}.getMetadataPanel()</code>, if {@link #getOntologyPanel()} is not null.
+	 */
+	TempOntologyInfoListener getTempOntologyInfoListener() {
+		return ontologyPanel != null ? ontologyPanel.getMetadataPanel() : null;
+	}
+	
+	
 	public void launchCreateMapping() {
 		String url = createLinkVine();
 		String features = null;
@@ -162,10 +170,12 @@ public class PortalControl {
 		return ontologyPanel;
 	}
 
+	
 	public void completedRegisterOntologyResult(RegisterOntologyResult registerOntologyResult) {
 		
 		portalMainPanel.completedRegisterOntologyResult(registerOntologyResult);
 	}
+
 
 	public void refreshedListAllOntologies(List<RegisteredOntologyInfo> ontologyInfos) {
 		portalMainPanel.refreshedListAllOntologies(ontologyInfos);
