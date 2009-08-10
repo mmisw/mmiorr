@@ -2,6 +2,14 @@ org.mmisw.iserver
 Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 
+2008-08-07:
+	- Checking pre-existing registered ontology when trying to submit a new one:
+		Util2.checkNoPreexistingOntology(String possibleOntologyUri, BaseResult result)
+		Server.createOntology(CreateOntologyInfo createOntologyInfo)
+		OntServiceUtil.isRegisteredOntologyUri(String uriModel, String... acceptEntries)
+		Util2.checkNoPreexistingOntology(String possibleOntologyUri, BaseResult result)
+	
+	
 2000-08-03:   1.5.0.alpha4
 	- Server.createOntology(CreateOntologyInfo): Do NOT remove "original OWL.Ontology individual"
 	  if where are in re-hosting mode (createOntologyResult.isPreserveOriginalBaseNamespace).

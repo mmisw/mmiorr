@@ -13,7 +13,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -58,19 +57,33 @@ public class Util2 {
 		String possibleOntologyUri = namespaceRoot + "/" +
         							orgAbbreviation + "/" +
         							shortName;
-
+		
+		return checkNoPreexistingOntology(possibleOntologyUri, result);
+	}
+	
+	
+	/**
+	 * Checks the preexistence of an ontology to determine the possible conflict with an ontology that
+	 * is about to be uploaded as *new*.
+	 * 
+	 * @param possibleOntologyUri URI to test.
+	 * 
+	 * @param result setError will be called on this object in case an ontology exists with the given parameters
+	 *           or if any error occurred while doing the check.
+	 * 
+	 * @return true if there is NO existing ontology with the given parameter; false if there IS an existing
+	 *            ontology OR some error occurred.  If false is returned, result.getError() will be non-null.
+	 */
+	public static boolean checkNoPreexistingOntology(String possibleOntologyUri, BaseResult result) {
 		if ( log.isDebugEnabled() ) {
 			log.debug("New submission; checking for preexisting ontology with unversioned URI: " +possibleOntologyUri);
 		}
 		
-		// we just need to know whether this URI resolves:
 		boolean possibleOntologyExists = false;
+		
+		// we just need to know whether this URI resolves against the registry:
 		try {
-			int statusCode = HttpUtil.httpGetStatusCode(possibleOntologyUri, "application/rdf+xml");
-			if ( log.isDebugEnabled() ) {
-				log.debug("HTTP GET status code: " +statusCode+ ": " +HttpStatus.getStatusText(statusCode));
-			}
-			possibleOntologyExists = statusCode == HttpStatus.SC_OK;
+			possibleOntologyExists = OntServiceUtil.isRegisteredOntologyUri(possibleOntologyUri, "application/rdf+xml");
 		}
 		catch (Exception e) {
 			// report the error and return false (we shouldn't continue with the upload):
@@ -81,18 +94,13 @@ public class Util2 {
 		}
 		
 		if ( possibleOntologyExists ) {
-			String info = "There is already a registered ontology with the same " +
-							"authority and resource type combination:\n" +
-							"   " +possibleOntologyUri;
+			String info = "There is already a registered ontology with URI: " +possibleOntologyUri;
 			
 			if ( log.isDebugEnabled() ) {
 				log.debug(info);
 			}
 			
 			result.setError(info+ "\n\n" +
-					"You will need to change the authority and/or resource topic to be able to " +
-					"submit your ontology.\n" +
-					"\n" +
 					"Note: if you want to submit a new version for the above ontology, " +
 					"then you would need to browse to that entry in the main repository interface " +
 					"and use one of the available options to create a new version."

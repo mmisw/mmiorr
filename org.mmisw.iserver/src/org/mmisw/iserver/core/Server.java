@@ -366,7 +366,7 @@ public class Server implements IServer {
 			}
 			catch (Exception e1) {
 				String error = e.getMessage();
-				log.error("Error getting list of all ontologies. ", e);
+				log.error("Error getting RegisteredOntologyInfo: " +ontologyUri, e);
 				RegisteredOntologyInfo oi = new RegisteredOntologyInfo();
 				oi.setError(error);
 				return oi;
@@ -624,6 +624,7 @@ public class Server implements IServer {
 				}
 			}
 		}
+		// Else: see below, where we obtain the original namespace.
 		
 		
 		////////////////////////////////////////////////////////////////////////////
@@ -748,6 +749,25 @@ public class Server implements IServer {
 			//pons:  just use original namespace
 			ns_ = original_ns_;
 			base_ = JenaUtil2.removeTrailingFragment(ns_);
+			
+			///////////////////////////////////////////////////////
+			// to check if this is going to be a new submission (ontologyId == null) or, 
+			// otherwise, a new version.
+			String ontologyId = createOntologyInfo.getOntologyId();
+			
+			if ( ontologyId == null ) {
+				// This is a new submission. We need to check for any conflict with a preexisting
+				// ontology in the repository with the same URI, base_
+				//
+				if ( ! Util2.checkNoPreexistingOntology(base_, createOntologyResult) ) {
+					return createOntologyResult;
+				}
+			}
+			else {
+				// This is a submission of a *new version* of an existing ontology.
+				// NO check needed--the given URI (base_) is respected.
+			}
+			///////////////////////////////////////////////////////
 		}
 		else {
 			
