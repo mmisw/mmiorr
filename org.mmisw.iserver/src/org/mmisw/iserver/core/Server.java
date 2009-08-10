@@ -25,6 +25,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.util.JenaUtil2;
+import org.mmisw.iserver.core.util.OntServiceUtil;
 import org.mmisw.iserver.core.util.TempOntologyHelper;
 import org.mmisw.iserver.core.util.Utf8Util;
 import org.mmisw.iserver.core.util.QueryUtil;
@@ -111,7 +112,6 @@ public class Server implements IServer {
 			
 			Config.Prop.BIOPORTAL_REST_URL.setValue(bioportalRestUrl);
 			log.info("bioportalRestUrl = " +bioportalRestUrl);
-			
 		}
 		catch (Throwable ex) {
 			log.error("Cannot initialize: " +ex.getMessage(), ex);
@@ -351,18 +351,26 @@ public class Server implements IServer {
 	}
 	
 	public RegisteredOntologyInfo getOntologyInfo(String ontologyUri) {
+		String[] toks = ontologyUri.split("\\?");
+		ontologyUri = toks[0];
+		
+		String version = null;
+		if ( toks.length > 1 && toks[1].startsWith("version=") ) {
+			version = toks[1].substring("version=".length());
+		}
+		
 		try {
 			MmiUri mmiUri = new MmiUri(ontologyUri);
 			
 			// it's an MmiUri. dispatch it as usual:
-			return getOntologyInfoFromMmiUri(ontologyUri, mmiUri);
+			return getOntologyInfoFromMmiUri(ontologyUri, mmiUri, version);
 		}
 		catch (Exception e) {
 			
 			// re-hosted
 			String unversOntologyUri = ontologyUri;
 			try {
-				return getOntologyInfoUseGivenUnversioned(ontologyUri, unversOntologyUri);
+				return getOntologyInfoWithVersionParams(ontologyUri, unversOntologyUri, version);
 			}
 			catch (Exception e1) {
 				String error = e.getMessage();
@@ -375,11 +383,11 @@ public class Server implements IServer {
 		}
 	}
 
-	private RegisteredOntologyInfo getOntologyInfoFromMmiUri(String ontologyUri, MmiUri mmiUri) {
+	private RegisteredOntologyInfo getOntologyInfoFromMmiUri(String ontologyUri, MmiUri mmiUri, String version) {
 		try {	
 			// get elements associated with the unversioned form of the requested URI:
 			String unversOntologyUri = mmiUri.copyWithVersion(null).getOntologyUri();
-			return getOntologyInfoUseGivenUnversioned(ontologyUri, unversOntologyUri);
+			return getOntologyInfoWithVersionParams(ontologyUri, unversOntologyUri, version);
 		}
 		catch (Exception e) {
 			String error = e.getMessage();
@@ -390,9 +398,19 @@ public class Server implements IServer {
 		}
 	}
 	
-	
-	private RegisteredOntologyInfo getOntologyInfoUseGivenUnversioned(String ontologyUri, String unversOntologyUri) throws Exception {
+	/**
+	 * Get info about a registered ontology using unversion and explicit version parameters.
+	 * 
+	 * @param ontologyUri           original requested URI
+	 * @param unversOntologyUri     corresponding unversioned form
+	 * @param version               explicit version
+	 * @return
+	 * @throws Exception
+	 */
+	private RegisteredOntologyInfo getOntologyInfoWithVersionParams(String ontologyUri, String unversOntologyUri,
+			String version) throws Exception {
 
+		// first, get list of entries for the requested ontology using the unversioned form as key:
 		Map<String, List<RegisteredOntologyInfo>> unversionedToVersioned = getUnversionedToOntologyInfoListMap(unversOntologyUri);
 
 		if ( unversionedToVersioned.isEmpty() ) {
@@ -403,25 +421,39 @@ public class Server implements IServer {
 		// get the list of ontologies with same unversioned URI
 		List<RegisteredOntologyInfo> list = unversionedToVersioned.values().iterator().next();
 
-		// Two main cases: 
+		// Three cases: 
 		//
-		//  a) unversioned URI request -> just return first entry in list, which is the most recent,
+		//  a) explicit version given: search for exact match using 'version' field
+		//
+		//  b) unversioned URI request -> just return first entry in list, which is the most recent,
 		//     but making the Uri property equal to the UnversionedUri property
 		//
-		//  b) versioned URI request -> search the list for the exact match, if any
+		//  c) versioned URI request -> search the list for the exact match using the 'uri' field
 		//
 
 
-		if ( ontologyUri.equals(unversOntologyUri) ) {
-			// a) unversioned URI request, eg., http://mmisw.org/ont/seadatanet/qualityFlag
+		if ( version != null ) {
+			log.debug("Server.getOntologyInfoWithVersionParams case a) version = " +version);
+			//  a) explicit version given: search for exact match using the 'version' field:
+			for ( RegisteredOntologyInfo oi : list ) {
+				if ( version.equals(oi.getVersionNumber()) ) {
+					return oi;
+				}
+			}
+			return null;  // not found
+		}
+		else if ( ontologyUri.equals(unversOntologyUri) ) {
+			log.debug("Server.getOntologyInfoWithVersionParams case b) unversioned request = " +unversOntologyUri);
+			// b) unversioned URI request, eg., http://mmisw.org/ont/seadatanet/qualityFlag
 			// just return first entry in list
 			RegisteredOntologyInfo oi = list.get(0);
 			oi.setUri(oi.getUnversionedUri());
 			return oi;
 		}
 		else {
-			// b) versioned URI request, eg., http://mmisw.org/ont/seadatanet/20081113T205440/qualityFlag
-			// Search list for exact match
+			log.debug("Server.getOntologyInfoWithVersionParams case c) versioned request = " +ontologyUri);
+			// c) versioned URI request, eg., http://mmisw.org/ont/seadatanet/20081113T205440/qualityFlag
+			// Search list for exact match of 'uri' field:
 			for ( RegisteredOntologyInfo oi : list ) {
 				if ( ontologyUri.equals(oi.getUri()) ) {
 					return oi;
@@ -479,8 +511,7 @@ public class Server implements IServer {
 		
 		OntModel ontModel;
 		try {
-//			ontModel = QueryUtil.loadModel(registeredOntologyInfo.getUri());
-			ontModel = JenaUtil2.retrieveModel(registeredOntologyInfo.getUri());
+			ontModel = OntServiceUtil.retrieveModel(registeredOntologyInfo.getUri(), registeredOntologyInfo.getVersionNumber());
 		}
 		catch (Exception e) {
 			String error = "Error loading model: " +e.getMessage();
@@ -842,10 +873,11 @@ public class Server implements IServer {
 				String newValue = newValues.get(prd.getURI());
 				if ( newValue == null || newValue.trim().length() == 0 ) {
 					log.info("  Transferring: " +st.getSubject()+ " :: " +prd+ " :: " +st.getObject());
-					newOntModel.add(ont_, st.getPredicate(), st.getObject());
+					newOntModel.add(ont_, prd, st.getObject());
 				}
 				else {
-					log.info(" Not Transferring: " +prd+ " from previous version because new value " +newValue);
+					log.info(" Removing pre-existing values for predicate: " +prd+ " because of new value " +newValue);
+					newOntModel.removeAll(ont_, prd, null);
 				}
 			}	
 			

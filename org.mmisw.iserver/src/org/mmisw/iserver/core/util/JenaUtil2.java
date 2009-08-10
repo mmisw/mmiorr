@@ -1,16 +1,11 @@
 package org.mmisw.iserver.core.util;
 
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.hp.hpl.jena.ontology.OntDocumentManager;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.NsIterator;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
 
@@ -111,38 +106,6 @@ public class JenaUtil2 {
 				model.removeNsPrefix(prefix);
 			}
 		}
-	}
-
-	
-	
-	/**
-	 * Loads a model resolving the URI against the "ont" service.
-	 * @param uriModel
-	 * @return
-	 * @throws Exception
-	 */
-	public static OntModel retrieveModel(String uriModel) throws Exception {
-		
-		String str = OntServiceUtil.resolveOntologyUri(uriModel, "application/rdf+xml");
-		
-		OntModel model = createDefaultOntModel();
-		uriModel = JenaUtil2.removeTrailingFragment(uriModel);
-		
-		StringReader sr = new StringReader(str);
-		
-		model.read(sr, uriModel);
-		
-		return model;
-	}
-	
-	private static OntModel createDefaultOntModel() {
-		OntModelSpec spec = new OntModelSpec(OntModelSpec.OWL_MEM);
-		OntDocumentManager docMang = new OntDocumentManager();
-		spec.setDocumentManager(docMang);
-		OntModel model = ModelFactory.createOntologyModel(spec, null);
-		// removeNotNeccesaryNamespaces(model);
-
-		return model;
 	}
 
 }
