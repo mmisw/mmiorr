@@ -4,6 +4,18 @@ $Id$
 
 ChangeLog
 
+2009-08-08,10   1.3.1.beta
+	Dispatching "version" parameter in conjunction with "uri" parameter
+		- Example: http://localhost:8080/ont?form=owl&uri=http://EXAMPLE.org/external3&version=20090806T021338
+		- OntServlet: accept "version" parameter; see _dispatchUri(Request req).
+		
+	FIXME: Overall usage of MmiUri as a way to determine that the URI corresponds
+	to a *hosted* (ie., with namespace in the context of this web service), is NOT sufficient.
+	In particular, MmiUri constructors do not check the actual value of the hostname-root
+	combination, so, any external URI that happens to follow the MmiUri structure will be
+	considered to be a *hosted* one.
+
+
 2009-08-03
 	- OntServlet.getRegisteredOntology(String potentialOntUri) -> Ontology
 	  method to obtain a registered ontology considering the various cases: versioned

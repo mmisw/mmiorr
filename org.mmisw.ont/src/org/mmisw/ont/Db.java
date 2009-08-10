@@ -75,6 +75,65 @@ public class Db {
 	
 	
 	/**
+	 * Obtains basic ontology info by the given URI and version.
+	 * 
+	 * @param ontologyUri The ontology URI as exactly stored in the database.
+	 * @param version desired version
+	 * @return
+	 * @throws ServletException
+	 * @throws SQLException 
+	 */
+	Ontology getOntologyVersion(String ontologyUri, String version) throws ServletException {
+		Connection _con = null;
+		try {
+			_con = getConnection();
+			Statement _stmt = _con.createStatement();
+
+			String query = 
+				"select v.id, v.ontology_id, v.file_path " +
+				"from v_ncbo_ontology v " +
+				"where v.urn='" +ontologyUri+ "'" +
+				"  and v.version_number='" +version+ "'";
+
+			ResultSet rs = _stmt.executeQuery(query);
+
+			if ( rs.next() ) {
+				Ontology ontology = new Ontology();
+				ontology.id = rs.getString(1);
+				ontology.ontology_id = rs.getString(2);
+				ontology.file_path = rs.getString(3);
+
+				try {
+					URL uri_ = new URL(ontologyUri);
+					ontology.filename = new File(uri_.getPath()).getName();
+				}
+				catch (MalformedURLException e) {
+					// should not occur.
+					log.debug("should not occur.", e);
+				}
+				return ontology;
+			}
+		}
+		catch (SQLException e) {
+			throw new ServletException(e);
+		}
+		finally {
+			if ( _con != null ) {
+				try {
+					_con.close();
+				}
+				catch (SQLException e) {
+					log.warn("Error closing connection", e);
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+
+	
+	/**
 	 * Obtains basic ontology info by the given URI.
 	 * 
 	 * This uses the ontologyUri given. To try other file extensions,

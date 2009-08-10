@@ -60,6 +60,7 @@ public class OntServlet extends HttpServlet {
 	// NOTE: Refactoring underway
 	// I keep both instances of UriResolver and the new UriResolver2.
 	// uriResolver2 is used only when the parameter "ur2" is included in the request
+	// but also in other requests as I moved to it instead of original UriResolver.
 	private final UriResolver2 uriResolver2 = new UriResolver2(ontConfig, db, ontGraph);
 	
 	/**
@@ -81,6 +82,9 @@ public class OntServlet extends HttpServlet {
 		// in case the ontology info is obtained somehow, use it:
 		Ontology ontology;
 		
+		// in case an explicit version is requested
+		final String version;
+		
 		
 		Request(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) {
 			this.servletContext = servletContext;
@@ -99,24 +103,20 @@ public class OntServlet extends HttpServlet {
 			
 			MmiUri mmiUriTest = null;
 			String outFormatTest;
+			String versionTest = null;
 			
 			try {
 				if ( Util.yes(request, "uri") ) {
 					// when the "uri" parameter is passed, its value is used.
 					
 					String entityUri = Util.getParam(request, "uri", "");
-//					if ( entityUri.length() == 0 ) {
-//						response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing uri parameter");
-//						return;
-//					}
-
 					mmiUriTest = new MmiUri(entityUri);
 				}
 				else {
 					mmiUriTest = new MmiUri(fullRequestedUri);
-					// we have an MmiUri request.
-					
 				}
+				// We have an MmiUri request.
+				
 				// get output format to be used:
 				outFormatTest = OntServlet.getOutFormatForMmiUri(formParam, accept, mmiUriTest, log);
 			}
@@ -137,8 +137,16 @@ public class OntServlet extends HttpServlet {
 				);
 			}
 
+			
+			if ( Util.yes(request, "version") ) {
+				// explicit version given:
+				versionTest = Util.getParam(request, "version", null);
+			}
+			
+			
 			mmiUri = mmiUriTest;
 			outFormat = outFormatTest;
+			version = versionTest;
 
 			if ( log.isDebugEnabled() ) {
 				List<String> pcList = Util.getHeader(request, "PC-Remote-Addr");
@@ -338,8 +346,47 @@ public class OntServlet extends HttpServlet {
 			return;
 		}
 		
+		Ontology ontology = null;
+		
+		// explicit version?
+		if ( req.version != null ) {
+			// 
+			// Dispatch explicit version request.
+			//
+			log.debug("Explicit version requested: " +req.version);
+			
+			if ( req.mmiUri != null ) {
+				if ( req.mmiUri.getVersion() != null ) {		
+					//
+					// Both, veriones URI and "version" parameter given.
+					// Check that the two components are equal.
+					//
+					if ( req.version.equals(req.mmiUri.getVersion()) ) {
+						ontology = db.getOntologyVersion(ontOrEntUri, req.version);
+					}
+					else {
+						// versioned request AND explicit version parameter -> BAD REQUEST:
+						req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, 
+								"Versioned URI and \"version\" parameter requested simultaneously; both values must be equal.");
+						return;
+					}
+				}
+				else {
+					// unversioned request.  Get most recent
+					ontology = db.getMostRecentOntologyVersion(req.mmiUri);
+				}
+			}
+			else {
+				// possibly a re-hosted ontology.
+				ontology = db.getOntologyVersion(ontOrEntUri, req.version);
+			}		
+		}
+		else {
+			// No explicit version.
+			ontology = getRegisteredOntology(ontOrEntUri);
+		}
+		
 		// see if the given URI corresponds to a registered ontology
-		Ontology ontology = getRegisteredOntology(ontOrEntUri);
 		if ( ontology != null ) {
 			//
 			// yes, it's a stored ontology--dispatch as if it were a regular call to resolve the ontology

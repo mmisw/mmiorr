@@ -52,6 +52,7 @@ The generated file is _generated/ont.war.
 
 * Current design
 
+NOTE: Current major refactoring underway (see OntServelet, UriResolver2, others)
 Main classes in package org.mmisw.ont:
 	- UriResolver: the main servlet.
 	- OntConfig: configuration.
