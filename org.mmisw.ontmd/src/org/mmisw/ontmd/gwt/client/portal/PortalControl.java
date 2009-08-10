@@ -121,10 +121,10 @@ public class PortalControl {
 		}
 		
 		if ( oi != null ) {
-			final String ONT = Portal.portalBaseInfo.getOntServiceUrl();
-			String ontService = ONT;  // OntServiceUtil.getOntServiceUrl();
+			final String ontService = Portal.portalBaseInfo.getOntServiceUrl();
 			String ontUri = URL.encode(oi.getUri()).replaceAll("#", "%23");
 			String url = ontService+ "?form=" +dopc.getFormat()+ "&uri=" +ontUri;
+			url += "&version=" +oi.getVersionNumber();
 			return "<a target=\"_blank\" href=\"" +url+ "\">" +dopc.getName()+ "</a>";
 		}
 		return null;

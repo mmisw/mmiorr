@@ -3,6 +3,11 @@ Carlos Rueda  -  http://marinemetadata.org
 
 ChangeLog
 
+2008-08-10  1.5.0.alpha7   Issue #159: Re-host ontologies: versioning
+	- OntologyTable.update(): include version in hyperlinks
+	- PortalControl.getDownloadOptionHtml(): include "version" parameter
+	
+	
 2009-08-05  1.5.0.alpha6
 	- Fixed issue #160 Loading an ontology file does not update associated metadata in the editor
 		Problem was that the listener registered with the DataPanel was not updated when the mode

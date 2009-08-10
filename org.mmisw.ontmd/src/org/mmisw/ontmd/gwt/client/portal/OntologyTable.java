@@ -228,7 +228,9 @@ public class OntologyTable extends FlexTable {
 			String author = oi.getContactName();
 			String version = oi.getVersionNumber();
 			
-			String tooltip = uri;
+			String tooltip = uri+ " version: " +version;
+			
+			String historyToken = uri+ "?version=" +version;
 			
 			Widget nameWidget;
 			
@@ -238,7 +240,7 @@ public class OntologyTable extends FlexTable {
 			// null, so the ontology will be requested every time -- simpler and works 
 			
 			
-			Hyperlink hlink = new Hyperlink(name, uri);
+			Hyperlink hlink = new Hyperlink(name, historyToken);
 			if ( Util.isTestingOntology(oi) ) {
 				// add a mark
 				HorizontalPanel hp = new HorizontalPanel();

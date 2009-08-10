@@ -259,7 +259,11 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			}
 		};
 
-		headerPanel.updateTitle("<b>" +ontologyInfo.getDisplayLabel()+ "</b> - "+ontologyInfo.getUri()+ "<br/>");
+		headerPanel.updateTitle("<b>" +ontologyInfo.getDisplayLabel()+ "</b>" +
+				" - "+ontologyInfo.getUri()+ 
+				"  (version "+ontologyInfo.getVersionNumber()+ ")" + 
+				"<br/>"
+		);
 		headerPanel.showProgressMessage("Loading contents. Please wait...");
 
 		metadataPanel.showProgressMessage("Loading contents. Please wait...");
