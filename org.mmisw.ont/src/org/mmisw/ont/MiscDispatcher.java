@@ -130,7 +130,7 @@ public class MiscDispatcher {
 					_con.close();
 				}
 				catch (SQLException e) {
-					throw new ServletException(e);
+					log.error("error closing connection", e);
 				}
 			}
 		}
@@ -203,7 +203,7 @@ public class MiscDispatcher {
 					_con.close();
 				}
 				catch (SQLException e) {
-					throw new ServletException(e);
+					log.error("error closing connection", e);
 				}
 			}
 		}
@@ -276,7 +276,7 @@ public class MiscDispatcher {
 					_con.close();
 				}
 				catch (SQLException e) {
-					throw new ServletException(e);
+					log.error("error closing connection", e);
 				}
 			}
 		}
@@ -369,7 +369,7 @@ public class MiscDispatcher {
 					_con.close();
 				}
 				catch (SQLException e) {
-					throw new ServletException(e);
+					log.error("error closing connection", e);
 				}
 			}
 		}
