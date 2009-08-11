@@ -439,6 +439,11 @@ public class UriResolver2 {
 			}
 
 			OntModel model = originalModel;
+			
+			// no explicit version requested and it's an unversioned MmiUri?
+			if ( req.version == null && req.mmiUri != null && req.mmiUri.getVersion() == null ) {
+				model = UnversionedConverter.getUnversionedModel(originalModel, req.mmiUri);
+			}
 
 			resp = new OntologyResponse(model);
 		}
