@@ -136,6 +136,13 @@ public class Db {
 	/**
 	 * Obtains basic ontology info by the given URI.
 	 * 
+	 * <p>
+	 * Note: As of August, 2009, because on the "re-hosting" capability, the ontology URI is
+	 * no longer unique in the database, ie., there may be multiple versions associated with the 
+	 * same ontology URI. Now, this method returns the most recent version associated
+	 * with the given URI.
+	 * 
+	 * <p>
 	 * This uses the ontologyUri given. To try other file extensions,
 	 * use {@link #getOntologyWithExts(MmiUri, String[])}.
 	 * 
@@ -150,48 +157,33 @@ public class Db {
 			_con = getConnection();
 			Statement _stmt = _con.createStatement();
 
-			if ( true ) {
-				String query = 
-					"select v.id, v.ontology_id, v.file_path " +
-					"from v_ncbo_ontology v " +
-					"where v.urn='" +ontologyUri+ "'";
-				
-				ResultSet rs = _stmt.executeQuery(query);
-				
-		        if ( rs.next() ) {
-		        	Ontology ontology = new Ontology();
-		        	ontology.id = rs.getString(1);
-		        	ontology.ontology_id = rs.getString(2);
-		        	ontology.file_path = rs.getString(3);
-		        	
-		        	try {
-		        		URL uri_ = new URL(ontologyUri);
-		        		ontology.filename = new File(uri_.getPath()).getName();
-		        	}
-		        	catch (MalformedURLException e) {
-		        		// should not occur.
-		        		log.debug("should not occur.", e);
-		        	}
-		        	return ontology;
-		        }
+			String query = 
+				"select v.id, v.ontology_id, v.file_path " +
+				"from v_ncbo_ontology v " +
+				"where v.urn='" +ontologyUri+ "' " +
+				"order by v.version_number desc";  // -> to get most recent version first.
+
+			if ( log.isDebugEnabled() ) {
+				log.debug("Executing query: " +query);
 			}
-			else{
-				String query = 
-					"select v.id, v.ontology_id, v.file_path, f.filename " +
-					"from v_ncbo_ontology v, ncbo_ontology_file f " +
-					"where v.urn='" +ontologyUri+ "'" +
-					"  and v.id = f.ontology_version_id";
-				
-				ResultSet rs = _stmt.executeQuery(query);
-				
-		        if ( rs.next() ) {
-		        	Ontology ontology = new Ontology();
-		        	ontology.id = rs.getString(1);
-		        	ontology.ontology_id = rs.getString(2);
-		        	ontology.file_path = rs.getString(3);
-		        	ontology.filename = rs.getString(4);
-		        	return ontology;
-		        }
+			
+			ResultSet rs = _stmt.executeQuery(query);
+
+			if ( rs.next() ) {
+				Ontology ontology = new Ontology();
+				ontology.id = rs.getString(1);
+				ontology.ontology_id = rs.getString(2);
+				ontology.file_path = rs.getString(3);
+
+				try {
+					URL uri_ = new URL(ontologyUri);
+					ontology.filename = new File(uri_.getPath()).getName();
+				}
+				catch (MalformedURLException e) {
+					// should not occur.
+					log.debug("should not occur.", e);
+				}
+				return ontology;
 			}
 		}
 		catch (SQLException e) {

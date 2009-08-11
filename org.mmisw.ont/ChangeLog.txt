@@ -4,6 +4,16 @@ $Id$
 
 ChangeLog
 
+2009-08-11  1.3.3.beta
+	- "uri=" request for an external (re-hosted) ontology, and with NO "version=" parameter 
+	  should return the latest version:
+	  	Db.getOntology(String ontologyUri): because on the "re-hosting" capability, the ontology URI is
+	 	no longer unique in the database, ie., there may be multiple versions associated with the 
+	 	same ontology URI. Now, this method returns the most recent version associated
+	 	with the given URI.
+	 	This fixes the issue in general.
+	 	
+	 	
 2009-08-11  1.3.2.beta
 	Fixed bug with "uri" parameter: http://mmisw.org/ont?form=n3&uri=http://mmisw.org/ont/mmi/device
 	     is returning the *versioned* form (of the latest version) -- Should be the unversioned form.
@@ -12,7 +22,7 @@ ChangeLog
 			if ( req.version == null && req.mmiUri != null && req.mmiUri.getVersion() == null ) {
 				model = UnversionedConverter.getUnversionedModel(originalModel, req.mmiUri);
 			}
-	
+			
 	
 2009-08-08,10   1.3.1.beta
 	Dispatching "version" parameter in conjunction with "uri" parameter
