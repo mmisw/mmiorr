@@ -151,6 +151,7 @@ public class OntServlet extends HttpServlet {
 			if ( log.isDebugEnabled() ) {
 				List<String> pcList = Util.getHeader(request, "PC-Remote-Addr");
 				log.debug("__Request: fullRequestedUri: " +fullRequestedUri);
+				log.debug("                    Params: " +Util.getParams(request));
 				log.debug("                 user-agent: " +userAgentList);
 				log.debug("             PC-Remote-Addr: " +pcList);
 				log.debug("             Accept entries: " +accept.getEntries());
