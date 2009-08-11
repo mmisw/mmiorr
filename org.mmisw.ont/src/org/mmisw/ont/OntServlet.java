@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -151,7 +153,16 @@ public class OntServlet extends HttpServlet {
 			if ( log.isDebugEnabled() ) {
 				List<String> pcList = Util.getHeader(request, "PC-Remote-Addr");
 				log.debug("__Request: fullRequestedUri: " +fullRequestedUri);
-				log.debug("                    Params: " +Util.getParams(request));
+
+				StringBuilder sbParams = new StringBuilder("{");
+				Map<String, String[]> params = Util.getParams(request);
+				for ( String key: params.keySet() ) {
+					sbParams.append(key+ "=>" + Arrays.asList(params.get(key))+ ",");	
+				}
+				sbParams.append("}");
+				log.debug("                    Params: " +sbParams);
+
+				
 				log.debug("                 user-agent: " +userAgentList);
 				log.debug("             PC-Remote-Addr: " +pcList);
 				log.debug("             Accept entries: " +accept.getEntries());
