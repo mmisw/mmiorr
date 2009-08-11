@@ -11,6 +11,10 @@ Created: 2009-05-13
 		  there is a new value for the corresponding property.
 		  TODO Note: We are always replacing the values; we may eventually consider a mechanism to allow 
 		  actual *addition" of more values for the same predicate.
+		  
+	Server.getOntologyInfo(String ontologyUri): always include all versions. (note that the flag was
+	called includePriorVersions originally)
+	 
 	
 2008-08-07:
 	- Checking pre-existing registered ontology when trying to submit a new one:

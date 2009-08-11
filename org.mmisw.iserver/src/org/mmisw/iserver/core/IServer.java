@@ -43,11 +43,11 @@ public interface IServer {
 	 * Note that the priorVersion list WILL also contain the main (most recent) element, but in 
 	 * versioned form (that is, getUri() for that element will be versioned.
 	 * 
-	 * @param includePriorVersions true to include the prior versions for each element
+	 * @param includeAllVersions true to include all versions for each element
 	 * @return
 	 * @throws Exception
 	 */
-	List<RegisteredOntologyInfo> getAllOntologies(boolean includePriorVersions) throws Exception;
+	List<RegisteredOntologyInfo> getAllOntologies(boolean includeAllVersions) throws Exception;
 	
 	/**
 	 * Gets an ontology from the registry.

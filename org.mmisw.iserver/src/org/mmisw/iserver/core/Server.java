@@ -306,7 +306,7 @@ public class Server implements IServer {
 	}
 
 	
-	public List<RegisteredOntologyInfo> getAllOntologies(boolean includePriorVersions) throws Exception {
+	public List<RegisteredOntologyInfo> getAllOntologies(boolean includeAllVersions) throws Exception {
 		
 		// {unversionedUri -> list of versioned URIs }  for all unversioned URIs ontologies
 		Map<String, List<RegisteredOntologyInfo>> unversionedToVersioned = getUnversionedToOntologyInfoListMap(null);
@@ -338,8 +338,8 @@ public class Server implements IServer {
 					mostRecent.getShortName()
 			);
 
-			// if requested, include prior versions: 
-			if ( includePriorVersions ) {
+			// if requested, include all versions: 
+			if ( includeAllVersions ) {
 				registeredOntologyInfo.getPriorVersions().addAll(versionedList);
 			}
 			
@@ -370,7 +370,8 @@ public class Server implements IServer {
 			// re-hosted
 			String unversOntologyUri = ontologyUri;
 			try {
-				return getOntologyInfoWithVersionParams(ontologyUri, unversOntologyUri, version);
+				boolean includeAllVersions = true;
+				return getOntologyInfoWithVersionParams(ontologyUri, unversOntologyUri, version, includeAllVersions);
 			}
 			catch (Exception e1) {
 				String error = e.getMessage();
@@ -387,7 +388,8 @@ public class Server implements IServer {
 		try {	
 			// get elements associated with the unversioned form of the requested URI:
 			String unversOntologyUri = mmiUri.copyWithVersion(null).getOntologyUri();
-			return getOntologyInfoWithVersionParams(ontologyUri, unversOntologyUri, version);
+			boolean includeAllVersions = true;
+			return getOntologyInfoWithVersionParams(ontologyUri, unversOntologyUri, version, includeAllVersions);
 		}
 		catch (Exception e) {
 			String error = e.getMessage();
@@ -408,7 +410,7 @@ public class Server implements IServer {
 	 * @throws Exception
 	 */
 	private RegisteredOntologyInfo getOntologyInfoWithVersionParams(String ontologyUri, String unversOntologyUri,
-			String version) throws Exception {
+			String version, boolean includeAllVersions) throws Exception {
 
 		// first, get list of entries for the requested ontology using the unversioned form as key:
 		Map<String, List<RegisteredOntologyInfo>> unversionedToVersioned = getUnversionedToOntologyInfoListMap(unversOntologyUri);
@@ -432,15 +434,17 @@ public class Server implements IServer {
 		//
 
 
+		RegisteredOntologyInfo foundRoi = null;
+		
 		if ( version != null ) {
 			log.debug("Server.getOntologyInfoWithVersionParams case a) version = " +version);
 			//  a) explicit version given: search for exact match using the 'version' field:
 			for ( RegisteredOntologyInfo oi : list ) {
 				if ( version.equals(oi.getVersionNumber()) ) {
-					return oi;
+					foundRoi = oi;
+					break;
 				}
 			}
-			return null;  // not found
 		}
 		else if ( ontologyUri.equals(unversOntologyUri) ) {
 			log.debug("Server.getOntologyInfoWithVersionParams case b) unversioned request = " +unversOntologyUri);
@@ -448,7 +452,7 @@ public class Server implements IServer {
 			// just return first entry in list
 			RegisteredOntologyInfo oi = list.get(0);
 			oi.setUri(oi.getUnversionedUri());
-			return oi;
+			foundRoi = oi;
 		}
 		else {
 			log.debug("Server.getOntologyInfoWithVersionParams case c) versioned request = " +ontologyUri);
@@ -456,11 +460,17 @@ public class Server implements IServer {
 			// Search list for exact match of 'uri' field:
 			for ( RegisteredOntologyInfo oi : list ) {
 				if ( ontologyUri.equals(oi.getUri()) ) {
-					return oi;
+					foundRoi = oi;
+					break;
 				}
 			}
-			return null;  // not found
 		}
+		
+		if ( foundRoi != null && includeAllVersions ) {
+			foundRoi.getPriorVersions().addAll(list);
+		}
+		
+		return foundRoi;
 	}
 
 	public RegisteredOntologyInfo getEntities(RegisteredOntologyInfo registeredOntologyInfo) {
