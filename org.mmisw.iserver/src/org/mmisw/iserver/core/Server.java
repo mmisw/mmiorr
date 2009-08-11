@@ -351,6 +351,9 @@ public class Server implements IServer {
 	}
 	
 	public RegisteredOntologyInfo getOntologyInfo(String ontologyUri) {
+		
+		log.debug("getOntologyInfo: ontologyUri=" +ontologyUri);
+		
 		String[] toks = ontologyUri.split("\\?");
 		ontologyUri = toks[0];
 		
@@ -358,6 +361,8 @@ public class Server implements IServer {
 		if ( toks.length > 1 && toks[1].startsWith("version=") ) {
 			version = toks[1].substring("version=".length());
 		}
+		
+		log.debug("getOntologyInfo: ontologyUri=" +ontologyUri+ "  version=" +version);
 		
 		try {
 			MmiUri mmiUri = new MmiUri(ontologyUri);
@@ -415,6 +420,8 @@ public class Server implements IServer {
 		// first, get list of entries for the requested ontology using the unversioned form as key:
 		Map<String, List<RegisteredOntologyInfo>> unversionedToVersioned = getUnversionedToOntologyInfoListMap(unversOntologyUri);
 
+		log.debug("getOntologyInfoWithVersionParams: getUnversionedToOntologyInfoListMap => " +unversionedToVersioned);
+		
 		if ( unversionedToVersioned.isEmpty() ) {
 			return null; // not found
 		}
