@@ -115,7 +115,9 @@ public class PortalControl {
 		}
 	}
 		
-	public String getDownloadOptionHtml(DownloadOption dopc, RegisteredOntologyInfo oi) {
+	public String getDownloadOptionHtml(DownloadOption dopc, RegisteredOntologyInfo oi,
+			boolean includeVersion) {
+		
 		if ( oi == null ) {
 			oi = ontologyInfo;
 		}
@@ -124,7 +126,9 @@ public class PortalControl {
 			final String ontService = Portal.portalBaseInfo.getOntServiceUrl();
 			String ontUri = URL.encode(oi.getUri()).replaceAll("#", "%23");
 			String url = ontService+ "?form=" +dopc.getFormat()+ "&uri=" +ontUri;
-			url += "&version=" +oi.getVersionNumber();
+			if ( includeVersion ) {
+				url += "&version=" +oi.getVersionNumber();
+			}
 			return "<a target=\"_blank\" href=\"" +url+ "\">" +dopc.getName()+ "</a>";
 		}
 		return null;
@@ -238,13 +242,13 @@ public class PortalControl {
 	
 	private IQuickInfo quickInfo = new IQuickInfo() {
 		
-		public Widget getWidget(final RegisteredOntologyInfo oi) {
+		public Widget getWidget(final RegisteredOntologyInfo oi, final boolean includeVersionInLinks) {
 			
 			if ( true ) {
 				ControlsPanel controlsPanel = PortalControl.getInstance().getMenuBarPanel();
 				
 				// TODO do not include Edit option yet
-				MenuBar menu = controlsPanel.createOntologyMenuBar(oi, false);
+				MenuBar menu = controlsPanel.createOntologyMenuBar(oi, false, includeVersionInLinks);
 				MenuBar mb = new MenuBar(true);
 //				mb.addItem("<font color=\"blue\">i</font>", true, menu);
 				mb.addItem("", menu);
@@ -257,7 +261,7 @@ public class PortalControl {
 						
 						ControlsPanel controlsPanel = PortalControl.getInstance().getMenuBarPanel();
 						
-						MenuBar menu = controlsPanel.createOntologyMenuBar(oi, false);
+						MenuBar menu = controlsPanel.createOntologyMenuBar(oi, false, includeVersionInLinks);
 						
 						final PopupPanel menuPopup = new PopupPanel(true);
 					    menuPopup.setWidget(menu);

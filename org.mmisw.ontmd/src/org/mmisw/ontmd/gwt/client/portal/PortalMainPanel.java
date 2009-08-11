@@ -203,36 +203,22 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		// so this will be alwas null.  TODO: Remove the historyTokenMap cache.
 		Object obj = historyTokenMap.get(historyToken);
 		
-		if ( obj == null ) {
+		assert ( obj == null ) ;
 
-			if ( historyToken.trim().length() > 0 ) {
-				if ( historyToken.trim().toLowerCase().equals("browse") ) {
-					dispatchMainPanel(false);		
-				}
-				else {
-					String ontologyUri = historyToken.trim();
-					Main.log("onHistoryChanged: URI: " +ontologyUri);
-					getOntologyInfo(ontologyUri);
-				}
+		if ( historyToken.trim().length() > 0 ) {
+			if ( historyToken.trim().toLowerCase().equals("browse") ) {
+				dispatchMainPanel(false);		
 			}
 			else {
-				dispatchMainPanel(false);
+				String ontologyUri = historyToken.trim();
+				Main.log("onHistoryChanged: URI: " +ontologyUri);
+				getOntologyInfo(ontologyUri);
 			}
+		}
+		else {
+			dispatchMainPanel(false);
+		}
 			
-			return;
-		}
-		
-		if ( obj instanceof RegisteredOntologyInfo ) {
-			RegisteredOntologyInfo ontologyInfo = (RegisteredOntologyInfo) obj;
-			pctrl.setOntologyInfo(ontologyInfo);
-			Main.log("onHistoryChanged: OntologyInfo: " +ontologyInfo.getUri());
-			dispatchOntologyPanel(ontologyInfo);
-			return;
-		}
-		
-		
-		// else:
-		dispatchMainPanel(false);
 	}
 
 	
@@ -264,7 +250,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	    }
 	}
 	
-	private void dispatchOntologyPanel(final RegisteredOntologyInfo ontologyInfo) {
+	private void dispatchOntologyPanel(final RegisteredOntologyInfo ontologyInfo, final boolean versionExplicit) {
 		String ontologyUri = ontologyInfo.getUri();
 		Main.log("dispatchOntologyPanel:  ontologyUri=" +ontologyUri);
 
@@ -275,7 +261,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	    
 	    DeferredCommand.addCommand(new Command() {
 			public void execute() {
-				OntologyPanel ontologyPanel = new OntologyPanel(ontologyInfo, true);
+				OntologyPanel ontologyPanel = new OntologyPanel(ontologyInfo, true, versionExplicit);
 				pctrl.setOntologyInfo(ontologyInfo);
 				pctrl.setOntologyPanel(ontologyPanel);
 				controlsPanel.showMenuBar(interfaceType);
@@ -290,7 +276,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	
 	public void createNewFromFile() {
 		RegisteredOntologyInfo ontologyInfo = new RegisteredOntologyInfo();
-		OntologyPanel ontologyPanel = new OntologyPanel(ontologyInfo, false);
+		OntologyPanel ontologyPanel = new OntologyPanel(ontologyInfo, false, false);
 
 		pctrl.setOntologyInfo(ontologyInfo);
 		pctrl.setOntologyPanel(ontologyPanel);
@@ -308,7 +294,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	
 	public void createNewVocabulary() {
 		RegisteredOntologyInfo ontologyInfo = new RegisteredOntologyInfo();
-		OntologyPanel ontologyPanel = new OntologyPanel(ontologyInfo, false);
+		OntologyPanel ontologyPanel = new OntologyPanel(ontologyInfo, false, false);
 
 		pctrl.setOntologyInfo(ontologyInfo);
 		pctrl.setOntologyPanel(ontologyPanel);
@@ -421,7 +407,8 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 				    bodyPanel.add(vp);
 				}
 				else {
-					dispatchOntologyPanel(ontologyInfo);
+					boolean versionExplicit = ontologyUri.indexOf("version=") >= 0;
+					dispatchOntologyPanel(ontologyInfo, versionExplicit);
 				}
 			}
 		};

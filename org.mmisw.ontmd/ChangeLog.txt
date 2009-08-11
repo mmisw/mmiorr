@@ -1,7 +1,19 @@
 org.mmisw.ontmd: MMI Portal
 Carlos Rueda  -  http://marinemetadata.org
+$Id$
 
 ChangeLog
+
+2009-08-11  1.5.0.alpha8
+	- Fixed bug: "version" param always added for requests to the "ont" service
+	
+	- The latest version is dispached in general; only versioned dispatch in done when an ontology
+	  is displayed from the "available versions" window, or if the requested URI is a versioned MmiUri.
+	
+	- "available versions" window now shows the unversioned URI in the title. The list is now sorted 
+	  by descending version (so most recent version first).
+  
+  
 
 2008-08-10  1.5.0.alpha7   Issue #159: Re-host ontologies: versioning
 	- OntologyTable.update(): include version in hyperlinks

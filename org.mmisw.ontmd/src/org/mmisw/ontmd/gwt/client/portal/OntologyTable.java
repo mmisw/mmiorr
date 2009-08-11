@@ -27,12 +27,13 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class OntologyTable extends FlexTable {
 	private static final String TESTING_ONT_MARK = "<font color=\"red\">T</font>";
+	private static final String TESTING_ONT_TOOLTIP = "A testing ontology";
 
 // TODO Use utility ViewTable 
 	
 	
 	static interface IQuickInfo {
-		Widget getWidget(RegisteredOntologyInfo oi);
+		Widget getWidget(RegisteredOntologyInfo oi, boolean includeVersionInLinks);
 	}
 	
 	private IQuickInfo quickInfo;
@@ -107,6 +108,9 @@ public class OntologyTable extends FlexTable {
 	private ClickListener clickListenerToHyperlinks;
 	
 	
+	private boolean includeVersionInLinks = false;
+	
+	
 	OntologyTable(IQuickInfo quickInfo) {
 		super();
 		this.quickInfo = quickInfo;
@@ -124,6 +128,28 @@ public class OntologyTable extends FlexTable {
 		prepareHeader();
 	}
 	
+	/**
+	 * By default, the version is not included in the hyperlinks.
+	 * 
+	 * @param includeVersionInLinks true to include version in the hyperlinks.
+	 */
+	public void setIncludeVersionInLinks(boolean includeVersionInLinks) {
+		this.includeVersionInLinks = includeVersionInLinks;
+	}
+
+	/**
+	 * Set the sort criteria. It will have effect on the next update of the table, which
+	 * happens upon a call to {@link #setOntologyInfos(List, LoginResult)}.
+	 * 
+	 * @param sortColumn
+	 * @param increasing
+	 */
+	public void setSortColumn(String sortColumn, boolean increasing) {
+		this.sortColumn = sortColumn;
+		this.sortFactor = increasing ? 1 : -1;
+	}
+
+
 	/**
 	 * For subsequent creation of the entries in the table, the given listener will be
 	 * associated to the corresponding hyperlinks. So, call this before {@link #setOntologyInfos(List, LoginResult)}.
@@ -198,6 +224,12 @@ public class OntologyTable extends FlexTable {
 		row++;
 	}
 	
+	/**
+	 * Sets the ontologies to be displayed in the table.
+	 * 
+	 * @param ontologyInfos
+	 * @param loginResult
+	 */
 	void setOntologyInfos(final List<RegisteredOntologyInfo> ontologyInfos, LoginResult loginResult) {
 		this.ontologyInfos = ontologyInfos;
 		this.isAdmin = loginResult != null && loginResult.isAdministrator();
@@ -224,9 +256,13 @@ public class OntologyTable extends FlexTable {
 			String author = oi.getContactName();
 			String version = oi.getVersionNumber();
 			
-			String tooltip = uri+ " version: " +version;
+			String tooltip = uri;
+			String historyToken = uri;
 			
-			String historyToken = uri+ "?version=" +version;
+			if ( includeVersionInLinks ) {
+				historyToken += "?version=" +version;
+				tooltip += "\nversion: " +version;
+			}
 			
 			Widget nameWidget;
 			
@@ -241,7 +277,9 @@ public class OntologyTable extends FlexTable {
 				// add a mark
 				HorizontalPanel hp = new HorizontalPanel();
 				hp.add(hlink);
-				hp.add(new HTML(TESTING_ONT_MARK));
+				HTML html = new HTML(TESTING_ONT_MARK);
+				html.setTitle(TESTING_ONT_TOOLTIP);
+				hp.add(html);
 				nameWidget = hp;
 			}
 			else {
@@ -257,7 +295,7 @@ public class OntologyTable extends FlexTable {
 			
 			int col = 0;
 			if ( quickInfo != null ) {
-				flexPanel.setWidget(row, col, quickInfo.getWidget(oi));
+				flexPanel.setWidget(row, col, quickInfo.getWidget(oi, includeVersionInLinks));
 				flexPanel.getFlexCellFormatter().setAlignment(row, col, 
 						HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE
 				);

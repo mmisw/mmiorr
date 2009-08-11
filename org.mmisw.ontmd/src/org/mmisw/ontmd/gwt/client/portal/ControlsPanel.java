@@ -127,6 +127,7 @@ if ( false ) {  //TODO not implemented
 	}
 
 	private void _prepareOntologyViewButtons() {
+		boolean includeVersion = pctrl.getOntologyPanel().isVersionExplicit();
 		
 		PushButton button;
 		
@@ -162,7 +163,7 @@ if ( false ) {  //TODO not implemented
 		viewAsPanel.setSpacing(4);
 		viewAsPanel.add(new HTML("View as: "));
 		for (PortalControl.DownloadOption dopc : PortalControl.DownloadOption.values() ) {
-			String text = pctrl.getDownloadOptionHtml(dopc, oi);
+			String text = pctrl.getDownloadOptionHtml(dopc, oi, includeVersion);
 			if ( text != null ) {
 				viewAsPanel.add(new HTML(text));
 			}
@@ -241,14 +242,14 @@ if ( false ) {  //TODO not implemented
 	}
 
 	
-	MenuBar createOntologyMenuBar(RegisteredOntologyInfo oi, boolean includeEdit) {
+	MenuBar createOntologyMenuBar(RegisteredOntologyInfo oi, boolean includeEdit, boolean includeVersion) {
 		MenuBar ont_mb = new MenuBar(true);
 		
 		if ( includeEdit && pctrl.checkCanEditOntology(oi) == null ) {
 			ont_mb.addItem(_createMenuItemCreateNewVersion());
 		}
 		
-		ont_mb.addItem("Download as", _createMenuBarDownloadOntologyAs(oi));
+		ont_mb.addItem("View as", _createMenuBarDownloadOntologyAs(oi, includeVersion));
 		
 		if ( oi == null ) {
 			oi = pctrl.getOntologyInfo();
@@ -264,7 +265,9 @@ if ( false ) {  //TODO not implemented
 	
 	
 	private MenuBar _prepareOntologyViewMenuBar() {
-		MenuBar ont_mb = createOntologyMenuBar(null, true);
+		boolean includeVersion = pctrl.getOntologyPanel().isVersionExplicit();
+		
+		MenuBar ont_mb = createOntologyMenuBar(null, true, includeVersion);
 		
 		mb.addItem(new MenuItem(_menuTitle("Ontology"), true, ont_mb));
 		
@@ -338,8 +341,10 @@ if ( false ) {  //TODO not implemented
 		vp.setHorizontalAlignment(ALIGN_CENTER);
 
 		final MyDialog popup = new MyDialog(vp);
-		popup.setText("Available versions");
+		popup.setText("Available versions for " +oi.getUnversionedUri());
 		OntologyTable ontologyTable = new OntologyTable(PortalControl.getInstance().getQuickInfo());
+		ontologyTable.setIncludeVersionInLinks(true);
+		ontologyTable.setSortColumn("version", false); // (version, false) = most recent version first. 
 		
 		// this is to hide the popup when the user clicks one of the links:
 		ontologyTable.addClickListenerToHyperlinks(
@@ -373,11 +378,11 @@ if ( false ) {  //TODO not implemented
 		}
 	};
 	
-	private MenuBar _createMenuBarDownloadOntologyAs(RegisteredOntologyInfo oi) {
+	private MenuBar _createMenuBarDownloadOntologyAs(RegisteredOntologyInfo oi, boolean includeVersion) {
 		// use a nullCmd as i'm not sure addItem accepts a null command
 		MenuBar mb = new MenuBar(true);
 		for (PortalControl.DownloadOption dopc : PortalControl.DownloadOption.values() ) {
-			String text = pctrl.getDownloadOptionHtml(dopc, oi);
+			String text = pctrl.getDownloadOptionHtml(dopc, oi, includeVersion);
 			if ( text != null ) {
 				mb.addItem(text, true, nullCmd);
 			}

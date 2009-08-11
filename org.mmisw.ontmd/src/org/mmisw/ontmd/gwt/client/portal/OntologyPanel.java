@@ -71,6 +71,9 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	/** Ontology to be dispatched */
 	private RegisteredOntologyInfo ontologyInfo;
 	
+	/** dispatch with explicit version? */
+	private final boolean versionExplicit;
+	
 	
 	public MetadataPanel getMetadataPanel() { 
 		return metadataPanel; 
@@ -98,12 +101,13 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	 * @param ontologyInfo
 	 * @param readOly the initial mode
 	 */
-	public OntologyPanel(RegisteredOntologyInfo ontologyInfo, boolean readOnly) {
+	public OntologyPanel(RegisteredOntologyInfo ontologyInfo, boolean readOnly, boolean versionExplicit) {
 		super();
 		setWidth("100%");
 		container.setWidth("100%");
 		
 		this.ontologyInfo = ontologyInfo;
+		this.versionExplicit = versionExplicit;
 		
 		add(container);
 		
@@ -140,6 +144,13 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	}
 	
 	
+	/**
+	 * @return the versionExplicit
+	 */
+	public boolean isVersionExplicit() {
+		return versionExplicit;
+	}
+
 	/**
 	 * @return the ontologyInfo
 	 */
@@ -453,7 +464,6 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		final MyDialog popup = new MyDialog(null);
 		popup.addTextArea(null).setSize("600", "150");
 		popup.getTextArea().setText("please wait ...");
-		Main.log("Creating ontology ...");
 		PortalControl.getInstance().notifyActivity(true);
 		popup.setText("Creating ontology ...");
 		popup.center();
@@ -467,11 +477,13 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			}
 
 			public void onSuccess(CreateOntologyResult result) {
+				Main.log("CreateOntologyResult obtained.");
 				PortalControl.getInstance().notifyActivity(false);
 				reviewCompleted(popup, result);
 			}
 		};
 
+		Main.log("Calling ontmdService.createOntology ...");
 		Main.ontmdService.createOntology(createOntologyInfo, callback);
 	}
 
