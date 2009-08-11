@@ -401,6 +401,8 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 			}
 
 			public void onSuccess(RegisteredOntologyInfo ontologyInfo) {
+				Main.log("getOntologyInfo: ontologyUri = " +ontologyUri+ ". success.");
+				
 				String error = null;
 				if ( ontologyInfo == null ) {
 					error = "<b>" +ontologyUri+ "</b>: " +
