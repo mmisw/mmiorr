@@ -29,6 +29,11 @@
 		<priority value="@ontmd.app.log.ontmdlevel@" />
 	</category>
 
+	<!-- Use same level for iserver module -->
+	<category name="org.mmisw.iserver">
+		<priority value="@ontmd.app.log.ontmdlevel@" />
+	</category>
+
 	<root>
 		<priority value="@ontmd.app.log.deflevel@" />
 		<appender-ref ref="file" />

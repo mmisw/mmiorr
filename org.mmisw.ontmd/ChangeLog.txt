@@ -8,6 +8,9 @@ ChangeLog
 	- PortalControl.getDownloadOptionHtml(): include "version" parameter
 	
 	
+	- log4j.xml: assigned same org.mmisw.ontmd's log level to org.mmisw.iserver module.
+	
+	
 2009-08-05  1.5.0.alpha6
 	- Fixed issue #160 Loading an ontology file does not update associated metadata in the editor
 		Problem was that the listener registered with the DataPanel was not updated when the mode
