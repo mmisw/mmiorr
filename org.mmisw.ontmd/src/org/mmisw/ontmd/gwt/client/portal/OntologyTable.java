@@ -261,7 +261,7 @@ public class OntologyTable extends FlexTable {
 			
 			if ( includeVersionInLinks ) {
 				historyToken += "?version=" +version;
-				tooltip += "\nversion: " +version;
+				tooltip += "   \nversion: " +version;
 			}
 			
 			Widget nameWidget;
