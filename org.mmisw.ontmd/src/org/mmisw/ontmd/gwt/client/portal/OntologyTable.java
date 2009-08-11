@@ -107,16 +107,12 @@ public class OntologyTable extends FlexTable {
 	private ClickListener clickListenerToHyperlinks;
 	
 	
-	OntologyTable() {
-		this(null);
-	}
-	
 	OntologyTable(IQuickInfo quickInfo) {
 		super();
 		this.quickInfo = quickInfo;
 		
 		flexPanel.setBorderWidth(1);
-		flexPanel.setCellPadding(1);
+		flexPanel.setCellPadding(3);
 		flexPanel.setWidth("100%");
 		flexPanel.setStylePrimaryName("OntologyTable");
 		

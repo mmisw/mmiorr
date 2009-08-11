@@ -66,13 +66,14 @@ public class HeaderPanel extends FlexTable {
 		int row = 0;
 		
 		flexPanel.setWidget(row, 0, Main.images.mmior().createImage());
+		flexPanel.getFlexCellFormatter().setWidth(row, 0, "10%");
 		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 
 		flexPanel.setWidget(row, 1, linksPanel);
 		flexPanel.getFlexCellFormatter().setAlignment(row, 1, 
-				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP
 		);
 
 	}
