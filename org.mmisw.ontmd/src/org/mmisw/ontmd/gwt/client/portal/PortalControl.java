@@ -122,20 +122,22 @@ public class PortalControl {
 		HTML hrefHtml;
 		String tooltip;
 		
-		ExternalViewersInfo(String ontbrowserUrl, RegisteredOntologyInfo oi) {
+		ExternalViewersInfo(String ontbrowserUrl, RegisteredOntologyInfo oi, boolean includeVersion) {
 			hp.setSpacing(3);
 			
 			// URI of the ontology to be retrieved from the "ont" service:
 			String uri = Portal.portalBaseInfo.getOntServiceUrl() + "?form=owl&uri=" +oi.getUri();
+			if ( includeVersion ) {
+				uri += "&version=" +oi.getVersionNumber();
+			}
+
 			uri = uri.replaceAll("\\?", "%3F").replaceAll("#", "%23").replaceAll("&", "%26");
 			
 			// the link for the ontology-browser tool:
 			String link = ontbrowserUrl+ "/manage/?action=load&clear=true&uri=" +uri;
 			Main.log("ontology-browser link: " +link);
 			
-			// use the same target always as a way to force the reloading (to be tested)
-			// to be tests. Otherwise, report bug to the ontology-browser folks.
-			String target = "_ontbrowser_";   // "_blank"
+			String target = "_blank";
 			String href = "<a target=\"" +target+ "\" href=\"" +link+ "\">Ontology Browser</a>";
 			
 			hrefHtml = new HTML(href);
@@ -146,7 +148,7 @@ public class PortalControl {
 		}
 	}
 	
-	public ExternalViewersInfo getExternalViewersInfo(RegisteredOntologyInfo oi) {
+	public ExternalViewersInfo getExternalViewersInfo(RegisteredOntologyInfo oi, boolean includeVersion) {
 		String ontbrowserUrl = Portal.portalBaseInfo.getOntbrowserServiceUrl();
 		if ( ontbrowserUrl == null || ontbrowserUrl.trim().length() == 0 ) {
 			return null;
@@ -157,7 +159,7 @@ public class PortalControl {
 		}
 		
 		if ( oi != null ) {
-			return new ExternalViewersInfo(ontbrowserUrl, oi);
+			return new ExternalViewersInfo(ontbrowserUrl, oi, includeVersion);
 		}
 		return null;
 	}

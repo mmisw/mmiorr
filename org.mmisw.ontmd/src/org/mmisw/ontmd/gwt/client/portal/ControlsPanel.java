@@ -173,7 +173,7 @@ if ( false ) {  //TODO not implemented
 		}
 		controls.add(viewAsPanel);
 		
-		ExternalViewersInfo xvi = pctrl.getExternalViewersInfo(oi);
+		ExternalViewersInfo xvi = pctrl.getExternalViewersInfo(oi, includeVersion);
 		if ( xvi != null ) {
 			controls.add(xvi.hp);
 		}
@@ -269,7 +269,7 @@ if ( false ) {  //TODO not implemented
 			ont_mb.addItem(_createMenuItemVersions(oi));
 		}
 		
-		ExternalViewersInfo xvi = pctrl.getExternalViewersInfo(oi);
+		ExternalViewersInfo xvi = pctrl.getExternalViewersInfo(oi, includeVersion);
 		if ( xvi != null ) {
 			ont_mb.addSeparator();
 			MenuItem mi = new MenuItem(xvi.hrefHtml.getHTML(), true, nullCmd);
