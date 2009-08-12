@@ -133,7 +133,10 @@ public class PortalControl {
 			String link = ontbrowserUrl+ "/manage/?action=load&clear=true&uri=" +uri;
 			Main.log("ontology-browser link: " +link);
 			
-			String href = "<a target=\"_blank\" href=\"" +link+ "\">Ontology Browser</a>";
+			// use the same target always as a way to force the reloading (to be tested)
+			// to be tests. Otherwise, report bug to the ontology-browser folks.
+			String target = "_ontbrowser_";   // "_blank"
+			String href = "<a target=\"" +target+ "\" href=\"" +link+ "\">Ontology Browser</a>";
 			
 			hrefHtml = new HTML(href);
 			tooltip = "Opens the ontology using the external Ontology Browser tool. " +
