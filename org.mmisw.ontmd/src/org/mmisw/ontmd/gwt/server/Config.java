@@ -52,8 +52,10 @@ public class Config {
 		/** URL of Vine service */
 		VINE_SERVICE_URL               ("vine.service.url", "http://localhost:8080/vine", false),
 		
-		/** URL of Ontology Browser service */
-		ONTBROWSER_SERVICE_URL         ("ontbrowser.service.url", "http://localhost:8080/browser", false),
+		/** URL of Ontology Browser service.
+		 * Note: it's required;  use the "-" value in build.properties to disable this functionality.
+		 */
+		ONTBROWSER_SERVICE_URL         ("ontbrowser.service.url", "http://localhost:8080/browser"),
 		
 		;
 		

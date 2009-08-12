@@ -11,8 +11,8 @@ ChangeLog
 	http://mmisw.org/browser (latest version 1.1.6)
 	
 		- sample.build.properties: new property ontbrowser.service.url
-		- If this is non-blank, "Ontology Browser" links will be included in the controls bar and in the
-		  popup menu associated with ontologies to open the ontology using that tool.
+		- If the value is not "-", "Ontology Browser" links will be included in the 
+		  controls bar and in the popup menu associated with ontologies to open the ontology using that tool.
 		  
 	In a future version, we could probably embed the ontology-browser in the ontology panel.
 	
