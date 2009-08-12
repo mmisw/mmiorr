@@ -69,9 +69,11 @@ public class PortalImpl  {
 		
 		portalBaseInfo = new PortalBaseInfo();
 		
+		portalBaseInfo.setAppServerUrl(Config.Prop.APPSERVER_HOST.getValue());
 		portalBaseInfo.setOntServiceUrl(Config.Prop.ONT_SERVICE_URL.getValue());
 		portalBaseInfo.setPortalServiceUrl(Config.Prop.PORTAL_SERVICE_URL.getValue());
 		portalBaseInfo.setVineServiceUrl(Config.Prop.VINE_SERVICE_URL.getValue());
+		portalBaseInfo.setOntbrowserServiceUrl(Config.Prop.ONTBROWSER_SERVICE_URL.getValue());
 
 		log.info("preparing base info ... Done.");
 	}

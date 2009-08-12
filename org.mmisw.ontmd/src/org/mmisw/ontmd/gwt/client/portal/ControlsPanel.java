@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.ontmd.gwt.client.portal.PortalControl.ExternalViewersInfo;
 import org.mmisw.ontmd.gwt.client.portal.PortalMainPanel.InterfaceType;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 
@@ -30,7 +31,7 @@ public class ControlsPanel extends HorizontalPanel {
 	
 	// actually use a MenuBar?
 	private static final boolean useMenuBar = false;
-	
+
 	private final MenuBar mb = useMenuBar ? new MenuBar() : null;
 	
 	private final HorizontalPanel controls = useMenuBar ? null : new HorizontalPanel();
@@ -50,7 +51,9 @@ public class ControlsPanel extends HorizontalPanel {
 		if ( ! useMenuBar ) {
 			this.setStylePrimaryName("ToolBar");
 			
+			controls.setStylePrimaryName("ControlsBar");
 			controls.setVerticalAlignment(ALIGN_MIDDLE);
+			controls.setBorderWidth(1);
 			this.add(controls);
 		}
 	}
@@ -169,6 +172,12 @@ if ( false ) {  //TODO not implemented
 			}
 		}
 		controls.add(viewAsPanel);
+		
+		ExternalViewersInfo xvi = pctrl.getExternalViewersInfo(oi);
+		if ( xvi != null ) {
+			controls.add(xvi.hp);
+		}
+		
 	}
 
 	private void _prepareOntologyEditButtons() {
@@ -259,6 +268,15 @@ if ( false ) {  //TODO not implemented
 			ont_mb.addSeparator();
 			ont_mb.addItem(_createMenuItemVersions(oi));
 		}
+		
+		ExternalViewersInfo xvi = pctrl.getExternalViewersInfo(oi);
+		if ( xvi != null ) {
+			ont_mb.addSeparator();
+			MenuItem mi = new MenuItem(xvi.hrefHtml.getHTML(), true, nullCmd);
+			mi.setTitle(xvi.tooltip);
+			ont_mb.addItem(mi);
+		}
+
 		
 		return ont_mb;
 	}

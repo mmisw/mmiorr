@@ -9,10 +9,25 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class PortalBaseInfo implements IsSerializable {
 
+	private String appServerUrl;
 	private String ontServiceUrl;
 	private String portalServiceUrl;
 	private String vineServiceUrl;
+	private String ontbrowserServiceUrl;
 	
+	
+	/**
+	 * @return the appServerUrl
+	 */
+	public String getAppServerUrl() {
+		return appServerUrl;
+	}
+	/**
+	 * @param appServerUrl the appServerUrl to set
+	 */
+	public void setAppServerUrl(String appServerUrl) {
+		this.appServerUrl = appServerUrl;
+	}
 	/**
 	 * @return the ontServiceUrl
 	 */
@@ -48,6 +63,18 @@ public class PortalBaseInfo implements IsSerializable {
 	 */
 	public void setVineServiceUrl(String vineServiceUrl) {
 		this.vineServiceUrl = vineServiceUrl;
+	}
+	/**
+	 * @return the ontbrowserServiceUrl
+	 */
+	public String getOntbrowserServiceUrl() {
+		return ontbrowserServiceUrl;
+	}
+	/**
+	 * @param ontbrowserServiceUrl the ontbrowserServiceUrl to set
+	 */
+	public void setOntbrowserServiceUrl(String ontbrowserServiceUrl) {
+		this.ontbrowserServiceUrl = ontbrowserServiceUrl;
 	}
 	
 	

@@ -11,6 +11,8 @@ import org.mmisw.ontmd.gwt.client.portal.OntologyTable.IQuickInfo;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -115,6 +117,48 @@ public class PortalControl {
 		}
 	}
 		
+	static class ExternalViewersInfo {
+		HorizontalPanel hp = new HorizontalPanel();
+		HTML hrefHtml;
+		String tooltip;
+		
+		ExternalViewersInfo(String ontbrowserUrl, RegisteredOntologyInfo oi) {
+			hp.setSpacing(3);
+			
+			// URI of the ontology to be retrieved from the "ont" service:
+			String uri = Portal.portalBaseInfo.getOntServiceUrl() + "?form=owl&uri=" +oi.getUri();
+			uri = uri.replaceAll("\\?", "%3F").replaceAll("#", "%23").replaceAll("&", "%26");
+			
+			// the link for the ontology-browser tool:
+			String link = ontbrowserUrl+ "/manage/?action=load&clear=true&uri=" +uri;
+			Main.log("ontology-browser link: " +link);
+			
+			String href = "<a target=\"_blank\" href=\"" +link+ "\">Ontology Browser</a>";
+			
+			hrefHtml = new HTML(href);
+			tooltip = "Opens the ontology using the external Ontology Browser tool. " +
+						"(See http://code.google.com/p/ontology-browser/.)";
+			hrefHtml.setTitle(tooltip);
+			hp.add(hrefHtml);
+		}
+	}
+	
+	public ExternalViewersInfo getExternalViewersInfo(RegisteredOntologyInfo oi) {
+		String ontbrowserUrl = Portal.portalBaseInfo.getOntbrowserServiceUrl();
+		if ( ontbrowserUrl == null || ontbrowserUrl.trim().length() == 0 ) {
+			return null;
+		}
+		
+		if ( oi == null ) {
+			oi = ontologyInfo;
+		}
+		
+		if ( oi != null ) {
+			return new ExternalViewersInfo(ontbrowserUrl, oi);
+		}
+		return null;
+	}
+
 	public String getDownloadOptionHtml(DownloadOption dopc, RegisteredOntologyInfo oi,
 			boolean includeVersion) {
 		
