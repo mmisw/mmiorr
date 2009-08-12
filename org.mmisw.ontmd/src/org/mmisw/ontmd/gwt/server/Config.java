@@ -136,6 +136,14 @@ public class Config {
 				String contextPath = sc.getServletContext().getContextPath();
 				Prop.PORTAL_SERVICE_URL.setValue(Prop.APPSERVER_HOST.getValue() + contextPath);
 			}
+			
+			// actually, if the ontbrowser property value does not start with "http", then
+			// it is ignored.
+			String ontbrowserUrl = Prop.ONTBROWSER_SERVICE_URL.getValue();
+			if ( ! ontbrowserUrl.toLowerCase().startsWith("http") ) {
+				Prop.ONTBROWSER_SERVICE_URL.setValue(null);
+			}
+
 		}
 	}
 
