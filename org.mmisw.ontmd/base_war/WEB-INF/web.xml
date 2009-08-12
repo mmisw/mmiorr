@@ -36,6 +36,11 @@
 		</init-param>
 		
 		<init-param>
+			<param-name>ontbrowser.service.url</param-name>
+			<param-value>@ontbrowser.service.url@</param-value>
+		</init-param>
+		
+		<init-param>
 			<param-name>bioportal.rest.url</param-name>
 			<param-value>@bioportal.rest.url@</param-value>
 		</init-param>
