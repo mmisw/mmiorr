@@ -34,6 +34,7 @@ public class Sparql {
 	public static class QueryResult {
 		private String result;
 		private String contentType;
+		private boolean isEmpty;
 
 		public void setResult(String result) {
 			this.result = result;
@@ -49,6 +50,15 @@ public class Sparql {
 		public String getContentType() {
 			return contentType;
 		}
+
+		public boolean isEmpty() {
+			return isEmpty;
+		}
+
+		public void setIsEmpty(boolean isEmpty) {
+			this.isEmpty = isEmpty;
+		}
+		
 	}
 
 	/**
@@ -77,6 +87,7 @@ public class Sparql {
 					// DESCRIBE
 					model_ = qe.execDescribe();
 				}
+				queryResult.setIsEmpty(model_.isEmpty());
 				
 				JenaUtil2.removeUnusedNsPrefixes(model_);
 				
@@ -100,6 +111,7 @@ public class Sparql {
 			// SELECT
 			else if ( query.isSelectType() ) {
 				ResultSet results = qe.execSelect();
+				queryResult.setIsEmpty(! results.hasNext());
 				
 				if ( form == null || form.equalsIgnoreCase("html") ) {
 					queryResult.setContentType("text/html");

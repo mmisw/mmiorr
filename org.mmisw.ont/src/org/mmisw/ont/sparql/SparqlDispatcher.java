@@ -50,18 +50,24 @@ public class SparqlDispatcher {
 			query = SPARQL_EXAMPLE;
 		}
 
-		execute(request, response, query);
+		execute(request, response, query, null);
 	}
 	
 	/** 
 	 * Executes the given query.
+	 * 
+	 * @param requestedEntity If non-null and the result of the query is empty, then 404 is returned to the client.
 	 */
-	public void execute(HttpServletRequest request, HttpServletResponse response, String query)
+	public void execute(HttpServletRequest request, HttpServletResponse response, String query, String requestedEntity)
 	throws ServletException, IOException {
 		
 		String form = Util.getParam(request, "form", null);
 		
 		Sparql.QueryResult queryResult = _execute(query, form);
+		
+		if ( requestedEntity != null && queryResult.isEmpty() ) {
+			response.sendError(HttpServletResponse.SC_NOT_FOUND, requestedEntity);
+		}
 		
 		String result = queryResult.getResult();
 		

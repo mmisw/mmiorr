@@ -413,8 +413,8 @@ public class OntServlet extends HttpServlet {
 			uriResolver2.serviceForOntology(req);
 		}
 		else {
-			// dispatch entity URI (not complete ontology)
-			uriDispatcher.dispatchUri(req.request, req.response);
+			// dispatch entity URI (not complete ontology).
+			uriDispatcher.dispatchEntityUri(req.request, req.response);
 		}
 	}
 

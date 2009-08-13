@@ -51,8 +51,9 @@ public class UriDispatcher {
 	
 	/**
 	 * Dispatches the URI indicated with the "uri" parameter in the request.
+	 * The URI is assumed to be for a term or entity, not for a whole ontology.
 	 */
-	void dispatchUri(HttpServletRequest request, HttpServletResponse response) 
+	void dispatchEntityUri(HttpServletRequest request, HttpServletResponse response) 
 	throws ServletException, IOException {
 		String entityUri = Util.getParam(request, "uri", "");
 		if ( entityUri.length() == 0 ) {
@@ -92,7 +93,8 @@ public class UriDispatcher {
 		
 		String query = PROPS_CONSTRUCT_QUERY_TEMPLATE.replaceAll("\\{E\\}", entityUri);
 		
-		sparqlDispatcher.execute(request, response, query);
+		// note, we pass the entityUri such that, if the result es empty, then 404 is returned
+		sparqlDispatcher.execute(request, response, query, entityUri);
 	}
 
 
@@ -105,6 +107,7 @@ public class UriDispatcher {
 		
 		String query = PROPS_SELECT_QUERY_TEMPLATE.replaceAll("\\{E\\}", entityUri);
 		
-		sparqlDispatcher.execute(request, response, query);
+		// note, we pass the entityUri such that, if the result es empty, then 404 is returned
+		sparqlDispatcher.execute(request, response, query, entityUri);
 	}
 }
