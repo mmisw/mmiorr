@@ -5,12 +5,16 @@ $Id$
 ChangeLog
 
 2008-08-13  1.5.0.alpha10
-  (change in iserver library:
-	- Issue #164 Keep periods and case in term URI
-		- More in general, if the first column given to VocCreator is named "uri," the values
-		  are just checked for validity (according to java.net.URI constructor), and now
-		  no conversions at all are performed. 
-  )
+  	(only change in iserver library:
+		- Issue #164 Keep periods and case in term URI
+			- More in general, if the first column given to VocCreator is named "uri," the values
+			  are just checked for validity (according to java.net.URI constructor), and now
+			  no conversions at all are performed. 
+  	)
+  	
+  	- CreateOntologyInfo and RegisteredOntologyInfo: removed namespaceRoot attribute -- this 
+	  was added in a preliminary approach to handle re-hosting. It is not necessary anymore.
+	  
 		  
 2009-08-11  1.5.0.alpha9
 	Issue #8: Improve HTML response
