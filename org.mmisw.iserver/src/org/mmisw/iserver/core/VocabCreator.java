@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +41,9 @@ import edu.drexel.util.rdf.OwlModel;
  * Dispatchs the conversion.
  * 
  * <p>
- * Adapted from org.mmi.web.MetadataBean.
+ * Adapted from org.mmi.web.MetadataBean. Note that changes have been kept to a minimum, basically
+ * to whatever is strictly necessary to make the whole thing work. Time permitting, this will be
+ * cleaned up at some point.
  * 
  * @author Carlos Rueda
  */
@@ -387,7 +391,7 @@ public class VocabCreator {
 
 	}
 
-	private void createIndividual(DataRow row) {
+	private void createIndividual(DataRow row) throws Exception {
 		// create individual
 		Individual ind = null;
 		try {
@@ -405,7 +409,7 @@ public class VocabCreator {
 	}
 	
 	
-	private void createNotHierarchyIndividual(Individual ind, DataRow row) {
+	private void createNotHierarchyIndividual(Individual ind, DataRow row) throws Exception {
 
 		if (ind != null) {
 			for (int i = 0; i < row.size(); i++) {
@@ -467,16 +471,30 @@ public class VocabCreator {
 	 * @param id
 	 * @param cs
 	 * @return
+	 * @throws Exception 
 	 */
-	private Individual createIndividual(DataRow row, int id, OntClass cs) {
+	private Individual createIndividual(DataRow row, int id, OntClass cs) throws Exception {
 
 		if (isGood(row, id)) {
 			boolean allowColon = true;
 			String resourceString;
 			
 			if ( id == 0 && keyIsUri ) {
-				// just use the simple name given in this column
-				resourceString = getGoodName(row, id, allowColon).toLowerCase();
+				
+				// OLD:
+				//// just use the simple name given in this column
+				////resourceString = getGoodName(row, id, allowColon).toLowerCase();
+				
+				// New: regarding Issue #164 "Keep periods and case in term URI" and 
+				// more generally, just check that it's a valid URI and do no conversions at all
+				String uri = row.getString(id).trim();
+				try {
+					new URI(uri);
+					resourceString = uri; // good URI
+				}
+				catch (URISyntaxException e) {
+					throw new Exception("Error in URI value: " +uri, e);
+				}
 			}
 			else {
 				// "locate" the individual within the namespace of the ontology

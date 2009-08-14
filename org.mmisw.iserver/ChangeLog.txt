@@ -2,6 +2,13 @@ org.mmisw.iserver
 Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 
+2008-08-13  1.5.0.alpha6
+	- Issue #164 Keep periods and case in term URI
+		- More in general, if the first column given to VocCreator is named "uri," the values
+		  are just checked for validity (according to java.net.URI constructor), and now
+		  no conversions at all are performed. 
+	
+	
 2008-08-10  1.5.0.alpha5
 	Processing "version" parameter  (issue #159)
 		- Server.getOntologyInfo(String ontologyUri): parses the string to extract version parameter, if any.
