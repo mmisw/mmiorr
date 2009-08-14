@@ -129,7 +129,6 @@ public class Util2 {
 	 *         false if there IS any error (result.getError() will be non-null).
 	 */
 	public static boolean checkUriKeyCombinationForNewVersion(
-			String originalNamespaceRoot, String namespaceRoot,
 			String originalOrgAbbreviation, String originalShortName, 
 			String orgAbbreviation, String shortName, BaseResult result) {
 		
@@ -137,11 +136,7 @@ public class Util2 {
 		//               "new version allows the shortName and authority to be changed"
 		
 		
-		if ( originalNamespaceRoot == null ) {
-			result.setError("No original namespaceRoot given!");
-			return false;
-		}
-		else if ( originalOrgAbbreviation == null ) {
+		if ( originalOrgAbbreviation == null ) {
 			result.setError("No original authority given!");
 			return false;
 		}

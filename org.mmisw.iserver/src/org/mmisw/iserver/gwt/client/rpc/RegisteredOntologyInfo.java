@@ -16,8 +16,6 @@ public class RegisteredOntologyInfo extends BaseOntologyInfo {
 	
 	private String displayLabel;
 	
-	private String namespaceRoot;
-
 	private String authority;
 
 	private String shortName;
@@ -73,21 +71,6 @@ public class RegisteredOntologyInfo extends BaseOntologyInfo {
 		return getUri().hashCode();
 	}
 
-
-	
-	/**
-	 * @return the namespaceRoot
-	 */
-	public String getNamespaceRoot() {
-		return namespaceRoot;
-	}
-
-	/**
-	 * @param namespaceRoot the namespaceRoot to set
-	 */
-	public void setNamespaceRoot(String namespaceRoot) {
-		this.namespaceRoot = namespaceRoot;
-	}
 
 	/**
 	 * @return the authority

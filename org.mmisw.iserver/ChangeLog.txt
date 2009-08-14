@@ -7,6 +7,9 @@ Created: 2009-05-13
 		- More in general, if the first column given to VocCreator is named "uri," the values
 		  are just checked for validity (according to java.net.URI constructor), and now
 		  no conversions at all are performed. 
+		  
+	- CreateOntologyInfo and RegisteredOntologyInfo: removed namespaceRoot attribute -- this 
+	  was added in a preliminary approach to handle re-hosting. It is not necessary anymore.
 	
 	
 2008-08-10  1.5.0.alpha5

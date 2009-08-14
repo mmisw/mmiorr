@@ -619,9 +619,7 @@ public class Server implements IServer {
 		}
 		
 		
-		final String namespaceRoot = newValues.get("namespaceRoot") != null 
-			? newValues.get("namespaceRoot")
-			:  defaultNamespaceRoot;
+		final String namespaceRoot = defaultNamespaceRoot;
 		
 		final String orgAbbreviation = newValues.get(OmvMmi.origMaintainerCode.getURI());
 		final String shortName = newValues.get(Omv.acronym.getURI());
@@ -659,13 +657,10 @@ public class Server implements IServer {
 				// would imply a *new* ontology, not a new version.
 				//
 				
-				String originalNamespaceRoot = createOntologyInfo.getNamespaceRoot();
-				
 				String originalOrgAbbreviation = createOntologyInfo.getAuthority();
 				String originalShortName = createOntologyInfo.getShortName();
 				
 				if ( ! Util2.checkUriKeyCombinationForNewVersion(
-						originalNamespaceRoot, namespaceRoot,
 						originalOrgAbbreviation, originalShortName, 
 						orgAbbreviation, shortName, createOntologyResult) ) {
 					return createOntologyResult;
