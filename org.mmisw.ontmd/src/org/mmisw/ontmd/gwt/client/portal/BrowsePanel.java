@@ -25,7 +25,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class BrowsePanel extends VerticalPanel {
 
 	private final SelectionTree selTree = new SelectionTree(this);
-	final OntologyTable ontologyTable = new OntologyTable(PortalControl.getInstance().getQuickInfo());
+	final OntologyTable ontologyTable = new OntologyTable(PortalControl.getInstance().getQuickInfo(), false);
 
 	// all the ontologies from the registry
 	private List<RegisteredOntologyInfo> allOntologyInfos;

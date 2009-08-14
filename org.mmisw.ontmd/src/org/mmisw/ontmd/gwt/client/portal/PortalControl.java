@@ -291,13 +291,14 @@ public class PortalControl {
 	
 	private IQuickInfo quickInfo = new IQuickInfo() {
 		
-		public Widget getWidget(final RegisteredOntologyInfo oi, final boolean includeVersionInLinks) {
+		public Widget getWidget(final RegisteredOntologyInfo oi, final boolean includeVersionInLinks,
+				final boolean includeVersionsMenu) {
 			
 			if ( true ) {
 				ControlsPanel controlsPanel = PortalControl.getInstance().getMenuBarPanel();
 				
 				// TODO do not include Edit option yet
-				MenuBar menu = controlsPanel.createOntologyMenuBar(oi, false, includeVersionInLinks);
+				MenuBar menu = controlsPanel.createOntologyMenuBar(oi, false, includeVersionInLinks, includeVersionsMenu);
 				MenuBar mb = new MenuBar(true);
 //				mb.addItem("<font color=\"blue\">i</font>", true, menu);
 				mb.addItem("", menu);
@@ -310,7 +311,7 @@ public class PortalControl {
 						
 						ControlsPanel controlsPanel = PortalControl.getInstance().getMenuBarPanel();
 						
-						MenuBar menu = controlsPanel.createOntologyMenuBar(oi, false, includeVersionInLinks);
+						MenuBar menu = controlsPanel.createOntologyMenuBar(oi, false, includeVersionInLinks, includeVersionsMenu);
 						
 						final PopupPanel menuPopup = new PopupPanel(true);
 					    menuPopup.setWidget(menu);

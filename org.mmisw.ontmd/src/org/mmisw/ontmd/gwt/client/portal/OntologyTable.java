@@ -33,10 +33,13 @@ public class OntologyTable extends FlexTable {
 	
 	
 	static interface IQuickInfo {
-		Widget getWidget(RegisteredOntologyInfo oi, boolean includeVersionInLinks);
+		Widget getWidget(RegisteredOntologyInfo oi, boolean includeVersionInLinks, boolean includeVersionsMenu);
 	}
 	
 	private IQuickInfo quickInfo;
+	
+	private boolean isVersionsTable;
+	
 
 	private List<RegisteredOntologyInfo> ontologyInfos;
 	
@@ -111,9 +114,15 @@ public class OntologyTable extends FlexTable {
 	private boolean includeVersionInLinks = false;
 	
 	
-	OntologyTable(IQuickInfo quickInfo) {
+	/**
+	 * 
+	 * @param quickInfo
+	 * @param isVersionsTable
+	 */
+	OntologyTable(IQuickInfo quickInfo, boolean isVersionsTable) {
 		super();
 		this.quickInfo = quickInfo;
+		this.isVersionsTable = isVersionsTable;
 		
 		flexPanel.setBorderWidth(1);
 		flexPanel.setCellPadding(3);
@@ -295,7 +304,7 @@ public class OntologyTable extends FlexTable {
 			
 			int col = 0;
 			if ( quickInfo != null ) {
-				flexPanel.setWidget(row, col, quickInfo.getWidget(oi, includeVersionInLinks));
+				flexPanel.setWidget(row, col, quickInfo.getWidget(oi, includeVersionInLinks, !isVersionsTable));
 				flexPanel.getFlexCellFormatter().setAlignment(row, col, 
 						HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE
 				);

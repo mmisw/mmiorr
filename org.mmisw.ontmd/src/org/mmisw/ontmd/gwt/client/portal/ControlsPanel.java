@@ -251,7 +251,9 @@ if ( false ) {  //TODO not implemented
 	}
 
 	
-	MenuBar createOntologyMenuBar(RegisteredOntologyInfo oi, boolean includeEdit, boolean includeVersion) {
+	MenuBar createOntologyMenuBar(RegisteredOntologyInfo oi, boolean includeEdit, boolean includeVersion,
+			boolean includeVersionsMenu
+	) {
 		MenuBar ont_mb = new MenuBar(true);
 		
 		if ( includeEdit && pctrl.checkCanEditOntology(oi) == null ) {
@@ -264,7 +266,7 @@ if ( false ) {  //TODO not implemented
 			oi = pctrl.getOntologyInfo();
 		}
 		
-		if ( oi != null && oi.getPriorVersions() != null && oi.getPriorVersions().size() > 0 ) {
+		if ( includeVersionsMenu && oi != null && oi.getPriorVersions() != null && oi.getPriorVersions().size() > 0 ) {
 			ont_mb.addSeparator();
 			ont_mb.addItem(_createMenuItemVersions(oi));
 		}
@@ -285,7 +287,7 @@ if ( false ) {  //TODO not implemented
 	private MenuBar _prepareOntologyViewMenuBar() {
 		boolean includeVersion = pctrl.getOntologyPanel().isVersionExplicit();
 		
-		MenuBar ont_mb = createOntologyMenuBar(null, true, includeVersion);
+		MenuBar ont_mb = createOntologyMenuBar(null, true, includeVersion, true);
 		
 		mb.addItem(new MenuItem(_menuTitle("Ontology"), true, ont_mb));
 		
@@ -360,7 +362,7 @@ if ( false ) {  //TODO not implemented
 
 		final MyDialog popup = new MyDialog(vp);
 		popup.setText("Available versions for " +oi.getUnversionedUri());
-		OntologyTable ontologyTable = new OntologyTable(PortalControl.getInstance().getQuickInfo());
+		OntologyTable ontologyTable = new OntologyTable(PortalControl.getInstance().getQuickInfo(), true);
 		ontologyTable.setIncludeVersionInLinks(true);
 		ontologyTable.setSortColumn("version", false); // (version, false) = most recent version first. 
 		
