@@ -602,16 +602,35 @@ public class Server implements IServer {
 
 		createOntologyResult.setCreateOntologyInfo(createOntologyInfo);
 		
+		// to check if this is going to be a new submission (if ontologyId == null) or, otherwise, a new version.
+		final String ontologyId = createOntologyInfo.getOntologyId();
+		
+		
 		//{pons      pons: sections related with preserveOriginalBaseNamespace
-		createOntologyResult.setPreserveOriginalBaseNamespace(false);
+		
 		// this flag will be only true in the case where an external ontology is to be registered
 		// and the user indicates that the original base namespace be preserved.
+		createOntologyResult.setPreserveOriginalBaseNamespace(false);
+		
 		if ( dataCreationInfo instanceof OtherDataCreationInfo ) {
 			OtherDataCreationInfo odci = (OtherDataCreationInfo) dataCreationInfo;
 			TempOntologyInfo toi = odci.getTempOntologyInfo();
 			createOntologyResult.setPreserveOriginalBaseNamespace(toi != null && toi.isPreserveOriginalBaseNamespace());
 		}
+
+		
+		if ( ! createOntologyResult.isPreserveOriginalBaseNamespace() ) {
+			// Note: if this is the submission of a new version (ontologyId != null) of an "external" (ie, re-hosted)
+			// ontology, then set this flag to true
+			if ( ontologyId != null && ! OntServiceUtil.isOntResolvableUri(createOntologyInfo.getUri()) ) {
+				createOntologyResult.setPreserveOriginalBaseNamespace(true);
+				
+				// TODO However, note that we're goint to preserve the URI of the given ontology in this submission,
+				// which may not coincide with the previous one.
+			}
+		}
 		//}pons
+
 		
 		Map<String, String> newValues = createOntologyInfo.getMetadataValues();
 		
@@ -652,10 +671,6 @@ public class Server implements IServer {
 				return createOntologyResult;
 			}
 
-			// to check if this is going to be a new submission (ontologyId == null) or, 
-			// otherwise, a new version.
-			String ontologyId = createOntologyInfo.getOntologyId();
-			
 			if ( ontologyId == null ) {
 				// This is a new submission. We need to check for any conflict with a preexisting
 				// ontology in the repository with the same shortName+orgAbbreviation combination
@@ -807,9 +822,6 @@ public class Server implements IServer {
 			base_ = JenaUtil2.removeTrailingFragment(ns_);
 			
 			///////////////////////////////////////////////////////
-			// to check if this is going to be a new submission (ontologyId == null) or, 
-			// otherwise, a new version.
-			String ontologyId = createOntologyInfo.getOntologyId();
 			
 			if ( ontologyId == null ) {
 				// This is a new submission. We need to check for any conflict with a preexisting

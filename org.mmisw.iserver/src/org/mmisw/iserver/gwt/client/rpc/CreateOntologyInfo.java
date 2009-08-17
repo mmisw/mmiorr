@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
+ * Info to create a new ontology entry in the registry.
  * 
  * @author Carlos Rueda
  */
@@ -21,6 +22,8 @@ public class CreateOntologyInfo implements Serializable {
 	private String ontologyId = null;
 	private String ontologyUserId = null;
 	
+	/** URI of current ontology, if not null, used when creating a new version */
+	private String uri;
 
 	/**
 	 * ctor.
@@ -127,5 +130,12 @@ public class CreateOntologyInfo implements Serializable {
 		this.ontologyUserId = ontologyUserId;
 	}
 
+	public String getUri() {
+		return uri;
+	}
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
 	
+
 }

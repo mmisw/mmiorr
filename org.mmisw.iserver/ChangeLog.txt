@@ -9,6 +9,14 @@ $Id$
 	  config parameter to determine if a given URI is resolvable by the deployed "ont" service.
 	  This returns true iff uri.startsWith(value of ont.service.url parameter).
 	  (there's a similar method in "ont" module)
+	  
+	- Added CreateOntologyInfo.uri member to "remember" previous URI when registerig a new version.
+	
+	NOTE: Suppose an external ontology whose contents are recognized by the "vocabulary (ie., voc2rd)" format.
+	Currently, there is no check for the "external" property so the usual elements (authority, shortName, etc)
+	are used to create the class name in the vocabulary. Should we support this, or perhaps just handle as
+	"other" any external ontology?  The latter seems definitely simpler to provide.
+	
 
 2008-08-13  1.5.0.alpha6
 	- Issue #164 Keep periods and case in term URI
