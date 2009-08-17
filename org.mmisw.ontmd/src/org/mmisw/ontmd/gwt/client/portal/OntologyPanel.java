@@ -428,6 +428,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		// transfer info about prior ontology, if any, for eventual creation of new version:
 		createOntologyInfo.setOntologyId(ontologyInfo.getOntologyId());
 		createOntologyInfo.setOntologyUserId(ontologyInfo.getOntologyUserId());
+		createOntologyInfo.setUri(ontologyInfo.getUri());
 		createOntologyInfo.setAuthority(ontologyInfo.getAuthority());
 		createOntologyInfo.setShortName(ontologyInfo.getShortName());
 		
