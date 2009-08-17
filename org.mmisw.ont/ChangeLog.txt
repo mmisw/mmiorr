@@ -4,6 +4,17 @@ $Id$
 
 ChangeLog
 
+2009-08-14,16  1.3.5.beta
+  	Issue #162: "External ontology considered to be internal"
+	- New OntUtil class with method isOntResolvableUri(String uri): uses the ont.service.url
+	  config parameter to determine if a given URI is resolvable by the deployed "ont" service.
+	  This returns true iff uri.startsWith(value of ont.service.url parameter).
+	  (there's a similar method in "iserver" module)
+	  
+	- OntConfig: removed Properties props member -- now, values are stored in the same enumeration.
+	  
+
+
 2009-08-13  1.3.4.beta
 	- Fixed issue #163 Empty result returned for inexistent term using uri parameter 
 	  If the URI is tried for a term or entity (as opposed to a registered ontology), 

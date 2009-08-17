@@ -30,7 +30,6 @@ public class Db {
 	
 	private final Log log = LogFactory.getLog(Db.class);
 	
-	private final OntConfig ontConfig;
 
 	// obtained from the config in the init() method
 	private String aquaportalDatasource; 
@@ -45,7 +44,6 @@ public class Db {
 	 * @param ontConfig Used at initialization.
 	 */
 	Db(OntConfig ontConfig) {
-		this.ontConfig = ontConfig;
 	}
 	
 	/** 
@@ -53,7 +51,7 @@ public class Db {
 	 */
 	void init() throws Exception {
 		log.debug("init called.");
-		aquaportalDatasource = ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_DATASOURCE); 
+		aquaportalDatasource = OntConfig.Prop.AQUAPORTAL_DATASOURCE.getValue(); 
 		
 		try {
 			Context initialContext = new InitialContext();

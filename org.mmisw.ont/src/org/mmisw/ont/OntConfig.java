@@ -1,8 +1,5 @@
 package org.mmisw.ont;
 
-import java.util.Enumeration;
-import java.util.Properties;
-
 import javax.servlet.ServletConfig;
 
 import org.apache.commons.logging.Log;
@@ -38,6 +35,7 @@ class OntConfig {
 		
 		private String name;
 		private boolean required;
+		private String value;
 		
 		Prop(String name) { 
 			this(name, true);
@@ -53,11 +51,12 @@ class OntConfig {
 		public boolean isRequired() {
 			return required;
 		}
+		
+		public void setValue(String value) { this.value = value; }
+		public String getValue() { return value; }
 	}
 	
 	private final Log log = LogFactory.getLog(OntConfig.class);
-	
-	private final Properties props = new Properties();
 	
 	/** Call {@link #init(ServletConfig)} to initialize. */
 	OntConfig() {
@@ -70,33 +69,26 @@ class OntConfig {
 	 * @throws Exception If any required parameter is undefined.
 	 */
 	void init(ServletConfig sc) throws Exception {
-		// load the initParameters:
-		Enumeration<?> parNames = sc.getInitParameterNames();
-		while ( parNames.hasMoreElements() ) {
-			String parName = (String) parNames.nextElement();
-			String parValue = sc.getInitParameter(parName);
-			props.setProperty(parName, parValue);
-			log.debug(parName+ " = " +parValue);
-		}
 		
-		// check the required properties, ie, the members of the Prop enumeration:
 		for ( Prop prop : Prop.values() ) {
-			if ( prop.isRequired() && ! props.containsKey(prop.getName()) ) {
-				throw new Exception("Required parameter not defined: " +prop.getName());
+			String value = sc.getInitParameter(prop.getName());
+			if ( value == null || value.trim().length() == 0 ) {
+				if ( prop.required ) {
+					throw new Exception("Required init parameter not defined: " +prop.getName());
+				}
+			}
+			else {
+				prop.setValue(value);
 			}
 		}
 		
 		String contextPath = sc.getServletContext().getContextPath();
-		props.setProperty(Prop.ONT_SERVICE_URL.getName(), 
-				props.getProperty(Prop.APPSERVER_HOST.getName()) + contextPath
-		);
-		log.debug(Prop.ONT_SERVICE_URL.getName()+ " = " +props.getProperty(Prop.ONT_SERVICE_URL.getName()));
-	}
-
-	/**
-	 * @returns the value of a configuration property from the Prop enumeration.
-	 */
-	public String getProperty(Prop prop) {
-		return props.getProperty(prop.getName());
+		Prop.ONT_SERVICE_URL.setValue(Prop.APPSERVER_HOST.getValue() + contextPath);
+		
+		if ( log != null && log.isDebugEnabled() ) {
+			for ( Prop prop : Prop.values() ) {
+				log.debug(prop.getName()+ " = " +prop.getValue());
+			}
+		}
 	}
 }

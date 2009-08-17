@@ -40,13 +40,9 @@ public class HtmlDispatcher {
 	private OntConfig ontConfig;
 	private Db db;
 	
-	private String servedRoot; 
-	
 	HtmlDispatcher(OntConfig ontConfig, Db db) {
 		this.ontConfig = ontConfig;
 		this.db = db;
-		
-		servedRoot = ontConfig.getProperty(OntConfig.Prop.ONT_SERVICE_URL);
 	}
 
 	void init() {
@@ -206,29 +202,27 @@ public class HtmlDispatcher {
 	 * Appends ".html" to the given URI if resolvable by this service.
 	 * This means that, if:
 	 * <ul>
-	 *     <li> the uri is a valid MmiUri, and </li>
-	 *     <li> the prefix until the root "belongs" to this service</li>
+	 *     <li> the prefix until the root corresponds to this service, and</li>
+	 *     <li> the uri is a valid MmiUri</li>
 	 * </ul>
 	 * then, ".html" is appended and returned. If the URI corresponds to a term, a slash is used as separator.
 	 * Otherwise, the argument is returned unchanged.
 	 * 
 	 * @param uri A URI
-	 * @return The URI with ".html" appended according to the above.
+	 * @return The given URI with ".html" appended according to the above.
 	 *         Otherwise, it returs the given URI unmodified.
 	 */
 	private String appendHtmlIfResolvableByThisService(String uri) {
 		
-		try {
-			MmiUri mmiUri = new MmiUri(uri);
-			String untilRoot = mmiUri.getUntilRoot();
-			if ( untilRoot.equalsIgnoreCase(servedRoot) ) {
+		if ( OntUtil.isOntResolvableUri(uri) ) {
+			try {
+				MmiUri mmiUri = new MmiUri(uri);
 				uri = mmiUri.getTermUri() + ".html";
 			}
+			catch (URISyntaxException e) {
+				// ignore.
+			}
 		}
-		catch (URISyntaxException e) {
-			// ignore.
-		}
-
 		return uri;
 	}
 

@@ -497,7 +497,7 @@ public class MiscDispatcher {
 		}
 		
 		destPathCsv = destPathCsv.replaceAll("/|\\\\", "_") + ".csv";
-		File fileCsv = new File(ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_VOC2RDF_DIR) + destPathCsv);
+		File fileCsv = new File(OntConfig.Prop.AQUAPORTAL_VOC2RDF_DIR.getValue() + destPathCsv);
 
 		if ( log.isDebugEnabled() ) {
 			log.debug("getOntologyInfoFromRegistry: fileCsv=" +fileCsv+ " exists=" +fileCsv.exists());

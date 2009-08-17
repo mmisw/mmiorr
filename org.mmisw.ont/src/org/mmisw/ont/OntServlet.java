@@ -205,8 +205,8 @@ public class OntServlet extends HttpServlet {
 			ServletConfig servletConfig = getServletConfig();
 			ontConfig.init(servletConfig);
 			
-			VERSION = ontConfig.getProperty(OntConfig.Prop.VERSION)+ " (" +
-			          ontConfig.getProperty(OntConfig.Prop.BUILD)  + ")";
+			VERSION = OntConfig.Prop.VERSION.getValue()+ " (" +
+			          OntConfig.Prop.BUILD.getValue()  + ")";
 			FULL_TITLE = TITLE + ". Version " +VERSION;
 			
 			log.info(FULL_TITLE);
@@ -349,8 +349,7 @@ public class OntServlet extends HttpServlet {
 	 * If the uri corresponds to a stored ontology, then the ontology is resolved
 	 * as it were a regular self-served ontology.
 	 */
-	private void _dispatchUri(Request req) 
-	throws ServletException, IOException {
+	private void _dispatchUri(Request req) throws ServletException, IOException {
 		// get (ontology or entity) URI from the parameter:
 		String ontOrEntUri = Util.getParam(req.request, "uri", "");
 		if ( ontOrEntUri.length() == 0 ) {
@@ -428,19 +427,25 @@ public class OntServlet extends HttpServlet {
 	 */
 	Ontology getRegisteredOntology(String potentialOntUri) throws ServletException {
 		Ontology ontology = null;
-		try {
-			MmiUri mmiUri = new MmiUri(potentialOntUri);
-			if ( mmiUri.getVersion() == null ) {
-				// unversioned request.  Get most recent
-				ontology = db.getMostRecentOntologyVersion(mmiUri);
+		if ( OntUtil.isOntResolvableUri(potentialOntUri) ) {
+			
+			try {
+				MmiUri mmiUri = new MmiUri(potentialOntUri);
+				if ( mmiUri.getVersion() == null ) {
+					// unversioned request.  Get most recent
+					ontology = db.getMostRecentOntologyVersion(mmiUri);
+				}
+				else {
+					// versioned request. Just try to use the argument as given:
+					ontology = db.getOntology(potentialOntUri);
+				}
 			}
-			else {
-				// versioned request. Just try to use the argument as given:
+			catch (URISyntaxException e) {
+				// Not an MmiUri. Just try to use the argument as given:
 				ontology = db.getOntology(potentialOntUri);
 			}
 		}
-		catch (URISyntaxException e) {
-			// Not an MmiUri (likely a Re-hosted ontology). Just try to use the argument as given:
+		else {
 			ontology = db.getOntology(potentialOntUri);
 		}
 		
@@ -538,7 +543,7 @@ public class OntServlet extends HttpServlet {
 	 * @return
 	 */
 	static File getFullPath(Ontology ontology, OntConfig ontConfig, Log log) {
-		String full_path = ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY) 
+		String full_path = OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY.getValue() 
 			+ "/" +ontology.file_path + "/" + ontology.filename;
 		
 		File file = new File(full_path);

@@ -33,7 +33,6 @@ public class OntGraph {
 	 */
 	private static final boolean USE_UNVERSIONED = true;
 
-	private final OntConfig ontConfig;
 	private final Db db;
 	
 	/** the model with all the ontologies */
@@ -51,7 +50,6 @@ public class OntGraph {
 	 * @param db The database helper.
 	 */
 	OntGraph(OntConfig ontConfig, Db db) {
-		this.ontConfig = ontConfig;
 		this.db = db;
 	}
 
@@ -68,7 +66,7 @@ public class OntGraph {
 	void init() throws ServletException {
 		log.info("init called.");
 		
-		aquaUploadsDir = ontConfig.getProperty(OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY);
+		aquaUploadsDir = OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY.getValue();
 		
 		if ( _model == null ) {
 			_doInitModel();
@@ -109,25 +107,23 @@ public class OntGraph {
 				
 			if ( USE_UNVERSIONED ) {
 				OntModel model = JenaUtil.loadModel(full_path, false);
-				MmiUri mmiUri;
-				try {
-					mmiUri = new MmiUri(ontology.getUri());
+				
+				if ( OntUtil.isOntResolvableUri(ontology.getUri()) ) {
+					MmiUri mmiUri;
+					try {
+						mmiUri = new MmiUri(ontology.getUri());
+						OntModel unversionedModel = UnversionedConverter.getUnversionedModel(model, mmiUri);
+						_model.add(unversionedModel);
+					}
+					catch (URISyntaxException e) {
+						log.error("shouldn't happen", e);
+						continue;
+					}
 				}
-				catch (URISyntaxException e) {
-					// <re-host> The exception was ignored as "shouldn't happen", but now I'm
-					// using this as indication of possibly a re-hosted ontology...
-					//
-					//log.error("shouldn't happen", e);
-					//
-					// ... so, load the original ontology:
+				else {
 					log.info("    RH: " +full_path);
 					_model.add(model);
-					// <re-host>
-					
-					continue;
 				}
-				OntModel unversionedModel = UnversionedConverter.getUnversionedModel(model, mmiUri);
-				_model.add(unversionedModel);
 			}
 			else {
 				String absPath = "file:" + full_path;
