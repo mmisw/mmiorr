@@ -18,6 +18,8 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
  * @author Carlos Rueda
  */
 public class OntServiceUtil {
+	private OntServiceUtil() {}
+	
 	
 	/**
 	 * Resolves a URI against the "Ont" service.
@@ -96,6 +98,29 @@ public class OntServiceUtil {
 		return model;
 	}
 
+	
+	
+	/**
+	 * Determines whether the given URI corresponds to an ontology or term
+	 * served or that can be served by the "ont" service.  
+	 * It uses the "ont.service.url" property value provided
+	 * by the configuration object.
+	 * 
+	 * <p>
+	 * A similar method exists in the "ont" module.
+	 * 
+	 * @param uri The URI to check.
+	 * @return if the given URI has the Ont service URL as a prefix (ignoring case).
+	 * @throws IllegalStateException if the configuration object returns a null value for the 
+	 *         {@link OntConfig.Prop.ONT_SERVICE_URL} parameter.
+	 */
+	public static boolean isOntResolvableUri(String uri) {
+		 String ontServiceUrl = Config.Prop.ONT_SERVICE_URL.getValue();
+		 if ( ontServiceUrl == null ) {
+			 throw new IllegalStateException("Config.Prop.ONT_SERVICE_URL.getValue() returned null");
+		 }
+		 return uri.toLowerCase().startsWith(ontServiceUrl.toLowerCase());
+	}
 
 }
 

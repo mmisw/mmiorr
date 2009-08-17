@@ -241,15 +241,23 @@ public class Server implements IServer {
 			String authority;
 			String shortName;
 			
-			try {
-				MmiUri mmiUri = new MmiUri(ontologyUri);
-				authority = mmiUri.getAuthority();
-				shortName = mmiUri.getTopic();
-				unversionedUri = mmiUri.copyWithVersion(null).getOntologyUri();
+			if ( OntServiceUtil.isOntResolvableUri(ontologyUri) ) {
+				try {
+					MmiUri mmiUri = new MmiUri(ontologyUri);
+					authority = mmiUri.getAuthority();
+					shortName = mmiUri.getTopic();
+					unversionedUri = mmiUri.copyWithVersion(null).getOntologyUri();
+				}
+				catch (URISyntaxException e) {
+					// shouldn't happen.
+					
+					String error = "Shouldn't not happen: ont-resolvable URI is not an MmiUri: " 
+						+ontologyUri+ "  Error: " +e.getMessage();
+					log.error("getUnversionedToOntologyInfoListMap: " +error, e);
+					continue;
+				}
 			}
-			catch (URISyntaxException e) {
-				
-				// re-hosted
+			else {
 				// FIXME  setting and hoc values temporarily
 				authority = ontologyUri;
 				shortName = "tempshortname";
@@ -364,28 +372,33 @@ public class Server implements IServer {
 		
 		log.debug("getOntologyInfo: ontologyUri=" +ontologyUri+ "  version=" +version);
 		
-		try {
-			MmiUri mmiUri = new MmiUri(ontologyUri);
-			
-			// it's an MmiUri. dispatch it as usual:
-			return getOntologyInfoFromMmiUri(ontologyUri, mmiUri, version);
+		if ( OntServiceUtil.isOntResolvableUri(ontologyUri) ) {
+			try {
+				MmiUri mmiUri = new MmiUri(ontologyUri);
+				return getOntologyInfoFromMmiUri(ontologyUri, mmiUri, version);
+			}
+			catch (URISyntaxException e) {
+				String error = e.getMessage();
+				log.error("getOntologyInfo: Error in URI: " +ontologyUri, e);
+				RegisteredOntologyInfo oi = new RegisteredOntologyInfo();
+				oi.setError(error);
+				return oi;
+			}
 		}
-		catch (Exception e) {
-			
-			// re-hosted
+		else {
+			// "external" URI
 			String unversOntologyUri = ontologyUri;
 			try {
 				boolean includeAllVersions = true;
 				return getOntologyInfoWithVersionParams(ontologyUri, unversOntologyUri, version, includeAllVersions);
 			}
-			catch (Exception e1) {
+			catch (Exception e) {
 				String error = e.getMessage();
 				log.error("Error getting RegisteredOntologyInfo: " +ontologyUri, e);
 				RegisteredOntologyInfo oi = new RegisteredOntologyInfo();
 				oi.setError(error);
 				return oi;
 			}
-			
 		}
 	}
 
