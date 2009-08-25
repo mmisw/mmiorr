@@ -4,6 +4,15 @@ $Id$
 
 ChangeLog
 
+2009-08-25  1.3.6.beta
+	issue #148: "Need property to capture "creator/author of original source vocabulary""
+	- Added OmvMmi.hasContentCreator property (http://mmisw.org/ont/mmi/20081020/ontologyMetadata/hasContentCreator)
+	
+	Recall: the "vocabulary" library is used by other MMISW modules; rebuild it like this:
+		ant voc-jar
+	creates: org.mmisw.ont.vocabulary.jar
+	
+
 2009-08-14,16  1.3.5.beta
   	Issue #162: "External ontology considered to be internal"
 	- New OntUtil class with method isOntResolvableUri(String uri): uses the ont.service.url

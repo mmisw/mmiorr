@@ -105,4 +105,8 @@ public class OmvMmi {
 
     /** Instance of {@link Omv#usedOntologyEngineeringTool} */  
     public static final Property vine = m_model.createProperty( NS , "vine" );
+    
+    
+    /** See <a href="http://code.google.com/p/mmisw/issues/detail?id=148">Issue #148</a> */
+    public static final Property hasContentCreator = m_model.createProperty( NS , "hasContentCreator" );
 }
