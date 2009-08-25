@@ -399,8 +399,10 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			return;
 		}
 		
+		boolean isNewVersion = ontologyInfo != null && ontologyInfo.getOntologyId() != null;
+		
 		// check data values
-		error = dataPanel.checkData();
+		error = dataPanel.checkData(isNewVersion);
 		if ( error != null ) {
 			dataDisclosure.setOpen(true);
 			Window.alert(error);
@@ -426,8 +428,12 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		CreateOntologyInfo createOntologyInfo = new CreateOntologyInfo();
 		
 		// transfer info about prior ontology, if any, for eventual creation of new version:
-		createOntologyInfo.setOntologyId(ontologyInfo.getOntologyId());
-		createOntologyInfo.setOntologyUserId(ontologyInfo.getOntologyUserId());
+		createOntologyInfo.setPriorOntologyInfo(
+				ontologyInfo.getOntologyId(), 
+				ontologyInfo.getOntologyUserId(), 
+				ontologyInfo.getVersionNumber()
+		);
+		
 		createOntologyInfo.setUri(ontologyInfo.getUri());
 		createOntologyInfo.setAuthority(ontologyInfo.getAuthority());
 		createOntologyInfo.setShortName(ontologyInfo.getShortName());

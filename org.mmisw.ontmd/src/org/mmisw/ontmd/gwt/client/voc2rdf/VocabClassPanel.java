@@ -297,7 +297,8 @@ public class VocabClassPanel extends BaseOntologyContentsPanel implements TermTa
 		return primaryClass;
 	}
 
-	public String checkData() {
+	public String checkData(boolean isNewVersion) {
+		// isNewVersion: ignored -- param introduced later on
 
 		String primaryClass = getClassName();
 		if ( primaryClass.length() == 0 ) {

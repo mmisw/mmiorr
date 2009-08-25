@@ -56,8 +56,9 @@ public abstract class BaseOntologyContentsPanel {
 	/**
 	 * Checks the data.
 	 * 
+	 * @param isNewVersion true iff this is a new version on a registered ontology.
 	 * @return null if OK.  Otherwise an error message that can be displayed to the user.
 	 */
-	public abstract String checkData();
+	public abstract String checkData(boolean isNewVersion);
 
 }

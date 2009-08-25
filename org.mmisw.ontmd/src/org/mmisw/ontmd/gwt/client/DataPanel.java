@@ -124,9 +124,13 @@ public class DataPanel extends VerticalPanel {
 	}
 	
 
-	public String checkData() {
+	/**
+	 * @param isNewVersion true iff this is a new version on a registered ontology.
+	 * @return
+	 */
+	public String checkData(boolean isNewVersion) {
 		for ( BaseOntologyContentsPanel baseOntologyContentsPanel : baseOntologyContentsPanels ) {
-			String error = baseOntologyContentsPanel.checkData();
+			String error = baseOntologyContentsPanel.checkData(isNewVersion);
 			if ( error != null ) {
 				return error;
 			}

@@ -129,11 +129,17 @@ public class OtherOntologyContentsPanel extends BaseOntologyContentsPanel {
 	}
 
 	@Override
-	public String checkData() {
+	public String checkData(boolean isNewVersion) {
 		if ( tempOntologyInfo == null ) {
-			return "No ontology has been uploaded into working space yet";
+			if ( isNewVersion ) {
+				// Ok. contents of the ontology are already known.
+			}
+			else {
+				// this is a new ontology -- we need contents:
+				return "No ontology has been uploaded into working space yet";
+			}
 		}
-		if ( tempOntologyInfo.getError() != null ) {
+		else if ( tempOntologyInfo.getError() != null ) {
 			return "There was a previous error with the uploading of the file (" +tempOntologyInfo.getError()+ ")";
 		}
 		return null;

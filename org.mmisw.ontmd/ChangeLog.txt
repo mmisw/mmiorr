@@ -4,6 +4,14 @@ $Id$
 
 ChangeLog
 
+2008-08-24  1.5.0.alpha12
+	Fixed issue #161 "New version forces upload of local file"
+	- OntologyPanel.reviewAndRegister: using new createOntologyInfo.setPriorOntologyInfo(..) to transfer
+	  all necessary info about prior version, now including the actual version.
+	- BaseOntologyContentsPanel/OtherOntologyContentsPanel.checkData(boolean isNewVersion): added flag 
+	  to indicate if new version.
+
+
 2008-08-16   1.5.0.alpha11
 	- OntologyPanel.reviewAndRegister: Passing "uri" attribute in CreateOntologyInfo object, 
 	  which "remembers" previous URI when registering a new version.
