@@ -230,9 +230,16 @@ public class MdHelper {
 		);
 		
 		general_attr_list.add(
+				createAttrDef(OmvMmi.hasContentCreator, true)
+				.setLabel("Content creator")
+				.setTooltip("The name of the person that created the contents reflected in the ontology.")
+				.setExample("Athena Project")
+		);
+		
+		general_attr_list.add(
 				createAttrDef(Omv.hasCreator, true)
-				.setLabel("Creator")
-				.setTooltip("The name of the person submitting the ontology.")
+				.setLabel("Ontology creator")
+				.setTooltip("The name of the person that created the ontology representation.")
 				.setExample("Athena Project")
 		);
 		
