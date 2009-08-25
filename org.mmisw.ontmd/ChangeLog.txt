@@ -4,6 +4,10 @@ $Id$
 
 ChangeLog
 
+2009-08-25  1.5.0.alpha13
+	issue #148: "Need property to capture "creator/author of original source vocabulary""
+	Implemented in iserver and ont modules (just rebuild here with the updated libs)
+	
 2008-08-24  1.5.0.alpha12
 	Fixed issue #161 "New version forces upload of local file"
 	- OntologyPanel.reviewAndRegister: using new createOntologyInfo.setPriorOntologyInfo(..) to transfer
