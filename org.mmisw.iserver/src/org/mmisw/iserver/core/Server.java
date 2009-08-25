@@ -42,6 +42,7 @@ import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyDataCreationInfo;
+import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo.PriorOntologyInfo;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.ont.MmiUri;
 import org.mmisw.ont.vocabulary.Omv;
@@ -603,7 +604,7 @@ public class Server implements IServer {
 		createOntologyResult.setCreateOntologyInfo(createOntologyInfo);
 		
 		// to check if this is going to be a new submission (if ontologyId == null) or, otherwise, a new version.
-		final String ontologyId = createOntologyInfo.getOntologyId();
+		final String ontologyId = createOntologyInfo.getPriorOntologyInfo().getOntologyId();
 		
 		
 		//{pons      pons: sections related with preserveOriginalBaseNamespace
@@ -718,7 +719,30 @@ public class Server implements IServer {
 			OtherDataCreationInfo otherDataCreationInfo = (OtherDataCreationInfo) dataCreationInfo;
 			TempOntologyInfo tempOntologyInfo = otherDataCreationInfo.getTempOntologyInfo();
 			
-			String full_path = tempOntologyInfo.getFullPath();
+			String full_path;
+			
+			if ( tempOntologyInfo != null ) {
+				// new contents were provided. Use that:
+				full_path = tempOntologyInfo.getFullPath();
+			}
+			else {
+				// No new contents. Only possible way for this to happen is that this is 
+				// a new version of an existing ontology.
+				
+				if ( ontologyId != null ) {
+					// Just indicate a null full_path; see below.
+					full_path = null;
+				}
+				else {
+					// This shouldn't happen!
+					String error = "Unexpected: Submission of new ontology, but not contents were provided. " +
+					"This should be detected before submission. Please report this bug";
+					createOntologyResult.setError(error);
+					log.info(error);
+					return createOntologyResult;
+				}
+				
+			}
 			createOntologyResult.setFullPath(full_path);
 		}
 		else {
@@ -726,24 +750,6 @@ public class Server implements IServer {
 			return createOntologyResult;
 		}
 
-		
-		
-		////////////////////////////////////////////
-		// load  model
-
-		String full_path = createOntologyResult.getFullPath();
-		log.info("Loading model: " +full_path);
-		
-		File file = new File(full_path);
-		try {
-			Utf8Util.verifyUtf8(file);
-		}
-		catch (Exception e) {
-			String error = "Error reading model: " +e.getMessage();
-			log.error(error, e);
-			createOntologyResult.setError(error);
-			return createOntologyResult;
-		}
 		
 		// current date:
 		final Date date = new Date(System.currentTimeMillis());
@@ -777,26 +783,84 @@ public class Server implements IServer {
 		}
 		
 		
-		String uriFile = file.toURI().toString();
-		OntModel model = null;
-		try {
-			model = JenaUtil.loadModel(uriFile, false);
-		}
-		catch ( Throwable ex ) {
-			String error = "Unexpected error: " +ex.getClass().getName()+ " : " +ex.getMessage();
-			log.info(error);
-			createOntologyResult.setError(error);
-			return createOntologyResult;
-		}
-		
-		String uriForEmpty = Util2.getDefaultNamespace(model, file, createOntologyResult);
+		////////////////////////////////////////////
+		// load  model
+
+		OntModel model;
+		String uriForEmpty;
+		String newContentsFileName;
+
+		if ( createOntologyResult.getFullPath() != null ) {
+			//
+			// new contents to check.
+			// Get model from the new contents.
+			//
+			String full_path = createOntologyResult.getFullPath();
+			log.info("Loading model: " +full_path);
+
+			File file = new File(full_path);
+			try {
+				Utf8Util.verifyUtf8(file);
+			}
+			catch (Exception e) {
+				String error = "Error reading model: " +e.getMessage();
+				log.error(error, e);
+				createOntologyResult.setError(error);
+				return createOntologyResult;
+			}
 			
-		if ( uriForEmpty == null ) {
-			String error = "Cannot get URI for empty namespace";
-			log.info(error);
-			createOntologyResult.setError(error);
-			return createOntologyResult;
+			String uriFile = file.toURI().toString();
+			try {
+				model = JenaUtil.loadModel(uriFile, false);
+			}
+			catch ( Throwable ex ) {
+				String error = "Unexpected error: " +ex.getClass().getName()+ " : " +ex.getMessage();
+				log.info(error);
+				createOntologyResult.setError(error);
+				return createOntologyResult;
+			}
+			
+			uriForEmpty = Util2.getDefaultNamespace(model, file, createOntologyResult);
+
+			if ( uriForEmpty == null ) {
+				String error = "Cannot get URI for empty namespace";
+				log.info(error);
+				createOntologyResult.setError(error);
+				return createOntologyResult;
+			}
+			
+			newContentsFileName = file.getName();
 		}
+		else {
+			// NO new contents.
+			// Use contents from prior version.
+			PriorOntologyInfo priorVersionInfo = createOntologyInfo.getPriorOntologyInfo();
+			
+			try {
+				model = OntServiceUtil.retrieveModel(createOntologyInfo.getUri(), priorVersionInfo.getVersionNumber());
+			}
+			catch (Exception e) {
+				String error = "error while retrieving registered ontology: " +e.getMessage();
+				log.info(error, e);
+				createOntologyResult.setError(error);
+				return createOntologyResult;
+			}
+			
+			uriForEmpty = model.getNsPrefixURI("");
+			if ( uriForEmpty == null ) {
+				// Shouldn't happen -- we're reading in an already registered version.
+				String error = "error while getting URI for empty prefix for a registered version. " +
+						"Please report this bug.";
+				log.info(error);
+				createOntologyResult.setError(error);
+				return createOntologyResult;
+			}
+
+			// replace ':', '/', or '\' for '_'
+			newContentsFileName = uriForEmpty.replaceAll(":|/|\\\\", "_");
+		}
+
+			
 
 		
 		log.info("createOntology: using '" +uriForEmpty+ "' as default namespace");
@@ -980,7 +1044,7 @@ public class Server implements IServer {
 
 		// write new contents to a new file under previewDir:
 		
-		File reviewedFile = new File(previewDir , file.getName());
+		File reviewedFile = new File(previewDir, newContentsFileName);
 		createOntologyResult.setFullPath(reviewedFile.getAbsolutePath());
 
 		PrintWriter os;
@@ -1082,8 +1146,8 @@ public class Server implements IServer {
 
 		CreateOntologyInfo createOntologyInfo = createOntologyResult.getCreateOntologyInfo();
 
-		String ontologyId = createOntologyInfo.getOntologyId();
-		String ontologyUserId = createOntologyInfo.getOntologyUserId();
+		String ontologyId = createOntologyInfo.getPriorOntologyInfo().getOntologyId();
+		String ontologyUserId = createOntologyInfo.getPriorOntologyInfo().getOntologyUserId();
 		
 		if ( ontologyId != null ) {
 			log.info("Will create a new version for ontologyId = " +ontologyId+ ", userId=" +ontologyUserId);

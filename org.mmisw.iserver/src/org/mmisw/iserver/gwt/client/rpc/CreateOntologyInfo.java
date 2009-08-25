@@ -18,9 +18,41 @@ public class CreateOntologyInfo implements Serializable {
 	
 	private DataCreationInfo dataCreationInfo;
 	
-	/** aquaportal ontology ID used, if not null, to create a new version */
-	private String ontologyId = null;
-	private String ontologyUserId = null;
+	/**
+	 * Necessary info for when a prior version exists and a new version
+	 * is going to be created/submitted.
+	 */
+	public static class PriorOntologyInfo implements Serializable {
+		private static final long serialVersionUID = 1L;
+		
+		/** aquaportal ontology ID used, if not null, to create a new version */
+		private String ontologyId;
+		private String ontologyUserId;
+		private String versionNumber;
+		
+
+		/**
+		 * Gets the ID of the ontology base for the creation of a new version.
+		 * @return the ontologyId. null for the case of a brand new ontology.
+		 */
+		public String getOntologyId() {
+			return ontologyId;
+		}
+		/**
+		 * Gets the ID of user associated with the ontology base for the creation of a new version.
+		 * @return the ontologyUserId
+		 */
+		public String getOntologyUserId() {
+			return ontologyUserId;
+		}
+
+		public String getVersionNumber() {
+			return versionNumber;
+		}
+
+	}
+	
+	private PriorOntologyInfo priorOntologyInfo;
 	
 	/** URI of current ontology, if not null, used when creating a new version */
 	private String uri;
@@ -32,6 +64,28 @@ public class CreateOntologyInfo implements Serializable {
 		
 	}
 	
+
+
+	public PriorOntologyInfo getPriorOntologyInfo() {
+		if ( priorOntologyInfo == null ) {
+			priorOntologyInfo = new PriorOntologyInfo();
+		}
+		return priorOntologyInfo;
+	}
+
+	/**
+	 * Sets the ID of the ontology base for the creation of a new version.
+	 * Sets the ID of user associated with the ontology base for the creation of a new version.
+	 * @param ontologyId the ontologyId to set
+	 * @param ontologyUserId the ontologyUserId to set
+	 * @param versionNumber The particular version used as a basis for the new version
+	 */
+	public void setPriorOntologyInfo(String ontologyId, String ontologyUserId, String versionNumber) {
+		priorOntologyInfo = getPriorOntologyInfo();
+		priorOntologyInfo.ontologyId = ontologyId;
+		priorOntologyInfo.ontologyUserId = ontologyUserId;
+		priorOntologyInfo.versionNumber = versionNumber;
+	}
 
 	/**
 	 * @return the authority
@@ -94,41 +148,6 @@ public class CreateOntologyInfo implements Serializable {
 		this.dataCreationInfo = dataCreationInfo;
 	}
 
-
-	/**
-	 * Gets the ID of the ontology base for the creation of a new version.
-	 * @return the ontologyId. null for the case of a brand new ontology.
-	 */
-	public String getOntologyId() {
-		return ontologyId;
-	}
-
-
-	/**
-	 * Sets the ID of the ontology base for the creation of a new version.
-	 * @param ontologyId the ontologyId to set
-	 */
-	public void setOntologyId(String ontologyId) {
-		this.ontologyId = ontologyId;
-	}
-
-
-	/**
-	 * Gets the ID of user associated with the ontology base for the creation of a new version.
-	 * @return the ontologyUserId
-	 */
-	public String getOntologyUserId() {
-		return ontologyUserId;
-	}
-
-
-	/**
-	 * Sets the ID of user associated with the ontology base for the creation of a new version.
-	 * @param ontologyUserId the ontologyUserId to set
-	 */
-	public void setOntologyUserId(String ontologyUserId) {
-		this.ontologyUserId = ontologyUserId;
-	}
 
 	public String getUri() {
 		return uri;

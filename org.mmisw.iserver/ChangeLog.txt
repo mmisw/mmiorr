@@ -3,6 +3,16 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+
+2008-08-24  1.5.0.alpha8
+	Fixed issue #161 "New version forces upload of local file"
+	- CreateOntologyInfo.PriorOntologyInfo: new class to hold necessary info for when a new
+	  version is to be created/registered
+	- Server.createOntology: when tempOntologyInfo == null, it uses createOntologyInfo.getPriorOntologyInfo()
+	  to retrieve the model directly and determine the uriForEmpty, from which the temporary
+	  filename is also determined.
+		
+		
 2008-08-16  1.5.0.alpha7
 	issue 162: "External ontology considered to be internal"
 	- OntServiceUtil.isOntResolvableUri(String uri): uses the ont.service.url

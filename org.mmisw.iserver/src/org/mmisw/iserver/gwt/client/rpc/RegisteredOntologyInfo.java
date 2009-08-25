@@ -104,13 +104,6 @@ public class RegisteredOntologyInfo extends BaseOntologyInfo {
 		return ontologyId;
 	}
 
-	/**
-	 * @param ontologyId the ontologyId to set
-	 */
-	public void setOntologyId(String ontologyId) {
-		this.ontologyId = ontologyId;
-	}
-
 	/** sets the aquaportal ontology ID used, if not null, to create a new version */
 	public void setOntologyId(String ontologyId, String ontologyUserId) {
 		this.ontologyId = ontologyId;
@@ -120,13 +113,6 @@ public class RegisteredOntologyInfo extends BaseOntologyInfo {
 	/** @returns the aquaportal userId of the ontology ID used to create a new version */
 	public String getOntologyUserId() {
 		return ontologyUserId;
-	}
-
-	/**
-	 * @param ontologyUserId the ontologyUserId to set
-	 */
-	public void setOntologyUserId(String ontologyUserId) {
-		this.ontologyUserId = ontologyUserId;
 	}
 
 
