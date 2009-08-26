@@ -3,7 +3,7 @@ package org.mmisw.vine.gwt.client.rpc;
 import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -17,9 +17,9 @@ public interface VineServiceAsync {
 
 	void getAppInfo(AsyncCallback<AppInfo> callback);
 	
-	void getAllOntologies(AsyncCallback<List<OntologyInfo>> callback);
+	void getAllOntologies(AsyncCallback<List<RegisteredOntologyInfo>> callback);
 	
-	void getEntities(OntologyInfo ontologyInfo, AsyncCallback<OntologyInfo> callback);
+	void getEntities(RegisteredOntologyInfo ontologyInfo, AsyncCallback<RegisteredOntologyInfo> callback);
 	
 	
 	void getRelationInfos(AsyncCallback<List<RelationInfo>> callback);

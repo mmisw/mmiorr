@@ -3,8 +3,10 @@ package org.mmisw.vine.gwt.client;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mmisw.iserver.gwt.client.rpc.BaseOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.OntologyData;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
 import org.mmisw.vine.gwt.client.util.TLabel;
 
@@ -112,7 +114,7 @@ public class SearchGroup extends VerticalPanel {
 	}
 	
 	private void executeSearch(String text) {
-		List<OntologyInfo> selectedVocabs = vocabularySelection.getSelectedVocabularies();
+		List<RegisteredOntologyInfo> selectedVocabs = vocabularySelection.getSelectedVocabularies();
 		List<EntityInfo> entities = search(text, selectedVocabs );
 		
 		Main.log("search: retrieved " +entities.size()+ " terms");
@@ -122,7 +124,7 @@ public class SearchGroup extends VerticalPanel {
 		searchResultsForm.updateEntities(entities);
 	}
 	
-	private List<EntityInfo> search(String text, List<OntologyInfo> uris) {
+	private List<EntityInfo> search(String text, List<RegisteredOntologyInfo> uris) {
 		
 		// TODO use a parameter to apply case-sensitive or not
 		text = text.toLowerCase();
@@ -133,8 +135,29 @@ public class SearchGroup extends VerticalPanel {
 		
 		
 		List<EntityInfo> foundEntities = new ArrayList<EntityInfo>();
-		for (OntologyInfo ont : uris ) {
-			List<EntityInfo> entities = ont.getEntities();
+		for (RegisteredOntologyInfo ont : uris ) {
+			
+			if ( ont.getError() != null ) {
+				Main.log("Error: " +ont.getError());
+				continue;
+			}
+			
+			OntologyData ontologyData = ont.getOntologyData();
+			BaseOntologyData baseOntologyData = ontologyData.getBaseOntologyData();
+			
+			Object[] entityArray = {
+					baseOntologyData.getClasses(),
+					baseOntologyData.getProperties(),
+					baseOntologyData.getIndividuals(),
+			};
+			
+			for (Object object : entityArray) {
+				
+			
+			@SuppressWarnings("unchecked")
+			List<? extends EntityInfo> entities = (List<? extends EntityInfo>) object;
+			
+			
 			if ( entities == null || entities.size() == 0 ) {
 				continue;
 			}
@@ -165,6 +188,8 @@ public class SearchGroup extends VerticalPanel {
 					foundEntities.add(entityInfo);
 				}
 			}
+			
+			} 
 		}
 		return foundEntities;
 	}

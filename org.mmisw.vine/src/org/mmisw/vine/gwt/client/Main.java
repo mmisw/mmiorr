@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.vine.gwt.client.img.VineImageBundle;
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.vine.gwt.client.rpc.VineService;
 import org.mmisw.vine.gwt.client.rpc.VineServiceAsync;
 import org.mmisw.vine.gwt.client.util.Util;
@@ -53,32 +53,32 @@ public class Main implements EntryPoint {
 	static VineServiceAsync vineService;
 	
 	// cached list of all ontologies
-	private static List<OntologyInfo> allUris = new ArrayList<OntologyInfo>();
+	private static List<RegisteredOntologyInfo> allUris = new ArrayList<RegisteredOntologyInfo>();
 	
 	// selected ontologies to work on:
-	// Map: code -> OntologyInfo
-	private static final Map<String, OntologyInfo> workingUris = new LinkedHashMap<String,OntologyInfo>();
+	// Map: code -> RegisteredOntologyInfo
+	private static final Map<String, RegisteredOntologyInfo> workingUris = new LinkedHashMap<String,RegisteredOntologyInfo>();
 	
 	
-	public static List<OntologyInfo> getAllUris() {
+	public static List<RegisteredOntologyInfo> getAllUris() {
 		return allUris;
 	}
 
-	public static void setAllUris(List<OntologyInfo> allUris) {
+	public static void setAllUris(List<RegisteredOntologyInfo> allUris) {
 		Main.allUris = allUris;
 	}
 
-	public static Map<String, OntologyInfo> getWorkingUris() {
+	public static Map<String, RegisteredOntologyInfo> getWorkingUris() {
 		return workingUris;
 	}
 
-	public static void addWorkingUri(OntologyInfo uri) {
+	public static void addWorkingUri(RegisteredOntologyInfo uri) {
 		char code = (char) ((int) 'A' + Main.workingUris.size());
 		uri.setCode(code);
 		Main.workingUris.put(""+ code, uri);
 	}
 
-	public static boolean containsWorkingUri(OntologyInfo uri) {
+	public static boolean containsWorkingUri(RegisteredOntologyInfo uri) {
 		return workingUris.get("" +uri.getCode()) != null;
 	}
 
@@ -181,13 +181,13 @@ public class Main implements EntryPoint {
   
   
   private void getAllOntologies(final Map<String,String> params) {
-      AsyncCallback<List<OntologyInfo>> callback = new AsyncCallback<List<OntologyInfo>>() {
+      AsyncCallback<List<RegisteredOntologyInfo>> callback = new AsyncCallback<List<RegisteredOntologyInfo>>() {
           public void onFailure(Throwable thr) {
         	  removeLoadingMessage();
               RootPanel.get().add(new HTML(thr.toString()));
           }
 
-		public void onSuccess(List<OntologyInfo> ontUris) {
+		public void onSuccess(List<RegisteredOntologyInfo> ontUris) {
 			removeLoadingMessage();
 			Main.allUris = ontUris;
 			log("getAllOntologies: retrieved " +ontUris.size()+ " ontologies");

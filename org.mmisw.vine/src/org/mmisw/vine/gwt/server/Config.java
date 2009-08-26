@@ -16,14 +16,28 @@ public class Config {
 	 */
 	public enum Prop {
 		
-		VERSION                       ("vine.app.version"),
-		BUILD                         ("vine.app.build"),
+		VERSION                       ("vine.app.version", "PEND_VERSION"),
+		BUILD                         ("vine.app.build", "PEND_BUILD"),
+
+		/** Base URL of bioportal REST service */
+		BIOPORTAL_REST_URL            ("bioportal.rest.url", "http://localhost:8080/bioportal/rest"),
+		
+		/** URL of "Ont" URI resolution service */
+		ONT_SERVICE_URL                ("ont.service.url", "http://localhost:8080/ont"),
+		
 		;
 		
 		private final String name;
 		private String value;
 
-		Prop(String name) { this.name = name; };
+		Prop(String name) { 
+			this(name, null); 
+		};
+		
+		Prop(String name, String value) { 
+			this.name = name; 
+			this.value = value;
+		};
 		
 		public String getName() { return name; }
 
@@ -62,12 +76,17 @@ public class Config {
 			// Read in the required properties:
 			for ( Prop prop : Prop.values() ) {
 				String value = sc.getInitParameter(prop.getName());
-				if ( value == null || value.trim().length() == 0 ) {
+				if ( value != null && value.trim().length() > 0 ) {
+					prop.setValue(value);
+				}
+				else if ( prop.getValue() == null ) {
 					throw new Exception("Required init parameter not defined: " +prop.getName());
 				}
-				prop.setValue(value);
-				if ( log != null && log.isDebugEnabled() ) {
-					log.debug(prop.getName()+ " = " +value);
+			}
+			
+			if ( log != null && log.isDebugEnabled() ) {
+				for ( Prop prop : Prop.values() ) {
+					log.debug(prop.getName()+ " = " +prop.getValue());
 				}
 			}
 		}

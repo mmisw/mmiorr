@@ -1,8 +1,18 @@
 org.mmisw.vine - Web VINE
 Carlos Rueda - MMI / MBARI
+$Id$
 
 ChangeLog
 
+2009-08-25  1.5.0.alpha2
+	Did adjustments according to latest changes in supporting modules.
+	It's running now again, pretty much as it was before the refactoring.
+	TODO: put links to ontologies and terms with the "uri" parameter as the general
+	mechanism (in particular for the re-hosted/external ontologies).
+	
+	TODO Next: Make actual mapping ontology, integrate with portal. 
+	
+	
 2009-05-24
 	- minor updates per changes in iserver
 	(note that this project may be eventually be merged into the main portal)

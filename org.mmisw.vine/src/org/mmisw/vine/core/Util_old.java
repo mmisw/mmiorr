@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.ClassInfo;
 import org.mmisw.iserver.gwt.client.rpc.IndividualInfo;
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
 import org.mmisw.iserver.gwt.client.rpc.PropertyInfo;
@@ -31,7 +31,8 @@ import com.hp.hpl.jena.rdf.model.Resource;
  * 
  * @author Carlos Rueda
  */
-public class Util {
+@Deprecated
+public class Util_old {
 	
 	/** Query to obtain the individuals in a model */
 	private static final String INDIVIDUALS_QUERY =
@@ -72,7 +73,7 @@ public class Util {
 	 * @param ontologyInfo
 	 * @return the given argument
 	 */
-	public static OntologyInfo getEntities(OntologyInfo ontologyInfo) {
+	public static RegisteredOntologyInfo getEntities(RegisteredOntologyInfo ontologyInfo) {
 		String ontologyUri = ontologyInfo.getUri();
 		OntModel ontModel = loadModel(ontologyUri);
 
@@ -87,7 +88,10 @@ public class Util {
 		// classes:
 		addClasses(entities, ontModel, ontologyUri);
 
-		ontologyInfo.setEntities(entities);
+		// just removing to have successful compilation -- but this class will be removed
+		//ontologyInfo.setEntities(entities);
+		
+		
 		return ontologyInfo;
 	}
 	

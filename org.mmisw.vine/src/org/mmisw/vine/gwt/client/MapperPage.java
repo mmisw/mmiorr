@@ -2,7 +2,7 @@ package org.mmisw.vine.gwt.client;
 
 import java.util.Set;
 
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.vine.gwt.client.rpc.RelationInfo;
 
 import com.google.gwt.user.client.Window;
@@ -80,7 +80,7 @@ public class MapperPage extends DockPanel {
 
 	
 	/** Call this to notify that a new ontology has been added to the working list */
-	void notifyWorkingOntologyAdded(OntologyInfo ontologyInfo) {
+	void notifyWorkingOntologyAdded(RegisteredOntologyInfo ontologyInfo) {
 		int workingOntsSize = Main.getWorkingUris().size();
 		int chooseLeft = workingOntsSize > 0 ? 0 : -1;
 		int chooseRight = workingOntsSize > 1 ? 1 : chooseLeft;

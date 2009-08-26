@@ -10,7 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.IServer;
 import org.mmisw.iserver.core.Server;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.vine.gwt.client.rpc.RelationInfo;
 import org.mmisw.vine.gwt.client.rpc.VineService;
 
@@ -31,14 +31,14 @@ public class VineServiceImpl extends RemoteServiceServlet implements VineService
 //	private static final String VOCABS = ONT + "?vocabs";
 //	private static final String MAPPINGS = ONT + "?mappings";
 
-	private static final List<OntologyInfo> EMPTY_ONTOLOGY_INFO_LIST = new ArrayList<OntologyInfo>();
+	private static final List<RegisteredOntologyInfo> EMPTY_ONTOLOGY_INFO_LIST = new ArrayList<RegisteredOntologyInfo>();
 
 	
 	private final AppInfo appInfo = new AppInfo("Web VINE");
 	private final Log log = LogFactory.getLog(VineServiceImpl.class);
 	
 	
-	private IServer iserver = Server.getInstance();
+	private IServer iserver;
 	
 	
 	
@@ -54,6 +54,11 @@ public class VineServiceImpl extends RemoteServiceServlet implements VineService
 			);
 					
 			log.info(appInfo.toString());
+			
+			// portal initialization
+			String ontServiceUrl = Config.Prop.ONT_SERVICE_URL.getValue();
+			String bioportalRestUrl = Config.Prop.BIOPORTAL_REST_URL.getValue();
+			iserver = Server.getInstance(ontServiceUrl, bioportalRestUrl);
 			
 		}
 		catch (Throwable ex) {
@@ -80,7 +85,7 @@ public class VineServiceImpl extends RemoteServiceServlet implements VineService
 	/**
 	 * 
 	 */
-	public List<OntologyInfo> getAllOntologies() {
+	public List<RegisteredOntologyInfo> getAllOntologies() {
 		try {
 			return iserver.getAllOntologies(false);
 		}
@@ -90,7 +95,7 @@ public class VineServiceImpl extends RemoteServiceServlet implements VineService
 		}
 	}
 	
-	public OntologyInfo getEntities(OntologyInfo ontologyInfo) {
+	public RegisteredOntologyInfo getEntities(RegisteredOntologyInfo ontologyInfo) {
 		return iserver.getEntities(ontologyInfo);
 	}
 

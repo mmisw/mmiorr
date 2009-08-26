@@ -3,7 +3,7 @@ package org.mmisw.vine.gwt.client;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.vine.gwt.client.util.TLabel;
 
 import com.google.gwt.user.client.DOM;
@@ -49,12 +49,12 @@ public class SearchVocabularySelection extends VerticalPanel {
 	 * Returns a list of the Main.workingUris that are selected for search.
 	 * @return
 	 */
-	List<OntologyInfo> getSelectedVocabularies() {
-		List<OntologyInfo> selectedUris = new ArrayList<OntologyInfo>();
+	List<RegisteredOntologyInfo> getSelectedVocabularies() {
+		List<RegisteredOntologyInfo> selectedUris = new ArrayList<RegisteredOntologyInfo>();
 		int count = buttons.getWidgetCount();
 		assert count == Main.getWorkingUris().size();
 		
-		List<OntologyInfo> workingUris = new ArrayList<OntologyInfo>(Main.getWorkingUris().values());
+		List<RegisteredOntologyInfo> workingUris = new ArrayList<RegisteredOntologyInfo>(Main.getWorkingUris().values());
 		
 		for ( int i = 0; i < count; i++ ) {
 			if ( ((ToggleButton) buttons.getWidget(i)).isDown() ) {
@@ -71,7 +71,7 @@ public class SearchVocabularySelection extends VerticalPanel {
 	void setToggleButtons(int searchIndex) {
 		buttons.clear();
 		int idx = 0;
-		for ( OntologyInfo s : Main.getWorkingUris().values() ) {
+		for ( RegisteredOntologyInfo s : Main.getWorkingUris().values() ) {
 			char id = s.getCode();
 			final ToggleButton sel = new ToggleButton("" +id);
 			DOM.setElementAttribute(sel.getElement(), "id", "my-button-id");

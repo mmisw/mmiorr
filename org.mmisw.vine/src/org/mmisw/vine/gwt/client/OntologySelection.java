@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mmisw.vine.gwt.client.util.TLabel;
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
@@ -68,7 +68,7 @@ public class OntologySelection extends VerticalPanel {
 		layout.add(vp);
 		
 		
-		for ( OntologyInfo s : Main.getWorkingUris().values() ) {
+		for ( RegisteredOntologyInfo s : Main.getWorkingUris().values() ) {
 			vp.add(new HTML("<b>" +s.getCode()+ "</b>: " + s.getUri() + "/"));
 		}
 		
@@ -81,7 +81,7 @@ public class OntologySelection extends VerticalPanel {
 		});
 	}
 	
-	void ontologySucessfullyLoaded(OntologyInfo ontologyInfo) {
+	void ontologySucessfullyLoaded(RegisteredOntologyInfo ontologyInfo) {
 		char code = ontologyInfo.getCode();
 		String uri = ontologyInfo.getUri();
 		
@@ -106,12 +106,12 @@ public class OntologySelection extends VerticalPanel {
 		
 		MultiWordSuggestOracle oracle = new MultiWordSuggestOracle("/ :"); 
 		
-		// A map from a suggestion to its corresponding OntologyInfo:
-		final Map<String,OntologyInfo> suggestions = new HashMap<String,OntologyInfo>();
+		// A map from a suggestion to its corresponding RegisteredOntologyInfo:
+		final Map<String,RegisteredOntologyInfo> suggestions = new HashMap<String,RegisteredOntologyInfo>();
 		
-		List<OntologyInfo> allUris = Main.getAllUris();
+		List<RegisteredOntologyInfo> allUris = Main.getAllUris();
 		for ( int index = 0, count = allUris.size(); index < count; index++ ) {
-			OntologyInfo ontologyInfo = allUris.get(index);
+			RegisteredOntologyInfo ontologyInfo = allUris.get(index);
 			if ( Main.containsWorkingUri(ontologyInfo) ) {
 				// do not add any suggestion for an entry that is already in the workingUris
 				continue;
@@ -153,7 +153,7 @@ public class OntologySelection extends VerticalPanel {
 		box.addEventHandler(new SuggestionHandler() {
 			public void onSuggestionSelected(SuggestionEvent event) {
 				String suggestion = event.getSelectedSuggestion().getReplacementString();
-				OntologyInfo ontologyInfo = suggestions.get(suggestion);
+				RegisteredOntologyInfo ontologyInfo = suggestions.get(suggestion);
 				mainPanel.notifyWorkingOntologyAdded(OntologySelection.this, ontologyInfo, popup);
 			}
 		});

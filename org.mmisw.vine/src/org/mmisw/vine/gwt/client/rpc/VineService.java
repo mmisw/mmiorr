@@ -3,7 +3,7 @@ package org.mmisw.vine.gwt.client.rpc;
 import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 
@@ -23,9 +23,9 @@ public interface VineService extends RemoteService {
 	/**
 	 * Gets the vocabularies.
 	 * Only the basic information about each ontology is obtained.
-	 * Call {@link #getEntities(OntologyInfo)} to obtain the entities of an ontology.
+	 * Call {@link #getEntities(RegisteredOntologyInfo)} to obtain the entities of an ontology.
 	 */
-	List<OntologyInfo> getAllOntologies();
+	List<RegisteredOntologyInfo> getAllOntologies();
 	
 	
 	/**
@@ -33,7 +33,7 @@ public interface VineService extends RemoteService {
 	 * @param ontologyInfo
 	 * @return ontologyInfo
 	 */
-	OntologyInfo getEntities(OntologyInfo ontologyInfo);
+	RegisteredOntologyInfo getEntities(RegisteredOntologyInfo ontologyInfo);
 
 	/**
 	 * Gets the default list of RelationInfo's.

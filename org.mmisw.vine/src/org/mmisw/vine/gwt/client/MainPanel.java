@@ -1,6 +1,6 @@
 package org.mmisw.vine.gwt.client;
 
-import org.mmisw.iserver.gwt.client.rpc.OntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DecoratorPanel;
@@ -47,7 +47,7 @@ public class MainPanel extends VerticalPanel {
 	 * @param ontologySelection 
 	 * @param ontologyInfo
 	 */
-	void notifyWorkingOntologyAdded(final OntologySelection ontologySelection, OntologyInfo ontologyInfo, final MyDialog popup) {
+	void notifyWorkingOntologyAdded(final OntologySelection ontologySelection, RegisteredOntologyInfo ontologyInfo, final MyDialog popup) {
 		
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.setSpacing(10);
@@ -65,13 +65,13 @@ public class MainPanel extends VerticalPanel {
 		popup.setWidget(hp);
 		popup.setText("Loading vocabulary...");
 		
-		AsyncCallback<OntologyInfo> callback = new AsyncCallback<OntologyInfo>() {
+		AsyncCallback<RegisteredOntologyInfo> callback = new AsyncCallback<RegisteredOntologyInfo>() {
 			public void onFailure(Throwable thr) {
 				RootPanel.get().add(new HTML(thr.toString()));
 				popup.hide();
 			}
 
-			public void onSuccess(OntologyInfo ontologyInfo) {
+			public void onSuccess(RegisteredOntologyInfo ontologyInfo) {
 				popup.setWidget(new HTML("Load complete"));
 				Main.log("getEntities: " +ontologyInfo.getUri()+ " completed.");
 				

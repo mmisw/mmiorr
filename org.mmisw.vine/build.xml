@@ -25,7 +25,10 @@
 
   	<pathelement path="base_war/WEB-INF/lib/commons-logging.jar"/>
   	<pathelement path="base_war/WEB-INF/lib/log4j-1.2.12.jar"/>
+  	<pathelement path="base_war/WEB-INF/lib/commons-io-1.4.jar"/>
+  	<pathelement path="base_war/WEB-INF/lib/chardet.jar"/>
   	
+  	<pathelement path="base_war/WEB-INF/lib/org.mmisw.ont.mmiuri.jar"/>
   	<pathelement path="base_war/WEB-INF/lib/org.mmisw.iserver.gwt.jar"/>
   </path>
 
@@ -123,6 +126,9 @@
 				<filter token="vine.app.maxlogbackupindex" value="${vine.app.maxlogbackupindex}" />
 				<filter token="vine.app.log.deflevel"      value="${vine.app.log.deflevel}" />
 				<filter token="vine.app.log.vinelevel"    value="${vine.app.log.vinelevel}" />
+
+				<filter token="ont.service.url"          value="${ont.service.url}" />
+				<filter token="bioportal.rest.url"       value="${bioportal.rest.url}" />
 			</filterset>
 		</copy>
 

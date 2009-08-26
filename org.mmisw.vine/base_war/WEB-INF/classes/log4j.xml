@@ -29,6 +29,11 @@
 		<priority value="@vine.app.log.vinelevel@" />
 	</category>
 
+	<!-- Use same level for iserver module -->
+	<category name="org.mmisw.iserver">
+		<priority value="@vine.app.log.ontmdlevel@" />
+	</category>
+
 	<root>
 		<priority value="@vine.app.log.deflevel@" />
 		<appender-ref ref="file" />
