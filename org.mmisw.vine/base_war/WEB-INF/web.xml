@@ -17,6 +17,17 @@
 			<param-name>vine.app.build</param-name>
 			<param-value>@vine.app.build@</param-value>
 		</init-param>
+		
+		<init-param>
+			<param-name>ont.service.url</param-name>
+			<param-value>@ont.service.url@</param-value>
+		</init-param>
+		
+		<init-param>
+			<param-name>bioportal.rest.url</param-name>
+			<param-value>@bioportal.rest.url@</param-value>
+		</init-param>
+		
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	
