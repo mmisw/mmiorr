@@ -115,6 +115,8 @@
 			<filterset>
 				<filter token="vine.app.version"        value="${vine.app.version}" />
 				<filter token="vine.app.build"          value="${vine.app.build}" />
+				<filter token="ont.service.url"          value="${ont.service.url}" />
+				<filter token="bioportal.rest.url"       value="${bioportal.rest.url}" />
 			</filterset>
 		</copy>
 
@@ -126,9 +128,6 @@
 				<filter token="vine.app.maxlogbackupindex" value="${vine.app.maxlogbackupindex}" />
 				<filter token="vine.app.log.deflevel"      value="${vine.app.log.deflevel}" />
 				<filter token="vine.app.log.vinelevel"    value="${vine.app.log.vinelevel}" />
-
-				<filter token="ont.service.url"          value="${ont.service.url}" />
-				<filter token="bioportal.rest.url"       value="${bioportal.rest.url}" />
 			</filterset>
 		</copy>
 
