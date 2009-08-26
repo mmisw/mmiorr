@@ -3,6 +3,10 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2009-08-25  1.5.0.alpha10
+	- Server.getEntities(RegisteredOntologyInfo): adjustments for proper way to get the
+	  ontology. This operation is only being used by the Vine app, which I'm updating now.
+
 2009-08-25  1.5.0.alpha9
 	issue #148: "Need property to capture "creator/author of original source vocabulary""
 	- MdHelper: 

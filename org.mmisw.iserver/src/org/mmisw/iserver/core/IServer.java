@@ -56,6 +56,8 @@ public interface IServer {
 
 	/**
 	 * Obtains the entities of an ontology.
+	 * Note: No specific version is requested, but the latest version should be obtained.
+	 * 
 	 * @param registeredOntologyInfo
 	 * @return ontologyInfo
 	 */

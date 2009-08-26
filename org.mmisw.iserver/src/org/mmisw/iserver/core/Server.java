@@ -496,11 +496,26 @@ public class Server implements IServer {
 
 	public RegisteredOntologyInfo getEntities(RegisteredOntologyInfo registeredOntologyInfo) {
 		if ( log.isDebugEnabled() ) {
-			log.debug("getEntities(OntologyInfo) starting");
+			log.debug("getEntities(RegisteredOntologyInfo) starting");
 		}
 		
+		
+		OntModel ontModel;
 		try {
-			QueryUtil.getEntities(registeredOntologyInfo, null);
+			// note, version==null -> not specific version, so get the latest version
+			final String version = null;
+			ontModel = OntServiceUtil.retrieveModel(registeredOntologyInfo.getUri(), version);
+		}
+		catch (Exception e) {
+			String error = "Error loading model: " +e.getMessage();
+			log.error(error, e);
+			registeredOntologyInfo.setError(error);
+			return registeredOntologyInfo;
+		}
+
+		
+		try {
+			QueryUtil.getEntities(registeredOntologyInfo, ontModel);
 		}
 		catch (Exception e) {
 			String error = "Error loading model: " +e.getMessage();
