@@ -3,6 +3,18 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+
+2009-08-26  1.5.0.alpha11
+	VINE: Adding elements to incorporate VINE functionality.
+	- package org.mmisw.iserver.gwt.client.rpc.vine
+		RelationInfo, Mapping
+	- Server: List<RelationInfo> getVineRelationInfos()
+	- TODO: Define precise info required for a mapping from this server side,
+	perhaps separating the attributes of a RelationInfo from the mapping; just use
+	the relation URI to link the two.
+
+
+
 2009-08-25  1.5.0.alpha10
 	- Server.getEntities(RegisteredOntologyInfo): adjustments for proper way to get the
 	  ontology. This operation is only being used by the Vine app, which I'm updating now.

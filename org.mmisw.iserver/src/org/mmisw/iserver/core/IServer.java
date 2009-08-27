@@ -11,6 +11,7 @@ import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
 
 /**
  * Interface to get info from the server.
@@ -102,4 +103,16 @@ public interface IServer {
 	 * @return
 	 */
 	public TempOntologyInfo getTempOntologyInfo(String uploadResults, boolean includeContents, boolean includeRdf);
+	
+	
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// VINE:
+	
+	/**
+	 * Gets the default list of RelationInfo's.
+	 */
+	List<RelationInfo> getVineRelationInfos();
+	
+	// :VINE
+	////////////////////////////////////////////////////////////////////////////////////////////
 }

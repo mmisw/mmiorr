@@ -23,6 +23,7 @@ import org.mmisw.iserver.gwt.client.rpc.PropValue;
 import org.mmisw.iserver.gwt.client.rpc.PropertyInfo;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData.ClassData;
+import org.mmisw.iserver.gwt.client.rpc.vine.Mapping;
 
 import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -188,7 +189,7 @@ public class QueryUtil {
 		}
 		else if ( containSkos ) {
 			baseOntologyInfo.setType("mapping");
-			ontologyData = _createMappingOntologyData(baseOntologyData);
+			ontologyData = _createMappingOntologyData(baseOntologyData, individuals);
 		}
 		else {
 			baseOntologyInfo.setType("other");
@@ -371,10 +372,32 @@ public class QueryUtil {
 
 
 
-	private static OntologyData _createMappingOntologyData(BaseOntologyData baseOntologyData) {
+	private static OntologyData _createMappingOntologyData(BaseOntologyData baseOntologyData, List<IndividualInfo> individuals) {
+		
+		List<Mapping> mappings = new ArrayList<Mapping>();
+
+		for ( IndividualInfo individualInfo : individuals ) {
+			List<PropValue> indivProps = individualInfo.getProps();
+			for ( PropValue propValue: indivProps ) {
+				if ( propValue.getPropName().matches(".*Match.*") ) {
+					Mapping mapping = new Mapping();
+					
+					mapping.setLeft(individualInfo.getUri());
+					
+					mapping.setRight(propValue.getValueUri());
+					
+					// TODO mapping.setRelationInfo(...)
+					
+					mappings.add(mapping);
+				}
+			}
+			
+		}
+		
 		MappingOntologyData ontologyData = new MappingOntologyData();
+		ontologyData.setMappings(mappings);
 		ontologyData.setBaseOntologyData(baseOntologyData);
-		// TODO 
+
 		return ontologyData;
 	}
 
