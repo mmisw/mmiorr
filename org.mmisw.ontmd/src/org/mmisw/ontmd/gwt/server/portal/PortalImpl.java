@@ -15,6 +15,7 @@ import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
 import org.mmisw.ontmd.gwt.client.rpc.PortalBaseInfo;
 import org.mmisw.ontmd.gwt.server.Config;
 
@@ -119,4 +120,17 @@ public class PortalImpl  {
 			boolean includeRdf) {
 		return iserver.getTempOntologyInfo(uploadResults, includeContents, includeRdf);
 	}
+	
+	
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// VINE:
+	
+
+	public List<RelationInfo> getVineRelationInfos() {
+		return iserver.getVineRelationInfos();
+	}
+	
+	// :VINE
+	////////////////////////////////////////////////////////////////////////////////////////////
+
 }

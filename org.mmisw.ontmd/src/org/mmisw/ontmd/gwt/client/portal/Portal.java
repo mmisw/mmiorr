@@ -8,6 +8,7 @@ import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.rpc.PortalBaseInfo;
+import org.mmisw.ontmd.gwt.client.vine.VineMain;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
@@ -99,6 +100,7 @@ public class Portal {
 
 			public void onSuccess(List<RegisteredOntologyInfo> result) {
 				ontologyInfos = result;
+				VineMain.setAllUris(ontologyInfos);
 				startApplication(params);
 			}
 			

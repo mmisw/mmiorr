@@ -8,6 +8,7 @@ import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
+import org.mmisw.iserver.gwt.client.rpc.MappingOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
 import org.mmisw.iserver.gwt.client.rpc.OtherDataCreationInfo;
@@ -182,6 +183,27 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		vocababularyOntologyData.setBaseOntologyData(baseOntologyData);
 		vocababularyOntologyData.setClasses(null);
 		ontologyInfo.setOntologyData(vocababularyOntologyData);
+
+		// create dataPanel
+		dataPanel = new DataPanel(false);
+		dataPanel.updateWith(ontologyInfo, false);
+		dataDisclosure.setContent(dataPanel);
+		
+		enable(true);
+	}
+
+	/**
+	 * Prepares the panel for creation of an ontology using the vine style.
+	 */
+	void createNewMappingOntology() {
+		createNewBase();
+		
+		// create (empty) data for the ontologyInfo
+		MappingOntologyData mappingOntologyData = new MappingOntologyData();
+		BaseOntologyData baseOntologyData = null;
+		mappingOntologyData.setBaseOntologyData(baseOntologyData);
+		mappingOntologyData.setMappings(null);
+		ontologyInfo.setOntologyData(mappingOntologyData);
 
 		// create dataPanel
 		dataPanel = new DataPanel(false);

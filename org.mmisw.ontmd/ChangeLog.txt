@@ -4,6 +4,13 @@ $Id$
 
 ChangeLog
 
+2009-08-26  1.5.0.alpha14
+	Incorporated VINE functionality into this module from the org.mmisw.vine project (which
+	will be removed eventually).
+	- See ChangeLog in org.mmisw.iserver
+	-  Check the retrieval of allOntologies -- the list shows the *versioned* form.
+
+
 2009-08-25  1.5.0.alpha13
 	issue #148: "Need property to capture "creator/author of original source vocabulary""
 	Implemented in iserver and ont modules (just rebuild here with the updated libs)

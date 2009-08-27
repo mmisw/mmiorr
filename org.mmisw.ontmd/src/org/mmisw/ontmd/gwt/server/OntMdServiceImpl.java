@@ -51,6 +51,7 @@ import org.mmisw.ontmd.gwt.client.rpc.OntologyInfoPre;
 import org.mmisw.ontmd.gwt.client.rpc.PortalBaseInfo;
 import org.mmisw.ontmd.gwt.client.rpc.ReviewResult_Old;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
 import org.mmisw.ontmd.gwt.client.rpc.UploadResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
@@ -1413,4 +1414,18 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			boolean includeRdf) {
 		return portal.getTempOntologyInfo(uploadResults, includeContents, includeRdf);
 	}
+
+	
+	
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// VINE:
+	
+
+	public List<RelationInfo> getVineRelationInfos() {
+		return portal.getVineRelationInfos();
+	}
+	
+	// :VINE
+	////////////////////////////////////////////////////////////////////////////////////////////
+
 }

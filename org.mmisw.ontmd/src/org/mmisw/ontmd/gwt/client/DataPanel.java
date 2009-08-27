@@ -19,10 +19,10 @@ import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData.ClassData;
 import org.mmisw.ontmd.gwt.client.portal.BaseOntologyContentsPanel;
 import org.mmisw.ontmd.gwt.client.portal.IVocabPanel;
 import org.mmisw.ontmd.gwt.client.portal.OtherOntologyContentsPanel;
+import org.mmisw.ontmd.gwt.client.portal.VineOntologyContentsPanel;
 import org.mmisw.ontmd.gwt.client.util.IRow;
 import org.mmisw.ontmd.gwt.client.voc2rdf.VocabClassPanel;
 
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -235,7 +235,9 @@ public class DataPanel extends VerticalPanel {
 	private Widget _createMappingWidget(MappingOntologyData ontologyData) {
 		Main.log("Creating MappingWidget");
 
-		return new HTML("<i>not implemented yet</i>");
+		VineOntologyContentsPanel vineOntologyContentsPanel = new VineOntologyContentsPanel(ontologyData, readOnly);
+		baseOntologyContentsPanels.add(vineOntologyContentsPanel);
+		return vineOntologyContentsPanel.getWidget();
 	}
 
 	public void cancel() {

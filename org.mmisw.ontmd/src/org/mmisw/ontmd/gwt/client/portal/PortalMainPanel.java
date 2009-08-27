@@ -11,6 +11,7 @@ import org.mmisw.ontmd.gwt.client.LoginListener;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.UserPanel;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
+import org.mmisw.ontmd.gwt.client.vine.VineMain;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
@@ -291,7 +292,23 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	}
 
 	
-	
+	public void createNewMappingOntology() {
+		RegisteredOntologyInfo ontologyInfo = new RegisteredOntologyInfo();
+		OntologyPanel ontologyPanel = new OntologyPanel(ontologyInfo, false, false);
+
+		pctrl.setOntologyInfo(ontologyInfo);
+		pctrl.setOntologyPanel(ontologyPanel);
+		
+		interfaceType = InterfaceType.ONTOLOGY_EDIT_NEW;
+	    controlsPanel.showMenuBar(interfaceType);
+	    headerPanel.updateLinks(interfaceType);
+		ontologyPanel.createNewMappingOntology();
+		
+	    bodyPanel.clear();
+		bodyPanel.add(ontologyPanel);
+	}
+
+
 	public void createNewVocabulary() {
 		RegisteredOntologyInfo ontologyInfo = new RegisteredOntologyInfo();
 		OntologyPanel ontologyPanel = new OntologyPanel(ontologyInfo, false, false);
@@ -368,6 +385,8 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		bodyPanel.clear();
 		bodyPanel.add(browsePanel);
 		browsePanel.setAllOntologyInfos(ontologyInfos);
+		
+		VineMain.setAllUris(ontologyInfos);
 	}
 
 	

@@ -160,3 +160,90 @@ table.inline td {
   background-color: #dee7ec;
 }
 
+
+
+/* VINE */
+
+SearchResultsTable {
+  min-width: 400px;
+  _width: 400px;/* IE6 hack */
+  background-color: #ffffff;
+  border-spacing: 0px;
+  border-collapse: collapse;
+  border: 1px solid #8cacbb;
+}
+.SearchResultsTable-focused {
+/*  
+	background-color: #dee7ec; 
+  background-color: #ffccff;
+*/
+  border: 1px solid #8cacbb;
+  background-color: #f3fcff;
+}
+.SearchResultsTable-normal {
+/*  
+	background-color: #dee7ec; 
+  background-color: #f3fcff;
+*/
+  border: 1px solid #8cacbb;
+  background-color: #ffccff;
+}
+
+.SearchResultsTable-TextBox {
+  min-width: 400px;
+  _width: 400px;/* IE6 hack */
+  background-color: #ffffff;
+}
+.SearchResultsTable-TextBox-focused {
+  min-width: 400px;
+  _width: 400px;/* IE6 hack */
+/*
+  background-color: #dee7ec;
+*/
+  background-color: #ffccff;
+}
+
+
+.DisclosureTable {
+  width: 100%
+  font-size: small;
+  background-color: transparent;
+  border-spacing: 0px;
+}
+
+
+/* inline tables */
+.MappingsTable {
+  width: 100%
+  font-size: small;
+  background-color: #ffffff;
+  border-spacing: 0px;
+  border-collapse: collapse;
+}
+
+.MappingsTable-header {
+  width: 100%
+  padding: 3px;
+  border: 1px solid #8cacbb;
+  background-color: #dee7ec;
+}
+
+.MappingsTable-row {
+  width: 100%
+  padding: 3px;
+  background-color: #f4f4f4;
+  border: 1px solid #8cacbb;
+}
+  
+
+.MappingsTable-focused {
+/*  
+	background-color: #dee7ec; 
+  background-color: #ffccff;
+*/
+  border: 1px solid #8cacbb;
+  background-color: #f3fcff;
+}
+  
+
+

@@ -50,8 +50,17 @@ public class PortalControl {
 	}
 	
 	
+	public void createNewMappingOntology() {
+		portalMainPanel.createNewMappingOntology();
+	}
+
+
 	public void launchCreateMapping() {
-		String url = createLinkVine();
+		String url = Portal.portalBaseInfo.getVineServiceUrl();
+		if ( loginResult != null ) {
+			url += "?userId=" +loginResult.getUserId();
+			url += "&sessionid=" +loginResult.getSessionId();
+		}
 		String features = null;
 		Window.open(url, "_blank", features);
 	}
@@ -62,15 +71,6 @@ public class PortalControl {
 
 	
 	
-	
-	private String createLinkVine() {
-		String link = Portal.portalBaseInfo.getVineServiceUrl();
-		if ( loginResult != null ) {
-			link += "?userId=" +loginResult.getUserId();
-			link += "&sessionid=" +loginResult.getSessionId();
-		}
-		return link;
-	}
 
 	public void createNewVocabulary() {
 		portalMainPanel.createNewVocabulary();

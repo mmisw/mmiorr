@@ -107,16 +107,14 @@ public class ControlsPanel extends HorizontalPanel {
 			controls.add(button);
 			buttons.add(button);
 
-if ( false ) {  //TODO not implemented
 			button = new PushButton("Create mapping", new ClickListener() {
 				public void onClick(Widget sender) {
-					pctrl.launchCreateMapping();
+					pctrl.createNewMappingOntology();
 				}
 			});
 			button.setTitle("Allows to create a mapping ontology (vine tool)");
 			controls.add(button);
 			buttons.add(button);
-}
 			
 			button = new PushButton("Upload", new ClickListener() {
 				public void onClick(Widget sender) {
@@ -241,9 +239,7 @@ if ( false ) {  //TODO not implemented
 			MenuBar new_mb = new MenuBar(true);
 			new_mb.addItem(_createNewMenuItemVocabulary());
 			
-			if ( false ) {  //TODO not implemented
-				new_mb.addItem(_createNewMenuItemMapping());
-			}
+			new_mb.addItem(_createNewMenuItemMapping());
 			
 			new_mb.addItem(_createNewMenuItemUpload());
 			mb.addItem(new MenuItem(_menuTitle("New"), true, new_mb));

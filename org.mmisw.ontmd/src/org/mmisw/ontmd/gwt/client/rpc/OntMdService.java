@@ -12,6 +12,7 @@ import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
@@ -156,5 +157,18 @@ public interface OntMdService extends RemoteService {
 	public TempOntologyInfo getTempOntologyInfo(String uploadResults, boolean includeContents,
 			boolean includeRdf);
 
+
+	
+	
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// VINE:
+	
+	/**
+	 * Gets the default list of RelationInfo's.
+	 */
+	public List<RelationInfo> getVineRelationInfos();
+	
+	// :VINE
+	////////////////////////////////////////////////////////////////////////////////////////////
 
 }
