@@ -6,9 +6,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.mmisw.iserver.gwt.client.rpc.BaseOntologyData;
@@ -183,13 +185,13 @@ public class QueryUtil {
 		// TODO NOTE: these are just heuristics to determine the ontologyData type:
 		// Pending: use omv:useOntologyEngineeringTool for example.
 		
-		if ( classes.size() == 1 && individuals.size() > 0 && containDatatype ) {
-			baseOntologyInfo.setType("vocabulary");
-			ontologyData = _createVocabularyOntologyData(baseOntologyData);
-		}
-		else if ( containSkos ) {
+		if ( containSkos ) {
 			baseOntologyInfo.setType("mapping");
 			ontologyData = _createMappingOntologyData(baseOntologyData, individuals);
+		}
+		else if ( classes.size() == 1 && individuals.size() > 0 && containDatatype ) {
+			baseOntologyInfo.setType("vocabulary");
+			ontologyData = _createVocabularyOntologyData(baseOntologyData);
 		}
 		else {
 			baseOntologyInfo.setType("other");
@@ -374,6 +376,7 @@ public class QueryUtil {
 
 	private static OntologyData _createMappingOntologyData(BaseOntologyData baseOntologyData, List<IndividualInfo> individuals) {
 		
+		Set<String> namespaces = new HashSet<String>();
 		List<Mapping> mappings = new ArrayList<Mapping>();
 
 		for ( IndividualInfo individualInfo : individuals ) {
@@ -383,22 +386,34 @@ public class QueryUtil {
 					Mapping mapping = new Mapping();
 					
 					mapping.setLeft(individualInfo.getUri());
-					
+					mapping.setRelation(propValue.getPropUri());
 					mapping.setRight(propValue.getValueUri());
 					
-					// TODO mapping.setRelationInfo(...)
-					
 					mappings.add(mapping);
+					
+					_addNamespace(namespaces, individualInfo.getUri(), individualInfo.getLocalName());
+					_addNamespace(namespaces, propValue.getValueUri(), propValue.getValueName());
 				}
 			}
 			
 		}
 		
 		MappingOntologyData ontologyData = new MappingOntologyData();
+		ontologyData.setNamespaces(namespaces);
 		ontologyData.setMappings(mappings);
 		ontologyData.setBaseOntologyData(baseOntologyData);
 
 		return ontologyData;
+	}
+	
+	private static void _addNamespace(Set<String> namespaces, String uri, String localName) {
+		int uriLen = uri.length();
+		int locLen = +1 + localName.length();   // +1 to also omit the separator
+		String ns = uriLen > locLen ? uri.substring(0, uriLen - locLen) : "";
+		
+		if ( ns.trim().length() > 0 ) {
+			namespaces.add(ns);
+		}
 	}
 
 	private static OntologyData _createOtherOntologyData(BaseOntologyData baseOntologyData) {
@@ -477,7 +492,7 @@ public class QueryUtil {
 					// use the given entityUri as the local name.
 					// Note that the query is made against the ontology, so every entity
 					// found there should be included.
-					String localName = entityUri;
+					String localName = _getLocalName(entityUri);
 					entityInfo.setLocalName(localName);
 				}
 				
@@ -489,6 +504,20 @@ public class QueryUtil {
 		}
 		
 		return entities;
+	}
+	
+	private static String _getLocalName(String uri) {
+		int idx = uri.lastIndexOf('/');
+		if ( idx >= 0 ) {
+			return uri.substring(idx + 1);
+		}
+		else {
+			idx = uri.lastIndexOf('#');
+			if ( idx >= 0 ) {
+				return uri.substring(idx + 1);
+			}
+		}
+		return uri;
 	}
 
 	/**
@@ -563,7 +592,7 @@ public class QueryUtil {
 				// use the given entityUri as the local name.
 				// Note that the query is made against the ontology, so every entity
 				// found there should be included.
-				String localName = entityUri;
+				String localName = _getLocalName(entityUri);
 				entityInfo.setLocalName(localName);
 			}
 
@@ -626,7 +655,7 @@ public class QueryUtil {
 					// use the given entityUri as the local name.
 					// Note that the query is made against the ontology, so every entity
 					// found there should be included.
-					String localName = entityUri;
+					String localName = _getLocalName(entityUri);
 					entityInfo.setLocalName(localName);
 				}
 				

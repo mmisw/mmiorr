@@ -12,6 +12,10 @@ $Id$
 	- TODO: Define precise info required for a mapping from this server side,
 	perhaps separating the attributes of a RelationInfo from the mapping; just use
 	the relation URI to link the two.
+	
+	More updates:  (still incomplete)
+	- new MappingOntologyCreator (similar to VocabCreator)
+	- enabling MappingDataCreationInfo processing
 
 
 

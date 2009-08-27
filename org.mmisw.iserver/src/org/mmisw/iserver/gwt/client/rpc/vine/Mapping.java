@@ -11,7 +11,7 @@ public class Mapping implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String left;
-	private RelationInfo relInfo;
+	private String relation;
 	private String right;
 	
 	/** no-arg ctor required for the serialization */
@@ -19,10 +19,10 @@ public class Mapping implements Serializable {
 	}
 	
 	
-	public Mapping(String left, RelationInfo relInfo, String right) {
+	public Mapping(String left, String relation, String right) {
 		super();
 		this.left = left;
-		this.relInfo = relInfo;
+		this.relation = relation;
 		this.right = right;
 	}
 	
@@ -33,9 +33,15 @@ public class Mapping implements Serializable {
 	public void setLeft(String left) {
 		this.left = left;
 	}
-	public RelationInfo getRelationInfo() {
-		return relInfo;
+	public String getRelation() {
+		return relation;
 	}
+	
+	public void setRelation(String relation) {
+		this.relation = relation;
+	}
+
+
 	public String getRight() {
 		return right;
 	}

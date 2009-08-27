@@ -31,6 +31,7 @@ import org.mmisw.iserver.core.util.Utf8Util;
 import org.mmisw.iserver.core.util.QueryUtil;
 import org.mmisw.iserver.core.util.Util2;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
+import org.mmisw.iserver.gwt.client.rpc.MappingDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.OtherDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
@@ -728,6 +729,17 @@ public class Server implements IServer {
 				return createOntologyResult;
 			}
 		}
+		else if (  dataCreationInfo instanceof MappingDataCreationInfo ) {
+			// mapping (vine case):
+			
+			MappingDataCreationInfo mappingDataCreationInfo = (MappingDataCreationInfo) dataCreationInfo;
+			
+			_createTempMappingOntology(createOntologyInfo, mappingDataCreationInfo, createOntologyResult);
+			if ( createOntologyResult.getError() != null ) {
+				return createOntologyResult;
+			}
+
+		}
 		else if (  dataCreationInfo instanceof OtherDataCreationInfo) {
 			// external ontology case: the base ontology is already available, just use it
 			// by setting the full path in the createOntologyResult:
@@ -762,7 +774,8 @@ public class Server implements IServer {
 			createOntologyResult.setFullPath(full_path);
 		}
 		else {
-			createOntologyResult.setError("Sorry, creation of " +dataCreationInfo.getClass().getSimpleName()+ " not implemented yet");
+			createOntologyResult.setError("Unexpected creation of " +
+					dataCreationInfo.getClass().getSimpleName()+ ". Please report this bug.");
 			return createOntologyResult;
 		}
 
@@ -1112,6 +1125,33 @@ public class Server implements IServer {
 		}
 		
 		vocabCreator.createOntology(createVocabResult);
+	}
+
+	
+	/**
+	 * This creates a new mapping ontology under the previewDir directory with the given info.
+	 * @param createOntologyInfo
+	 * @param mappingDataCreationInfo
+	 * @param createVocabResult 
+	 */
+	private void _createTempMappingOntology(
+			CreateOntologyInfo createOntologyInfo,
+			MappingDataCreationInfo mappingDataCreationInfo,
+			CreateOntologyResult createVocabResult
+	) {
+
+		MappingOntologyCreator ontCreator;
+		try {
+			ontCreator = new MappingOntologyCreator(createOntologyInfo, mappingDataCreationInfo);
+		}
+		catch (Exception e) {
+			String error = "Error creating mapping ontology: " +e.getMessage();
+			log.error(error, e);
+			createVocabResult.setError(error);
+			return;
+		}
+		
+		ontCreator.createOntology(createVocabResult);
 	}
 
 	
