@@ -135,7 +135,7 @@ public class PortalControl {
 			
 			// the link for the ontology-browser tool:
 			String link = ontbrowserUrl+ "/manage/?action=load&clear=true&uri=" +uri;
-			Main.log("ontology-browser link: " +link);
+//			Main.log("ontology-browser link: " +link);
 			
 			String target = "_blank";
 			String href = "<a target=\"" +target+ "\" href=\"" +link+ "\">Ontology Browser</a>";

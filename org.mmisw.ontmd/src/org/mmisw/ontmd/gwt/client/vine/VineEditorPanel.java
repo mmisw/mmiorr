@@ -1,6 +1,7 @@
 package org.mmisw.ontmd.gwt.client.vine;
 
 import java.util.List;
+import java.util.Set;
 
 import org.mmisw.iserver.gwt.client.rpc.MappingOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
@@ -48,9 +49,13 @@ public class VineEditorPanel extends VerticalPanel {
 	private void _setUp() {
 		layout.clear();
 		
+		Set<String> namespaces = ontologyData.getNamespaces();
+		
+		VineMain.setWorkingUrisWithGivenNamespaces(namespaces);
+		
 		List<Mapping> mappings = ontologyData.getMappings();
 
-		if ( ! readOnly || (mappings != null && mappings.size() > 0) ) {
+		if ( ! readOnly || VineMain.getWorkingUris().size() > 0 ) {
 			ontSel = new OntologySelection(this);
 			layout.add(ontSel);
 			layout.setCellHorizontalAlignment(ontSel, ALIGN_CENTER);

@@ -3,6 +3,7 @@ package org.mmisw.ontmd.gwt.client.portal;
 import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
+import org.mmisw.iserver.gwt.client.rpc.MappingDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.MappingOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.vine.Mapping;
 import org.mmisw.ontmd.gwt.client.vine.VineEditorPanel;
@@ -40,8 +41,11 @@ public class VineOntologyContentsPanel extends BaseOntologyContentsPanel {
 
 	@Override
 	public DataCreationInfo getCreateOntologyInfo() {
-		// TODO Auto-generated method stub
-		return null;
+		MappingDataCreationInfo mappingDataCreationInfo = new MappingDataCreationInfo();
+		
+		mappingDataCreationInfo.setMappings(vineEditorPanel.getMappings());
+
+		return mappingDataCreationInfo;
 	}
 
 	@Override

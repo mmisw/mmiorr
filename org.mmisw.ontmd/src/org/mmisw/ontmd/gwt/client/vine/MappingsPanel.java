@@ -10,6 +10,7 @@ import org.mmisw.ontmd.gwt.client.vine.util.TLabel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DisclosureEvent;
 import com.google.gwt.user.client.ui.DisclosureHandler;
@@ -62,12 +63,24 @@ public class MappingsPanel extends FocusPanel {
 	}
 
 
-	public void setMappings(List<Mapping> mappings) {
+	public void setMappings(final List<Mapping> mappings) {
 		this.mappings.clear();
 		if ( mappings != null ) {
-			for ( Mapping mapping : mappings ) {
-				addMapping(mapping.getLeft(), mapping.getRelationInfo(), mapping.getRight());
-			}
+			AsyncCallback<List<RelationInfo>> callback = new AsyncCallback<List<RelationInfo>>() {
+
+				public void onFailure(Throwable caught) {
+					// Ignore here.  Should have been dispatched in VineMain
+				}
+
+				public void onSuccess(List<RelationInfo> result) {
+					for ( Mapping mapping : mappings ) {
+						RelationInfo relInfo = VineMain.getRelInfoMap().get(mapping.getRelation());
+						addMapping(mapping.getLeft(), relInfo, mapping.getRight());
+					}
+				}
+
+			};
+			VineMain.getRelationInfos(callback);
 		}
 	}
 
@@ -75,7 +88,7 @@ public class MappingsPanel extends FocusPanel {
 	/**
 	 * Adds a new mapping to the table.
 	 * @param leftKey
-	 * @param sender
+	 * @param relInfo
 	 * @param rightKey
 	 */
 	public void addMapping(String leftKey, RelationInfo relInfo, String rightKey) {
@@ -86,19 +99,21 @@ public class MappingsPanel extends FocusPanel {
 		}
 
 		Widget center;
+		Mapping mapping;
 		
 		if ( relInfo != null ) {
 			String imgUri = GWT.getModuleBaseURL()+ "images/" +relInfo.getIconUri();
 			Image img = new Image(imgUri);
 			img.setTitle(relInfo.getDescription());
 			center = img;
+			mapping = new Mapping(leftKey, relInfo.getUri(), rightKey);
 		}
 		else {
 			center = new HTML("?");
+			mapping = new Mapping(leftKey, null, rightKey);
 		}
 		
 		
-		Mapping mapping = new Mapping(leftKey, relInfo, rightKey);
 		mappings.add(mapping);
 		
 		Widget left = new Label(leftKey);
@@ -163,7 +178,10 @@ public class MappingsPanel extends FocusPanel {
 		
 		
 		HorizontalPanel hp = new HorizontalPanel();
-		hp.add(new CheckBox());
+		
+		if ( ! readOnly ) {
+			hp.add(new CheckBox());
+		}
 		
 //		hp.add(Main.images.metadata().createImage());
 //		hp.add(Main.images.delete().createImage());

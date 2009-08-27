@@ -65,7 +65,9 @@ public class MapperPage extends DockPanel {
 		
 		int totalToCreate = numLeft * numRight;
 		if ( totalToCreate >= 20 ) {
-			String msg = totalToCreate+ " mappings are about to be created";
+			String msg = totalToCreate+ " mappings are about to be created.\n" +
+					"Please confirm.";
+			
 			if ( ! Window.confirm(msg) ) {
 				return;
 			}

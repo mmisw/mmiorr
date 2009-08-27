@@ -9,12 +9,10 @@ import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MappingOntologyData;
-import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
-import org.mmisw.iserver.gwt.client.rpc.OtherDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.OtherOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
-import org.mmisw.iserver.gwt.client.rpc.VocabularyDataCreationInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData;
 import org.mmisw.ontmd.gwt.client.DataPanel;
 import org.mmisw.ontmd.gwt.client.Main;
@@ -478,15 +476,15 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		
 		createOntologyInfo.setDataCreationInfo(dataCreationInfo);
 		
-		if ( dataCreationInfo instanceof VocabularyDataCreationInfo
-		||   dataCreationInfo instanceof OtherDataCreationInfo
-		) {
-			// OK: continue
-		}
-		else {
-			Window.alert("sorry, not implemented yet");
-			return;
-		}
+//		if ( dataCreationInfo instanceof VocabularyDataCreationInfo
+//		||   dataCreationInfo instanceof OtherDataCreationInfo
+//		) {
+//			// OK: continue
+//		}
+//		else {
+//			Window.alert("sorry, not implemented yet");
+//			return;
+//		}
 		
 		
 		final MyDialog popup = new MyDialog(null);

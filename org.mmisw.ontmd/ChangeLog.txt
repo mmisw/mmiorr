@@ -10,6 +10,9 @@ ChangeLog
 	- See ChangeLog in org.mmisw.iserver
 	-  Check the retrieval of allOntologies -- the list shows the *versioned* form.
 
+	More updates:  (still incomplete)
+	- enabling MappingDataCreationInfo, VineOntologyContentsPanel processing
+
 
 2009-08-25  1.5.0.alpha13
 	issue #148: "Need property to capture "creator/author of original source vocabulary""

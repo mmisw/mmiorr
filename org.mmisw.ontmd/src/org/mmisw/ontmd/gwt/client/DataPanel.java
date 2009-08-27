@@ -260,6 +260,11 @@ public class DataPanel extends VerticalPanel {
 			
 			return vocabClassPanel.getCreateOntologyInfo();
 		}
+		else if ( baseOntologyContentsPanel instanceof VineOntologyContentsPanel ) {
+			VineOntologyContentsPanel ontologyContentsPanel = (VineOntologyContentsPanel) baseOntologyContentsPanel;
+			
+			return ontologyContentsPanel.getCreateOntologyInfo();
+		}
 		else if ( baseOntologyContentsPanel instanceof OtherOntologyContentsPanel ) {
 			OtherOntologyContentsPanel otherOntologyContentsPanel = (OtherOntologyContentsPanel) baseOntologyContentsPanel;
 			

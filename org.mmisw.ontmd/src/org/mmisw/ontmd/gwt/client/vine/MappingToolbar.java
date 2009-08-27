@@ -61,8 +61,9 @@ public class MappingToolbar extends VerticalPanel {
 		
 		//setWidth("10%");
 
+	    if ( false ) {
 		final PushButton configButton = new PushButton("Config");
-		configButton.setTitle("Allows to configure the available relations (not implemented yet)");
+		configButton.setTitle("Allows to configure the available relations");
 		DOM.setElementAttribute(configButton.getElement(), "id", "my-button-id");
 
 		configButton.addClickListener(new ClickListener() {
@@ -72,7 +73,8 @@ public class MappingToolbar extends VerticalPanel {
 			}
 		});
 		add(configButton);
-
+	    }
+	    
 	    update();
 	
 	}
@@ -98,12 +100,12 @@ public class MappingToolbar extends VerticalPanel {
 			}
 		};
 
-		Main.log("Getting relations ...");
-		Main.ontmdService.getVineRelationInfos(callback);
+		VineMain.getRelationInfos(callback);
 	}
 
 
 	private void _gottenRelationInfos(List<RelationInfo> relInfos) {
+		
 		layout.clear();
 		for ( final RelationInfo relInfo : relInfos ) {
 			String imgUri = GWT.getModuleBaseURL()+ "images/" +relInfo.getIconUri();
