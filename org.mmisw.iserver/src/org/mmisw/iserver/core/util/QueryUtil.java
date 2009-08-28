@@ -42,7 +42,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
- * A placeholder for preliminary functionality at the core.
+ * Some utilities based on SPARQL queries.
  * 
  * @author Carlos Rueda
  */
@@ -50,9 +50,10 @@ public class QueryUtil {
 	
 	/** Query to obtain the individuals in a model */
 	private static final String QUERY_PREFIXES =
-		"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
-		"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
-		"PREFIX owl: <http://www.w3.org/2002/07/owl#> "
+		"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+		"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+		"PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" +
+		"PREFIX skos: <http://www.w3.org/2008/05/skos#>\n"
 	;
 	
 	/** Query to obtain the individuals in a model */
@@ -94,6 +95,21 @@ public class QueryUtil {
 	private static final String PROPS_QUERY_TEMPLATE =
 		"SELECT ?prop ?value " +
 		"WHERE { <{E}> ?prop ?value . }"
+	;
+	
+	/** Query to get the SKOS relations in a model */
+	private static final String SKOS_QUERY = 
+		QUERY_PREFIXES +
+		"SELECT ?left ?rel ?right \n" +
+		"WHERE {    { ?left ?rel ?right  } . \n" +
+		"           {      { ?left skos:broadMatch ?right } \n" +
+		"            UNION { ?left skos:closeMatch ?right } \n" +
+		"            UNION { ?left skos:exactMatch ?right } \n" +
+		"            UNION { ?left skos:narrowMatch ?right } \n" +
+		"            UNION { ?left skos:relatedMatch ?right } \n" +
+		"            UNION { ?left skos:relatedMatch ?right } \n" +
+		"           } .\n" +
+		"}" 
 	;
 	
 	
@@ -168,12 +184,16 @@ public class QueryUtil {
 		// now, determine the type of ontology data to be created:
 		
 		// TODO: the next search for SKOS relations is not complete; it's just an initial idea.
-		boolean containSkos = false;
-		for ( IndividualInfo individualInfo : individuals ) {
-			List<PropValue> indivProps = individualInfo.getProps();
-			for ( PropValue propValue: indivProps ) {
-				if ( propValue.getPropName().matches(".*Match.*") ) {
-					containSkos = true;
+		List<Mapping> mappings = _getSkosRelations(null, ontModel);
+		boolean containSkos = mappings.size() > 0;
+		if ( ! containSkos ) {
+			// try looking into the individuals:
+			for ( IndividualInfo individualInfo : individuals ) {
+				List<PropValue> indivProps = individualInfo.getProps();
+				for ( PropValue propValue: indivProps ) {
+					if ( propValue.getPropName().matches(".*Match.*") ) {
+						containSkos = true;
+					}
 				}
 			}
 		}
@@ -187,7 +207,7 @@ public class QueryUtil {
 		
 		if ( containSkos ) {
 			baseOntologyInfo.setType("mapping");
-			ontologyData = _createMappingOntologyData(baseOntologyData, individuals);
+			ontologyData = _createMappingOntologyData(baseOntologyData, mappings, individuals);
 		}
 		else if ( classes.size() == 1 && individuals.size() > 0 && containDatatype ) {
 			baseOntologyInfo.setType("vocabulary");
@@ -374,11 +394,21 @@ public class QueryUtil {
 
 
 
-	private static OntologyData _createMappingOntologyData(BaseOntologyData baseOntologyData, List<IndividualInfo> individuals) {
+	private static OntologyData _createMappingOntologyData(
+			BaseOntologyData baseOntologyData, 
+			List<Mapping> mappings,
+			List<IndividualInfo> individuals
+	) {
 		
 		Set<String> namespaces = new HashSet<String>();
-		List<Mapping> mappings = new ArrayList<Mapping>();
 
+		// add the namespaces corresponding to the already provided mappings:
+		for ( Mapping mapping : mappings ) {
+			_addNamespace(namespaces, mapping.getLeft(), null);
+			_addNamespace(namespaces, mapping.getRight(), null);
+		}
+
+		// TODO: need to check also the individuals?  Don't think so -- revise
 		for ( IndividualInfo individualInfo : individuals ) {
 			List<PropValue> indivProps = individualInfo.getProps();
 			for ( PropValue propValue: indivProps ) {
@@ -406,10 +436,32 @@ public class QueryUtil {
 		return ontologyData;
 	}
 	
+	/** adds the namespace associated with the uri to the given set.
+	 * It uses the given localName if non-null; otherwhise it gets the local name
+	 * from the uri as the last fragment starting with slash or hash 
+	 */
 	private static void _addNamespace(Set<String> namespaces, String uri, String localName) {
-		int uriLen = uri.length();
-		int locLen = +1 + localName.length();   // +1 to also omit the separator
-		String ns = uriLen > locLen ? uri.substring(0, uriLen - locLen) : "";
+		
+		String ns;
+		
+		if ( localName == null ) {
+			int idx_slash = uri.lastIndexOf('/');
+			int idx_hash = uri.lastIndexOf('#');
+			if ( idx_slash >= 0 || idx_hash >= 0 ) {
+				int idx = Math.max(idx_slash, idx_hash);
+				//localName = uri.substring(idx);
+				ns = uri.substring(0, idx);
+			}
+			else {
+				//localName = "";
+				ns = uri;
+			}
+		}
+		else {
+			int uriLen = uri.length();
+			int locLen = +1 + localName.length();   // +1 to also omit the separator
+			ns = uriLen > locLen ? uri.substring(0, uriLen - locLen) : "";
+		}
 		
 		if ( ns.trim().length() > 0 ) {
 			namespaces.add(ns);
@@ -742,6 +794,64 @@ public class QueryUtil {
 		}
 	}
 
+	
+	/**
+	 * Determines if there are SKOS relations used (as predicates) in the model.
+	 * @param ontModel
+	 */
+	private static List<Mapping> _getSkosRelations(List<Mapping> mappings, OntModel ontModel) {
+		
+		if ( mappings == null ) {
+			mappings = new ArrayList<Mapping>();
+		}
+		
+		Query query = QueryFactory.create(SKOS_QUERY);
+		QueryExecution qe = QueryExecutionFactory.create(query, ontModel);
+		
+		ResultSet results = qe.execSelect();
+		
+		while ( results.hasNext() ) {
+			
+			QuerySolution sol = results.nextSolution();
+			
+			String left = null;
+			String rel = null;
+			String right = null;
+			
+			Iterator<?> varNames = sol.varNames();
+			while ( varNames.hasNext() ) {
+				String varName = String.valueOf(varNames.next());
+				RDFNode rdfNode = sol.get(varName);
+				
+				if ( rdfNode.isAnon() ) {
+					continue;
+				}
+				
+				String varValue = String.valueOf(rdfNode);
+				if ( varValue == null ) {
+					continue;
+				}
+				
+				if ( "left".equals(varName) ) {
+					left = varValue;
+				}
+				else if ( "rel".equals(varName) ) {
+					rel = varValue;
+				}
+				else if ( "right".equals(varName) ) {
+					right = varValue;
+				}
+			}
+			
+			if ( left != null && rel != null && right != null ) {
+				mappings.add(new Mapping(left, rel, right));
+			}
+		}
+		
+		return mappings;
+	}
+
+	
 	/**
 	 * Creates a default model, calls model.read(is, base) and returns the resulting model.
 	 */

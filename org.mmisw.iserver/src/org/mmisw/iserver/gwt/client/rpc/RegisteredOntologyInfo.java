@@ -11,9 +11,6 @@ import java.util.List;
 public class RegisteredOntologyInfo extends BaseOntologyInfo {
 	private static final long serialVersionUID = 1L;
 
-	// used only on the client side
-	private transient char code;
-	
 	private String displayLabel;
 	
 	private String authority;
@@ -46,13 +43,6 @@ public class RegisteredOntologyInfo extends BaseOntologyInfo {
 
 	
 	public RegisteredOntologyInfo() {
-	}
-	
-	public char getCode() {
-		return code;
-	}
-	public void setCode(char code) {
-		this.code = code;
 	}
 	
 

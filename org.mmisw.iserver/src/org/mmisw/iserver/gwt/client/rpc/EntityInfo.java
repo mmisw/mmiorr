@@ -14,9 +14,6 @@ import java.util.List;
 public abstract class EntityInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	// used only on the client side
-	private transient char code;
-	
 	private String uri;
 	private String localName;
 	private String displayLabel;
@@ -25,14 +22,6 @@ public abstract class EntityInfo implements Serializable {
 	private List<PropValue> props;
 	
 	
-	public char getCode() {
-		return code;
-	}
-	public void setCode(char code) {
-		this.code = code;
-	}
-	
-
 	/**
 	 * @return the uri
 	 */

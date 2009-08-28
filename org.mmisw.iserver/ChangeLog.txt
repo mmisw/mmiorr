@@ -3,7 +3,10 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
-
+2009-08-27  1.5.0.alpha11
+	- RegisteredOntologyInfo, EntityInfo: Removed transient field 'code' -- client should use its own mechanism.
+	
+	
 2009-08-26  1.5.0.alpha11
 	VINE: Adding elements to incorporate VINE functionality.
 	- package org.mmisw.iserver.gwt.client.rpc.vine
