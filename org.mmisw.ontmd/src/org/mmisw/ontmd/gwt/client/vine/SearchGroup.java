@@ -144,6 +144,11 @@ public class SearchGroup extends VerticalPanel {
 			}
 			
 			OntologyData ontologyData = ont.getOntologyData();
+			if ( ontologyData == null ) {
+				Main.log("search: data not yet retrieved for " +ont.getUri());
+				continue;
+			}
+			
 			BaseOntologyData baseOntologyData = ontologyData.getBaseOntologyData();
 			
 			Object[] entityArray = {
@@ -154,42 +159,38 @@ public class SearchGroup extends VerticalPanel {
 			
 			for (Object object : entityArray) {
 				
-			
-			@SuppressWarnings("unchecked")
-			List<? extends EntityInfo> entities = (List<? extends EntityInfo>) object;
-			
-			
-			if ( entities == null || entities.size() == 0 ) {
-				continue;
-			}
-			
-			for ( EntityInfo entityInfo : entities ) {
-				boolean add = false;
-				
-				// check localName
-				if ( (useLocalName && entityInfo.getLocalName().toLowerCase().indexOf(text) >= 0) ) {
-					add = true;
+				@SuppressWarnings("unchecked")
+				List<? extends EntityInfo> entities = (List<? extends EntityInfo>) object;
+
+
+				if ( entities == null || entities.size() == 0 ) {
+					continue;
 				}
-				
-				// check props
-				if ( !add && useProps ) {
-					List<PropValue> props = entityInfo.getProps();
-					for ( PropValue pv : props ) {
-						String str = pv.getValueName();
-						add = str != null && str.toLowerCase().indexOf(text) >= 0;
-						if ( add ) {
-							break;
+
+				for ( EntityInfo entityInfo : entities ) {
+					boolean add = false;
+
+					// check localName
+					if ( (useLocalName && entityInfo.getLocalName().toLowerCase().indexOf(text) >= 0) ) {
+						add = true;
+					}
+
+					// check props
+					if ( !add && useProps ) {
+						List<PropValue> props = entityInfo.getProps();
+						for ( PropValue pv : props ) {
+							String str = pv.getValueName();
+							add = str != null && str.toLowerCase().indexOf(text) >= 0;
+							if ( add ) {
+								break;
+							}
 						}
 					}
+
+					if ( add ) {
+						foundEntities.add(entityInfo);
+					}
 				}
-				
-					
-				if ( add ) {
-					entityInfo.setCode(ont.getCode());
-					foundEntities.add(entityInfo);
-				}
-			}
-			
 			} 
 		}
 		return foundEntities;

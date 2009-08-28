@@ -31,16 +31,14 @@ public class VineMain {
 	
 	public static VineImageBundle images = (VineImageBundle) GWT.create(VineImageBundle.class);
 
-	
-	// cached list of all ontologies
-	private static List<RegisteredOntologyInfo> allUris = new ArrayList<RegisteredOntologyInfo>();
 
+	// cached list of all ontologies
 	// Map: URI -> RegisteredOntologyInfo
 	private static final Map<String, RegisteredOntologyInfo> allUrisMap = new LinkedHashMap<String,RegisteredOntologyInfo>();
 	
 	// selected ontologies to work on:
-	// Map: code -> RegisteredOntologyInfo
-	private static final Map<String, RegisteredOntologyInfo> workingUris = new LinkedHashMap<String,RegisteredOntologyInfo>();
+	// the code for the i-th entry is code = 'A' + i
+	private static final List<String> workingUris = new ArrayList<String>();
 	
 	
 	private static List<RelationInfo> relInfos;
@@ -49,31 +47,86 @@ public class VineMain {
 	
 	
 	public static List<RegisteredOntologyInfo> getAllUris() {
-		return allUris;
+		return new ArrayList<RegisteredOntologyInfo>(allUrisMap.values());
+	}
+
+	public static RegisteredOntologyInfo getRegisteredOntologyInfo(String uri) {
+		return allUrisMap.get(uri);
 	}
 
 	public static void setAllUris(List<RegisteredOntologyInfo> allUris) {
-		VineMain.allUris = allUris;
 		allUrisMap.clear();
 		for ( RegisteredOntologyInfo roi : allUris ) {
 			allUrisMap.put(roi.getUri(), roi);
 		}
 	}
 
-	public static Map<String, RegisteredOntologyInfo> getWorkingUris() {
+	public static List<String>  getWorkingUris() {
 		return workingUris;
 	}
+	
+	/**
+	 * Gets the "coded" style for the given term.
+	 * @param termUri
+	 * @return
+	 */
+	static String getCodedTerm(String termUri) {
+		int idx = VineMain.getWorkingUriIndex(termUri);
+		if ( idx >= 0 ) {
+			String namespace = VineMain.getWorkingUris().get(idx);
+			char code = (char) ('A' + idx);
+			return code+ ":" +termUri.substring(namespace.length());
+		}
+		return termUri;
+	}
 
-	public static void addWorkingUri(RegisteredOntologyInfo uri) {
+	/**
+	 * Gets the "expanded" (not coded) style for the given term.
+	 * @param termUri
+	 * @return
+	 */
+	public static String getExpandedTerm(String termUri) {
+		
+		String[] toks = termUri.split(":", 2);
+		if ( toks.length == 2 && toks[0].length() == 1 ) {
+			char code = toks[0].charAt(0);
+			int idx = code - 'A';
+			String namespace = VineMain.getWorkingUris().get(idx);
+			return namespace + toks[1];
+		}
+		else {
+			return termUri;
+		}
+	}
+
+
+
+	/**
+	 * Adds a working URI.
+	 * @param uri
+	 * @return The corresponding code.
+	 */
+	public static char addWorkingUri(String uri) {
 		char code = (char) ((int) 'A' + VineMain.workingUris.size());
-		uri.setCode(code);
-		VineMain.workingUris.put(""+ code, uri);
+		VineMain.workingUris.add(uri);
+		return code;
 	}
 
-	public static boolean containsWorkingUri(RegisteredOntologyInfo uri) {
-		return workingUris.get("" +uri.getCode()) != null;
+	public static boolean containsWorkingUri(RegisteredOntologyInfo roi) {
+		return workingUris.indexOf(roi.getUri()) >= 0 ;
 	}
 
+	/**
+	 * Called to notify the load of an ontology. Note that even if it was just to load
+	 * the contents of an entry already in the list of all ontologies, this should
+	 * be called to use the returned object reference (which may be different after the
+	 * RPC call).
+	 * 
+	 * @param roi
+	 */
+	public static void ontologySucessfullyLoaded(RegisteredOntologyInfo roi) {
+		allUrisMap.put(roi.getUri(), roi);
+	}
 	
 	
 	public static Map<String, RelationInfo> getRelInfoMap() {
@@ -119,15 +172,20 @@ public class VineMain {
 		if ( namespaces != null ) {
 			for ( String namespace : namespaces ) {
 				Main.log("   namespace: " +namespace);
-				RegisteredOntologyInfo roi = allUrisMap.get(namespace);
-				if ( roi != null ) {
-					addWorkingUri(roi);
-				}
-				else {
-					Main.log("   namespace: " +namespace+ " NOT FOUND");
-				}
+				addWorkingUri(namespace);
 			}
 		}
+	}
+
+	public static int getWorkingUriIndex(String uri) {
+		int idx = 0;
+		for ( String workingUri : workingUris ) {
+			if ( uri.indexOf(workingUri) == 0 ) {
+				return idx;
+			}
+			idx++;
+		}
+		return -1;
 	}
 
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.vine.util.TLabel;
 
 import com.google.gwt.user.client.DOM;
@@ -54,11 +55,18 @@ public class SearchVocabularySelection extends VerticalPanel {
 		int count = buttons.getWidgetCount();
 		assert count == VineMain.getWorkingUris().size();
 		
-		List<RegisteredOntologyInfo> workingUris = new ArrayList<RegisteredOntologyInfo>(VineMain.getWorkingUris().values());
-		
 		for ( int i = 0; i < count; i++ ) {
 			if ( ((ToggleButton) buttons.getWidget(i)).isDown() ) {
-				selectedUris.add( workingUris.get(i) );
+				
+				String uri = VineMain.getWorkingUris().get(i);
+				RegisteredOntologyInfo roi = VineMain.getRegisteredOntologyInfo(uri);
+				if ( roi != null ) {
+					selectedUris.add(roi);
+				}
+				else {
+					char code = (char) ('A' + i);
+					Main.log("Button " +code+ " selected but not registed uri: " +uri);
+				}
 			}
 		}
 		return selectedUris;
@@ -71,19 +79,27 @@ public class SearchVocabularySelection extends VerticalPanel {
 	void setToggleButtons(int searchIndex) {
 		buttons.clear();
 		int idx = 0;
-		for ( RegisteredOntologyInfo s : VineMain.getWorkingUris().values() ) {
-			char id = s.getCode();
+		for ( String uri : VineMain.getWorkingUris() ) {
+			char id = (char) ('A' + idx);
 			final ToggleButton sel = new ToggleButton("" +id);
 			DOM.setElementAttribute(sel.getElement(), "id", "my-button-id");
-			sel.setTitle(s.getDisplayLabel());
-			sel.addClickListener(new ClickListener() {
-				public void onClick(Widget sender) {
-					// TODO update some variable indicating the selected ontologies for search
-				}
-			});
 			buttons.add(sel);
-			if ( searchIndex == idx ) {
-				sel.setDown(true);
+			
+			RegisteredOntologyInfo s = VineMain.getRegisteredOntologyInfo(uri);
+			if ( s != null ) {
+				sel.setTitle(s.getDisplayLabel());
+				sel.addClickListener(new ClickListener() {
+					public void onClick(Widget sender) {
+						// TODO update some variable indicating the selected ontologies for search
+					}
+				});
+				if ( searchIndex == idx ) {
+					sel.setDown(true);
+				}
+			}
+			else {
+				sel.setEnabled(false);
+				sel.setTitle("This is not a registered ontology");
 			}
 			
 			idx++;

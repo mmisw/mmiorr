@@ -87,23 +87,27 @@ public class OntologySelection extends VerticalPanel {
 		
 		layout.add(vp);
 		
-		for ( RegisteredOntologyInfo s : VineMain.getWorkingUris().values() ) {
-			vp.add(new HTML("<b>" +s.getCode()+ "</b>: " + s.getUri() + "/"));
+		int nn = 0;
+		for ( String uri : VineMain.getWorkingUris() ) {
+			char code = (char) ((int) 'A' + (nn++));
+			RegisteredOntologyInfo ontologyInfo = VineMain.getRegisteredOntologyInfo(uri);
+			_addWorkingUriHtml(code, uri, ontologyInfo.getDisplayLabel());
 		}
 		
 	}
 	
-	void ontologySucessfullyLoaded(RegisteredOntologyInfo ontologyInfo) {
-		char code = ontologyInfo.getCode();
+	void ontologySucessfullyLoaded(char code, RegisteredOntologyInfo ontologyInfo) {
 		String uri = ontologyInfo.getUri();
-		
-		vp.add(new HTML("<b>" +code+ "</b>: " 
-				+ "<a target=\"_blank\" href=\"" +uri+ "\">" +uri+ "/</a>" 
-				+ " -- "
-				+ "<i>" +ontologyInfo.getDisplayLabel()+ "</i>"
-		));
+		_addWorkingUriHtml(code, uri, ontologyInfo.getDisplayLabel());
 	}
 
+	private void _addWorkingUriHtml(char code, String uri, String label) {
+		vp.add(new HTML("<b>" +code+ "</b>: " 
+				+ "<a target=\"_blank\" href=\"" +uri+ "\">" +uri+ "</a>" 
+				+ " -- "
+				+ "<i>" +label+ "</i>"
+		));
+	}
 	
 	/**
 	 * Allows the user to choose a vocabulary that is not yet a working one, and

@@ -177,7 +177,9 @@ public class SearchResultsForm extends VerticalPanel {
 			textBox = new TextBox();
 			textBox.setStylePrimaryName("SearchResultsTable-TextBox");
 			
-			String str = entity.getCode()+ ":" +entity.getLocalName();
+//			String str = entity.getCode()+ ":" +entity.getLocalName();
+			String str = VineMain.getCodedTerm(entity.getUri());
+			
 			textBox.setText(str);
 			textBox.setReadOnly(true);
 //			textBox.
@@ -250,7 +252,8 @@ public class SearchResultsForm extends VerticalPanel {
 		}
 
 		public String getKey() {
-			return entity.getCode()+ ":" +entity.getLocalName()+ ".";
+//			return entity.getCode()+ ":" +entity.getLocalName()+ ".";
+			return VineMain.getCodedTerm(entity.getUri());
 		}
 
 		public void setSelected(boolean selected) {

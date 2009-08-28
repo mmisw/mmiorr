@@ -4,11 +4,15 @@ import java.util.List;
 import java.util.Set;
 
 import org.mmisw.iserver.gwt.client.rpc.MappingOntologyData;
+import org.mmisw.iserver.gwt.client.rpc.OntologyData;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.vine.Mapping;
 import org.mmisw.ontmd.gwt.client.Main;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -72,6 +76,14 @@ public class VineEditorPanel extends VerticalPanel {
 
 	    layout.add(mappingsPanel);
 
+	    // prepare command to load data of working ontologies
+	    // (in particular, this will enable the search)
+		DeferredCommand.addCommand(new Command() {
+			public void execute() {
+				_loadDataOfWorkingOntologiesForMapping(0);
+			}
+		});
+
 	}
 
 	public List<Mapping> getMappings() {
@@ -120,10 +132,16 @@ public class VineEditorPanel extends VerticalPanel {
 
 			public void onSuccess(RegisteredOntologyInfo ontologyInfo) {
 				popup.setWidget(new HTML("Load complete"));
-				Main.log("getEntities: " +ontologyInfo.getUri()+ " completed.");
 				
-				VineMain.addWorkingUri(ontologyInfo);
-				ontologySelection.ontologySucessfullyLoaded(ontologyInfo);
+				Main.log("getOntologyContents: " +ontologyInfo.getUri()+ " completed.");
+				
+				if ( ontologyInfo.getOntologyData() == null ) {
+					Main.log("getOntologyContents: unexpected: data not retrieved");
+				}
+				
+				char code = VineMain.addWorkingUri(ontologyInfo.getUri());
+				VineMain.ontologySucessfullyLoaded(ontologyInfo);
+				ontologySelection.ontologySucessfullyLoaded(code, ontologyInfo);
 				
 				if ( mapperPage != null ) {
 					mapperPage.notifyWorkingOntologyAdded(ontologyInfo);
@@ -133,8 +151,85 @@ public class VineEditorPanel extends VerticalPanel {
 			}
 		};
 		
-		Main.log("getEntities: " +ontologyInfo.getUri()+ " starting");
+		Main.log("getOntologyContents: " +ontologyInfo.getUri()+ " starting");
 		Main.ontmdService.getOntologyContents(ontologyInfo, callback);
 	}
+
+	
+	/**
+	 * Loads the data for the working ontologies that do not have data yet.
+	 * This is a recursive routine used to traverse the list of working
+	 * ontologies with a RPC call for each entry needing the retrieval of data.
+	 * 
+	 * @param currentIdx the current index to examine.
+	 */
+	private void _loadDataOfWorkingOntologiesForMapping(final int currentIdx) {
+		List<String> uris = VineMain.getWorkingUris();
+		if ( uris.size() == 0 || currentIdx >= uris.size() ) {
+			return;
+		}
+		
+		String uri = uris.get(currentIdx);
+		RegisteredOntologyInfo ontologyInfo = VineMain.getRegisteredOntologyInfo(uri);
+		
+		if ( ontologyInfo.getError() != null ) {
+			// continue to next entry:
+			_loadDataOfWorkingOntologiesForMapping(currentIdx + 1);
+			return;
+		}
+
+		OntologyData ontologyData = ontologyInfo.getOntologyData();
+		if ( ontologyData != null ) {
+			// this entry already has data; continue to next entry:
+			_loadDataOfWorkingOntologiesForMapping(currentIdx + 1);
+			return;
+		}
+		
+		// this entry needs data.
+		
+		Main.log("_loadDataOfWorkingOntologiesForMapping: " +ontologyInfo.getUri()+ " starting");
+		AsyncCallback<RegisteredOntologyInfo> callback = new AsyncCallback<RegisteredOntologyInfo>() {
+
+			public void onFailure(Throwable thr) {
+				String error = thr.getClass().getName()+ ": " +thr.getMessage();
+				while ( (thr = thr.getCause()) != null ) {
+					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
+				}
+				Window.alert(error);
+			}
+
+			public void onSuccess(RegisteredOntologyInfo ontologyInfo) {
+				Main.log("_loadDataOfWorkingOntologiesForMapping: " +ontologyInfo.getUri()+ " completed.");
+				
+				if ( ontologyInfo.getOntologyData() == null ) {
+					Main.log("_loadDataOfWorkingOntologiesForMapping: unexpected: data not retrieved");
+				}
+				
+				char code = VineMain.addWorkingUri(ontologyInfo.getUri());
+				VineMain.ontologySucessfullyLoaded(ontologyInfo);
+				
+				if ( ontSel != null ) {
+					ontSel.ontologySucessfullyLoaded(code, ontologyInfo);
+				}
+				
+				if ( mapperPage != null ) {
+					mapperPage.notifyWorkingOntologyAdded(ontologyInfo);
+				}
+				
+				// continue with next entry:
+				DeferredCommand.addCommand(new Command() {
+					public void execute() {
+						_loadDataOfWorkingOntologiesForMapping(currentIdx + 1);
+					}
+				});
+
+			}
+			
+		};
+		Main.ontmdService.getOntologyContents(ontologyInfo, callback );
+
+
+	}
+
 
 }

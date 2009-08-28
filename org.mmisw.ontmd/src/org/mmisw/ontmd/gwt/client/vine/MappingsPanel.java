@@ -75,7 +75,11 @@ public class MappingsPanel extends FocusPanel {
 				public void onSuccess(List<RelationInfo> result) {
 					for ( Mapping mapping : mappings ) {
 						RelationInfo relInfo = VineMain.getRelInfoMap().get(mapping.getRelation());
-						addMapping(mapping.getLeft(), relInfo, mapping.getRight());
+						
+						String codedLeft = VineMain.getCodedTerm(mapping.getLeft());
+						String codedRight = VineMain.getCodedTerm(mapping.getRight());
+						
+						addMapping(codedLeft, relInfo, codedRight);
 					}
 				}
 
@@ -83,8 +87,8 @@ public class MappingsPanel extends FocusPanel {
 			VineMain.getRelationInfos(callback);
 		}
 	}
-
-
+	
+	
 	/**
 	 * Adds a new mapping to the table.
 	 * @param leftKey

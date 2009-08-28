@@ -111,6 +111,8 @@ public class DataPanel extends VerticalPanel {
 		add(vp);
 	}
 	
+
+	
 	
 	public void setReadOnly(boolean readOnly) {
 		if ( this.readOnly == readOnly ) {

@@ -4,6 +4,10 @@ $Id$
 
 ChangeLog
 
+2009-08-27  1.5.0.alpha14
+	VINE: More preparations
+	
+	 
 2009-08-26  1.5.0.alpha14
 	Incorporated VINE functionality into this module from the org.mmisw.vine project (which
 	will be removed eventually).
