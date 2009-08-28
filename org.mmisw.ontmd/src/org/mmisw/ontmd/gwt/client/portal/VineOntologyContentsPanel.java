@@ -1,5 +1,6 @@
 package org.mmisw.ontmd.gwt.client.portal;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
@@ -43,7 +44,15 @@ public class VineOntologyContentsPanel extends BaseOntologyContentsPanel {
 	public DataCreationInfo getCreateOntologyInfo() {
 		MappingDataCreationInfo mappingDataCreationInfo = new MappingDataCreationInfo();
 		
-		mappingDataCreationInfo.setMappings(vineEditorPanel.getMappings());
+		List<Mapping> expandedMappings = new ArrayList<Mapping>();
+		
+		for ( Mapping mapping : vineEditorPanel.getMappings() ) {
+			String expandedLeft = VineMain.getExpandedTerm(mapping.getLeft());
+			String expandedRight = VineMain.getExpandedTerm(mapping.getRight());
+			
+			expandedMappings.add(new Mapping(expandedLeft, mapping.getRelation(), expandedRight));
+		}
+		mappingDataCreationInfo.setMappings(expandedMappings);
 
 		return mappingDataCreationInfo;
 	}
