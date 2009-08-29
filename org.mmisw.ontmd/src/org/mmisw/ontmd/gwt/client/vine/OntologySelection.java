@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mmisw.ontmd.gwt.client.vine.util.TLabel;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.ontmd.gwt.client.vine.util.TLabel;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
@@ -34,7 +34,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class OntologySelection extends VerticalPanel {
 	
 	private  VineEditorPanel mainPanel;
-	private CellPanel vp = new VerticalPanel();
+	private final CellPanel workingUrisPanel = new VerticalPanel();
 	
 	OntologySelection(VineEditorPanel mainPanel) {
 		super();
@@ -85,27 +85,36 @@ public class OntologySelection extends VerticalPanel {
 			hp.add(addButton);
 		}
 		
-		layout.add(vp);
+		layout.add(workingUrisPanel);
 		
+		refreshListWorkingUris();
+	}
+	
+	void refreshListWorkingUris() {
+		workingUrisPanel.clear();
 		int nn = 0;
 		for ( String uri : VineMain.getWorkingUris() ) {
 			char code = (char) ((int) 'A' + (nn++));
 			RegisteredOntologyInfo ontologyInfo = VineMain.getRegisteredOntologyInfo(uri);
-			_addWorkingUriHtml(code, uri, ontologyInfo.getDisplayLabel());
+			_addWorkingUriHtml(code, ontologyInfo, uri);
 		}
-		
 	}
 	
-	void ontologySucessfullyLoaded(char code, RegisteredOntologyInfo ontologyInfo) {
-		String uri = ontologyInfo.getUri();
-		_addWorkingUriHtml(code, uri, ontologyInfo.getDisplayLabel());
+	private void _addWorkingUriHtml(char code, RegisteredOntologyInfo ontologyInfo, String uri) {
+		if ( ontologyInfo != null ) {
+			_addWorkingUriHtmlRegistered(code, ontologyInfo);
+		}
+		else {
+			workingUrisPanel.add(new HTML("<b>" +code+ "</b>: " +uri+ "</a>"));
+		}
 	}
-
-	private void _addWorkingUriHtml(char code, String uri, String label) {
-		vp.add(new HTML("<b>" +code+ "</b>: " 
+	
+	private void _addWorkingUriHtmlRegistered(char code, RegisteredOntologyInfo ontologyInfo) {
+		String uri = ontologyInfo.getUri();
+		String label = ontologyInfo.getDisplayLabel(); 
+		workingUrisPanel.add(new HTML("<b>" +code+ "</b>: " 
 				+ "<a target=\"_blank\" href=\"" +uri+ "\">" +uri+ "</a>" 
-				+ " -- "
-				+ "<i>" +label+ "</i>"
+				+ " -- <i>" +label+ "</i>"
 		));
 	}
 	

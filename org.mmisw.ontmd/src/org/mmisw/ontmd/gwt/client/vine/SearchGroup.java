@@ -152,9 +152,15 @@ public class SearchGroup extends VerticalPanel {
 			BaseOntologyData baseOntologyData = ontologyData.getBaseOntologyData();
 			
 			Object[] entityArray = {
-					baseOntologyData.getClasses(),
-					baseOntologyData.getProperties(),
+					
+					// Only individuals ...
 					baseOntologyData.getIndividuals(),
+					
+					// ... TODO determine whether classes and properties should be included and how.
+					// For now, omitting classes and properties
+					//baseOntologyData.getClasses(),
+					//baseOntologyData.getProperties(),
+					
 			};
 			
 			for (Object object : entityArray) {

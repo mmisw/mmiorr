@@ -9,7 +9,8 @@ import org.mmisw.ontmd.gwt.client.vine.util.SelectAllNonePanel;
 import org.mmisw.ontmd.gwt.client.vine.util.TLabel;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DisclosureEvent;
@@ -35,9 +36,22 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 public class MappingsPanel extends FocusPanel {
 	
 	private boolean readOnly;
-	private FlexTable flexPanel = new FlexTable();
+	private FlexTable flexPanel;
 	
-	private List<Mapping> mappings = new ArrayList<Mapping>();
+	
+	private static class MappingAssoc {
+		Mapping mapping;
+		CheckBox cb;
+		MappingAssoc(Mapping mapping, boolean readOnly) {
+			super();
+			this.mapping = mapping;
+			if ( ! readOnly ) {
+				cb = new CheckBox();
+			}
+		}
+	}
+	
+	private final List<MappingAssoc> mappingAssocs = new ArrayList<MappingAssoc>();
 	
 	/**
 	 * 
@@ -46,6 +60,13 @@ public class MappingsPanel extends FocusPanel {
 		super();
 		this.readOnly = readOnly;
 		
+		_prepareFlexPanel();
+	}
+	
+	private void _prepareFlexPanel() {
+		this.clear();
+		
+		flexPanel = new FlexTable();
 //		flexPanel.setBorderWidth(1);
 		
 		add(flexPanel);
@@ -58,14 +79,38 @@ public class MappingsPanel extends FocusPanel {
 	}
 
 	
+	private void _deleteRows() {
+		final List<Mapping> newMappings = new ArrayList<Mapping>();
+		for ( int i = 0, cnt = mappingAssocs.size(); i< cnt; i++ ) {
+			MappingAssoc mappingAssoc = mappingAssocs.get(i);
+			CheckBox cb = mappingAssoc.cb;
+			if ( ! cb.isChecked() ) {
+				newMappings.add(mappingAssoc.mapping);
+			}
+		}
+		if ( newMappings.size() < mappingAssocs.size() ) {
+			DeferredCommand.addCommand(new Command() {
+				public void execute() {
+					_prepareFlexPanel();
+					setMappings(newMappings);
+				}
+			});
+		}
+	}
+	
 	public List<Mapping> getMappings() {
-		return mappings;
+		final List<Mapping> newMappings = new ArrayList<Mapping>();
+		for ( int i = 0, cnt = mappingAssocs.size(); i< cnt; i++ ) {
+			MappingAssoc mappingAssoc = mappingAssocs.get(i);
+			newMappings.add(mappingAssoc.mapping);
+		}
+		return newMappings;
 	}
 
 
-	public void setMappings(final List<Mapping> mappings) {
-		this.mappings.clear();
-		if ( mappings != null ) {
+	public void setMappings(final List<Mapping> newMappings) {
+		this.mappingAssocs.clear();
+		if ( newMappings != null ) {
 			AsyncCallback<List<RelationInfo>> callback = new AsyncCallback<List<RelationInfo>>() {
 
 				public void onFailure(Throwable caught) {
@@ -73,7 +118,7 @@ public class MappingsPanel extends FocusPanel {
 				}
 
 				public void onSuccess(List<RelationInfo> result) {
-					for ( Mapping mapping : mappings ) {
+					for ( Mapping mapping : newMappings ) {
 						RelationInfo relInfo = VineMain.getRelInfoMap().get(mapping.getRelation());
 						
 						String codedLeft = VineMain.getCodedTerm(mapping.getLeft());
@@ -96,7 +141,7 @@ public class MappingsPanel extends FocusPanel {
 	 * @param rightKey
 	 */
 	public void addMapping(String leftKey, RelationInfo relInfo, String rightKey) {
-		int row = mappings.size();
+		int row = mappingAssocs.size();
 		if ( row == 0 ) {
 			flexPanel.clear();
 			_setHeader(0);
@@ -117,24 +162,30 @@ public class MappingsPanel extends FocusPanel {
 			mapping = new Mapping(leftKey, null, rightKey);
 		}
 		
-		
-		mappings.add(mapping);
+		MappingAssoc ma = new MappingAssoc(mapping, readOnly);
+		mappingAssocs.add(ma);
 		
 		Widget left = new Label(leftKey);
 		Widget right = new Label(rightKey);
 
-		_addRow(left, center, right, "MappingsTable-row");
+		_addRow(ma.cb, left, center, right, "MappingsTable-row");
 	}
 	
 	private void _setHeader(int row) {
 		flexPanel.getRowFormatter().setStyleName(row, "MappingsTable-header");
 		
 		if ( !readOnly ) {
-			SelectAllNonePanel selAllNonePanel = new SelectAllNonePanel() {
+			SelectAllNonePanel selAllNonePanel = new SelectAllNonePanel("Delete") {
 				@Override
 				protected void updateAllNone(boolean selected) {
-					// TODO Auto-generated method stub
-					Window.alert("sorry, not implemented yet");
+					for ( MappingAssoc ma : mappingAssocs ) {
+						ma.cb.setChecked(selected);
+					}
+				}
+				
+				@Override
+				protected void clientButtonClicked(String str) {
+					_deleteRows();
 				}
 			};
 			flexPanel.setWidget(row, 0, selAllNonePanel);
@@ -175,7 +226,7 @@ public class MappingsPanel extends FocusPanel {
 //		thisFp.setText(row, 3, ".");
 	}
 
-	private void _addRow(Widget left, Widget center, Widget right, String style) {
+	private void _addRow(CheckBox cb, Widget left, Widget center, Widget right, String style) {
 		final int row = flexPanel.getRowCount();
 		FlexCellFormatter cf = flexPanel.getFlexCellFormatter();
 		flexPanel.getRowFormatter().setStyleName(row, style);
@@ -183,26 +234,28 @@ public class MappingsPanel extends FocusPanel {
 		
 		HorizontalPanel hp = new HorizontalPanel();
 		
-		if ( ! readOnly ) {
-			hp.add(new CheckBox());
+		if ( cb != null ) {
+			hp.add(cb);
 		}
 		
 //		hp.add(Main.images.metadata().createImage());
 //		hp.add(Main.images.delete().createImage());
 		
-		DisclosurePanel disclosure = new DisclosurePanel("");
-		disclosure.addEventHandler(new DisclosureHandler() {
-			public void onClose(DisclosureEvent event) {
-				flexPanel.setText(row + 1, 0, "");
-			}
-
-			public void onOpen(DisclosureEvent event) {
-				flexPanel.setWidget(row + 1, 0, disclosureOpen());	
-			}
-		});
-
-		hp.add(disclosure);
-		
+		if ( false ) {
+			// TODO proper dispatch of disclosure for a mapping
+			DisclosurePanel disclosure = new DisclosurePanel("");
+			disclosure.addEventHandler(new DisclosureHandler() {
+				public void onClose(DisclosureEvent event) {
+					flexPanel.setText(row + 1, 0, "");
+				}
+	
+				public void onOpen(DisclosureEvent event) {
+					flexPanel.setWidget(row + 1, 0, disclosureOpen());	
+				}
+			});
+	
+			hp.add(disclosure);
+		}
 		
 		flexPanel.setWidget(row, 0,
 				new FocusableRowElement(row, hp)

@@ -4,6 +4,23 @@ $Id$
 
 ChangeLog
 
+2009-08-28  1.5.0.alpha14
+	VINE: 
+	- Integration and basic functionality (including creation/registration of new mapping
+	  ontology and update/registration of new version of mapping ontology) implemented.
+	- Selection (all, none) and removal of selected mappings implemented, so basic editing of mappings included
+	- disabled the disclosure panel associated to each mapping (it's not implemented yet).
+	
+	- SearchGroup: only *individuals* are searched (disabled classes and properties)
+	- TODO: for selection of working ontologies (OntologySelection), only include appropriate vocabularies,
+	  in particular, do not include other mappings. (check property Omv.usedOntologyEngineeringTool, for example).
+
+	Other changes:
+	- Because of new version param in Server.getOntologyContents(RegisteredOntologyInfo registeredOntologyInfo, String version),
+	  updated the various call with version==null.
+	
+	
+
 2009-08-27  1.5.0.alpha14
 	VINE: More preparations
 	

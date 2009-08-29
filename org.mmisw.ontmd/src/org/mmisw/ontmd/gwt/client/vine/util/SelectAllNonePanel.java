@@ -8,16 +8,20 @@ import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * A utility Panel providing "All" and "None" (and perhaps others later) buttons.
+ * A utility Panel providing "All" and "None", and provided buttons.
  * 
  * @author Carlos Rueda
  */
-public abstract class SelectAllNonePanel extends HorizontalPanel {
+public class SelectAllNonePanel extends HorizontalPanel {
 	
-	public SelectAllNonePanel() {
+	/**
+	 * @param btns string for additional buttons
+	 */
+	public SelectAllNonePanel(String... btns) {
 		super();
 		
 		Label label = new Label("Select: ");
+		add(label);
 		
 		PushButton all = new PushButton("All", new ClickListener() {
 			public void onClick(Widget sender) {
@@ -25,19 +29,33 @@ public abstract class SelectAllNonePanel extends HorizontalPanel {
 			}
 		});
 		DOM.setElementAttribute(all.getElement(), "id", "my-button-id");
+		add(all);
+
 		PushButton none = new PushButton("None", new ClickListener() {
 			public void onClick(Widget sender) {
 				updateAllNone(false);
 			}
 		});
 		DOM.setElementAttribute(none.getElement(), "id", "my-button-id");
-		
-		add(label);
-		add(all);
 		add(none);
+
+		for ( final String str : btns ) {
+			PushButton pb = new PushButton(str, new ClickListener() {
+				public void onClick(Widget sender) {
+					clientButtonClicked(str);
+				}
+			});
+			DOM.setElementAttribute(pb.getElement(), "id", "my-button-id");
+			add(pb);
+		}
 	}
 
 	/** Called when one of the buttons is clicked to notified the selection desored */
-	protected abstract void updateAllNone(boolean selected);
+	protected void updateAllNone(boolean selected) {
+	}
+	
+	/** Called when one of the client buttons is clicked */
+	protected void clientButtonClicked(String str) {
+	}
 	
 }

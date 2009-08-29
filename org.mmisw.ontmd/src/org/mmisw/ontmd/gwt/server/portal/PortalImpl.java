@@ -102,8 +102,8 @@ public class PortalImpl  {
 	}
 	
 	
-	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo ontologyInfo) {
-		return iserver.getOntologyContents(ontologyInfo);
+	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo ontologyInfo, String version) {
+		return iserver.getOntologyContents(ontologyInfo, version);
 	}
 
 	public CreateOntologyResult createOntology(CreateOntologyInfo createOntologyInfo) {

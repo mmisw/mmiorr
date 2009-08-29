@@ -78,7 +78,7 @@ public interface OntMdServiceAsync {
 
 	void getOntologyInfo(String ontologyUri, AsyncCallback<RegisteredOntologyInfo> callback);
 	
-	void getOntologyContents(RegisteredOntologyInfo ontologyInfo, AsyncCallback<RegisteredOntologyInfo> callback);
+	void getOntologyContents(RegisteredOntologyInfo ontologyInfo, String version, AsyncCallback<RegisteredOntologyInfo> callback);
 	
 	
 	void createOntology(CreateOntologyInfo createOntologyInfo, AsyncCallback<CreateOntologyResult> callback);

@@ -1395,8 +1395,8 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		return portal.getMetadataBaseInfo(includeVersion);
 	}
 
-	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo ontologyInfo) {
-		return portal.getOntologyContents(ontologyInfo);
+	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo ontologyInfo, String version) {
+		return portal.getOntologyContents(ontologyInfo, version);
 	}
 
 	

@@ -299,7 +299,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 
 		metadataPanel.showProgressMessage("Loading contents. Please wait...");
 		Main.log("getOntologyContents: ontologyUri = " +ontologyInfo.getUri());
-		Main.ontmdService.getOntologyContents(ontologyInfo, callback);
+		Main.ontmdService.getOntologyContents(ontologyInfo, null, callback);
 	}
 
 

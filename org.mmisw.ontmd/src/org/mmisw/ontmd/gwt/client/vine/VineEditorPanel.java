@@ -139,9 +139,10 @@ public class VineEditorPanel extends VerticalPanel {
 					Main.log("getOntologyContents: unexpected: data not retrieved");
 				}
 				
-				char code = VineMain.addWorkingUri(ontologyInfo.getUri());
 				VineMain.ontologySucessfullyLoaded(ontologyInfo);
-				ontologySelection.ontologySucessfullyLoaded(code, ontologyInfo);
+				
+				VineMain.addWorkingUri(ontologyInfo.getUri());
+				ontologySelection.refreshListWorkingUris();
 				
 				if ( mapperPage != null ) {
 					mapperPage.notifyWorkingOntologyAdded(ontologyInfo);
@@ -152,7 +153,7 @@ public class VineEditorPanel extends VerticalPanel {
 		};
 		
 		Main.log("getOntologyContents: " +ontologyInfo.getUri()+ " starting");
-		Main.ontmdService.getOntologyContents(ontologyInfo, callback);
+		Main.ontmdService.getOntologyContents(ontologyInfo, null, callback);
 	}
 
 	
@@ -166,12 +167,27 @@ public class VineEditorPanel extends VerticalPanel {
 	private void _loadDataOfWorkingOntologiesForMapping(final int currentIdx) {
 		List<String> uris = VineMain.getWorkingUris();
 		if ( uris.size() == 0 || currentIdx >= uris.size() ) {
+			// we re done.
+			if ( currentIdx > 0 ) {
+				// if we did something, refresh the OntologySelection:
+				if ( ontSel != null ) {
+					ontSel.refreshListWorkingUris();
+				}
+			}
 			return;
 		}
+	
+		final String log_prefix = "_loadDataOfWorkingOntologiesForMapping(" +currentIdx+ "): ";
 		
 		String uri = uris.get(currentIdx);
 		RegisteredOntologyInfo ontologyInfo = VineMain.getRegisteredOntologyInfo(uri);
 		
+		if ( ontologyInfo == null ) {
+			// Not a registered ontology; continue to next entry:
+			_loadDataOfWorkingOntologiesForMapping(currentIdx + 1);
+			return;
+		}
+
 		if ( ontologyInfo.getError() != null ) {
 			// continue to next entry:
 			_loadDataOfWorkingOntologiesForMapping(currentIdx + 1);
@@ -187,7 +203,7 @@ public class VineEditorPanel extends VerticalPanel {
 		
 		// this entry needs data.
 		
-		Main.log("_loadDataOfWorkingOntologiesForMapping: " +ontologyInfo.getUri()+ " starting");
+		Main.log(log_prefix +ontologyInfo.getUri()+ " starting");
 		AsyncCallback<RegisteredOntologyInfo> callback = new AsyncCallback<RegisteredOntologyInfo>() {
 
 			public void onFailure(Throwable thr) {
@@ -195,22 +211,19 @@ public class VineEditorPanel extends VerticalPanel {
 				while ( (thr = thr.getCause()) != null ) {
 					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
 				}
+				Main.log(log_prefix + " ERROR: " +error);
 				Window.alert(error);
 			}
 
 			public void onSuccess(RegisteredOntologyInfo ontologyInfo) {
-				Main.log("_loadDataOfWorkingOntologiesForMapping: " +ontologyInfo.getUri()+ " completed.");
+				Main.log(log_prefix +ontologyInfo.getUri()+ " completed.");
 				
 				if ( ontologyInfo.getOntologyData() == null ) {
-					Main.log("_loadDataOfWorkingOntologiesForMapping: unexpected: data not retrieved");
+					Main.log("  UNEXPECTED: data not retrieved");
 				}
 				
-				char code = VineMain.addWorkingUri(ontologyInfo.getUri());
 				VineMain.ontologySucessfullyLoaded(ontologyInfo);
-				
-				if ( ontSel != null ) {
-					ontSel.ontologySucessfullyLoaded(code, ontologyInfo);
-				}
+				VineMain.addWorkingUri(ontologyInfo.getUri());
 				
 				if ( mapperPage != null ) {
 					mapperPage.notifyWorkingOntologyAdded(ontologyInfo);
@@ -226,7 +239,7 @@ public class VineEditorPanel extends VerticalPanel {
 			}
 			
 		};
-		Main.ontmdService.getOntologyContents(ontologyInfo, callback );
+		Main.ontmdService.getOntologyContents(ontologyInfo, null, callback );
 
 
 	}

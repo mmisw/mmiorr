@@ -126,7 +126,7 @@ public interface OntMdService extends RemoteService {
 	public RegisteredOntologyInfo getOntologyInfo(String ontologyUri);
 
 	
-	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo ontologyInfo);
+	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo ontologyInfo, String version);
 	
 	
 	/**

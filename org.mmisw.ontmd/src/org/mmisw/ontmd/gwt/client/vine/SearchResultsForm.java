@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
+import org.mmisw.ontmd.gwt.client.portal.Portal;
 import org.mmisw.ontmd.gwt.client.vine.util.SelectAllNonePanel;
 
 import com.google.gwt.core.client.GWT;
@@ -177,7 +178,6 @@ public class SearchResultsForm extends VerticalPanel {
 			textBox = new TextBox();
 			textBox.setStylePrimaryName("SearchResultsTable-TextBox");
 			
-//			String str = entity.getCode()+ ":" +entity.getLocalName();
 			String str = VineMain.getCodedTerm(entity.getUri());
 			
 			textBox.setText(str);
@@ -252,7 +252,6 @@ public class SearchResultsForm extends VerticalPanel {
 		}
 
 		public String getKey() {
-//			return entity.getCode()+ ":" +entity.getLocalName()+ ".";
 			return VineMain.getCodedTerm(entity.getUri());
 		}
 
@@ -280,9 +279,6 @@ public class SearchResultsForm extends VerticalPanel {
 		
 		
 		private void disclosureOpen() {
-//			String name = entity.getLocalName();
-//			String code = "" + entity.getCode();
-//			String uri = Main.getWorkingUris().get(code).getUri()+ "/" +name;
 			String uri = entity.getUri();
 			
 			String uriResLink = getUriResolutionLink(uri);
@@ -357,8 +353,7 @@ public class SearchResultsForm extends VerticalPanel {
 		}
 		
 		private String getUriResolutionLink(String uri) {
-			// TODO get resolver for URNs from a configuration parameter
-			final String URN_RESOLVER = "http://mmisw.org/ont";
+			final String URN_RESOLVER = Portal.portalBaseInfo.getOntServiceUrl();
 			
 			String link;
 			if ( uri.startsWith("urn:") ) {

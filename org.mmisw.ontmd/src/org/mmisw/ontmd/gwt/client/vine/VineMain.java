@@ -102,13 +102,17 @@ public class VineMain {
 
 
 	/**
-	 * Adds a working URI.
+	 * Adds a working URI, if not already in the list.
 	 * @param uri
 	 * @return The corresponding code.
 	 */
 	public static char addWorkingUri(String uri) {
-		char code = (char) ((int) 'A' + VineMain.workingUris.size());
-		VineMain.workingUris.add(uri);
+		int idx = VineMain.workingUris.indexOf(uri);
+		if ( idx < 0 ) {
+			idx = VineMain.workingUris.size();
+			VineMain.workingUris.add(uri);
+		}
+		char code = (char) ('A' + idx);
 		return code;
 	}
 
@@ -171,17 +175,24 @@ public class VineMain {
 		Main.log("setWorkingUrisWithGivenNamespaces: " +namespaces);
 		if ( namespaces != null ) {
 			for ( String namespace : namespaces ) {
-				Main.log("   namespace: " +namespace);
 				addWorkingUri(namespace);
 			}
 		}
 	}
 
+	/**
+	 * returns the index of the namespace associated with the given uri.
+	 * @param uri
+	 * @return
+	 */
 	public static int getWorkingUriIndex(String uri) {
 		int idx = 0;
 		for ( String workingUri : workingUris ) {
 			if ( uri.indexOf(workingUri) == 0 ) {
-				return idx;
+				String localName = uri.substring(workingUri.length());
+				if ( localName.length() > 0 && (localName.charAt(0) == '/' || localName.charAt(0) == '#') ) { 
+					return idx;
+				}
 			}
 			idx++;
 		}
