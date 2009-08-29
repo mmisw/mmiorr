@@ -276,6 +276,9 @@ public class VocabCreator {
 		Ontology ont = newOntModel.createOntology(base_);
 		log.info("New ontology created with namespace " + ns_ + " base " + base_);
 
+		// Indicate Voc2RDF as the engineering tool:
+		ont.addProperty(Omv.usedOntologyEngineeringTool, OmvMmi.voc2rdf);
+
 		
 		Map<String, Property> uriPropMap = MdHelper.getUriPropMap();
 		for ( String uri : values.keySet() ) {

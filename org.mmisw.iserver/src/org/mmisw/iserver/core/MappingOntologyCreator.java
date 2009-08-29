@@ -26,9 +26,6 @@ import edu.drexel.util.rdf.OwlModel;
 /**
  * Creates a mapping ontology.
  * 
- * <p>
- * FIXME NOT IMPLEMENTED YET
- * 
  * @author Carlos Rueda
  */
 public class MappingOntologyCreator {
@@ -157,6 +154,8 @@ public class MappingOntologyCreator {
 		Ontology ont = newOntModel.createOntology(base_);
 		log.info("New ontology created with namespace " + ns_ + " base " + base_);
 
+		// Indicate VINE as the engineering tool:
+		ont.addProperty(Omv.usedOntologyEngineeringTool, OmvMmi.vine);
 		
 		Map<String, Property> uriPropMap = MdHelper.getUriPropMap();
 		for ( String uri : values.keySet() ) {
