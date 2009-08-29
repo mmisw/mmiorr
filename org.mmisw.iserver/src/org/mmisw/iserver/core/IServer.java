@@ -76,9 +76,10 @@ public interface IServer {
 	 * Gets both the metadata and the entities.
 	 * 
 	 * @param registeredOntologyInfo
+	 * @param version   Desired version; can be null
 	 * @return
 	 */
-	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo registeredOntologyInfo);
+	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo registeredOntologyInfo, String version);
 	
 	
 	/**

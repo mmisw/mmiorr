@@ -551,7 +551,7 @@ public class Server implements IServer {
 	
 	
 	
-	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo registeredOntologyInfo) {
+	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo registeredOntologyInfo, String version) {
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("getOntologyContents(RegisteredOntologyInfo): loading model");
@@ -559,7 +559,7 @@ public class Server implements IServer {
 		
 		OntModel ontModel;
 		try {
-			ontModel = OntServiceUtil.retrieveModel(registeredOntologyInfo.getUri(), registeredOntologyInfo.getVersionNumber());
+			ontModel = OntServiceUtil.retrieveModel(registeredOntologyInfo.getUri(), version);
 		}
 		catch (Exception e) {
 			String error = "Error loading model: " +e.getMessage();

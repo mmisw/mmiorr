@@ -3,6 +3,16 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2009-08-28  1.5.0.alpha11
+	- Server.getOntologyContents(RegisteredOntologyInfo registeredOntologyInfo, String version):
+	  added version parameter to specify the desired version; this param can be null. 
+	  If version == null:
+	  	if the associated getUri is *unversioned*, then the obtained ontology is the latest version
+	  	if it is *versioned*, then that version is retrieved.
+	  If version != null:
+	  	then, that version is retrieved.
+	- The above change done during the enabling of the VINE tool in the portal. 
+	
 2009-08-27  1.5.0.alpha11
 	- RegisteredOntologyInfo, EntityInfo: Removed transient field 'code' -- client should use its own mechanism.
 	
