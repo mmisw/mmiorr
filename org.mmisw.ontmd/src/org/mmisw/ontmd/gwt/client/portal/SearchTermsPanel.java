@@ -44,7 +44,7 @@ public class SearchTermsPanel extends VerticalPanel {
 	public SearchTermsPanel() {
 		
 		super.setSpacing(5);
-		oracle = new MultiWordSuggestOracle();
+		oracle = new MultiWordSuggestOracle("|");
 		
 		textBox = new SuggestBox(oracle);
 		textBox.setWidth("250px");
@@ -93,21 +93,21 @@ public class SearchTermsPanel extends VerticalPanel {
 	
 	private void _doSearch() {
 		
-		String string = getSearchString();
-		if ( string.length() == 0) {
+		final String searchString = getSearchString();
+		if ( searchString.length() == 0) {
 			return;
 		}
 		
-		string = string.replaceAll("\\s+(o|O)(r|R)\\s+", "|");
+		final String keywords = searchString.replaceAll("\\s+(o|O)(r|R)\\s+", "|");
 		
 		// TODO some paging mechanism
-		string = "SELECT DISTINCT ?subject ?predicate ?object " +
+		String queryString = "SELECT DISTINCT ?subject ?predicate ?object " +
 				"WHERE { ?subject ?predicate ?object. " +
-				"FILTER regex(?object, \"" +string+ "\", \"i\" ) } " +
+				"FILTER regex(?object, \"" +keywords+ "\", \"i\" ) } " +
 				"ORDER BY ?subject";
 		
 		SparqlQueryInfo query = new SparqlQueryInfo();
-		query.setQuery(string);
+		query.setQuery(queryString);
 		query.setFormat(null);  // format null -> HTML
 		
 		enable(false);
@@ -133,7 +133,13 @@ public class SearchTermsPanel extends VerticalPanel {
 					resultsPanel.add(new Label("ERROR: " +error));	
 				}
 				else {
-					oracle.add(getSearchString());
+					String[] kwArray = keywords.split("\\|");
+					if ( kwArray.length > 1 ) {
+						for ( String kw : kwArray ) {
+							oracle.add(kw);
+						}
+					}
+					oracle.add(searchString);
 
 					resultsPanel.add(new HTML(result.getResult()));
 				}
