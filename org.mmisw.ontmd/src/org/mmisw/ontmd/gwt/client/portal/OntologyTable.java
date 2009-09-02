@@ -26,7 +26,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author Carlos Rueda
  */
 public class OntologyTable extends FlexTable {
-	private static final String TESTING_ONT_MARK = "<font color=\"red\">T</font>";
+	private static final String TESTING_ONT_MARK = "<b><font color=\"red\" size=\"-1\">T</font></b>";
 	private static final String TESTING_ONT_TOOLTIP = "A testing ontology";
 
 // TODO Use utility ViewTable 
@@ -274,12 +274,6 @@ public class OntologyTable extends FlexTable {
 			}
 			
 			Widget nameWidget;
-			
-			// NOTE: Not actually using this cache memory
-//			PortalMainPanel.historyTokenMap.put(uri, oi);
-			// SeePortalMainPanel.onHistoryChanged: the object retieved there will be always
-			// null, so the ontology will be requested every time -- simpler and works 
-			
 			
 			Hyperlink hlink = new Hyperlink(name, historyToken);
 			if ( Util.isTestingOntology(oi) ) {

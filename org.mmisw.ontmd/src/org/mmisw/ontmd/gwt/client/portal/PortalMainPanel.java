@@ -1,12 +1,11 @@
 package org.mmisw.ontmd.gwt.client.portal;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
-import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.ontmd.gwt.client.LoginListener;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.UserPanel;
@@ -55,15 +54,14 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	private MyDialog signInPopup;
 
 	
-	static Map<String, Object> historyTokenMap = new HashMap<String, Object>();
-	
-	
 	/** helps confirm the leave of the current page */
 	private void _setupWindowCloseListener() {
 		Window.addWindowCloseListener(new WindowCloseListener() {
 			public String onWindowClosing() {
-				if ( interfaceType == InterfaceType.ONTOLOGY_EDIT_NEW_VERSION ) {
-					return "If any, all edit will be lost";
+				if ( interfaceType == InterfaceType.ONTOLOGY_EDIT_NEW_VERSION
+				||   interfaceType == InterfaceType.ONTOLOGY_EDIT_NEW
+				) {
+					return "If any, all edits will be lost";
 				}
 				return null;
 			}
@@ -200,15 +198,13 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		
 		Main.log("onHistoryChanged: historyToken: " +historyToken);
 		
-		// Note: See OntologyTable.update: no actual objects are stored in this cache,
-		// so this will be alwas null.  TODO: Remove the historyTokenMap cache.
-		Object obj = historyTokenMap.get(historyToken);
-		
-		assert ( obj == null ) ;
-
-		if ( historyToken.trim().length() > 0 ) {
-			if ( historyToken.trim().toLowerCase().equals("browse") ) {
+		historyToken = historyToken.trim();
+		if ( historyToken.length() > 0 ) {
+			if ( historyToken.toLowerCase().equals("browse") ) {
 				dispatchMainPanel(false);		
+			}
+			else if ( historyToken.toLowerCase().equals("search") ) {
+				dispatchSearchTerms();		
 			}
 			else {
 				String ontologyUri = historyToken.trim();
@@ -221,6 +217,37 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		}
 			
 	}
+
+	
+	public void refreshListAllOntologies() {
+		dispatchMainPanel(true);
+	}
+	
+	public void searchTerms() {
+		History.newItem("search");
+	}
+	
+	
+	
+	private void dispatchSearchTerms() {
+		
+		OntologyPanel ontologyPanel = pctrl.getOntologyPanel();
+		if ( ontologyPanel != null ) {
+			ontologyPanel.cancel();
+			pctrl.setOntologyInfo(null);
+			pctrl.setOntologyPanel(null);
+		}
+		
+		SearchTermsPanel searchTermsPanel = new SearchTermsPanel();
+
+		interfaceType = InterfaceType.SEARCH;
+	    controlsPanel.showMenuBar(interfaceType);
+	    headerPanel.updateLinks(interfaceType);
+		
+	    bodyPanel.clear();
+		bodyPanel.add(searchTermsPanel);
+	}
+	
 
 	
 	private void dispatchMainPanel(boolean reloadList) {

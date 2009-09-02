@@ -21,7 +21,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Menu bar for the portal application.
+ * Controls for the portal application.
  * 
  * @author Carlos Rueda
  */
@@ -29,59 +29,41 @@ public class ControlsPanel extends HorizontalPanel {
 
 	private PortalControl pctrl = PortalControl.getInstance();
 	
-	// actually use a MenuBar?
-	private static final boolean useMenuBar = false;
-
-	private final MenuBar mb = useMenuBar ? new MenuBar() : null;
-	
-	private final HorizontalPanel controls = useMenuBar ? null : new HorizontalPanel();
-	private final Set<PushButton> buttons =  useMenuBar ? null : new HashSet<PushButton>();
+	private final HorizontalPanel controls = new HorizontalPanel();
+	private final Set<PushButton> buttons =  new HashSet<PushButton>();
 
 	
 	/** Initially the menu bar is not shown */
 	ControlsPanel() {
 		setWidth("100%");
 		
-		if ( useMenuBar ) { 
-			add(mb);
-		}
-		
 		pctrl.setMenuBarPanel(this);
 		
-		if ( ! useMenuBar ) {
-			this.setStylePrimaryName("ToolBar");
-			
-			controls.setStylePrimaryName("ControlsBar");
-			controls.setVerticalAlignment(ALIGN_MIDDLE);
-			controls.setBorderWidth(1);
-			this.add(controls);
-		}
+		this.setStylePrimaryName("ToolBar");
+
+		controls.setStylePrimaryName("ControlsBar");
+		controls.setVerticalAlignment(ALIGN_MIDDLE);
+		controls.setBorderWidth(1);
+		this.add(controls);
 	}
 
 	private void _clear() {
-		if ( useMenuBar ) {
-			mb.clearItems();
-		}
-		else {
-			controls.clear();
-			buttons.clear();
-		}
+		controls.clear();
+		buttons.clear();
 	}
 
 	void showMenuBar(InterfaceType type) {
 		_clear();
-		if ( useMenuBar ) {
-			_createMenuBar(type);
-		}
-		else {
-			_createButtons(type);
-		}
+		_createButtons(type);
 	}
 	
 	private void _createButtons(InterfaceType type) {
 		switch ( type ) {
 		case BROWSE:
 			_prepareBrowseButtons();
+			break;
+		case SEARCH:
+			_prepareSearchTermsButtons();
 			break;
 		case ONTOLOGY_VIEW:
 			_prepareOntologyViewButtons();
@@ -93,11 +75,37 @@ public class ControlsPanel extends HorizontalPanel {
 		}
 	}
 
+	private void _prepareSearchTermsButtons() {
+		
+		// TODO do we need buttons here?
+		
+	}
+	
 	private void _prepareBrowseButtons() {
+		PushButton button;
+		
+		button = new PushButton("Refresh", new ClickListener() {
+			public void onClick(Widget sender) {
+				pctrl.refreshListAllOntologies();
+			}
+		});
+		button.setTitle("Reloads the list of registered ontologies");
+		controls.add(button);
+		buttons.add(button);
+
+
+		// TODO re-enable "search" when completed
+//		button = new PushButton("Search", new ClickListener() {
+//			public void onClick(Widget sender) {
+//				pctrl.searchTerms();
+//			}
+//		});
+//		button.setTitle("Searches terms");
+//		controls.add(button);
+//		buttons.add(button);
+
+		
 		if ( pctrl.getLoginResult() != null ) {
-			
-			PushButton button;
-			
 			button = new PushButton("Create vocabulary", new ClickListener() {
 				public void onClick(Widget sender) {
 					pctrl.createNewVocabulary();
@@ -215,38 +223,6 @@ public class ControlsPanel extends HorizontalPanel {
 
 	
 	
-	private void _createMenuBar(InterfaceType type) {
-		switch ( type ) {
-		case BROWSE:
-			_prepareBrowseMenuBar();
-			break;
-		case ONTOLOGY_VIEW:
-			_prepareOntologyViewMenuBar();
-			break;
-		case ONTOLOGY_EDIT_NEW_VERSION:
-		case ONTOLOGY_EDIT_NEW:
-			_prepareOntologyEditMenuBar();
-			break;
-		}
-	}
-
-	private static String _menuTitle(String title) {
-		return "<u>" +title+ "</u>";
-//		return title+ " <img src=\"" +GWT.getModuleBaseURL()+ "images/tridown.png\">";
-	}
-	private void _prepareBrowseMenuBar() {
-		if ( pctrl.getLoginResult() != null ) {
-			MenuBar new_mb = new MenuBar(true);
-			new_mb.addItem(_createNewMenuItemVocabulary());
-			
-			new_mb.addItem(_createNewMenuItemMapping());
-			
-			new_mb.addItem(_createNewMenuItemUpload());
-			mb.addItem(new MenuItem(_menuTitle("New"), true, new_mb));
-		}
-	}
-
-	
 	MenuBar createOntologyMenuBar(RegisteredOntologyInfo oi, boolean includeEdit, boolean includeVersion,
 			boolean includeVersionsMenu
 	) {
@@ -280,61 +256,6 @@ public class ControlsPanel extends HorizontalPanel {
 	}
 	
 	
-	private MenuBar _prepareOntologyViewMenuBar() {
-		boolean includeVersion = pctrl.getOntologyPanel().isVersionExplicit();
-		
-		MenuBar ont_mb = createOntologyMenuBar(null, true, includeVersion, true);
-		
-		mb.addItem(new MenuItem(_menuTitle("Ontology"), true, ont_mb));
-		
-		return mb;
-	}
-
-	private void _prepareOntologyEditMenuBar() {
-		if ( pctrl.getLoginResult() != null ) {
-			// TODO
-			MenuBar ont_mb = new MenuBar(true);
-			ont_mb.addItem(_createMenuItemCancelEdit());
-			ont_mb.addSeparator();
-
-			mb.addItem(new MenuItem(_menuTitle("Edit"), true, ont_mb));
-		}
-	}
-
-	private MenuItem _createMenuItemCancelEdit() {
-		return new MenuItem("Cancel", new Command() {
-			public void execute() {
-				pctrl.cancelEdit();
-			}
-		});
-	}
-	
-	
-	private MenuItem _createNewMenuItemUpload() {
-		return new MenuItem("Upload local file", new Command() {
-			public void execute() {
-				pctrl.createNewFromFile();
-			}
-		});
-	}
-
-	private MenuItem _createNewMenuItemMapping() {
-		return new MenuItem("Mapping", new Command() {
-			public void execute() {
-				pctrl.launchCreateMapping();
-			}
-		});
-	}
-
-	private MenuItem _createNewMenuItemVocabulary() {
-		return new MenuItem("Vocabulary", new Command() {
-			public void execute() {
-				pctrl.createNewVocabulary();
-			}
-		});
-	}
-
-
 	private MenuItem _createMenuItemCreateNewVersion() {
 		return new MenuItem("Edit new version", new Command() {
 			public void execute() {

@@ -4,6 +4,21 @@ $Id$
 
 ChangeLog
 
+2009-09-01:  1.5.0.alpha15
+	- Some code clean-up:
+		- PortalMainPanel: removed unused historyTokenMap cache
+		- ControlsPanel: removed constant flag useMenuBar=false and related menuBar interface elements
+		  as they are not used.
+		  
+	- Added "Refresh" button to reload the list of registered ontologies.
+	
+	- Adding "Search" functionality:
+	  new SearchTermsPanel class
+	  - next prepare query:
+	   SELECT DISTINCT ?s ?p ?o WHERE { ?s ?p ?o. FILTER regex(?o,\""+ @sparqlExpression +"\", \"i\" ) } ORDER BY ?s" 
+		  
+		
+		
 2009-08-28  1.5.0.alpha14
 	VINE: 
 	- Integration and basic functionality (including creation/registration of new mapping

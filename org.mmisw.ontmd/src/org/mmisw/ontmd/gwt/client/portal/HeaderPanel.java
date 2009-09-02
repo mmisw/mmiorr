@@ -92,6 +92,7 @@ public class HeaderPanel extends FlexTable {
 			// nothing
 			break;
 		case ONTOLOGY_VIEW:
+		case SEARCH:
 			widgets.add(browseLink);
 			break;
 		case ONTOLOGY_EDIT_NEW_VERSION:

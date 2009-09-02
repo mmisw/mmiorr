@@ -70,7 +70,13 @@ public class PortalControl {
 	}
 
 	
-	
+	public void refreshListAllOntologies() {
+		portalMainPanel.refreshListAllOntologies();
+	}
+
+	public void searchTerms() {
+		portalMainPanel.searchTerms();
+	}
 
 	public void createNewVocabulary() {
 		portalMainPanel.createNewVocabulary();
@@ -295,9 +301,11 @@ public class PortalControl {
 				final boolean includeVersionsMenu) {
 			
 			if ( true ) {
+				// This fragment creates a menuBar for dispatching the options.
+				
 				ControlsPanel controlsPanel = PortalControl.getInstance().getMenuBarPanel();
 				
-				// TODO do not include Edit option yet
+				// Note: Edit option not included here.
 				MenuBar menu = controlsPanel.createOntologyMenuBar(oi, false, includeVersionInLinks, includeVersionsMenu);
 				MenuBar mb = new MenuBar(true);
 //				mb.addItem("<font color=\"blue\">i</font>", true, menu);
@@ -305,6 +313,8 @@ public class PortalControl {
 				return mb;
 			}
 			else {
+				// This fragment uses an icon and a click listener to open a popup with the options.
+				
 				Image img = Main.images.triright().createImage();
 				img.addClickListener(new ClickListener() {
 					public void onClick(Widget sender) {
