@@ -12,10 +12,10 @@ ChangeLog
 		  
 	- Added "Refresh" button to reload the list of registered ontologies.
 	
-	- Adding "Search" functionality:
-	  new SearchTermsPanel class
-	  - next prepare query:
-	   SELECT DISTINCT ?s ?p ?o WHERE { ?s ?p ?o. FILTER regex(?o,\""+ @sparqlExpression +"\", \"i\" ) } ORDER BY ?s" 
+	- Added "Search" functionality.
+	  New SearchTermsPanel class. Provides keyword search using the new operation runSparqlQuery(..) in
+	  iserver module. Also includes link to SPARQL page.
+	  TODO eventually include general SPARQL dispatch here.
 		  
 		
 		

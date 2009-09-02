@@ -76,9 +76,11 @@ public class ControlsPanel extends HorizontalPanel {
 	}
 
 	private void _prepareSearchTermsButtons() {
-		
-		// TODO do we need buttons here?
-		
+		String ontServiceUrl = Portal.portalBaseInfo.getOntServiceUrl();
+		String sparqlPage = ontServiceUrl+ "/sparql.html";
+		HTML sparqlButton = new HTML("<a target=\"_blank\" href=\"" +sparqlPage+ 
+				"\">Advanced search with SPARQL</a>");
+		controls.add(sparqlButton);
 	}
 	
 	private void _prepareBrowseButtons() {
@@ -94,15 +96,14 @@ public class ControlsPanel extends HorizontalPanel {
 		buttons.add(button);
 
 
-		// TODO re-enable "search" when completed
-//		button = new PushButton("Search", new ClickListener() {
-//			public void onClick(Widget sender) {
-//				pctrl.searchTerms();
-//			}
-//		});
-//		button.setTitle("Searches terms");
-//		controls.add(button);
-//		buttons.add(button);
+		button = new PushButton("Search", new ClickListener() {
+			public void onClick(Widget sender) {
+				pctrl.searchTerms();
+			}
+		});
+		button.setTitle("Searches terms");
+		controls.add(button);
+		buttons.add(button);
 
 		
 		if ( pctrl.getLoginResult() != null ) {

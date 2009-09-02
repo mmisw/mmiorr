@@ -10,6 +10,8 @@ import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
+import org.mmisw.iserver.gwt.client.rpc.SparqlQueryResult;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
@@ -100,5 +102,10 @@ public interface OntMdServiceAsync {
 	
 	// :VINE
 	////////////////////////////////////////////////////////////////////////////////////////////
+
+	
+	// Search:
+	
+	void runSparqlQuery(SparqlQueryInfo query, AsyncCallback<SparqlQueryResult> callback);
 
 }

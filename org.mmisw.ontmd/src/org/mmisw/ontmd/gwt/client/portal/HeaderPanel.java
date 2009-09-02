@@ -37,7 +37,6 @@ public class HeaderPanel extends FlexTable {
 	private HTML helpButton = new HTML(
 			"<a target=\"_blank\" href=\"" +HELP_LINK+ "\">Help</a>");
 
-
 	
 	HeaderPanel() {
 		super();
@@ -91,8 +90,8 @@ public class HeaderPanel extends FlexTable {
 		case BROWSE:
 			// nothing
 			break;
+		case SEARCH: 
 		case ONTOLOGY_VIEW:
-		case SEARCH:
 			widgets.add(browseLink);
 			break;
 		case ONTOLOGY_EDIT_NEW_VERSION:

@@ -39,6 +39,8 @@ import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
+import org.mmisw.iserver.gwt.client.rpc.SparqlQueryResult;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.ont.MmiUri;
@@ -1427,5 +1429,12 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	
 	// :VINE
 	////////////////////////////////////////////////////////////////////////////////////////////
+
+	
+	// Search:
+	
+	public SparqlQueryResult runSparqlQuery(SparqlQueryInfo query) {
+		return portal.runSparqlQuery(query);
+	}
 
 }
