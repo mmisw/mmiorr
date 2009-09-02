@@ -3,6 +3,10 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2009-09-01  1.5.0.alpha12
+	- Server: new operation: SparqlQueryResult runSparqlQuery(SparqlQueryInfo query)
+	
+	
 2009-08-28  1.5.0.alpha11
 	- Server.getOntologyContents(RegisteredOntologyInfo registeredOntologyInfo, String version):
 	  added version parameter to specify the desired version; this param can be null. 

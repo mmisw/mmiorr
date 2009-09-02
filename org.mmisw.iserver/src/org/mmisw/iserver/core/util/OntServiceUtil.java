@@ -121,6 +121,34 @@ public class OntServiceUtil {
 		 }
 		 return uri.toLowerCase().startsWith(ontServiceUrl.toLowerCase());
 	}
+	
+	
+	/**
+	 * Runs a SPARQL query using the the "Ont" service.
+	 * 
+	 * <p>
+	 * TODO this is a very basic dispatch-- pending a better mechanism, includig paging
+	 * 
+	 * @param query  The query
+	 * @param format Desired format ("form" parameter). Can be null.
+	 * @param acceptEntries list of accept header entries
+	 * @return The response of the "ont" service.
+	 * @throws Exception
+	 */
+	public static String runSparqlQuery(String query, String format, String... acceptEntries) throws Exception {
+		
+		String ontServiceUrl = Config.Prop.ONT_SERVICE_URL.getValue();
+		query = URLEncoder.encode(query, "UTF-8");
+		String ontServiceRequest = ontServiceUrl + "?sparql=" +query;
+		if ( format != null ) {
+			ontServiceRequest += "&form=" +format;
+		}
+		String str = HttpUtil.getAsString(ontServiceRequest, acceptEntries);
+		
+		return str;
+	}
+
+
 
 }
 

@@ -40,6 +40,8 @@ import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
+import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
+import org.mmisw.iserver.gwt.client.rpc.SparqlQueryResult;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyDataCreationInfo;
@@ -1442,4 +1444,22 @@ public class Server implements IServer {
 		return relInfos;
 
 	}
+	
+	
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// Search:
+	
+	public SparqlQueryResult runSparqlQuery(SparqlQueryInfo query) {
+		SparqlQueryResult sparqlQueryResult = new SparqlQueryResult();
+		try {
+			String result = OntServiceUtil.runSparqlQuery(query.getQuery(), query.getFormat(), "application/rdf+xml");
+			sparqlQueryResult.setResult(result);
+		}
+		catch (Exception e) {
+			String error = "Error while dispatching query: " +e.getMessage();
+			sparqlQueryResult.setError(error);
+		}
+		return sparqlQueryResult;
+	}
+
 }
