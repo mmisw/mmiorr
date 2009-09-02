@@ -16,6 +16,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -28,8 +29,10 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class SearchTermsPanel extends VerticalPanel {
 	
-	private MultiWordSuggestOracle oracle;
-	private SuggestBox textBox;
+	// these are static to "remember" values
+	private static final MultiWordSuggestOracle oracle = new MultiWordSuggestOracle("|");
+	private static final TextBox textBox = new TextBox();
+	private static final SuggestBox suggestBox = new SuggestBox(oracle, textBox);
 
 	private PushButton searchButton;
 	
@@ -44,9 +47,7 @@ public class SearchTermsPanel extends VerticalPanel {
 	public SearchTermsPanel() {
 		
 		super.setSpacing(5);
-		oracle = new MultiWordSuggestOracle("|");
 		
-		textBox = new SuggestBox(oracle);
 		textBox.setWidth("250px");
 
 		textBox.addKeyboardListener(new KeyboardListenerAdapter() {
@@ -68,7 +69,7 @@ public class SearchTermsPanel extends VerticalPanel {
 	    add(decPanel);
 
 		hp.add(new Label("Search terms containing:"));
-		hp.add(textBox);
+		hp.add(suggestBox);
 		
 		searchButton = new PushButton(Main.images.search().createImage(), new ClickListener() {
 			public void onClick(Widget sender) {
@@ -85,7 +86,7 @@ public class SearchTermsPanel extends VerticalPanel {
 		new Timer() {
 			@Override
 			public void run() {
-				textBox.setFocus(true);
+				suggestBox.setFocus(true);
 			}
 		}.schedule(300);
 	}
@@ -150,12 +151,12 @@ public class SearchTermsPanel extends VerticalPanel {
 	}
 	
 	private void enable(boolean enabled) {
-//		textBox.setReadOnly(!enabled);  Oh, SuggestBox does not have this operation!
+		textBox.setReadOnly(!enabled);  
 		searchButton.setEnabled(enabled);
 	}
 
 	private String getSearchString() {
-		return textBox.getText().trim();
+		return suggestBox.getText().trim();
 	}
 
 }
