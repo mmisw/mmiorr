@@ -4,6 +4,10 @@ $Id$
 
 ChangeLog
 
+2009-09-03  1.5.0.alpha17   (sync'ed with iserver version)
+	Fixed issue #168: Submitted ontology not included for SPARQL query processing
+	Solved in iserver module; so just updating library and version here.
+
 2009-09-02:  1.5.0.alpha16
 	- Fixed issue #171: Repeated mappings are allowed
 	  MappingsPanel: new operations:
