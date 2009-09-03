@@ -12,10 +12,12 @@ import java.util.Map;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.sparql.SparqlDispatcher;
@@ -289,6 +291,12 @@ public class OntServlet extends HttpServlet {
 			return;
 		}
 
+		// load an ontology into the graph?
+		if ( Util.yes(req.request, "_lo")  ) {
+			_loadOntologyIntoGraph(req);
+			return;
+		}
+		
 		// reload graph?
 		if ( Util.yes(req.request, "_reload")  ) {
 			ontGraph.reinit();
@@ -425,7 +433,7 @@ public class OntServlet extends HttpServlet {
 	 * @return the ontology if found; null if not found.
 	 * @throws ServletException
 	 */
-	Ontology getRegisteredOntology(String potentialOntUri) throws ServletException {
+	private Ontology getRegisteredOntology(String potentialOntUri) throws ServletException {
 		Ontology ontology = null;
 		if ( OntUtil.isOntResolvableUri(potentialOntUri) ) {
 			
@@ -593,5 +601,74 @@ public class OntServlet extends HttpServlet {
 	}
 
 
+	/**
+	 * Loads the ontology indicated with the "_lo" parameter in the request.
+	 * The value is takes as the URI of the ontology.
+	 */
+	private void _loadOntologyIntoGraph(Request req) throws ServletException, IOException {
+		String ontUri = Util.getParam(req.request, "_lo", "");
+		if ( ontUri.length() == 0 ) {
+			req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing value for _lo parameter");
+			return;
+		}
+		
+		// explicit version?
+		if ( req.version != null ) {
+			req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "version parameter not accepted with _lo parameter");
+			return;
+		}
+
+		Ontology ontology = getRegisteredOntologyLatestVersion(ontUri);
+		
+		if ( ontology == null ) {
+			if ( log.isDebugEnabled() ) {
+				log.debug("_loadOntologyIntoGraph: not found: " +ontUri);
+			}
+			req.response.sendError(HttpServletResponse.SC_NOT_FOUND, ontUri);
+			return;
+		}
+		
+		// Load the stored stored ontology:
+		if ( log.isDebugEnabled() ) {
+			log.debug("_loadOntologyIntoGraph: loading " +ontUri);
+		}
+		ontGraph.loadOntology(ontology);
+		
+		req.response.setContentType("text/plain");
+		ServletOutputStream os = req.response.getOutputStream();
+		IOUtils.write(ontUri+ " loaded in graph.", os);
+		os.close();
+	}
+
+	/**
+	 * Gets the latest version of a registered ontology
+	 * 
+	 * @param potentialOntUri. The URI that will be used to try to find a corresponding registered
+	 *                     ontology. If this is an "ont resolvable" uri, any explicit version is
+	 *                     ignored.
+	 * @return the ontology if found; null if not found.
+	 * @throws ServletException
+	 */
+	private Ontology getRegisteredOntologyLatestVersion(String potentialOntUri) throws ServletException {
+		log.debug("getRegisteredOntologyLatestVersion: " +potentialOntUri);
+		Ontology ontology = null;
+		if ( OntUtil.isOntResolvableUri(potentialOntUri) ) {
+			try {
+				MmiUri mmiUri = new MmiUri(potentialOntUri);
+				// ignore version:
+				mmiUri = mmiUri.copyWithVersion(null);
+				ontology = db.getMostRecentOntologyVersion(mmiUri);
+			}
+			catch (URISyntaxException e) {
+				// Not an MmiUri. Just try to use the argument as given:
+				ontology = db.getOntology(potentialOntUri);
+			}
+		}
+		else {
+			ontology = db.getOntology(potentialOntUri);
+		}
+		
+		return ontology;
+	}
 
 }

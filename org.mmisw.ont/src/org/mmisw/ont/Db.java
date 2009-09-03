@@ -1,9 +1,6 @@
 package org.mmisw.ont;
 
-import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -88,9 +85,10 @@ public class Db {
 			Statement _stmt = _con.createStatement();
 
 			String query = 
-				"select v.id, v.ontology_id, v.file_path " +
-				"from v_ncbo_ontology v " +
-				"where v.urn='" +ontologyUri+ "'" +
+				"select v.id, v.ontology_id, v.file_path, f.filename " +
+				"from v_ncbo_ontology v, ncbo_ontology_file f  " +
+				"where v.id = f.ontology_version_id" +
+				"  and v.urn='" +ontologyUri+ "'" +
 				"  and v.version_number='" +version+ "'";
 
 			ResultSet rs = _stmt.executeQuery(query);
@@ -101,14 +99,18 @@ public class Db {
 				ontology.ontology_id = rs.getString(2);
 				ontology.file_path = rs.getString(3);
 
-				try {
-					URL uri_ = new URL(ontologyUri);
-					ontology.filename = new File(uri_.getPath()).getName();
-				}
-				catch (MalformedURLException e) {
-					// should not occur.
-					log.debug("should not occur.", e);
-				}
+				ontology.filename = rs.getString(4);
+				
+				// TODO Remove this OLD way to determine filename
+//				try {
+//					URL uri_ = new URL(ontologyUri);
+//					ontology.filename = new File(uri_.getPath()).getName();
+//				}
+//				catch (MalformedURLException e) {
+//					// should not occur.
+//					log.debug("should not occur.", e);
+//				}
+				
 				return ontology;
 			}
 		}
@@ -156,9 +158,10 @@ public class Db {
 			Statement _stmt = _con.createStatement();
 
 			String query = 
-				"select v.id, v.ontology_id, v.file_path " +
-				"from v_ncbo_ontology v " +
-				"where v.urn='" +ontologyUri+ "' " +
+				"select v.id, v.ontology_id, v.file_path, f.filename " +
+				"from v_ncbo_ontology v, ncbo_ontology_file f  " +
+				"where v.id = f.ontology_version_id" +
+				"  and v.urn='" +ontologyUri+ "'  " +
 				"order by v.version_number desc";  // -> to get most recent version first.
 
 			if ( log.isDebugEnabled() ) {
@@ -172,15 +175,20 @@ public class Db {
 				ontology.id = rs.getString(1);
 				ontology.ontology_id = rs.getString(2);
 				ontology.file_path = rs.getString(3);
+				
+				ontology.filename = rs.getString(4);
 
-				try {
-					URL uri_ = new URL(ontologyUri);
-					ontology.filename = new File(uri_.getPath()).getName();
-				}
-				catch (MalformedURLException e) {
-					// should not occur.
-					log.debug("should not occur.", e);
-				}
+
+				// TODO Remove this OLD way to determine filename
+//				try {
+//					URL uri_ = new URL(ontologyUri);
+//					ontology.filename = new File(uri_.getPath()).getName();
+//				}
+//				catch (MalformedURLException e) {
+//					// should not occur.
+//					log.debug("should not occur.", e);
+//				}
+				
 				return ontology;
 			}
 		}
@@ -311,10 +319,12 @@ public class Db {
 			Statement _stmt = _con.createStatement();
 
 			String query = 
-				"select v.id, v.ontology_id, v.file_path, v.urn " +
-				"from v_ncbo_ontology v " +
-				"where v.urn like '" +ontologyUriPattern+ "' " +
-				or_with_dot_ext +
+				"select v.id, v.ontology_id, v.file_path, v.urn, f.filename " +
+				"from v_ncbo_ontology v, ncbo_ontology_file f " +
+				"where v.id = f.ontology_version_id " +
+				"  and ( v.urn like '" +ontologyUriPattern+ "' " +
+				         or_with_dot_ext +
+				"      ) " +
 				"order by v.urn desc";
 
 			if ( log.isDebugEnabled() ) {
@@ -332,15 +342,19 @@ public class Db {
 				String ontologyUri = rs.getString(4);
 				ontology.setUri(ontologyUri);
 
-				try {
-					URL uri_ = new URL(ontologyUri);
-					ontology.filename = new File(uri_.getPath()).getName();
-					onts.add(ontology);
-				}
-				catch (MalformedURLException e) {
-					// should not occur.
-					log.debug("should not occur.", e);
-				}
+				ontology.filename = rs.getString(5);
+				onts.add(ontology);
+				
+				// TODO Remove this OLD way to determine filename
+//				try {
+//					URL uri_ = new URL(ontologyUri);
+//					ontology.filename = new File(uri_.getPath()).getName();
+//					onts.add(ontology);
+//				}
+//				catch (MalformedURLException e) {
+//					// should not occur.
+//					log.debug("should not occur.", e);
+//				}
 			}
 		}
 		catch (SQLException e) {

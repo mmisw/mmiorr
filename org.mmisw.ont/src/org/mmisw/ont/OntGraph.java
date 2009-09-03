@@ -19,8 +19,7 @@ import edu.drexel.util.rdf.JenaUtil;
 
 
 /**
- * Handles the "big" graph of all existing ontologies as returned by
- * {@link org.mmisw.ont.Db#getOntologies()}.
+ * Handles the "big" graph of all existing ontologies.
  * 
  * @author Carlos Rueda
  */
@@ -53,13 +52,18 @@ public class OntGraph {
 		this.db = db;
 	}
 
+	/**
+	 * Gets the model containing the graph.
+	 * @return the model containing the graph.
+	 */
 	public Model getModel() {
 		return _model;
 	}
 
 
 	/**
-	 * Initializes the graph.
+	 * Initializes the graph with all ontologies 
+	 * as returned by {@link org.mmisw.ont.Db#getOntologies()}
 	 * Does nothing if already initialized.
 	 * @throws ServletException
 	 */
@@ -97,48 +101,8 @@ public class OntGraph {
 			log.debug("Using unversioned ontologies: " +USE_UNVERSIONED);
 		}
 		
-		// 
 		for ( Ontology ontology : onts ) {
-			String full_path = aquaUploadsDir 
-				+ "/" +ontology.file_path + "/" + ontology.filename;
-		
-			log.info("init: loading: " +full_path);
-			
-				
-			if ( USE_UNVERSIONED ) {
-				OntModel model = JenaUtil.loadModel(full_path, false);
-				
-				if ( OntUtil.isOntResolvableUri(ontology.getUri()) ) {
-					MmiUri mmiUri;
-					try {
-						mmiUri = new MmiUri(ontology.getUri());
-						OntModel unversionedModel = UnversionedConverter.getUnversionedModel(model, mmiUri);
-						_model.add(unversionedModel);
-					}
-					catch (URISyntaxException e) {
-						log.error("shouldn't happen", e);
-						continue;
-					}
-				}
-				else {
-					log.info("    RH: " +full_path);
-					_model.add(model);
-				}
-			}
-			else {
-				String absPath = "file:" + full_path;
-				try {
-					_model.read(absPath, "", null);
-					
-					// TODO processImports: true or false?
-//					boolean processImports = false;
-//					Model model_ = JenaUtil.loadModel(absPath, processImports);
-//					_model.add(model_);
-				} 
-				catch (Exception e) {
-					log.error("Unable to add " + absPath + " to model");
-				}
-			}
+			loadOntology(ontology);
 		}
 
 		if ( false && log.isDebugEnabled() ) {
@@ -158,4 +122,48 @@ public class OntGraph {
 		}
 	}
 
+	/**
+	 * Loads the given model into the graph.
+	 * @param ontology
+	 */
+	public void loadOntology(Ontology ontology) {
+		String full_path = aquaUploadsDir+ "/" +ontology.file_path + "/" + ontology.filename;
+
+		log.info("Loading: " +full_path);
+
+		if ( USE_UNVERSIONED ) {
+			OntModel model = JenaUtil.loadModel(full_path, false);
+
+			if ( OntUtil.isOntResolvableUri(ontology.getUri()) ) {
+				MmiUri mmiUri;
+				try {
+					mmiUri = new MmiUri(ontology.getUri());
+					OntModel unversionedModel = UnversionedConverter.getUnversionedModel(model, mmiUri);
+					_model.add(unversionedModel);
+				}
+				catch (URISyntaxException e) {
+					log.error("shouldn't happen", e);
+					return;
+				}
+			}
+			else {
+				log.info("    RH: " +full_path);
+				_model.add(model);
+			}
+		}
+		else {
+			String absPath = "file:" + full_path;
+			try {
+				_model.read(absPath, "", null);
+
+				// TODO processImports: true or false?
+				//			boolean processImports = false;
+				//			Model model_ = JenaUtil.loadModel(absPath, processImports);
+				//			_model.add(model_);
+			} 
+			catch (Exception e) {
+				log.error("Unable to add " + absPath + " to model");
+			}
+		}
+	}
 }

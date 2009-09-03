@@ -4,6 +4,24 @@ $Id$
 
 ChangeLog
 
+2009-09-03   1.3.7.beta
+	Issue #168: Submitted ontology not included for SPARQL query processing
+	- OntGraph: new operation loadOntology(Ontology) to support addition of an ontology
+	  to the graph.
+	- OntServlet: now dispatches a "_lo" request to load a registered ontology into the graph,
+	  ...?_lo=<uri>
+	  Normally the given <uri> will be an unversioned one (for those resolved directly by the
+	  "ont" service). In any case, the latest version is the one that gets loaded.
+	  
+	NOTE: this "_lo" service is to be used by the iserver module once a new submission has been
+	completed, so the graph gets updated and then dependent actions go as expected, in particular,
+	SPARQL queries.
+	
+	NOTE: While doing the above today, in Db I fixed a few places that retrieve the filename, which
+	were still based on the path associated to the URL. These parts were kind of old code. The right 
+	way to retrieve the filename is from the database itself.
+
+
 2009-08-25  1.3.6.beta
 	issue #148: "Need property to capture "creator/author of original source vocabulary""
 	- Added OmvMmi.hasContentCreator property (http://mmisw.org/ont/mmi/20081020/ontologyMetadata/hasContentCreator)
