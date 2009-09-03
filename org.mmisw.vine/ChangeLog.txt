@@ -2,6 +2,14 @@ org.mmisw.vine - Web VINE
 Carlos Rueda - MMI / MBARI
 $Id$
 
+***** NOTE: Obsolete ****************************
+  As of 2009-09-01  VINE integrated in the portal code
+  
+  This module no longer used/maintained
+*************************************************
+ 
+ 
+
 ChangeLog
 
 2009-08-25  1.5.0.alpha2
