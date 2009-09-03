@@ -1195,7 +1195,7 @@ public class Server implements IServer {
 
 		// Get final URI of resulting model
 		// FIXME this uses the same original URI
-		String uri = createOntologyResult.getUri();
+		final String uri = createOntologyResult.getUri();
 		assert uri != null;
 		assert loginResult.getUserId() != null;
 		assert loginResult.getSessionId() != null;
@@ -1270,6 +1270,10 @@ public class Server implements IServer {
 			if ( res.startsWith("OK") ) {
 				registerOntologyResult.setUri(uri);
 				registerOntologyResult.setInfo(res);
+				
+				// issue #168 fix:
+				// request that the ontology be loaded in the "ont" graph:
+				OntServiceUtil.loadOntologyInGraph(uri);
 			}
 			else {
 				registerOntologyResult.setError(res);

@@ -149,6 +149,26 @@ public class OntServiceUtil {
 	}
 
 
+	/**
+	 * Makes the request to load the given ontology in the graph maintained by the
+	 * "ont" service.
+	 * 
+	 * @param uriModel  The URI of the desired ontlogy.
+	 * @return true iff "ont" responds with an OK return code.
+	 * @throws Exception
+	 */
+	public static boolean loadOntologyInGraph(String uriModel) throws Exception {
+		
+		String ontServiceUrl = Config.Prop.ONT_SERVICE_URL.getValue();
+		uriModel = URLEncoder.encode(uriModel, "UTF-8");
+		String ontServiceRequest = ontServiceUrl + "?_lo=" +uriModel;
+		int statusCode = HttpUtil.httpGetStatusCode(ontServiceRequest);
+		
+		return statusCode == HttpStatus.SC_OK;
+	}
+	
+	
+
 
 }
 

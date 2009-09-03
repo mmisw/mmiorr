@@ -3,6 +3,13 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2009-09-01  1.5.0.alpha17   (sync'ed with ontmd version;  alpha13-16 skipped here)
+	Fixed issue #168: Submitted ontology not included for SPARQL query processing
+	- Using the new "ont" service to load an ontology in the graph (via "_lo" parameter).
+	- OntServiceUtil.loadOntologyInGraph: to make the request
+	- Server.registerOntology: call to OntServiceUtil.loadOntologyInGraph 
+	
+	
 2009-09-01  1.5.0.alpha12
 	- Server: new operation: SparqlQueryResult runSparqlQuery(SparqlQueryInfo query)
 	
