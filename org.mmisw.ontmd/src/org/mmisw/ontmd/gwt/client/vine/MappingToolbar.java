@@ -48,10 +48,10 @@ public class MappingToolbar extends VerticalPanel {
 		add(new TLabel("", 
 				"Once you have selected entities on both sides, choose the relationship you want " +
 				"to establish between the corresponding entities. " +
-				"<br/>" +
-				"<br/>" +
-				"Click the \"Config\" button to configure the available relations " +
-				"(not implemented yet)."
+				"<br/>" 
+//				"<br/>" +
+//				"Click the \"Config\" button to configure the available relations " +
+//				"(not implemented yet)."
 		));
 		
 		DecoratorPanel decPanel = new DecoratorPanel();

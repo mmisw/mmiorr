@@ -2,6 +2,7 @@ package org.mmisw.ontmd.gwt.client.vine;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.mmisw.iserver.gwt.client.rpc.vine.Mapping;
 import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
@@ -131,6 +132,57 @@ public class MappingsPanel extends FocusPanel {
 			};
 			VineMain.getRelationInfos(callback);
 		}
+	}
+	
+	/**
+	 * Gets the list of mappings that can be added without duplications.
+	 * NO mappings are added to the panel.
+	 * Call {@link #addMapping(String, RelationInfo, String)} to do the actual addition.
+	 * 
+	 * @param leftKeys
+	 * @param relInfo
+	 * @param rightKeys
+	 */
+	public List<Mapping> preAddMappings(Set<String> leftKeys, RelationInfo relInfo, Set<String> rightKeys) {
+		List<Mapping> preMappings = new ArrayList<Mapping>();
+		
+		// TODO a more efficient implementation to check for duplicates.
+		
+		for ( String leftKey: leftKeys ) {
+			for ( String rightKey: rightKeys ) {
+		
+				boolean duplicate = false;
+				for ( MappingAssoc mappingAssoc : mappingAssocs ) {
+					Mapping mapping = mappingAssoc.mapping;
+					
+					if ( mapping.getLeft().equals(leftKey) && mapping.getRight().equals(rightKey)
+					&& mapping.getRelation().equals(relInfo.getUri()) ) {
+						duplicate = true;
+						break;
+					}
+				}
+				
+				if ( ! duplicate ) {
+					preMappings.add(new Mapping(leftKey, relInfo.getUri(), rightKey));
+				}
+			}
+		}
+		
+		return preMappings;
+	}
+	
+	/**
+	 * Adds the given list of mappings to this panel.
+	 * 
+	 * @param relInfo The relation to be used (note: the relation attribute of the member of the
+	 *                    given list is IGNORED).
+	 * @param mappings  The mappings to add. NO check for duplications is done here.
+	 */
+	public void addMappings(RelationInfo relInfo, List<Mapping> mappings) {
+		for ( Mapping mapping : mappings ) {
+			addMapping(mapping.getLeft(), relInfo, mapping.getRight());
+		}
+
 	}
 	
 	

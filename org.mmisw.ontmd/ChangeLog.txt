@@ -4,6 +4,26 @@ $Id$
 
 ChangeLog
 
+2009-09-02:  1.5.0.alpha16
+	- Fixed issue #171: Repeated mappings are allowed
+	  MappingsPanel: new operations:
+		- List<Mapping> preAddMappings(Set<String> leftKeys, RelationInfo relInfo, Set<String> rightKeys)
+		- void addMappings(RelationInfo relInfo, List<Mapping> mappings)
+	  which are called from MapperPage._relButtonClicked(RelationInfo relInfo)
+	  
+	  TODO preAddMappings: a more efficient implementation to check for duplicates.
+	  
+	  TODO Re-organize the mappings by grouping according to relation. Instead of list
+	  of (left, rel, right) triples, have a list of RelGroup's where a relGroup has a
+	  relation and a list of (left, right) pairs. This will consume slightly less memory
+	  and will support a more efficient search for duplicates.
+	  
+	- New behavior: right after the click of the relation button, the selection of terms on both 
+	  sides of the interface is cleared (only when any new mapping is actually inserted in the mapping
+	  panel). The previous behaviour was that the selections remain.
+	  
+	  
+		
 2009-09-01:  1.5.0.alpha15
 	- Some code clean-up:
 		- PortalMainPanel: removed unused historyTokenMap cache

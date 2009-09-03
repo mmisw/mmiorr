@@ -1,8 +1,10 @@
 package org.mmisw.ontmd.gwt.client.vine;
 
+import java.util.List;
 import java.util.Set;
 
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.vine.Mapping;
 import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
 
 import com.google.gwt.user.client.Window;
@@ -53,31 +55,26 @@ public class MapperPage extends DockPanel {
 		SearchResultsForm searchResultsLeft = vocabularyFormLeft.getSearchResultsForm();
 		SearchResultsForm searchResultsRight = vocabularyFormRight.getSearchResultsForm();
 		
-		Set<String> leftRowKeys = searchResultsLeft.getSelectedRows();
-		int numLeft = leftRowKeys.size();
-		Set<String> rightRowKeys = searchResultsRight.getSelectedRows();
-		int numRight = rightRowKeys.size();
+		Set<String> leftKeys = searchResultsLeft.getSelectedRows();
+		Set<String> rightKeys = searchResultsRight.getSelectedRows();
 		
+		List<Mapping> preMappings = mappingsPanel.preAddMappings(leftKeys, relInfo, rightKeys);
 		
-		//
-		// TODO: check for duplications
-		//
+		if ( preMappings.size() == 0 ) {
+			return;
+		}
 		
-		int totalToCreate = numLeft * numRight;
-		if ( totalToCreate >= 20 ) {
-			String msg = totalToCreate+ " mappings are about to be created.\n" +
-					"Please confirm.";
-			
+		if ( preMappings.size() >= 20 ) {
+			String msg = preMappings.size()+ " mappings are about to be created.\nPlease confirm.";
 			if ( ! Window.confirm(msg) ) {
 				return;
 			}
 		}
 		
-		for ( String leftKey: leftRowKeys ) {
-			for ( String rightKey: rightRowKeys ) {
-				mappingsPanel.addMapping(leftKey, relInfo, rightKey);
-			}
-		}
+		mappingsPanel.addMappings(relInfo, preMappings);
+		
+		searchResultsLeft.selectAll(false);
+		searchResultsRight.selectAll(false);
 	}
 
 	

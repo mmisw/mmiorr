@@ -68,10 +68,7 @@ public class SearchResultsForm extends VerticalPanel {
 		SelectAllNonePanel selAllNonePanel = new SelectAllNonePanel() {
 			@Override
 			protected void updateAllNone(boolean selected) {
-				for ( Row row : currentRows.values()  ) {
-					row.setSelected(selected);
-				}
-				updateStatus();
+				selectAll(selected);
 			}
 		};
 
@@ -103,6 +100,14 @@ public class SearchResultsForm extends VerticalPanel {
 		
 	}
 	
+	
+	void selectAll(boolean selected) {
+		for ( Row row : currentRows.values()  ) {
+			row.setSelected(selected);
+		}
+		updateStatus();
+	}
+
 	void updateStatus() {
 		status.setText("Selected: " +selectedRows.size()+ " out of " +currentRows.size()+ " element(s)");
 	}
