@@ -93,7 +93,7 @@ class UnversionedConverter {
 			// This case was manifested with the platform.owl ontology.
 		}
 		
-		log.info("review: model.getNsPrefixURI(\"\") = " +uriForEmpty);
+//		log.info("review: model.getNsPrefixURI(\"\") = " +uriForEmpty);
 		
 		// Why using JenaUtil.getURIForNS(uriForEmpty) to get the namespace?
 		// model.getNsPrefixURI("") should provide the base namespace, in fact,
@@ -105,10 +105,10 @@ class UnversionedConverter {
 		final String original_ns_ = uriForEmpty;
 
 		
-		log.info("original namespace: " +original_ns_);
-		log.info("Setting prefix \"\" for URI " + ns_);
+//		log.info("original namespace: " +original_ns_);
+//		log.info("Setting prefix \"\" for URI " + ns_);
 		model.setNsPrefix("", ns_);
-		log.info("     new namespace: " +ns_);
+//		log.info("     new namespace: " +ns_);
 
 		
 		// Update statements  according to the new namespace:
@@ -122,7 +122,7 @@ class UnversionedConverter {
 		List<Statement> prexistStatements = null; 
 		if ( ontRes != null ) {
 			prexistStatements = new ArrayList<Statement>();
-			log.info("Getting pre-existing properties for OWL.Ontology individual: " +ontRes.getURI());
+//			log.info("Getting pre-existing properties for OWL.Ontology individual: " +ontRes.getURI());
 			StmtIterator iter = ontRes.listProperties();
 			while ( iter.hasNext() ) {
 				Statement st = iter.nextStatement();
@@ -135,7 +135,7 @@ class UnversionedConverter {
 		// plus the new and updated attributes:
 		final OwlModel newOntModel = new OwlModel(model);
 		final Ontology ont_ = newOntModel.createOntology(base_);
-		log.info("New ontology created with namespace " + ns_ + " base " + base_);
+//		log.info("New ontology created with namespace " + ns_ + " base " + base_);
 		newOntModel.setNsPrefix("", ns_);
 		
 		
@@ -172,34 +172,34 @@ class UnversionedConverter {
 							String description = 
 								"An unversioned ontology containing the latest terms as of the request time, " +
 								"for the ontology containing: " +st.getObject();
-							log.info("  Transferring modified description: " +st.getSubject()+ " :: " +prd+ " :: " +description);
+//							log.info("  Transferring modified description: " +st.getSubject()+ " :: " +prd+ " :: " +description);
 							newOntModel.add(ont_, st.getPredicate(), description);
 						}
 						else if ( Omv.name.getURI().equals(prd.getURI()) ) {
 							// transfer modified title:
 							String title = 
 								"Unversioned form of: " +st.getObject();
-							log.info("  Transferring modified title: " +st.getSubject()+ " :: " +prd+ " :: " +title);
+//							log.info("  Transferring modified title: " +st.getSubject()+ " :: " +prd+ " :: " +title);
 							newOntModel.add(ont_, st.getPredicate(), title);
 						}
 						else {
 							// transfer as it comes:
-							log.info("  Transferring: " +st.getSubject()+ " :: " +prd+ " :: " +st.getObject());
+//							log.info("  Transferring: " +st.getSubject()+ " :: " +prd+ " :: " +st.getObject());
 							newOntModel.add(ont_, st.getPredicate(), st.getObject());
 						}
 					}
 					else {
 						// just transfer as it comes:
-						log.info("  Transferring: " +st.getSubject()+ " :: " +prd+ " :: " +st.getObject());
+//						log.info("  Transferring: " +st.getSubject()+ " :: " +prd+ " :: " +st.getObject());
 						newOntModel.add(ont_, st.getPredicate(), st.getObject());
 					}
 				}
 				else {
-					log.info(" Not Transferring: " +prd+ " from previous version because new value " +newValue);
+//					log.info(" Not Transferring: " +prd+ " from previous version because new value " +newValue);
 				}
 			}	
 			
-			log.info("Removing original OWL.Ontology individual");
+//			log.info("Removing original OWL.Ontology individual");
 			ontRes.removeProperties();
 			// TODO the following may be unnecesary but doesn't hurt:
 			model.remove(ontRes, RDF.type, OWL.Ontology); 
@@ -231,7 +231,7 @@ class UnversionedConverter {
 	 */
 	private static void _replaceNameSpace(OntModel model, String oldNameSpace, String newNameSpace) {
 		
-		log.info(" REPLACING NS " +oldNameSpace+ " WITH " +newNameSpace);
+//		log.info(" REPLACING NS " +oldNameSpace+ " WITH " +newNameSpace);
 		
 		// old statements to be removed:
 		List<Statement> o_stmts = new ArrayList<Statement>(); 
