@@ -851,10 +851,10 @@ public class Server implements IServer {
 				return createOntologyResult;
 			}
 			
-			uriForEmpty = Util2.getDefaultNamespace(model, file, createOntologyResult);
+			uriForEmpty = Util2.getDefaultNamespace(file, createOntologyResult);
 
 			if ( uriForEmpty == null ) {
-				String error = "Cannot get URI for empty namespace";
+				String error = "Cannot get base URI for the ontology";
 				log.info(error);
 				createOntologyResult.setError(error);
 				return createOntologyResult;
@@ -894,15 +894,8 @@ public class Server implements IServer {
 			
 
 		
-		log.info("createOntology: using '" +uriForEmpty+ "' as default namespace");
+		log.info("createOntology: using '" +uriForEmpty+ "' as base URI");
 		
-		// Why using JenaUtil.getURIForNS(uriForEmpty) to get the namespace?
-		// model.getNsPrefixURI("") should provide the base namespace, in fact,
-		// I verified that this call gives the right URI associated with "" in two
-		// cases, one with xxxx/ (slash) and xxxxx# (pound) at the end.
-		// So, instead of:
-		//    final String original_ns_ = JenaUtil.getURIForNS(uriForEmpty);
-		// I just take the reported URI as given by model.getNsPrefixURI(""):
 		final String original_ns_ = uriForEmpty;
 		log.info("original namespace: " +original_ns_);
 

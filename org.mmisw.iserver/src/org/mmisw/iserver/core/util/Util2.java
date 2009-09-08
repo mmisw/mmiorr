@@ -30,6 +30,11 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 import edu.drexel.util.rdf.JenaUtil;
 
+/**
+ * Misc utilities.
+ * 
+ * @author Carlos Rueda
+ */
 public class Util2 {
 
 	private static final Log log = LogFactory.getLog(Util2.class);
@@ -304,47 +309,84 @@ public class Util2 {
 	}
 
 	/**
-	 * Returns <code>model.getNsPrefixURI("")</code> if it's non-null; otherwise the URI
-	 * associated with xml:base, if defined in the document. If xml:base is not defined, 
+	 * Returns the URI associated with xml:base, if defined in the document. If xml:base is not defined, 
 	 * then it returns file.toURI().toString(). 
-	 * See for example  
+	 * See  
 	 * <a href="http://www.w3.org/TR/2003/PR-rdf-syntax-grammar-20031215/#section-Syntax-ID-xml-base"
 	 * >this section in the RDF/XML systax spec</a>.
 	 * 
-	 * @param model  to call <code>model.getNsPrefixURI("")</code>
-	 * @param file   if necessary, used to obtain xml:base if any, or the URI of the file itself.
+	 * @param file   Used to obtain xml:base from its contents, if any, or the URI of the file itself.
 	 * @param baseResult  setError(e) will be called if not value can be obtained
 	 * @return  the namespace.  null in case of not finding any value.
 	 */
-	public static String getDefaultNamespace(OntModel model, File file, BaseResult baseResult) {
+	public static String getDefaultNamespace(File file, BaseResult baseResult) {
 
-		String namespace = model.getNsPrefixURI("");
-		if ( namespace == null ) {
-			// issue #140: "ontologies with no declared namespace for empty prefix are not accepted"
-
-			// fix: use xml:base's URI
-
-			try {
-				String rdf;
-				rdf = readRdf(file);
-				URI xmlBaseUri = XmlBaseExtractor.getXMLBase(new InputSource(new StringReader(rdf)));
-				if ( xmlBaseUri != null ) {
-					namespace = xmlBaseUri.toString();
-				}
-				else {
-					return file.toURI().toString();
-				}
+		// See issue #174 (which supercedes issue #140).
+		
+		String namespace = null;
+		try {
+			String rdf;
+			rdf = readRdf(file);
+			URI xmlBaseUri = XmlBaseExtractor.getXMLBase(new InputSource(new StringReader(rdf)));
+			if ( xmlBaseUri != null ) {
+				namespace = xmlBaseUri.toString();
 			}
-			catch (Exception e) {
-				String error = "error while trying to read xml:base attribute: " +e.getMessage();
-				log.info(error, e);
-				baseResult.setError(error);
-				return null;
+			else {
+				namespace = file.toURI().toString();
 			}
 		}
-		
+		catch (Exception e) {
+			String error = "error while trying to read xml:base attribute: " +e.getMessage();
+			log.info(error, e);
+			baseResult.setError(error);
+			return null;
+		}
 		return namespace;
 	}
+
+//	OLD getDefaultNamespace
+//	/**
+//	 * Returns <code>model.getNsPrefixURI("")</code> if it's non-null; otherwise the URI
+//	 * associated with xml:base, if defined in the document. If xml:base is not defined, 
+//	 * then it returns file.toURI().toString(). 
+//	 * See for example  
+//	 * <a href="http://www.w3.org/TR/2003/PR-rdf-syntax-grammar-20031215/#section-Syntax-ID-xml-base"
+//	 * >this section in the RDF/XML systax spec</a>.
+//	 * 
+//	 * @param model  to call <code>model.getNsPrefixURI("")</code>
+//	 * @param file   if necessary, used to obtain xml:base if any, or the URI of the file itself.
+//	 * @param baseResult  setError(e) will be called if not value can be obtained
+//	 * @return  the namespace.  null in case of not finding any value.
+//	 */
+//	public static String getDefaultNamespace(OntModel model, File file, BaseResult baseResult) {
+//
+//		String namespace = model.getNsPrefixURI("");
+//		if ( namespace == null ) {
+//			// issue #140: "ontologies with no declared namespace for empty prefix are not accepted"
+//
+//			// fix: use xml:base's URI
+//
+//			try {
+//				String rdf;
+//				rdf = readRdf(file);
+//				URI xmlBaseUri = XmlBaseExtractor.getXMLBase(new InputSource(new StringReader(rdf)));
+//				if ( xmlBaseUri != null ) {
+//					namespace = xmlBaseUri.toString();
+//				}
+//				else {
+//					return file.toURI().toString();
+//				}
+//			}
+//			catch (Exception e) {
+//				String error = "error while trying to read xml:base attribute: " +e.getMessage();
+//				log.info(error, e);
+//				baseResult.setError(error);
+//				return null;
+//			}
+//		}
+//		
+//		return namespace;
+//	}
 	
 	/**
 	 * FIXME implementation is incorrect.

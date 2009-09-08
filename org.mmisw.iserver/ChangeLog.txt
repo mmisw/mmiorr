@@ -3,7 +3,24 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
-2009-09-01  1.5.0.alpha17   (sync'ed with ontmd version;  alpha13-16 skipped here)
+
+2009-09-08  1.5.0.alpha18
+	- Fix for issue #174 and general improvement in related functionality:
+	  Util2.getDefaultNamespace:   (note: OntModel parameter removed)
+		Now, the sequence to determine the URI for the submitted ontology is:
+		
+		- the URI associated with xml:base in the document, if given;
+		or
+		- the URI of the file containing the ontology
+		
+		See http://www.w3.org/TR/2003/PR-rdf-syntax-grammar-20031215/#section-Syntax-ID-xml-base
+
+		(So, note that the URI associated with the empty prefix (xmlns=xx) is NOT considered
+		any more in this operation. Getting the URI from xmlns=xx was the mechanism in the legacy 
+		MMI related code).	
+	
+
+2009-09-03  1.5.0.alpha17   (sync'ed with ontmd version;  alpha13-16 skipped here)
 	Fixed issue #168: Submitted ontology not included for SPARQL query processing
 	- Using the new "ont" service to load an ontology in the graph (via "_lo" parameter).
 	- OntServiceUtil.loadOntologyInGraph: to make the request
