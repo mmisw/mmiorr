@@ -2,7 +2,10 @@ org.mmisw.ontmd: MMI Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
-ChangeLog
+2009-09-08  1.5.0.alpha18
+	Fix for issue #174 and general improvement in related functionality.
+		See iserver's ChangeLog
+
 
 2009-09-03  1.5.0.alpha17   (sync'ed with iserver version)
 	Fixed issue #168: Submitted ontology not included for SPARQL query processing
