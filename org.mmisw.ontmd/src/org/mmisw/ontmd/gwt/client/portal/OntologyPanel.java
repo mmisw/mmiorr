@@ -465,12 +465,20 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		String shortName = createOntologyInfo.getShortName();
 		
 		if ( authority == null || authority.trim().length() == 0 ) {
-			authority = "mmitest";  // TODO
+			// TODO improve this code:
+			authority = newValues.get("http://mmisw.org/ont/mmi/20081020/ontologyMetadata/origMaintainerCode");
+			if ( authority == null || authority.trim().length() == 0 ) {
+				authority = "mmitest";  // TODO
+			}
 			createOntologyInfo.setAuthority(authority);
 		}
 		
 		if ( shortName == null || shortName.trim().length() == 0 ) {
-			shortName = "shorttest";  // TODO
+			// TODO improve this code:
+			shortName = newValues.get("http://omv.ontoware.org/2005/05/ontology#acronym");
+			if ( shortName == null || shortName.trim().length() == 0 ) {
+				shortName = "shorttest";  // TODO
+			}
 			createOntologyInfo.setShortName(shortName);
 		}
 		
