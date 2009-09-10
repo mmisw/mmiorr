@@ -12,7 +12,7 @@ import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
-import org.mmisw.ontmd.gwt.server.Config;
+import org.mmisw.ontmd.gwt.server.PortalConfig;
 import org.mmisw.ontmd.gwt.server.MdHelper_OLD;
 
 
@@ -35,8 +35,8 @@ public class Voc2RdfImpl  {
 	public Voc2RdfImpl() {
 		log.info("initializing " +appInfo.getAppName()+ "...");
 		appInfo.setVersion(
-				Config.Prop.VERSION.getValue()+ " (" +
-				Config.Prop.BUILD.getValue()  + ")"
+				PortalConfig.Prop.VERSION.getValue()+ " (" +
+				PortalConfig.Prop.BUILD.getValue()  + ")"
 		);
 
 		log.info(appInfo.toString());

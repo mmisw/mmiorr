@@ -2,6 +2,11 @@ org.mmisw.ontmd: MMI Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+
+2009-09-10  1.5.0.alpha20
+	- Renamed Config to PortalConfig
+
+	
 2009-09-09  1.5.0.alpha19
 	- Fixed a bug in OntologyPanel related with the mechanism to set shortName and authority.
 	  It was using the createOntologyInfo object by calling createOntologyInfo.{getAuthority(),getShortName()},

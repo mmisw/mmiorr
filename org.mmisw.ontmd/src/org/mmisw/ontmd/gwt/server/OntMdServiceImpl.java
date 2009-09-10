@@ -112,24 +112,24 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		log.info("initializing " +appInfo.getAppName()+ "...");
 		ServletConfig servletConfig = getServletConfig();
 		try {
-			Config.getInstance().init(servletConfig, log, true);
+			PortalConfig.getInstance().init(servletConfig, log, true);
 			
 			appInfo.setVersion(
-					Config.Prop.VERSION.getValue()+ " (" +
-						Config.Prop.BUILD.getValue()  + ")"
+					PortalConfig.Prop.VERSION.getValue()+ " (" +
+						PortalConfig.Prop.BUILD.getValue()  + ")"
 			);
 					
 			log.info(appInfo.toString());
 			
-			previewDir = new File(Config.Prop.ONTMD_PREVIEW_DIR.getValue());
+			previewDir = new File(PortalConfig.Prop.ONTMD_PREVIEW_DIR.getValue());
 			
 			
 			// voc2rdf initialization
 			voc2rdf = new Voc2RdfImpl();
 			
 			// portal initialization
-			String ontServiceUrl = Config.Prop.ONT_SERVICE_URL.getValue();
-			String bioportalRestUrl = Config.Prop.BIOPORTAL_REST_URL.getValue();
+			String ontServiceUrl = PortalConfig.Prop.ONT_SERVICE_URL.getValue();
+			String bioportalRestUrl = PortalConfig.Prop.BIOPORTAL_REST_URL.getValue();
 			portal = new PortalImpl(ontServiceUrl, bioportalRestUrl);
 			
 			namespaceRoot = ontServiceUrl;
@@ -1252,7 +1252,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	/**
 	 * Gets info about an ontology stored in a filesystem file on the server.
 	 * 
-	 * If the given path is relative, then it is taken as relative to {@link Config.Prop#ONTMD_VOC2RDF_DIR}.
+	 * If the given path is relative, then it is taken as relative to {@link PortalConfig.Prop#ONTMD_VOC2RDF_DIR}.
 	 * In this case, if a similar filename but with extension ".csv" is found, then
 	 * the .
 	 * 
@@ -1269,9 +1269,9 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			// then, the the full path is to be completed here.
 			// TODO Note: Currently, this is only handled for the Voc2Rdf case:
 			
-			file = new File(Config.Prop.ONTMD_VOC2RDF_DIR.getValue() + path);
+			file = new File(PortalConfig.Prop.ONTMD_VOC2RDF_DIR.getValue() + path);
 			
-			fileCsv = new File(Config.Prop.ONTMD_VOC2RDF_DIR.getValue() + path + ".csv");
+			fileCsv = new File(PortalConfig.Prop.ONTMD_VOC2RDF_DIR.getValue() + path + ".csv");
 			if ( ! fileCsv.exists() ) {
 				fileCsv = null;
 			}

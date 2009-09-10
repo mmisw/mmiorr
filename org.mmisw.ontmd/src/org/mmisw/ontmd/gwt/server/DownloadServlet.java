@@ -17,7 +17,7 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * This servlet does a "download" operation, that is, it makes available a file 
- * stored in the {@link Config.Prop#ONTMD_VOC2RDF_DIR} directory.
+ * stored in the {@link PortalConfig.Prop#ONTMD_VOC2RDF_DIR} directory.
  * 
  * @author Carlos Rueda
  */
@@ -34,8 +34,8 @@ public class DownloadServlet extends HttpServlet {
 		super.init();
 		log.info("initializing download service ...");
 		try {
-			Config.getInstance().init(getServletConfig(), null, true);
-			downloadsDir = new File(Config.Prop.ONTMD_VOC2RDF_DIR.getValue());
+			PortalConfig.getInstance().init(getServletConfig(), null, true);
+			downloadsDir = new File(PortalConfig.Prop.ONTMD_VOC2RDF_DIR.getValue());
 			log.info("downloadsDir = " +downloadsDir);
 		}
 		catch (Exception ex) {

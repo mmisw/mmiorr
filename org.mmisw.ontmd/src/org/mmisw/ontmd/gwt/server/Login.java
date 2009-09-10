@@ -56,7 +56,7 @@ class Login {
 		log.info("authenticating username=" +userName+ " password=" +userPassword.replaceAll(".", "*"));
 		log.info("applicationid=" +applicationid);
 		
-		String authRestUrl = Config.Prop.BIOPORTAL_REST_URL.getValue() + AUTH;
+		String authRestUrl = PortalConfig.Prop.BIOPORTAL_REST_URL.getValue() + AUTH;
 		log.info("authentication REST URL =" +authRestUrl);
 		
 		PostMethod post = new PostMethod(authRestUrl);

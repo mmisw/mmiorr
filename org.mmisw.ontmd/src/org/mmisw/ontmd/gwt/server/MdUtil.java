@@ -29,11 +29,11 @@ class MdUtil {
 	private static final Log log = LogFactory.getLog(MdUtil.class);
 	
 	/**
-	 * Populates the AttrDef with the list of individuals from {@link Config.Prop#AUTHORITY_CLASS}.
+	 * Populates the AttrDef with the list of individuals from {@link PortalConfig.Prop#AUTHORITY_CLASS}.
 	 * The options are sorted by getName() (ignoring case).
 	 */
 	static void readAuthorities(AttrDef authorityAttrDef) {
-		String classUri = Config.Prop.AUTHORITY_CLASS.getValue();
+		String classUri = PortalConfig.Prop.AUTHORITY_CLASS.getValue();
 		try {
 			populateList(authorityAttrDef, classUri);
 			Collections.sort(authorityAttrDef.getOptions(), new Comparator<Option>() {
@@ -51,11 +51,11 @@ class MdUtil {
 	}
 
 	/**
-	 * Populates the AttrDef with the list of individuals from {@link Config.Prop#RESOURCE_TYPE_CLASS}.
+	 * Populates the AttrDef with the list of individuals from {@link PortalConfig.Prop#RESOURCE_TYPE_CLASS}.
 	 * The options are sorted by getName() (ignoring case).
 	 */
 	static void readResourceTypes(AttrDef resourceTypeAttrDef) {
-		String classUri = Config.Prop.RESOURCE_TYPE_CLASS.getValue();
+		String classUri = PortalConfig.Prop.RESOURCE_TYPE_CLASS.getValue();
 		try {
 			populateList(resourceTypeAttrDef, classUri);
 			Collections.sort(resourceTypeAttrDef.getOptions(), new Comparator<Option>() {

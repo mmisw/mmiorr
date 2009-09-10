@@ -22,7 +22,7 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * This servlet does the "pre-upload" operation, that is, it stores the uploaded file from
- * the client in the {@link Config.Prop#ONTMD_PRE_UPLOADS_DIR} directory.
+ * the client in the {@link PortalConfig.Prop#ONTMD_PRE_UPLOADS_DIR} directory.
  * 
  * @author Carlos Rueda
  */
@@ -45,8 +45,8 @@ public class UploadServlet extends HttpServlet {
 		super.init();
 		log.info("initializing upload service ...");
 		try {
-			Config.getInstance().init(getServletConfig(), null, true);
-			preUploadsDir = new File(Config.Prop.ONTMD_PRE_UPLOADS_DIR.getValue());
+			PortalConfig.getInstance().init(getServletConfig(), null, true);
+			preUploadsDir = new File(PortalConfig.Prop.ONTMD_PRE_UPLOADS_DIR.getValue());
 			log.info("preUploadsDir = " +preUploadsDir);
 		}
 		catch (Exception ex) {

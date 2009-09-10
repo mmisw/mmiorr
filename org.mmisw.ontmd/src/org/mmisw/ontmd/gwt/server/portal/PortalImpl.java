@@ -19,7 +19,7 @@ import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
 import org.mmisw.ontmd.gwt.client.rpc.PortalBaseInfo;
-import org.mmisw.ontmd.gwt.server.Config;
+import org.mmisw.ontmd.gwt.server.PortalConfig;
 
 
 
@@ -46,8 +46,8 @@ public class PortalImpl  {
 	public PortalImpl(String ontServiceUrl, String bioportalRestUrl) {
 		log.info("initializing " +appInfo.getAppName()+ "...");
 		appInfo.setVersion(
-				Config.Prop.VERSION.getValue()+ " (" +
-				Config.Prop.BUILD.getValue()  + ")"
+				PortalConfig.Prop.VERSION.getValue()+ " (" +
+				PortalConfig.Prop.BUILD.getValue()  + ")"
 		);
 
 		log.info(appInfo.toString());
@@ -72,11 +72,11 @@ public class PortalImpl  {
 		
 		portalBaseInfo = new PortalBaseInfo();
 		
-		portalBaseInfo.setAppServerUrl(Config.Prop.APPSERVER_HOST.getValue());
-		portalBaseInfo.setOntServiceUrl(Config.Prop.ONT_SERVICE_URL.getValue());
-		portalBaseInfo.setPortalServiceUrl(Config.Prop.PORTAL_SERVICE_URL.getValue());
-		portalBaseInfo.setVineServiceUrl(Config.Prop.VINE_SERVICE_URL.getValue());
-		portalBaseInfo.setOntbrowserServiceUrl(Config.Prop.ONTBROWSER_SERVICE_URL.getValue());
+		portalBaseInfo.setAppServerUrl(PortalConfig.Prop.APPSERVER_HOST.getValue());
+		portalBaseInfo.setOntServiceUrl(PortalConfig.Prop.ONT_SERVICE_URL.getValue());
+		portalBaseInfo.setPortalServiceUrl(PortalConfig.Prop.PORTAL_SERVICE_URL.getValue());
+		portalBaseInfo.setVineServiceUrl(PortalConfig.Prop.VINE_SERVICE_URL.getValue());
+		portalBaseInfo.setOntbrowserServiceUrl(PortalConfig.Prop.ONTBROWSER_SERVICE_URL.getValue());
 
 		log.info("preparing base info ... Done.");
 	}
@@ -97,8 +97,8 @@ public class PortalImpl  {
 
 	
 	public MetadataBaseInfo getMetadataBaseInfo(boolean includeVersion) {
-		String resourceTypeClassUri = Config.Prop.RESOURCE_TYPE_CLASS.getValue();
-		String authorityClassUri = Config.Prop.AUTHORITY_CLASS.getValue();
+		String resourceTypeClassUri = PortalConfig.Prop.RESOURCE_TYPE_CLASS.getValue();
+		String authorityClassUri = PortalConfig.Prop.AUTHORITY_CLASS.getValue();
 		
 		return iserver.getMetadataBaseInfo(includeVersion, resourceTypeClassUri, authorityClassUri);
 	}

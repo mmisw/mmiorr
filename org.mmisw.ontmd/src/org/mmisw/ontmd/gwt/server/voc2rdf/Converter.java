@@ -12,7 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
-import org.mmisw.ontmd.gwt.server.Config;
+import org.mmisw.ontmd.gwt.server.PortalConfig;
 import org.mmisw.iserver.core.util.JenaUtil2;
 import org.mmisw.iserver.core.MdHelper;
 import org.mmisw.voc2rdf.transf.StringManipulationUtil;
@@ -125,7 +125,7 @@ public class Converter {
 		log.info("!!!!!!!!!!!!!!!! Converter: values = " +values);
 		log.info("setting primary class " + primaryClass);
 		
-		namespaceRoot = Config.Prop.ONT_SERVICE_URL.getValue();
+		namespaceRoot = PortalConfig.Prop.ONT_SERVICE_URL.getValue();
 		log.info("Converter: namespaceRoot = " +namespaceRoot);
 	}
 	
@@ -167,7 +167,7 @@ public class Converter {
 		//
 		// before saving the RDF, save a copy of the text contents:
 		//
-		String full_path_csv = Config.Prop.ONTMD_VOC2RDF_DIR.getValue() + getPathOnServer() + ".csv";
+		String full_path_csv = PortalConfig.Prop.ONTMD_VOC2RDF_DIR.getValue() + getPathOnServer() + ".csv";
 		try {
 			FileWriter os = new FileWriter(full_path_csv);
 			IOUtils.copy(new StringReader(ascii), os);
@@ -180,7 +180,7 @@ public class Converter {
 		}
 
 		// now save the RDF:
-		String full_path = Config.Prop.ONTMD_VOC2RDF_DIR.getValue() + getPathOnServer();
+		String full_path = PortalConfig.Prop.ONTMD_VOC2RDF_DIR.getValue() + getPathOnServer();
 		try {
 			FileWriter os = new FileWriter(full_path);
 			os.write(rdf);

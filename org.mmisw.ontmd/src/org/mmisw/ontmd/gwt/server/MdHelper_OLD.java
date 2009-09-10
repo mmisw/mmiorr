@@ -137,7 +137,7 @@ public class MdHelper_OLD {
 				.setTooltip(RESOURCE_TYPE_TOOLTIP)
 				.setExample("parameter")
 				.setAllowUserDefinedOption(true)
-				.setOptionsVocabulary(Config.Prop.RESOURCE_TYPE_CLASS.getValue())
+				.setOptionsVocabulary(PortalConfig.Prop.RESOURCE_TYPE_CLASS.getValue())
 				.addRelatedAttr(
 						createAttrDef(OmvMmi.shortNameUri)
 						.setLabel("URI of resource type")
@@ -180,7 +180,7 @@ public class MdHelper_OLD {
 				.setTooltip(AUTHORITY_TOOLTIP)
 				.setExample("mmitest")
 				.setAllowUserDefinedOption(true)
-				.setOptionsVocabulary(Config.Prop.AUTHORITY_CLASS.getValue())
+				.setOptionsVocabulary(PortalConfig.Prop.AUTHORITY_CLASS.getValue())
 			;
 			
 			MdUtil.readAuthorities(authorityAttrDef);

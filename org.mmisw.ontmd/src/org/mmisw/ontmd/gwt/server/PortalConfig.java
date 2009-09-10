@@ -9,7 +9,7 @@ import org.apache.commons.logging.Log;
  * 
  * @author Carlos Rueda
  */
-public class Config {
+public class PortalConfig {
 	
 	/**
 	 * The configuration properties used by the service.
@@ -82,20 +82,20 @@ public class Config {
 	}
 
 	
-	private static final Config instance = new Config();
+	private static final PortalConfig instance = new PortalConfig();
 	
 	/** 
 	 * Gets the unique instance of this class.
 	 * Call {@link #init(ServletConfig)} to have it properly initialized.
 	 */
-	public static Config getInstance() {
+	public static PortalConfig getInstance() {
 		return instance;
 	}
 	
 	
 	private volatile boolean initCalled = false;
 	
-	private Config() {};
+	private PortalConfig() {};
 
 	
 	/**
