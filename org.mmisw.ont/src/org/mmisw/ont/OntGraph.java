@@ -1,18 +1,27 @@
 package org.mmisw.ont;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.servlet.ServletException;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.InfModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.reasoner.Reasoner;
+import com.hp.hpl.jena.reasoner.rulesys.GenericRuleReasoner;
+import com.hp.hpl.jena.reasoner.rulesys.Rule;
 import com.hp.hpl.jena.util.PrintUtil;
 
 import edu.drexel.util.rdf.JenaUtil;
@@ -32,10 +41,22 @@ public class OntGraph {
 	 */
 	private static final boolean USE_UNVERSIONED = true;
 
+
+	/** Servlet resource containing the model with properties for inference purposes */
+	private static final String INF_PROPERTIES_MODEL_NAME = "inf_properties.n3";
+	
+	/** Servlet resource containing the rules for inference purposes */
+	private static final String INF_RULES_NAME = "inf_rules.txt";
+
+	/** the corresponding inference model after a _doInitModel(true) call. */
+	private InfModel _infModel;
+	
+	
 	private final Db db;
 	
 	/** the model with all the ontologies */
 	private Model _model;
+	
 	
 	private String aquaUploadsDir;
 
@@ -53,27 +74,36 @@ public class OntGraph {
 	}
 
 	/**
-	 * Gets the model containing the graph.
-	 * @return the model containing the graph.
+	 * Gets the model containing the graph. If the graph has been initialized with
+	 * inference, then the corresponding InfModel is returned; otherwise the raw model.
+	 * 
+	 * @return the model as described.
 	 */
 	public Model getModel() {
-		return _model;
+		return _infModel != null ? _infModel : _model;
 	}
 
 
 	/**
 	 * Initializes the graph with all ontologies 
-	 * as returned by {@link org.mmisw.ont.Db#getOntologies()}
+	 * as returned by {@link org.mmisw.ont.Db#getOntologies()}.
+	 * 
+	 * <p>
+	 * Inference is enabled by default. If inference should be disabled,
+	 * call {@link #reinit(boolean)} with a false argument.
+	 * 
+	 * <p>
 	 * Does nothing if already initialized.
 	 * @throws ServletException
 	 */
 	void init() throws ServletException {
-		log.info("init called.");
+		final boolean withInference = true;
+		log.info("init called. withInference=" +withInference);
 		
 		aquaUploadsDir = OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY.getValue();
 		
 		if ( _model == null ) {
-			_doInitModel();
+			_doInitModel(withInference);
 			log.info("init complete.");
 		}
 		else {
@@ -83,15 +113,23 @@ public class OntGraph {
 	
 	/**
 	 * Reinitializes the graph.
+	 * @param withInference true to enable inference.
 	 * @throws ServletException
 	 */
-	void reinit() throws ServletException {
-		log.info("reinit called.");
-		_doInitModel();
+	void reinit(boolean withInference) throws ServletException {
+		log.info("reinit called. withInference=" +withInference);
+		_doInitModel(withInference);
 		log.info("reinit complete.");
 	}
 	
-	private void _doInitModel() throws ServletException {
+	/**
+	 * Inits the _model and, if withInference is true, also the _infModel.
+	 * @param withInference true to create the inference model
+	 * @throws ServletException
+	 */
+	private void _doInitModel(boolean withInference) throws ServletException {
+		_infModel = null;  // make sure loadOntology(ontology) below does not use _infModel
+		
 		_model = ModelFactory.createDefaultModel();
 		
 		// get the list of (latest-version) ontologies:
@@ -103,6 +141,22 @@ public class OntGraph {
 		
 		for ( Ontology ontology : onts ) {
 			loadOntology(ontology);
+		}
+		
+		log.info("size of base model: " +_model.size());
+		
+		if ( withInference ) {
+			log.info("starting creation of inference model...");
+			long startTime = System.currentTimeMillis();
+			_infModel = _createInfModel();
+			if ( _infModel != null ) {
+				long endTime = System.currentTimeMillis();
+				log.info("creation of inference model completed successfully. (" +(endTime-startTime)+ " ms)");
+				log.info("estimated size of inference model: " +_infModel.size());
+			}
+		}
+		else {
+			_infModel = null;
 		}
 
 		if ( false && log.isDebugEnabled() ) {
@@ -121,12 +175,75 @@ public class OntGraph {
 			}
 		}
 	}
+	
+	/**
+	 * helper method to retrieve the contents of a resource in the classpath .
+	 */
+	private String _getResource(String resourceName) {
+		InputStream infRulesStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName);
+		if ( infRulesStream == null ) {
+			log.error(resourceName+ ": resource not found -- check classpath");
+			return null;
+		}
+		StringWriter output = new StringWriter();
+		try {
+			IOUtils.copy(infRulesStream, output);
+			return output.toString();
+		}
+		catch (IOException e) {
+			log.error(resourceName+ ": cannot read resource", e);
+			return null;
+		}
+		finally {
+			IOUtils.closeQuietly(infRulesStream);
+		}
+	}
+
+
+	/**
+	 * 1) load the skos properties model into the base model _model
+	 * 2) create reasoner and InfModel.
+	 * @return the created InfModel
+	 */
+	private InfModel _createInfModel() {
+		//
+		// 1) load the skos properties model into the base model _model:
+		//
+		String propsSrc = _getResource(INF_PROPERTIES_MODEL_NAME);
+		if ( propsSrc == null ) {
+			return null;
+		}
+		
+		Model propsModel = ModelFactory.createDefaultModel();
+		StringReader sr = new StringReader(propsSrc);
+		propsModel.read(sr, "dummyBase", "N3");
+		_model.add(propsModel);
+		log.info("Added properties model:\n\t" +propsSrc.replaceAll("\n", "\n\t"));
+
+		
+		//
+		// 2) create reasoner and InfModel:
+		//
+		String rulesSrc = _getResource(INF_RULES_NAME);
+		if ( rulesSrc == null ) {
+			return null;
+		}
+		log.info("Creating InfModel with rules:\n\t" +rulesSrc.replaceAll("\n", "\n\t"));
+		List<?> rules = Rule.parseRules(rulesSrc);
+		Reasoner reasoner = new GenericRuleReasoner(rules);
+		InfModel im = ModelFactory.createInfModel(reasoner, _model);
+		return im;
+	}
 
 	/**
 	 * Loads the given model into the graph.
+	 * If inference is enabled, then it updates the corresponding inference model.
 	 * @param ontology
 	 */
 	public void loadOntology(Ontology ontology) {
+		
+		final Model model2update = _infModel != null ? _infModel : _model;
+		
 		String full_path = aquaUploadsDir+ "/" +ontology.file_path + "/" + ontology.filename;
 
 		log.info("Loading: " +full_path);
@@ -139,7 +256,7 @@ public class OntGraph {
 				try {
 					mmiUri = new MmiUri(ontology.getUri());
 					OntModel unversionedModel = UnversionedConverter.getUnversionedModel(model, mmiUri);
-					_model.add(unversionedModel);
+					model2update.add(unversionedModel);
 				}
 				catch (URISyntaxException e) {
 					log.error("shouldn't happen", e);
@@ -148,13 +265,13 @@ public class OntGraph {
 			}
 			else {
 				log.info("    RH: " +full_path);
-				_model.add(model);
+				model2update.add(model);
 			}
 		}
 		else {
 			String absPath = "file:" + full_path;
 			try {
-				_model.read(absPath, "", null);
+				model2update.read(absPath, "", null);
 
 				// TODO processImports: true or false?
 				//			boolean processImports = false;

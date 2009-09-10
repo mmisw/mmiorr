@@ -4,6 +4,28 @@ $Id$
 
 ChangeLog
 
+2009-09-09   1.3.8.beta
+	Inferences enabled (issue #175 Enable inference mechanism)
+	- New in WebContent/WEB-INF/classes/:
+		inf_properties.n3 - to indicate properties of the skos relationships
+		inf_rules.txt     - to indicate inference rules over the skos relationships above
+	- OntServlet: Value of "_reload" param now examined: if empty or equals to "inf" then
+	  inference is included in the OntGraph. This facilitates testing w/ and w/o inferencing.
+	- OntGraph.reinit(boolean withInference): called with true by init().
+	- OntGraph._createInfModel(): create the _infModel based on the inf_rules.txt
+	- OntGraph.loadOntology(Ontology ontology): note that the updated model depends on whether
+	  inference in enabled (ie., _infModel != null, then _infModel is the model updated; otherwise, _model).
+	  
+	So, at deployment time, the inference model is created by default. The size of the base model and
+	the estimated size of the inference model are logged. This is a first step to examine memory
+	consumption and then see if some critical situation should be handled soon.
+	
+	References:
+	 - http://jena.sourceforge.net/inference/index.html
+	 - http://www.ibm.com/developerworks/xml/library/j-jena/
+	 - http://vine.cvs.sf.net/viewvc/vine/org.mmi.mappingPolicy2/config/
+	
+	
 2009-09-03   1.3.7.beta
 	Issue #168: Submitted ontology not included for SPARQL query processing
 	- OntGraph: new operation loadOntology(Ontology) to support addition of an ontology
