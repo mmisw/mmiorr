@@ -133,6 +133,8 @@
 				<filter token="ontmd.resource.dir"       value="${ontmd.resource.dir}" />
 				<filter token="ontmd.resourcetype.class" value="${ontmd.resourcetype.class}" />
 				<filter token="ontmd.authority.class"    value="${ontmd.authority.class}" />
+				<filter token="mail.usr"                 value="${mail.usr}" />
+				<filter token="mail.pw"                  value="${mail.pw}" />
 			</filterset>
 		</copy>
 

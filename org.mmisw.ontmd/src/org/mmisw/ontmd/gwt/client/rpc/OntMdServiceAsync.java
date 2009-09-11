@@ -10,6 +10,7 @@ import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryResult;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
@@ -34,8 +35,6 @@ public interface OntMdServiceAsync {
 	void refreshOptions(AttrDef attrDef, AsyncCallback<AttrDef> callback);
 	
 	void getBaseInfo(Map<String, String> params, AsyncCallback<MetadataBaseInfo> callback);
-	
-	void login(String userName, String userPassword, AsyncCallback<LoginResult> callback);
 	
 	void getOntologyInfoFromRegistry(String ontologyUri, AsyncCallback<OntologyInfoPre> callback);
 	
@@ -108,4 +107,9 @@ public interface OntMdServiceAsync {
 	
 	void runSparqlQuery(SparqlQueryInfo query, AsyncCallback<SparqlQueryResult> callback);
 
+	
+	// login
+	
+	void authenticateUser(String userName, String userPassword, AsyncCallback<LoginResult> callback);
+	void resetUserPassword(String username, AsyncCallback<ResetPasswordResult> callback);
 }

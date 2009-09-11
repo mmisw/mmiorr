@@ -7,7 +7,7 @@ import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
 import org.mmisw.ontmd.gwt.client.LoginListener;
 import org.mmisw.ontmd.gwt.client.Main;
-import org.mmisw.ontmd.gwt.client.UserPanel;
+import org.mmisw.ontmd.gwt.client.LoginPanel;
 import org.mmisw.ontmd.gwt.client.portal.IOntologyPanel;
 import org.mmisw.ontmd.gwt.client.portal.PortalControl;
 import org.mmisw.ontmd.gwt.client.rpc.OntologyInfoPre;
@@ -52,7 +52,7 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 	private MetadataPanel metadataPanel;
 	
 	
-	private UserPanel userInfoPanel = new UserPanel(this);
+	private LoginPanel userInfoPanel = new LoginPanel(this);
 //	private UploadPanel loginPanel = new UploadPanel(this);
 	
 	
@@ -815,6 +815,12 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 		popup.setText("Diagnostics on original metadata");
 		popup.center();
 		popup.show();
+	}
+
+
+	public void loginCreateAccount() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

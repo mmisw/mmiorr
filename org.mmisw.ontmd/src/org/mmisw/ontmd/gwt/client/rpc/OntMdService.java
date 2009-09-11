@@ -10,6 +10,7 @@ import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryResult;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
@@ -44,11 +45,6 @@ public interface OntMdService extends RemoteService {
 	 * @return the given argument.
 	 */
 	AttrDef refreshOptions(AttrDef attrDef);
-	
-	/**
-	 * Authenticates a user.
-	 */
-	LoginResult login(String userName, String userPassword);
 	
 	
 	/**
@@ -178,4 +174,9 @@ public interface OntMdService extends RemoteService {
 	
 	public SparqlQueryResult runSparqlQuery(SparqlQueryInfo query);
 
+	
+	// login
+	
+	public LoginResult authenticateUser(String userName, String userPassword);
+	public ResetPasswordResult resetUserPassword(String username);
 }

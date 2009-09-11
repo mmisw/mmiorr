@@ -6,6 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.IServer;
 import org.mmisw.iserver.core.Server;
+import org.mmisw.iserver.core.ServerConfig;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
@@ -13,6 +14,7 @@ import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryResult;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
@@ -53,6 +55,9 @@ public class PortalImpl  {
 		log.info(appInfo.toString());
 		
 		iserver = Server.getInstance(ontServiceUrl, bioportalRestUrl);
+		
+		ServerConfig.Prop.MAIL_USER.setValue(PortalConfig.Prop.MAIL_USER.getValue());
+		ServerConfig.Prop.MAIL_PASSWORD.setValue(PortalConfig.Prop.MAIL_PASSWORD.getValue());
 	}
 
 	public AppInfo getAppInfo() {
@@ -140,5 +145,16 @@ public class PortalImpl  {
 	
 	public SparqlQueryResult runSparqlQuery(SparqlQueryInfo query) {
 		return iserver.runSparqlQuery(query);
+	}
+	
+	
+	// login
+	
+	public LoginResult authenticateUser(String userName, String userPassword) {
+		return iserver.authenticateUser(userName, userPassword);
+	}
+	
+	public ResetPasswordResult resetUserPassword(String username) {
+		return iserver.resetUserPassword(username);
 	}
 }

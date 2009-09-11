@@ -19,7 +19,7 @@ public class UploadPanel extends VerticalPanel {
 
 //	private TextBox ontologyUri;
 	
-	private UserPanel userInfoPanel;
+	private LoginPanel userInfoPanel;
 	
 	private CellPanel buttons = createButtons();
 	
@@ -35,7 +35,7 @@ public class UploadPanel extends VerticalPanel {
 		add(form );
 		this.setCellHorizontalAlignment(form, ALIGN_CENTER);
 		
-		userInfoPanel = new UserPanel(mainPanel);
+		userInfoPanel = new LoginPanel(mainPanel);
 		add(userInfoPanel.getWidget());
 		this.setCellHorizontalAlignment(userInfoPanel.getWidget(), ALIGN_CENTER);
 		

@@ -5,6 +5,13 @@ $Id$
 
 2009-09-10  1.5.0.alpha20
 	- Renamed Config to PortalConfig
+	- PortalConfig: new properties: MAIL_USER, MAIL_PASSWORD
+	- Renamed UserPanel to LoginPanel
+	- Removed class Login (now using iserver's service authenticateUser)
+	- LoginPanel now with options to: 
+		- reset password - working
+		- create account - preliminary code
+	- {activation,mail}.jar included included to support iserver's MailSender helper.
 
 	
 2009-09-09  1.5.0.alpha19

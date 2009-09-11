@@ -39,6 +39,7 @@ import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryResult;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
@@ -194,23 +195,6 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	}
 
 
-	public LoginResult login(String userName, String userPassword) {
-		LoginResult loginResult = new LoginResult();
-		
-		log.info(": authenticating user " +userName+ " ...");
-		try {
-			Login login = new Login(userName, userPassword);
-			login.getSession(loginResult);
-		}
-		catch (Exception ex) {
-			loginResult.setError(ex.getMessage());
-		}
-
-		return loginResult;
-	}
-	
-
-	
 	public OntologyInfoPre getOntologyInfoFromPreLoaded(String uploadResults) {
 		OntologyInfoPre ontologyInfoPre = new OntologyInfoPre();
 		
@@ -1435,6 +1419,18 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	
 	public SparqlQueryResult runSparqlQuery(SparqlQueryInfo query) {
 		return portal.runSparqlQuery(query);
+	}
+
+	
+	// login
+	
+	public LoginResult authenticateUser(String userName, String userPassword) {
+		return portal.authenticateUser(userName, userPassword);
+	}
+	
+
+	public ResetPasswordResult resetUserPassword(String username) {
+		return portal.resetUserPassword(username);
 	}
 
 }

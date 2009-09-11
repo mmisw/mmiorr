@@ -75,6 +75,16 @@
 			<param-value>@ontmd.authority.class@</param-value>
 		</init-param>
 
+		<init-param>
+			<param-name>mail.usr</param-name>
+			<param-value>@mail.usr@</param-value>
+		</init-param>
+
+		<init-param>
+			<param-name>mail.pw</param-name>
+			<param-value>@mail.pw@</param-value>
+		</init-param>
+
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	

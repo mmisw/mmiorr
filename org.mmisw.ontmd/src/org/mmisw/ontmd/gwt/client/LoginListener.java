@@ -9,5 +9,7 @@ import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 public interface LoginListener {
 	
 	public void loginOk(LoginResult loginResult);
+	
+	public void loginCreateAccount();
 
 }

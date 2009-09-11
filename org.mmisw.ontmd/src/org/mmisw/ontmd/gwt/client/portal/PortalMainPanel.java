@@ -8,7 +8,7 @@ import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.ontmd.gwt.client.LoginListener;
 import org.mmisw.ontmd.gwt.client.Main;
-import org.mmisw.ontmd.gwt.client.UserPanel;
+import org.mmisw.ontmd.gwt.client.LoginPanel;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 import org.mmisw.ontmd.gwt.client.vine.VineMain;
 
@@ -33,7 +33,10 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class PortalMainPanel extends VerticalPanel implements LoginListener, HistoryListener {
 
-	public enum InterfaceType { BROWSE, ONTOLOGY_VIEW, ONTOLOGY_EDIT_NEW_VERSION, ONTOLOGY_EDIT_NEW, SEARCH };
+	public enum InterfaceType {
+		BROWSE, ONTOLOGY_VIEW, ONTOLOGY_EDIT_NEW_VERSION, ONTOLOGY_EDIT_NEW, SEARCH,
+		CREATE_USER_ACCOUNT
+	};
 	
 	
 	private final PortalControl pctrl;
@@ -49,7 +52,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 
 	private InterfaceType interfaceType = InterfaceType.BROWSE;
 	
-	private UserPanel userPanel;
+	private LoginPanel loginPanel;
 	
 	private MyDialog signInPopup;
 
@@ -140,8 +143,8 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	}
 	
 	void userSignedOut() {
-		if ( userPanel != null ) {
-			userPanel.logout();
+		if ( loginPanel != null ) {
+			loginPanel.logout();
 		}
 		pctrl.setLoginResult(null);
 		headerPanel.updateLinks(interfaceType);
@@ -152,9 +155,9 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	}
 	
 	void userToSignIn() {
-		if ( userPanel == null ) {
-			userPanel = new UserPanel(this);
-			signInPopup = new MyDialog(userPanel.getWidget()) {
+		if ( loginPanel == null ) {
+			loginPanel = new LoginPanel(this);
+			signInPopup = new MyDialog(loginPanel.getWidget()) {
 				public boolean onKeyUpPreview(char key, int modifiers) {
 					// avoid ENTER close the popup
 					if ( key == KeyboardListener.KEY_ESCAPE  ) {
@@ -168,7 +171,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 					// use a timer to make the userPanel focused (there must be a better way)
 					new Timer() {
 						public void run() {
-							userPanel.getFocus();
+							loginPanel.getFocus();
 						}
 					}.schedule(700);
 					super.show();
@@ -180,6 +183,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		signInPopup.show();
 	}
 
+	// LoginListener
 	public void loginOk(final LoginResult loginResult) {
 		pctrl.setLoginResult(loginResult);
 		browsePanel.ontologyTable.showProgress();
@@ -191,6 +195,17 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 			}
 		});
 	    
+	}
+
+	// LoginListener
+	public void loginCreateAccount() {
+		DeferredCommand.addCommand(new Command() {
+			public void execute() {
+				if ( signInPopup != null ) {
+					signInPopup.hide();
+				}
+			}
+		});
 	}
 
 
@@ -206,6 +221,9 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 			else if ( historyToken.toLowerCase().equals("search") ) {
 				dispatchSearchTerms();		
 			}
+			else if ( historyToken.toLowerCase().equals("newaccount") ) {
+				dispatchCreateAccount();		
+			}
 			else {
 				String ontologyUri = historyToken.trim();
 				Main.log("onHistoryChanged: URI: " +ontologyUri);
@@ -219,6 +237,25 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	}
 
 	
+	private void dispatchCreateAccount() {
+		OntologyPanel ontologyPanel = pctrl.getOntologyPanel();
+		if ( ontologyPanel != null ) {
+			ontologyPanel.cancel();
+			pctrl.setOntologyInfo(null);
+			pctrl.setOntologyPanel(null);
+		}
+		
+		CreateAccountPanel createAccountPanel = new CreateAccountPanel();
+
+		interfaceType = InterfaceType.CREATE_USER_ACCOUNT;
+	    controlsPanel.showMenuBar(interfaceType);
+	    headerPanel.updateLinks(interfaceType);
+		
+	    bodyPanel.clear();
+		bodyPanel.add(createAccountPanel);
+	}
+
+
 	public void refreshListAllOntologies() {
 		dispatchMainPanel(true);
 	}

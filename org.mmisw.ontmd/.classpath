@@ -2,6 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="/Users/carueda/Software/apache-tomcat-6.0.18/lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="base_war/WEB-INF/lib/activation.jar"/>
+	<classpathentry kind="lib" path="base_war/WEB-INF/lib/mail.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena.jar" sourcepath="/Users/carueda/Software/Jena-2.5.6/src"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/log4j-1.2.12.jar"/>
