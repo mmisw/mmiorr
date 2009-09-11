@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -1506,9 +1505,8 @@ public class Server implements IServer {
 		
 		///////////////////////////////////////////////////////////////
 		// update password in back-end
-		Map<String, String> values = new HashMap<String, String>();
+		Map<String, String> values = userInfoResult.getProps();
 		values.put("id", userInfoResult.getProps().get("id"));
-		values.put("username", username);
 		values.put("password", newPassword);
 		CreateUpdateUserAccountResult updatePwResult = createUpdateUserAccount(values);
 		if ( updatePwResult.getError() != null ) {
