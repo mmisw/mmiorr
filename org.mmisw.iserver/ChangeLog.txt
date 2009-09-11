@@ -5,7 +5,7 @@ $Id$
 
 2009-09-10   1.5.0.alpha20
 
-	- New UserAccountCreatorUpdater
+	- New UserAccountCreatorUpdater: creation -> ok;  update -> not working yet
 	- New Server.createUpdateUserAccount
 	
 	- Renamed Config to ServerConfig

@@ -136,7 +136,6 @@ public interface IServer {
 	LoginResult authenticateUser(String userName, String userPassword);
 	ResetPasswordResult resetUserPassword(String username);
 	UserInfoResult getUserInfo(String username);
-	
 	CreateUpdateUserAccountResult createUpdateUserAccount(Map<String,String> values);
 
 }

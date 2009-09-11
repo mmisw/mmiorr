@@ -23,7 +23,7 @@ import org.mmisw.iserver.gwt.client.rpc.CreateUpdateUserAccountResult;
  */
 class UserAccountCreatorUpdater {
 	/** for the REST call */
-	private static final String REST     = "/users";
+	private static final String USERS     = "/users";
 
 	// TODO revise this pattern
 //	private static final Pattern RESPONSE_PATTERN = Pattern.compile(
@@ -41,16 +41,18 @@ class UserAccountCreatorUpdater {
 
 	private final Log log = LogFactory.getLog(UserAccountCreatorUpdater.class);
 	
+	private String userId;
 	private Map<String,String> values;
 	
 	
 	/**
 	 * Constructor.
-	 * @param userName
-	 * @param userPassword
+	 * @param create true to create new account; false to update existing account.
+	 * @param values
 	 */
 	UserAccountCreatorUpdater(Map<String,String> values) {
 		this.values = values;
+		this.userId = values.get("id");
 	}
 	
 	
@@ -59,32 +61,42 @@ class UserAccountCreatorUpdater {
 		String applicationid = "4ea81d74-8960-4525-810b-fa1baab576ff";
 		log.info("applicationid=" +applicationid);
 		
-		String restUrl = ServerConfig.Prop.BIOPORTAL_REST_URL.getValue() + REST;
-		log.info("preparing to call REST URL =" +restUrl);
+		String restUrl = ServerConfig.Prop.BIOPORTAL_REST_URL.getValue() + USERS;
 		
 		values.put("applicationid", applicationid);
+
+		
+		if ( userId != null ) {
+			values.put("method", "PUT");
+			restUrl += "/" + userId;
+		}
+		restUrl += "?&applicationid=" +applicationid;
 		
 		List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-		
 		for ( String key : values.keySet() ) {
-			pairs.add(new NameValuePair(key, values.get(key)));
+			String value = values.get(key);
+			if ( value != null ) {
+				pairs.add(new NameValuePair(key, value));
+			}
 		}
-		
 		NameValuePair[] data = pairs.toArray(new NameValuePair[pairs.size()]);
-		
-		PostMethod post = new PostMethod(restUrl);
-		try {
-			post.setRequestBody(data);
 
+		PostMethod method = new PostMethod(restUrl);
+		method.setRequestBody(data);
+
+		log.info("preparing to call REST URL = " +restUrl);
+		
+
+		try {
 			HttpClient client = new HttpClient();
 			client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
 
-			log.info("Executing POST ...");
+			log.info("Executing " +method.getName()+ " ...");
 
 			String msg;
-			int status = client.executeMethod(post);
+			int status = client.executeMethod(method);
 			if (status == HttpStatus.SC_OK) {
-				msg = post.getResponseBodyAsString();
+				msg = method.getResponseBodyAsString();
 				log.info("Authentication complete, response=[" + msg + "]");
 				msg = "OK:" +msg;
 			} 
@@ -93,7 +105,7 @@ class UserAccountCreatorUpdater {
 				log.info("Authentication failed, status text=" + statusText);
 				
 				msg = statusText;
-				String response = post.getResponseBodyAsString();
+				String response = method.getResponseBodyAsString();
 				if ( response != null ) {
 					msg += "\n" + response;
 				}
@@ -103,12 +115,11 @@ class UserAccountCreatorUpdater {
 			return msg;
 		} 
 		finally {
-			post.releaseConnection();
+			method.releaseConnection();
 		}
 	}
 	
 	/**
-	 * Does the authentication returning a Session object.
 	 * @return
 	 * @throws Exception 
 	 */
