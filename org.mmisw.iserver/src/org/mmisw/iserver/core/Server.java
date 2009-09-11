@@ -1508,6 +1508,7 @@ public class Server implements IServer {
 		// update password in back-end
 		Map<String, String> values = new HashMap<String, String>();
 		values.put("id", userInfoResult.getProps().get("id"));
+		values.put("username", username);
 		values.put("password", newPassword);
 		CreateUpdateUserAccountResult updatePwResult = createUpdateUserAccount(values);
 		if ( updatePwResult.getError() != null ) {
