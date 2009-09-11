@@ -6,7 +6,7 @@ $Id$
 2009-09-10  1.5.0.alpha20
 
 	- various adjustments to dispatch user account creation/update
-	- user account creation/update: create -> ok;  update -> not yet.
+	- user account creation/update: updates in iserver
 	
 	
 	- Renamed Config to PortalConfig
