@@ -79,7 +79,7 @@ public class MappingOntologyCreator {
 		
 		this.mappings = mappingDataCreationInfo.getMappings();
 		
-		this.namespaceRoot = Config.Prop.ONT_SERVICE_URL.getValue();
+		this.namespaceRoot = ServerConfig.Prop.ONT_SERVICE_URL.getValue();
 		this.orgAbbreviation = createOntologyInfo.getAuthority();
 		this.shortName = createOntologyInfo.getShortName();
 		
@@ -120,7 +120,7 @@ public class MappingOntologyCreator {
 		
 
 		// now save the RDF:
-		String full_path = Config.Prop.ONTMD_VOC2RDF_DIR.getValue() + getPathOnServer();
+		String full_path = ServerConfig.Prop.ONTMD_VOC2RDF_DIR.getValue() + getPathOnServer();
 		try {
 			FileWriter os = new FileWriter(full_path);
 			os.write(rdf);

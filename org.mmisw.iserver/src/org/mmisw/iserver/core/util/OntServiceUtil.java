@@ -2,9 +2,11 @@ package org.mmisw.iserver.core.util;
 
 import java.io.StringReader;
 import java.net.URLEncoder;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.apache.commons.httpclient.HttpStatus;
-import org.mmisw.iserver.core.Config;
+import org.mmisw.iserver.core.ServerConfig;
 
 import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -35,7 +37,7 @@ public class OntServiceUtil {
 	 */
 	public static String resolveOntologyUri(String uriModel, String version, String... acceptEntries) throws Exception {
 		
-		String ontServiceUrl = Config.Prop.ONT_SERVICE_URL.getValue();
+		String ontServiceUrl = ServerConfig.Prop.ONT_SERVICE_URL.getValue();
 		uriModel = URLEncoder.encode(uriModel, "UTF-8");
 		String ontServiceRequest = ontServiceUrl + "?uri=" +uriModel;
 		if ( version != null ) {
@@ -57,7 +59,7 @@ public class OntServiceUtil {
 	 */
 	public static boolean isRegisteredOntologyUri(String uriModel, String... acceptEntries) throws Exception {
 		
-		String ontServiceUrl = Config.Prop.ONT_SERVICE_URL.getValue();
+		String ontServiceUrl = ServerConfig.Prop.ONT_SERVICE_URL.getValue();
 		uriModel = URLEncoder.encode(uriModel, "UTF-8");
 		String ontServiceRequest = ontServiceUrl + "?uri=" +uriModel;
 		int statusCode = HttpUtil.httpGetStatusCode(ontServiceRequest, acceptEntries);
@@ -115,7 +117,7 @@ public class OntServiceUtil {
 	 *         {@link OntConfig.Prop.ONT_SERVICE_URL} parameter.
 	 */
 	public static boolean isOntResolvableUri(String uri) {
-		 String ontServiceUrl = Config.Prop.ONT_SERVICE_URL.getValue();
+		 String ontServiceUrl = ServerConfig.Prop.ONT_SERVICE_URL.getValue();
 		 if ( ontServiceUrl == null ) {
 			 throw new IllegalStateException("Config.Prop.ONT_SERVICE_URL.getValue() returned null");
 		 }
@@ -137,7 +139,7 @@ public class OntServiceUtil {
 	 */
 	public static String runSparqlQuery(String query, String format, String... acceptEntries) throws Exception {
 		
-		String ontServiceUrl = Config.Prop.ONT_SERVICE_URL.getValue();
+		String ontServiceUrl = ServerConfig.Prop.ONT_SERVICE_URL.getValue();
 		query = URLEncoder.encode(query, "UTF-8");
 		String ontServiceRequest = ontServiceUrl + "?sparql=" +query;
 		if ( format != null ) {
@@ -159,7 +161,7 @@ public class OntServiceUtil {
 	 */
 	public static boolean loadOntologyInGraph(String uriModel) throws Exception {
 		
-		String ontServiceUrl = Config.Prop.ONT_SERVICE_URL.getValue();
+		String ontServiceUrl = ServerConfig.Prop.ONT_SERVICE_URL.getValue();
 		uriModel = URLEncoder.encode(uriModel, "UTF-8");
 		String ontServiceRequest = ontServiceUrl + "?_lo=" +uriModel;
 		int statusCode = HttpUtil.httpGetStatusCode(ontServiceRequest);
@@ -169,6 +171,33 @@ public class OntServiceUtil {
 	
 	
 
+	/**
+	 * Makes the request to get user info.
+	 * 
+	 * @param username  username
+	 * @return info properties
+	 * @throws Exception
+	 */
+	public static Map<String,String> getUserInfo(String username) throws Exception {
+		
+		String ontServiceUrl = ServerConfig.Prop.ONT_SERVICE_URL.getValue();
+		username = URLEncoder.encode(username, "UTF-8");
+		String ontServiceRequest = ontServiceUrl + "?_usri=" +username;
+		String str = HttpUtil.getAsString(ontServiceRequest);
+
+		Map<String,String> props = new LinkedHashMap<String,String>();
+		
+		String[] lines = str.split("\n");
+		for (String string : lines) {
+			String[] toks = string.split(":", 2);
+			if ( toks.length == 2 ) {
+				props.put(toks[0].trim(), toks[1].trim());
+			}
+		}
+		
+		return props;
+	}
+	
 
 }
 

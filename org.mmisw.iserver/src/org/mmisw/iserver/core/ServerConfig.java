@@ -6,7 +6,7 @@ package org.mmisw.iserver.core;
  * 
  * @author Carlos Rueda
  */
-public class Config {
+public class ServerConfig {
 	
 	/**
 	 * The configuration properties used by the service.
@@ -24,6 +24,9 @@ public class Config {
 		BIOPORTAL_REST_URL            ("bioportal.rest.url", "http://localhost:8080/bioportal/rest"),
 		
 		ONT_SERVICE_URL               ("ont.service.url", "http://localhost:8080/ont"),
+		
+		MAIL_USER                     ("mail.usr", null),
+		MAIL_PASSWORD                 ("mail.pw", null),
 		;
 		
 		private final String name;
@@ -42,16 +45,16 @@ public class Config {
 	}
 
 	
-	private static final Config instance = new Config();
+	private static final ServerConfig instance = new ServerConfig();
 	
 	/** 
 	 * Gets the unique instance of this class.
 	 */
-	public static Config getInstance() {
+	public static ServerConfig getInstance() {
 		return instance;
 	}
 	
 	
-	private Config() {};
+	private ServerConfig() {};
 
 }

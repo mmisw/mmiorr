@@ -29,7 +29,7 @@ class MdUtil {
 	private static final Log log = LogFactory.getLog(MdUtil.class);
 	
 	/**
-	 * Populates the AttrDef with the list of individuals from {@link Config.Prop#AUTHORITY_CLASS}.
+	 * Populates the AttrDef with the list of individuals from {@link ServerConfig.Prop#AUTHORITY_CLASS}.
 	 * The options are sorted by getName() (ignoring case).
 	 */
 	static void readAuthorities(AttrDef authorityAttrDef, String authorityClassUri) {
@@ -50,7 +50,7 @@ class MdUtil {
 	}
 
 	/**
-	 * Populates the AttrDef with the list of individuals from {@link Config.Prop#RESOURCE_TYPE_CLASS}.
+	 * Populates the AttrDef with the list of individuals from {@link ServerConfig.Prop#RESOURCE_TYPE_CLASS}.
 	 * The options are sorted by getName() (ignoring case).
 	 */
 	static void readResourceTypes(AttrDef resourceTypeAttrDef, String resourceTypeClassUri) {

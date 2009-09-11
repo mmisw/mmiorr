@@ -12,6 +12,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -412,5 +413,28 @@ public class Util2 {
 	}
 
 
+	private static Random random = new Random();
+	
+	public static String generatePassword() {
+		final int len = 7;
+		StringBuilder sb = new StringBuilder();
+		
+		while ( sb.length() < len ) {
+			int nn;
+			if ( random.nextDouble() < 2./3 ) {
+				if ( random.nextDouble() < 1./5 ) {
+					nn = 'a' + random.nextInt('z' - 'a');
+				}
+				else {
+					nn = 'A' + random.nextInt('Z' - 'A');
+				}
+			}
+			else {
+				nn = '0' + random.nextInt('9' - '0');
+			}
+			sb.append((char) nn);
+		}
+		return sb.toString();
+	}
 
 }

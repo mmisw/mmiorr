@@ -178,7 +178,7 @@ public class VocabCreator {
 		Map<String, String> values = createOntologyInfo.getMetadataValues();
 		
 		
-		this.namespaceRoot = Config.Prop.ONT_SERVICE_URL.getValue();
+		this.namespaceRoot = ServerConfig.Prop.ONT_SERVICE_URL.getValue();
 		this.orgAbbreviation = createOntologyInfo.getAuthority();
 		this.shortName = createOntologyInfo.getShortName();
 		
@@ -224,7 +224,7 @@ public class VocabCreator {
 		//
 		// before saving the RDF, save a copy of the text contents:
 		//
-		String full_path_csv = Config.Prop.ONTMD_VOC2RDF_DIR.getValue() + getPathOnServer() + ".csv";
+		String full_path_csv = ServerConfig.Prop.ONTMD_VOC2RDF_DIR.getValue() + getPathOnServer() + ".csv";
 		try {
 			FileWriter os = new FileWriter(full_path_csv);
 			IOUtils.copy(new StringReader(ascii), os);
@@ -238,7 +238,7 @@ public class VocabCreator {
 		}
 
 		// now save the RDF:
-		String full_path = Config.Prop.ONTMD_VOC2RDF_DIR.getValue() + getPathOnServer();
+		String full_path = ServerConfig.Prop.ONTMD_VOC2RDF_DIR.getValue() + getPathOnServer();
 		try {
 			FileWriter os = new FileWriter(full_path);
 			os.write(rdf);

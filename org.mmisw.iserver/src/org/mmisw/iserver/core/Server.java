@@ -25,25 +25,28 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.util.JenaUtil2;
+import org.mmisw.iserver.core.util.MailSender;
 import org.mmisw.iserver.core.util.OntServiceUtil;
+import org.mmisw.iserver.core.util.QueryUtil;
 import org.mmisw.iserver.core.util.TempOntologyHelper;
 import org.mmisw.iserver.core.util.Utf8Util;
-import org.mmisw.iserver.core.util.QueryUtil;
 import org.mmisw.iserver.core.util.Util2;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
-import org.mmisw.iserver.gwt.client.rpc.MappingDataCreationInfo;
-import org.mmisw.iserver.gwt.client.rpc.OtherDataCreationInfo;
-import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
+import org.mmisw.iserver.gwt.client.rpc.MappingDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
+import org.mmisw.iserver.gwt.client.rpc.OtherDataCreationInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryResult;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.UserInfoResult;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo.PriorOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
@@ -101,21 +104,21 @@ public class Server implements IServer {
 		defaultNamespaceRoot = ontServiceUrl;
 		log.info("basic init " +appInfo.getAppName()+ "...");
 		try {
-			Config.getInstance();
+			ServerConfig.getInstance();
 			
 			appInfo.setVersion(
-					Config.Prop.VERSION.getValue()+ " (" +
-						Config.Prop.BUILD.getValue()  + ")"
+					ServerConfig.Prop.VERSION.getValue()+ " (" +
+						ServerConfig.Prop.BUILD.getValue()  + ")"
 			);
 					
 			log.info(appInfo.toString());
 			
-			previewDir = new File(Config.Prop.ONTMD_PREVIEW_DIR.getValue());
+			previewDir = new File(ServerConfig.Prop.ONTMD_PREVIEW_DIR.getValue());
 			
-			Config.Prop.ONT_SERVICE_URL.setValue(ontServiceUrl);
+			ServerConfig.Prop.ONT_SERVICE_URL.setValue(ontServiceUrl);
 			log.info("ontServiceUrl = " +ontServiceUrl);
 			
-			Config.Prop.BIOPORTAL_REST_URL.setValue(bioportalRestUrl);
+			ServerConfig.Prop.BIOPORTAL_REST_URL.setValue(bioportalRestUrl);
 			log.info("bioportalRestUrl = " +bioportalRestUrl);
 		}
 		catch (Throwable ex) {
@@ -218,7 +221,7 @@ public class Server implements IServer {
 		// unversionedUri -> list of corresponding OntologyInfos
 		Map<String, List<RegisteredOntologyInfo>> unversionedToVersioned = new LinkedHashMap<String, List<RegisteredOntologyInfo>>();
 		
-		String uri = Config.Prop.ONT_SERVICE_URL.getValue()+ LISTALL;
+		String uri = ServerConfig.Prop.ONT_SERVICE_URL.getValue()+ LISTALL;
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("getUnversionedToVersioned. uri= " +uri);
@@ -1459,4 +1462,106 @@ public class Server implements IServer {
 		return sparqlQueryResult;
 	}
 
+	
+	// login:
+	
+	
+	public LoginResult authenticateUser(String userName, String userPassword) {
+		LoginResult loginResult = new LoginResult();
+		
+		log.info(": authenticating user " +userName+ " ...");
+		try {
+			UserAuthenticator login = new UserAuthenticator(userName, userPassword);
+			login.getSession(loginResult);
+		}
+		catch (Exception ex) {
+			loginResult.setError(ex.getMessage());
+		}
+
+		return loginResult;
+		
+	}
+	
+	public ResetPasswordResult resetUserPassword(String username) {
+		ResetPasswordResult result = new ResetPasswordResult();
+		
+		// Get email address for the user
+		UserInfoResult userInfoResult = getUserInfo(username);
+		if ( userInfoResult.getError() != null ) {
+			result.setError(userInfoResult.getError());
+			return result;
+		}
+		final String email = userInfoResult.getProps().get("email");
+		if ( email == null ) {
+			result.setError("No email associated with username: " +username);
+			return result;
+		}
+		
+		// get new password
+		String newPassword = Util2.generatePassword();
+		
+		// TODO update password in back-end
+		// ...
+		
+		// ...
+		
+		// update in back-end successful.
+		
+		// send email with new password
+		String mail_user = ServerConfig.Prop.MAIL_USER.getValue();
+		String mail_password = ServerConfig.Prop.MAIL_PASSWORD.getValue();
+		if ( mail_user == null ) {
+			String error = "Email server account not configured. Please report this bug. (u)";
+			result.setError(error);
+			log.error(error);
+			return result;
+		}
+		if ( mail_password == null ) {
+			String error = "Email server account not configured. Please report this bug. (p)";
+			result.setError(error);
+			log.error(error);
+			return result;
+		}
+
+		
+		boolean debug = false;
+		final String from = "MMI-ORR <techlead@marinemetadata.org>";
+		final String replyTo = "techlead@marinemetadata.org";
+		final String subject = "Password reset";
+		final String text = "Your MMI ORR password has been reset.\n" +
+				"\n" +
+				"Username: " +username+ "   email: " +email+ "\n" +
+				"Password: " +newPassword+ "\n" +
+				"\n"
+		;
+		
+		try {
+			MailSender.sendMessage(mail_user, mail_password, debug , from, email, replyTo, subject, text);
+			result.setEmail(email);
+		}
+		catch (Exception e) {
+			String error = "Error sending email: " +e.getMessage();
+			result.setError(error);
+			log.error(error, e);
+		}
+		
+		return result;
+	}
+
+	
+	public UserInfoResult getUserInfo(String username) {
+		UserInfoResult result = new UserInfoResult();
+		
+		try {
+			Map<String, String> props = OntServiceUtil.getUserInfo(username);
+			result.setProps(props);
+		}
+		catch (Exception e) {
+			String error = "error getting user information: " +e.getMessage();
+			result.setError(error);
+			log.error(error, e);
+		}
+		
+		return result;
+	}
 }
