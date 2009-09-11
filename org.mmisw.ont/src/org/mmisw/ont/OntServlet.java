@@ -324,7 +324,13 @@ public class OntServlet extends HttpServlet {
 		}
 		
 
+		// get user information?
+		if ( Util.yes(req.request, "_usri")  ) {
+			_getUserInfo(req);
+			return;
+		}
 		
+
 		
 		//////////////////////////////////////////////////////////////////////
 		// now, main dispatcher:
@@ -671,6 +677,32 @@ public class OntServlet extends HttpServlet {
 		}
 		
 		return ontology;
+	}
+
+	
+	/**
+	 * _usri=username
+	 */
+	private void _getUserInfo(Request req) throws ServletException, IOException {
+		StringBuffer result = new StringBuffer();
+		
+		String ontUri = Util.getParam(req.request, "_usri", "");
+		if ( ontUri.length() == 0 ) {
+			result.append("ERROR: missing username");
+		}
+		else {
+			Map<String, String> ui = db.getUserInfo(ontUri);
+			if ( ui != null ) {
+				for ( String key : ui.keySet() ) {
+					result.append(key+ ": " +ui.get(key)+ "\n");
+				}
+			}
+		}
+		
+		req.response.setContentType("text/plain");
+		ServletOutputStream os = req.response.getOutputStream();
+		IOUtils.write(result, os);
+		os.close();
 	}
 
 }

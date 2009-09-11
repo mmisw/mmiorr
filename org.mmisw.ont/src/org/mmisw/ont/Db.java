@@ -3,10 +3,13 @@ package org.mmisw.ont;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -433,5 +436,55 @@ public class Db {
 		}
 	
 		return onts;
+	}
+
+	/**
+	 * Gets info about a user.
+	 * @param username
+	 * @return
+	 */
+	public Map<String,String> getUserInfo(String username) throws ServletException {
+		Connection _con = null;
+		try {
+			_con = getConnection();
+			Statement _stmt = _con.createStatement();
+
+			String query = 
+				"select id, username, email, firstname, lastname, phone, date_created " +
+				"from ncbo_user " +
+				"where username = '" +username+ "'";
+			
+			ResultSet rs = _stmt.executeQuery(query);
+			
+			if ( rs.next() ) {
+				ResultSetMetaData md = rs.getMetaData();
+				Map<String,String> props = new LinkedHashMap<String,String>();
+			
+				for ( int i = 1, count = md.getColumnCount(); i <= count; i++ ) {
+					String value = rs.getString(i);
+					if ( value != null ) {
+						props.put(md.getColumnName(i), value);
+					}
+				}
+				
+	        	return props;
+	        }
+	        else {
+	        	return null;
+	        }
+		}
+		catch (SQLException e) {
+			throw new ServletException(e);
+		}
+		finally {
+			if ( _con != null ) {
+				try {
+					_con.close();
+				}
+				catch (SQLException e) {
+					log.warn("Error closing connection", e);
+				}
+			}
+		}
 	}
 }
