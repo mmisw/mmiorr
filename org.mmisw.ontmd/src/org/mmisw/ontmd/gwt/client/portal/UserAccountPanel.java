@@ -5,8 +5,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.CreateUpdateUserAccountResult;
+import org.mmisw.iserver.gwt.client.rpc.LoginResult;
+import org.mmisw.iserver.gwt.client.rpc.UserInfoResult;
 import org.mmisw.ontmd.gwt.client.Main;
 
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -31,7 +34,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author Carlos Rueda
  */
 public class UserAccountPanel extends VerticalPanel {
-	private final VerticalPanel widget = new VerticalPanel();
+	private final HorizontalPanel widget = new HorizontalPanel();
 	
 	private final CellPanel container = new VerticalPanel();
 	
@@ -74,13 +77,16 @@ public class UserAccountPanel extends VerticalPanel {
 	public UserAccountPanel() {
 		
 		_addTb("username", "Username");
-		_addTb("email", "E-mail");
 		_addTb("firstname", "First name");
 		_addTb("lastname", "Last name");
+		_addTb("email", "E-mail");
 		_addTb("phone", "Phone");
 		_addPwTb("password", "Password");
 		_addPwTb("password2", "Verify password");
 		
+		
+		widget.setWidth("600px");
+		widget.setHorizontalAlignment(ALIGN_CENTER);
 		
 		container.setSpacing(4);
 		DecoratorPanel decPanel = new DecoratorPanel();
@@ -110,6 +116,78 @@ public class UserAccountPanel extends VerticalPanel {
 	public Widget getWidget() {
 		return widget;
 	}
+	
+	public void dispatch() {
+		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
+		String userLoggedIn = (loginResult != null && loginResult.getError() == null) ?
+				loginResult.getUserName() : null
+		;
+
+
+		String nameToFocus;
+		if ( userLoggedIn != null ) {
+			tbs.get("username").tb.setEnabled(false);
+			nameToFocus = "firstname";
+			dispatchUpdate(userLoggedIn);
+		}
+		else {
+			nameToFocus = "username";
+			dispatchCreate();
+		}
+		final TextBox tb2Focus = tbs.get(nameToFocus).tb;
+		
+		// use a timer to make the userPanel focused (there must be a better way)
+		new Timer() {
+			public void run() {
+				tb2Focus.setFocus(true);
+				tb2Focus.selectAll();
+			}
+		}.schedule(700);
+
+	}
+	
+	private void dispatchUpdate(String username) {
+		
+		AsyncCallback<UserInfoResult> callback = new AsyncCallback<UserInfoResult>() {
+
+			public void onFailure(Throwable ex) {
+				String error = ex.getMessage();
+				Main.log("Error getting user info: " +error);
+				statusError("Error getting user info: " +error);
+				_enable(true);
+			}
+
+			public void onSuccess(UserInfoResult result) {
+				if ( result.getError() != null ) {
+					Main.log("Error getting user info: " +result.getError());
+					statusError(result.getError());
+				}
+				else {
+					Main.log("user info ok" );
+
+					Map<String, String> props = result.getProps();
+					for ( String name : props.keySet() ) {
+						Entry entry = tbs.get(name);
+						if ( entry != null ) {
+							entry.tb.setText(props.get(name));
+						}
+				    }
+
+					statusMessage("");
+				}
+				_enable(true);
+			}
+			
+		};
+		
+	    _enable(false);
+		Main.ontmdService.getUserInfo(username, callback );	
+	}
+	
+	
+	private void dispatchCreate() {
+		_enable(true);
+	}
 
 	private Widget createForm() {
 		FlexTable panel = new FlexTable();
@@ -125,9 +203,26 @@ public class UserAccountPanel extends VerticalPanel {
 		row++;
 
 		
+		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
+		String userLoggedIn = (loginResult != null && loginResult.getError() == null) ?
+				loginResult.getUserName() : null;
+		
+		HTML tipForPassword = null;
+		
 		for ( String name : tbs.keySet() ) {
 			Entry entry = tbs.get(name); 
 			TextBox tb = entry.tb;
+			
+			if ( (tb instanceof PasswordTextBox) && userLoggedIn != null && tipForPassword == null ) {
+				tipForPassword = new HTML("<font color=\"gray\"><i>Update the following if you want to change your password:</i></font>");
+				panel.getFlexCellFormatter().setColSpan(row, 0, 3);
+				panel.setWidget(row, 0, tipForPassword);
+				panel.getFlexCellFormatter().setAlignment(row, 0, 
+						HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+				);
+				row++;
+			}
+			
 			panel.setWidget(row, 0, new Label(entry.label+ ":"));
 
 			panel.setWidget(row, 1, tb);
@@ -137,26 +232,28 @@ public class UserAccountPanel extends VerticalPanel {
 			panel.getFlexCellFormatter().setAlignment(row, 1, 
 					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 			);
+			
 			row++;
 			
 		}
 
-		
-		HorizontalPanel loginCell = new HorizontalPanel();
-		loginCell.add(createUpdateButton);
-		panel.setWidget(row, 0, loginCell);
-		panel.getFlexCellFormatter().setAlignment(row, 0, 
-				HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE
-		);
-		row++;
-		
-		
 		panel.getFlexCellFormatter().setColSpan(row, 0, 3);
 		panel.setWidget(row, 0, statusLabel);
 		panel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		row++;
+		
+		createUpdateButton.setText(userLoggedIn == null ? "Create" : "Update");
+		HorizontalPanel loginCell = new HorizontalPanel();
+		loginCell.add(createUpdateButton);
+		panel.getFlexCellFormatter().setColSpan(row, 0, 3);
+		panel.setWidget(row, 0, loginCell);
+		panel.getFlexCellFormatter().setAlignment(row, 0, 
+				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		row++;
+		
 		
 		tbs.get("username").tb.setFocus(true);
 		return panel;
@@ -179,6 +276,18 @@ public class UserAccountPanel extends VerticalPanel {
 	}
 
 	private void createUpdate() {
+		
+		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
+		String userName = null;
+		String userId = null;
+		String sessionId = null;
+			
+		if ( loginResult != null && loginResult.getError() == null ) {
+			userName = loginResult.getUserName();
+			userId = loginResult.getUserId();
+			sessionId = loginResult.getSessionId();
+		}
+
 		Map<String,String> values = new HashMap<String,String>();
 		for (  String name : tbs.keySet() ) {
 			Entry entry = tbs.get(name);
@@ -196,23 +305,36 @@ public class UserAccountPanel extends VerticalPanel {
 				return;
 			}
 		}
-
-		// now, check passwordsL
-		if ( values.get("password").length() == 0 ) {
-			statusError("Missing password");
-			tbs.get("password").tb.setFocus(true);
-			return;
+		
+		boolean checkPassword = true;
+		
+		if ( userName != null ) {
+			// Update. do not check passwords if both fields are empty:
+			if ( values.get("password").length() == 0 && values.get("password2").length() == 0 ) {
+				checkPassword = false;
+			}
 		}
-		else if ( ! values.get("password").equals(values.get("password2")) ) {
-			statusError("Password mismatch");
-			tbs.get("password").tb.setFocus(true);
-			return;
+
+		
+		if ( checkPassword ) {
+			// now, check passwords:
+			if ( values.get("password").length() == 0 ) {
+				statusError("Missing password");
+				tbs.get("password").tb.setFocus(true);
+				return;
+			}
+			else if ( ! values.get("password").equals(values.get("password2")) ) {
+				statusError("Password mismatch");
+				tbs.get("password").tb.setFocus(true);
+				return;
+			}
 		}
 		
-		doCreateUpdate(values);
+		doCreateUpdate(userId, sessionId, values);
 	}
 	
-	void doCreateUpdate(Map<String,String> values) {
+	
+	private void doCreateUpdate(final String userId, String sessionId, Map<String,String> values) {
 		
 		AsyncCallback<CreateUpdateUserAccountResult> callback = new AsyncCallback<CreateUpdateUserAccountResult>() {
 
@@ -231,17 +353,25 @@ public class UserAccountPanel extends VerticalPanel {
 				else {
 					Main.log("account ok" );
 					statusMessage("OK");
-//					loginListener.loginOk(loginResult);
+//					History.newItem(PortalConsts.T_BROWSE);
 				}
 				_enable(true);
 			}
-			
 		};
-		Main.log("Creating/updating user account ...");
-		statusMessage("Creating/updating user account ...");
+		
+		if (userId != null ) {
+			values.put("id", userId);
+			values.put("sessionid", sessionId);
+			Main.log("Updating user account. UserId: " +userId);
+			statusMessage("Updating user account ...");
+		}
+		else {
+			Main.log("Creating user account ...");
+			statusMessage("Creating user account ...");
+		}
 		_enable(false);
-		Main.ontmdService.createUpdateUserAccount(values, callback);
 
+		Main.ontmdService.createUpdateUserAccount(values, callback);
 	}
 
 	

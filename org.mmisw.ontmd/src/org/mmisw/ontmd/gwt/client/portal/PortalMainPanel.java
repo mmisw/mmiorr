@@ -35,7 +35,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 
 	public enum InterfaceType {
 		BROWSE, ONTOLOGY_VIEW, ONTOLOGY_EDIT_NEW_VERSION, ONTOLOGY_EDIT_NEW, SEARCH,
-		CREATE_USER_ACCOUNT
+		USER_ACCOUNT
 	};
 	
 	
@@ -152,6 +152,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		browsePanel.ontologyTable.showProgress();
 	    browsePanel.setLoginResult(pctrl.getLoginResult());
 	    
+	    History.newItem(PortalConsts.T_BROWSE);
 	}
 	
 	void userToSignIn() {
@@ -247,12 +248,13 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		
 		UserAccountPanel userAccountPanel = new UserAccountPanel();
 
-		interfaceType = InterfaceType.CREATE_USER_ACCOUNT;
+		interfaceType = InterfaceType.USER_ACCOUNT;
 	    controlsPanel.showMenuBar(interfaceType);
 	    headerPanel.updateLinks(interfaceType);
 		
 	    bodyPanel.clear();
 		bodyPanel.add(userAccountPanel.getWidget());
+		userAccountPanel.dispatch();
 	}
 
 
@@ -415,9 +417,12 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	
 	
 	public void cancelEdit(OntologyPanel ontologyPanel) {
-		if ( ! Window.confirm("Any edits will be lost") ) {
-			return;
+		if ( ontologyPanel != null ) {
+			if ( ! Window.confirm("Any edits will be lost") ) {
+				return;
+			}
 		}
+		
 		switch ( interfaceType ) {
 			case ONTOLOGY_EDIT_NEW_VERSION:
 				interfaceType = InterfaceType.ONTOLOGY_VIEW;

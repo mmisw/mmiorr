@@ -43,6 +43,7 @@ import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryResult;
+import org.mmisw.iserver.gwt.client.rpc.UserInfoResult;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.ont.MmiUri;
@@ -1433,7 +1434,11 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	public ResetPasswordResult resetUserPassword(String username) {
 		return portal.resetUserPassword(username);
 	}
-
+	
+	public UserInfoResult getUserInfo(String username) {
+		return portal.getUserInfo(username);
+	}
+	
 	public CreateUpdateUserAccountResult createUpdateUserAccount(Map<String,String> values) {
 		return portal.createUpdateUserAccount(values);
 	}

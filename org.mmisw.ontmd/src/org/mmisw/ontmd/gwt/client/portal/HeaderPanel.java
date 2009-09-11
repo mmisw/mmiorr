@@ -30,6 +30,8 @@ public class HeaderPanel extends FlexTable {
 	
 	private Hyperlink browseLink = new Hyperlink("Browse", PortalConsts.T_BROWSE);
 	
+	private Hyperlink accountLink = new Hyperlink("Create account", PortalConsts.T_USER_ACCOUNT);
+	
 	private HTML signInButton = new HTML("<u>Sign in</u>");
 
 	private HTML signOutButton = new HTML("<u>Sign out</u>");
@@ -83,7 +85,9 @@ public class HeaderPanel extends FlexTable {
 		List<Widget> widgets = new ArrayList<Widget>();
 		
 		if ( loginResult != null ) {
-			widgets.add(new HTML("<b>" +loginResult.getUserName()+ "</b>"));
+//			widgets.add(new HTML("<b>" +loginResult.getUserName()+ "</b>"));
+			accountLink.setText(loginResult.getUserName());
+			widgets.add(accountLink);
 		}
 
 		switch ( type ) {
@@ -92,6 +96,7 @@ public class HeaderPanel extends FlexTable {
 			break;
 		case SEARCH: 
 		case ONTOLOGY_VIEW:
+		case USER_ACCOUNT:
 			widgets.add(browseLink);
 			break;
 		case ONTOLOGY_EDIT_NEW_VERSION:
@@ -102,6 +107,10 @@ public class HeaderPanel extends FlexTable {
 		
 		if ( loginResult == null ) {
 			widgets.add(signInButton);
+			if ( type != InterfaceType.USER_ACCOUNT ) {
+				accountLink.setText("Create account");
+				widgets.add(accountLink);
+			}
 		}
 		else {
 			widgets.add(signOutButton);

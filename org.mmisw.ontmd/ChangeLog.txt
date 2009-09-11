@@ -5,7 +5,8 @@ $Id$
 
 2009-09-10  1.5.0.alpha20
 
-	- create account ...
+	- various adjustments to dispatch user account creation/update
+	- user account creation/update: create -> ok;  update -> not yet.
 	
 	
 	- Renamed Config to PortalConfig

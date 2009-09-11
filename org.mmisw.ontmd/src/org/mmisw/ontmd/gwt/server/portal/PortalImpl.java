@@ -21,6 +21,7 @@ import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryResult;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.UserInfoResult;
 import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
 import org.mmisw.ontmd.gwt.client.rpc.PortalBaseInfo;
 import org.mmisw.ontmd.gwt.server.PortalConfig;
@@ -158,6 +159,10 @@ public class PortalImpl  {
 	
 	public ResetPasswordResult resetUserPassword(String username) {
 		return iserver.resetUserPassword(username);
+	}
+
+	public UserInfoResult getUserInfo(String username) {
+		return iserver.getUserInfo(username);
 	}
 	
 	public CreateUpdateUserAccountResult createUpdateUserAccount(Map<String,String> values) {

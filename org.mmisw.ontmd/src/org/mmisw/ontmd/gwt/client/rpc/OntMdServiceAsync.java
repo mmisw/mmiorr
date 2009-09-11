@@ -16,6 +16,7 @@ import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryResult;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.UserInfoResult;
 import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
@@ -113,6 +114,6 @@ public interface OntMdServiceAsync {
 	
 	void authenticateUser(String userName, String userPassword, AsyncCallback<LoginResult> callback);
 	void resetUserPassword(String username, AsyncCallback<ResetPasswordResult> callback);
-	
+	void getUserInfo(String username, AsyncCallback<UserInfoResult> callback);
 	void createUpdateUserAccount(Map<String,String> values, AsyncCallback<CreateUpdateUserAccountResult> callback);
 }

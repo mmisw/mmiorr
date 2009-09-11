@@ -16,6 +16,7 @@ import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryResult;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.UserInfoResult;
 import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
@@ -180,6 +181,6 @@ public interface OntMdService extends RemoteService {
 	
 	public LoginResult authenticateUser(String userName, String userPassword);
 	public ResetPasswordResult resetUserPassword(String username);
-	
+	public UserInfoResult getUserInfo(String username);
 	public CreateUpdateUserAccountResult createUpdateUserAccount(Map<String,String> values);
 }
