@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -1486,6 +1487,7 @@ public class Server implements IServer {
 	public ResetPasswordResult resetUserPassword(String username) {
 		ResetPasswordResult result = new ResetPasswordResult();
 		
+		///////////////////////////////////////////////////////////////
 		// Get email address for the user
 		UserInfoResult userInfoResult = getUserInfo(username);
 		if ( userInfoResult.getError() != null ) {
@@ -1498,16 +1500,23 @@ public class Server implements IServer {
 			return result;
 		}
 		
+		///////////////////////////////////////////////////////////////
 		// get new password
 		String newPassword = Util2.generatePassword();
 		
-		// TODO update password in back-end
-		// ...
+		///////////////////////////////////////////////////////////////
+		// update password in back-end
+		Map<String, String> values = new HashMap<String, String>();
+		values.put("id", userInfoResult.getProps().get("id"));
+		values.put("password", newPassword);
+		CreateUpdateUserAccountResult updatePwResult = createUpdateUserAccount(values);
+		if ( updatePwResult.getError() != null ) {
+			result.setError(updatePwResult.getError());
+			return result;
+		}
 		
-		// ...
 		
-		// update in back-end successful.
-		
+		///////////////////////////////////////////////////////////////
 		// send email with new password
 		String mail_user = ServerConfig.Prop.MAIL_USER.getValue();
 		String mail_password = ServerConfig.Prop.MAIL_PASSWORD.getValue();
@@ -1523,7 +1532,6 @@ public class Server implements IServer {
 			log.error(error);
 			return result;
 		}
-
 		
 		boolean debug = false;
 		final String from = "MMI-ORR <techlead@marinemetadata.org>";
@@ -1531,7 +1539,8 @@ public class Server implements IServer {
 		final String subject = "Password reset";
 		final String text = "Your MMI ORR password has been reset.\n" +
 				"\n" +
-				"Username: " +username+ "   email: " +email+ "\n" +
+				"Username: " +username+ "\n" +
+				"   email: " +email+ "\n" +
 				"Password: " +newPassword+ "\n" +
 				"\n"
 		;
@@ -1575,7 +1584,7 @@ public class Server implements IServer {
 			uacu.doIt(result);
 		}
 		catch (Exception e) {
-			String error = "error getting user information: " +e.getMessage();
+			String error = "error updating user information: " +e.getMessage();
 			result.setError(error);
 			log.error(error, e);
 		}
