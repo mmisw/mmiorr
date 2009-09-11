@@ -152,7 +152,9 @@ public class OntGraph {
 			if ( _infModel != null ) {
 				long endTime = System.currentTimeMillis();
 				log.info("creation of inference model completed successfully. (" +(endTime-startTime)+ " ms)");
-				log.info("estimated size of inference model: " +_infModel.size());
+				
+				// this takes time -- do not do it for now
+//				log.info("estimated size of inference model: " +_infModel.size());
 			}
 		}
 		else {

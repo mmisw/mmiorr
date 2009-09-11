@@ -8,6 +8,8 @@ ChangeLog
 	- new "_usri" service to obtain user info given the username
 	- Db.getUserInfo(String username)
 	
+	- Do not compute _infModel.size() -- takes time.
+	
 	
 2009-09-09   1.3.8.beta
 	Inferences enabled (issue #175 Enable inference mechanism)
