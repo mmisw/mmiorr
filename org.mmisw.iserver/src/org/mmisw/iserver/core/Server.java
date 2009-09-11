@@ -34,6 +34,7 @@ import org.mmisw.iserver.core.util.Util2;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.CreateUpdateUserAccountResult;
 import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
@@ -1563,5 +1564,23 @@ public class Server implements IServer {
 		}
 		
 		return result;
+	}
+	
+	
+	public CreateUpdateUserAccountResult createUpdateUserAccount(Map<String,String> values) {
+		CreateUpdateUserAccountResult result = new CreateUpdateUserAccountResult();
+		
+		try {
+			UserAccountCreatorUpdater uacu = new UserAccountCreatorUpdater(values);
+			uacu.doIt(result);
+		}
+		catch (Exception e) {
+			String error = "error getting user information: " +e.getMessage();
+			result.setError(error);
+			log.error(error, e);
+		}
+		
+		return result;
+		
 	}
 }

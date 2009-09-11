@@ -1,10 +1,12 @@
 package org.mmisw.iserver.core;
 
 import java.util.List;
+import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.CreateUpdateUserAccountResult;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
@@ -134,5 +136,7 @@ public interface IServer {
 	LoginResult authenticateUser(String userName, String userPassword);
 	ResetPasswordResult resetUserPassword(String username);
 	UserInfoResult getUserInfo(String username);
+	
+	CreateUpdateUserAccountResult createUpdateUserAccount(Map<String,String> values);
 
 }
