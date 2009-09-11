@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
+import org.mmisw.ontmd.gwt.client.portal.PortalConsts;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.History;
@@ -303,7 +304,7 @@ public class LoginPanel {
 	
 	private void createAccount() {
 		loginListener.loginCreateAccount();
-		History.newItem("newaccount");
+		History.newItem(PortalConsts.T_USER_ACCOUNT);
 	}
 
 	

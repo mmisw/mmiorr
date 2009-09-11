@@ -1,6 +1,7 @@
 package org.mmisw.ontmd.gwt.server.portal;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -10,6 +11,7 @@ import org.mmisw.iserver.core.ServerConfig;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.CreateUpdateUserAccountResult;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
@@ -157,4 +159,9 @@ public class PortalImpl  {
 	public ResetPasswordResult resetUserPassword(String username) {
 		return iserver.resetUserPassword(username);
 	}
+	
+	public CreateUpdateUserAccountResult createUpdateUserAccount(Map<String,String> values) {
+		return iserver.createUpdateUserAccount(values);
+	}
+	
 }

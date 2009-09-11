@@ -6,6 +6,7 @@ import java.util.Map;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.CreateUpdateUserAccountResult;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
@@ -179,4 +180,6 @@ public interface OntMdService extends RemoteService {
 	
 	public LoginResult authenticateUser(String userName, String userPassword);
 	public ResetPasswordResult resetUserPassword(String username);
+	
+	public CreateUpdateUserAccountResult createUpdateUserAccount(Map<String,String> values);
 }

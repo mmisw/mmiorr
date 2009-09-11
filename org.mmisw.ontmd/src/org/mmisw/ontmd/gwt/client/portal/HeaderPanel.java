@@ -28,7 +28,7 @@ public class HeaderPanel extends FlexTable {
 
 	private HorizontalPanel linksPanel = new HorizontalPanel();
 	
-	private Hyperlink browseLink = new Hyperlink("Browse", "browse");
+	private Hyperlink browseLink = new Hyperlink("Browse", PortalConsts.T_BROWSE);
 	
 	private HTML signInButton = new HTML("<u>Sign in</u>");
 

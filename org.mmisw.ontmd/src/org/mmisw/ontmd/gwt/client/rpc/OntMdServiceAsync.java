@@ -6,6 +6,7 @@ import java.util.Map;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.CreateUpdateUserAccountResult;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
@@ -112,4 +113,6 @@ public interface OntMdServiceAsync {
 	
 	void authenticateUser(String userName, String userPassword, AsyncCallback<LoginResult> callback);
 	void resetUserPassword(String username, AsyncCallback<ResetPasswordResult> callback);
+	
+	void createUpdateUserAccount(Map<String,String> values, AsyncCallback<CreateUpdateUserAccountResult> callback);
 }

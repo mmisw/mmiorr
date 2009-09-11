@@ -215,13 +215,13 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		
 		historyToken = historyToken.trim();
 		if ( historyToken.length() > 0 ) {
-			if ( historyToken.toLowerCase().equals("browse") ) {
+			if ( historyToken.toLowerCase().equals(PortalConsts.T_BROWSE) ) {
 				dispatchMainPanel(false);		
 			}
-			else if ( historyToken.toLowerCase().equals("search") ) {
+			else if ( historyToken.toLowerCase().equals(PortalConsts.T_SEARCH) ) {
 				dispatchSearchTerms();		
 			}
-			else if ( historyToken.toLowerCase().equals("newaccount") ) {
+			else if ( historyToken.toLowerCase().equals(PortalConsts.T_USER_ACCOUNT) ) {
 				dispatchCreateAccount();		
 			}
 			else {
@@ -245,14 +245,14 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 			pctrl.setOntologyPanel(null);
 		}
 		
-		CreateAccountPanel createAccountPanel = new CreateAccountPanel();
+		UserAccountPanel userAccountPanel = new UserAccountPanel();
 
 		interfaceType = InterfaceType.CREATE_USER_ACCOUNT;
 	    controlsPanel.showMenuBar(interfaceType);
 	    headerPanel.updateLinks(interfaceType);
 		
 	    bodyPanel.clear();
-		bodyPanel.add(createAccountPanel);
+		bodyPanel.add(userAccountPanel.getWidget());
 	}
 
 
@@ -261,7 +261,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	}
 	
 	public void searchTerms() {
-		History.newItem("search");
+		History.newItem(PortalConsts.T_SEARCH);
 	}
 	
 	
@@ -297,7 +297,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		}
 		
 		// notify the history that we are now in "browse":
-		History.newItem("browse");
+		History.newItem(PortalConsts.T_BROWSE);
 		
 		interfaceType = InterfaceType.BROWSE;
 	    controlsPanel.showMenuBar(interfaceType);
@@ -485,7 +485,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 					VerticalPanel vp = new VerticalPanel();
 					vp.setSpacing(14);
 					vp.add(new HTML(error));
-					vp.add(new Hyperlink("Go to main page", "browse"));
+					vp.add(new Hyperlink("Go to main page", PortalConsts.T_BROWSE));
 					bodyPanel.clear();
 				    bodyPanel.add(vp);
 				}
