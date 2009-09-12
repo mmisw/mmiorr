@@ -81,20 +81,16 @@ class UserAccountCreatorUpdater {
 
 			log.info("Executing " +method.getName()+ " ...");
 
-			String msg;
+			String msg = method.getResponseBodyAsString();
 			int status = client.executeMethod(method);
 			if (status == HttpStatus.SC_OK) {
-				msg = method.getResponseBodyAsString();
 				log.info("creation/update complete, response=[" + msg + "]");
 			} 
 			else {
 				String statusText = HttpStatus.getStatusText(status);
 				log.info("creation/update failed, status text=" + statusText);
-				
-				msg = statusText;
-				String response = method.getResponseBodyAsString();
-				if ( response != null ) {
-					msg += "\n" + response;
+				if ( msg == null ) {
+					msg = statusText;
 				}
 			}
 			
