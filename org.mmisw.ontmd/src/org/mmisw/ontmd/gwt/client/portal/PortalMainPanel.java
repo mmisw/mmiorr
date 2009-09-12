@@ -6,9 +6,8 @@ import java.util.Map;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
-import org.mmisw.ontmd.gwt.client.LoginListener;
-import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.LoginPanel;
+import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 import org.mmisw.ontmd.gwt.client.vine.VineMain;
 
@@ -31,7 +30,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * 
  * @author Carlos Rueda
  */
-public class PortalMainPanel extends VerticalPanel implements LoginListener, HistoryListener {
+public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 
 	public enum InterfaceType {
 		BROWSE, ONTOLOGY_VIEW, ONTOLOGY_EDIT_NEW_VERSION, ONTOLOGY_EDIT_NEW, SEARCH,
@@ -157,7 +156,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 	
 	void userToSignIn() {
 		if ( loginPanel == null ) {
-			loginPanel = new LoginPanel(this);
+			loginPanel = new LoginPanel();
 			signInPopup = new MyDialog(loginPanel.getWidget()) {
 				public boolean onKeyUpPreview(char key, int modifiers) {
 					// avoid ENTER close the popup
@@ -184,7 +183,20 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 		signInPopup.show();
 	}
 
-	// LoginListener
+	public void userAccountCreatedOrUpdated(boolean created, final LoginResult loginResult) {
+		if ( created ) {
+			// the timer is to let the user account panel to show any final messages
+			// for a little while before going to a new page:
+			new Timer() {
+				public void run() {
+					loginOk(loginResult);
+				}
+			}.schedule(1000);
+		}
+		// Else: nothing--let the user account panel continue.
+	}
+
+	
 	public void loginOk(final LoginResult loginResult) {
 		pctrl.setLoginResult(loginResult);
 		browsePanel.ontologyTable.showProgress();
@@ -196,6 +208,8 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 			}
 		});
 	    
+		// TODO do this?
+		History.newItem(PortalConsts.T_BROWSE);
 	}
 
 	// LoginListener
@@ -207,6 +221,7 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 				}
 			}
 		});
+		History.newItem(PortalConsts.T_USER_ACCOUNT);
 	}
 
 
@@ -224,6 +239,12 @@ public class PortalMainPanel extends VerticalPanel implements LoginListener, His
 			}
 			else if ( historyToken.toLowerCase().equals(PortalConsts.T_USER_ACCOUNT) ) {
 				dispatchCreateAccount();		
+			}
+			else if ( historyToken.toLowerCase().equals(PortalConsts.T_SIGN_IN) ) {
+				PortalControl.getInstance().userToSignIn();
+			}
+			else if ( historyToken.toLowerCase().equals(PortalConsts.T_SIGN_OUT) ) {
+				PortalControl.getInstance().userSignedOut();
 			}
 			else {
 				String ontologyUri = historyToken.trim();

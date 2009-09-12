@@ -9,7 +9,6 @@ import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.portal.OntologyTable.IQuickInfo;
 
 import com.google.gwt.http.client.URL;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -55,16 +54,6 @@ public class PortalControl {
 	}
 
 
-	public void launchCreateMapping() {
-		String url = Portal.portalBaseInfo.getVineServiceUrl();
-		if ( loginResult != null ) {
-			url += "?userId=" +loginResult.getUserId();
-			url += "&sessionid=" +loginResult.getSessionId();
-		}
-		String features = null;
-		Window.open(url, "_blank", features);
-	}
-
 	public void createNewFromFile() {		
 		portalMainPanel.createNewFromFile();
 	}
@@ -96,6 +85,9 @@ public class PortalControl {
 		portalMainPanel.cancelEdit(ontologyPanel);
 	}
 	
+	public void createAccount() {
+		portalMainPanel.loginCreateAccount();
+	}
 
 	public static enum DownloadOption {
 		RDFXML("RDF/XML", "rdf"),
@@ -201,6 +193,15 @@ public class PortalControl {
 	 */
 	public void setPortalMainPanel(PortalMainPanel portalMainPanel) {
 		this.portalMainPanel = portalMainPanel;
+	}
+
+	
+	public void loginOk(LoginResult loginResult) {
+		portalMainPanel.loginOk(loginResult);
+	}
+
+	public void userAccountCreatedOrUpdated(boolean created, LoginResult loginResult) {
+		portalMainPanel.userAccountCreatedOrUpdated(created, loginResult);
 	}
 
 	/**

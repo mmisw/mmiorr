@@ -7,7 +7,6 @@ import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.portal.PortalMainPanel.InterfaceType;
 
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -32,9 +31,9 @@ public class HeaderPanel extends FlexTable {
 	
 	private Hyperlink accountLink = new Hyperlink("Create account", PortalConsts.T_USER_ACCOUNT);
 	
-	private HTML signInButton = new HTML("<u>Sign in</u>");
-
-	private HTML signOutButton = new HTML("<u>Sign out</u>");
+	private Hyperlink signInLink = new Hyperlink("Sign in", PortalConsts.T_SIGN_IN);
+	
+	private Hyperlink signOutLink = new Hyperlink("Sign out", PortalConsts.T_SIGN_OUT);
 	
 	private HTML helpButton = new HTML(
 			"<a target=\"_blank\" href=\"" +HELP_LINK+ "\">Help</a>");
@@ -46,21 +45,7 @@ public class HeaderPanel extends FlexTable {
 		
 //		linksPanel.setBorderWidth(1);
 		
-		signInButton.addClickListener(new ClickListener() {
-			public void onClick(Widget sender) {
-				PortalControl.getInstance().userToSignIn();
-			}
-		});
 
-
-		signOutButton.addClickListener(new ClickListener() {
-			public void onClick(Widget sender) {
-				PortalControl.getInstance().userSignedOut();
-			}
-		});
-
-		
-		
 		FlexTable flexPanel = this;
 		flexPanel.setWidth("100%");
 //		flexPanel.setBorderWidth(1);
@@ -106,14 +91,14 @@ public class HeaderPanel extends FlexTable {
 		}
 		
 		if ( loginResult == null ) {
-			widgets.add(signInButton);
+			widgets.add(signInLink);
 			if ( type != InterfaceType.USER_ACCOUNT ) {
 				accountLink.setText("Create account");
 				widgets.add(accountLink);
 			}
 		}
 		else {
-			widgets.add(signOutButton);
+			widgets.add(signOutLink);
 		}
 		
 		widgets.add(helpButton);

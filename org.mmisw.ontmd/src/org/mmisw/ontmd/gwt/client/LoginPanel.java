@@ -4,10 +4,9 @@ import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
-import org.mmisw.ontmd.gwt.client.portal.PortalConsts;
+import org.mmisw.ontmd.gwt.client.portal.PortalControl;
 
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -35,7 +34,6 @@ public class LoginPanel {
 
 	private VerticalPanel widget = new VerticalPanel();
 	
-	private LoginListener loginListener;
 	private CellPanel container = new VerticalPanel();
 	
 	private TextBox userName;
@@ -55,16 +53,14 @@ public class LoginPanel {
 	
 	private PushButton createAccountButton = new PushButton("Create account", new ClickListener() {
 		public void onClick(Widget sender) {
-			createAccount();
+			PortalControl.getInstance().createAccount();
 		}
-
 	});
 	
 	private HTML statusLabel = new HTML("");
 	
 	
-	public LoginPanel(LoginListener loginListener) {
-		this.loginListener = loginListener;
+	public LoginPanel() {
 		container.setSpacing(4);
 		DecoratorPanel decPanel = new DecoratorPanel();
 	    decPanel.setWidget(container);
@@ -238,7 +234,7 @@ public class LoginPanel {
 				else {
 					Main.log("login ok: " +loginResult.getUserName());
 					statusMessage("OK");
-					loginListener.loginOk(loginResult);
+					PortalControl.getInstance().loginOk(loginResult);
 				}
 				_enable(true);
 			}
@@ -288,7 +284,7 @@ public class LoginPanel {
 			
 		};
 		Main.log("Resetting password for username: " +userName+ " ...");
-		statusMessage("Resetting password...");
+		statusMessage("Resetting password. Please wait...");
 		_enable(false);
 
 		Main.ontmdService.resetUserPassword(userName, callback);
@@ -299,12 +295,6 @@ public class LoginPanel {
 	public void setLoginResult(LoginResult loginResult) {
 		boolean ok = loginResult != null && loginResult.getError() == null;
 		_enable(! ok);
-	}
-
-	
-	private void createAccount() {
-		loginListener.loginCreateAccount();
-		History.newItem(PortalConsts.T_USER_ACCOUNT);
 	}
 
 	

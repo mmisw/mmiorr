@@ -103,7 +103,7 @@ public class UserAccountPanel extends VerticalPanel {
 	    		statusLabel.setText("");
 	    		if ( keyCode == KeyboardListener.KEY_ENTER ) {
 	    			_cancelKey();
-	    			createUpdate();
+	    			justCheck();
 	    		}
 			}
 	    };
@@ -126,7 +126,7 @@ public class UserAccountPanel extends VerticalPanel {
 
 		String nameToFocus;
 		if ( userLoggedIn != null ) {
-			tbs.get("username").tb.setEnabled(false);
+			tbs.get("username").tb.setReadOnly(true);
 			nameToFocus = "firstname";
 			dispatchUpdate(userLoggedIn);
 		}
@@ -214,7 +214,7 @@ public class UserAccountPanel extends VerticalPanel {
 			TextBox tb = entry.tb;
 			
 			if ( (tb instanceof PasswordTextBox) && userLoggedIn != null && tipForPassword == null ) {
-				tipForPassword = new HTML("<font color=\"gray\"><i>Update the following if you want to change your password:</i></font>");
+				tipForPassword = new HTML("<font color=\"gray\"><i>Fill in the following if you want to change your password:</i></font>");
 				panel.getFlexCellFormatter().setColSpan(row, 0, 3);
 				panel.setWidget(row, 0, tipForPassword);
 				panel.getFlexCellFormatter().setAlignment(row, 0, 
@@ -271,23 +271,10 @@ public class UserAccountPanel extends VerticalPanel {
 	
 	private void statusError(String error) {
 		statusLabel.setHTML("<font color=\"red\">" +error+ "</font>");
-		tbs.get("username").tb.setFocus(true);
-		tbs.get("username").tb.selectAll();
 	}
 
-	private void createUpdate() {
-		
-		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
-		String userName = null;
-		String userId = null;
-		String sessionId = null;
-			
-		if ( loginResult != null && loginResult.getError() == null ) {
-			userName = loginResult.getUserName();
-			userId = loginResult.getUserId();
-			sessionId = loginResult.getSessionId();
-		}
-
+	
+	private Map<String,String> checkFields(String userName) {
 		Map<String,String> values = new HashMap<String,String>();
 		for (  String name : tbs.keySet() ) {
 			Entry entry = tbs.get(name);
@@ -302,7 +289,18 @@ public class UserAccountPanel extends VerticalPanel {
 			if ( value.length() == 0 ) {
 				statusError("Missing value for field: " +entry.label);
 				tb.setFocus(true);
-				return;
+				tb.selectAll();
+				return null;
+			}
+			else if ( name.equals("email") ) {
+				// basic check:  something@something:
+				String[] toks = value.split("@");
+				if ( toks.length != 2 ) {
+					statusError("Malformed email address. Expected name and domain");
+					tb.setFocus(true);
+					tb.selectAll();
+					return null;
+				}
 			}
 		}
 		
@@ -315,22 +313,54 @@ public class UserAccountPanel extends VerticalPanel {
 			}
 		}
 
-		
 		if ( checkPassword ) {
 			// now, check passwords:
 			if ( values.get("password").length() == 0 ) {
 				statusError("Missing password");
 				tbs.get("password").tb.setFocus(true);
-				return;
+				return null;
 			}
 			else if ( ! values.get("password").equals(values.get("password2")) ) {
 				statusError("Password mismatch");
 				tbs.get("password").tb.setFocus(true);
-				return;
+				return null;
 			}
 		}
 		
-		doCreateUpdate(userId, sessionId, values);
+		return values;
+	}
+	
+	
+	private void justCheck() {
+		
+		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
+		String userName = null;
+			
+		if ( loginResult != null && loginResult.getError() == null ) {
+			userName = loginResult.getUserName();
+		}
+
+		checkFields(userName);
+	}
+	
+	private void createUpdate() {
+		
+		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
+		String userName = null;
+		String userId = null;
+		String sessionId = null;
+			
+		if ( loginResult != null && loginResult.getError() == null ) {
+			userName = loginResult.getUserName();
+			userId = loginResult.getUserId();
+			sessionId = loginResult.getSessionId();
+		}
+
+		Map<String, String> values = checkFields(userName);
+		
+		if ( values != null ) {
+			doCreateUpdate(userId, sessionId, values);
+		}
 	}
 	
 	
@@ -351,9 +381,12 @@ public class UserAccountPanel extends VerticalPanel {
 					statusError(result.getError());
 				}
 				else {
-					Main.log("account ok" );
-					statusMessage("OK");
-//					History.newItem(PortalConsts.T_BROWSE);
+					boolean created = userId == null;
+					String msg = "Account " + (created ? "created" : "updated");
+					Main.log(msg);
+					statusMessage(msg);
+					LoginResult loginResult = result.getLoginResult();
+					PortalControl.getInstance().userAccountCreatedOrUpdated(created, loginResult);
 				}
 				_enable(true);
 			}
@@ -363,10 +396,14 @@ public class UserAccountPanel extends VerticalPanel {
 			values.put("id", userId);
 			values.put("sessionid", sessionId);
 			Main.log("Updating user account. UserId: " +userId);
-			statusMessage("Updating user account ...");
+			statusMessage("Updating user account. values=" +values);
 		}
 		else {
-			Main.log("Creating user account ...");
+			if ( sessionId == null || sessionId.trim().length() == 0 ) {
+				sessionId = "33333333333333";
+			}
+			values.put("sessionid", sessionId);
+			Main.log("Creating user account. values=" +values);
 			statusMessage("Creating user account ...");
 		}
 		_enable(false);

@@ -3,6 +3,21 @@ Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
 
+2009-09-11  1.5.0.alpha21
+	- General user account management, login, and password reset completed:
+		Fixed issue #176: login issue - forgot password user name
+		Fixed Issue #173: user phone number can not be changes
+	- See iserver's changelog.
+	- Check email address before creating/updating a user account. Ideally, a full verification
+	  would include using the email (eg., sending some special URL that the user can click to
+	  verify/activate his/her account).
+	- Removed LoginListener (not needed anymore-- TODO lots of old code to be removed)
+		
+	- TODO Next: use cookies to keep the session (Issue #154)
+
+
+
+
 2009-09-10  1.5.0.alpha20
 
 	- various adjustments to dispatch user account creation/update

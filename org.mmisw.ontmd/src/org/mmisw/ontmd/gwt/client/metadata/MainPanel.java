@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
-import org.mmisw.ontmd.gwt.client.LoginListener;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.LoginPanel;
 import org.mmisw.ontmd.gwt.client.portal.IOntologyPanel;
@@ -38,7 +37,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author Carlos Rueda
  */
-public class MainPanel extends VerticalPanel implements LoginListener, IOntologyPanel {
+public class MainPanel extends VerticalPanel implements IOntologyPanel {
 
 
 	private CellPanel container = new VerticalPanel();
@@ -52,7 +51,7 @@ public class MainPanel extends VerticalPanel implements LoginListener, IOntology
 	private MetadataPanel metadataPanel;
 	
 	
-	private LoginPanel userInfoPanel = new LoginPanel(this);
+	private LoginPanel userInfoPanel = new LoginPanel();
 //	private UploadPanel loginPanel = new UploadPanel(this);
 	
 	
