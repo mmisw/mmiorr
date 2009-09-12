@@ -52,7 +52,7 @@ public class LoginResult extends BaseResult {
 	
 	
 	public String toString() {
-		return "LoginResult{userId=" +userId+", sessionId=" +sessionId+", role=" +userRole+ ", error=" +error+ "}";
+		return "LoginResult{userId=" +userId+", userName=" +userName+", sessionId=" +sessionId+", role=" +userRole+ ", error=" +error+ "}";
 	}
 
 }

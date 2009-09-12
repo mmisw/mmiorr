@@ -3,6 +3,19 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2009-09-11   1.5.0.alpha21
+	- General user account management, login, and password reset completed:
+		Fixed issue #176: login issue - forgot password user name
+		Fixed Issue #173: user phone number can not be changes
+	- Improvements in parsing of RESTful responses
+	- New helper XmlAccessor: Used by UserAuthenticator and UserAccountCreatorUpdater
+	- Check email address before creating/updating a user account. Ideally, a full verification
+	  would include using the email (eg., sending some special URL that the user can click to
+	  verify/activate his/her account).
+		
+	- TODO Next: use cookies to keep the session (Issue #154)
+
+
 2009-09-10   1.5.0.alpha20
 
 	- New UserAccountCreatorUpdater

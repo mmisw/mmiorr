@@ -18,6 +18,9 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -1508,6 +1511,7 @@ public class Server implements IServer {
 		Map<String, String> values = userInfoResult.getProps();
 		values.put("id", userInfoResult.getProps().get("id"));
 		values.put("password", newPassword);
+		values.put("sessionid", "4444444444444");
 		CreateUpdateUserAccountResult updatePwResult = createUpdateUserAccount(values);
 		if ( updatePwResult.getError() != null ) {
 			result.setError(updatePwResult.getError());
@@ -1578,12 +1582,25 @@ public class Server implements IServer {
 	public CreateUpdateUserAccountResult createUpdateUserAccount(Map<String,String> values) {
 		CreateUpdateUserAccountResult result = new CreateUpdateUserAccountResult();
 		
+		String email = values.get("email");
+		if ( email != null ) {
+			try {
+				new InternetAddress(email, true);
+			}
+			catch (AddressException e) {
+				String error = "Malformed email address: " +e.getMessage();
+				result.setError(error);
+				return result;
+			}
+		}
+		
 		try {
 			UserAccountCreatorUpdater uacu = new UserAccountCreatorUpdater(values);
 			uacu.doIt(result);
 		}
 		catch (Exception e) {
-			String error = "error updating user information: " +e.getMessage();
+			String error = "error updating user information: " +
+				e.getClass().getName()+ " : " +e.getMessage();
 			result.setError(error);
 			log.error(error, e);
 		}
