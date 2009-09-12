@@ -57,8 +57,8 @@ public class PortalConfig {
 		 */
 		ONTBROWSER_SERVICE_URL         ("ontbrowser.service.url", "http://localhost:8080/browser"),
 		
-		MAIL_USER                     ("mail.usr", "mmi.mmiorr@gmail.com"),
-		MAIL_PASSWORD                 ("mail.pw", "w311c0m32mm1"),
+		MAIL_USER                     ("mail.usr", null),
+		MAIL_PASSWORD                 ("mail.pw", null),
 
 		;
 		
