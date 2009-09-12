@@ -63,14 +63,17 @@ class UserAuthenticator {
 
 			log.info("Executing POST ...");
 
-			String msg = post.getResponseBodyAsString();
 			int status = client.executeMethod(post);
+
+			String msg = post.getResponseBodyAsString();
+			
 			if (status == HttpStatus.SC_OK) {
 				log.info("Authentication complete, response=[" + msg + "]");
 			} 
 			else {
 				String statusText = HttpStatus.getStatusText(status);
 				log.info("Authentication failed, status text=" + statusText);
+				log.info("Authentication failed, response=" + msg);
 				if ( msg == null ) {
 					msg = statusText;
 				}
