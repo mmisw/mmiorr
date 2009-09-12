@@ -395,8 +395,8 @@ public class UserAccountPanel extends VerticalPanel {
 		if (userId != null ) {
 			values.put("id", userId);
 			values.put("sessionid", sessionId);
-			Main.log("Updating user account. UserId: " +userId);
-			statusMessage("Updating user account. values=" +values);
+			Main.log("Updating user account. UserId: " +userId+ "  values=" +values);
+			statusMessage("Updating user account ...");
 		}
 		else {
 			if ( sessionId == null || sessionId.trim().length() == 0 ) {
