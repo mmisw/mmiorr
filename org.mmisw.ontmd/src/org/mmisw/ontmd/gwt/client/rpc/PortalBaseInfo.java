@@ -1,17 +1,17 @@
 package org.mmisw.ontmd.gwt.client.rpc;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
+import java.io.Serializable;
 
 /**
  * Base info for the portal.
  * 
  * @author Carlos Rueda
  */
-public class PortalBaseInfo implements IsSerializable {
-
+public class PortalBaseInfo implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	private String appServerUrl;
 	private String ontServiceUrl;
-	private String portalServiceUrl;
 	private String ontbrowserServiceUrl;
 	
 	
@@ -38,18 +38,6 @@ public class PortalBaseInfo implements IsSerializable {
 	 */
 	public void setOntServiceUrl(String ontServiceUrl) {
 		this.ontServiceUrl = ontServiceUrl;
-	}
-	/**
-	 * @return the portalServiceUrl
-	 */
-	public String getPortalServiceUrl() {
-		return portalServiceUrl;
-	}
-	/**
-	 * @param portalServiceUrl the portalServiceUrl to set
-	 */
-	public void setPortalServiceUrl(String portalServiceUrl) {
-		this.portalServiceUrl = portalServiceUrl;
 	}
 
 	/**

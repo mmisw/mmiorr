@@ -46,9 +46,6 @@ public class PortalConfig {
 		/** URL of "Ont" URI resolution service */
 		ONT_SERVICE_URL                ("ont.service.url", "http://localhost:8080/ont"),
 		
-		/** URL of portal service */
-		PORTAL_SERVICE_URL             ("portal.service.url", "http://localhost:8888/portal", false),
-		
 		/** URL of Ontology Browser service.
 		 * Note: it's required;  use the "-" value in build.properties to disable this functionality.
 		 */
@@ -116,10 +113,10 @@ public class PortalConfig {
 			for ( Prop prop : Prop.values() ) {
 				String value = sc.getInitParameter(prop.getName());
 				if ( value == null || value.trim().length() == 0 ) {
-					if ( useDefault ) {
+					if ( useDefault && prop.defValue != null ) {
 						value = prop.defValue;
 						if ( log != null && log.isDebugEnabled() ) {
-							log.debug("Using internal default value for " +prop.getName());
+							log.debug("--Using internal default value for " +prop.getName());
 						}
 					}
 					else if ( prop.required ) {
@@ -130,11 +127,6 @@ public class PortalConfig {
 				if ( log != null && log.isDebugEnabled() ) {
 					log.debug(prop.getName()+ " = " +value);
 				}
-			}
-			
-			if ( null == Prop.PORTAL_SERVICE_URL.getValue() ) {
-				String contextPath = sc.getServletContext().getContextPath();
-				Prop.PORTAL_SERVICE_URL.setValue(Prop.APPSERVER_HOST.getValue() + contextPath);
 			}
 			
 			// actually, if the ontbrowser property value does not start with "http", then

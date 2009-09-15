@@ -119,7 +119,6 @@ public class Portal {
 				removeLoadingMessage();
 				portalBaseInfo = bInfo;
 				Main.log("PortalBaseInfo: Ont service = " +portalBaseInfo.getOntServiceUrl());
-				Main.log("PortalBaseInfo: Portal service = " +portalBaseInfo.getPortalServiceUrl());
 				PortalMainPanel portalMainPanel = new PortalMainPanel(params, ontologyInfos);
 				main.startGui(params, portalMainPanel);
 			}
