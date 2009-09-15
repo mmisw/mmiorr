@@ -26,16 +26,6 @@
 		</init-param>
 		
 		<init-param>
-			<param-name>portal.service.url</param-name>
-			<param-value>@portal.service.url@</param-value>
-		</init-param>
-		
-		<init-param>
-			<param-name>vine.service.url</param-name>
-			<param-value>@vine.service.url@</param-value>
-		</init-param>
-		
-		<init-param>
 			<param-name>ontbrowser.service.url</param-name>
 			<param-value>@ontbrowser.service.url@</param-value>
 		</init-param>

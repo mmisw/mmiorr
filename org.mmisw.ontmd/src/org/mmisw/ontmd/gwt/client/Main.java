@@ -69,7 +69,14 @@ public class Main implements EntryPoint {
 		log("baseUrl = " + baseUrl);
 
 		// launch portal?
-		boolean launchPortal = GWT.getHostPageBaseURL().endsWith("/portal/");
+//		boolean launchPortal = GWT.getHostPageBaseURL().endsWith("/portal/");
+		// Note: now, always launch the portal
+		boolean launchPortal = true;
+
+		//
+		// TODO Remove the following mechanisms to launch the old versions of the
+		// other tools.
+		//
 		
 		// launch Voc2RDF?
 		boolean launchVoc2rdf = GWT.getHostPageBaseURL().endsWith("/voc2rdf/");

@@ -10,6 +10,8 @@ $Id$
 	  of the WAR if desired/necessary), without any needed internal changes. 
 	  
 	- Removed "vine.service.url" property and associated config methods from everywhere as it is not used.
+	
+	- Main: now, always launches the portal (TODOS lots of code clean-up)
 	  
 
 2009-09-11  1.5.0.alpha21
