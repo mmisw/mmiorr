@@ -120,7 +120,6 @@ public class Portal {
 				portalBaseInfo = bInfo;
 				Main.log("PortalBaseInfo: Ont service = " +portalBaseInfo.getOntServiceUrl());
 				Main.log("PortalBaseInfo: Portal service = " +portalBaseInfo.getPortalServiceUrl());
-				Main.log("PortalBaseInfo: Vine service = " +portalBaseInfo.getVineServiceUrl());
 				PortalMainPanel portalMainPanel = new PortalMainPanel(params, ontologyInfos);
 				main.startGui(params, portalMainPanel);
 			}

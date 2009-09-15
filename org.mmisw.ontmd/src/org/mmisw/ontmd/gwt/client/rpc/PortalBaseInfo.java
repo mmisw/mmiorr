@@ -12,7 +12,6 @@ public class PortalBaseInfo implements IsSerializable {
 	private String appServerUrl;
 	private String ontServiceUrl;
 	private String portalServiceUrl;
-	private String vineServiceUrl;
 	private String ontbrowserServiceUrl;
 	
 	
@@ -52,18 +51,7 @@ public class PortalBaseInfo implements IsSerializable {
 	public void setPortalServiceUrl(String portalServiceUrl) {
 		this.portalServiceUrl = portalServiceUrl;
 	}
-	/**
-	 * @return the vineServiceUrl
-	 */
-	public String getVineServiceUrl() {
-		return vineServiceUrl;
-	}
-	/**
-	 * @param vineServiceUrl the vineServiceUrl to set
-	 */
-	public void setVineServiceUrl(String vineServiceUrl) {
-		this.vineServiceUrl = vineServiceUrl;
-	}
+
 	/**
 	 * @return the ontbrowserServiceUrl
 	 */

@@ -2,6 +2,15 @@ org.mmisw.ontmd: MMI Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2009-09-15  1.5.0.alpha22
+	- Removed "portal.service.url" from sample.build.properties, build.xml, and web.xml.
+	  The value of this configuration property is obtained automatically by PortalConfig based on
+	  the application server property and the servlet context.
+	  This change makes it easy to redeploy the generated WAR file (with just change in the name
+	  of the WAR if desired/necessary), without any needed internal changes. 
+	  
+	- Removed "vine.service.url" property and associated config methods from everywhere as it is not used.
+	  
 
 2009-09-11  1.5.0.alpha21
 	- General user account management, login, and password reset completed:

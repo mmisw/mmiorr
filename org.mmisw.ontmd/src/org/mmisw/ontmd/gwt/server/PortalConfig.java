@@ -49,9 +49,6 @@ public class PortalConfig {
 		/** URL of portal service */
 		PORTAL_SERVICE_URL             ("portal.service.url", "http://localhost:8888/portal", false),
 		
-		/** URL of Vine service */
-		VINE_SERVICE_URL               ("vine.service.url", "http://localhost:8080/vine", false),
-		
 		/** URL of Ontology Browser service.
 		 * Note: it's required;  use the "-" value in build.properties to disable this functionality.
 		 */
