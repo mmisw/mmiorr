@@ -49,6 +49,7 @@ public class OntologyTable extends FlexTable {
 
 	private HTML quickInfoHeaderHtml = new HTML("");
 	private HTML nameHeaderHtml = new HTML("Name");
+	private HTML ontologyUriHeaderHtml = new HTML("URI");
 	private HTML authorHeaderHtml = new HTML("Author");
 	private HTML versionHeaderHtml = new HTML("Version");
 	private HTML submitterHeaderHtml = new HTML("Submitter");
@@ -68,6 +69,10 @@ public class OntologyTable extends FlexTable {
 			else if ( sortColumn.equalsIgnoreCase("author") ) {
 				s1 = o1.getContactName();
 				s2 = o2.getContactName();
+			}
+			else if ( sortColumn.equalsIgnoreCase("uri") ) {
+				s1 = o1.getUri();
+				s2 = o2.getUri();
 			}
 			else if ( sortColumn.equalsIgnoreCase("version") ) {
 				s1 = o1.getVersionNumber();
@@ -130,6 +135,7 @@ public class OntologyTable extends FlexTable {
 		flexPanel.setStylePrimaryName("OntologyTable");
 		
 		nameHeaderHtml.addClickListener(columnHeaderClickListener);
+		ontologyUriHeaderHtml.addClickListener(columnHeaderClickListener);
 		authorHeaderHtml.addClickListener(columnHeaderClickListener);
 		versionHeaderHtml.addClickListener(columnHeaderClickListener);
 		submitterHeaderHtml.addClickListener(columnHeaderClickListener);
@@ -205,6 +211,12 @@ public class OntologyTable extends FlexTable {
 			col++;
 		}
 		
+		flexPanel.setWidget(row, col, ontologyUriHeaderHtml);
+		flexPanel.getFlexCellFormatter().setAlignment(row, col, 
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		col++;
+
 		flexPanel.setWidget(row, col, nameHeaderHtml);
 		flexPanel.getFlexCellFormatter().setAlignment(row, col, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
@@ -296,6 +308,8 @@ public class OntologyTable extends FlexTable {
 
 			nameWidget.setTitle(tooltip);
 			
+			Widget uriWidget = new Hyperlink(uri, historyToken);
+			
 			int col = 0;
 			if ( quickInfo != null ) {
 				flexPanel.setWidget(row, col, quickInfo.getWidget(oi, includeVersionInLinks, !isVersionsTable));
@@ -305,6 +319,12 @@ public class OntologyTable extends FlexTable {
 				col++;
 			}
 			
+			flexPanel.setWidget(row, col, uriWidget);
+			flexPanel.getFlexCellFormatter().setAlignment(row, col, 
+					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+			);
+			col++;
+				
 			flexPanel.setWidget(row, col, nameWidget);
 			flexPanel.getFlexCellFormatter().setAlignment(row, col, 
 					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE

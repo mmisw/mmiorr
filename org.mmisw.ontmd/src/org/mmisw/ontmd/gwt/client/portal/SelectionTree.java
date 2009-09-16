@@ -14,17 +14,20 @@ import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.TreeListener;
 
 /**
- * ontology table.
+ * Selection tree.
  * 
  * @author Carlos Rueda
  */
 public class SelectionTree extends Tree implements TreeListener {
 
-	private static final String ALL = "-All-";
+	private static final String ALL_ONTOLOGIES = "All ontologies";
+	private static final String REGISTERED_BY_ME = "Registered by me";
+	private static final String REGISTERED_BY = "Registered by:";
+	
 	private final BrowsePanel browsePanel;
 	private final Tree tree = this;
 	
-	private TreeItem authorMenu;
+	private TreeItem allOntsTreeItem;
 	
 	private class AuthorItem extends TreeItem implements Comparable<AuthorItem> {
 		private String userId;
@@ -75,8 +78,8 @@ public class SelectionTree extends Tree implements TreeListener {
 	
 	private void initTree() {
 		tree.removeItems();
-		authorMenu = new TreeItem("Submitter");
-		tree.addItem(authorMenu);
+		allOntsTreeItem = new TreeItem(ALL_ONTOLOGIES);
+		tree.addItem(allOntsTreeItem);
 	}
 	
 	void update(List<RegisteredOntologyInfo> ontologyInfos, LoginResult loginResult) {
@@ -106,17 +109,23 @@ public class SelectionTree extends Tree implements TreeListener {
 			}
 			
 		}
-		
-		authorMenu.addItem(new TreeItem(ALL));
+
 		if ( loginResult != null ) {
+			allOntsTreeItem.addItem(new AuthorItem(REGISTERED_BY_ME, loginResult.getUserId()));
+		
+			TreeItem registerByTreeItem = new TreeItem(REGISTERED_BY);
+
+			allOntsTreeItem.addItem(registerByTreeItem);
+		
 			List<String> usernames = new ArrayList<String>();
 			usernames.addAll(authors.keySet());
+			usernames.remove(loginResult.getUserName());
 			Collections.sort(usernames);
 			for ( String author : usernames ) {
-				authorMenu.addItem(new AuthorItem(author, authors.get(author)));	
+				registerByTreeItem.addItem(new AuthorItem(author, authors.get(author)));	
 			}
 		}
-		authorMenu.setState(true);
+		allOntsTreeItem.setState(true);
 		
 		if ( types.size() > 0 ) {
 			Collections.sort(types);
@@ -155,7 +164,7 @@ public class SelectionTree extends Tree implements TreeListener {
 		}
 		else {
 			String text = item.getText();
-			if ( text.equalsIgnoreCase(ALL) ) {
+			if ( text.equalsIgnoreCase(ALL_ONTOLOGIES) ) {
 				browsePanel.allSelected();
 			}
 		}

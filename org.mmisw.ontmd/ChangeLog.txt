@@ -2,6 +2,21 @@ org.mmisw.ontmd: MMI Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2009-09-15  1.5.0.alpha23
+	- implemented #181: Include ontology URI column in ontology table
+		OntologyTable: "URI" column included
+	
+	- implemented #180: "my submitted ontologies" entry in the tree
+		SelectionTree: the first subtree is now, when the user is logged:
+			+ All ontologies
+				Registered by me
+				+ Registered by:
+					user1
+					user2
+					...
+		and simply All ontologies when not logged in.
+		
+
 2009-09-15  1.5.0.alpha22
 	- Removed "portal.service.url" property and associated config methods from everywhere as it is not needed.
 	  This change makes it easy to redeploy the generated WAR file (with just a change in the name
@@ -10,6 +25,8 @@ $Id$
 	- Removed "vine.service.url" property and associated config methods from everywhere as it is not used.
 	
 	- Main: now, always launches the portal (TODOS lots of code clean-up)
+	
+	
 	  
 
 2009-09-11  1.5.0.alpha21
