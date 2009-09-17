@@ -145,7 +145,11 @@ public class MetadataGroupPanel extends VerticalPanel {
 				
 				if ( Main.metadataBaseInfo.getResourceTypeUri().equals(attr.getUri()) ) {
 					// the special case for the "resourceType"
-					widget = resourceTypeWidget = new ResourceTypeWidget(attr, editing, true,
+					
+					// #183: Don't ask user whether the submitted ontology is a mapping
+					boolean includeIsMapCheck = false;
+					
+					widget = resourceTypeWidget = new ResourceTypeWidget(attr, editing, includeIsMapCheck,
 						new ChangeListener () {
 							public void onChange(Widget sender) {
 									formChanged();

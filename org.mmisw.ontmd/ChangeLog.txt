@@ -2,6 +2,14 @@ org.mmisw.ontmd: MMI Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2009-09-16  1.5.0.alpha24
+	- MetadataGroupPanel: #183: Don't ask user whether the submitted ontology is a mapping
+	  This should be determined by examining the contents of the ontology.
+	  See "listall" operation in Ont module.
+	  
+	- ResourceTypeWidget(AttrDef attr, boolean editing, boolean includeIsMapCheck, ChangeListener cl):
+	  Smaller size of this area so it aligns better with rest of the fields in the form.
+	
 2009-09-15  1.5.0.alpha23
 	- implemented #181: Include ontology URI column in ontology table
 		OntologyTable: "URI" column included

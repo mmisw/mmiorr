@@ -172,19 +172,28 @@ public class ResourceTypeWidget extends VerticalPanel {
 		FlexTable panel = new FlexTable();
 		int row = 0;
 		int nl = attr2.getNumberOfLines();
-		resourceTypeRelatedField = Util.createTextBoxBase(nl, "400", cl);
+		resourceTypeRelatedField = Util.createTextBoxBase(nl, "330", cl);
 		String tooltip = "<b>" +label+ "</b>:<br/>" + 
 							attr2.getTooltip() +
 							"<br/><br/><div align=\"right\">(" +attr2.getUri()+ ")</div>";
-		panel.setWidget(row, 0, new TLabel(label, editing && attr2.isRequired(), tooltip ));
-		panel.setWidget(row, 1, resourceTypeRelatedField);
-		panel.getFlexCellFormatter().setWidth(row, 0, "250");
+		
+		TLabel tlabel = new TLabel(label, editing && attr2.isRequired(), tooltip);
+		
+		HorizontalPanel hpRelated = new HorizontalPanel();
+		hpRelated.add(tlabel);
+		hpRelated.add(resourceTypeRelatedField);
+		panel.setWidget(row, 0, hpRelated);
+		
+//		panel.setWidget(row, 0, tlabel);
+//		panel.setWidget(row, 0, resourceTypeRelatedField);
+//		panel.getFlexCellFormatter().setWidth(row, 0, "250");
+		
 		panel.getFlexCellFormatter().setAlignment(row, 0, 
-				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
-		);
-		panel.getFlexCellFormatter().setAlignment(row, 1, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
+//		panel.getFlexCellFormatter().setAlignment(row, 1, 
+//				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+//		);
 		row++;
 		vp.add(panel);
 		//////////////////////////////////////////////////////////////
