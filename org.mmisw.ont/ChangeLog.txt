@@ -6,6 +6,8 @@ ChangeLog
 
 2009-09-17   1.3.10.beta
 	- fixed logo image link in sparql.html
+	- SparqlDispatcher: now returns SC_BAD_REQUEST if sparql parameter value is not given.
+	  (previously, a default example was dispatched, which was confusing in general). 
 	
 2009-09-10   1.3.9.beta
 	- new "_usri" service to obtain user info given the username

@@ -26,9 +26,6 @@ import org.mmisw.ont.util.Util;
 @Unfinished(priority=Unfinished.Priority.MEDIUM)
 public class SparqlDispatcher {
 	
-	/** The default query */
-	private static final String SPARQL_EXAMPLE = "CONSTRUCT { ?s ?p ?o } where {?s ?p ?o. } LIMIT 20";
-	
 	private final Log log = LogFactory.getLog(SparqlDispatcher.class);
 	
 	// ontGraph.getModel() is used as the model to process queries
@@ -41,13 +38,14 @@ public class SparqlDispatcher {
 	
 	/** 
 	 * Executes the query indicated as argument of the "sparql" parameter in the request.
-	 * An example query is processed in the parameter is not given,
+	 * Return SC_BAD_REQUEST to the client if value not given.
 	 */
 	public void execute(HttpServletRequest request, HttpServletResponse response) 
 	throws ServletException, IOException {
 		String query = Util.getParam(request, "sparql", "");
 		if ( query.length() == 0 ) {
-			query = SPARQL_EXAMPLE;
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "sparql parameter value not given");
+			return;
 		}
 
 		execute(request, response, query, null);
