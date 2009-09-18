@@ -25,9 +25,11 @@ public class HeaderPanel extends FlexTable {
 
 	private static final String HELP_LINK = "http://marinemetadata.org/orr";
 
-	private HorizontalPanel linksPanel = new HorizontalPanel();
+	private HorizontalPanel linksPanel1 = new HorizontalPanel();
+	private HorizontalPanel linksPanel2 = new HorizontalPanel();
 	
 	private Hyperlink browseLink = new Hyperlink("Browse", PortalConsts.T_BROWSE);
+	private Hyperlink searchLink = new Hyperlink("Search", PortalConsts.T_SEARCH);
 	
 	private Hyperlink accountLink = new Hyperlink("Create account", PortalConsts.T_USER_ACCOUNT);
 	
@@ -41,33 +43,38 @@ public class HeaderPanel extends FlexTable {
 	
 	HeaderPanel() {
 		super();
-		linksPanel.setSpacing(4);
+		linksPanel1.setSpacing(4);
+		linksPanel2.setSpacing(4);
 		
-//		linksPanel.setBorderWidth(1);
-		
-
 		FlexTable flexPanel = this;
 		flexPanel.setWidth("100%");
 //		flexPanel.setBorderWidth(1);
 		int row = 0;
 		
+		flexPanel.getFlexCellFormatter().setRowSpan(row, 0, 2);
 		flexPanel.setWidget(row, 0, Main.images.mmior().createImage());
 		flexPanel.getFlexCellFormatter().setWidth(row, 0, "10%");
 		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 
-		flexPanel.setWidget(row, 1, linksPanel);
+		flexPanel.setWidget(row, 1, linksPanel1);
 		flexPanel.getFlexCellFormatter().setAlignment(row, 1, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP
 		);
 
+		row++;
+		flexPanel.setWidget(row, 0, linksPanel2);
+		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_BOTTOM
+		);
 	}
 	
 	void updateLinks(InterfaceType type) {
 		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
 	
 		List<Widget> widgets = new ArrayList<Widget>();
+		List<Widget> widgets2 = new ArrayList<Widget>();
 		
 		if ( loginResult != null ) {
 //			widgets.add(new HTML("<b>" +loginResult.getUserName()+ "</b>"));
@@ -77,12 +84,17 @@ public class HeaderPanel extends FlexTable {
 
 		switch ( type ) {
 		case BROWSE:
-			// nothing
+			widgets2.add(searchLink);
 			break;
-		case SEARCH: 
 		case ONTOLOGY_VIEW:
 		case USER_ACCOUNT:
-			widgets.add(browseLink);
+		case ENTITY_VIEW:
+		case ENTITY_NOT_FOUND:
+			widgets2.add(browseLink);
+			widgets2.add(searchLink);
+			break;
+		case SEARCH: 
+			widgets2.add(browseLink);
 			break;
 		case ONTOLOGY_EDIT_NEW_VERSION:
 		case ONTOLOGY_EDIT_NEW:
@@ -103,14 +115,24 @@ public class HeaderPanel extends FlexTable {
 		
 		widgets.add(helpButton);
 		
-		// now assign to linksPanel
-		linksPanel.clear();
+		// now assign to linksPanels
+		linksPanel1.clear();
+		linksPanel2.clear();
 		String sep = null;
 		for ( Widget widget : widgets ) {
 			if ( sep != null ) {
-				linksPanel.add(new Label(sep));
+				linksPanel1.add(new Label(sep));
 			}
-			linksPanel.add(widget);	
+			linksPanel1.add(widget);	
+			sep = "|";
+		}
+
+		sep = null;
+		for ( Widget widget : widgets2 ) {
+			if ( sep != null ) {
+				linksPanel2.add(new Label(sep));
+			}
+			linksPanel2.add(widget);	
 			sep = "|";
 		}
 

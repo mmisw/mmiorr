@@ -17,6 +17,7 @@ import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
+import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryResult;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
@@ -93,6 +94,10 @@ public class PortalImpl  {
 		return iserver.getAllOntologies(includePriorVersions);
 	}
 	
+	public ResolveUriResult resolveUri(String uri) {
+		return iserver.resolveUri(uri);
+	}
+
 	public RegisteredOntologyInfo getOntologyInfo(String ontologyUri) {
 		return iserver.getOntologyInfo(ontologyUri);
 	}

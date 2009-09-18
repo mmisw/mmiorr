@@ -36,7 +36,36 @@ public class SearchTermsPanel extends VerticalPanel {
 
 	private PushButton searchButton;
 	
-	private final VerticalPanel resultsPanel = new VerticalPanel();
+	
+	private static class ResultsPanel {
+		private final VerticalPanel panel = new VerticalPanel();
+
+		Widget getWidget() {
+			return panel;
+		}
+
+		void searching() {
+			panel.setBorderWidth(0);
+			panel.clear();
+			panel.add(new HTML("<img src=\"" +GWT.getModuleBaseURL()+ "images/loading.gif\"> " +
+					"<i>searching ...</i>"));
+		}
+
+		void error(String error) {
+			panel.setBorderWidth(0);
+			panel.clear();
+			panel.add(new Label("ERROR: " +error));
+		}
+
+		void setHtml(String result) {
+//			panel.setBorderWidth(1);
+			panel.clear();
+			panel.add(new HTML(result));
+		}
+		
+	}
+	
+	private ResultsPanel resultsPanel = new ResultsPanel();
 	
 	
 	/**
@@ -80,8 +109,7 @@ public class SearchTermsPanel extends VerticalPanel {
 		hp.add(searchButton);
 		hp.add(new Label("Use OR to separate alternative keywords"));
 		
-		resultsPanel.setBorderWidth(1);
-		add(resultsPanel);
+		add(resultsPanel.getWidget());
 		
 		new Timer() {
 			@Override
@@ -109,29 +137,25 @@ public class SearchTermsPanel extends VerticalPanel {
 		
 		SparqlQueryInfo query = new SparqlQueryInfo();
 		query.setQuery(queryString);
-		query.setFormat(null);  // format null -> HTML
+		query.setFormat("html-frag");
 		
 		enable(false);
-		resultsPanel.clear();
-		resultsPanel.add(new HTML("<img src=\"" +GWT.getModuleBaseURL()+ "images/loading.gif\"> " +
-				"<i>searching ...</i>"));
+		resultsPanel.searching();
 		
 		AsyncCallback<SparqlQueryResult> callback = new AsyncCallback<SparqlQueryResult>() {
 			public void onFailure(Throwable exception) {
 				enable(true);
 				String error = exception.getMessage();
 				Main.log("Search failure: " + error);
-				resultsPanel.clear();
-				resultsPanel.add(new Label("ERROR: " +error));
+				resultsPanel.error(error);
 			}
 
 			public void onSuccess(SparqlQueryResult result) {
 				enable(true);
-				resultsPanel.clear();
 				if ( result.getError() != null ) {
 					String error = result.getError();
 					Main.log("Search error: " + error);
-					resultsPanel.add(new Label("ERROR: " +error));	
+					resultsPanel.error(error);	
 				}
 				else {
 					String[] kwArray = keywords.split("\\|");
@@ -142,7 +166,7 @@ public class SearchTermsPanel extends VerticalPanel {
 					}
 					oracle.add(searchString);
 
-					resultsPanel.add(new HTML(result.getResult()));
+					resultsPanel.setHtml(result.getResult());
 				}
 			}
 		};

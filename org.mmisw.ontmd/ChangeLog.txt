@@ -2,6 +2,16 @@ org.mmisw.ontmd: MMI Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2009-09-16-18  1.5.0.alpha25
+	- Implemented #184: Dispatch term URI in portal
+		- The dispatch is now generalized for both ontologies and terms:
+			.../orr/#<uri>
+	  	  This translates to a call to resolveUri in the iserver module. The return value will determine
+	  	  what specific panel and object to dispatch in the GUI.
+	 - some reorganization of the interface ("search" link now in the header section)
+	
+	
+		
 2009-09-16  1.5.0.alpha24
 	- MetadataGroupPanel: #183: Don't ask user whether the submitted ontology is a mapping
 	  This should be determined by examining the contents of the ontology.

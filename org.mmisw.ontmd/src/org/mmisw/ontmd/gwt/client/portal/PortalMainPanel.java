@@ -3,9 +3,11 @@ package org.mmisw.ontmd.gwt.client.portal;
 import java.util.List;
 import java.util.Map;
 
+import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
 import org.mmisw.ontmd.gwt.client.LoginPanel;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
@@ -34,7 +36,9 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 
 	public enum InterfaceType {
 		BROWSE, ONTOLOGY_VIEW, ONTOLOGY_EDIT_NEW_VERSION, ONTOLOGY_EDIT_NEW, SEARCH,
-		USER_ACCOUNT
+		USER_ACCOUNT,
+		ENTITY_VIEW,
+		ENTITY_NOT_FOUND
 	};
 	
 	
@@ -133,6 +137,12 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	    }
 	}
 	
+	
+	InterfaceType getInterfaceType() {
+		return interfaceType;
+	}
+
+
 	private void userSignedIn() {
 		controlsPanel.showMenuBar(interfaceType);
 		browsePanel.setLoginResult(pctrl.getLoginResult());
@@ -247,9 +257,16 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 				PortalControl.getInstance().userSignedOut();
 			}
 			else {
-				String ontologyUri = historyToken.trim();
-				Main.log("onHistoryChanged: URI: " +ontologyUri);
-				getOntologyInfo(ontologyUri);
+				String uri = historyToken.trim();
+				Main.log("onHistoryChanged: URI: " +uri);
+				
+				// TODO remove unused code getOntologyInfo once resolveUri is tested.
+				if ( true ) {
+					resolveUri(uri);
+				}
+				else {  
+					getOntologyInfo(uri);
+				}
 			}
 		}
 		else {
@@ -361,6 +378,69 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	    });
 	}
 
+	private void dispatchEntityPanel(final EntityInfo entityInfo) {
+		String entityUri = entityInfo.getUri();
+		Main.log("dispatchTermPanel:  entityUri=" +entityUri);
+
+		interfaceType = InterfaceType.ENTITY_VIEW;
+
+	    bodyPanel.clear();
+	    bodyPanel.add(new HTML("<i>Loading term...</i>"));
+	    
+	    DeferredCommand.addCommand(new Command() {
+			public void execute() {
+				
+				pctrl.setOntologyInfo(null);
+				pctrl.setOntologyPanel(null);
+
+				EntityPanel entityPanel = new EntityPanel();
+//				entityPanel.setSize("400", "100");
+
+				pctrl.setEntityInfo(entityInfo);
+				pctrl.setEntityPanel(entityPanel);
+
+
+				
+//				pctrl.setOntologyInfo(entityInfo);
+//				pctrl.setOntologyPanel(ontologyPanel);
+				controlsPanel.showMenuBar(interfaceType);
+				headerPanel.updateLinks(interfaceType);
+				
+			    bodyPanel.clear();
+				bodyPanel.add(entityPanel);
+				entityPanel.update(entityInfo);
+			}
+	    });
+	}
+
+	
+	private void dispatchUriNotFound(ResolveUriResult resolveUriResult) {
+		final NotFoundUriPanel nfup = new NotFoundUriPanel(resolveUriResult.getUri(), resolveUriResult.isUrl());
+		
+		interfaceType = InterfaceType.ENTITY_NOT_FOUND;
+
+	    bodyPanel.clear();
+	    
+	    DeferredCommand.addCommand(new Command() {
+			public void execute() {
+				
+				pctrl.setOntologyInfo(null);
+				pctrl.setOntologyPanel(null);
+				pctrl.setEntityInfo(null);
+				pctrl.setEntityPanel(null);
+
+				controlsPanel.showMenuBar(interfaceType);
+				headerPanel.updateLinks(interfaceType);
+				
+				VerticalPanel pan = new VerticalPanel();
+				pan.setSpacing(20);
+				pan.add(nfup);
+				bodyPanel.add(pan);
+			}
+	    });
+
+
+	}
 	
 	public void createNewFromFile() {
 		RegisteredOntologyInfo ontologyInfo = new RegisteredOntologyInfo();
@@ -477,6 +557,68 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		browsePanel.setAllOntologyInfos(ontologyInfos);
 		
 		VineMain.setAllUris(ontologyInfos);
+	}
+
+	
+	/**
+	 * Requests an ontology or term to the back-end and dispatches a corresponding
+	 * panel, ontology or term (TODO: term)
+	 * @param uri
+	 */
+	private void resolveUri(final String uri) {
+		AsyncCallback<ResolveUriResult> callback = new AsyncCallback<ResolveUriResult>() {
+			public void onFailure(Throwable thr) {
+				String error = thr.getClass().getName()+ ": " +thr.getMessage();
+				while ( (thr = thr.getCause()) != null ) {
+					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
+				}
+				Window.alert(error);
+			}
+
+			public void onSuccess(ResolveUriResult resolveUriResult) {
+				Main.log("resolveUri <" +uri+ ">: call completed.");
+				
+				String error = null;
+				if ( resolveUriResult == null ) {
+					error = "<b>" +uri+ "</b>: " +
+							"<font color=\"red\">" +"URI not found"+ "</font>";
+				}
+				else if ( resolveUriResult.getError() != null ) {
+					error = "<font color=\"red\">" +resolveUriResult.getError()+ "</font>";
+				}
+				
+				if ( error != null ) {
+					VerticalPanel vp = new VerticalPanel();
+					vp.setSpacing(14);
+					vp.add(new HTML(error));
+					vp.add(new Hyperlink("Go to main page", PortalConsts.T_BROWSE));
+					bodyPanel.clear();
+				    bodyPanel.add(vp);
+				    return;
+				}
+				
+				RegisteredOntologyInfo registeredOntologyInfo = resolveUriResult.getRegisteredOntologyInfo();
+				if ( registeredOntologyInfo != null ) {
+					boolean versionExplicit = uri.indexOf("version=") >= 0;
+					dispatchOntologyPanel(registeredOntologyInfo, versionExplicit);
+					return;
+				}
+				
+				EntityInfo entityInfo = resolveUriResult.getEntityInfo();
+				if ( entityInfo != null ) {
+					dispatchEntityPanel(entityInfo);
+					return;
+				}
+				
+				dispatchUriNotFound(resolveUriResult);
+			}
+		};
+
+	    bodyPanel.clear();
+	    bodyPanel.add(new HTML("<i>Loading ontology...</i>"));
+
+		Main.log("getOntologyInfo: ontologyUri = " +uri);
+		Main.ontmdService.resolveUri(uri, callback);
 	}
 
 	

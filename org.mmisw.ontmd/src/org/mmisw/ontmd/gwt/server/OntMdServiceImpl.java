@@ -41,6 +41,7 @@ import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
+import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryResult;
 import org.mmisw.iserver.gwt.client.rpc.UserInfoResult;
@@ -1368,6 +1369,10 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			log.error("error getting list of ontologies", e);
 			return EMPTY_ONTOLOGY_INFO_LIST;
 		}
+	}
+	
+	public ResolveUriResult resolveUri(String uri) {
+		return portal.resolveUri(uri);
 	}
 
 	public RegisteredOntologyInfo getOntologyInfo(String ontologyUri) {

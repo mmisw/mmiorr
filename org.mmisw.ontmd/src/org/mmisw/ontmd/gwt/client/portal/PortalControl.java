@@ -2,6 +2,7 @@ package org.mmisw.ontmd.gwt.client.portal;
 
 import java.util.List;
 
+import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
@@ -34,11 +35,14 @@ public class PortalControl {
 	private PortalMainPanel portalMainPanel;
 	
 	private LoginResult loginResult;
+	private ControlsPanel controlsPanel;
+	
 	
 	private RegisteredOntologyInfo ontologyInfo;
-	
 	private OntologyPanel ontologyPanel;
-	private ControlsPanel controlsPanel;
+	
+	private EntityInfo entityInfo;
+	private EntityPanel entityPanel;
 	
 	
 	/**
@@ -218,6 +222,10 @@ public class PortalControl {
 		this.ontologyInfo = ontologyInfo;
 	}
 
+	public void setEntityInfo(EntityInfo entityInfo) {
+		this.entityInfo = entityInfo;
+	}
+
 	public LoginResult getLoginResult() {
 		return loginResult;
 	}
@@ -230,6 +238,14 @@ public class PortalControl {
 		return ontologyPanel;
 	}
 
+	public void setEntityPanel(EntityPanel entityPanel) {
+		this.entityPanel = entityPanel;		
+	}
+	
+	public EntityPanel getEntityPanel() {
+		return entityPanel;		
+	}
+	
 	
 	public void completedRegisterOntologyResult(RegisterOntologyResult registerOntologyResult) {
 		
@@ -351,6 +367,31 @@ public class PortalControl {
 		if ( controlsPanel != null ) {
 			controlsPanel.notifyActivity(b);
 		}
+	}
+
+
+	/**
+	 * returns a title for the GUI according to the current intergace type.
+	 * @return
+	 */
+	public String getTitle() {
+		switch ( portalMainPanel.getInterfaceType() ) {
+		case BROWSE:
+			return "";
+
+		case ONTOLOGY_VIEW:
+		case ONTOLOGY_EDIT_NEW_VERSION:
+			if ( ontologyInfo != null ) {
+				return "Ontology: " +ontologyInfo.getUri();
+			}
+			break;
+		case ENTITY_VIEW:
+			if ( entityInfo != null ) {
+				return "Term: " +entityInfo.getUri();
+			}
+			break;
+		}
+		return null;
 	}
 	
 

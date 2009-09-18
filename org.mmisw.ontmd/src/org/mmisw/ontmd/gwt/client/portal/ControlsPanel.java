@@ -54,7 +54,15 @@ public class ControlsPanel extends HorizontalPanel {
 
 	void showMenuBar(InterfaceType type) {
 		_clear();
+		_addTitle();
 		_createButtons(type);
+	}
+	
+	private void _addTitle() {
+		String title = pctrl.getTitle();
+		if ( title != null ) {
+			controls.add(new HTML("<b>&nbsp;" +title+ "&nbsp;</b>"));
+		}
 	}
 	
 	private void _createButtons(InterfaceType type) {
@@ -71,6 +79,12 @@ public class ControlsPanel extends HorizontalPanel {
 		case ONTOLOGY_EDIT_NEW_VERSION:
 		case ONTOLOGY_EDIT_NEW:
 			_prepareOntologyEditButtons();
+			break;
+		case ENTITY_VIEW:
+			_prepareEntityViewButtons();
+			break;
+		case ENTITY_NOT_FOUND:
+			
 			break;
 		}
 	}
@@ -96,16 +110,6 @@ public class ControlsPanel extends HorizontalPanel {
 		buttons.add(button);
 
 
-		button = new PushButton("Search", new ClickListener() {
-			public void onClick(Widget sender) {
-				pctrl.searchTerms();
-			}
-		});
-		button.setTitle("Searches terms");
-		controls.add(button);
-		buttons.add(button);
-
-		
 		if ( pctrl.getLoginResult() != null ) {
 			button = new PushButton("Create vocabulary", new ClickListener() {
 				public void onClick(Widget sender) {
@@ -136,38 +140,23 @@ public class ControlsPanel extends HorizontalPanel {
 		}
 	}
 
+	
+	
+	
+	private void _prepareEntityViewButtons() {
+		// nothing
+	}
+	
 	private void _prepareOntologyViewButtons() {
 		boolean includeVersion = pctrl.getOntologyPanel().isVersionExplicit();
-		
-		PushButton button;
-		
+
 		RegisteredOntologyInfo oi = pctrl.getOntologyInfo();
-		
-		if ( pctrl.checkCanEditOntology(oi) == null ) {
-			button = new PushButton("Edit new version", new ClickListener() {
-				public void onClick(Widget sender) {
-					pctrl.editNewVersion();
-				}
-			});
-			controls.add(button);
-			buttons.add(button);
-		}
 		
 		if ( oi == null ) {
 			oi = pctrl.getOntologyInfo();
 		}
 		
-		if ( oi != null && oi.getPriorVersions() != null && oi.getPriorVersions().size() > 0 ) {
-			final RegisteredOntologyInfo roi = oi;
-			button = new PushButton("Versions", new ClickListener() {
-				public void onClick(Widget sender) {
-					launchVersions(roi);
-				}
-			});
-			controls.add(button);
-			buttons.add(button);
-		}
-		
+
 		// "view as" options:
 		HorizontalPanel viewAsPanel = new HorizontalPanel();
 		viewAsPanel.setSpacing(4);
@@ -185,6 +174,29 @@ public class ControlsPanel extends HorizontalPanel {
 			controls.add(xvi.hp);
 		}
 		
+
+		PushButton button;
+		
+		if ( pctrl.checkCanEditOntology(oi) == null ) {
+			button = new PushButton("Edit new version", new ClickListener() {
+				public void onClick(Widget sender) {
+					pctrl.editNewVersion();
+				}
+			});
+			controls.add(button);
+			buttons.add(button);
+		}
+		
+		if ( oi != null && oi.getPriorVersions() != null && oi.getPriorVersions().size() > 0 ) {
+			final RegisteredOntologyInfo roi = oi;
+			button = new PushButton("Versions", new ClickListener() {
+				public void onClick(Widget sender) {
+					launchVersions(roi);
+				}
+			});
+			controls.add(button);
+			buttons.add(button);
+		}
 	}
 
 	private void _prepareOntologyEditButtons() {
