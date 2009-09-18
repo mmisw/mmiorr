@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -44,9 +46,11 @@ import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MappingDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.OtherDataCreationInfo;
+import org.mmisw.iserver.gwt.client.rpc.PropValue;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
+import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryResult;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
@@ -63,6 +67,7 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
@@ -370,6 +375,117 @@ public class Server implements IServer {
 		return onts;
 	}
 	
+	
+	public ResolveUriResult resolveUri(String uri) {
+		ResolveUriResult resolveUriResult = new ResolveUriResult(uri);
+		
+		// try ontology:
+		RegisteredOntologyInfo roi = getOntologyInfo(uri);
+		if ( roi != null && roi.getError() == null ) {
+			resolveUriResult.setRegisteredOntologyInfo(roi);
+			return resolveUriResult;
+		}
+		
+		// try term:
+		_getEntityInfo(uri, resolveUriResult);
+		
+		return resolveUriResult;
+	}
+	
+	private void _getEntityInfo(String uri, ResolveUriResult resolveUriResult) {
+		
+		// NOTE that the query needs to be against Ont, and not in this module (as those done by QueryUtil),
+		// because the query needs to be against all registered ontologies.
+		
+		String query = 
+			"SELECT ?prop ?value " +
+			"WHERE { <" +uri+ "> ?prop ?value . }"
+		;
+		String format = "csv";
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug(" format=" +format+ " query=[" +query+ "]");
+		}
+		
+		String result;
+		try {
+			result = OntServiceUtil.runSparqlQuery(query, format, "text/plain");
+		}
+		catch (Exception e) {
+			String error = "Error while dispatching query: " +e.getMessage();
+			resolveUriResult.setError(error);
+			return;
+		}
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug("RESULT=" +result);
+		}
+		
+		boolean ok = false;
+		
+		if ( ! result.toLowerCase().startsWith("error:") ) {
+			EntityInfo entityInfo = new EntityInfo();
+			
+			String[] lines = result.split("\n|\r\n|\n");
+			for (String string : lines) {
+				String[] toks = string.split(",", 2);
+				if ( toks.length != 2 || ("prop".equals(toks[0]) && "value".equals(toks[1])) ) {
+					continue;
+				}
+				String prop = toks[0];
+				String value = toks.length > 1 ? toks[1] : null;
+				
+				Resource propResource = ResourceFactory.createResource(prop);
+				
+				PropValue pv = new PropValue();
+				pv.setPropName(propResource.getLocalName());
+				pv.setPropUri(prop);
+				
+				boolean valueIsUri = false;
+				try {
+					URI jUri = new URI(value);  // just check to see whether is a URI
+					valueIsUri = jUri.isAbsolute();
+				}
+				catch (URISyntaxException e) {
+					// ignore.
+				}
+				if ( valueIsUri ) {
+					pv.setValueUri(value);
+					Resource objResource = ResourceFactory.createResource(value);
+					pv.setValueName(objResource.getLocalName());
+				}
+				else {
+					pv.setValueName(value);
+				}
+				
+				entityInfo.getProps().add(pv);
+			}
+			
+			int size = entityInfo.getProps().size();
+			if ( size > 0 ) {
+				ok = true;
+				entityInfo.setUri(uri);
+				if ( log.isDebugEnabled() ) {
+					log.debug("Added " +size+ " property/value pairs to " +uri);
+				}
+				resolveUriResult.setEntityInfo(entityInfo);
+			}
+		}
+
+		if ( ! ok ) {
+			try {
+				// is it at least a valid URL?
+				new URL(uri);
+				resolveUriResult.setIsUrl(true);
+			}
+			catch (MalformedURLException e) {
+				resolveUriResult.setIsUrl(false);
+			}
+		}
+	}
+
+	
+
 	public RegisteredOntologyInfo getOntologyInfo(String ontologyUri) {
 		
 		log.debug("getOntologyInfo: ontologyUri=" +ontologyUri);
@@ -603,8 +719,6 @@ public class Server implements IServer {
 	
 	}
 
-	
-	
 	
 	// TODO this mechanism copied from MmiUri (in ont project).
 	private static final Pattern VERSION_PATTERN = 

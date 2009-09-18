@@ -7,11 +7,12 @@ import java.util.List;
 /**
  * Info about an entity.
  * 
- * TODO include properties associated with the entity.
+ * This class can be instantiated directly for generic info about an entity,
+ * but there a few subclasses for particular types of entities.
  * 
  * @author Carlos Rueda
  */
-public abstract class EntityInfo implements Serializable {
+public class EntityInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String uri;
@@ -21,6 +22,10 @@ public abstract class EntityInfo implements Serializable {
 	
 	private List<PropValue> props;
 	
+	
+	public EntityInfo() {
+		
+	}
 	
 	/**
 	 * @return the uri

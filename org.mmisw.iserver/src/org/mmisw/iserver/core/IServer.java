@@ -13,6 +13,7 @@ import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
+import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryResult;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
@@ -70,6 +71,16 @@ public interface IServer {
 	 */
 	RegisteredOntologyInfo getEntities(RegisteredOntologyInfo registeredOntologyInfo);
 	
+	
+	
+	/**
+	 * Resolves a URI against the registry
+	 * 
+	 * Upon success, this result is either a {@link RegisteredOntologyInfo} or an {@link EntityInfo}.
+	 * 
+	 * Both members will be null if the URI could not be resolved (not found).
+	 */
+	public ResolveUriResult resolveUri(String uri);
 	
 	
 	

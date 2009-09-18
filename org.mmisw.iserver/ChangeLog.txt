@@ -3,6 +3,15 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2009-09-18   1.5.0.alpha22
+	- New support to resolve term URIs. This is generalized for both ontology URIs and
+	  term URIs via a new class ResolveUriResult and service Server.resolveUri(uri).
+	  The operation first tries getOntologyInfo(uri) and then _getEntityInfo(..).
+	- _getEntityInfo: The resolution of a term URI is based on the query:
+	    SELECT ?prop ?value WHERE { <URI> ?prop ?value . }
+	  against the Ont service (which maintains the ontological graph).
+	  
+	 
 2009-09-11   1.5.0.alpha21
 	- General user account management, login, and password reset completed:
 		Fixed issue #176: login issue - forgot password user name
