@@ -3,12 +3,19 @@ Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
 2009-09-16-18  1.5.0.alpha25
+	 - implemented #172: search list of ontologies
+	 	- New "search ontologies" in the main page to find ontologies according to a given string, which is
+	   		searched in basic properties of the ontology.
+	 	- "Search" link now called "Search terms" to make clear the distinction
+	 	- Tooltips added to bot search options.
+	 	
 	- Implemented #184: Dispatch term URI in portal
 		- The dispatch is now generalized for both ontologies and terms:
 			.../orr/#<uri>
 	  	  This translates to a call to resolveUri in the iserver module. The return value will determine
 	  	  what specific panel and object to dispatch in the GUI.
 	 - some reorganization of the interface ("search" link now in the header section)
+	 
 	
 	
 		

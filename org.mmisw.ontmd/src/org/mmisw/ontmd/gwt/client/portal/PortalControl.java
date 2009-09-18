@@ -10,6 +10,7 @@ import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.portal.OntologyTable.IQuickInfo;
 
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -392,6 +393,11 @@ public class PortalControl {
 			break;
 		}
 		return null;
+	}
+
+
+	public void searchOntologies(String searchString, Command doneCmd) {
+		portalMainPanel.searchOntologies(searchString, doneCmd);
 	}
 	
 

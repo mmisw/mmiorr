@@ -204,4 +204,53 @@ public class BrowsePanel extends VerticalPanel {
 	}
 
 
+	void searchOntologies(final String searchString, final Command doneCmd) {
+		ontologyTable.showProgress();
+		
+		DeferredCommand.addCommand(new Command() {
+			public void execute() {
+				try {
+					selectedOntologyInfos.clear();
+					
+					// empty searchString? -> add all:
+					if ( searchString.trim().length() == 0 ) {
+						selectedOntologyInfos.addAll(ontologyInfos);
+					}
+					else {
+						for ( RegisteredOntologyInfo oi : ontologyInfos ) {
+							boolean include = false;
+							
+							String[] strings = { 
+									oi.getDisplayLabel(),
+									oi.getContactName(),
+									oi.getVersionNumber(),
+									oi.getUri(),
+							};
+							
+							for ( String string : strings ) {
+								if ( string != null && string.toLowerCase().indexOf(searchString.toLowerCase()) >= 0 ) {
+									include = true;
+									break;
+								}
+							}
+							
+							if ( include ) {
+								selectedOntologyInfos.add(oi);
+							}
+						}
+					}
+					
+					ontologyTable.setOntologyInfos(selectedOntologyInfos, loginResult);
+				}
+				finally {
+					if ( doneCmd != null ) {
+						doneCmd.execute();
+					}
+				}
+			}
+		});
+	
+	}
+
+
 }

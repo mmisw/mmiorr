@@ -29,7 +29,7 @@ public class HeaderPanel extends FlexTable {
 	private HorizontalPanel linksPanel2 = new HorizontalPanel();
 	
 	private Hyperlink browseLink = new Hyperlink("Browse", PortalConsts.T_BROWSE);
-	private Hyperlink searchLink = new Hyperlink("Search", PortalConsts.T_SEARCH);
+	private Hyperlink searchLink = new Hyperlink("Search terms", PortalConsts.T_SEARCH_TERMS);
 	
 	private Hyperlink accountLink = new Hyperlink("Create account", PortalConsts.T_USER_ACCOUNT);
 	
@@ -43,6 +43,9 @@ public class HeaderPanel extends FlexTable {
 	
 	HeaderPanel() {
 		super();
+		
+		searchLink.setTitle("Allows to search terms in all registered ontologies");
+		
 		linksPanel1.setSpacing(4);
 		linksPanel2.setSpacing(4);
 		

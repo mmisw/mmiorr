@@ -31,6 +31,8 @@ public class ControlsPanel extends HorizontalPanel {
 	
 	private final HorizontalPanel controls = new HorizontalPanel();
 	private final Set<PushButton> buttons =  new HashSet<PushButton>();
+	
+	private final SearchOntologiesPanel searchOntologiesPanel = new SearchOntologiesPanel();
 
 	
 	/** Initially the menu bar is not shown */
@@ -109,8 +111,11 @@ public class ControlsPanel extends HorizontalPanel {
 		controls.add(button);
 		buttons.add(button);
 
-
-		if ( pctrl.getLoginResult() != null ) {
+		if ( pctrl.getLoginResult() == null ) {
+			controls.add(_putHFillers("30px", searchOntologiesPanel, null));
+		}
+		else {
+			controls.add(_putHFillers("30px", searchOntologiesPanel, "100px"));
 			button = new PushButton("Create vocabulary", new ClickListener() {
 				public void onClick(Widget sender) {
 					pctrl.createNewVocabulary();
@@ -141,8 +146,24 @@ public class ControlsPanel extends HorizontalPanel {
 	}
 
 	
-	
-	
+	private HorizontalPanel _putHFillers(String wleft, Widget widget, String wright) {
+		HorizontalPanel hp = new HorizontalPanel();
+		if ( wleft != null ) {
+			hp.add(_createHFiller(wleft));
+		}
+		hp.add(widget);
+		if ( wright != null ) {
+			hp.add(_createHFiller(wright));
+		}
+		return hp;
+	}
+
+	private Widget _createHFiller(String width) {
+		HTML html = new HTML();
+		html.setWidth(width);
+		return html;
+	}
+
 	private void _prepareEntityViewButtons() {
 		// nothing
 	}

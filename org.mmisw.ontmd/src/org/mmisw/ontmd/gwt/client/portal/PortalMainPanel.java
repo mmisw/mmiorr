@@ -244,7 +244,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 			if ( historyToken.toLowerCase().equals(PortalConsts.T_BROWSE) ) {
 				dispatchMainPanel(false);		
 			}
-			else if ( historyToken.toLowerCase().equals(PortalConsts.T_SEARCH) ) {
+			else if ( historyToken.toLowerCase().equals(PortalConsts.T_SEARCH_TERMS) ) {
 				dispatchSearchTerms();		
 			}
 			else if ( historyToken.toLowerCase().equals(PortalConsts.T_USER_ACCOUNT) ) {
@@ -301,7 +301,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	}
 	
 	public void searchTerms() {
-		History.newItem(PortalConsts.T_SEARCH);
+		History.newItem(PortalConsts.T_SEARCH_TERMS);
 	}
 	
 	
@@ -669,6 +669,11 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 
 		Main.log("getOntologyInfo: ontologyUri = " +ontologyUri);
 		Main.ontmdService.getOntologyInfo(ontologyUri, callback);
+	}
+
+
+	void searchOntologies(String searchString, Command doneCmd) {
+		browsePanel.searchOntologies(searchString, doneCmd);
 	}
 
 
