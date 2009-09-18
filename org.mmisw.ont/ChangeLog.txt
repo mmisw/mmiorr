@@ -7,7 +7,8 @@ ChangeLog
 2009-09-18   1.3.11.beta
 	- Sparql and SparqlDispatcher: catch potential runtime errors and respond an explicit message.
 	  In particular, QueryFactory.create() and/or QueryExecutionFactory.create() may throw such
-	  unchecked exceptions, so I put a catch-all statement.
+	  unchecked exceptions, so I put a catch-all statement. (The most likely error is a syntax error.)
+	  The returned message is always text/plain starting with "ERROR:".
 	   
 	
 	

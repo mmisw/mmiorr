@@ -66,10 +66,15 @@ public class SparqlDispatcher {
 			queryResult = _execute(query, form);
 		}
 		catch (Exception e) {
-			String error = e.getMessage();
+			String error = "ERROR: " +e.getMessage();
 			log.error(error, e);
-			StringReader is = new StringReader(error+ "\n" +
-					"More details of the error are in the ORR logs");
+			error += "\nMore details of the error are in the ORR logs";
+			if ( e.getCause() != null ) {
+				String cause = e.getCause().getMessage();
+				if ( cause != null )
+					error += "\n" + cause;
+			}
+			StringReader is = new StringReader(error);
 			ServletOutputStream os = response.getOutputStream();
 			response.setContentType("text/plain");
 			IOUtils.copy(is, os);

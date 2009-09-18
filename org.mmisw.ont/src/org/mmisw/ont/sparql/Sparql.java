@@ -81,7 +81,7 @@ public class Sparql {
 			qe = QueryExecutionFactory.create(query, model);
 		}
 		catch ( Throwable thr ) {
-			String error = "Error preparing query: " +thr.getMessage();
+			String error = "Error preparing query.";
 			throw new Exception(error, thr);
 		}
 		
