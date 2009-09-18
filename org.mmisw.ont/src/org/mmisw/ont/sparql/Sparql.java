@@ -68,12 +68,22 @@ public class Sparql {
 	 * @param sparqlQuery
 	 * @param form Only used for a "select" query.
 	 * @return
+	 * @throws Exception 
 	 */
-	public static QueryResult executeQuery(Model model, String sparqlQuery, String form) {
+	public static QueryResult executeQuery(Model model, String sparqlQuery, String form) throws Exception {
 		QueryResult queryResult = new QueryResult();
+
+		Query query;
+		QueryExecution qe;
 		
-		Query query = QueryFactory.create(sparqlQuery);
-		QueryExecution qe = QueryExecutionFactory.create(query, model);
+		try {
+			query = QueryFactory.create(sparqlQuery);
+			qe = QueryExecutionFactory.create(query, model);
+		}
+		catch ( Throwable thr ) {
+			String error = "Error preparing query: " +thr.getMessage();
+			throw new Exception(error, thr);
+		}
 		
 		try {
 			// CONSTRUCT or DESCRIBE
@@ -113,7 +123,7 @@ public class Sparql {
 				ResultSet results = qe.execSelect();
 				queryResult.setIsEmpty(! results.hasNext());
 				
-				if ( form == null || form.equalsIgnoreCase("html") ) {
+				if ( form == null || form.startsWith("html") ) {
 					queryResult.setContentType("text/html");
 					queryResult.setResult(_htmlSelectResults(results));
 				}

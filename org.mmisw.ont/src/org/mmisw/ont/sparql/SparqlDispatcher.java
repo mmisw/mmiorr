@@ -61,10 +61,25 @@ public class SparqlDispatcher {
 		
 		String form = Util.getParam(request, "form", null);
 		
-		Sparql.QueryResult queryResult = _execute(query, form);
+		Sparql.QueryResult queryResult;
+		try {
+			queryResult = _execute(query, form);
+		}
+		catch (Exception e) {
+			String error = e.getMessage();
+			log.error(error, e);
+			StringReader is = new StringReader(error+ "\n" +
+					"More details of the error are in the ORR logs");
+			ServletOutputStream os = response.getOutputStream();
+			response.setContentType("text/plain");
+			IOUtils.copy(is, os);
+			os.close();
+			return;
+		}
 		
 		if ( requestedEntity != null && queryResult.isEmpty() ) {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND, requestedEntity);
+			return;
 		}
 		
 		String result = queryResult.getResult();
@@ -105,12 +120,23 @@ public class SparqlDispatcher {
 		}
 		
 		else if ( "text/html".equalsIgnoreCase(queryResult.getContentType()) ) {
-			String pre = "<html><head><title>Query result</title>" +
-			             "<link rel=stylesheet href=\"" +
-			                  request.getContextPath()+ "/main.css\" type=\"text/css\">" +
-			             "</head><body>\n";
-			pre += "\n<!-- Query:\n" +Util.toHtmlComment(query)+ "\n-->\n\n";
-			result = pre + result + "</body></html>";
+			String queryComm = "\n<!-- Query:\n\n" +Util.toHtmlComment(query)+ "\n-->\n\n";
+			String pre, pos;
+			
+			if ( "html-frag".equals(form) ) {
+				pre = queryComm;
+				pos = "";
+			}
+			else {
+				pre = "<html><head><title>Query result</title>" +
+								"<link rel=stylesheet href=\"" +
+								request.getContextPath()+ "/main.css\" type=\"text/css\">" +
+								"</head><body>\n" +
+						queryComm
+				;
+				pos = "</body></html>";
+			}
+			result = pre + result + pos;
 			response.setContentType(queryResult.getContentType());
 		}
 		
@@ -123,7 +149,7 @@ public class SparqlDispatcher {
 		os.close();
 	}
 
-	private Sparql.QueryResult _execute(String sparqlQuery, String form) {
+	private Sparql.QueryResult _execute(String sparqlQuery, String form) throws Exception {
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("execute: query string = [" +sparqlQuery+ "]");
