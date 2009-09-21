@@ -2,6 +2,10 @@ org.mmisw.ontmd: MMI Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2009-09-21  1.5.0.alpha26
+	fixed issue #187 CSV support broken
+		VocabClassPanel.SeparatorPanel: fixed handling of selected separator
+	
 2009-09-16-18  1.5.0.alpha25
 	 - implemented #172: search list of ontologies
 	 	- New "search ontologies" in the main page to find ontologies according to a given string, which is

@@ -1,6 +1,8 @@
 package org.mmisw.ontmd.gwt.client.voc2rdf;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.ClassInfo;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyDataCreationInfo;
@@ -570,7 +572,7 @@ public class VocabClassPanel extends BaseOntologyContentsPanel implements TermTa
 					
 				popup.hide();
 				
-				importContents(separatorPanel.separator.charAt(0), text);
+				importContents(separatorPanel.getSelectedSeparator().charAt(0), text);
 				
 			}
 		});
@@ -708,7 +710,7 @@ public class VocabClassPanel extends BaseOntologyContentsPanel implements TermTa
 		CellPanel separatorPanel = new SeparatorPanel() {
 			public void onClick(Widget sender) {
 				super.onClick(sender);
-				textArea.setText(termTable.getCsv(null, separator));
+				textArea.setText(termTable.getCsv(null, getSelectedSeparator()));
 			}
 		};
 		vp.add(separatorPanel);
@@ -720,16 +722,27 @@ public class VocabClassPanel extends BaseOntologyContentsPanel implements TermTa
 	
 	/** Helper class to capture desired separator for CSV contents */
 	private static class SeparatorPanel extends HorizontalPanel implements ClickListener {
-		String separator = ",";
+		private String selectedOption;
+		// option -> separator
+		private Map<String,String> optionSeparatorMap= new HashMap<String,String>();
 		
 		SeparatorPanel() {
 			super();
-			String[] separators = { "Comma (,)", "Semi-colon (;)", "Tab", "Vertical bar (|)" };
-			for (int i = 0; i< separators.length; i++ ) {
-				String separator = separators[i];
-				RadioButton rb = new RadioButton("separator", separator);
+			String[] separators = { 
+					// label,         separator
+					"Comma (,)",        ",",
+					"Semi-colon (;)",   ";", 
+					"Tab",              "\t",
+					"Vertical bar (|)", "|", 
+			};
+			for (int i = 0; i < separators.length; i += 2 ) {
+				String label = separators[i];
+				String separator = separators[i + 1];
+				optionSeparatorMap.put(label, separator);
+				RadioButton rb = new RadioButton("separator", label);
 				if ( i == 0 ) {
 					rb.setChecked(true);
+					selectedOption = label;
 				}
 				rb.addClickListener(this);
 				this.add(rb);
@@ -737,7 +750,11 @@ public class VocabClassPanel extends BaseOntologyContentsPanel implements TermTa
 		}
 		public void onClick(Widget sender) {
 			RadioButton rb = (RadioButton) sender;
-			separator = rb.getText();
+			selectedOption = rb.getText();
+		}
+		
+		String getSelectedSeparator() {
+			return optionSeparatorMap.get(selectedOption);
 		}
 	}
 
