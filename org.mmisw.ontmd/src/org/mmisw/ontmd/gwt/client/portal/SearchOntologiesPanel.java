@@ -1,11 +1,11 @@
 package org.mmisw.ontmd.gwt.client.portal;
 
 import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.util.TLabel;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.PushButton;
@@ -19,7 +19,14 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class SearchOntologiesPanel extends HorizontalPanel {
 	
-	private final HTML searchLabel = new HTML("Search:&nbsp;");
+	private static final String tooltip = 
+		"Finds registered ontologies according to a given string, which is " +
+		"searched in basic properties of the ontology."
+	;
+	
+	// fix #188: Clarify search options on portal front page
+	private TLabel searchLabel = new TLabel("Search&nbsp;ontologies", tooltip);
+//	private final HTML searchLabel = new HTML("Search&nbsp;ontologies:&nbsp;");
 	
 	// static to "remember" values
 	private static final TextBox textBox = new TextBox();
@@ -30,9 +37,6 @@ public class SearchOntologiesPanel extends HorizontalPanel {
 		}
 	});
 	
-	private static final String tooltip = "Finds ontologies according to a given string, which is " +
-	"searched in basic properties of the ontology"
-;
 
 	/**
 	 * Creates a field with a choose feature.

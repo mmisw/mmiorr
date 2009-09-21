@@ -3,7 +3,11 @@ Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
 2009-09-21  1.5.0.alpha26
-	fixed issue #187 CSV support broken
+	- fixed #188: Clarify search options on portal front page
+		SearchOntologiesPanel: using TLabel and with "Search ontologies:" label
+		OntMdImageBundle: transparent bg for tooltip icon (question12t.gif) for better display
+		
+	- fixed issue #187 CSV support broken
 		VocabClassPanel.SeparatorPanel: fixed handling of selected separator
 	
 2009-09-16-18  1.5.0.alpha25

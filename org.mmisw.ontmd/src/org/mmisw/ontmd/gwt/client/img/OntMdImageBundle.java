@@ -16,8 +16,9 @@ public interface OntMdImageBundle extends ImageBundle {
 	 */
 	public AbstractImagePrototype mozilla_blu();
 
-	 /** Reduced version of http://photos.icollector.com/photos/question_icon.gif */
-	 public AbstractImagePrototype question12();
+	/** Reduced version of http://photos.icollector.com/photos/question_icon.gif */
+	public AbstractImagePrototype question12t(); // transparent background
+	public AbstractImagePrototype question12();  // opaque (white) background
 
 	public AbstractImagePrototype search();
 	 

@@ -77,7 +77,7 @@ public class TLabel extends HorizontalPanel {
 	 */
 	private TLabel setTooltip(String tooltip) {
 		if ( ttIcon == null ) {
-			ttIcon = Main.images.question12().createImage();
+			ttIcon = Main.images.question12t().createImage();
 		}
 		
 		if ( popup == null ) {
