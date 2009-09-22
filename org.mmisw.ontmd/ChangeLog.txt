@@ -2,6 +2,12 @@ org.mmisw.ontmd: MMI Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2009-09-22  1.5.0.alpha27
+	fixed #191 No feedback if javascript is disabled
+	- index.html: included <noscript> section with a message:
+		The MMI ORR Portal requires JavaScript enabled in your web browser.
+		Enable JavaScript and then refresh this page.
+	
 2009-09-21  1.5.0.alpha27
 	- Dispatching .../orr/#voc2rdf and .../orr/#vine
 	  For now, these tags "redirect" to the main browse page (.../orr/#b ) where a Window.alert
