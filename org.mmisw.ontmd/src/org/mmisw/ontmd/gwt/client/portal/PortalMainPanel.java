@@ -59,6 +59,8 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	
 	private MyDialog signInPopup;
 
+	private String pendingMessage = null;
+
 	
 	/** helps confirm the leave of the current page */
 	private void _setupWindowCloseListener() {
@@ -93,7 +95,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		// conveniences for testing in development environment
 		if ( ! GWT.isScript() ) {
 			
-			if ( true ) {    // true for auto-login
+			if ( false ) {    // true for auto-login
 				loginResult = new LoginResult();
 				loginResult.setSessionId("22222222222222222");
 				loginResult.setUserId("1001");
@@ -217,11 +219,9 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 				userSignedIn();
 			}
 		});
-	    
-		// TODO do this?
-		History.newItem(PortalConsts.T_BROWSE);
 	}
 
+	
 	// LoginListener
 	public void loginCreateAccount() {
 		DeferredCommand.addCommand(new Command() {
@@ -256,6 +256,12 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 			else if ( historyToken.toLowerCase().equals(PortalConsts.T_SIGN_OUT) ) {
 				PortalControl.getInstance().userSignedOut();
 			}
+			else if ( historyToken.toLowerCase().equals(PortalConsts.T_VOC2RDF) ) {
+				dispatchNewVocabulary();
+			}
+			else if ( historyToken.toLowerCase().equals(PortalConsts.T_VINE) ) {
+				dispatchNewMappingOntology();
+			}
 			else {
 				String uri = historyToken.trim();
 				Main.log("onHistoryChanged: URI: " +uri);
@@ -271,6 +277,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		}
 		else {
 			dispatchMainPanel(false);
+			History.newItem(PortalConsts.T_BROWSE);
 		}
 			
 	}
@@ -336,9 +343,6 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 			pctrl.setOntologyPanel(null);
 		}
 		
-		// notify the history that we are now in "browse":
-		History.newItem(PortalConsts.T_BROWSE);
-		
 		interfaceType = InterfaceType.BROWSE;
 	    controlsPanel.showMenuBar(interfaceType);
 	    headerPanel.updateLinks(interfaceType);
@@ -352,6 +356,15 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	    }
 	    else {
 	    	bodyPanel.add(browsePanel);
+	    	
+	    	if ( pendingMessage  != null ) {
+	    		DeferredCommand.addCommand(new Command() {
+					public void execute() {
+		    			Window.alert(pendingMessage);
+		    			pendingMessage = null;
+					}
+	    		});
+	    	}
 	    }
 	}
 	
@@ -458,8 +471,25 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		bodyPanel.add(ontologyPanel);
 	}
 
-	
 	public void createNewMappingOntology() {
+		History.newItem(PortalConsts.T_VINE);
+	}
+	
+	/** If no user is logged in, then it simply triggers the main browse page
+	 * TODO prompt for Sign in, and then launch the "new mapping" page.
+	 * or
+	 * TODO Allow the VINE interface, even if no user logged in.
+	 */
+	public void dispatchNewMappingOntology() {
+		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
+		if ( loginResult == null || loginResult.getError() != null ) {
+			pendingMessage = "Please, sign in and then select \"Create mapping\"" +
+				" to use the integrated VINE tool."
+			;
+			History.newItem(PortalConsts.T_BROWSE);
+			return;
+		}
+		
 		RegisteredOntologyInfo ontologyInfo = new RegisteredOntologyInfo();
 		OntologyPanel ontologyPanel = new OntologyPanel(ontologyInfo, false, false);
 
@@ -475,8 +505,25 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		bodyPanel.add(ontologyPanel);
 	}
 
-
-	public void createNewVocabulary() {
+	void createNewVocabulary() {
+		History.newItem(PortalConsts.T_VOC2RDF);
+	}
+	
+	/** If no user is logged in, then it simply triggers the main browse page
+	 * TODO prompt for Sign in, and then launch the "new vocabulary" page.
+	 * or
+	 * TODO Allow the VOC2RDF interface, even if no user logged in.
+	 */
+	private void dispatchNewVocabulary() {
+		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
+		if ( loginResult == null || loginResult.getError() != null ) {
+			pendingMessage = "Please, sign in and then select \"Create vocabulary\"" +
+					" to use the integrated Voc2RDF tool."
+			;
+			History.newItem(PortalConsts.T_BROWSE);
+			return;
+		}
+		
 		RegisteredOntologyInfo ontologyInfo = new RegisteredOntologyInfo();
 		OntologyPanel ontologyPanel = new OntologyPanel(ontologyInfo, false, false);
 
@@ -547,8 +594,8 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	}
 
 	public void completedRegisterOntologyResult(RegisterOntologyResult registerOntologyResult) {
-		
 		dispatchMainPanel(true);
+		History.newItem(PortalConsts.T_BROWSE);
 	}
 
 	public void refreshedListAllOntologies(List<RegisteredOntologyInfo> ontologyInfos) {

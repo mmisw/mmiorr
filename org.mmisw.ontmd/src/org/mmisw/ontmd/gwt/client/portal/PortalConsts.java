@@ -13,5 +13,8 @@ public class PortalConsts {
 	public static final String T_USER_ACCOUNT = "ua";
 	public static final String T_SIGN_IN = "login";
 	public static final String T_SIGN_OUT = "logout";
+	
+	public static final String T_VOC2RDF = "voc2rdf";
+	public static final String T_VINE = "vine";
 
 }

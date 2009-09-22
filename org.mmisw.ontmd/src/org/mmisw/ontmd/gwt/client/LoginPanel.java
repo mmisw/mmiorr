@@ -215,7 +215,7 @@ public class LoginPanel {
 		doLogin(username, password);
 	}
 	
-	void doLogin(String userName, String userPassword) {
+	private void doLogin(String userName, String userPassword) {
 		
 		AsyncCallback<LoginResult> callback = new AsyncCallback<LoginResult>() {
 
@@ -302,5 +302,9 @@ public class LoginPanel {
 		loginButton.setEnabled(enable);
 		resetPasswordButton.setEnabled(enable);
 		createAccountButton.setEnabled(enable);
+	}
+
+	public void setUserName(String string) {
+		userName.setText(string);
 	}
 }

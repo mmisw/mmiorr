@@ -2,6 +2,22 @@ org.mmisw.ontmd: MMI Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2009-09-21  1.5.0.alpha27
+	- Dispatching .../orr/#voc2rdf and .../orr/#vine
+	  For now, these tags "redirect" to the main browse page (.../orr/#b ) where a Window.alert
+	  is shown indicating something like:
+	  	Please, sign in and then select "<the corresponding button>" to use the integrated <tool name>
+	  	
+	  This change is mainly intended as a preparation to dispatch direct references to these tools.
+	  In particular, I'm updating mmisw.org/{voc2rdf,vine} (which appear in some marinemetadata site
+	  pages) to redirect to mmisw.org/orr/#{voc2rdf,vine}.
+	  
+	  TODO Two possible improvements:
+	  	- Immediatly prompt the user for Sign in, and then launch the corresponding tool
+		- Dispatch the tool even if the user is not logged in; prompt for sign in when necessary
+	  	
+	  
+	
 2009-09-21  1.5.0.alpha26
 	- fixed #188: Clarify search options on portal front page
 		SearchOntologiesPanel: using TLabel and with "Search ontologies:" label
