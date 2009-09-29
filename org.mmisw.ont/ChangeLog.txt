@@ -7,6 +7,19 @@ ChangeLog
 2009-09-29   1.3.12.beta
 	Investigating regression issue. Test with http://mmisw.org/ont/mmi/device -- it returns *versioned!*
 		UnversionedConverter: enabling debug info
+		
+	Ok, what happened was this: I uploaded a *versioned* device ontology to create a new version in the
+	registry. So the "old" (versioned) namespace got stuck in the contents. The UnversionedConverter moves
+	everything in the new (versioned) namespace to the unversioned namespace but will not do
+	anything to the stuff in the old (versioned) namespace. That's why I got what looks a versioned
+	response from the unversioned request.
+	This is definitely a potential issue. Where should it be fixed? 
+		a) properly prepare the uploaded ontology so it removes the version component (if any, automatically);
+		and/or
+		b) in UnversionedConverter so it moves everything from related versioned namespaces to the unversioned
+		namespace.
+	See issue #192 "wrong versioned/unversioned response"
+	
 	
 2009-09-18   1.3.11.beta
 	- Sparql and SparqlDispatcher: catch potential runtime errors and respond an explicit message.
