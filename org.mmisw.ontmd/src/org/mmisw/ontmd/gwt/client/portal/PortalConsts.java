@@ -16,5 +16,7 @@ public class PortalConsts {
 	
 	public static final String T_VOC2RDF = "voc2rdf";
 	public static final String T_VINE = "vine";
+	
+	public static final String T_UPLOAD = "ul";
 
 }

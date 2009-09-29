@@ -38,7 +38,8 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		BROWSE, ONTOLOGY_VIEW, ONTOLOGY_EDIT_NEW_VERSION, ONTOLOGY_EDIT_NEW, SEARCH,
 		USER_ACCOUNT,
 		ENTITY_VIEW,
-		ENTITY_NOT_FOUND
+		ENTITY_NOT_FOUND,
+		UPLOAD_ONTOLOGY,
 	};
 	
 	
@@ -262,6 +263,9 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 			else if ( historyToken.toLowerCase().equals(PortalConsts.T_VINE) ) {
 				dispatchNewMappingOntology();
 			}
+			else if ( historyToken.toLowerCase().equals(PortalConsts.T_UPLOAD) ) {
+				dispatchUploadOntology();
+			}
 			else {
 				String uri = historyToken.trim();
 				Main.log("onHistoryChanged: URI: " +uri);
@@ -282,6 +286,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 			
 	}
 
+	
 	
 	private void dispatchCreateAccount() {
 		OntologyPanel ontologyPanel = pctrl.getOntologyPanel();
@@ -469,6 +474,27 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		
 	    bodyPanel.clear();
 		bodyPanel.add(ontologyPanel);
+	}
+
+	
+	
+	/** Starts the sequence to register an external ontology.
+	 * This will eventually replace {@link #createNewFromFile()}.
+	 */
+	private void dispatchUploadOntology() {
+		// TODO actual parameters
+		RegisterExternalOntologyPage1 page1 = new RegisterExternalOntologyPage1();
+
+		pctrl.setOntologyInfo(null);
+		pctrl.setOntologyPanel(null);
+		
+		interfaceType = InterfaceType.UPLOAD_ONTOLOGY;
+	    controlsPanel.showMenuBar(interfaceType);
+	    headerPanel.updateLinks(interfaceType);
+		
+	    bodyPanel.clear();
+		bodyPanel.add(page1.getWidget());
+
 	}
 
 	public void createNewMappingOntology() {

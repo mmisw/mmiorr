@@ -2,6 +2,18 @@ org.mmisw.ontmd: MMI Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2009-09-28  1.5.0.alpha28
+	More preparations for #177: Re-hosting option is not clear
+	- RegisterExternalOntologyPageBase and subclasses: these will be wizard-like pages for a new sequence 
+	  to upload and register an external ontology. Still preliminary. Call with #ul to launch the sequence.
+	  The idea is as follows:
+		  Page1: selection and upload of local file into working space
+		  Page2: selection of hosting option (fully hosted; re-hosted; re-indexed)
+		  Page3: Summary of the effect on the option selected
+		  Finish in page3: Continue with the usual ontology metadata editing and final registration
+	  
+	  
+	
 2009-09-22  1.5.0.alpha27
 	fixed #191 No feedback if javascript is disabled
 	- index.html: included <noscript> section with a message:
