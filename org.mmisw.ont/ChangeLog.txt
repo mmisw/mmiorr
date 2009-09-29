@@ -4,6 +4,10 @@ $Id$
 
 ChangeLog
 
+2009-09-29   1.3.12.beta
+	Investigating regression issue. Test with http://mmisw.org/ont/mmi/device -- it returns *versioned!*
+		UnversionedConverter: enabling debug info
+	
 2009-09-18   1.3.11.beta
 	- Sparql and SparqlDispatcher: catch potential runtime errors and respond an explicit message.
 	  In particular, QueryFactory.create() and/or QueryExecutionFactory.create() may throw such

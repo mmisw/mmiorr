@@ -93,7 +93,9 @@ class UnversionedConverter {
 			// This case was manifested with the platform.owl ontology.
 		}
 		
-//		log.info("review: model.getNsPrefixURI(\"\") = " +uriForEmpty);
+		if ( log.isDebugEnabled() ) {
+			log.debug("review: model.getNsPrefixURI(\"\") = " +uriForEmpty);
+		}
 		
 		// Why using JenaUtil.getURIForNS(uriForEmpty) to get the namespace?
 		// model.getNsPrefixURI("") should provide the base namespace, in fact,
@@ -108,7 +110,9 @@ class UnversionedConverter {
 //		log.info("original namespace: " +original_ns_);
 //		log.info("Setting prefix \"\" for URI " + ns_);
 		model.setNsPrefix("", ns_);
-//		log.info("     new namespace: " +ns_);
+		if ( log.isDebugEnabled() ) {
+			log.debug("     new namespace: " +ns_);
+		}
 
 		
 		// Update statements  according to the new namespace:
@@ -135,7 +139,9 @@ class UnversionedConverter {
 		// plus the new and updated attributes:
 		final OwlModel newOntModel = new OwlModel(model);
 		final Ontology ont_ = newOntModel.createOntology(base_);
-//		log.info("New ontology created with namespace " + ns_ + " base " + base_);
+		if ( log.isDebugEnabled() ) {
+			log.debug("New ontology created with namespace " + ns_ + " base " + base_);
+		}
 		newOntModel.setNsPrefix("", ns_);
 		
 		
@@ -231,7 +237,9 @@ class UnversionedConverter {
 	 */
 	private static void _replaceNameSpace(OntModel model, String oldNameSpace, String newNameSpace) {
 		
-//		log.info(" REPLACING NS " +oldNameSpace+ " WITH " +newNameSpace);
+		if ( log.isDebugEnabled() ) {
+			log.debug(" REPLACING NAMESPACE " +oldNameSpace+ " WITH " +newNameSpace);
+		}
 		
 		// old statements to be removed:
 		List<Statement> o_stmts = new ArrayList<Statement>(); 
