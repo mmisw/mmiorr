@@ -204,8 +204,7 @@ public class Util2 {
 			return namespace.equals(resourceNamespace);
 		}
 		else {
-			resourceNamespace = resourceNamespace.replaceAll("(/|#)$", "");
-			return namespace.equals(resourceNamespace);
+			return resourceNamespace != null && namespace.equals(resourceNamespace.replaceAll("(/|#)$", ""));
 		}
 	}
 	
