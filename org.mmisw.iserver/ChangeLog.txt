@@ -3,6 +3,12 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2009-09-29   1.5.0.alpha29   (alpha23-28 skipped to sync with ontmd)
+	Fixed issue #192 "wrong versioned/unversioned response"
+	Util2.replaceNameSpace now uses Util2._inNamespace(Resource resource, String namespace)
+	to determine when a resource is "located" in a given namespace.
+	
+	
 2009-09-18   1.5.0.alpha22
 	- New support to resolve term URIs. This is generalized for both ontology URIs and
 	  term URIs via a new class ResolveUriResult and service Server.resolveUri(uri).

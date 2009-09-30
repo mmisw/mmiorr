@@ -187,6 +187,29 @@ public class Util2 {
 	}
 
 	/**
+	 * Determines if the given resource is "located" in the given namespace.
+	 * 
+	 * <p>
+	 * If namespace ends with '/' or '#', this will be true iff namespace.equals(resource.getNameSpace()).
+	 * Otherwise, this will be true iff resource.getNameSpace() without the trailing
+	 * separator ('/' or '#', if any) is equal to namespace. 
+	 * @param resource
+	 * @param namespace
+	 * @return
+	 */
+	private static boolean _inNamespace(Resource resource, String namespace) {
+		String resourceNamespace = resource.getNameSpace();
+		
+		if ( namespace.endsWith("/") || namespace.endsWith("#") ) {
+			return namespace.equals(resourceNamespace);
+		}
+		else {
+			resourceNamespace = resourceNamespace.replaceAll("(/|#)$", "");
+			return namespace.equals(resourceNamespace);
+		}
+	}
+	
+	/**
 	 * Replaces any statement having an element in the given oldNameSpace with a
 	 * correponding statement in the new namespace.
 	 * <p>
@@ -219,17 +242,23 @@ public class Util2 {
 			Property n_prd = prd;
 			RDFNode  n_obj = obj;
 
-			if ( oldNameSpace.equals(sbj.getNameSpace()) ) {
+//			if ( oldNameSpace.equals(sbj.getNameSpace()) ) {
+			if ( _inNamespace(sbj, oldNameSpace) ) {
 				n_sbj = model.createResource(newNameSpace + sbj.getLocalName());
 				any_change = true;
 			}
-			if ( oldNameSpace.equals(prd.getNameSpace()) ) {
+//			if ( oldNameSpace.equals(prd.getNameSpace()) ) {
+			if ( _inNamespace(prd, oldNameSpace) ) {
 				n_prd = model.createProperty(newNameSpace + prd.getLocalName());
 				any_change = true;
 			}
-			if ( (obj instanceof Resource) && oldNameSpace.equals(((Resource) obj).getNameSpace()) ) {
-				n_obj = model.createResource(newNameSpace + ((Resource) obj).getLocalName());
-				any_change = true;
+			if ( (obj instanceof Resource) ) {
+				Resource objr = (Resource) obj;
+//				if ( oldNameSpace.equals(objr.getNameSpace()) ) {
+				if ( _inNamespace(objr, oldNameSpace) ) {
+					n_obj = model.createResource(newNameSpace + objr.getLocalName());
+					any_change = true;
+				}
 			}
 
 			if ( any_change ) {
