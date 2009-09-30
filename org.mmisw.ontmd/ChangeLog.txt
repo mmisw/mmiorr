@@ -2,6 +2,12 @@ org.mmisw.ontmd: MMI Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2009-09-29   1.5.0.alpha29
+	Fixed issue #192 "wrong versioned/unversioned response"
+	Fixed Issue #193 "list of versions include unversioned"
+	See iserver module.
+	
+	
 2009-09-28  1.5.0.alpha28
 	More preparations for #177: Re-hosting option is not clear
 	- RegisterExternalOntologyPageBase and subclasses: these will be wizard-like pages for a new sequence 
