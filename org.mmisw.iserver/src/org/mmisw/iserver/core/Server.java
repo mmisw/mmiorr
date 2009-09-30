@@ -598,9 +598,31 @@ public class Server implements IServer {
 			log.debug("Server.getOntologyInfoWithVersionParams case b) unversioned request = " +unversOntologyUri);
 			// b) unversioned URI request, eg., http://mmisw.org/ont/seadatanet/qualityFlag
 			// just return first entry in list
-			RegisteredOntologyInfo oi = list.get(0);
-			oi.setUri(oi.getUnversionedUri());
-			foundRoi = oi;
+			
+			// do not alter the first entry in the list!
+//			RegisteredOntologyInfo oi = list.get(0);
+//			oi.setUri(oi.getUnversionedUri());
+//			foundRoi = oi;
+			
+			// here is how it should be done:
+			RegisteredOntologyInfo mostRecent = list.get(0);
+			foundRoi = _createOntologyInfo(
+					mostRecent.getUnversionedUri(),      // NOTE: UnversionedURI for the URI
+					mostRecent.getDisplayLabel(),
+					mostRecent.getType(),
+					mostRecent.getUserId(),
+					mostRecent.getContactName(),
+					mostRecent.getVersionNumber(),
+					mostRecent.getDateCreated(),
+					mostRecent.getUsername(),
+					mostRecent.getOntologyId(),
+					
+					mostRecent.getUnversionedUri(),
+					mostRecent.getAuthority(),
+					mostRecent.getShortName()
+			);
+
+			
 		}
 		else {
 			log.debug("Server.getOntologyInfoWithVersionParams case c) versioned request = " +ontologyUri);

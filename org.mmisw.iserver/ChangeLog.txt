@@ -5,8 +5,12 @@ $Id$
 
 2009-09-29   1.5.0.alpha29   (alpha23-28 skipped to sync with ontmd)
 	Fixed issue #192 "wrong versioned/unversioned response"
-	Util2.replaceNameSpace now uses Util2._inNamespace(Resource resource, String namespace)
-	to determine when a resource is "located" in a given namespace.
+		Util2.replaceNameSpace now uses Util2._inNamespace(Resource resource, String namespace)
+		to determine when a resource is "located" in a given namespace.
+		
+	Fixed Issue #193 "list of versions include unversioned"
+		getOntologyInfoWithVersionParams: in case b), the first entry in the list was altered; now
+		a copy is made, which is assigned the unversioned URI.
 	
 	
 2009-09-18   1.5.0.alpha22
