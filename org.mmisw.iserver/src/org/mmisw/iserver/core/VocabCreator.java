@@ -12,12 +12,12 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mmisw.iserver.core.util.JenaUtil2;
 import org.mmisw.iserver.core.util.StringManipulationUtil;
 import org.mmisw.iserver.core.util.Utf8Util;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyDataCreationInfo;
+import org.mmisw.ont.JenaUtil2;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
 

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.mmisw.iserver.core.ServerConfig;
+import org.mmisw.ont.JenaUtil2;
 
 import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;

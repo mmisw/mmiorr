@@ -24,5 +24,6 @@
 	<classpathentry kind="lib" path="/Users/carueda/Software/gwt-mac-1.5.2/gwt-user.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/activation.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/mail.jar"/>
+	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmisw.ont.misc.jar" sourcepath="/org.mmisw.ont"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

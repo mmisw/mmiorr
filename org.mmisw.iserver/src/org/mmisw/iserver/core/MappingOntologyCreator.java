@@ -7,11 +7,11 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mmisw.iserver.core.util.JenaUtil2;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.MappingDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.vine.Mapping;
+import org.mmisw.ont.JenaUtil2;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
 

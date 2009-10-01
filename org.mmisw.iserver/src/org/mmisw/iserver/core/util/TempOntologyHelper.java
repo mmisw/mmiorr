@@ -1,6 +1,8 @@
 package org.mmisw.iserver.core.util;
 
 import java.io.File;
+import java.io.StringReader;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -13,8 +15,10 @@ import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
+import org.mmisw.ont.JenaUtil2;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
+import org.xml.sax.InputSource;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -90,17 +94,36 @@ public class TempOntologyHelper {
 			return tempOntologyInfo;
 		}
 		
+		String rdf;
+		
+		try {
+			rdf = Util2.readRdf(file);
+		}
+		catch (Throwable e) {
+			String error = "Cannot read RDF model: " +full_path+ " : " +e.getMessage();
+			log.info(error, e);
+			tempOntologyInfo.setError(error);
+			return tempOntologyInfo;
+		}
+
 		if ( includeRdf ) {
-			try {
-				tempOntologyInfo.setRdf(Util2.readRdf(file));
-			}
-			catch (Throwable e) {
-				String error = "Cannot read RDF model: " +full_path+ " : " +e.getMessage();
-				log.info(error, e);
-				tempOntologyInfo.setError(error);
-				return tempOntologyInfo;
+			tempOntologyInfo.setRdf(rdf);
+		}
+		
+		URI xmlBaseUri;
+		try {
+			xmlBaseUri = XmlBaseExtractor.getXMLBase(new InputSource(new StringReader(rdf)));
+			if ( xmlBaseUri != null ) {
+				tempOntologyInfo.setXmlBase(xmlBaseUri.toString());
 			}
 		}
+		catch (Exception e) {
+			String error = "error while trying to read xml:base attribute: " +e.getMessage()+ ". " +
+					"Continuing assuming ontology does not contain xml:base";
+			log.error(error, e);
+			// Continue.
+		}
+
 
 		// prepare the rest of the ontology info:
 		String error = prepareOntologyInfo(file, tempOntologyInfo);

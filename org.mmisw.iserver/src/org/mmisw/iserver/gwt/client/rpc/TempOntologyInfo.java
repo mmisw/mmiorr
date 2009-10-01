@@ -20,7 +20,10 @@ public class TempOntologyInfo extends BaseOntologyInfo {
 	/** message to describe details about the metadata contents of the ontology */
 	private String details;
 	
+	/** the value of the associated xml:base */
+	private String xmlBase;
 	
+	// to be moved out from here
 	private boolean preserveOriginalBaseNamespace;
 	
 	
@@ -59,6 +62,7 @@ public class TempOntologyInfo extends BaseOntologyInfo {
 	/**
 	 * @return the preserveOriginalBaseNamespace
 	 */
+	@Deprecated
 	public boolean isPreserveOriginalBaseNamespace() {
 		return preserveOriginalBaseNamespace;
 	}
@@ -67,10 +71,20 @@ public class TempOntologyInfo extends BaseOntologyInfo {
 	/**
 	 * @param preserveOriginalBaseNamespace the preserveOriginalBaseNamespace to set
 	 */
+	@Deprecated
 	public void setPreserveOriginalBaseNamespace(
 			boolean preserveOriginalBaseNamespace) {
 		this.preserveOriginalBaseNamespace = preserveOriginalBaseNamespace;
 	}
 
+
+	public String getXmlBase() {
+		return xmlBase;
+	}
+
+
+	public void setXmlBase(String xmlBase) {
+		this.xmlBase = xmlBase;
+	}
 
 }

@@ -26,6 +26,7 @@ import org.mmisw.iserver.gwt.client.rpc.PropertyInfo;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData.ClassData;
 import org.mmisw.iserver.gwt.client.rpc.vine.Mapping;
+import org.mmisw.ont.JenaUtil2;
 
 import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;

@@ -5,12 +5,12 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mmisw.iserver.core.util.JenaUtil2;
 import org.mmisw.iserver.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
+import org.mmisw.ont.JenaUtil2;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
 
