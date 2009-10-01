@@ -10,6 +10,7 @@ import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
 import org.mmisw.ontmd.gwt.client.LoginPanel;
 import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.portal.extont.RegisterExternalOntologyWizard;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 import org.mmisw.ontmd.gwt.client.vine.VineMain;
 
@@ -483,7 +484,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	 */
 	private void dispatchUploadOntology() {
 		// TODO actual parameters
-		RegisterExternalOntologyPage1 page1 = new RegisterExternalOntologyPage1();
+		RegisterExternalOntologyWizard wizard = new RegisterExternalOntologyWizard();
 
 		pctrl.setOntologyInfo(null);
 		pctrl.setOntologyPanel(null);
@@ -493,7 +494,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	    headerPanel.updateLinks(interfaceType);
 		
 	    bodyPanel.clear();
-		bodyPanel.add(page1.getWidget());
+		bodyPanel.add(wizard.getWidget());
 
 	}
 

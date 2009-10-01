@@ -1,4 +1,4 @@
-package org.mmisw.ontmd.gwt.client.portal;
+package org.mmisw.ontmd.gwt.client.portal.extont;
 
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.ontmd.gwt.client.Main;
@@ -40,11 +40,10 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author Carlos Rueda
  */
-public class RegisterExternalOntologyPage1 extends RegisterExternalOntologyPageBase {
+class RegisterExternalOntologyPage1 extends RegisterExternalOntologyPageBase {
 	
 	private static final String UPLOAD_ACTION = GWT.getModuleBaseURL() + "upload";
 
-	
 	private VerticalPanel contents = new VerticalPanel();
 	
 	// note: the 2 radiobuttons were for i) local file and ii) remote (URI) file, as in an previous
@@ -56,7 +55,6 @@ public class RegisterExternalOntologyPage1 extends RegisterExternalOntologyPageB
 
 	private FormPanel formPanel = new FormPanel();
 	private FileUpload upload;
-	private HTML statusLoad = new HTML();
 	
 //	private TextBox statusField2 = new TextBox();
 	
@@ -78,15 +76,13 @@ public class RegisterExternalOntologyPage1 extends RegisterExternalOntologyPageB
 	 * @param tempOntologyInfoListener
 	 * @param allowLoadOptions
 	 */
-	public RegisterExternalOntologyPage1() {
-		super(false, true);
-		contents.setSize("650px", "300px");
+	RegisterExternalOntologyPage1(RegisterExternalOntologyWizard wizard) {
+		super(wizard, false, true);
+//		nextButton.setEnabled(false); TODO temporarily allowing NExt to facilitate testing
+		contents.setSize("650px", "200px");
 		addContents(contents);
 		
 		createDetailsButton();
-
-		statusLoad.setText("");
-//		statusField2.setText("");
 
 		createLoadButton();
 		recreate();
@@ -106,23 +102,10 @@ public class RegisterExternalOntologyPage1 extends RegisterExternalOntologyPageB
 //		panel.setBorderWidth(1);
 		int row = 0;
 		
-		String info = "Please specify your ontology file.";
+		String info = "<br/>Please, select your ontology file";
 		panel.setWidget(row, 0, new HTML(info));
 		panel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
-		);
-		
-		HorizontalPanel hp = new HorizontalPanel();
-		hp.setSpacing(3);
-		hp.add(statusLoad);
-		
-//		if ( allowLoadOptions ) {
-//			hp.add(loadButton);
-//		}
-		
-		panel.setWidget(row, 1, hp);
-		panel.getFlexCellFormatter().setAlignment(row, 1, 
-				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		row++;
 
@@ -207,8 +190,7 @@ public class RegisterExternalOntologyPage1 extends RegisterExternalOntologyPageB
 		ClickListener clickListener = new ClickListener() {
 			private TextBox chooseLabel;
 			public void onClick(Widget sender) {
-				statusLoad.setText("");
-//				statusField2.setText("");
+				statusHtml.setText("");
 //				upload.setEnabled(rb0.isChecked());  // --> this method is not available 
 				uploadContainer.clear();
 				if ( rb0.isChecked() ) {
@@ -252,20 +234,19 @@ public class RegisterExternalOntologyPage1 extends RegisterExternalOntologyPageB
 		formPanel.addFormHandler(new FormHandler() {
 
 			public void onSubmit(FormSubmitEvent event) {
-				statusLoad.setHTML("<font color=\"blue\">Loading ...</font>");
-//				statusField2.setText("");
+				statusHtml.setHTML("<font color=\"blue\">Loading ...</font>");
 				Main.log("onSubmit.");
 			}
 
 			public void onSubmitComplete(FormSubmitCompleteEvent event) {
-				statusLoad.setHTML("<font color=\"blue\">Examining ontology ...</font>");
+				statusHtml.setHTML("<font color=\"blue\">Examining ontology ...</font>");
 				String results = event.getResults();
 				Main.log("onSubmitComplete: " +results);
 				if ( results != null ) {
 					getTempOntologyInfo(results);
 				}
 				else {
-					statusLoad.setHTML("<font color=\"red\">Unexpected null response from server." +
+					statusHtml.setHTML("<font color=\"red\">Unexpected null response from server." +
 							"Please try again later.</font>");
 					enable(true);
 				}
@@ -287,11 +268,12 @@ public class RegisterExternalOntologyPage1 extends RegisterExternalOntologyPageB
 
 			public void onSuccess(TempOntologyInfo tempOntologyInfo) {
 				enable(true);
-				Main.log("calling getTempOntologyInfo ... success!");
+				Main.log("calling getTempOntologyInfo ... success");
 				RegisterExternalOntologyPage1.this.onSuccess(tempOntologyInfo);
 			}
 		};
 
+//		nextButton.setEnabled(false);  TODO temporarily allowing NExt to facilitate testing
 		Main.log("calling getTempOntologyInfo ... ");
 		Main.ontmdService.getTempOntologyInfo(uploadResults, true, INCLUDE_RDF, callback);
 
@@ -299,8 +281,8 @@ public class RegisterExternalOntologyPage1 extends RegisterExternalOntologyPageB
 	
 	
 	
-	void onFailure(Throwable thr) {
-		statusLoad.setHTML("<font color=\"red\">Error</font>");
+	private void onFailure(Throwable thr) {
+		statusHtml.setHTML("<font color=\"red\">Error</font>");
 		String error = thr.getClass().getName()+ ": " +thr.getMessage();
 		while ( (thr = thr.getCause()) != null ) {
 			error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
@@ -309,7 +291,7 @@ public class RegisterExternalOntologyPage1 extends RegisterExternalOntologyPageB
 		Window.alert(error);
 	}
 
-	void onSuccess(TempOntologyInfo tempOntologyInfo) {
+	private void onSuccess(TempOntologyInfo tempOntologyInfo) {
 		ontologyInfoObtained(tempOntologyInfo);
 	}
 
@@ -324,7 +306,7 @@ public class RegisterExternalOntologyPage1 extends RegisterExternalOntologyPageB
 						formPanel.submit();
 					}
 					else {
-						statusLoad.setHTML("<font color=\"red\">No file selected</font>");
+						statusHtml.setHTML("<font color=\"red\">No file selected</font>");
 					}
 				}
 				else {
@@ -399,7 +381,7 @@ public class RegisterExternalOntologyPage1 extends RegisterExternalOntologyPageB
 	
 	private void loadRegistryOntology() {
 		if ( registryOntologyUri == null ) {
-			statusLoad.setHTML("<font color=\"red\">No file selected</font>");
+			statusHtml.setHTML("<font color=\"red\">No file selected</font>");
 			return;
 		}
 		// TODO: load selected remote ontology
@@ -410,12 +392,19 @@ public class RegisterExternalOntologyPage1 extends RegisterExternalOntologyPageB
 	private void ontologyInfoObtained(TempOntologyInfo tempOntologyInfo) {
 		String error = tempOntologyInfo.getError();
 		if ( error != null ) {
-			statusLoad.setHTML("<font color=\"red\">Error</font>");
+			statusHtml.setHTML("<font color=\"red\">Error</font>");
 			Window.alert("Error reading file. Make sure it is an RDF file.\n" +
 					"Server reports:\n\n" +error);
 			return;
 		}
-		statusLoad.setHTML("<font color=\"green\">Ontology loaded into editor</font>");
+		
+		wizard.ontologyInfoObtained(tempOntologyInfo);
+		
+		String xmlBase = tempOntologyInfo.getXmlBase();
+		nextButton.setEnabled(true);
+		statusHtml.setHTML("<font color=\"green\">Ontology loaded</font>" +
+				"<br/>xml:base = " +(xmlBase != null ? xmlBase : "undefined") 
+		);
 //		statusField2.setText("Original base URI: " +tempOntologyInfo.getUri());
 		
 		if ( INCLUDE_RDF ) {

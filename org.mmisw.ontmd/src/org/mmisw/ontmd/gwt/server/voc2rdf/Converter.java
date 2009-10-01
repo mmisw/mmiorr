@@ -10,10 +10,10 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.ont.JenaUtil2;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.ontmd.gwt.server.PortalConfig;
-import org.mmisw.iserver.core.util.JenaUtil2;
 import org.mmisw.iserver.core.MdHelper;
 import org.mmisw.voc2rdf.transf.StringManipulationUtil;
 

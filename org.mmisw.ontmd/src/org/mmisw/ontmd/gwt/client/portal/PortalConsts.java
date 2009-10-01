@@ -18,5 +18,8 @@ public class PortalConsts {
 	public static final String T_VINE = "vine";
 	
 	public static final String T_UPLOAD = "ul";
+	
+	
+	public static final String REG_TYPE_HELP_PAGE = "http://marinemetadata.org/mmiorrusrman/mmiorrref/mmiorruploadexisting";
 
 }

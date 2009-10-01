@@ -27,6 +27,7 @@
   	
   	<pathelement path="base_war/WEB-INF/lib/org.mmisw.ont.mmiuri.jar"/>
   	<pathelement path="base_war/WEB-INF/lib/org.mmisw.ont.vocabulary.jar"/>
+  	<pathelement path="base_war/WEB-INF/lib/org.mmisw.ont.misc.jar"/>
   	<pathelement path="base_war/WEB-INF/lib/org.mmisw.iserver.gwt.jar"/>
   	
   	<pathelement path="base_war/WEB-INF/lib/concurrent.jar"/>

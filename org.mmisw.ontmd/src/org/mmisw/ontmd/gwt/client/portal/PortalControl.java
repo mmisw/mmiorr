@@ -391,6 +391,11 @@ public class PortalControl {
 				return "Term: " +entityInfo.getUri();
 			}
 			break;
+		case UPLOAD_ONTOLOGY:
+			return "Registering your ontology. " +
+					"The registration options are described " +
+					"<a target=\"_blank\" href=\"" +PortalConsts.REG_TYPE_HELP_PAGE+ "\">here</a>."
+			;
 		}
 		return null;
 	}
@@ -399,6 +404,4 @@ public class PortalControl {
 	public void searchOntologies(String searchString, Command doneCmd) {
 		portalMainPanel.searchOntologies(searchString, doneCmd);
 	}
-	
-
 }
