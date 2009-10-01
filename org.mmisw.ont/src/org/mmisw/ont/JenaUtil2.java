@@ -54,7 +54,7 @@ public class JenaUtil2 {
 	 * @return The URI without any trailing fragment separators.
 	 */
 	public static String removeTrailingFragment(String uri) {
-		return uri.replaceAll(FRAG_SEPARATOR + "+$", "");
+		return uri.replaceAll("(/|#)+$", "");
 	}
 	
 	

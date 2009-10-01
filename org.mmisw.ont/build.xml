@@ -70,6 +70,17 @@
 	</target>
 
 	
+	<!-- creates the misc jar -->
+	<target name="misc" depends="compile">
+		<mkdir dir="${build.dir}/lib" />
+		<jar destfile="org.mmisw.ont.misc.jar">
+			<fileset dir="${build.dir}/classes">
+				<include name="org/mmisw/ont/JenaUtil2.class" />
+			</fileset>
+		</jar>
+	</target>
+
+	
 	<target name="prepate2war" depends="jar">
 		<!-- prepare tmp.WebContent -->
 		<copy todir="${build.dir}/tmp.WebContent">
