@@ -45,10 +45,23 @@ public class FieldWithChoose  extends HorizontalPanel implements SourcesChangeEv
 	 * @param cl
 	 */
 	public FieldWithChoose(AttrDef attr, ChangeListener cl) {
+		this(attr, cl, "200px");
+	}
+	
+	/**
+	 * Creates a field with a choose feature.
+	 * @param attr
+	 * @param cl
+	 * @param textWidth
+	 */
+	public FieldWithChoose(AttrDef attr, ChangeListener cl, String textWidth) {
 		this.attr = attr;
 		this.cl = cl;
+		
+		addChangeListener(cl);
+		
 		int nl = 1;    /// attr.getNumberOfLines() is ignored
-		textBox = Util.createTextBoxBase(nl, "200", cl);
+		textBox = Util.createTextBoxBase(nl, textWidth, cl);
 		textBox.addChangeListener(new ChangeListener() {
 			public void onChange(Widget sender) {
 				_onChange();

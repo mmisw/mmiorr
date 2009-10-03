@@ -5,9 +5,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.mmisw.iserver.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
-import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.ontmd.gwt.client.Main;
@@ -344,7 +344,7 @@ public class MetadataPanel extends FlexTable implements TempOntologyInfoListener
 	}
 
 	
-	public void resetToOriginalValues(RegisteredOntologyInfo ontologyInfo, ReviewResult_Old reviewResult_Old, boolean confirm, boolean link) {
+	public void resetToOriginalValues(BaseOntologyInfo ontologyInfo, ReviewResult_Old reviewResult_Old, boolean confirm, boolean link) {
 		OntologyMetadata ontologyMetadata = ontologyInfo.getOntologyMetadata();
 		String ontologyUri = ontologyInfo.getUri();
 		resetToOriginalOrNewValues(ontologyUri, ontologyMetadata, true, reviewResult_Old, confirm, link);

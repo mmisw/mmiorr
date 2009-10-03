@@ -3,6 +3,8 @@ package org.mmisw.ontmd.gwt.client.portal;
 import java.util.List;
 import java.util.Map;
 
+import org.mmisw.iserver.gwt.client.rpc.BaseOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
@@ -264,7 +266,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 			else if ( historyToken.toLowerCase().equals(PortalConsts.T_VINE) ) {
 				dispatchNewMappingOntology();
 			}
-			else if ( historyToken.toLowerCase().equals(PortalConsts.T_UPLOAD) ) {
+			else if ( historyToken.toLowerCase().equals(PortalConsts.T_REGISTER_EXTERNAL) ) {
 				dispatchUploadOntology();
 			}
 			else {
@@ -461,7 +463,24 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 
 	}
 	
-	public void createNewFromFile() {
+	/**
+	 * Dispatchs interface to create a new ontology.
+	 * 
+	 * @param createOntologyInfo If non-null, info for the new ontology is taken from here.
+	 * 
+	 * TODO NOTE: This is a new parameter in this method while I complete the new "registration of
+	 * external" ontology functionality.
+	 */
+	public void createNewFromFile(CreateOntologyInfo createOntologyInfo) {
+		
+		// TODO should have a OntologyPanel contructor with createOntologyInfo
+		if ( createOntologyInfo != null ) {
+			// TODO
+		}
+		else {
+			// TODO
+		}
+		
 		RegisteredOntologyInfo ontologyInfo = new RegisteredOntologyInfo();
 		OntologyPanel ontologyPanel = new OntologyPanel(ontologyInfo, false, false);
 
@@ -471,7 +490,8 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		interfaceType = InterfaceType.ONTOLOGY_EDIT_NEW;
 	    controlsPanel.showMenuBar(interfaceType);
 	    headerPanel.updateLinks(interfaceType);
-		ontologyPanel.createNewFromFile();
+	    
+		ontologyPanel.createNewFromFile(createOntologyInfo);
 		
 	    bodyPanel.clear();
 		bodyPanel.add(ontologyPanel);
@@ -484,7 +504,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	 */
 	private void dispatchUploadOntology() {
 		// TODO actual parameters
-		RegisterExternalOntologyWizard wizard = new RegisterExternalOntologyWizard();
+		RegisterExternalOntologyWizard wizard = new RegisterExternalOntologyWizard(this);
 
 		pctrl.setOntologyInfo(null);
 		pctrl.setOntologyPanel(null);
@@ -570,7 +590,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	
 	
 	public void editNewVersion(OntologyPanel ontologyPanel) {
-		RegisteredOntologyInfo ontologyInfo = ontologyPanel.getOntologyInfo();
+		BaseOntologyInfo ontologyInfo = ontologyPanel.getOntologyInfo();
 		String error = pctrl.checkCanEditOntology(ontologyInfo);
 		
 		if ( error != null ) {

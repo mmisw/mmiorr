@@ -45,18 +45,30 @@ public class OtherOntologyContentsPanel extends BaseOntologyContentsPanel {
 	private TempOntologyInfoListener myTempOntologyInfoListener;
 	
 	
-	public OtherOntologyContentsPanel(OtherOntologyData ontologyData, 
+	/**
+	 * @param tempOntologyInfo If non-null, info for the new ontology is taken from here.
+	 * 
+	 * TODO NOTE: This is a new parameter in this method while I complete the new "registration of
+	 * external" ontology functionality.
+	 */
+	public OtherOntologyContentsPanel(
+			TempOntologyInfo tempOntologyInfo,
+			OtherOntologyData ontologyData, 
 			boolean readOnly
 	) {
 		super(readOnly);
 		
-		this.myTempOntologyInfoListener = new TempOntologyInfoListener() {
-			public void tempOntologyInfoObtained(TempOntologyInfo tempOntologyInfo) {
-				// update my own data and then notify any interested "external" listener:
-				_tempOntologyInfoObtained(tempOntologyInfo);
-			}
-		};
-		
+		if ( tempOntologyInfo == null ) {
+			this.myTempOntologyInfoListener = new TempOntologyInfoListener() {
+				public void tempOntologyInfoObtained(TempOntologyInfo tempOntologyInfo) {
+					// update my own data and then notify any interested "external" listener:
+					_tempOntologyInfoObtained(tempOntologyInfo);
+				}
+			};
+		}
+		else {
+			_tempOntologyInfoObtained(tempOntologyInfo);
+		}
 		
 		BaseOntologyData baseData = ontologyData.getBaseOntologyData();
 		if ( baseData != null ) {
@@ -92,13 +104,16 @@ public class OtherOntologyContentsPanel extends BaseOntologyContentsPanel {
 		widget.clear();
 		
 		if ( !isReadOnly() ) {
-			if ( uploadLocalOntologyPanel == null ) {
-				uploadLocalOntologyPanel = new UploadLocalOntologyPanel(myTempOntologyInfoListener, true);
+			if ( tempOntologyInfo == null ) {
+				if ( uploadLocalOntologyPanel == null ) {
+					uploadLocalOntologyPanel = new UploadLocalOntologyPanel(myTempOntologyInfoListener, true);
+				}
+				DecoratorPanel dec = new DecoratorPanel();
+				dec.setWidget(uploadLocalOntologyPanel);
+				//			widget.add(uploadLocalOntologyPanel);
+				widget.add(dec);
 			}
-			DecoratorPanel dec = new DecoratorPanel();
-			dec.setWidget(uploadLocalOntologyPanel);
-//			widget.add(uploadLocalOntologyPanel);
-			widget.add(dec);
+			//Else: do not add the upload panel--we already have tempOntologyInfo
 		}
 		
 		if ( contents != null ) {

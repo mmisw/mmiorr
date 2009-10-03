@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.BaseOntologyData;
+import org.mmisw.iserver.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
@@ -13,6 +14,7 @@ import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
 import org.mmisw.iserver.gwt.client.rpc.OtherOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData;
 import org.mmisw.ontmd.gwt.client.DataPanel;
 import org.mmisw.ontmd.gwt.client.Main;
@@ -68,7 +70,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	
 	
 	/** Ontology to be dispatched */
-	private RegisteredOntologyInfo ontologyInfo;
+	private BaseOntologyInfo ontologyInfo;
 	
 	/** dispatch with explicit version? */
 	private final boolean versionExplicit;
@@ -100,7 +102,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	 * @param ontologyInfo
 	 * @param readOly the initial mode
 	 */
-	public OntologyPanel(RegisteredOntologyInfo ontologyInfo, boolean readOnly, boolean versionExplicit) {
+	public OntologyPanel(BaseOntologyInfo ontologyInfo, boolean readOnly, boolean versionExplicit) {
 		super();
 		setWidth("100%");
 		container.setWidth("100%");
@@ -153,7 +155,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	/**
 	 * @return the ontologyInfo
 	 */
-	public RegisteredOntologyInfo getOntologyInfo() {
+	public BaseOntologyInfo getOntologyInfo() {
 		return ontologyInfo;
 	}
 	
@@ -184,7 +186,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 
 		// create dataPanel
 		dataPanel = new DataPanel(false);
-		dataPanel.updateWith(ontologyInfo, false);
+		dataPanel.updateWith(null, ontologyInfo, false);
 		dataDisclosure.setContent(dataPanel);
 		
 		enable(true);
@@ -205,7 +207,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 
 		// create dataPanel
 		dataPanel = new DataPanel(false);
-		dataPanel.updateWith(ontologyInfo, false);
+		dataPanel.updateWith(null, ontologyInfo, false);
 		dataDisclosure.setContent(dataPanel);
 		
 		enable(true);
@@ -215,20 +217,39 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	/**
 	 * Prepares the panel for creation of an ontology from a local file to
 	 * be uploaded.
+	 * 
+	 * @param createOntologyInfo If non-null, info for the new ontology is taken from here.
+	 * 
+	 * TODO NOTE: This is a new parameter in this method while I complete the new "registration of
+	 * external" ontology functionality.
 	 */
-	void createNewFromFile() {
+	void createNewFromFile(CreateOntologyInfo createOntologyInfo) {
 		createNewBase();
 		
-		// create (empty) data for the ontologyInfo
-		OtherOntologyData otherOntologyData = new OtherOntologyData();
-		BaseOntologyData baseOntologyData = null;
-		otherOntologyData.setBaseOntologyData(baseOntologyData);
+		OtherOntologyData otherOntologyData = null;
+		
+		BaseOntologyInfo baseOntologyInfo = createOntologyInfo != null ? createOntologyInfo.getBaseOntologyInfo() : null;
+		if ( baseOntologyInfo != null
+		&&   baseOntologyInfo instanceof TempOntologyInfo
+		) {
+			// TODO check actual type of ontology data? It should be OtherOntologyData in this case.
+			otherOntologyData = (OtherOntologyData) baseOntologyInfo.getOntologyData();
+		}
+		else {
+			// create (empty) data for the ontologyInfo
+			otherOntologyData = new OtherOntologyData();
+		}
+		
 		ontologyInfo.setOntologyData(otherOntologyData);
 
 		// create dataPanel
 		dataPanel = new DataPanel(false);
 		
-		dataPanel.updateWith(ontologyInfo, false);
+		TempOntologyInfo tempOntologyInfo = (baseOntologyInfo instanceof TempOntologyInfo)
+		                                  ? (TempOntologyInfo) baseOntologyInfo
+		                                  : null;
+		                                  
+		dataPanel.updateWith(tempOntologyInfo, ontologyInfo, false);
 		
 		dataDisclosure.setContent(dataPanel);
 		
@@ -257,7 +278,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		
 		if ( readOnly ) {
 			// coming from edit mode to view only mode-- reload data
-			dataPanel.updateWith(ontologyInfo, readOnly);
+			dataPanel.updateWith(null, ontologyInfo, readOnly);
 		}
 		else {
 			// coming from view to edit--just update elements for editing (do not reload contents)
@@ -269,6 +290,9 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 
 
 	private void getOntologyContents(final boolean readOnly) {
+		
+		assert ontologyInfo instanceof RegisteredOntologyInfo ;
+		RegisteredOntologyInfo roi = (RegisteredOntologyInfo) ontologyInfo;
 		
 		AsyncCallback<RegisteredOntologyInfo> callback = new AsyncCallback<RegisteredOntologyInfo>() {
 			public void onFailure(Throwable thr) {
@@ -290,20 +314,19 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			}
 		};
 
-		headerPanel.updateTitle("<b>" +ontologyInfo.getDisplayLabel()+ "</b>" +
-				" - "+ontologyInfo.getUri()+ 
-				"  (version "+ontologyInfo.getVersionNumber()+ ")" + 
-				"<br/>"
-		);
+		String title = "<b>" +roi.getDisplayLabel()+ "</b> - " +roi.getUri()
+					+ "  (version "+roi.getVersionNumber()+ ")" + "<br/>";
+		;
+		headerPanel.updateTitle(title);
 		headerPanel.showProgressMessage("Loading contents. Please wait...");
 
 		metadataPanel.showProgressMessage("Loading contents. Please wait...");
 		Main.log("getOntologyContents: ontologyUri = " +ontologyInfo.getUri());
-		Main.ontmdService.getOntologyContents(ontologyInfo, null, callback);
+		Main.ontmdService.getOntologyContents(roi, null, callback);
 	}
 
 
-	private void ontologyContentsRetrieved(RegisteredOntologyInfo ontologyInfo, boolean readOnly) {
+	private void ontologyContentsRetrieved(BaseOntologyInfo ontologyInfo, boolean readOnly) {
 		this.ontologyInfo = ontologyInfo;
 		String error = ontologyInfo.getError();
 		if ( error != null ) {
@@ -317,7 +340,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			metadataPanel.resetToOriginalValues(ontologyInfo, null, false, link);
 			
 			if ( dataPanel != null ) {
-				dataPanel.updateWith(ontologyInfo, readOnly);
+				dataPanel.updateWith(null, ontologyInfo, readOnly);
 			}
 //			else if ( editDataPanel != null ) {
 //				editDataPanel.updateWith(ontologyInfo);
@@ -419,7 +442,9 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			return;
 		}
 		
-		boolean isNewVersion = ontologyInfo != null && ontologyInfo.getOntologyId() != null;
+		boolean isNewVersion = ontologyInfo != null
+			&& ontologyInfo instanceof RegisteredOntologyInfo
+			&& ((RegisteredOntologyInfo) ontologyInfo).getOntologyId() != null;
 		
 		// check data values
 		error = dataPanel.checkData(isNewVersion);
@@ -448,15 +473,22 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		CreateOntologyInfo createOntologyInfo = new CreateOntologyInfo();
 		
 		// transfer info about prior ontology, if any, for eventual creation of new version:
-		createOntologyInfo.setPriorOntologyInfo(
-				ontologyInfo.getOntologyId(), 
-				ontologyInfo.getOntologyUserId(), 
-				ontologyInfo.getVersionNumber()
-		);
+		if ( ontologyInfo instanceof RegisteredOntologyInfo ) {
+			RegisteredOntologyInfo roi = (RegisteredOntologyInfo) ontologyInfo;
+			createOntologyInfo.setPriorOntologyInfo(
+					roi.getOntologyId(), 
+					roi.getOntologyUserId(), 
+					roi.getVersionNumber()
+			);
+		}
 		
 		createOntologyInfo.setUri(ontologyInfo.getUri());
-		createOntologyInfo.setAuthority(ontologyInfo.getAuthority());
-		createOntologyInfo.setShortName(ontologyInfo.getShortName());
+		
+		if ( ontologyInfo instanceof RegisteredOntologyInfo ) {
+			RegisteredOntologyInfo roi = (RegisteredOntologyInfo) ontologyInfo;
+			createOntologyInfo.setAuthority(roi.getAuthority());
+			createOntologyInfo.setShortName(roi.getShortName());
+		}
 		
 		createOntologyInfo.setMetadataValues(newValues);
 		

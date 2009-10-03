@@ -1,5 +1,6 @@
 package org.mmisw.ontmd.gwt.client.portal.extont;
 
+import org.mmisw.ontmd.gwt.client.portal.PortalConsts;
 import org.mmisw.ontmd.gwt.client.portal.extont.RegisterExternalOntologyWizard.HostingType;
 
 import com.google.gwt.user.client.ui.ClickListener;
@@ -88,6 +89,19 @@ class RegisterExternalOntologyPage2 extends RegisterExternalOntologyPageBase {
 			);
 			row++;
 		}
+		
+		String info2 = 
+			"<br/>" +
+			"<br/>" +
+			"See this <a target=\"_blank\" href=\"" +PortalConsts.REG_TYPE_HELP_PAGE+ "\"" +
+					">manual page</a> for details."
+		;
+		panel.setWidget(row, 0, new HTML(info2));
+		panel.getFlexCellFormatter().setAlignment(row, 0, 
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		
+		
 		return panel;
 	}
 

@@ -1,7 +1,9 @@
 package org.mmisw.ontmd.gwt.client.portal.extont;
 
+import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.portal.PortalControl;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 
 import com.google.gwt.core.client.GWT;
@@ -55,8 +57,6 @@ class RegisterExternalOntologyPage1 extends RegisterExternalOntologyPageBase {
 
 	private FormPanel formPanel = new FormPanel();
 	private FileUpload upload;
-	
-//	private TextBox statusField2 = new TextBox();
 	
 	private final TextArea textArea = INCLUDE_RDF ? new TextArea() : null;
 	
@@ -132,12 +132,17 @@ class RegisterExternalOntologyPage1 extends RegisterExternalOntologyPageBase {
 		if ( loadButton != null ) {
 			buttons.add(loadButton);
 		}
-		buttons.add(detailsButton);
+		
+		// include the "details" button only if an administrator is logged in
+		// OR this is running in my dev environment (for testing)
+		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
+		if ( (loginResult != null && loginResult.isAdministrator())
+		||   GWT.isClient()
+		) {
+			buttons.add(detailsButton);
+		}
 		
 		panel.getFlexCellFormatter().setColSpan(row, 0, 2);
-//		statusField2.setWidth("400");
-//		statusField2.setReadOnly(true);
-//		panel.setWidget(row, 0, statusField2);
 		panel.setWidget(row, 0, buttons);
 		panel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
@@ -263,13 +268,18 @@ class RegisterExternalOntologyPage1 extends RegisterExternalOntologyPageBase {
 			public void onFailure(Throwable thr) {
 				enable(true);
 				Main.log("calling getTempOntologyInfo ... failure! ");
-				RegisterExternalOntologyPage1.this.onFailure(thr);
+				statusHtml.setHTML("<font color=\"red\">Error</font>");
+				String error = thr.getClass().getName()+ ": " +thr.getMessage();
+				while ( (thr = thr.getCause()) != null ) {
+					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
+				}
+				Window.alert(error);
 			}
 
 			public void onSuccess(TempOntologyInfo tempOntologyInfo) {
 				enable(true);
 				Main.log("calling getTempOntologyInfo ... success");
-				RegisterExternalOntologyPage1.this.onSuccess(tempOntologyInfo);
+				ontologyInfoObtained(tempOntologyInfo);
 			}
 		};
 
@@ -279,22 +289,6 @@ class RegisterExternalOntologyPage1 extends RegisterExternalOntologyPageBase {
 
 	}
 	
-	
-	
-	private void onFailure(Throwable thr) {
-		statusHtml.setHTML("<font color=\"red\">Error</font>");
-		String error = thr.getClass().getName()+ ": " +thr.getMessage();
-		while ( (thr = thr.getCause()) != null ) {
-			error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
-		}
-//		statusField2.setText(error);
-		Window.alert(error);
-	}
-
-	private void onSuccess(TempOntologyInfo tempOntologyInfo) {
-		ontologyInfoObtained(tempOntologyInfo);
-	}
-
 	
 	private void createLoadButton() {
 		loadButton = new PushButton("Load ontology", new ClickListener() {
@@ -403,9 +397,8 @@ class RegisterExternalOntologyPage1 extends RegisterExternalOntologyPageBase {
 		String xmlBase = tempOntologyInfo.getXmlBase();
 		nextButton.setEnabled(true);
 		statusHtml.setHTML("<font color=\"green\">Ontology loaded</font>" +
-				"<br/>xml:base = " +(xmlBase != null ? xmlBase : "undefined") 
+				"<br/>Ontology URI: " +(xmlBase != null ? xmlBase : "undefined") 
 		);
-//		statusField2.setText("Original base URI: " +tempOntologyInfo.getUri());
 		
 		if ( INCLUDE_RDF ) {
 			String rdf = tempOntologyInfo.getRdf();

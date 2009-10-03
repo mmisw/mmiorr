@@ -1,7 +1,9 @@
 package org.mmisw.ontmd.gwt.client.portal.extont;
 
+import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.portal.PortalMainPanel;
 
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -16,6 +18,8 @@ import com.google.gwt.user.client.ui.Widget;
  * @author Carlos Rueda
  */
 public class RegisterExternalOntologyWizard {
+	
+	private final PortalMainPanel portalMainPanel;
 	
 	private final RegisterExternalOntologyPage1 page1 = new RegisterExternalOntologyPage1(this);
 	
@@ -36,7 +40,7 @@ public class RegisterExternalOntologyWizard {
 	private HTML statusLoad = new HTML();
 	
 	// provided by page1
-	private TempOntologyInfo tempOntologyInfo;
+	TempOntologyInfo tempOntologyInfo;
 	
 	
 	enum HostingType { 
@@ -53,8 +57,10 @@ public class RegisterExternalOntologyWizard {
 	private HostingType hostingType;
 
 	/**
+	 * @param portalMainPanel 
 	 */
-	public RegisterExternalOntologyWizard() {
+	public RegisterExternalOntologyWizard(PortalMainPanel portalMainPanel) {
+		this.portalMainPanel = portalMainPanel;
 		contents.setSize("650px", "300px");
 		
 		contents.add(page1.getWidget());
@@ -127,7 +133,21 @@ public class RegisterExternalOntologyWizard {
 
 	void finish(RegisterExternalOntologyPageBase currentPage) {
 		if ( currentPage == pageFullyHosted ) {
-			// TODO continue with regular OntologyPanel...
+			
+			// initialize info for the eventual submission
+			CreateOntologyInfo createOntologyInfo = new CreateOntologyInfo();
+			
+			// set info of original ontology:
+			createOntologyInfo.setBaseOntologyInfo(tempOntologyInfo);
+			
+			// set the desired authority/shortName combination:
+			String authority = pageFullyHosted.getAuthority();
+			String shortName = pageFullyHosted.getShortName();
+			createOntologyInfo.setAuthority(authority);
+			createOntologyInfo.setShortName(shortName);
+			
+			// and dispatch the rest of the process
+			portalMainPanel.createNewFromFile(createOntologyInfo);
 		}
 		else if ( currentPage == pageReHosted ) {
 			// TODO continue with regular OntologyPanel...

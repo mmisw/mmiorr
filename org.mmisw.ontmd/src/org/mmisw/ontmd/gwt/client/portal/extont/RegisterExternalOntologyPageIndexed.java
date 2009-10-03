@@ -52,7 +52,8 @@ class RegisterExternalOntologyPageIndexed extends RegisterExternalOntologyPageBa
 						">manual page</a> for details." +
 				"<br/>" +
 				"<br/>" +
-				"Click Finish to complete the registration."
+				"Click Finish to complete the registration. " +
+				"<font color=\"red\">(not implemented yet)</font>"
 		;
 		panel.setWidget(row, 0, new HTML(info));
 		panel.getFlexCellFormatter().setAlignment(row, 0, 

@@ -2,6 +2,7 @@ package org.mmisw.ontmd.gwt.client.portal;
 
 import java.util.List;
 
+import org.mmisw.iserver.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
@@ -39,7 +40,7 @@ public class PortalControl {
 	private ControlsPanel controlsPanel;
 	
 	
-	private RegisteredOntologyInfo ontologyInfo;
+	private BaseOntologyInfo ontologyInfo;
 	private OntologyPanel ontologyPanel;
 	
 	private EntityInfo entityInfo;
@@ -60,7 +61,7 @@ public class PortalControl {
 
 
 	public void createNewFromFile() {		
-		portalMainPanel.createNewFromFile();
+		portalMainPanel.createNewFromFile(null);
 	}
 
 	
@@ -151,7 +152,7 @@ public class PortalControl {
 		}
 	}
 	
-	public ExternalViewersInfo getExternalViewersInfo(RegisteredOntologyInfo oi, boolean includeVersion) {
+	public ExternalViewersInfo getExternalViewersInfo(BaseOntologyInfo oi, boolean includeVersion) {
 		String ontbrowserUrl = Portal.portalBaseInfo.getOntbrowserServiceUrl();
 		if ( ontbrowserUrl == null || ontbrowserUrl.trim().length() == 0 ) {
 			return null;
@@ -161,34 +162,36 @@ public class PortalControl {
 			oi = ontologyInfo;
 		}
 		
-		if ( oi != null ) {
-			return new ExternalViewersInfo(ontbrowserUrl, oi, includeVersion);
+		if ( oi instanceof RegisteredOntologyInfo ) {
+			return new ExternalViewersInfo(ontbrowserUrl, (RegisteredOntologyInfo) oi, includeVersion);
 		}
 		return null;
 	}
 
-	public String getDownloadOptionHtml(DownloadOption dopc, RegisteredOntologyInfo oi,
+	public String getDownloadOptionHtml(DownloadOption dopc, BaseOntologyInfo oi,
 			boolean includeVersion) {
 		
 		if ( oi == null ) {
 			oi = ontologyInfo;
 		}
 		
-		if ( oi != null ) {
+		if ( oi instanceof RegisteredOntologyInfo ) {
+			RegisteredOntologyInfo roi = (RegisteredOntologyInfo) oi;
 			final String ontService = Portal.portalBaseInfo.getOntServiceUrl();
-			String ontUri = URL.encode(oi.getUri()).replaceAll("#", "%23");
+			String ontUri = URL.encode(roi.getUri()).replaceAll("#", "%23");
 			String url = ontService+ "?form=" +dopc.getFormat()+ "&uri=" +ontUri;
 			if ( includeVersion ) {
-				url += "&version=" +oi.getVersionNumber();
+				url += "&version=" +roi.getVersionNumber();
 			}
 			return "<a target=\"_blank\" href=\"" +url+ "\">" +dopc.getName()+ "</a>";
 		}
+		
 		return null;
 	}
 
 	public List<RegisteredOntologyInfo> getVersions() {
-		if ( ontologyInfo != null ) {
-			return ontologyInfo.getPriorVersions();
+		if ( ontologyInfo instanceof RegisteredOntologyInfo ) {
+			return ((RegisteredOntologyInfo) ontologyInfo).getPriorVersions();
 		}
 		return null;
 	}
@@ -290,7 +293,7 @@ public class PortalControl {
 	}
 
 	
-	public String checkCanEditOntology(RegisteredOntologyInfo oi) {
+	public String checkCanEditOntology(BaseOntologyInfo oi) {
 		final String NOT_AUTHORIZED = "You are not authorized to edit this ontology";
 
 		if ( oi == null ) {
@@ -305,8 +308,14 @@ public class PortalControl {
 			if ( loginResult.isAdministrator() ) {
 				// OK.
 			}
-			else if ( oi == null || ! loginResult.getUserId().equals(oi.getOntologyUserId()) ) {
+			else if ( oi == null ) {
 				error = NOT_AUTHORIZED;
+			}
+			else if ( oi instanceof RegisteredOntologyInfo ) {
+				RegisteredOntologyInfo roi = (RegisteredOntologyInfo) oi;
+				if ( ! loginResult.getUserId().equals(roi.getOntologyUserId()) ) {
+					error = NOT_AUTHORIZED;
+				}
 			}
 		}
 		return error;
@@ -360,7 +369,7 @@ public class PortalControl {
 		return quickInfo;
 	}
 
-	public RegisteredOntologyInfo getOntologyInfo() {
+	public BaseOntologyInfo getOntologyInfo() {
 		return ontologyInfo;
 	}
 

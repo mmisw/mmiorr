@@ -169,15 +169,16 @@ public class ControlsPanel extends HorizontalPanel {
 	}
 	
 	private void _prepareOntologyViewButtons() {
-		boolean includeVersion = pctrl.getOntologyPanel().isVersionExplicit();
-
-		RegisteredOntologyInfo oi = pctrl.getOntologyInfo();
 		
-		if ( oi == null ) {
-			oi = pctrl.getOntologyInfo();
+		if ( ! (pctrl.getOntologyInfo() instanceof RegisteredOntologyInfo) ) {
+			return;
 		}
 		
+		RegisteredOntologyInfo oi = (RegisteredOntologyInfo) pctrl.getOntologyInfo();
 
+		boolean includeVersion = pctrl.getOntologyPanel().isVersionExplicit();
+
+		
 		// "view as" options:
 		HorizontalPanel viewAsPanel = new HorizontalPanel();
 		viewAsPanel.setSpacing(4);
@@ -268,23 +269,24 @@ public class ControlsPanel extends HorizontalPanel {
 		
 		ont_mb.addItem("View as", _createMenuBarDownloadOntologyAs(oi, includeVersion));
 		
-		if ( oi == null ) {
-			oi = pctrl.getOntologyInfo();
+		if ( oi == null && (pctrl.getOntologyInfo() instanceof RegisteredOntologyInfo) ) {
+			oi = (RegisteredOntologyInfo) pctrl.getOntologyInfo();
 		}
 		
-		if ( includeVersionsMenu && oi != null && oi.getPriorVersions() != null && oi.getPriorVersions().size() > 0 ) {
-			ont_mb.addSeparator();
-			ont_mb.addItem(_createMenuItemVersions(oi));
-		}
-		
-		ExternalViewersInfo xvi = pctrl.getExternalViewersInfo(oi, includeVersion);
-		if ( xvi != null ) {
-			ont_mb.addSeparator();
-			MenuItem mi = new MenuItem(xvi.hrefHtml.getHTML(), true, nullCmd);
-			mi.setTitle(xvi.tooltip);
-			ont_mb.addItem(mi);
-		}
+		if ( oi != null ) {
+			if ( includeVersionsMenu && oi.getPriorVersions() != null && oi.getPriorVersions().size() > 0 ) {
+				ont_mb.addSeparator();
+				ont_mb.addItem(_createMenuItemVersions(oi));
+			}
 
+			ExternalViewersInfo xvi = pctrl.getExternalViewersInfo(oi, includeVersion);
+			if ( xvi != null ) {
+				ont_mb.addSeparator();
+				MenuItem mi = new MenuItem(xvi.hrefHtml.getHTML(), true, nullCmd);
+				mi.setTitle(xvi.tooltip);
+				ont_mb.addItem(mi);
+			}
+		}
 		
 		return ont_mb;
 	}

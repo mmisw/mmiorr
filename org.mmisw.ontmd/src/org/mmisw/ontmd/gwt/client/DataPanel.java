@@ -7,13 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.mmisw.iserver.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.IndividualInfo;
 import org.mmisw.iserver.gwt.client.rpc.MappingOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.OntologyData;
 import org.mmisw.iserver.gwt.client.rpc.OtherOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
-import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData.ClassData;
 import org.mmisw.ontmd.gwt.client.portal.BaseOntologyContentsPanel;
@@ -77,9 +78,13 @@ public class DataPanel extends VerticalPanel {
 
 	/**
 	 * Updates this panel with the data associated to the given ontology 
-	 * @param ontologyInfoPre
+	 * 
+	 * @param tempOntologyInfo If non-null, info for the new ontology is taken from here.
+	 * 
+	 * TODO NOTE: This is a new parameter in this method while I complete the new "registration of
+	 * external" ontology functionality.
 	 */
-	public void updateWith(RegisteredOntologyInfo ontologyInfo, boolean readOnly) {
+	public void updateWith(TempOntologyInfo tempOntologyInfo, BaseOntologyInfo ontologyInfo, boolean readOnly) {
 		this.readOnly = readOnly;
 		this.clear();
 		
@@ -98,7 +103,7 @@ public class DataPanel extends VerticalPanel {
 		}
 		else if ( ontologyData instanceof OtherOntologyData ) {
 			type = "Synopsis of ontology contents:";
-			widget = _createOtherWidget((OtherOntologyData) ontologyData);
+			widget = _createOtherWidget(tempOntologyInfo, (OtherOntologyData) ontologyData);
 		}
 		else {
 			throw new AssertionError();
@@ -221,12 +226,19 @@ public class DataPanel extends VerticalPanel {
 		return vp;
 	}
 
-	
-	private Widget _createOtherWidget(OtherOntologyData ontologyData) {
+	/**
+	 * 
+	 * @param tempOntologyInfo If non-null, info for the new ontology is taken from here.
+	 * 
+	 * TODO NOTE: This is a new parameter in this method while I complete the new "registration of
+	 * external" ontology functionality.
+	 */
+	private Widget _createOtherWidget(TempOntologyInfo tempOntologyInfo, OtherOntologyData ontologyData) {
 		
 		Main.log("Creating OtherWidget");
 		
 		OtherOntologyContentsPanel otherOntologyContentsPanel = new OtherOntologyContentsPanel(
+				tempOntologyInfo,
 				ontologyData, readOnly);
 
 		baseOntologyContentsPanels.add(otherOntologyContentsPanel);
