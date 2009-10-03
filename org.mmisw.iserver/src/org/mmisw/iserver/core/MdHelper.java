@@ -175,6 +175,10 @@ public class MdHelper {
 	private static AttrDef authorityAttrDef = null;
 	
 	
+	static AttrDef getAuthorityAttrDef() {
+		return authorityAttrDef;
+	}
+
 	/**
 	 * Creates the "authority" attribute definition.
 	 */

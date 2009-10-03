@@ -1,5 +1,6 @@
 package org.mmisw.iserver.gwt.client.rpc;
 
+import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -16,6 +17,7 @@ public class MetadataBaseInfo implements IsSerializable {
 	
 	private String resourceTypeUri;
 	private String authorityAbbreviationUri;
+	private AttrDef authorityAttrDef;
 	
 	private String error;
 	
@@ -64,6 +66,13 @@ public class MetadataBaseInfo implements IsSerializable {
 	public String getError() {
 		return error;
 	}
-	
+
+	public void setAuthorityAttrDef(AttrDef authorityAttrDef) {
+		this.authorityAttrDef = authorityAttrDef;
+	}
+
+	public AttrDef getAuthorityAttrDef() {
+		return authorityAttrDef;
+	}
 
 }

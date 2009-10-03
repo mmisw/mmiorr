@@ -161,6 +161,9 @@ public class Server implements IServer {
 			MdHelper.prepareGroups(includeVersion, resourceTypeClassUri, authorityClassUri);
 			AttrGroup[] attrGroups = MdHelper.getAttrGroups();
 			metadataBaseInfo.setAttrGroups(attrGroups);
+			
+			metadataBaseInfo.setAuthorityAttrDef(MdHelper.getAuthorityAttrDef());
+			
 			log.info("preparing base info ... DONE");
 
 		}

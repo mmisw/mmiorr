@@ -115,6 +115,17 @@ public class TempOntologyHelper {
 			xmlBaseUri = XmlBaseExtractor.getXMLBase(new InputSource(new StringReader(rdf)));
 			if ( xmlBaseUri != null ) {
 				tempOntologyInfo.setXmlBase(xmlBaseUri.toString());
+				// get shortName as the last piece in the path but discarding any query piece
+				String path = xmlBaseUri.getPath();
+				if ( path != null ) {
+					int idx = Math.max(Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\')), path.lastIndexOf(':'));
+					String shortName = idx < 0 ? path : path.substring(idx + 1);
+					int idxQ = shortName.lastIndexOf('?');
+					if ( idxQ >= 0 ) {
+						shortName = shortName.substring(0, idxQ);
+					}
+					tempOntologyInfo.setShortName(shortName);
+				}
 			}
 		}
 		catch (Exception e) {

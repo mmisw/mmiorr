@@ -23,6 +23,9 @@ public class TempOntologyInfo extends BaseOntologyInfo {
 	/** the value of the associated xml:base */
 	private String xmlBase;
 	
+	/** corresponding shortName */
+	private String shortName;
+	
 	// to be moved out from here
 	private boolean preserveOriginalBaseNamespace;
 	
@@ -85,6 +88,13 @@ public class TempOntologyInfo extends BaseOntologyInfo {
 
 	public void setXmlBase(String xmlBase) {
 		this.xmlBase = xmlBase;
+	}
+
+	public void setShortName(String shortName) {
+		this.shortName = shortName;
+	}
+	public String getShortName() {
+		return shortName;
 	}
 
 }

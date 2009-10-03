@@ -11,8 +11,6 @@ import java.util.List;
 public class RegisteredOntologyInfo extends BaseOntologyInfo {
 	private static final long serialVersionUID = 1L;
 
-	private String displayLabel;
-	
 	private String authority;
 
 	private String shortName;
@@ -46,14 +44,6 @@ public class RegisteredOntologyInfo extends BaseOntologyInfo {
 	}
 	
 
-	public String getDisplayLabel() {
-		return displayLabel;
-	}
-	public void setDisplayLabel(String displayLabel) {
-		this.displayLabel = displayLabel;
-	}
-	
-	
 	public boolean equals(Object other) {
 		return other instanceof RegisteredOntologyInfo && getUri().equals(((RegisteredOntologyInfo) other).getUri());
 	}

@@ -3,14 +3,16 @@ package org.mmisw.iserver.gwt.client.rpc;
 import java.io.Serializable;
 
 /**
- * The base class for information about an ontology, either registerd or
- * obtained from an external source..
+ * The base class for information about an ontology, either registered or not (eg.,
+ * obtained from an external source).
  * 
  * @author Carlos Rueda
  */
 public abstract class BaseOntologyInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	private String displayLabel;
+	
 	private String error;
 	
 	private String uri;
@@ -23,6 +25,13 @@ public abstract class BaseOntologyInfo implements Serializable {
 
 	
 	public BaseOntologyInfo() {
+	}
+	
+	public String getDisplayLabel() {
+		return displayLabel;
+	}
+	public void setDisplayLabel(String displayLabel) {
+		this.displayLabel = displayLabel;
 	}
 	
 	public String getError() {

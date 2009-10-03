@@ -11,12 +11,26 @@ import java.util.Map;
 public class CreateOntologyInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	// desired authority and shortName for the to-be-registered ontology
 	private String authority;
 	private String shortName;
 	
+	// desired metadata for the to-be-registered ontology
 	private Map<String,String> metadataValues;
 	
+	// desired data for the to-be-registered ontology
 	private DataCreationInfo dataCreationInfo;
+	
+	/**
+	 * Info about the ontology used as starting point, if any. 
+	 * This can be a TempOntologyInfo or a RegisteredOntologyInfo
+	 */
+	private BaseOntologyInfo baseOntologyInfo;
+	
+	//
+	// TODO REmove the following PriorOntologyInfo stuff: when the baseOntologyInfo above is
+	// a RegisteredOntologyInfo, we already have the required prior info.
+	//
 	
 	/**
 	 * Necessary info for when a prior version exists and a new version
@@ -154,6 +168,18 @@ public class CreateOntologyInfo implements Serializable {
 	}
 	public void setUri(String uri) {
 		this.uri = uri;
+	}
+
+
+
+	public BaseOntologyInfo getBaseOntologyInfo() {
+		return baseOntologyInfo;
+	}
+
+
+
+	public void setBaseOntologyInfo(BaseOntologyInfo baseOntologyInfo) {
+		this.baseOntologyInfo = baseOntologyInfo;
 	}
 	
 
