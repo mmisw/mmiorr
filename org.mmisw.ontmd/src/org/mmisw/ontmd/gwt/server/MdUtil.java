@@ -24,6 +24,7 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
  * 
  * @author Carlos Rueda
  */
+@Deprecated
 class MdUtil {
 	
 	private static final Log log = LogFactory.getLog(MdUtil.class);

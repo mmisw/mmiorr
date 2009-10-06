@@ -28,7 +28,7 @@ class RegisterExternalOntologyPage2 extends RegisterExternalOntologyPageBase {
 			super("ht", hostingType.label);
 			addClickListener(new ClickListener() {
 				public void onClick(Widget sender) {
-					wizard.hostingTypeSelected(hostingType);
+					getWizard().hostingTypeSelected(hostingType);
 					nextButton.setEnabled(true);
 				}
 			});

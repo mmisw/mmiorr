@@ -222,7 +222,7 @@ public class PortalControl {
 	/**
 	 * @param ontologyInfo the ontologyInfo to set
 	 */
-	public void setOntologyInfo(RegisteredOntologyInfo ontologyInfo) {
+	public void setOntologyInfo(BaseOntologyInfo ontologyInfo) {
 		this.ontologyInfo = ontologyInfo;
 	}
 
@@ -401,10 +401,7 @@ public class PortalControl {
 			}
 			break;
 		case UPLOAD_ONTOLOGY:
-			return "Registering your ontology. " +
-					"The registration options are described " +
-					"<a target=\"_blank\" href=\"" +PortalConsts.REG_TYPE_HELP_PAGE+ "\">here</a>."
-			;
+			return "Registering your ontology.";
 		}
 		return null;
 	}

@@ -138,7 +138,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		
 	    container.add(panel);
 	    
-	    if ( this.ontologyInfo.getUri() != null ) {
+	    if ( this.ontologyInfo instanceof RegisteredOntologyInfo && this.ontologyInfo.getUri() != null ) {
 	    	getOntologyContents(readOnly);
 	    }
 	    // if Uri is null, then this is a new ontology being created in the interface.
@@ -229,9 +229,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		OtherOntologyData otherOntologyData = null;
 		
 		BaseOntologyInfo baseOntologyInfo = createOntologyInfo != null ? createOntologyInfo.getBaseOntologyInfo() : null;
-		if ( baseOntologyInfo != null
-		&&   baseOntologyInfo instanceof TempOntologyInfo
-		) {
+		if ( baseOntologyInfo instanceof TempOntologyInfo ) {
 			// TODO check actual type of ontology data? It should be OtherOntologyData in this case.
 			otherOntologyData = (OtherOntologyData) baseOntologyInfo.getOntologyData();
 		}

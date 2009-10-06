@@ -3,6 +3,13 @@ Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
 2009-10-02   1.5.0.alpha30
+	- First test of full sequence to register an external ontology in full hosted mode:
+	  first basic test working, but details pending including:
+	  	- log in first and then run #rx (this will be the case when button "register external ont" be provided) 
+	  	- proper handling of user-specified ontology URI (via given authority-shortName);
+	  	  the acronym (== resourceType) still used.  Need to clarify this.
+	
+	
 	- Reorganizing code (iserver included) to better capture info about starting ontology (either
 	  TempOntologyInfo or RegisteredOntologyInfo.
 	- Removing some use of RegisteredOntologyInfo where (the more generic) BaseOntologyInfo is more 

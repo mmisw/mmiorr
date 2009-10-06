@@ -23,6 +23,7 @@ import com.hp.hpl.jena.vocabulary.DC;
  * 
  * @author Carlos Rueda
  */
+@Deprecated
 public class MdHelper_OLD {
 	private MdHelper_OLD() { }
 

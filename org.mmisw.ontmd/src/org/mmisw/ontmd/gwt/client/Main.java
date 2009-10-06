@@ -46,7 +46,16 @@ public class Main implements EntryPoint {
 	
 	static AppInfo appInfo;
 	
-	public static MetadataBaseInfo metadataBaseInfo;
+	private static MetadataBaseInfo metadataBaseInfo;
+	
+	
+	public static void setMetadataBaseInfo(MetadataBaseInfo mdbi) {
+		metadataBaseInfo = mdbi;
+	}
+
+	public static MetadataBaseInfo getMetadataBaseInfo() {
+		return metadataBaseInfo ;
+	}
 
 	// buffer for logging in the client interface; used only if a certain parameter is given
 	private static StringBuffer logBuffer;
@@ -214,7 +223,7 @@ public class Main implements EntryPoint {
 					RootPanel.get().add(new Label(error));
 				}
 				else {
-					metadataBaseInfo = bInfo;
+					setMetadataBaseInfo(bInfo);
 					Widget mainPanel = new MainPanel(params);
 					startGui(params, mainPanel);
 				}

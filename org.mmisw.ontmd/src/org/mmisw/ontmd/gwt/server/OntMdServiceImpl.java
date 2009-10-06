@@ -64,6 +64,7 @@ import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
 import org.mmisw.ontmd.gwt.server.portal.PortalImpl;
 import org.mmisw.ontmd.gwt.server.voc2rdf.Voc2RdfImpl;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.Ontology;
@@ -181,20 +182,23 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	
 	/** always re-creates the baseInfo */
 	private void prepareBaseInfo(boolean includeVersion) {
-		log.info("preparing base info ...");
-		metadataBaseInfo = new MetadataBaseInfo();
-		
-		metadataBaseInfo.setResourceTypeUri(Omv.acronym.getURI());
-		
-		MdHelper_OLD.prepareGroups(includeVersion);
-		AttrGroup[] attrGroups = MdHelper_OLD.getAttrGroups();
-		metadataBaseInfo.setAttrGroups(attrGroups);
-		log.info("preparing base info ... DONE");
+		Window.alert("OLD prepareBaseInfo called.  Please report this bug!");
+//		
+//		log.info("preparing base info ...");
+//		metadataBaseInfo = new MetadataBaseInfo();
+//		
+//		metadataBaseInfo.setResourceTypeUri(Omv.acronym.getURI());
+//		
+//		MdHelper_OLD.prepareGroups(includeVersion);
+//		AttrGroup[] attrGroups = MdHelper_OLD.getAttrGroups();
+//		metadataBaseInfo.setAttrGroups(attrGroups);
+//		log.info("preparing base info ... DONE");
 	}
 
 	
 	public AttrDef refreshOptions(AttrDef attrDef) {
-		return MdHelper_OLD.refreshOptions(attrDef);
+		return MdHelper.refreshOptions(attrDef);
+//		return MdHelper_OLD.refreshOptions(attrDef);
 	}
 
 

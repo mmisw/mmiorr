@@ -143,7 +143,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 			if ( editing &&  // not listBoxes if we are just viewing 
 					options.size() > 0 ) {
 				
-				if ( Main.metadataBaseInfo.getResourceTypeUri().equals(attr.getUri()) ) {
+				if ( Main.getMetadataBaseInfo().getResourceTypeUri().equals(attr.getUri()) ) {
 					// the special case for the "resourceType"
 					
 					// #183: Don't ask user whether the submitted ontology is a mapping
@@ -418,7 +418,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 //			Main.log("resetToOriginalOrNewValues: uri: " +uri+ " = " +value);
 
 			// Special case: Omv.acronym/OmvMmi.shortNameUri
-			if ( Main.metadataBaseInfo.getResourceTypeUri().equals(uri) ) {
+			if ( Main.getMetadataBaseInfo().getResourceTypeUri().equals(uri) ) {
 				List<AttrDef> relatedAttrs = elem.attr.getRelatedAttrs();
 				assert relatedAttrs != null && relatedAttrs.size() > 0 ;
 				String relatedUri = relatedAttrs.get(0).getUri();

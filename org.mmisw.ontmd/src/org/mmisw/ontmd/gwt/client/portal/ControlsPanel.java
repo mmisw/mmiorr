@@ -80,7 +80,8 @@ public class ControlsPanel extends HorizontalPanel {
 			break;
 		case ONTOLOGY_EDIT_NEW_VERSION:
 		case ONTOLOGY_EDIT_NEW:
-			_prepareOntologyEditButtons();
+		case UPLOAD_ONTOLOGY:
+			_prepareOntologyEditButtons(type != InterfaceType.UPLOAD_ONTOLOGY);
 			break;
 		case ENTITY_VIEW:
 			_prepareEntityViewButtons();
@@ -221,27 +222,28 @@ public class ControlsPanel extends HorizontalPanel {
 		}
 	}
 
-	private void _prepareOntologyEditButtons() {
+	private void _prepareOntologyEditButtons(boolean includeReviewAndRegister) {
+		PushButton button;
 		if ( pctrl.getLoginResult() != null ) {
-			PushButton button;
-			
-			button = new PushButton("Review and Register", new ClickListener() {
-				public void onClick(Widget sender) {
-					pctrl.reviewAndRegister();
-				}
-			});
-			button.setTitle("Checks the contents and prepares the ontology for subsequent registration");
-			controls.add(button);
-			buttons.add(button);
-			
-			button = new PushButton("Cancel", new ClickListener() {
-				public void onClick(Widget sender) {
-					pctrl.cancelEdit();
-				}
-			});
-			controls.add(button);
-			buttons.add(button);
+			if ( includeReviewAndRegister ) {
+				button = new PushButton("Review and Register", new ClickListener() {
+					public void onClick(Widget sender) {
+						pctrl.reviewAndRegister();
+					}
+				});
+				button.setTitle("Checks the contents and prepares the ontology for subsequent registration");
+				controls.add(button);
+				buttons.add(button);
+			}
 		}
+		
+		button = new PushButton("Cancel", new ClickListener() {
+			public void onClick(Widget sender) {
+				pctrl.cancelEdit();
+			}
+		});
+		controls.add(button);
+		buttons.add(button);
 	}
 
 	

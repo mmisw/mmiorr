@@ -156,7 +156,7 @@ public class MetadataPanel extends FlexTable implements TempOntologyInfoListener
 		dockPanel.add(tabPanel, DockPanel.NORTH);
 	    container.add(dockPanel, DockPanel.CENTER);
 	    
-		for ( AttrGroup attrGroup: Main.metadataBaseInfo.getAttrGroups() ) {
+		for ( AttrGroup attrGroup: Main.getMetadataBaseInfo().getAttrGroups() ) {
 			CellPanel groupPanel = new MetadataGroupPanel(this, attrGroup, editing);
 			tabPanel.add(groupPanel, attrGroup.getName());
 		}

@@ -80,7 +80,7 @@ public class Portal {
 			}
 
 			public void onSuccess(MetadataBaseInfo result) {
-				Main.metadataBaseInfo = result;
+				Main.setMetadataBaseInfo(result);
 				getAllOntologies(params);
 			}
 			

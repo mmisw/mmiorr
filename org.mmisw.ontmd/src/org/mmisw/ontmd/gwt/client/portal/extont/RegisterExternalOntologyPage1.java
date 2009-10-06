@@ -3,6 +3,7 @@ package org.mmisw.ontmd.gwt.client.portal.extont;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.portal.PortalConsts;
 import org.mmisw.ontmd.gwt.client.portal.PortalControl;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 
@@ -102,7 +103,17 @@ class RegisterExternalOntologyPage1 extends RegisterExternalOntologyPageBase {
 //		panel.setBorderWidth(1);
 		int row = 0;
 		
-		String info = "<br/>Please, select your ontology file";
+		String info = 
+			"<br/>" +
+			"First step is to indicate the ontology you want to register. Then, you can indicate the " +
+			"desired type of hosting. You may need to provide additional information depending on the " +
+			"type of hosting. " +
+			"See this <a target=\"_blank\" href=\"" +PortalConsts.REG_TYPE_HELP_PAGE+ "\"" +
+			">manual page</a> for details." +
+			"<br/>" +
+			"<br/>" +
+			"Please, select your ontology file"
+		;
 		panel.setWidget(row, 0, new HTML(info));
 		panel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
@@ -392,12 +403,16 @@ class RegisterExternalOntologyPage1 extends RegisterExternalOntologyPageBase {
 			return;
 		}
 		
-		wizard.ontologyInfoObtained(tempOntologyInfo);
+		getWizard().ontologyInfoObtained(tempOntologyInfo);
 		
 		String xmlBase = tempOntologyInfo.getXmlBase();
 		nextButton.setEnabled(true);
-		statusHtml.setHTML("<font color=\"green\">Ontology loaded</font>" +
-				"<br/>Ontology URI: " +(xmlBase != null ? xmlBase : "undefined") 
+		statusHtml.setHTML(
+				"<font color=\"green\">Ontology loaded in work space.</font>" +
+				"<br/>" +
+				"Ontology URI: " +(xmlBase != null ? xmlBase : "undefined") +
+				"<br/>" +
+				"Click Next to continue." 
 		);
 		
 		if ( INCLUDE_RDF ) {

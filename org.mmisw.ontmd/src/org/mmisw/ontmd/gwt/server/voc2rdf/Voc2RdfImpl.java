@@ -1,19 +1,16 @@
 package org.mmisw.ontmd.gwt.server.voc2rdf;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mmisw.ont.vocabulary.Omv;
-import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
-import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.server.PortalConfig;
-import org.mmisw.ontmd.gwt.server.MdHelper_OLD;
+
+import com.google.gwt.user.client.Window;
 
 
 
@@ -55,23 +52,24 @@ public class Voc2RdfImpl  {
 	}
 	
 	private void prepareBaseInfo() {
-		log.info("preparing base info ...");
-		
-		// prepare all the information (as in ontmd) even that voc2rdf is just going to use a few of the attributes:
-		MdHelper_OLD.prepareGroups(false);
-		
-		baseInfo = new Voc2RdfBaseInfo();
-		baseInfo.setResourceTypeAttrDef(MdHelper_OLD.getResourceTypeAttrDef());
-		
-		Map<String,AttrDef> attrDefMap = new HashMap<String,AttrDef>();
-		Map<String, AttrDef> uriAttrDefMap = MdHelper_OLD.getAttrDefMap();
-		attrDefMap.put("fullTitle", uriAttrDefMap.get(Omv.name.getURI()));
-		attrDefMap.put("creator", uriAttrDefMap.get(Omv.hasCreator.getURI()));
-		attrDefMap.put("description", uriAttrDefMap.get(Omv.description.getURI()));
-		attrDefMap.put("authority", uriAttrDefMap.get(OmvMmi.origMaintainerCode.getURI()));
-		baseInfo.setAttrDefMap(attrDefMap);
-		
-		log.info("preparing base info ... Done.  attrDefMap = " +attrDefMap);
+		Window.alert("Voc2RdfImpl: OLD prepareBaseInfo called.  Please report this bug!");
+//		log.info("preparing base info ...");
+//		
+//		// prepare all the information (as in ontmd) even that voc2rdf is just going to use a few of the attributes:
+//		MdHelper_OLD.prepareGroups(false);
+//		
+//		baseInfo = new Voc2RdfBaseInfo();
+//		baseInfo.setResourceTypeAttrDef(MdHelper_OLD.getResourceTypeAttrDef());
+//		
+//		Map<String,AttrDef> attrDefMap = new HashMap<String,AttrDef>();
+//		Map<String, AttrDef> uriAttrDefMap = MdHelper_OLD.getAttrDefMap();
+//		attrDefMap.put("fullTitle", uriAttrDefMap.get(Omv.name.getURI()));
+//		attrDefMap.put("creator", uriAttrDefMap.get(Omv.hasCreator.getURI()));
+//		attrDefMap.put("description", uriAttrDefMap.get(Omv.description.getURI()));
+//		attrDefMap.put("authority", uriAttrDefMap.get(OmvMmi.origMaintainerCode.getURI()));
+//		baseInfo.setAttrDefMap(attrDefMap);
+//		
+//		log.info("preparing base info ... Done.  attrDefMap = " +attrDefMap);
 	}
 	
 	

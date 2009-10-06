@@ -37,16 +37,15 @@ class RegisterExternalOntologyPageFullyHosted extends RegisterExternalOntologyPa
 
 
 	private VerticalPanel contents = new VerticalPanel();
-	private AuthorityShortNamePanel authorityShortNamePanel = new AuthorityShortNamePanel(this);
+	AuthorityShortNamePanel authorityShortNamePanel = new AuthorityShortNamePanel(this);
 	
 	
 	RegisterExternalOntologyPageFullyHosted(RegisterExternalOntologyWizard wizard) {
-		super(wizard, true, false, true);
+		super(wizard, true, true, false);
 		contents.setSize("650px", "200px");
 		addContents(contents);
 		
 		nextButton.setEnabled(false);
-		finishButton.setEnabled(false);
 		recreate();
 	}
 	
@@ -74,14 +73,14 @@ class RegisterExternalOntologyPageFullyHosted extends RegisterExternalOntologyPa
 		contents.add(panel);
 	}
 
-	Widget getWidget() {
+	public Widget getWidget() {
 		authorityShortNamePanel.initFields();
 		return super.getWidget();
 	}
 
 	void formChanged() {
 		statusHtml.setHTML("");
-		finishButton.setEnabled(false);
+		nextButton.setEnabled(false);
 	}
 
 	void checkAuthorityShortName(boolean fullCheck, String authority, String shortName) {
@@ -160,7 +159,7 @@ class RegisterExternalOntologyPageFullyHosted extends RegisterExternalOntologyPa
 						"Click Finish to proceed with providing metadata to this ontology and " +
 						"then complete the registration."
 				);
-				finishButton.setEnabled(true);
+				nextButton.setEnabled(true);
 			}
 		};
 
@@ -180,5 +179,8 @@ class RegisterExternalOntologyPageFullyHosted extends RegisterExternalOntologyPa
 	}
 
 
+	String getOntologyUri() {
+		return authorityShortNamePanel.getOntologyUri();
+	}
 
 }

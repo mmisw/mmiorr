@@ -1,5 +1,6 @@
 package org.mmisw.ontmd.gwt.client.portal;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -7,9 +8,11 @@ import org.mmisw.iserver.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
+import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
+import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.ontmd.gwt.client.LoginPanel;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.portal.extont.RegisterExternalOntologyWizard;
@@ -473,18 +476,39 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	 */
 	public void createNewFromFile(CreateOntologyInfo createOntologyInfo) {
 		
-		// TODO should have a OntologyPanel contructor with createOntologyInfo
+		OntologyPanel ontologyPanel;
+		
+		// TODO should have an OntologyPanel constructor with createOntologyInfo
 		if ( createOntologyInfo != null ) {
 			// TODO
+			
+			BaseOntologyInfo baseOntologyInfo = createOntologyInfo.getBaseOntologyInfo();
+			assert baseOntologyInfo instanceof TempOntologyInfo;
+			TempOntologyInfo tempOntologyInfo = (TempOntologyInfo) baseOntologyInfo;
+			
+			OntologyMetadata md = tempOntologyInfo.getOntologyMetadata();
+			Map<String,String> originalValues = new HashMap<String,String>();
+			
+			// TODO should be a "shortName" explicit parameter, not the acronym
+			originalValues.put("http://omv.ontoware.org/2005/05/ontology#acronym", 
+					createOntologyInfo.getShortName());
+			
+			// TODO use parameter instead of hard-coded
+			originalValues.put("http://mmisw.org/ont/mmi/20081020/ontologyMetadata/origMaintainerCode", 
+					createOntologyInfo.getAuthority());
+			
+			md.setOriginalValues(originalValues);
+			
+			ontologyPanel = new OntologyPanel(tempOntologyInfo, false, false);
 		}
 		else {
 			// TODO
+			RegisteredOntologyInfo ontologyInfo = new RegisteredOntologyInfo();
+			ontologyPanel = new OntologyPanel(ontologyInfo, false, false);
+			pctrl.setOntologyInfo(ontologyInfo);
 		}
 		
-		RegisteredOntologyInfo ontologyInfo = new RegisteredOntologyInfo();
-		OntologyPanel ontologyPanel = new OntologyPanel(ontologyInfo, false, false);
 
-		pctrl.setOntologyInfo(ontologyInfo);
 		pctrl.setOntologyPanel(ontologyPanel);
 		
 		interfaceType = InterfaceType.ONTOLOGY_EDIT_NEW;
@@ -612,10 +636,8 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	
 	
 	public void cancelEdit(OntologyPanel ontologyPanel) {
-		if ( ontologyPanel != null ) {
-			if ( ! Window.confirm("Any edits will be lost") ) {
-				return;
-			}
+		if ( ! Window.confirm("Any edits will be lost") ) {
+			return;
 		}
 		
 		switch ( interfaceType ) {
@@ -628,6 +650,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 			    }
 				break;
 			case ONTOLOGY_EDIT_NEW:
+			case UPLOAD_ONTOLOGY:
 				interfaceType = InterfaceType.BROWSE;
 			    controlsPanel.showMenuBar(interfaceType);
 			    headerPanel.updateLinks(interfaceType);
