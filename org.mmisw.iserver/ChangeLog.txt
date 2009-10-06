@@ -4,6 +4,8 @@ Created: 2009-05-13
 $Id$
 
 2009-10-02   1.5.0.alpha30
+	- MdHelper and MetadataBaseInfo: Exposing more elements to clients
+
 	- TempOntologyInfo: now with a shortName attribute taken from the xmlbase
 	- CreateOntologyInfo: now with a baseOntologyInfo attribute which is info about the 
 	  ontology used as starting point, if any.

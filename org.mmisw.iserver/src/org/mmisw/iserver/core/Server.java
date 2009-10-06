@@ -164,6 +164,11 @@ public class Server implements IServer {
 			
 			metadataBaseInfo.setAuthorityAttrDef(MdHelper.getAuthorityAttrDef());
 			
+			metadataBaseInfo.setResourceTypeAttrDef(MdHelper.getResourceTypeAttrDef());
+			
+			metadataBaseInfo.setUriAttrDefMap(MdHelper.getUriAttrDefMap());
+			
+			
 			log.info("preparing base info ... DONE");
 
 		}

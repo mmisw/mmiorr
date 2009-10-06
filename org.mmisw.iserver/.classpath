@@ -15,7 +15,7 @@
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/icu4j_3_4.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/commons-logging.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmisw.ont.mmiuri.jar" sourcepath="/org.mmisw.ont"/>
-	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmisw.ont.vocabulary.jar"/>
+	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmisw.ont.vocabulary.jar" sourcepath="/org.mmisw.ont"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmi.util.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmi.ont.util.jar" sourcepath="/org.mmi.ont.util"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/commons-io-1.4.jar"/>

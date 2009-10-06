@@ -105,7 +105,7 @@ public class MdHelper {
 		return uriPropMap;
 	}
 
-	public static Map<String, AttrDef> getAttrDefMap() {
+	public static Map<String, AttrDef> getUriAttrDefMap() {
 		return uriAttrDefMap;
 	}
 
@@ -165,7 +165,7 @@ public class MdHelper {
 	
 	
 	
-	public static AttrDef getResourceTypeAttrDef(String classUri) {
+	public static AttrDef getResourceTypeAttrDef() {
 		createResourceTypeAttrDef();
 		return resourceTypeAttrDef;
 	}

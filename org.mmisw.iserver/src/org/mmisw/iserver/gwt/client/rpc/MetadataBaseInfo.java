@@ -1,5 +1,7 @@
 package org.mmisw.iserver.gwt.client.rpc;
 
+import java.util.Map;
+
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
 
@@ -18,6 +20,10 @@ public class MetadataBaseInfo implements IsSerializable {
 	private String resourceTypeUri;
 	private String authorityAbbreviationUri;
 	private AttrDef authorityAttrDef;
+	
+	private AttrDef resourceTypeAttrDef;
+	
+	private Map<String,AttrDef> uriAttrDefMap;
 	
 	private String error;
 	
@@ -75,4 +81,21 @@ public class MetadataBaseInfo implements IsSerializable {
 		return authorityAttrDef;
 	}
 
+	public AttrDef getResourceTypeAttrDef() {
+		return resourceTypeAttrDef;
+	}
+
+	public void setResourceTypeAttrDef(AttrDef resourceTypeAttrDef) {
+		this.resourceTypeAttrDef = resourceTypeAttrDef;
+	}
+
+	public Map<String, AttrDef> getUriAttrDefMap() {
+		return uriAttrDefMap;
+	}
+
+	public void setUriAttrDefMap(Map<String, AttrDef> uriAttrDefMap) {
+		this.uriAttrDefMap = uriAttrDefMap;
+	}
+
+	
 }
