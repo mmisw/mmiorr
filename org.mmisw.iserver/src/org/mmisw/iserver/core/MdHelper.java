@@ -211,6 +211,17 @@ public class MdHelper {
 		resourceTypeClassUri = resourceTypeClassUri_;
 		authorityClassUri    = authorityClassUri_;
 		
+		
+		// issue #196 capture omv:reference
+		// Note that I'm only creating the AttrDef but no including it in any group; the reason
+		// is that this attribute will be accessed directly from the new wizard-like interface
+		// in the portal.
+		createAttrDef(Omv.reference)
+			.setLabel("References")
+			.setTooltip("Bibliographic references describing the ontology and its applications.")
+			.setNumberOfLines(3);
+		;
+		
 		List<AttrDef> general_attr_list = new ArrayList<AttrDef>();
 		general_attr_list.add(createResourceTypeAttrDef());
 		

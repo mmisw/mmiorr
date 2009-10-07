@@ -3,6 +3,12 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2009-10-06   1.5.0.alpha30
+	- issue #196 capture omv:reference
+		MdHelper.prepareGroups: Creating AttrDef for omv:reference.
+		Note that I'm only creating the AttrDef but no including it in any group; the reason
+		is that this attribute will be accessed directly from the new wizard-like interface in the portal.
+
 2009-10-02   1.5.0.alpha30
 	- MdHelper and MetadataBaseInfo: Exposing more elements to clients
 
