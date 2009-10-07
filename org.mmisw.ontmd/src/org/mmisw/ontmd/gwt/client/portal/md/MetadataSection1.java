@@ -30,6 +30,7 @@ public class MetadataSection1 extends MetadataSection {
 	private AttrDef linkOrigVocabAttrDef =    _getAttrDef("http://mmisw.org/ont/mmi/20081020/ontologyMetadata/origVocUri");
 	private AttrDef linkDocAttrDef =          _getAttrDef("http://omv.ontoware.org/2005/05/ontology#documentation");
 	private AttrDef contributorsAttrDef =     _getAttrDef("http://omv.ontoware.org/2005/05/ontology#hasContributor");
+	private AttrDef referenceAttrDef =        _getAttrDef("http://omv.ontoware.org/2005/05/ontology#reference");
 	
 
 	
@@ -50,7 +51,8 @@ public class MetadataSection1 extends MetadataSection {
 				keywordsAttrDef,
 				linkOrigVocabAttrDef,
 				linkDocAttrDef,
-				contributorsAttrDef
+				contributorsAttrDef,
+				referenceAttrDef,
 		};
 		createElements();
 		createForm();

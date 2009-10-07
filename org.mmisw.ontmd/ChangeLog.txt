@@ -2,6 +2,13 @@ org.mmisw.ontmd: MMI Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2009-10-06   1.5.0.alpha30
+	- issue #196 capture omv:reference
+		MetadataSection1: This property included here.
+		TODO: handle multiple entries in the same field (one per line, presumably)
+		
+		
+		
 2009-10-02   1.5.0.alpha30
 	- First test of full sequence to register an external ontology in full hosted mode:
 	  first basic test working, but details pending including:
