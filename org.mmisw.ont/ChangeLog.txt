@@ -7,6 +7,9 @@ ChangeLog
 2009-10-06   1.3.14.beta
 	- issue #196 capture omv:reference
 		Omv: added omv:reference
+		
+	- issue #99 Normalize theme/topic/class throughout interface
+		OmvMmi: added omvmmi:hasResourceType
 	
 	
 2009-09-30   1.3.13.beta

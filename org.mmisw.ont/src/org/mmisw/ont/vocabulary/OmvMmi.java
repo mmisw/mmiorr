@@ -109,4 +109,7 @@ public class OmvMmi {
     
     /** See <a href="http://code.google.com/p/mmisw/issues/detail?id=148">Issue #148</a> */
     public static final Property hasContentCreator = m_model.createProperty( NS , "hasContentCreator" );
+    
+    /** See <a href="http://code.google.com/p/mmisw/issues/detail?id=99">Issue #99</a> */
+    public static final Property hasResourceType = m_model.createProperty( NS , "hasResourceType" );
 }
