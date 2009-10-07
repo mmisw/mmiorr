@@ -66,6 +66,9 @@ public class Omv {
     /** OM.15 */
     public static final Property documentation = m_model.createProperty( NS , "documentation" );
     
+    /** OM.16 */
+    public static final Property reference = m_model.createProperty( NS , "reference" );
+    
     /** OM.17 */
     public static final Property naturalLanguage = m_model.createProperty( NS , "naturalLanguage" );
     
