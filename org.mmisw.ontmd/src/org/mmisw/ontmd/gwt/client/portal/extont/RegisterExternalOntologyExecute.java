@@ -5,7 +5,6 @@ import java.util.Map;
 import org.mmisw.iserver.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
-import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
@@ -35,47 +34,24 @@ class RegisterExternalOntologyExecute {
 	}
 	
 	
-	void reviewAndRegister() {
+	/**
+	 * Call this to review and register an new ontology (not a new version of an existing registered ontology).
+	 */
+	void reviewAndRegisterNewOntology() {
 		Map<String, String> newValues = createOntologyInfo.getMetadataValues();
 		
 		BaseOntologyInfo ontologyInfo = createOntologyInfo.getBaseOntologyInfo();
 		
-		boolean isNewVersion = ontologyInfo instanceof RegisteredOntologyInfo
-			&& ((RegisteredOntologyInfo) ontologyInfo).getOntologyId() != null;
-		
-		
-		DataCreationInfo dataCreationInfo = createOntologyInfo.getDataCreationInfo();
+		assert ! ( ontologyInfo instanceof RegisteredOntologyInfo ) ;
 		
 		
 		// Ok, put the new values in the ontologyInfo object:
 		ontologyInfo.getOntologyMetadata().setNewValues(newValues);
 		
 		
-		// transfer info about prior ontology, if any, for eventual creation of new version:
-		if ( ontologyInfo instanceof RegisteredOntologyInfo ) {
-			RegisteredOntologyInfo roi = (RegisteredOntologyInfo) ontologyInfo;
-			createOntologyInfo.setPriorOntologyInfo(
-					roi.getOntologyId(), 
-					roi.getOntologyUserId(), 
-					roi.getVersionNumber()
-			);
-		}
-		
 		createOntologyInfo.setUri(ontologyInfo.getUri());
-		
-		if ( ontologyInfo instanceof RegisteredOntologyInfo ) {
-			RegisteredOntologyInfo roi = (RegisteredOntologyInfo) ontologyInfo;
-			createOntologyInfo.setAuthority(roi.getAuthority());
-			createOntologyInfo.setShortName(roi.getShortName());
-		}
-		
 
-		String authority = createOntologyInfo.getAuthority();
-		String shortName = createOntologyInfo.getShortName();
-		
-		
-		createOntologyInfo.setDataCreationInfo(dataCreationInfo);
-		
+		Main.log("reviewAndRegisterNewOntology starting.  HostingType: " +createOntologyInfo.getHostingType());
 		
 		final MyDialog popup = new MyDialog(null);
 		popup.addTextArea(null).setSize("600", "150");

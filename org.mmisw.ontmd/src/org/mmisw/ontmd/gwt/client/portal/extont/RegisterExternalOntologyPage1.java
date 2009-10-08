@@ -410,7 +410,7 @@ class RegisterExternalOntologyPage1 extends RegisterExternalOntologyPageBase {
 		statusHtml.setHTML(
 				"<font color=\"green\">Ontology loaded in work space.</font>" +
 				"<br/>" +
-				"Ontology URI: " +(xmlBase != null ? xmlBase : "undefined") +
+				"Ontology URI: <b>" +(xmlBase != null ? xmlBase : "undefined") + "</b>" +
 				"<br/>" +
 				"Click Next to continue." 
 		);

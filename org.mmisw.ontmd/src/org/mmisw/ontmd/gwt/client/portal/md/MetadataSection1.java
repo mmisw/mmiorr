@@ -1,7 +1,10 @@
 package org.mmisw.ontmd.gwt.client.portal.md;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import org.mmisw.iserver.gwt.client.rpc.HostingType;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
@@ -21,8 +24,10 @@ public class MetadataSection1 extends MetadataSection {
 		return attrDef;
 	}
 	
-	private AttrDef resourceTypeAttrDef =     _getAttrDef("http://omv.ontoware.org/2005/05/ontology#acronym");
+	private AttrDef resourceTypeAttrDef =     Main.getMetadataBaseInfo().getResourceTypeAttrDef();
+	private AttrDef authorityAttrDef =        _getAttrDef("http://mmisw.org/ont/mmi/20081020/ontologyMetadata/origMaintainerCode");
 	private AttrDef fullTitleAttrDef =        _getAttrDef("http://omv.ontoware.org/2005/05/ontology#name");
+	private AttrDef acronymAttrDef =          _getAttrDef("http://omv.ontoware.org/2005/05/ontology#acronym");
 	private AttrDef contentCreatorAttrDef =   _getAttrDef("http://mmisw.org/ont/mmi/20081020/ontologyMetadata/hasContentCreator");
 	private AttrDef ontologyCreatorAttrDef =  _getAttrDef("http://omv.ontoware.org/2005/05/ontology#hasCreator");
 	private AttrDef briefDescriptionAttrDef = _getAttrDef("http://omv.ontoware.org/2005/05/ontology#description");
@@ -34,26 +39,33 @@ public class MetadataSection1 extends MetadataSection {
 	
 
 	
-	public MetadataSection1() {
+	public MetadataSection1(HostingType hostingType) {
 		super();
 		
 		preamble = "<b>General information.</b> " +
 				"These fields capture general information about this ontology, who created it, and where it came from. " +
 				COMMON_INFO
 		;
-		
-		attrDefs = new AttrDef[] {
-				resourceTypeAttrDef,
-				fullTitleAttrDef,
-				contentCreatorAttrDef,
-				ontologyCreatorAttrDef,
-				briefDescriptionAttrDef,
-				keywordsAttrDef,
-				linkOrigVocabAttrDef,
-				linkDocAttrDef,
-				contributorsAttrDef,
-				referenceAttrDef,
-		};
+
+		List<AttrDef> list = new ArrayList<AttrDef>();
+
+		if ( hostingType != HostingType.FULLY_HOSTED ) {
+			list.add(authorityAttrDef);
+		}
+		list.add(resourceTypeAttrDef);
+		list.add(fullTitleAttrDef);
+		list.add(acronymAttrDef);
+		list.add(contentCreatorAttrDef);
+		list.add(ontologyCreatorAttrDef);
+		list.add(briefDescriptionAttrDef);
+		list.add(keywordsAttrDef);
+		list.add(linkOrigVocabAttrDef);
+		list.add(linkDocAttrDef);
+		list.add(contributorsAttrDef);
+		list.add(referenceAttrDef);
+
+		attrDefs = list.toArray(new AttrDef[list.size()]);
+
 		createElements();
 		createForm();
 	}
@@ -65,10 +77,10 @@ public class MetadataSection1 extends MetadataSection {
 			}
 			Elem elem;
 			if ( attrDef == resourceTypeAttrDef ) {
-				elem = new Elem(attrDef, new FieldWithChoose(resourceTypeAttrDef, cl, "200px"));
+				elem = new Elem(attrDef, new FieldWithChoose(resourceTypeAttrDef, cl, "250px"));
 			}
 			else {
-				elem = new Elem(attrDef, Util.createTextBoxBase(attrDef.getNumberOfLines(), "350px", cl));
+				elem = new Elem(attrDef, Util.createTextBoxBase(attrDef.getNumberOfLines(), "450px", cl));
 			}
 			addElem(elem);
 		}

@@ -32,4 +32,8 @@ class RegisterExternalOntologyMetadataPage extends RegisterExternalOntologyPageB
 		}
 		return true;
 	}
+	
+	protected void formChanged() {
+		preCheckNextClicked();
+	}
 }

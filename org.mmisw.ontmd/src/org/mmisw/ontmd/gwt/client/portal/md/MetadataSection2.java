@@ -65,14 +65,14 @@ public class MetadataSection2 extends MetadataSection {
 				
 				boolean allowUserOption = attrDef.isAllowUserDefinedOption();
 				if ( allowUserOption ) {
-					elem = new Elem(attrDef, new FieldWithChoose(attrDef, cl, "200px"));
+					elem = new Elem(attrDef, new FieldWithChoose(attrDef, cl, "250px"));
 				}
 				else {
 					elem = new Elem(attrDef, Util.createListBox(options, cl));
 				}
 			}
 			else {
-				elem = new Elem(attrDef, Util.createTextBoxBase(attrDef.getNumberOfLines(), "350px", cl));
+				elem = new Elem(attrDef, Util.createTextBoxBase(attrDef.getNumberOfLines(), "450px", cl));
 			}
 			addElem(elem);
 		}

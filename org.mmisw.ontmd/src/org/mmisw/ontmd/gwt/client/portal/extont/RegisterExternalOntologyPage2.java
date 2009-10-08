@@ -1,7 +1,7 @@
 package org.mmisw.ontmd.gwt.client.portal.extont;
 
+import org.mmisw.iserver.gwt.client.rpc.HostingType;
 import org.mmisw.ontmd.gwt.client.portal.PortalConsts;
-import org.mmisw.ontmd.gwt.client.portal.extont.RegisterExternalOntologyWizard.HostingType;
 
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -25,7 +25,7 @@ class RegisterExternalOntologyPage2 extends RegisterExternalOntologyPageBase {
 	
 	private class RButton extends RadioButton {
 		RButton(final HostingType hostingType) {
-			super("ht", hostingType.label);
+			super("ht", hostingType.getLabel());
 			addClickListener(new ClickListener() {
 				public void onClick(Widget sender) {
 					getWizard().hostingTypeSelected(hostingType);

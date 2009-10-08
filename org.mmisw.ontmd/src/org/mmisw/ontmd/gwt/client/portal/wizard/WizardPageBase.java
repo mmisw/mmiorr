@@ -118,6 +118,12 @@ public abstract class WizardPageBase  {
 		return w;
 	}
 	
+	/** called to notify the page is now active.
+	 */
+	public void activate() {
+		
+	}
+	
 	/**
 	 * A subclass calls this to define the contents of the page.
 	 * @param contents

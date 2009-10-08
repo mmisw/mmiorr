@@ -156,8 +156,7 @@ class RegisterExternalOntologyPageFullyHosted extends RegisterExternalOntologyPa
 				// OK
 				statusHtml.setHTML("<font color=\"green\">Resulting URI is OK.</font> " +
 						"<br/>" +
-						"Click Finish to proceed with providing metadata to this ontology and " +
-						"then complete the registration."
+						"Click Next to continue."
 				);
 				nextButton.setEnabled(true);
 			}
