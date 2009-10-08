@@ -10,6 +10,9 @@ import java.util.Map;
  */
 public class CreateOntologyInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
+
+	private HostingType hostingType;
+	
 	
 	// desired authority and shortName for the to-be-registered ontology
 	private String authority;
@@ -100,6 +103,17 @@ public class CreateOntologyInfo implements Serializable {
 		priorOntologyInfo.ontologyUserId = ontologyUserId;
 		priorOntologyInfo.versionNumber = versionNumber;
 	}
+
+	
+	public HostingType getHostingType() {
+		return hostingType;
+	}
+
+	public void setHostingType(HostingType hostingType) {
+		this.hostingType = hostingType;
+	}
+
+
 
 	/**
 	 * @return the authority

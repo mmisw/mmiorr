@@ -29,6 +29,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.iserver.core.ontmodel.OntModelUtil;
 import org.mmisw.iserver.core.util.MailSender;
 import org.mmisw.iserver.core.util.OntServiceUtil;
 import org.mmisw.iserver.core.util.QueryUtil;
@@ -36,11 +37,13 @@ import org.mmisw.iserver.core.util.TempOntologyHelper;
 import org.mmisw.iserver.core.util.Utf8Util;
 import org.mmisw.iserver.core.util.Util2;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
+import org.mmisw.iserver.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.CreateUpdateUserAccountResult;
 import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
+import org.mmisw.iserver.gwt.client.rpc.HostingType;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MappingDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
@@ -155,7 +158,9 @@ public class Server implements IServer {
 		if ( metadataBaseInfo == null ) {
 			metadataBaseInfo = new MetadataBaseInfo();
 			
-			metadataBaseInfo.setResourceTypeUri(Omv.acronym.getURI());
+//			metadataBaseInfo.setResourceTypeUri(Omv.acronym.getURI());
+			metadataBaseInfo.setResourceTypeUri(OmvMmi.hasResourceType.getURI());
+			
 			metadataBaseInfo.setAuthorityAbbreviationUri(OmvMmi.origMaintainerCode.getURI());
 			
 			MdHelper.prepareGroups(includeVersion, resourceTypeClassUri, authorityClassUri);
@@ -759,6 +764,766 @@ public class Server implements IServer {
 	////////////////////////////////////////////////////////////////////////////////////////
 	
 	public CreateOntologyResult createOntology(CreateOntologyInfo createOntologyInfo) {
+		
+		CreateOntologyResult createOntologyResult = null;
+		
+		if ( createOntologyInfo.getHostingType() != null ) {
+			// use of this attribute indicates to use the new method
+			createOntologyResult = createOntology_newMethod(createOntologyInfo);
+		}
+		else {
+			createOntologyResult = createOntology_oldMethod(createOntologyInfo);
+		}
+		
+		return createOntologyResult;
+	}
+
+	
+	private CreateOntologyResult createOntology_newMethod(CreateOntologyInfo createOntologyInfo) {
+		
+		final HostingType hostingType = createOntologyInfo.getHostingType();
+		
+		log.info("createOntology: called. hostingType = " +hostingType);
+		CreateOntologyResult createOntologyResult = new CreateOntologyResult();
+		
+		if ( createOntologyInfo.getMetadataValues() == null ) {
+			String error = "Unexpected: createOntologyInfo.getMetadataValues returned null. Please report this bug";
+			createOntologyResult.setError(error);
+			log.info(error);
+			return createOntologyResult;
+		}
+
+		createOntologyResult.setCreateOntologyInfo(createOntologyInfo);
+		
+		switch ( hostingType ) {
+			case FULLY_HOSTED:
+				return createOntologyFullyHosted(createOntologyInfo, createOntologyResult);
+			case RE_HOSTED:
+				return createOntologyReHosted(createOntologyInfo, createOntologyResult);
+			default: {
+				String error = "Hosting type "+hostingType+ " NOT yet implemented.";
+				createOntologyResult.setError(error);
+				log.info(error);
+				return createOntologyResult;
+			}
+		}
+	}
+	
+	
+	private CreateOntologyResult createOntologyFullyHosted(CreateOntologyInfo createOntologyInfo, CreateOntologyResult createOntologyResult) {
+		
+		Map<String, String> newValues = createOntologyInfo.getMetadataValues();
+		assert ( newValues != null ) ;
+		
+		DataCreationInfo dataCreationInfo = createOntologyInfo.getDataCreationInfo();
+		assert ( dataCreationInfo instanceof OtherDataCreationInfo ) ;
+		final OtherDataCreationInfo otherDataCreationInfo = (OtherDataCreationInfo) dataCreationInfo;
+		final TempOntologyInfo tempOntologyInfo = otherDataCreationInfo.getTempOntologyInfo();
+
+		
+		// to check if this is going to be a new submission (if ontologyId == null) or, otherwise, a new version.
+		final String ontologyId = createOntologyInfo.getPriorOntologyInfo().getOntologyId();
+		
+		
+		final String namespaceRoot = defaultNamespaceRoot;
+		final String orgAbbreviation = createOntologyInfo.getAuthority();
+		final String shortName = createOntologyInfo.getShortName();
+
+
+		if ( orgAbbreviation == null ) {
+			// should not happen.
+			String error = "missing authority abbreviation";
+			log.info(error);
+			createOntologyResult.setError(error);
+			return createOntologyResult;
+		}
+		if ( shortName == null ) {
+			// should not happen.
+			String error = "missing short name";
+			log.info(error);
+			createOntologyResult.setError(error);
+			return createOntologyResult;
+		}
+
+		if ( ontologyId == null ) {
+			// This is a new submission. We need to check for any conflict with a preexisting
+			// ontology in the repository with the same shortName+orgAbbreviation combination
+			//
+			if ( ! Util2.checkNoPreexistingOntology(namespaceRoot, orgAbbreviation, shortName, createOntologyResult) ) {
+				return createOntologyResult;
+			}
+		}
+		else {
+			// This is a submission of a *new version* of an existing ontology.
+			// We need to check the shortName+orgAbbreviation combination as any changes here
+			// would imply a *new* ontology, not a new version.
+			//
+
+			BaseOntologyInfo baseOntologyInfo = createOntologyInfo.getBaseOntologyInfo();
+			assert baseOntologyInfo instanceof RegisteredOntologyInfo;
+			RegisteredOntologyInfo roi = (RegisteredOntologyInfo) baseOntologyInfo;
+
+			String originalOrgAbbreviation = roi.getAuthority();
+			String originalShortName = roi.getShortName();
+
+			if ( ! Util2.checkUriKeyCombinationForNewVersion(
+					originalOrgAbbreviation, originalShortName, 
+					orgAbbreviation, shortName, createOntologyResult) ) {
+				return createOntologyResult;
+			}
+		}
+		
+		
+		////////////////////////////////////////////////////////////////////////////
+		// section to create the ontology the base:
+		
+		// external ontology case: the base ontology is already available, just use it
+		// by setting the full path in the createOntologyResult:
+			
+		String full_path;
+
+		if ( tempOntologyInfo != null ) {
+			// new contents were provided. Use that:
+			full_path = tempOntologyInfo.getFullPath();
+		}
+		else {
+			// No new contents. Only possible way for this to happen is that this is 
+			// a new version of an existing ontology.
+
+			if ( ontologyId != null ) {
+				// Just indicate a null full_path; see below.
+				full_path = null;
+			}
+			else {
+				// This shouldn't happen!
+				String error = "Unexpected: Submission of new ontology, but not contents were provided. " +
+				"This should be detected before submission. Please report this bug";
+				createOntologyResult.setError(error);
+				log.info(error);
+				return createOntologyResult;
+			}
+
+		}
+		createOntologyResult.setFullPath(full_path);
+
+		
+		// current date:
+		final Date date = new Date(System.currentTimeMillis());
+		
+		///////////////////////////////////////////////////////////////////
+		// creation date:
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+		final String creationDate = sdf.format(date);
+		
+
+		///////////////////////////////////////////////////////////////////
+		// version:
+		// Note, if the version is given from the client, then use it
+		String version = newValues.get(Omv.version.getURI());
+		if ( version != null && version.trim().length() > 0 ) {
+			// check that the given version is OK:
+			boolean ok = VERSION_PATTERN.matcher(version).find();
+			if ( ! ok ) {
+				String error = "Given version is invalid: " +version;
+				log.info(error);
+				createOntologyResult.setError(error);
+				return createOntologyResult;
+			}
+		}
+		else {
+			// otherwise: assign it here:
+			sdf = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
+			sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+			version = sdf.format(date);
+		}
+		
+		
+		////////////////////////////////////////////
+		// load  model
+
+		OntModel model;
+		String uriForEmpty;
+		String newContentsFileName;
+
+		if ( createOntologyResult.getFullPath() != null ) {
+			//
+			// new contents to check.
+			// Get model from the new contents.
+			//
+			full_path = createOntologyResult.getFullPath();
+			log.info("Loading model: " +full_path);
+
+			File file = new File(full_path);
+			try {
+				Utf8Util.verifyUtf8(file);
+			}
+			catch (Exception e) {
+				String error = "Error reading model: " +e.getMessage();
+				log.error(error, e);
+				createOntologyResult.setError(error);
+				return createOntologyResult;
+			}
+			
+			String uriFile = file.toURI().toString();
+			try {
+				model = JenaUtil.loadModel(uriFile, false);
+			}
+			catch ( Throwable ex ) {
+				String error = "Unexpected error: " +ex.getClass().getName()+ " : " +ex.getMessage();
+				log.info(error);
+				createOntologyResult.setError(error);
+				return createOntologyResult;
+			}
+			
+			uriForEmpty = Util2.getDefaultNamespace(file, createOntologyResult);
+
+			if ( uriForEmpty == null ) {
+				String error = "Cannot get base URI for the ontology";
+				log.info(error);
+				createOntologyResult.setError(error);
+				return createOntologyResult;
+			}
+			
+			newContentsFileName = file.getName();
+		}
+		else {
+			// NO new contents.
+			// Use contents from prior version.
+			PriorOntologyInfo priorVersionInfo = createOntologyInfo.getPriorOntologyInfo();
+			
+			try {
+				model = OntServiceUtil.retrieveModel(createOntologyInfo.getUri(), priorVersionInfo.getVersionNumber());
+			}
+			catch (Exception e) {
+				String error = "error while retrieving registered ontology: " +e.getMessage();
+				log.info(error, e);
+				createOntologyResult.setError(error);
+				return createOntologyResult;
+			}
+			
+			uriForEmpty = model.getNsPrefixURI("");
+			if ( uriForEmpty == null ) {
+				// Shouldn't happen -- we're reading in an already registered version.
+				String error = "error while getting URI for empty prefix for a registered version. " +
+						"Please report this bug.";
+				log.info(error);
+				createOntologyResult.setError(error);
+				return createOntologyResult;
+			}
+
+			// replace ':', '/', or '\' for '_'
+			newContentsFileName = uriForEmpty.replaceAll(":|/|\\\\", "_");
+		}
+
+			
+
+		
+		log.info("createOntology: using '" +uriForEmpty+ "' as base URI");
+		
+		final String original_ns_ = uriForEmpty;
+		log.info("original namespace: " +original_ns_);
+
+		
+		String ns_;
+		String base_;
+
+		
+		final String finalUri = namespaceRoot + "/" +
+		orgAbbreviation + "/" +
+		version + "/" +
+		shortName;
+
+		ns_ = JenaUtil2.appendFragment(finalUri);
+		base_ = JenaUtil2.removeTrailingFragment(finalUri);
+
+
+		log.info("Setting prefix \"\" for URI " + ns_);
+		model.setNsPrefix("", ns_);
+
+
+		// Update statements  according to the new namespace:
+		Util2.replaceNameSpace(model, original_ns_, ns_);
+			
+		
+		
+		/////////////////////////////////////////////////////////////////
+		// Is there an existing OWL.Ontology individual?
+		// TODO Note that ONLY the first OWL.Ontology individual is considered.
+		Resource ontRes = JenaUtil.getFirstIndividual(model, OWL.Ontology);
+		List<Statement> prexistStatements = null; 
+		if ( ontRes != null ) {
+			prexistStatements = new ArrayList<Statement>();
+			log.info("Getting pre-existing properties for OWL.Ontology individual: " +ontRes.getURI());
+			StmtIterator iter = ontRes.listProperties();
+			while ( iter.hasNext() ) {
+				Statement st = iter.nextStatement();
+				prexistStatements.add(st);
+			}	
+		}
+
+		
+		// The new OntModel that will contain the pre-existing attributes (if any),
+		// plus the new and updated attributes:
+		final OwlModel newOntModel = new OwlModel(model);
+		final Ontology ont_ = newOntModel.createOntology(base_);
+		log.info("New ontology created with namespace " + ns_ + " base " + base_);
+		newOntModel.setNsPrefix("", ns_);
+		
+		// set preferred prefixes:
+		Map<String, String> preferredPrefixMap = MdHelper.getPreferredPrefixMap();
+		for ( String uri : preferredPrefixMap.keySet() ) {
+			String prefix = preferredPrefixMap.get(uri);
+			newOntModel.setNsPrefix(prefix, uri);
+		}
+		
+		
+		// Set internal attributes, which are updated in the newValues map itself
+		// so we facilite the processing below:
+		newValues.put(Omv.version.getURI(), version);
+		
+		newValues.put(Omv.creationDate.getURI(), creationDate);
+		
+		
+		// set some properties from the explicit values
+		newValues.put(OmvMmi.origMaintainerCode.getURI(), orgAbbreviation);
+
+
+		//////////////////////////////////////////////////
+		// transfer any preexisting attributes, and then remove all properties from
+		// pre-existing ontRes so just the new OntModel gets added.
+		if ( ontRes != null ) {
+			for ( Statement st : prexistStatements ) {
+				Property prd = st.getPredicate();
+
+				//
+				// Do not tranfer pre-existing/pre-assigned-above attributes
+				//
+				String newValue = newValues.get(prd.getURI());
+				if ( newValue == null || newValue.trim().length() == 0 ) {
+					log.info("  Transferring: " +st.getSubject()+ " :: " +prd+ " :: " +st.getObject());
+					newOntModel.add(ont_, prd, st.getObject());
+				}
+				else {
+					log.info(" Removing pre-existing values for predicate: " +prd+ " because of new value " +newValue);
+					newOntModel.removeAll(ont_, prd, null);
+				}
+			}	
+			
+			
+			if ( ! createOntologyResult.isPreserveOriginalBaseNamespace() ) {
+				
+				// 
+				// Only, when we're creating a new model, ie., per the new namespace, do the following removals.
+				// (If we did this on a model with the same original namespace, we would remove the owl:Ontology 
+				// entry altogether and get an "rdf:Description" instead.
+				//
+				
+				log.info("Removing original OWL.Ontology individual");
+				ontRes.removeProperties();
+				// TODO the following may be unnecesary but doesn't hurt:
+				model.remove(ontRes, RDF.type, OWL.Ontology); 
+			}
+		}
+
+		
+		
+		///////////////////////////////////////////////////////
+		// Update attributes in model:
+
+		Map<String, Property> uriPropMap = MdHelper.getUriPropMap();
+		for ( String uri : newValues.keySet() ) {
+			String value = newValues.get(uri).trim();
+			if ( value.length() > 0 ) {
+				Property prop = uriPropMap.get(uri);
+				if ( prop == null ) {
+					log.info("No property found for uri='" +uri+ "'");
+					continue;
+				}
+
+				log.info(" Assigning: " +uri+ " = " +value);
+				ont_.addProperty(prop, value);
+			}
+		}
+		
+
+
+		// Set the missing DC attrs that have defined e	equivalent MMI attrs: 
+		Util2.setDcAttributes(ont_);
+		
+		////////////////////////////////////////////////////////////////////////
+		// Done with the model. 
+		////////////////////////////////////////////////////////////////////////
+		
+		// Get resulting string:
+		String rdf = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV") ;  // XXX newOntModel);
+		
+		//TODO: pons: print result RDF for testing
+		System.out.println(rdf);
+		if ( log.isDebugEnabled() ) {
+			if ( createOntologyResult.isPreserveOriginalBaseNamespace() ) {
+				log.debug(rdf);
+			}
+		}
+		
+		log.debug("createOntology: setting URI: " +base_);
+		createOntologyResult.setUri(base_);
+		
+
+		// write new contents to a new file under previewDir:
+		
+		File reviewedFile = new File(previewDir, newContentsFileName);
+		createOntologyResult.setFullPath(reviewedFile.getAbsolutePath());
+
+		PrintWriter os;
+		try {
+			os = new PrintWriter(reviewedFile);
+		}
+		catch (FileNotFoundException e) {
+			log.info("Unexpected: file not found: " +reviewedFile);
+			createOntologyResult.setError("Unexpected: file not found: " +reviewedFile);
+			return createOntologyResult;
+		}
+		StringReader is = new StringReader(rdf);
+		try {
+			IOUtils.copy(is, os);
+			os.flush();
+		}
+		catch (IOException e) {
+			log.info("Unexpected: IO error while writing to: " +reviewedFile);
+			createOntologyResult.setError("Unexpected: IO error while writing to: " +reviewedFile);
+			return createOntologyResult;
+		}
+
+		// Done.
+
+		return createOntologyResult;
+	}
+
+
+	
+	private CreateOntologyResult createOntologyReHosted(CreateOntologyInfo createOntologyInfo, CreateOntologyResult createOntologyResult) {
+		
+		Map<String, String> newValues = createOntologyInfo.getMetadataValues();
+		assert ( newValues != null ) ;
+		
+		DataCreationInfo dataCreationInfo = createOntologyInfo.getDataCreationInfo();
+		assert ( dataCreationInfo instanceof OtherDataCreationInfo ) ;
+		final OtherDataCreationInfo otherDataCreationInfo = (OtherDataCreationInfo) dataCreationInfo;
+		final TempOntologyInfo tempOntologyInfo = otherDataCreationInfo.getTempOntologyInfo();
+
+		
+		// to check if this is going to be a new submission (if ontologyId == null) or, otherwise, a new version.
+		final String ontologyId = createOntologyInfo.getPriorOntologyInfo().getOntologyId();
+		
+		
+		////////////////////////////////////////////////////////////////////////////
+		// section to create the ontology the base:
+		
+		// external ontology case: the base ontology is already available, just use it
+		// by setting the full path in the createOntologyResult:
+			
+		String full_path;
+
+		if ( tempOntologyInfo != null ) {
+			// new contents were provided. Use that:
+			full_path = tempOntologyInfo.getFullPath();
+		}
+		else {
+			// No new contents. Only possible way for this to happen is that this is 
+			// a new version of an existing ontology.
+
+			if ( ontologyId != null ) {
+				// Just indicate a null full_path; see below.
+				full_path = null;
+			}
+			else {
+				// This shouldn't happen!
+				String error = "Unexpected: Submission of new ontology, but not contents were provided. " +
+				"This should be detected before submission. Please report this bug";
+				createOntologyResult.setError(error);
+				log.info(error);
+				return createOntologyResult;
+			}
+
+		}
+		createOntologyResult.setFullPath(full_path);
+
+		
+		// current date:
+		final Date date = new Date(System.currentTimeMillis());
+		
+		///////////////////////////////////////////////////////////////////
+		// creation date:
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+		final String creationDate = sdf.format(date);
+		
+
+		///////////////////////////////////////////////////////////////////
+		// version:
+		// Note, if the version is given from the client, then use it
+		String version = newValues.get(Omv.version.getURI());
+		if ( version != null && version.trim().length() > 0 ) {
+			// check that the given version is OK:
+			boolean ok = VERSION_PATTERN.matcher(version).find();
+			if ( ! ok ) {
+				String error = "Given version is invalid: " +version;
+				log.info(error);
+				createOntologyResult.setError(error);
+				return createOntologyResult;
+			}
+		}
+		else {
+			// otherwise: assign it here:
+			sdf = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
+			sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+			version = sdf.format(date);
+		}
+		
+		
+		////////////////////////////////////////////
+		// load  model
+
+		OntModel model;
+		Ontology ont;
+		String uriForEmpty;
+		String newContentsFileName;
+
+		if ( createOntologyResult.getFullPath() != null ) {
+			//
+			// new contents to check.
+			// Get model from the new contents.
+			//
+			full_path = createOntologyResult.getFullPath();
+			log.info("Loading model: " +full_path);
+
+			File file = new File(full_path);
+			try {
+				Utf8Util.verifyUtf8(file);
+			}
+			catch (Exception e) {
+				String error = "Error reading model: " +e.getMessage();
+				log.error(error, e);
+				createOntologyResult.setError(error);
+				return createOntologyResult;
+			}
+			
+			String uriFile = file.toURI().toString();
+			try {
+				model = OntModelUtil.loadModel(uriFile, false);
+			}
+			catch ( Throwable ex ) {
+				String error = "Unexpected error: " +ex.getClass().getName()+ " : " +ex.getMessage();
+				log.info(error);
+				createOntologyResult.setError(error);
+				return createOntologyResult;
+			}
+			
+			ont = OntModelUtil.getOntology(model);
+			if ( ont != null ) {
+				uriForEmpty = ont.getURI();	
+			}
+			else {
+				uriForEmpty = Util2.getDefaultNamespace(file, createOntologyResult);
+			}
+
+			if ( uriForEmpty == null ) {
+				String error = "Cannot get base URI for the ontology";
+				log.error(error);
+				createOntologyResult.setError(error);
+				return createOntologyResult;
+			}
+			
+			newContentsFileName = file.getName();
+		}
+		else {
+			// NO new contents.
+			// Use contents from prior version.
+			PriorOntologyInfo priorVersionInfo = createOntologyInfo.getPriorOntologyInfo();
+			
+			try {
+				model = OntServiceUtil.retrieveModel(createOntologyInfo.getUri(), priorVersionInfo.getVersionNumber());
+			}
+			catch (Exception e) {
+				String error = "error while retrieving registered ontology: " +e.getMessage();
+				log.info(error, e);
+				createOntologyResult.setError(error);
+				return createOntologyResult;
+			}
+			
+			ont = OntModelUtil.getOntology(model);
+			if ( ont == null ) {
+				// Shouldn't happen -- we're reading in an already registered version.
+				String error = "error while getting Ontology resource a registered version. " +
+						"Please report this bug.";
+				log.info(error);
+				createOntologyResult.setError(error);
+				return createOntologyResult;
+			}
+			uriForEmpty = ont.getURI();
+
+			// replace ':', '/', or '\' for '_'
+			newContentsFileName = uriForEmpty.replaceAll(":|/|\\\\", "_");
+		}
+
+			
+		log.info("createOntology: using '" +uriForEmpty+ "' as base URI");
+		
+		final String original_ns_ = uriForEmpty;
+		final String original_base_ = JenaUtil2.removeTrailingFragment(uriForEmpty);
+		log.info("original namespace: " +original_ns_);
+
+		// and this is the info for the requested URI:
+		final String ontUri = createOntologyInfo.getUri();
+		final String ns_ = JenaUtil2.appendFragment(ontUri);
+		final String base_ = JenaUtil2.removeTrailingFragment(ontUri);
+
+		if ( ! original_base_.equals(base_) ) {
+			// In this re-hosted case, we force the original URI and the new URI to be the same.
+			// This may happen only in the case of a submission of a new version.
+			String error = "The new base URI (" +original_base_+ ") is not equal to the registered " +
+					"base URI (" +base_+ ") "
+			;
+			log.debug(error);
+			createOntologyResult.setError(error);
+			return createOntologyResult;
+		}
+		
+		/////////////////////////////////////////////////////////////////
+		// If there is an pre-existing Ontology resource, get the associated statements:
+		List<Statement> prexistStatements = null; 
+		if ( ont != null ) {
+			prexistStatements = new ArrayList<Statement>();
+			if ( log.isDebugEnabled() ) {
+				log.debug("Getting pre-existing properties from Ontology: " +ont.getURI());
+			}
+			StmtIterator iter = ont.listProperties();
+			while ( iter.hasNext() ) {
+				Statement st = iter.nextStatement();
+				prexistStatements.add(st);
+			}	
+		}
+
+		
+		// The new OntModel that will contain the pre-existing attributes (if any),
+		// plus the new and updated attributes:
+		final OntModel newOntModel = OntModelUtil.createOntModel(base_, model);
+		final Ontology ont_ = OntModelUtil.getOntology(newOntModel);
+		if ( log.isDebugEnabled() ) {
+			log.debug("New ontology created with namespace " + ns_ + " base " + base_);
+		}
+		
+		// Set internal attributes, which are updated in the newValues map itself
+		// so we facilite the processing below:
+		newValues.put(Omv.version.getURI(), version);
+		newValues.put(Omv.creationDate.getURI(), creationDate);
+		
+
+		//////////////////////////////////////////////////
+		// transfer any preexisting attributes, and then remove all properties from
+		// pre-existing ont so just the new OntModel gets added.
+		if ( prexistStatements != null ) {
+			for ( Statement st : prexistStatements ) {
+				Property prd = st.getPredicate();
+
+				//
+				// Do not tranfer pre-existing/pre-assigned-above attributes
+				//
+				String newValue = newValues.get(prd.getURI());
+				if ( newValue == null || newValue.trim().length() == 0 ) {
+					if ( log.isDebugEnabled() ) {
+						log.debug("  Transferring: " +st.getSubject()+ " :: " +prd+ " :: " +st.getObject());
+					}
+					newOntModel.add(ont_, prd, st.getObject());
+				}
+				else {
+					if ( log.isDebugEnabled() ) {
+						log.debug(" Removing pre-existing values for predicate: " +prd+ " because of new value " +newValue);
+					}
+					newOntModel.removeAll(ont_, prd, null);
+				}
+			}	
+			
+		}
+
+		
+		
+		///////////////////////////////////////////////////////
+		// Update attributes in model:
+
+		Map<String, Property> uriPropMap = MdHelper.getUriPropMap();
+		for ( String uri : newValues.keySet() ) {
+			String value = newValues.get(uri);
+			if ( value != null && value.trim().length() > 0 ) {
+				Property prop = uriPropMap.get(uri);
+				if ( prop == null ) {
+					log.info("No property found for uri='" +uri+ "'");
+					continue;
+				}
+
+				log.info(" Assigning: " +uri+ " = " +value);
+				ont_.addProperty(prop, value);
+			}
+		}
+		
+
+
+		// Set the missing DC attrs that have defined e	equivalent MMI attrs: 
+		Util2.setDcAttributes(ont_);
+		
+		////////////////////////////////////////////////////////////////////////
+		// Done with the model. 
+		////////////////////////////////////////////////////////////////////////
+		
+		// Get resulting string:
+		String rdf = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV") ;  // XXX newOntModel);
+		
+		//TODO remove this print result RDF for testing
+		System.out.println(rdf);
+		if ( log.isDebugEnabled() ) {
+			log.debug(rdf);
+		}
+		
+		log.debug("createOntology: setting URI: " +base_);
+		createOntologyResult.setUri(base_);
+		
+
+		// write new contents to a new file under previewDir:
+		
+		File reviewedFile = new File(previewDir, newContentsFileName);
+		createOntologyResult.setFullPath(reviewedFile.getAbsolutePath());
+
+		PrintWriter os;
+		try {
+			os = new PrintWriter(reviewedFile);
+		}
+		catch (FileNotFoundException e) {
+			log.info("Unexpected: file not found: " +reviewedFile);
+			createOntologyResult.setError("Unexpected: file not found: " +reviewedFile);
+			return createOntologyResult;
+		}
+		StringReader is = new StringReader(rdf);
+		try {
+			IOUtils.copy(is, os);
+			os.flush();
+		}
+		catch (IOException e) {
+			log.info("Unexpected: IO error while writing to: " +reviewedFile);
+			createOntologyResult.setError("Unexpected: IO error while writing to: " +reviewedFile);
+			return createOntologyResult;
+		}
+
+		// Done.
+
+		return createOntologyResult;
+	}
+
+	
+	
+	
+	// TODO remove when new mechanism is in place.
+	private CreateOntologyResult createOntology_oldMethod(CreateOntologyInfo createOntologyInfo) {
 			
 		log.info("createOntology: called.");
 		
@@ -1301,9 +2066,280 @@ public class Server implements IServer {
 	}
 
 	
+	public RegisterOntologyResult registerOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult) {
+		RegisterOntologyResult registerOntologyResult = null;
+		
+		if ( createOntologyResult.getCreateOntologyInfo().getHostingType() != null ) {
+			// use of this attribute indicates to use the new method
+			registerOntologyResult = registerOntology_newMethod(createOntologyResult, loginResult);
+		}
+		else {
+			registerOntologyResult = registerOntology_oldMethod(createOntologyResult, loginResult);
+		}
+		
+		return registerOntologyResult;
 	
+	}
+
+	public RegisterOntologyResult registerOntology_newMethod(CreateOntologyResult createOntologyResult, LoginResult loginResult) {
+		final HostingType hostingType = createOntologyResult.getCreateOntologyInfo().getHostingType();
+		
+		log.info("registerOntology: called. hostingType = " +hostingType);
+		RegisterOntologyResult registerOntologyResult = new RegisterOntologyResult();
+		
+		switch ( hostingType ) {
+			case FULLY_HOSTED:
+				return registerOntologyFullyHosted(createOntologyResult, registerOntologyResult, loginResult);
+			case RE_HOSTED:
+				return registerOntologyReHosted(createOntologyResult, registerOntologyResult, loginResult);
+			default: {
+				String error = "Hosting type "+hostingType+ " NOT yet implemented.";
+				registerOntologyResult.setError(error);
+				log.info(error);
+				return registerOntologyResult;
+			}
+		}
+
+	}
 	
-	public RegisterOntologyResult registerOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult)  {
+	public RegisterOntologyResult registerOntologyFullyHosted(CreateOntologyResult createOntologyResult, RegisterOntologyResult registerOntologyResult, LoginResult loginResult) {
+	
+		String full_path = createOntologyResult.getFullPath();
+		
+		log.info("registerOntology: Reading in temporary file: " +full_path);
+		
+		File file = new File(full_path);
+		if ( ! file.canRead() ) {
+			String error = "Unexpected: cannot read: " +full_path;
+			log.info(error);
+			registerOntologyResult.setError(error);
+			return registerOntologyResult;
+		}
+		
+		// Get resulting model:
+		String rdf;
+		try {
+			rdf = Util2.readRdf(file);
+		}
+		catch (IOException e) {
+			String error = "Unexpected: IO error while reading from: " +full_path+ " : " +e.getMessage();
+			log.info(error);
+			registerOntologyResult.setError(error);
+			return registerOntologyResult;
+		}
+		
+		// ok, we have our ontology:
+		
+		
+		//////////////////////////////////////////////////////////////////////////
+		// finally, do actual registration to MMI registry
+
+		// Get final URI of resulting model
+		final String uri = createOntologyResult.getUri();
+		assert uri != null;
+		assert loginResult.getUserId() != null;
+		assert loginResult.getSessionId() != null;
+		
+		log.info(": registering URI: " +uri+ " ...");
+
+		CreateOntologyInfo createOntologyInfo = createOntologyResult.getCreateOntologyInfo();
+
+		String ontologyId = createOntologyInfo.getPriorOntologyInfo().getOntologyId();
+		String ontologyUserId = createOntologyInfo.getPriorOntologyInfo().getOntologyUserId();
+		
+		if ( ontologyId != null ) {
+			log.info("Will create a new version for ontologyId = " +ontologyId+ ", userId=" +ontologyUserId);
+		}
+		
+		
+		Map<String, String> newValues = createOntologyInfo .getMetadataValues();
+		
+
+		try {
+			// this is to get the filename for the registration
+			String fileName = new URL(uri).getPath();
+			
+			//
+			// make sure the fileName ends with ".owl" as the aquaportal back-end seems
+			// to add that fixed extension in some operations (at least in the parse operation)
+			//
+			if ( ! fileName.toLowerCase().endsWith(".owl") ) {
+				if ( log.isDebugEnabled() ) {
+					log.debug("register: setting file extension to .owl per aquaportal requirement.");
+				}
+				fileName += ".owl";
+			}
+			
+			
+			if ( ontologyId == null ) {
+				//
+				// Submission of a new ontology (not version of a registered one)
+				//
+				
+				// We are about to do the actual registration. But first, re-check that there is NO a preexisting
+				// ontology that may conflict with this one.
+				// NOTE: this check has been done already in the review operation; however, we repeat it here
+				// in case there is a new registration done by other user in the meantime. Of course, we
+				// are NOT completely solving the potential concurrency problem with this re-check; we are just
+				// reducing the chances of that event.
+				
+				
+				// TODO: the following can be simplified by obtaining the unversioned form of the URI and
+				// calling Util2.checkNoPreexistingOntology(unversionedUri, registerOntologyResult)
+
+				final String namespaceRoot = newValues.get("namespaceRoot") != null 
+						? newValues.get("namespaceRoot")
+						:  defaultNamespaceRoot;
+
+				final String orgAbbreviation = createOntologyInfo.getAuthority();
+				final String shortName = createOntologyInfo.getShortName();
+
+				if ( ! Util2.checkNoPreexistingOntology(namespaceRoot, orgAbbreviation, shortName, registerOntologyResult) ) {
+					return registerOntologyResult;
+				}
+
+			}
+			else {
+				// This is a submission of a *new version* of an existing ontology.
+				// Nothing needs to be checked here.
+				// NOTE: We don't need to repeat the _checkUriKeyCombinationForNewVersion step here
+				// as any change in the contents of the metadata forces the user to explicitly
+				// do the "review" operation, which already takes care of that check.
+			}
+			
+			// OK, now do the actual registration:
+			OntologyUploader createOnt = new OntologyUploader(uri, fileName, rdf, 
+					loginResult,
+					ontologyId, ontologyUserId,
+					newValues
+			);
+			String res = createOnt.create();
+			
+			if ( res.startsWith("OK") ) {
+				registerOntologyResult.setUri(uri);
+				registerOntologyResult.setInfo(res);
+				
+				// issue #168 fix:
+				// request that the ontology be loaded in the "ont" graph:
+				OntServiceUtil.loadOntologyInGraph(uri);
+			}
+			else {
+				registerOntologyResult.setError(res);
+			}
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			registerOntologyResult.setError(ex.getClass().getName()+ ": " +ex.getMessage());
+		}
+		
+		log.info("registerOntologyResult = " +registerOntologyResult);
+
+		
+		return registerOntologyResult;
+	}
+
+
+	// TODO
+	public RegisterOntologyResult registerOntologyReHosted(CreateOntologyResult createOntologyResult, RegisterOntologyResult registerOntologyResult, LoginResult loginResult) {
+		
+		String full_path = createOntologyResult.getFullPath();
+		
+		log.info("registerOntology: Reading in temporary file: " +full_path);
+		
+		File file = new File(full_path);
+		if ( ! file.canRead() ) {
+			String error = "Unexpected: cannot read: " +full_path;
+			log.info(error);
+			registerOntologyResult.setError(error);
+			return registerOntologyResult;
+		}
+		
+		// Get resulting model:
+		String rdf;
+		try {
+			rdf = Util2.readRdf(file);
+		}
+		catch (IOException e) {
+			String error = "Unexpected: IO error while reading from: " +full_path+ " : " +e.getMessage();
+			log.info(error);
+			registerOntologyResult.setError(error);
+			return registerOntologyResult;
+		}
+		
+		// ok, we have our ontology:
+		
+		
+		//////////////////////////////////////////////////////////////////////////
+		// finally, do actual registration to MMI registry
+
+		// Get final URI of resulting model
+		final String uri = createOntologyResult.getUri();
+		assert uri != null;
+		assert loginResult.getUserId() != null;
+		assert loginResult.getSessionId() != null;
+		
+		log.info(": registering ...");
+
+		CreateOntologyInfo createOntologyInfo = createOntologyResult.getCreateOntologyInfo();
+
+		String ontologyId = createOntologyInfo.getPriorOntologyInfo().getOntologyId();
+		String ontologyUserId = createOntologyInfo.getPriorOntologyInfo().getOntologyUserId();
+		
+		if ( ontologyId != null ) {
+			log.info("Will create a new version for ontologyId = " +ontologyId+ ", userId=" +ontologyUserId);
+		}
+		
+		
+		Map<String, String> newValues = createOntologyInfo .getMetadataValues();
+		
+
+		try {
+			
+			String fileName = new URL(uri).getPath();
+			
+			//
+			// make sure the fileName ends with ".owl" as the aquaportal back-end seems
+			// to add that fixed extension in some operations (at least in the parse operation)
+			//
+			if ( ! fileName.toLowerCase().endsWith(".owl") ) {
+				log.info("register: setting file extension to .owl per aquaportal requirement.");
+				fileName += ".owl";
+			}
+			
+			
+			// OK, now do the actual registration:
+			OntologyUploader createOnt = new OntologyUploader(uri, fileName, rdf, 
+					loginResult,
+					ontologyId, ontologyUserId,
+					newValues
+			);
+			String res = createOnt.create();
+			
+			if ( res.startsWith("OK") ) {
+				registerOntologyResult.setUri(uri);
+				registerOntologyResult.setInfo(res);
+				
+				// issue #168 fix:
+				// request that the ontology be loaded in the "ont" graph:
+				OntServiceUtil.loadOntologyInGraph(uri);
+			}
+			else {
+				registerOntologyResult.setError(res);
+			}
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			registerOntologyResult.setError(ex.getClass().getName()+ ": " +ex.getMessage());
+		}
+		
+		log.info("registerOntologyResult = " +registerOntologyResult);
+
+		
+		return registerOntologyResult;
+	}
+
+	
+	public RegisterOntologyResult registerOntology_oldMethod(CreateOntologyResult createOntologyResult, LoginResult loginResult) {
 		RegisterOntologyResult registerOntologyResult = new RegisterOntologyResult();
 		
 		

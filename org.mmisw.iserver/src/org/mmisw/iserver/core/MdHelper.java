@@ -33,14 +33,20 @@ public class MdHelper {
 	
 	
 	public static final String RESOURCE_TYPE_TOOLTIP =
-		"The kind of resource represented by the ontology. Typically made up of a Topic or Class name, an " +
-		"optional indication of a mapping ontology ('_map' if this is a term mapping ontology), and if " +
-		"necessary a unique identifier (a numeric appendix or subcategory, like '_002' or '_team1'. " +
-		"So while most Resource Types are simple terms like 'parameter' or 'datum', they can be more complex, " +
-		"like temporal_map_ageClassifier'. The two attributes \"Resource type\" and \"Authority abbreviation\" " +
-		"are used to construct the URIs for the vocabulary and terms. So Resource Type must be constrained to " +
-		"alphnumerics, underscore, and (discouraged) hyphen. Underscores are recommended only between the components. " +
-		"MMI converts all resource types to lower case. " +
+		"The kind of resource represented by the ontology. " +
+		
+		"You can choose from any of the existing terms in the list, or specify a new one. " +
+		
+//		"Typically made up of a Topic or Class name, an " +
+//		"optional indication of a mapping ontology ('_map' if this is a term mapping ontology), and if " +
+//		"necessary a unique identifier (a numeric appendix or subcategory, like '_002' or '_team1'. " +
+//		"So while most Resource Types are simple terms like 'parameter' or 'datum', they can be more complex, " +
+//		"like temporal_map_ageClassifier'. " +
+//		"The two attributes \"Resource type\" and \"Authority abbreviation\" " +
+//		"are used to construct the URIs for the vocabulary and terms. So Resource Type must be constrained to " +
+//		"alphnumerics, underscore, and (discouraged) hyphen. Underscores are recommended only between the components. " +
+//		"MMI converts all resource types to lower case. " +
+		
 		"For more tips on selecting Resource Type, see the " +
 		"<a href=\"http://marinemetadata.org/apguides/ontprovidersguide/ontguideconstructinguris\" target=\"_blank\"" +
 		">MMI Ontology Providers Guide</a>.";
@@ -49,15 +55,21 @@ public class MdHelper {
 
 	public static final String AUTHORITY_TOOLTIP = 
 		"This is an MMI-controlled vocabulary of abbreviations that indicate the controlling authority of the vocabulary. " +
-		"You can choose from any of the existing terms in the list, or specify a new one; MMI reserves the right to correct " +
+		"You can choose from any of the existing terms in the list, or specify a new one. " +
+		
+		"MMI reserves the right to correct " +
 		"your choice if that is appropriate. (For example, using a government organization as the authority should only be " +
 		"made if you are in an authoritative position for that organization.) " +
-		"The two attributes \"Resource type\" and \"Authority abbreviation\" are used to construct the URIs for the " +
-		"vocabulary and terms. The authority abbreviation should be short but descriptive; it is possible for one " +
+		
+//		"The two attributes \"Resource type\" and \"Authority abbreviation\" are used to construct the URIs for the " +
+//		"vocabulary and terms. " +
+		
+		"The authority abbreviation should be short but descriptive; it is possible for one " +
 		"organization to have multiple authority names (e.g., mmi, mmitest, mmidev), but a profusion of authority " +
 		"names is discouraged (familiarity is more important than uniqueness). Organizations that will be submitting " +
 		"a lot of overlapping ontologies should consider using authority names to provide namespace separation. " +
-		"For more tips on selecting Resource Type, see the " +
+		
+		"For more tips on selecting an authority abbreviation, see the " +
 		"<a href=\"http://marinemetadata.org/apguides/ontprovidersguide/ontguideconstructinguris\" target=\"_blank\"" +
 		">MMI Ontology Providers Guide</a>.";
 	
@@ -137,12 +149,17 @@ public class MdHelper {
 		if ( resourceTypeAttrDef == null ) {
 			// Note: OmvMmi.shortNameUri is now associated with Omv.acronym:
 			resourceTypeAttrDef =
-				createAttrDef(Omv.acronym, true) 
+				// issue #99 Normalize theme/topic/class throughout interface
+//				createAttrDef(Omv.acronym, true) 
+				createAttrDef(OmvMmi.hasResourceType, true) 
 			    .setLabel("Resource type")
 				.setTooltip(RESOURCE_TYPE_TOOLTIP)
 				.setExample("parameter")
 				.setAllowUserDefinedOption(true)
 				.setOptionsVocabulary(resourceTypeClassUri)
+				
+				// issue #99 Normalize theme/topic/class throughout interface
+				// TODO Remove this related attribute?  Perhaps the above should suffice
 				.addRelatedAttr(
 						createAttrDef(OmvMmi.shortNameUri)
 						.setLabel("URI of resource type")
@@ -221,20 +238,20 @@ public class MdHelper {
 			.setTooltip("Bibliographic references describing the ontology and its applications.")
 			.setNumberOfLines(3);
 		;
+
+		
+		// issue #99 Normalize theme/topic/class throughout interface
+		// Omv.acronym to be used for what is supposed to be: "A short name by which an ontology 
+		// is formally known."
+		createAttrDef(Omv.acronym)
+			.setLabel("Acronym")
+			.setTooltip("A short name by which the ontology is known")
+		;
+		
+		
 		
 		List<AttrDef> general_attr_list = new ArrayList<AttrDef>();
 		general_attr_list.add(createResourceTypeAttrDef());
-		
-// Not any more; OmvMmi.shortNameUri is now associated with Omv.acronym above.
-//		general_attr_list.add(
-//				createAttrDef(OmvMmi.shortNameUri)
-//				.setLabel("URI of resource type")
-//				.setTooltip("Ideally the resource type is selected from, and described in, a controlled " +
-//						"vocabulary with URIs defined. If so, enter the URI naming the term in this field. " +
-//						"If the term is in a controlled vocabulary but does not have its own URI, enter the " +
-//						"controlled vocabulary URI. Otherwise, leave this field blank.")
-//				.setExample("http://mmisw.org/ont/mmi/topicTheme/parameter")
-//		);
 		
 		
 		general_attr_list.add(
@@ -270,7 +287,9 @@ public class MdHelper {
 		general_attr_list.add(
 				createAttrDef(Omv.description, true)
 				.setLabel("Brief description")
-				.setTooltip("A textual description of the ontology. Completeness is welcome. HTML characters are less than ideal.")
+				.setTooltip("A textual description of the ontology. Completeness is welcome. "
+//						+ "HTML characters are less than ideal."
+				)
 				.setNumberOfLines(4)
 				.setExample("Parameters used in Project Athena")
 		);
@@ -314,7 +333,7 @@ public class MdHelper {
 		
 		general_attr_list.add(
 				createAttrDef(Omv.hasContributor)
-				.setLabel("Contributor(s)")
+				.setLabel("Contributor")
 				.setTooltip("List all the individuals and/or organizations that contributed materially " +
 						"to this vocabulary/ontology. You may use comma- or semicolon-separated names " +
 						"or URIs for individuals or organizations, or URIs that point to additional " +

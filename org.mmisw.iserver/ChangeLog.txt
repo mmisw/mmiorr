@@ -3,11 +3,39 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2009-10-07   1.5.0.alpha30
+	issue #99 Normalize theme/topic/class throughout interface
+		- MdHelper:
+			- Omv.acronym to be used for what is supposed to be: "A short name by which an ontology 
+		  	  is formally known."
+		  	- Resource type captured with OmvMmi.hasResourceType
+		  	
+	 Issue 177: Re-hosting option is not clear
+		- New HostingType and corresponding attribute in CreateOntologyInfo
+		- New OntModelUtil to create and update OntModel objects
+		- Server: 
+			- preparing new methods for createOntology (createOntology_newMethod) and
+		  	  registerOntology (registerOntology_newMethod).  These are called when the
+		  	  hostingType attribute is specified (as a way to test the new methods).
+		  	  
+			- createOntologyFullyHosted: preliminary tests OK
+			- registerOntologyFullyHosted: preliminary tests OK
+			  	
+			- createOntologyReHosted: preliminary tests OK
+			- registerOntologyReHosted: preliminary tests OK
+		  	
+
+
 2009-10-06   1.5.0.alpha30
 	- issue #196 capture omv:reference
 		MdHelper.prepareGroups: Creating AttrDef for omv:reference.
 		Note that I'm only creating the AttrDef but no including it in any group; the reason
 		is that this attribute will be accessed directly from the new wizard-like interface in the portal.
+		
+	- New HostingType enumeration
+	- New CreateOntologyInfo.hostingType attribute; when this is given (non-null), it used by the new 
+	  methods in Server to createOntology() and registerOntology().
+	  
 
 2009-10-02   1.5.0.alpha30
 	- MdHelper and MetadataBaseInfo: Exposing more elements to clients
