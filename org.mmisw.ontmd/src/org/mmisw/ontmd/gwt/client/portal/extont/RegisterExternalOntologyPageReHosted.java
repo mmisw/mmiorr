@@ -26,14 +26,20 @@ class RegisterExternalOntologyPageReHosted extends RegisterExternalOntologyPageB
 	
 	
 	RegisterExternalOntologyPageReHosted(RegisterExternalOntologyWizard wizard) {
-		super(wizard, true, true, false);
+		this(wizard, true, true, false);
+	}
+	
+	protected RegisterExternalOntologyPageReHosted(RegisterExternalOntologyWizard wizard,
+			boolean includeBack, boolean includeNext, boolean includeFinish
+	) {
+		super(wizard, includeBack, includeNext, includeFinish);
 		contents.setSize("650px", "200px");
 		addContents(contents);
 		
 		recreate();
 		nextButton.setEnabled(true);
 	}
-	
+
 	
 	private void recreate() {
 		contents.clear();

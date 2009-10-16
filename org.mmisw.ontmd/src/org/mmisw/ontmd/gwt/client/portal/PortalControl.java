@@ -401,7 +401,7 @@ public class PortalControl {
 			}
 			break;
 		case UPLOAD_ONTOLOGY:
-			return "Registering your ontology.";
+			return "Registering your ontology";
 		}
 		return null;
 	}

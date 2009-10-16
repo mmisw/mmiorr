@@ -17,15 +17,16 @@ class RegisterExternalOntologyPageFullyHostedConfirmation extends RegisterExtern
 	
 	private static final String INFO_TEMPLATE = 
 		"<br/>" +
-		"You have chosen to have this ontology <b>fully hosted</b> at the MMI ORR." +
+		"MMI ORR is ready to register your ontology in <b>fully hosted</b> mode." +
 		"<br/>" +
 		"<br/>" +
 		"Ontology URI: <b>" +ONT_URI+ "</b> " +
 		"<br/>" +
 		"<br/>" +
-		"Click Finish to complete the registration at the MMI ORR." +
+		"Click Back to change any information." +
 		"<br/>" +
-		"Click Back to change any information."
+		"<br/>" +
+		"Click Finish to complete the registration." 
 		;
 
 

@@ -79,7 +79,7 @@ class RegisterExternalOntologyPage1 extends RegisterExternalOntologyPageBase {
 	 */
 	RegisterExternalOntologyPage1(RegisterExternalOntologyWizard wizard) {
 		super(wizard, false, true);
-//		nextButton.setEnabled(false); TODO temporarily allowing NExt to facilitate testing
+		nextButton.setEnabled(false);
 		contents.setSize("650px", "200px");
 		addContents(contents);
 		
@@ -294,7 +294,7 @@ class RegisterExternalOntologyPage1 extends RegisterExternalOntologyPageBase {
 			}
 		};
 
-//		nextButton.setEnabled(false);  TODO temporarily allowing NExt to facilitate testing
+		nextButton.setEnabled(false);
 		Main.log("calling getTempOntologyInfo ... ");
 		Main.ontmdService.getTempOntologyInfo(uploadResults, true, INCLUDE_RDF, callback);
 
