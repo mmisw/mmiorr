@@ -1590,7 +1590,7 @@ public class Server implements IServer {
 		final String namespaceRoot = defaultNamespaceRoot;
 		
 		final String orgAbbreviation = newValues.get(OmvMmi.origMaintainerCode.getURI());
-		final String shortName = newValues.get(Omv.acronym.getURI());
+		String shortName = newValues.get(Omv.acronym.getURI());
 		// TODO: shortName taken NOT from acronym but from a new field explicitly for the shortName piece
 
 		if ( ! createOntologyResult.isPreserveOriginalBaseNamespace() ) {
@@ -1601,10 +1601,20 @@ public class Server implements IServer {
 				createOntologyResult.setError("missing origMaintainerCode");
 				return createOntologyResult;
 			}
+			
 			if ( shortName == null ) {
-				log.info("missing acronym");
-				createOntologyResult.setError("missing acronym");
-				return createOntologyResult;
+				
+				if ( ontologyId == null ) {
+					// This is a new submission.
+					log.info("missing acronym (to be used as shortName)");
+					createOntologyResult.setError("missing acronym (to be used as shortName)");
+					return createOntologyResult;
+				}
+				else {
+					// take from previous information
+					String originalShortName = createOntologyInfo.getShortName();
+					shortName = originalShortName;
+				}
 			}
 
 			if ( ontologyId == null ) {
