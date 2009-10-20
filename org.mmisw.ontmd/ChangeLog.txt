@@ -7,13 +7,21 @@ $Id$
 	  register a *new version* of a registered ontology.
 	- Now, the "Upload" button dispatches the #rx tag
 	
-	Next steps:
-		- create wizard to register a *new version* of an *external ontology*:
-			- page 1: optionally, the user can upload a new file. If that's the case,
-			  the tool will prompt the user about overwriting or not metadata values in 
-			  the new file that are different from the ones in the registered current version.
-			- next pages to edit metadata (these will depend on the type of hosting)
-			- confirmation page
+	- PortalMainPanel.editNewVersion():
+		- checks the case of "external ontology" (ie, when the ontologyData is of
+		  type OtherOntologyData) to dispatch the new wizard
+		  
+	- RegisterVersionWizard: new wizard to register a *new version* of an *external ontology*:
+	  (yet to be implemented)
+  		- page 0: user indicates whether a file will be uploaded as basis for new version
+		- page 1: the upload file page. The tool will prompt the user about overwriting or not 
+		  metadata values in the new file that are different from the ones in the registered 
+		  current version.
+		- next pages to edit metadata (these will depend on the type of hosting)
+		- confirmation page
+	  ==> Continue with
+	  		PortalMainPanel.editNewVersion()
+			RegisterVersionWizard.finish()
 			  
 	  
 	  

@@ -7,8 +7,11 @@ import java.util.Map;
 import org.mmisw.iserver.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
+import org.mmisw.iserver.gwt.client.rpc.HostingType;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
+import org.mmisw.iserver.gwt.client.rpc.OntologyData;
 import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
+import org.mmisw.iserver.gwt.client.rpc.OtherOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
@@ -16,6 +19,7 @@ import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.ontmd.gwt.client.LoginPanel;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.portal.extont.RegisterNewWizard;
+import org.mmisw.ontmd.gwt.client.portal.extont.RegisterVersionWizard;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 import org.mmisw.ontmd.gwt.client.vine.VineMain;
 
@@ -46,6 +50,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		ENTITY_VIEW,
 		ENTITY_NOT_FOUND,
 		UPLOAD_ONTOLOGY,
+		UPLOAD_NEW_VERSION,
 	};
 	
 	
@@ -636,6 +641,19 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	
 	public void editNewVersion(OntologyPanel ontologyPanel) {
 		BaseOntologyInfo ontologyInfo = ontologyPanel.getOntologyInfo();
+		
+		if ( ontologyInfo instanceof RegisteredOntologyInfo ) {
+			// this should be the normal case.
+			
+			RegisteredOntologyInfo roi = (RegisteredOntologyInfo) ontologyInfo;
+			OntologyData ontologyData = roi.getOntologyData();
+			if ( ontologyData instanceof OtherOntologyData ) {
+				Main.log("PortalMainPanel.editNewVersion: Dispatching wizard to capture new version");
+				dispatchUploadNewVersionOntology(roi);
+				return;
+			}
+		}
+		
 		String error = pctrl.checkCanEditOntology(ontologyInfo);
 		
 		if ( error != null ) {
@@ -648,6 +666,39 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	    headerPanel.updateLinks(interfaceType);
 		ontologyPanel.updateInterface(interfaceType);
 	}
+	
+	/** 
+	 * Starts the sequence to register a new version of an external ontology.
+	 */
+	private void dispatchUploadNewVersionOntology(RegisteredOntologyInfo roi) {
+		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
+		if ( loginResult == null || loginResult.getError() != null ) {
+			pendingMessage = "Please, sign in and then select \"Upload\"" +
+				" to register an external ontology."
+			;
+			History.newItem(PortalConsts.T_BROWSE);
+			return;
+		}
+
+		// FIXME set the correct hostingType
+		HostingType hostingType = HostingType.FULLY_HOSTED;  
+		RegisterVersionWizard wizard = new RegisterVersionWizard(this, roi, hostingType);
+
+		pctrl.setOntologyInfo(null);
+		pctrl.setOntologyPanel(null);
+		
+		interfaceType = InterfaceType.UPLOAD_NEW_VERSION;
+	    controlsPanel.showMenuBar(interfaceType);
+	    headerPanel.updateLinks(interfaceType);
+		
+	    bodyPanel.clear();
+		bodyPanel.add(wizard.getWidget());
+
+	}
+
+	
+	
+	
 
 	public  void reviewAndRegister(OntologyPanel ontologyPanel) {
 		if ( ontologyPanel != null ) {
