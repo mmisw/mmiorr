@@ -227,6 +227,8 @@ public class Server implements IServer {
 		registeredOntologyInfo.setAuthority(authority);
 		registeredOntologyInfo.setShortName(shortName);
 
+		setHostingType(registeredOntologyInfo);
+		
 		return registeredOntologyInfo;
 	}
 	
@@ -343,6 +345,17 @@ public class Server implements IServer {
 		return unversionedToVersioned;
 	}
 
+	
+	private static void setHostingType(RegisteredOntologyInfo registeredOntologyInfo) {
+		if ( OntServiceUtil.isOntResolvableUri(registeredOntologyInfo.getUri()) ) {
+			registeredOntologyInfo.setHostingType(HostingType.FULLY_HOSTED);
+		}
+		else {
+			registeredOntologyInfo.setHostingType(HostingType.RE_HOSTED);
+		}
+		// TODO: Determine HostingType.INDEXED case.
+	}
+	
 	
 	public List<RegisteredOntologyInfo> getAllOntologies(boolean includeAllVersions) throws Exception {
 		
@@ -634,7 +647,6 @@ public class Server implements IServer {
 					mostRecent.getAuthority(),
 					mostRecent.getShortName()
 			);
-
 			
 		}
 		else {

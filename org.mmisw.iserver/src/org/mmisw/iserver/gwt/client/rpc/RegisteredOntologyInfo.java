@@ -19,6 +19,8 @@ public class RegisteredOntologyInfo extends BaseOntologyInfo {
 	 * these values are to be transferred to a CreateOntologyInfo object. */
 	private String ontologyId = null;
 	private String ontologyUserId = null;
+	
+	private HostingType hostingType;
 
 
 	// UNversioned URI
@@ -166,6 +168,16 @@ public class RegisteredOntologyInfo extends BaseOntologyInfo {
 	 */
 	public void setUnversionedUri(String unversionedUri) {
 		this.unversionedUri = unversionedUri;
+	}
+
+
+	public void setHostingType(HostingType hostingType) {
+		this.hostingType = hostingType;
+	}
+
+
+	public HostingType getHostingType() {
+		return hostingType;
 	}
 
 }
