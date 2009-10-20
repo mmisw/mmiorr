@@ -2,6 +2,21 @@ org.mmisw.ontmd: MMI Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2009-10-19   1.5.0.alpha30
+	- package extont: made various file renamings in preparation for wizard sequence to 
+	  register a *new version* of a registered ontology.
+	- Now, the "Upload" button dispatches the #rx tag
+	
+	Next steps:
+		- create wizard to register a *new version* of an *external ontology*:
+			- page 1: optionally, the user can upload a new file. If that's the case,
+			  the tool will prompt the user about overwriting or not metadata values in 
+			  the new file that are different from the ones in the registered current version.
+			- next pages to edit metadata (these will depend on the type of hosting)
+			- confirmation page
+			  
+	  
+	  
 2009-10-16   1.5.0.alpha30
 	- more tests, preparing for release.
 	

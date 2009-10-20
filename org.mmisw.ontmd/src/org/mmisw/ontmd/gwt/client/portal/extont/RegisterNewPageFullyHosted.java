@@ -19,7 +19,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author Carlos Rueda
  */
-class RegisterExternalOntologyPageFullyHosted extends RegisterExternalOntologyPageBase {
+class RegisterNewPageFullyHosted extends BasePage {
 	private static final String ONT_SERVICE_URL_FRAG = "XXXX";
 	
 	private static final String INFO_TEMPLATE = 
@@ -40,7 +40,7 @@ class RegisterExternalOntologyPageFullyHosted extends RegisterExternalOntologyPa
 	AuthorityShortNamePanel authorityShortNamePanel = new AuthorityShortNamePanel(this);
 	
 	
-	RegisterExternalOntologyPageFullyHosted(RegisterExternalOntologyWizard wizard) {
+	RegisterNewPageFullyHosted(RegisterNewWizard wizard) {
 		super(wizard, true, true, false);
 		contents.setSize("650px", "200px");
 		addContents(contents);

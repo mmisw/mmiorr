@@ -10,11 +10,11 @@ import org.mmisw.ontmd.gwt.client.portal.md.MetadataSection;
  * 
  * @author Carlos Rueda
  */
-class RegisterExternalOntologyMetadataPage extends RegisterExternalOntologyPageBase {
+class MetadataPage extends BasePage {
 	
 	MetadataSection mdSection;
 	
-	RegisterExternalOntologyMetadataPage(RegisterExternalOntologyWizard wizard, MetadataSection mdSection) {
+	MetadataPage(BaseWizard wizard, MetadataSection mdSection) {
 		super(wizard, true, true);
 		this.mdSection = mdSection;
 		addContents(mdSection.getWidget());

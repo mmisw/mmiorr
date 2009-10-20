@@ -137,7 +137,7 @@ public class ControlsPanel extends HorizontalPanel {
 			
 			button = new PushButton("Upload", new ClickListener() {
 				public void onClick(Widget sender) {
-					pctrl.createNewFromFile();
+					pctrl.startRegisterExternal();
 				}
 			});
 			button.setTitle("Allows to prepare and register a local ontology file");

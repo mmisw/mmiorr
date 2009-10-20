@@ -43,7 +43,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author Carlos Rueda
  */
-class RegisterExternalOntologyPage1 extends RegisterExternalOntologyPageBase {
+class RegisterNewPage1 extends BasePage {
 	
 	private static final String UPLOAD_ACTION = GWT.getModuleBaseURL() + "upload";
 
@@ -77,7 +77,7 @@ class RegisterExternalOntologyPage1 extends RegisterExternalOntologyPageBase {
 	 * @param tempOntologyInfoListener
 	 * @param allowLoadOptions
 	 */
-	RegisterExternalOntologyPage1(RegisterExternalOntologyWizard wizard) {
+	RegisterNewPage1(RegisterNewWizard wizard) {
 		super(wizard, false, true);
 		nextButton.setEnabled(false);
 		contents.setSize("650px", "200px");
@@ -424,6 +424,11 @@ class RegisterExternalOntologyPage1 extends RegisterExternalOntologyPageBase {
 		
 		details = tempOntologyInfo.getDetails();
 		detailsButton.setEnabled(true);
+	}
+
+	@Override
+	public RegisterNewWizard getWizard() {
+		return (RegisterNewWizard) wizard;
 	}
 
 }

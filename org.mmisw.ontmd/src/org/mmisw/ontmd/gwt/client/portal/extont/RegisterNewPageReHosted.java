@@ -18,18 +18,18 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * 
  * @author Carlos Rueda
  */
-class RegisterExternalOntologyPageReHosted extends RegisterExternalOntologyPageBase {
+class RegisterNewPageReHosted extends BasePage {
 	
 	private VerticalPanel contents = new VerticalPanel();
 	private String uri = null;
 	protected HTML infoHtml = new HTML("(No URI indicated)");
 	
 	
-	RegisterExternalOntologyPageReHosted(RegisterExternalOntologyWizard wizard) {
+	RegisterNewPageReHosted(RegisterNewWizard wizard) {
 		this(wizard, true, true, false);
 	}
 	
-	protected RegisterExternalOntologyPageReHosted(RegisterExternalOntologyWizard wizard,
+	protected RegisterNewPageReHosted(RegisterNewWizard wizard,
 			boolean includeBack, boolean includeNext, boolean includeFinish
 	) {
 		super(wizard, includeBack, includeNext, includeFinish);

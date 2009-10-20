@@ -24,12 +24,12 @@ import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-class RegisterExternalOntologyExecute {
+class RegisterNewExecute {
 	
 	private CreateOntologyInfo createOntologyInfo;
 
 	
-	RegisterExternalOntologyExecute(CreateOntologyInfo createOntologyInfo) {
+	RegisterNewExecute(CreateOntologyInfo createOntologyInfo) {
 		this.createOntologyInfo = createOntologyInfo;
 	}
 	

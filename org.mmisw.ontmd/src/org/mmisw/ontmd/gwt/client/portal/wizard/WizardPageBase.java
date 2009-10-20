@@ -107,7 +107,7 @@ public abstract class WizardPageBase  {
 		row++;
 	}
 	
-	protected WizardBase getWizard() {
+	public WizardBase getWizard() {
 		return wizard;
 	}
 	

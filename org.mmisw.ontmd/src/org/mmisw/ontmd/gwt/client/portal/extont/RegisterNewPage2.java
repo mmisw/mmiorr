@@ -19,7 +19,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author Carlos Rueda
  */
-class RegisterExternalOntologyPage2 extends RegisterExternalOntologyPageBase {
+class RegisterNewPage2 extends BasePage {
 	
 	private VerticalPanel contents = new VerticalPanel();
 	
@@ -43,7 +43,7 @@ class RegisterExternalOntologyPage2 extends RegisterExternalOntologyPageBase {
 	 * 
 	 * @param allowLoadOptions
 	 */
-	RegisterExternalOntologyPage2(RegisterExternalOntologyWizard wizard) {
+	RegisterNewPage2(RegisterNewWizard wizard) {
 		super(wizard, true, true);
 		contents.setSize("650px", "200px");
 		addContents(contents);
@@ -103,6 +103,11 @@ class RegisterExternalOntologyPage2 extends RegisterExternalOntologyPageBase {
 		
 		
 		return panel;
+	}
+
+	@Override
+	public RegisterNewWizard getWizard() {
+		return (RegisterNewWizard) wizard;
 	}
 
 }

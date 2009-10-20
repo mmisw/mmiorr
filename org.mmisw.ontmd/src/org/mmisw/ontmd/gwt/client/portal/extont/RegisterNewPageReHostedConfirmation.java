@@ -12,28 +12,27 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * 
  * @author Carlos Rueda
  */
-class RegisterExternalOntologyPageFullyHostedConfirmation extends RegisterExternalOntologyPageBase {
+class RegisterNewPageReHostedConfirmation extends BasePage {
 	private static final String ONT_URI = "XXXX";
 	
 	private static final String INFO_TEMPLATE = 
 		"<br/>" +
-		"MMI ORR is ready to register your ontology in <b>fully hosted</b> mode." +
+		"You have chosen to have this ontology <b>re-hosted</b> at the MMI ORR." +
 		"<br/>" +
 		"<br/>" +
 		"Ontology URI: <b>" +ONT_URI+ "</b> " +
 		"<br/>" +
 		"<br/>" +
-		"Click Back to change any information." +
+		"Click Finish to complete the registration at the MMI ORR." +
 		"<br/>" +
-		"<br/>" +
-		"Click Finish to complete the registration." 
+		"Click Back to change any information."
 		;
 
 
 	private VerticalPanel contents = new VerticalPanel();
 	
 	
-	RegisterExternalOntologyPageFullyHostedConfirmation(RegisterExternalOntologyWizard wizard) {
+	RegisterNewPageReHostedConfirmation(RegisterNewWizard wizard) {
 		super(wizard, true, false, true);
 		contents.setSize("650px", "200px");
 		addContents(contents);
@@ -60,6 +59,11 @@ class RegisterExternalOntologyPageFullyHostedConfirmation extends RegisterExtern
 		row++;
 
 		contents.add(panel);
+	}
+
+	@Override
+	public RegisterNewWizard getWizard() {
+		return (RegisterNewWizard) wizard;
 	}
 
 }

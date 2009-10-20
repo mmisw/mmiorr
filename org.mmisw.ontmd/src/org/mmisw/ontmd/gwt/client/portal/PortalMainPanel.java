@@ -15,7 +15,7 @@ import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.ontmd.gwt.client.LoginPanel;
 import org.mmisw.ontmd.gwt.client.Main;
-import org.mmisw.ontmd.gwt.client.portal.extont.RegisterExternalOntologyWizard;
+import org.mmisw.ontmd.gwt.client.portal.extont.RegisterNewWizard;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 import org.mmisw.ontmd.gwt.client.vine.VineMain;
 
@@ -467,6 +467,18 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	}
 	
 	/**
+	 * Dispatchs interface to register an external ontology.
+	 */
+	public void startRegisterExternal() {
+		if ( true ) {
+			History.newItem(PortalConsts.T_REGISTER_EXTERNAL);
+		}
+		else {
+			createNewFromFile(null);
+		}
+	}
+		
+	/**
 	 * Dispatchs interface to create a new ontology.
 	 * 
 	 * @param createOntologyInfo If non-null, info for the new ontology is taken from here.
@@ -474,7 +486,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	 * TODO NOTE: This is a new parameter in this method while I complete the new "registration of
 	 * external" ontology functionality.
 	 */
-	public void createNewFromFile(CreateOntologyInfo createOntologyInfo) {
+	private void createNewFromFile(CreateOntologyInfo createOntologyInfo) {
 		
 		OntologyPanel ontologyPanel;
 		
@@ -527,8 +539,17 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	 * This will eventually replace {@link #createNewFromFile()}.
 	 */
 	private void dispatchUploadOntology() {
+		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
+		if ( loginResult == null || loginResult.getError() != null ) {
+			pendingMessage = "Please, sign in and then select \"Upload\"" +
+				" to register an external ontology."
+			;
+			History.newItem(PortalConsts.T_BROWSE);
+			return;
+		}
+
 		// TODO actual parameters
-		RegisterExternalOntologyWizard wizard = new RegisterExternalOntologyWizard(this);
+		RegisterNewWizard wizard = new RegisterNewWizard(this);
 
 		pctrl.setOntologyInfo(null);
 		pctrl.setOntologyPanel(null);

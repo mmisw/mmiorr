@@ -60,8 +60,8 @@ public class PortalControl {
 	}
 
 
-	public void createNewFromFile() {		
-		portalMainPanel.createNewFromFile(null);
+	public void startRegisterExternal() {		
+		portalMainPanel.startRegisterExternal();
 	}
 
 	

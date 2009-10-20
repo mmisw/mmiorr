@@ -30,7 +30,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class AuthorityShortNamePanel extends VerticalPanel {
 
-	private RegisterExternalOntologyPageFullyHosted page;
+	private RegisterNewPageFullyHosted page;
 	private AttrDef authorityAttrDef;
 	
 	private FieldWithChoose authorityWidget;
@@ -47,7 +47,7 @@ public class AuthorityShortNamePanel extends VerticalPanel {
 	});
 
 	
-	AuthorityShortNamePanel(RegisterExternalOntologyPageFullyHosted page) {
+	AuthorityShortNamePanel(RegisterNewPageFullyHosted page) {
 		this.page = page;
 		authorityAttrDef = Main.getMetadataBaseInfo().getAuthorityAttrDef();
 		assert authorityAttrDef != null;
@@ -175,10 +175,10 @@ public class AuthorityShortNamePanel extends VerticalPanel {
 
 	void initFields() {
 		if ( shortNameTextBox.getText().trim().length() == 0
-		&&   page.getWizard().tempOntologyInfo != null
-		&&   page.getWizard().tempOntologyInfo.getShortName() != null
+		&&   page.getWizard().getTempOntologyInfo() != null
+		&&   page.getWizard().getTempOntologyInfo().getShortName() != null
 		) {
-			shortNameTextBox.setText(page.getWizard().tempOntologyInfo.getShortName());
+			shortNameTextBox.setText(page.getWizard().getTempOntologyInfo().getShortName());
 			formChanged();
 		}
 	}

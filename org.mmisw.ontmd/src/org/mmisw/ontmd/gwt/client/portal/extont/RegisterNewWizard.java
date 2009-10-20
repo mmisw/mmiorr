@@ -13,7 +13,6 @@ import org.mmisw.ontmd.gwt.client.portal.PortalMainPanel;
 import org.mmisw.ontmd.gwt.client.portal.md.MetadataSection1;
 import org.mmisw.ontmd.gwt.client.portal.md.MetadataSection2;
 import org.mmisw.ontmd.gwt.client.portal.md.MetadataSection3;
-import org.mmisw.ontmd.gwt.client.portal.wizard.WizardBase;
 import org.mmisw.ontmd.gwt.client.portal.wizard.WizardPageBase;
 
 import com.google.gwt.user.client.Window;
@@ -26,33 +25,33 @@ import com.google.gwt.user.client.Window;
  * 
  * @author Carlos Rueda
  */
-public class RegisterExternalOntologyWizard extends WizardBase {
+public class RegisterNewWizard extends BaseWizard {
 	
-	private final RegisterExternalOntologyPage1 page1 = new RegisterExternalOntologyPage1(this);
+	private final RegisterNewPage1 page1 = new RegisterNewPage1(this);
 	
-	private final RegisterExternalOntologyPage2 page2 = new RegisterExternalOntologyPage2(this);
+	private final RegisterNewPage2 page2 = new RegisterNewPage2(this);
 
 	///////////////////////////////////////////////////////////////////////////////////
 	// fully-hosted type pages
-	private RegisterExternalOntologyPageFullyHosted pageFullyHosted;
-	private RegisterExternalOntologyMetadataPage pageFullyHostedMetadataPage1;
-	private RegisterExternalOntologyMetadataPage pageFullyHostedMetadataPage2;
-	private RegisterExternalOntologyMetadataPage pageFullyHostedMetadataPage3;
-	private RegisterExternalOntologyPageFullyHostedConfirmation pageFullyHostedConfirmation;
+	private RegisterNewPageFullyHosted pageFullyHosted;
+	private MetadataPage pageFullyHostedMetadataPage1;
+	private MetadataPage pageFullyHostedMetadataPage2;
+	private MetadataPage pageFullyHostedMetadataPage3;
+	private RegisterNewPageFullyHostedConfirmation pageFullyHostedConfirmation;
 
 	
 	///////////////////////////////////////////////////////////////////////////////////
 	// re-hosted type pages
-	private RegisterExternalOntologyPageReHosted pageReHosted;
-	private RegisterExternalOntologyMetadataPage pageReHostedMetadataPage1;
-	private RegisterExternalOntologyMetadataPage pageReHostedMetadataPage2;
-	private RegisterExternalOntologyMetadataPage pageReHostedMetadataPage3;
-	private RegisterExternalOntologyPageReHostedConfirmation pageReHostedConfirmation;
+	private RegisterNewPageReHosted pageReHosted;
+	private MetadataPage pageReHostedMetadataPage1;
+	private MetadataPage pageReHostedMetadataPage2;
+	private MetadataPage pageReHostedMetadataPage3;
+	private RegisterNewPageReHostedConfirmation pageReHostedConfirmation;
 
 	
 	///////////////////////////////////////////////////////////////////////////////////
 	// indexed type pages
-	private RegisterExternalOntologyPageIndexed pageIndexed;
+	private RegisterNewPageIndexed pageIndexed;
 	
 	
 	
@@ -64,16 +63,13 @@ public class RegisterExternalOntologyWizard extends WizardBase {
 	
 	
 	
-	// provided by page1
-	TempOntologyInfo tempOntologyInfo;
-	
 	
 	private HostingType hostingType;
 
 	/**
 	 * @param portalMainPanel 
 	 */
-	public RegisterExternalOntologyWizard(PortalMainPanel portalMainPanel) {
+	public RegisterNewWizard(PortalMainPanel portalMainPanel) {
 		super(portalMainPanel);
 		contents.setSize("650px", "300px");
 		
@@ -85,12 +81,12 @@ public class RegisterExternalOntologyWizard extends WizardBase {
 	void ontologyInfoObtained(TempOntologyInfo tempOntologyInfo) {
 		assert tempOntologyInfo.getError() == null;
 		
-		this.tempOntologyInfo = tempOntologyInfo;
+		this.setTempOntologyInfo(tempOntologyInfo);
 	}
 	
 	@Override
 	protected void pageNext(WizardPageBase cp) {
-		RegisterExternalOntologyPageBase currentPage = (RegisterExternalOntologyPageBase) cp;
+		BasePage currentPage = (BasePage) cp;
 //		if ( tempOntologyInfo == null ) { TODO apply after testing
 //			return;
 //		}
@@ -102,12 +98,12 @@ public class RegisterExternalOntologyWizard extends WizardBase {
 		else if ( currentPage == page2 ) {
 			assert hostingType != null;
 			
-			RegisterExternalOntologyPageBase nextPage = null;
+			BasePage nextPage = null;
 			
 			switch ( hostingType ) {
 			case FULLY_HOSTED:
 				if ( pageFullyHosted == null ) {
-					pageFullyHosted = new RegisterExternalOntologyPageFullyHosted(this);
+					pageFullyHosted = new RegisterNewPageFullyHosted(this);
 					pageReHosted = null;
 					pageIndexed = null;
 				}
@@ -115,20 +111,20 @@ public class RegisterExternalOntologyWizard extends WizardBase {
 				break;
 			case RE_HOSTED:
 				if ( pageReHosted == null ) {
-					pageReHosted = new RegisterExternalOntologyPageReHosted(this);
+					pageReHosted = new RegisterNewPageReHosted(this);
 					pageFullyHosted = null;
 					pageIndexed = null;
 				}
-				pageReHosted.updateUri(tempOntologyInfo.getXmlBase());
+				pageReHosted.updateUri(getTempOntologyInfo().getXmlBase());
 				nextPage = pageReHosted;
 				break;
 			case INDEXED:
 				if ( pageIndexed == null ) {
-					pageIndexed = new RegisterExternalOntologyPageIndexed(this);
+					pageIndexed = new RegisterNewPageIndexed(this);
 					pageReHosted = null;
 					pageFullyHosted = null;
 				}
-				pageIndexed.updateUri(tempOntologyInfo.getXmlBase());
+				pageIndexed.updateUri(getTempOntologyInfo().getXmlBase());
 				nextPage = pageIndexed;
 				break;
 			}
@@ -145,7 +141,7 @@ public class RegisterExternalOntologyWizard extends WizardBase {
 
 		else if ( currentPage == pageFullyHosted ) {
 			if ( pageFullyHostedMetadataPage1 == null ) {
-				pageFullyHostedMetadataPage1 = new RegisterExternalOntologyMetadataPage(this, 
+				pageFullyHostedMetadataPage1 = new MetadataPage(this, 
 				new MetadataSection1(HostingType.FULLY_HOSTED) {
 					protected void formChanged() {
 						pageFullyHostedMetadataPage1.formChanged();
@@ -157,7 +153,7 @@ public class RegisterExternalOntologyWizard extends WizardBase {
 		}
 		else if ( currentPage == pageFullyHostedMetadataPage1 ) {
 			if ( pageFullyHostedMetadataPage2 == null ) {
-				pageFullyHostedMetadataPage2 = new RegisterExternalOntologyMetadataPage(this, 
+				pageFullyHostedMetadataPage2 = new MetadataPage(this, 
 				new MetadataSection2() {
 					protected void formChanged() {
 						pageFullyHostedMetadataPage2.formChanged();
@@ -169,7 +165,7 @@ public class RegisterExternalOntologyWizard extends WizardBase {
 		}
 		else if ( currentPage == pageFullyHostedMetadataPage2 ) {
 			if ( pageFullyHostedMetadataPage3 == null ) {
-				pageFullyHostedMetadataPage3 = new RegisterExternalOntologyMetadataPage(this, 
+				pageFullyHostedMetadataPage3 = new MetadataPage(this, 
 				new MetadataSection3()  {
 					protected void formChanged() {
 						pageFullyHostedMetadataPage3.formChanged();
@@ -181,7 +177,7 @@ public class RegisterExternalOntologyWizard extends WizardBase {
 		}
 		else if ( currentPage == pageFullyHostedMetadataPage3 ) {
 			if ( pageFullyHostedConfirmation == null ) {
-				pageFullyHostedConfirmation = new RegisterExternalOntologyPageFullyHostedConfirmation(this);
+				pageFullyHostedConfirmation = new RegisterNewPageFullyHostedConfirmation(this);
 			}
 			contents.clear();
 			contents.add(pageFullyHostedConfirmation.getWidget());
@@ -192,7 +188,7 @@ public class RegisterExternalOntologyWizard extends WizardBase {
 
 		else if ( currentPage == pageReHosted ) {
 			if ( pageReHostedMetadataPage1 == null ) {
-				pageReHostedMetadataPage1 = new RegisterExternalOntologyMetadataPage(this, 
+				pageReHostedMetadataPage1 = new MetadataPage(this, 
 				new MetadataSection1(HostingType.RE_HOSTED) {
 					protected void formChanged() {
 						pageReHostedMetadataPage1.formChanged();
@@ -204,7 +200,7 @@ public class RegisterExternalOntologyWizard extends WizardBase {
 		}
 		else if ( currentPage == pageReHostedMetadataPage1 ) {
 			if ( pageReHostedMetadataPage2 == null ) {
-				pageReHostedMetadataPage2 = new RegisterExternalOntologyMetadataPage(this, 
+				pageReHostedMetadataPage2 = new MetadataPage(this, 
 				new MetadataSection2() {
 					protected void formChanged() {
 						pageReHostedMetadataPage2.formChanged();
@@ -216,7 +212,7 @@ public class RegisterExternalOntologyWizard extends WizardBase {
 		}
 		else if ( currentPage == pageReHostedMetadataPage2 ) {
 			if ( pageReHostedMetadataPage3 == null ) {
-				pageReHostedMetadataPage3 = new RegisterExternalOntologyMetadataPage(this, 
+				pageReHostedMetadataPage3 = new MetadataPage(this, 
 				new MetadataSection3()  {
 					protected void formChanged() {
 						pageReHostedMetadataPage3.formChanged();
@@ -228,7 +224,7 @@ public class RegisterExternalOntologyWizard extends WizardBase {
 		}
 		else if ( currentPage == pageReHostedMetadataPage3 ) {
 			if ( pageReHostedConfirmation == null ) {
-				pageReHostedConfirmation = new RegisterExternalOntologyPageReHostedConfirmation(this);
+				pageReHostedConfirmation = new RegisterNewPageReHostedConfirmation(this);
 			}
 			contents.clear();
 			contents.add(pageReHostedConfirmation.getWidget());
@@ -238,7 +234,7 @@ public class RegisterExternalOntologyWizard extends WizardBase {
 	
 	@Override
 	protected void pageBack(WizardPageBase cp) {
-		RegisterExternalOntologyPageBase currentPage = (RegisterExternalOntologyPageBase) cp;
+		BasePage currentPage = (BasePage) cp;
 		if ( currentPage == page2 ) {
 			contents.clear();
 			contents.add(page1.getWidget());
@@ -254,7 +250,7 @@ public class RegisterExternalOntologyWizard extends WizardBase {
 		else if ( currentPage == pageFullyHostedMetadataPage1
 		     ||   currentPage == pageReHostedMetadataPage1
 		) {
-			RegisterExternalOntologyPageBase nextPage = null;
+			BasePage nextPage = null;
 			if ( pageFullyHosted != null ) {
 				nextPage = pageFullyHosted;
 			}
@@ -307,9 +303,9 @@ public class RegisterExternalOntologyWizard extends WizardBase {
 
 	@Override
 	protected void finish(WizardPageBase cp) {
-		RegisterExternalOntologyPageBase currentPage = (RegisterExternalOntologyPageBase) cp;
+		BasePage currentPage = (BasePage) cp;
 		
-		if ( tempOntologyInfo == null ) {
+		if ( getTempOntologyInfo() == null ) {
 			// this should not normally happen -- only while I'm testing other functionalities
 			Window.alert("No ontology info has been specified--Please report this bug.");
 			return;
@@ -351,17 +347,17 @@ public class RegisterExternalOntologyWizard extends WizardBase {
 			createOntologyInfo.setMetadataValues(newValues);
 			
 			OtherDataCreationInfo dataCreationInfo = new OtherDataCreationInfo();
-			dataCreationInfo.setTempOntologyInfo(tempOntologyInfo);
+			dataCreationInfo.setTempOntologyInfo(getTempOntologyInfo());
 			createOntologyInfo.setDataCreationInfo(dataCreationInfo);
 			
 			// set info of original ontology:
-			createOntologyInfo.setBaseOntologyInfo(tempOntologyInfo);
+			createOntologyInfo.setBaseOntologyInfo(getTempOntologyInfo());
 			
 			// set the desired authority/shortName combination:
 			createOntologyInfo.setAuthority(pageFullyHosted.getAuthority());
 			createOntologyInfo.setShortName(pageFullyHosted.getShortName());
 			
-			RegisterExternalOntologyExecute execute = new RegisterExternalOntologyExecute(createOntologyInfo);
+			RegisterNewExecute execute = new RegisterNewExecute(createOntologyInfo);
 			
 			execute.reviewAndRegisterNewOntology();
 		}
@@ -388,14 +384,14 @@ public class RegisterExternalOntologyWizard extends WizardBase {
 			createOntologyInfo.setMetadataValues(newValues);
 			
 			OtherDataCreationInfo dataCreationInfo = new OtherDataCreationInfo();
-			dataCreationInfo.setTempOntologyInfo(tempOntologyInfo);
+			dataCreationInfo.setTempOntologyInfo(getTempOntologyInfo());
 			createOntologyInfo.setDataCreationInfo(dataCreationInfo);
 			
 			// set info of original ontology:
-			createOntologyInfo.setBaseOntologyInfo(tempOntologyInfo);
+			createOntologyInfo.setBaseOntologyInfo(getTempOntologyInfo());
 			
 			
-			RegisterExternalOntologyExecute execute = new RegisterExternalOntologyExecute(createOntologyInfo);
+			RegisterNewExecute execute = new RegisterNewExecute(createOntologyInfo);
 			
 			execute.reviewAndRegisterNewOntology();
 		}
@@ -416,7 +412,7 @@ public class RegisterExternalOntologyWizard extends WizardBase {
 			return pageFullyHosted.getOntologyUri();
 		}
 		else {
-			String xmlBase = tempOntologyInfo.getXmlBase();
+			String xmlBase = getTempOntologyInfo().getXmlBase();
 			return xmlBase;
 		}
 	}

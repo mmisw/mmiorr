@@ -9,9 +9,9 @@ import org.mmisw.ontmd.gwt.client.portal.PortalConsts;
  * 
  * @author Carlos Rueda
  */
-class RegisterExternalOntologyPageIndexed extends RegisterExternalOntologyPageReHosted {
+class RegisterNewPageIndexed extends RegisterNewPageReHosted {
 	
-	RegisterExternalOntologyPageIndexed(RegisterExternalOntologyWizard wizard) {
+	RegisterNewPageIndexed(RegisterNewWizard wizard) {
 		super(wizard, true, false, false);
 		nextButton.setEnabled(false);
 		finishButton.setEnabled(false);
