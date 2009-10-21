@@ -229,27 +229,6 @@ public class MdHelper {
 		authorityClassUri    = authorityClassUri_;
 		
 		
-		// issue #196 capture omv:reference
-		// Note that I'm only creating the AttrDef but no including it in any group; the reason
-		// is that this attribute will be accessed directly from the new wizard-like interface
-		// in the portal.
-		createAttrDef(Omv.reference)
-			.setLabel("References")
-			.setTooltip("Bibliographic references describing the ontology and its applications.")
-			.setNumberOfLines(3);
-		;
-
-		
-		// issue #99 Normalize theme/topic/class throughout interface
-		// Omv.acronym to be used for what is supposed to be: "A short name by which an ontology 
-		// is formally known."
-		createAttrDef(Omv.acronym)
-			.setLabel("Acronym")
-			.setTooltip("A short name by which the ontology is known")
-		;
-		
-		
-		
 		List<AttrDef> general_attr_list = new ArrayList<AttrDef>();
 		general_attr_list.add(createResourceTypeAttrDef());
 		
@@ -259,6 +238,16 @@ public class MdHelper {
 				.setLabel("Full title")
 				.setTooltip("A one-line descriptive title (title case) for the ontology.")
 				.setExample("Project Athena Parameters")
+		);
+		
+		
+		// issue #99 Normalize theme/topic/class throughout interface
+		// Omv.acronym to be used for what is supposed to be: "A short name by which an ontology 
+		// is formally known."
+		general_attr_list.add(
+				createAttrDef(Omv.acronym)
+					.setLabel("Acronym")
+					.setTooltip("A short name by which the ontology is known")
 		);
 		
 		general_attr_list.add(
@@ -345,6 +334,17 @@ public class MdHelper {
 		general_attr_list.add(
 				createAttrDef(Omv.uri)
 				.setInternal(true)
+		);
+		
+		// issue #196 capture omv:reference
+		// Note that I'm only creating the AttrDef but no including it in any group; the reason
+		// is that this attribute will be accessed directly from the new wizard-like interface
+		// in the portal.
+		general_attr_list.add(
+				createAttrDef(Omv.reference)
+					.setLabel("References")
+					.setTooltip("Bibliographic references describing the ontology and its applications.")
+					.setNumberOfLines(3)
 		);
 		
 		
