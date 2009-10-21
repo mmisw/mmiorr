@@ -25,28 +25,29 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Use to review and register an new ontology (not a new version of an existing registered ontology).
+ * Use to review and register a new version of a registered ontology.
+ *  
  * @author Carlos Rueda
  */
-class RegisterNewExecute {
+class RegisterVersionExecute {
 	
 	private CreateOntologyInfo createOntologyInfo;
 
 	
-	RegisterNewExecute(CreateOntologyInfo createOntologyInfo) {
+	RegisterVersionExecute(CreateOntologyInfo createOntologyInfo) {
 		this.createOntologyInfo = createOntologyInfo;
 	}
 	
 	
 	/**
-	 * Call this to review and register an new ontology (not a new version of an existing registered ontology).
+	 * Call this to review and register a new version of a registered ontology 
 	 */
-	void reviewAndRegisterNewOntology() {
+	void reviewAndRegisterVersionOntology() {
 		Map<String, String> newValues = createOntologyInfo.getMetadataValues();
 		
 		BaseOntologyInfo ontologyInfo = createOntologyInfo.getBaseOntologyInfo();
 		
-		assert ! ( ontologyInfo instanceof RegisteredOntologyInfo ) ;
+		assert ontologyInfo instanceof RegisteredOntologyInfo ;
 		
 		
 		// Ok, put the new values in the ontologyInfo object:
@@ -55,13 +56,13 @@ class RegisterNewExecute {
 		
 		createOntologyInfo.setUri(ontologyInfo.getUri());
 
-		Main.log("reviewAndRegisterNewOntology starting.  HostingType: " +createOntologyInfo.getHostingType());
+		Main.log("reviewAndRegisterVersionOntology starting.  HostingType: " +createOntologyInfo.getHostingType());
 		
 		final MyDialog popup = new MyDialog(null);
 		popup.addTextArea(null).setSize("600", "150");
 		popup.getTextArea().setText("please wait ...");
 		PortalControl.getInstance().notifyActivity(true);
-		popup.setText("Creating ontology ...");
+		popup.setText("Creating version of ontology ...");
 		popup.center();
 		popup.show();
 
@@ -94,7 +95,7 @@ class RegisterNewExecute {
 		if ( error == null ) {
 			vp.add(new Label("Ontology URI: " +createOntologyResult.getUri()));
 			
-			vp.add(new Label("You can now register your ontology or close this " +
+			vp.add(new Label("You can now register the new version of your ontology or close this " +
 					"dialog to continue editing the contents."));
 			
 			// prepare uploadButton
@@ -103,7 +104,7 @@ class RegisterNewExecute {
 					register(popup, true, createOntologyResult);
 				}
 			});
-			registerButton.setTitle("Registers the new ontology");
+			registerButton.setTitle("Registers the new version of the ontology");
 
 			popup.getButtonsPanel().insert(registerButton, 0);
 			
@@ -147,8 +148,8 @@ class RegisterNewExecute {
 		popup.addTextArea(null).setText("please wait ...");
 		popup.getTextArea().setSize("600", "150");
 		
-		Main.log("Registering ontology ...");
-		popup.setText("Registering ontology ...");
+		Main.log("Registering new version of ontology ...");
+		popup.setText("Registering new version of ontology ...");
 		popup.center();
 		popup.show();
 
@@ -183,7 +184,7 @@ class RegisterNewExecute {
 			String uri = uploadOntologyResult.getUri();
 
 			vp.add(new HTML("<font color=\"green\">Congratulations!</font> "
-					+ "Your ontology is now registered."
+					+ "The new version is now registered."
 			));
 			
 			
@@ -210,7 +211,7 @@ class RegisterNewExecute {
 		Main.log("Registration result: " +msg);
 
 		final MyDialog popup = new MyDialog(null);
-		popup.setText(error == null ? "Registration completed sucessfully" : "Error");
+		popup.setText(error == null ? "Registration of new version completed sucessfully" : "Error");
 		popup.addTextArea(null).setText(msg);
 		popup.getTextArea().setSize("600", "150");
 		

@@ -648,7 +648,6 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 			RegisteredOntologyInfo roi = (RegisteredOntologyInfo) ontologyInfo;
 			OntologyData ontologyData = roi.getOntologyData();
 			if ( ontologyData instanceof OtherOntologyData ) {
-				Main.log("PortalMainPanel.editNewVersion: Dispatching wizard to capture new version");
 				dispatchUploadNewVersionOntology(roi);
 				return;
 			}
@@ -667,24 +666,28 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		ontologyPanel.updateInterface(interfaceType);
 	}
 	
+	
 	/** 
 	 * Starts the sequence to register a new version of an external ontology.
 	 */
 	private void dispatchUploadNewVersionOntology(RegisteredOntologyInfo roi) {
 		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
 		if ( loginResult == null || loginResult.getError() != null ) {
-			pendingMessage = "Please, sign in and then select \"Upload\"" +
-				" to register an external ontology."
+			pendingMessage = "Please, sign in, browse to the desired ontology, " +
+				"and then select \"Upload\" to register a new version."
 			;
 			History.newItem(PortalConsts.T_BROWSE);
 			return;
 		}
 
-		// FIXME set the correct hostingType
-		HostingType hostingType = HostingType.FULLY_HOSTED;  
+		HostingType hostingType = roi.getHostingType();  
+		
+		Main.log("PortalMainPanel.editNewVersion: Dispatching wizard to capture new version. " +
+				"hostingType = " +hostingType);
+		
 		RegisterVersionWizard wizard = new RegisterVersionWizard(this, roi, hostingType);
 
-		pctrl.setOntologyInfo(null);
+		pctrl.setOntologyInfo(roi);
 		pctrl.setOntologyPanel(null);
 		
 		interfaceType = InterfaceType.UPLOAD_NEW_VERSION;
@@ -721,6 +724,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 			    	ontologyPanel.updateInterface(interfaceType);
 			    }
 				break;
+				
 			case ONTOLOGY_EDIT_NEW:
 			case UPLOAD_ONTOLOGY:
 				interfaceType = InterfaceType.BROWSE;
@@ -729,6 +733,23 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 			    bodyPanel.clear();
 			    bodyPanel.add(browsePanel);
 				break;
+				
+			case UPLOAD_NEW_VERSION:
+				if ( pctrl.getOntologyInfo() instanceof RegisteredOntologyInfo ) {
+					RegisteredOntologyInfo roi = (RegisteredOntologyInfo) pctrl.getOntologyInfo();
+					String uri = roi.getUri();
+					if ( uri.equals(History.getToken()) ){
+						resolveUri(uri);
+					}
+					else {
+						History.newItem(uri);
+					}
+				}
+				else {
+					History.newItem(PortalConsts.T_BROWSE);
+				}
+				break;
+				
 			default:
 				// shouldn't happen. just return;
 				return;

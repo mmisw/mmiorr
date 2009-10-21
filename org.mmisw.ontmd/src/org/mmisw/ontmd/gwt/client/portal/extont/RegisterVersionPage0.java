@@ -33,7 +33,7 @@ class RegisterVersionPage0 extends BasePage {
 	 * @param allowLoadOptions
 	 */
 	RegisterVersionPage0(RegisterVersionWizard wizard) {
-		super(wizard, true, true);
+		super(wizard, false, true);
 		
 		uploadFileRb.addClickListener(new ClickListener() {
 			public void onClick(Widget sender) {

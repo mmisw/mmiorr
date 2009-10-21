@@ -1,6 +1,8 @@
 package org.mmisw.ontmd.gwt.client.portal.extont;
 
+import org.mmisw.iserver.gwt.client.rpc.HostingType;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.portal.PortalConsts;
@@ -75,7 +77,7 @@ class RegisterVersionPage1 extends BasePage {
 	 * @param allowLoadOptions
 	 */
 	RegisterVersionPage1(RegisterVersionWizard wizard) {
-		super(wizard, false, true);
+		super(wizard, true, true);
 		nextButton.setEnabled(false);
 		contents.setSize("650px", "200px");
 		addContents(contents);
@@ -401,14 +403,57 @@ class RegisterVersionPage1 extends BasePage {
 		getWizard().ontologyInfoObtained(tempOntologyInfo);
 		
 		String xmlBase = tempOntologyInfo.getXmlBase();
-		nextButton.setEnabled(true);
-		statusHtml.setHTML(
-				"<font color=\"green\">Ontology loaded in work space.</font>" +
+		String html = "<font color=\"green\">Ontology loaded in work space.</font>" +
 				"<br/>" +
-				"Ontology URI: <b>" +(xmlBase != null ? xmlBase : "undefined") + "</b>" +
-				"<br/>" +
-				"Click Next to continue." 
-		);
+				"Ontology URI: <b>" +(xmlBase != null ? xmlBase : "undefined") + "</b>"
+		;
+		
+		RegisteredOntologyInfo roi = getWizard().getRegisteredOntologyInfo();
+		String uri = roi.getUnversionedUri();
+		HostingType hostingType = roi.getHostingType();
+		
+		switch ( hostingType ) {
+		case FULLY_HOSTED:
+			if ( xmlBase != null ) {
+				html += "<br/>Note: entities in this namespace will be moved to " +uri;
+			}
+			nextButton.setEnabled(true);
+			statusHtml.setHTML(
+					 html+
+					"<br/>Click Next to continue." 
+			);
+			break;
+
+		case RE_HOSTED:
+			error = null;
+			if ( xmlBase != null ) {
+				if ( ! uri.equals(xmlBase) ) {
+					error = "<br/><font color=\"red\">Error: Ontology URI must be " +uri;
+				}
+			}
+			
+			if ( error == null ) {
+				nextButton.setEnabled(true);
+				statusHtml.setHTML(
+						html+
+						"<br/>Click Next to continue." 
+				);
+			}
+			else {
+				nextButton.setEnabled(false);
+				statusHtml.setHTML(
+						html + error
+				);
+			}
+			break;
+			
+		case INDEXED:
+			// TODO INDEXED case
+			break;
+			
+		default:
+			break;
+		}
 		
 		if ( INCLUDE_RDF ) {
 			String rdf = tempOntologyInfo.getRdf();

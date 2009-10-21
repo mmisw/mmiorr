@@ -1,7 +1,11 @@
 package org.mmisw.ontmd.gwt.client.portal.extont;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.HostingType;
@@ -10,6 +14,7 @@ import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.ontmd.gwt.client.portal.PortalControl;
 import org.mmisw.ontmd.gwt.client.portal.PortalMainPanel;
+import org.mmisw.ontmd.gwt.client.portal.extont.RegisterVersionPage2.MdInitMode;
 import org.mmisw.ontmd.gwt.client.portal.md.MetadataSection1;
 import org.mmisw.ontmd.gwt.client.portal.md.MetadataSection2;
 import org.mmisw.ontmd.gwt.client.portal.md.MetadataSection3;
@@ -29,6 +34,8 @@ public class RegisterVersionWizard extends BaseWizard {
 	
 	private final RegisterVersionPage0 page0 = new RegisterVersionPage0(this);
 	private final RegisterVersionPage1 page1 = new RegisterVersionPage1(this);
+	private final RegisterVersionPage2 page2 = new RegisterVersionPage2(this);
+	
 	
 
 	///////////////////////////////////////////////////////////////////////////////////
@@ -54,9 +61,127 @@ public class RegisterVersionWizard extends BaseWizard {
 	
 	private final RegisteredOntologyInfo registeredOntologyInfo;
 	private final HostingType hostingType;
+	
+	
+	// loaded and registerd values for a particular property URI 
+	static class Detail {
+		String key;
+		String loadedValue;
+		String registeredValue;
+		Detail(String key, String loadedValue, String registeredValue) {
+			super();
+			this.key = key;
+			this.loadedValue = loadedValue;
+			this.registeredValue = registeredValue;
+		}
+		
+		public String toString() {
+			return key+ ": loaded=" +loadedValue+ "  registered=" +registeredValue;
+		}
+	}
+
+	/**
+	 * Details about the metadata for the new version.
+	 */
+	class MdDetails {
+	
+		// the metadata values from the registered ontology
+		private final Map<String, String> registeredMdValues;
+		
+		// the metadata values from the loaded file, if any
+		private Map<String, String> loadedMdValues;
+		
+		private final Map<String, String> mdValuesWithLoadedPreferred = new HashMap<String, String>();
+		private final Map<String, String> mdValuesWithRegisteredPreferred = new HashMap<String, String>();
+	
+		// loaded and registered metadata values
+		final List<Detail> details = new ArrayList<Detail>();
+		
+		// number of differences (keys with different, non-blank values)
+		int noDiffs;
+		
+		MdDetails(Map<String, String> registeredMdValues) {
+			this.registeredMdValues = registeredMdValues;
+		}
+		
+		void prepare() {
+			TempOntologyInfo tempOntologyInfo = getTempOntologyInfo();
+			
+			loadedMdValues = tempOntologyInfo.getOntologyMetadata().getOriginalValues();
+			
+			Set<String> allKeys = new HashSet<String>();
+			allKeys.addAll(loadedMdValues.keySet());
+			allKeys.addAll(registeredMdValues.keySet());
+			
+			mdValuesWithLoadedPreferred.clear();
+			mdValuesWithRegisteredPreferred.clear();
+			
+			details.clear();
+			noDiffs = 0;
+			
+			for ( String key : allKeys ) {
+				String loadedValue = loadedMdValues.get(key);
+				String registeredValue = registeredMdValues.get(key);
+				
+				loadedValue = loadedValue == null ? "" : loadedValue.trim();
+				registeredValue = registeredValue == null ? "" : registeredValue.trim();
+				
+				if ( registeredValue.length() > 0  ||  loadedValue.length() > 0 ) {
+					Detail detail = new Detail(key, loadedValue, registeredValue);
+					details.add(detail);
+				}
+				
+				if ( registeredValue.length() > 0  &&  loadedValue.length() > 0 ) {
+					if ( ! loadedValue.equals(registeredValue) ) {
+						noDiffs++;
+					}
+				}
+				
+				if ( loadedValue.length() > 0 ) {
+					mdValuesWithLoadedPreferred.put(key, loadedValue);
+				}
+				else if ( registeredValue.length() > 0 ) {
+					mdValuesWithLoadedPreferred.put(key, registeredValue);
+				}
+				
+				if ( registeredValue.length() > 0 ) {
+					mdValuesWithRegisteredPreferred.put(key, registeredValue);
+				}
+				else if ( loadedValue.length() > 0 ) {
+					mdValuesWithRegisteredPreferred.put(key, loadedValue);
+				}
+				
+			}
+		}
+		
+		void setMetadataValuesAccordingToInitMode() {
+			switch (initMdMode) {
+			case ONLY_FROM_LOADED:
+				metadataValues = loadedMdValues;
+				break;
+			case ONLY_FROM_REGISTERED:
+				metadataValues = registeredMdValues;
+				break;
+			case MERGE_PREFER_LOADED:
+				metadataValues = mdValuesWithLoadedPreferred;
+				break;
+			case MERGE_PREFER_REGISTERED:
+				metadataValues = mdValuesWithRegisteredPreferred;
+				break;
+			default:
+				throw new AssertionError();
+			}
+		}
+	}
+	
+	private final MdDetails mdDetails;
+	
+	// the values to be used to fill in the metadata pages
+	private Map<String, String> metadataValues;
 
 
 	private boolean uploadFileIndicated;
+	private MdInitMode initMdMode;
 
 	/**
 	 * @param portalMainPanel 
@@ -68,6 +193,9 @@ public class RegisterVersionWizard extends BaseWizard {
 		super(portalMainPanel);
 		this.registeredOntologyInfo = registeredOntologyInfo;
 		this.hostingType = hostingType;
+		assert hostingType != null;
+		
+		mdDetails = new MdDetails(registeredOntologyInfo.getOntologyMetadata().getOriginalValues());
 		
 		contents.setSize("650px", "300px");
 		
@@ -80,14 +208,18 @@ public class RegisterVersionWizard extends BaseWizard {
 		assert tempOntologyInfo.getError() == null;
 		
 		this.setTempOntologyInfo(tempOntologyInfo);
+		prepareMdInitOptions();
+		page2.diffsUpdated();
+	}
+	
+	
+	private void prepareMdInitOptions() {
+		mdDetails.prepare();
 	}
 	
 	@Override
 	protected void pageNext(WizardPageBase cp) {
 		BasePage currentPage = (BasePage) cp;
-//		if ( tempOntologyInfo == null ) { TODO apply after testing
-//			return;
-//		}
 		
 		if ( currentPage == page0 && uploadFileIndicated ) {
 			contents.clear();
@@ -95,10 +227,22 @@ public class RegisterVersionWizard extends BaseWizard {
 			page1.activate();
 		}
 		
-		else if ( currentPage == page0 || currentPage == page1 ) {
-			assert hostingType != null;
+		else if ( currentPage == page1 ) {
+			contents.clear();
+			contents.add(page2.getWidget());
+			page2.activate();
+		}
+		
+		else if ( currentPage == page0 || currentPage == page2 ) {
+			MetadataPage nextPage = null;
 			
-			BasePage nextPage = null;
+			if ( currentPage == page0 ) {
+				metadataValues = mdDetails.registeredMdValues;
+			}
+			else {
+				assert initMdMode != null;
+				mdDetails.setMetadataValuesAccordingToInitMode();
+			}
 			
 			switch ( hostingType ) {
 			case FULLY_HOSTED:
@@ -130,6 +274,7 @@ public class RegisterVersionWizard extends BaseWizard {
 			}
 			
 			if ( nextPage != null ) {
+				nextPage.mdSection.setValuesFromMap(metadataValues, false);
 				contents.clear();
 				contents.add(nextPage.getWidget());
 				nextPage.activate();
@@ -208,21 +353,23 @@ public class RegisterVersionWizard extends BaseWizard {
 		
 	}
 	
+
 	@Override
 	protected void pageBack(WizardPageBase cp) {
 		BasePage currentPage = (BasePage) cp;
 		
-		if ( currentPage == pageFullyHostedMetadataPage1
-		||   currentPage == pageReHostedMetadataPage1
+		if ( currentPage == page1 ) {
+			contents.clear();
+			contents.add(page0.getWidget());
+		}
+		else if ( currentPage == page2 ) {
+			contents.clear();
+			contents.add(page1.getWidget());
+		}
+		else if ( currentPage == pageFullyHostedMetadataPage1
+		||        currentPage == pageReHostedMetadataPage1
 		) {
-			BasePage nextPage = page1;
-			
-			if ( uploadFileIndicated ) {
-				nextPage = page1;
-			}
-			else {
-				nextPage = page0;
-			}
+			BasePage nextPage = uploadFileIndicated ? page2 : page0 ;
 			
 			if ( nextPage != null ) {
 				contents.clear();
@@ -271,17 +418,25 @@ public class RegisterVersionWizard extends BaseWizard {
 	protected void finish(WizardPageBase cp) {
 		BasePage currentPage = (BasePage) cp;
 		
-		if ( getTempOntologyInfo() == null ) {
-			// this should not normally happen -- only while I'm testing other functionalities
-			Window.alert("No ontology info has been specified--Please report this bug.");
-			return;
-		}
 		if ( PortalControl.getInstance().getLoginResult() == null
 		||   PortalControl.getInstance().getLoginResult().getError() != null
 		) {
 			// this should not normally happen -- only while I'm testing other functionalities
 			Window.alert("No user logged in at this point--Please report this bug.");
 			return;
+		}
+		
+		TempOntologyInfo tempOntologyInfo = getTempOntologyInfo();
+		
+		if ( uploadFileIndicated ) {
+			if ( tempOntologyInfo == null ) {
+				// this should not normally happen -- only while I'm testing other functionalities
+				Window.alert("Upload of file as indicated but no ontology has been uploaded--Please report this bug.");
+				return;
+			}
+		}
+		else {
+			assert tempOntologyInfo == null;
 		}
 		
 
@@ -297,9 +452,9 @@ public class RegisterVersionWizard extends BaseWizard {
 			// collect information and run the "review and register"
 			String error;
 			Map<String, String> newValues = new HashMap<String, String>();
-			if ( (error = pageFullyHostedMetadataPage1.mdSection.putValues(newValues, true)) != null
-			||   (error = pageFullyHostedMetadataPage2.mdSection.putValues(newValues, true)) != null
-			||   (error = pageFullyHostedMetadataPage3.mdSection.putValues(newValues, true)) != null
+			if ( (error = pageFullyHostedMetadataPage1.mdSection.putValuesInMap(newValues, true)) != null
+			||   (error = pageFullyHostedMetadataPage2.mdSection.putValuesInMap(newValues, true)) != null
+			||   (error = pageFullyHostedMetadataPage3.mdSection.putValuesInMap(newValues, true)) != null
 			) {
 				// Should not happen
 				Window.alert(error);
@@ -313,19 +468,25 @@ public class RegisterVersionWizard extends BaseWizard {
 			createOntologyInfo.setMetadataValues(newValues);
 			
 			OtherDataCreationInfo dataCreationInfo = new OtherDataCreationInfo();
-			dataCreationInfo.setTempOntologyInfo(getTempOntologyInfo());
+			dataCreationInfo.setTempOntologyInfo(tempOntologyInfo);
 			createOntologyInfo.setDataCreationInfo(dataCreationInfo);
 			
 			// set info of original ontology:
-			createOntologyInfo.setBaseOntologyInfo(getTempOntologyInfo());
+			createOntologyInfo.setBaseOntologyInfo(registeredOntologyInfo);
+			
+			createOntologyInfo.setPriorOntologyInfo(
+					registeredOntologyInfo.getOntologyId(), 
+					registeredOntologyInfo.getOntologyUserId(), 
+					registeredOntologyInfo.getVersionNumber()
+			);
 			
 			// set the desired authority/shortName combination:
 			createOntologyInfo.setAuthority(registeredOntologyInfo.getAuthority());
 			createOntologyInfo.setShortName(registeredOntologyInfo.getShortName());
 			
-			RegisterNewExecute execute = new RegisterNewExecute(createOntologyInfo);
+			RegisterVersionExecute execute = new RegisterVersionExecute(createOntologyInfo);
 			
-			execute.reviewAndRegisterNewOntology();
+			execute.reviewAndRegisterVersionOntology();
 		}
 		
 		/////////////////////////////////////////////////////////////////////
@@ -335,9 +496,9 @@ public class RegisterVersionWizard extends BaseWizard {
 			// collect information and run the "review and register"
 			String error;
 			Map<String, String> newValues = new HashMap<String, String>();
-			if ( (error = pageReHostedMetadataPage1.mdSection.putValues(newValues, true)) != null
-			||   (error = pageReHostedMetadataPage2.mdSection.putValues(newValues, true)) != null
-			||   (error = pageReHostedMetadataPage3.mdSection.putValues(newValues, true)) != null
+			if ( (error = pageReHostedMetadataPage1.mdSection.putValuesInMap(newValues, true)) != null
+			||   (error = pageReHostedMetadataPage2.mdSection.putValuesInMap(newValues, true)) != null
+			||   (error = pageReHostedMetadataPage3.mdSection.putValuesInMap(newValues, true)) != null
 			) {
 				// Should not happen
 				Window.alert(error);
@@ -354,12 +515,21 @@ public class RegisterVersionWizard extends BaseWizard {
 			createOntologyInfo.setDataCreationInfo(dataCreationInfo);
 			
 			// set info of original ontology:
-			createOntologyInfo.setBaseOntologyInfo(getTempOntologyInfo());
+			createOntologyInfo.setBaseOntologyInfo(registeredOntologyInfo);
 			
+			createOntologyInfo.setPriorOntologyInfo(
+					registeredOntologyInfo.getOntologyId(), 
+					registeredOntologyInfo.getOntologyUserId(), 
+					registeredOntologyInfo.getVersionNumber()
+			);
 			
-			RegisterNewExecute execute = new RegisterNewExecute(createOntologyInfo);
+			// set the desired authority/shortName combination:
+			createOntologyInfo.setAuthority(registeredOntologyInfo.getAuthority());
+			createOntologyInfo.setShortName(registeredOntologyInfo.getShortName());
 			
-			execute.reviewAndRegisterNewOntology();
+			RegisterVersionExecute execute = new RegisterVersionExecute(createOntologyInfo);
+			
+			execute.reviewAndRegisterVersionOntology();
 		}
 		
 		/////////////////////////////////////////////////////////////////////
@@ -380,6 +550,28 @@ public class RegisterVersionWizard extends BaseWizard {
 
 	void setUploadFileIndicated(boolean uploadFileIndicated) {
 		this.uploadFileIndicated = uploadFileIndicated;
+		
+		// always, reset this
+		setTempOntologyInfo(null);
+		
+		if ( !uploadFileIndicated ) {
+			metadataValues = mdDetails.registeredMdValues;
+		}
+	}
+
+
+	RegisteredOntologyInfo getRegisteredOntologyInfo() {
+		return registeredOntologyInfo;
+	}
+
+
+	void InitMdModeSelected(MdInitMode initMdMode) {
+		this.initMdMode = initMdMode;
+	}
+
+
+	public MdDetails getMdDetails() {
+		return mdDetails;
 	}
 
 }

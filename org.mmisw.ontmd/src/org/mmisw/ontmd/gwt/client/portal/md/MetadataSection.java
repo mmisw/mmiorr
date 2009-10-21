@@ -9,6 +9,7 @@ import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
 import org.mmisw.ontmd.gwt.client.util.Util;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
@@ -129,7 +130,7 @@ public abstract class MetadataSection {
 	 *         
 	 * @return Only non-null when called with checkMissing == true and there is some missing required attribute.
 	 */
-	public String putValues(Map<String, String> values, boolean checkMissing) {
+	public String putValuesInMap(Map<String, String> values, boolean checkMissing) {
 		
 		for ( Elem elem : elems ) {
 			String value = "";
@@ -166,6 +167,7 @@ public abstract class MetadataSection {
 		}
 		return null;
 	}
+	
 	/**
 	 * Puts the value in the map, only if value is not null and not empty.
 	 */
@@ -176,6 +178,65 @@ public abstract class MetadataSection {
 	}
 
 
+	/**
+	 * 
+	 * @param values
+	 * @param confirm
+	 */
+	public void setValuesFromMap(Map<String, String> values, boolean confirm) {
+		if ( confirm && ! Window.confirm("This action will replace the current values in this section") ) {
+			return;
+		}
 
+		resetToEmpty();
+		
+		for ( Elem elem : elems ) {
+			String uri = elem.attrDef.getUri();
+			String value = values.get(uri);
+			
+			if ( value == null ) {
+				continue;
+			}
+			
+			if ( elem.widget instanceof TextBoxBase ) {
+				((TextBoxBase) elem.widget).setText(value);
+			}
+			else if ( elem.widget instanceof ListBox ) {
+				ListBox lb = (ListBox) elem.widget;
+				int idx = 0;
+				for ( int i = 0; i < lb.getItemCount(); i++ ) {
+					if ( value.equals(lb.getValue(i)) ) {
+						idx = i;
+						break;
+					}
+				}
+				lb.setSelectedIndex(idx);
+			}
+			else if ( elem.widget instanceof FieldWithChoose ) {
+				((FieldWithChoose) elem.widget).setValue(value);
+			}
+		}
+	}
+
+	/**
+	 * Sets all widget values to empty (textbox) and first option (listbox). 
+	 */
+	private void resetToEmpty() {
+		String value = "";
+		for ( Elem elem : elems ) {
+			if ( elem.widget instanceof TextBoxBase ) {
+				((TextBoxBase) elem.widget).setText(value);
+			}
+			else if ( elem.widget instanceof ListBox ) {
+				ListBox lb = (ListBox) elem.widget;
+				int idx = 0;
+				lb.setSelectedIndex(idx);
+			}
+			else if ( elem.widget instanceof FieldWithChoose ) {
+				((FieldWithChoose) elem.widget).setValue(value);
+			}
+		}
+		
+	}
 	
 }

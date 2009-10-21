@@ -2,6 +2,26 @@ org.mmisw.ontmd: MMI Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2009-10-20   1.5.0.alpha30
+	- RegisterVersionWizard sequence complete for both FULLY_HOSTED and RE_HOSTED hosting types:
+  		- page 0: user indicates whether a file will be uploaded as basis for new version. If so,
+  		  goes to page 1; otherwise to the metadata pages.
+		- page 1: the upload file page. In RE_HOSTED mode, checks that the URI is equal to the
+		  registered one.
+		- page 2: options for initializing the metadata fields in the subsequence pages
+		  according to values in the two sources (uploaded file and the registered ontology):
+			o Use values from both sources with new values overwriting registered values, if any
+			o Use values from both sources with registered values overwriting new values, if any
+			o Use only values from the loaded ontology
+			o Use only values from the registered ontology
+		  Includes a "details" button to show the values from the two sources.
+			
+		- next pages to edit metadata
+		- Finish with a call to RegisterVersionExecute.reviewAndRegisterVersionOntology
+		
+		Various test OK.
+		
+
 2009-10-19   1.5.0.alpha30
 	- package extont: made various file renamings in preparation for wizard sequence to 
 	  register a *new version* of a registered ontology.

@@ -402,7 +402,12 @@ public class PortalControl {
 			break;
 		case UPLOAD_ONTOLOGY:
 			return "Registering your ontology";
+			
+		case UPLOAD_NEW_VERSION:
+			return "Registering new version" +
+			  (ontologyInfo != null ? " for " +ontologyInfo.getUri() : "");
 		}
+		
 		return null;
 	}
 

@@ -24,7 +24,7 @@ class MetadataPage extends BasePage {
 		statusHtml.setHTML("");
 		boolean checkMissing = true;
 		Map<String, String> values = null;  //don't need the value now.
-		String str = mdSection.putValues(values, checkMissing);
+		String str = mdSection.putValuesInMap(values, checkMissing);
 		
 		if ( str != null ) {
 			statusHtml.setHTML("<font color=\"red\">" +str+ "</font");

@@ -78,11 +78,17 @@ public class ControlsPanel extends HorizontalPanel {
 		case ONTOLOGY_VIEW:
 			_prepareOntologyViewButtons();
 			break;
+			
 		case ONTOLOGY_EDIT_NEW_VERSION:
 		case ONTOLOGY_EDIT_NEW:
-		case UPLOAD_ONTOLOGY:
-			_prepareOntologyEditButtons(type != InterfaceType.UPLOAD_ONTOLOGY);
+			_prepareOntologyEditButtons(true);
 			break;
+			
+		case UPLOAD_ONTOLOGY:
+		case UPLOAD_NEW_VERSION:
+			_prepareOntologyEditButtons(false);
+			break;
+			
 		case ENTITY_VIEW:
 			_prepareEntityViewButtons();
 			break;

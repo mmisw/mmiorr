@@ -332,9 +332,9 @@ public class RegisterNewWizard extends BaseWizard {
 			String error;
 			Map<String, String> newValues = new HashMap<String, String>();
 			if ( (error = pageFullyHosted.authorityShortNamePanel.putValues(newValues, true)) != null
-			||   (error = pageFullyHostedMetadataPage1.mdSection.putValues(newValues, true)) != null
-			||   (error = pageFullyHostedMetadataPage2.mdSection.putValues(newValues, true)) != null
-			||   (error = pageFullyHostedMetadataPage3.mdSection.putValues(newValues, true)) != null
+			||   (error = pageFullyHostedMetadataPage1.mdSection.putValuesInMap(newValues, true)) != null
+			||   (error = pageFullyHostedMetadataPage2.mdSection.putValuesInMap(newValues, true)) != null
+			||   (error = pageFullyHostedMetadataPage3.mdSection.putValuesInMap(newValues, true)) != null
 			) {
 				// Should not happen
 				Window.alert(error);
@@ -369,9 +369,9 @@ public class RegisterNewWizard extends BaseWizard {
 			// collect information and run the "review and register"
 			String error;
 			Map<String, String> newValues = new HashMap<String, String>();
-			if ( (error = pageReHostedMetadataPage1.mdSection.putValues(newValues, true)) != null
-			||   (error = pageReHostedMetadataPage2.mdSection.putValues(newValues, true)) != null
-			||   (error = pageReHostedMetadataPage3.mdSection.putValues(newValues, true)) != null
+			if ( (error = pageReHostedMetadataPage1.mdSection.putValuesInMap(newValues, true)) != null
+			||   (error = pageReHostedMetadataPage2.mdSection.putValuesInMap(newValues, true)) != null
+			||   (error = pageReHostedMetadataPage3.mdSection.putValuesInMap(newValues, true)) != null
 			) {
 				// Should not happen
 				Window.alert(error);
