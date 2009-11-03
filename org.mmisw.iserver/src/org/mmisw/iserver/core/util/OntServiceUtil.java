@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.mmisw.iserver.core.ServerConfig;
+import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
 import org.mmisw.ont.JenaUtil2;
 
 import com.hp.hpl.jena.ontology.OntDocumentManager;
@@ -152,6 +153,32 @@ public class OntServiceUtil {
 	}
 
 
+	
+	/**
+	 * Runs a SPARQL query using the the "Ont" service.
+	 * 
+	 * <p>
+	 * TODO this is a very basic dispatch-- pending a better mechanism, includig paging
+	 * 
+	 * @param sqi  The query
+	 * @return The response of the "ont" service.
+	 * @throws Exception
+	 */
+	public static String runSparqlQuery(SparqlQueryInfo sqi) throws Exception {
+		
+		String ontServiceUrl = sqi.getEndPoint() == null ? ServerConfig.Prop.ONT_SERVICE_URL.getValue() : sqi.getEndPoint();
+		String query = URLEncoder.encode(sqi.getQuery(), "UTF-8");
+		String ontServiceRequest = ontServiceUrl + "?sparql=" +query;
+		if ( sqi.getFormat() != null ) {
+			ontServiceRequest += "&form=" +sqi.getFormat();
+		}
+		String str = HttpUtil.getAsString(ontServiceRequest, sqi.getAcceptEntries());
+		
+		return str;
+	}
+
+
+	
 	/**
 	 * Makes the request to load the given ontology in the graph maintained by the
 	 * "ont" service.

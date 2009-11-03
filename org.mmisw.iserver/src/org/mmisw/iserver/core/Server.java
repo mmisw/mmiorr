@@ -2658,7 +2658,16 @@ public class Server implements IServer {
 	public SparqlQueryResult runSparqlQuery(SparqlQueryInfo query) {
 		SparqlQueryResult sparqlQueryResult = new SparqlQueryResult();
 		try {
-			String result = OntServiceUtil.runSparqlQuery(query.getQuery(), query.getFormat(), "application/rdf+xml");
+			String result;
+			if ( query.getAcceptEntries().length == 0 ) {
+				// this is the call used for previous version of the SparqlQueryInfo object, which didn't
+				// have the acceptEntries attribute
+				result = OntServiceUtil.runSparqlQuery(query.getQuery(), query.getFormat(), "application/rdf+xml");
+			}
+			else {
+				// use the new call:
+				result = OntServiceUtil.runSparqlQuery(query);
+			}
 			sparqlQueryResult.setResult(result);
 		}
 		catch (Exception e) {
