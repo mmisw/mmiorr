@@ -2,6 +2,30 @@ org.mmisw.ontmd: MMI Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2009-11-03   1.6.0.alpha
+	- Setting version to 1.6.0.alpha reflecting all the 1.5.0.alpha30 changes below.
+	  This is also sync'ed with iserver module.
+	
+	- Note that Omv.acronym is now a required attribute (see iserver module), in particular
+	  because it is used *also* as the shortName component in the voc2rdf and vine interfaces.
+	- Enhancement #202: "Upload button (in new portal) is ambiguous"
+		Name of the button is now "Upload ontology"
+	- Improved the tooltips for the three buttons:
+		Create vocabulary
+			Allows to create an ontology from a tabular arrangement of terms using the integrated Voc2RDF tool
+		Create mapping
+			Allows to create a mapping ontology using the integrated VINE tool
+		Upload ontology
+			Allows to prepare and register an external ontology file 
+	- MetadataGroupPanel.putValues: special cases: acronym and authority abbreviation: 
+		Do not allow '/', '\', or ':' (in particular '/') to avoid having an incorrect MmiUri.
+	- HeaderPanel: added link to Terms of Use: http://marinemetadata.org/orr/tou
+	  
+
+	misc changes:	  
+	- Renamed ontmd.launch to orr.launch
+	  
+	
 2009-10-20   1.5.0.alpha30
 	- RegisterVersionWizard sequence complete for both FULLY_HOSTED and RE_HOSTED hosting types:
   		- page 0: user indicates whether a file will be uploaded as basis for new version. If so,

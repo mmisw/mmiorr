@@ -128,7 +128,8 @@ public class ControlsPanel extends HorizontalPanel {
 					pctrl.createNewVocabulary();
 				}
 			});
-			button.setTitle("Allows to create an ontology from a tabular arrangement of terms (voc2rdf tool)");
+			button.setTitle("Allows to create an ontology from a tabular arrangement of terms " +
+					"using the integrated Voc2RDF tool");
 			controls.add(button);
 			buttons.add(button);
 
@@ -137,16 +138,18 @@ public class ControlsPanel extends HorizontalPanel {
 					pctrl.createNewMappingOntology();
 				}
 			});
-			button.setTitle("Allows to create a mapping ontology (vine tool)");
+			button.setTitle("Allows to create a mapping ontology using the integrated VINE tool");
 			controls.add(button);
 			buttons.add(button);
 			
-			button = new PushButton("Upload", new ClickListener() {
+			// Enhancement #202: "Upload button (in new portal) is ambiguous"
+			//	Name of the button is now "Upload ontology"
+			button = new PushButton("Upload ontology", new ClickListener() {
 				public void onClick(Widget sender) {
 					pctrl.startRegisterExternal();
 				}
 			});
-			button.setTitle("Allows to prepare and register a local ontology file");
+			button.setTitle("Allows to prepare and register an external ontology file");
 			controls.add(button);
 			buttons.add(button);
 		}

@@ -309,6 +309,28 @@ public class MetadataGroupPanel extends VerticalPanel {
 			else {
 				String uri = elem.attr.getUri();
 				value = value.trim();
+				
+				if ( checkMissing ) {
+					// actually the flag is used to check the value is well-formed.
+					// TODO review useage of the checkMissing flag and rename appropriately.
+					
+					// special cases: acronym, authority abbreviation
+					// TODO a more general mechanism to handle this kind of verifications
+					if ( "http://omv.ontoware.org/2005/05/ontology#acronym".equals(uri)
+					||   "http://mmisw.org/ont/mmi/20081020/ontologyMetadata/origMaintainerCode".equals(uri)
+					) {
+						// do not accept some characters, in particular '/':
+						for ( char ch : "/\\:".toCharArray() ) {
+							if ( value.indexOf(ch) >= 0 ) {
+								String error = "Character '" +ch+ "' not allowed in value for: " +
+									elem.attr.getLabel();
+								return error;
+							}
+						}
+					}
+				}
+				
+				
 				if ( values != null ) {
 					// do actual assignment
 					_putValueIfNonEmpty(values, uri, value);

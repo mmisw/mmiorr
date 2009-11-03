@@ -24,6 +24,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class HeaderPanel extends FlexTable {
 
 	private static final String HELP_LINK = "http://marinemetadata.org/orr";
+	private static final String TOU_LINK = "http://marinemetadata.org/orr/tou";
 
 	private HorizontalPanel linksPanel1 = new HorizontalPanel();
 	private HorizontalPanel linksPanel2 = new HorizontalPanel();
@@ -39,6 +40,9 @@ public class HeaderPanel extends FlexTable {
 	
 	private HTML helpButton = new HTML(
 			"<a target=\"_blank\" href=\"" +HELP_LINK+ "\">Help</a>");
+
+	private HTML touButton = new HTML(
+			"<a target=\"_blank\" href=\"" +TOU_LINK+ "\">Terms of Use</a>");
 
 	
 	HeaderPanel() {
@@ -117,6 +121,7 @@ public class HeaderPanel extends FlexTable {
 		}
 		
 		widgets.add(helpButton);
+		widgets.add(touButton);
 		
 		// now assign to linksPanels
 		linksPanel1.clear();

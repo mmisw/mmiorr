@@ -711,8 +711,15 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	
 	
 	public void cancelEdit(OntologyPanel ontologyPanel) {
-		if ( ! Window.confirm("Any edits will be lost") ) {
-			return;
+		switch ( interfaceType ) {
+			case ONTOLOGY_EDIT_NEW_VERSION:
+			case ONTOLOGY_EDIT_NEW:
+			case UPLOAD_ONTOLOGY:
+			case UPLOAD_NEW_VERSION:
+				if ( ! Window.confirm("Any edits will be lost") ) {
+					return;
+				}
+				break;
 		}
 		
 		switch ( interfaceType ) {
@@ -727,11 +734,13 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 				
 			case ONTOLOGY_EDIT_NEW:
 			case UPLOAD_ONTOLOGY:
-				interfaceType = InterfaceType.BROWSE;
-			    controlsPanel.showMenuBar(interfaceType);
-			    headerPanel.updateLinks(interfaceType);
-			    bodyPanel.clear();
-			    bodyPanel.add(browsePanel);
+				History.newItem(PortalConsts.T_BROWSE);
+				// TODO remove the following
+//				interfaceType = InterfaceType.BROWSE;
+//			    controlsPanel.showMenuBar(interfaceType);
+//			    headerPanel.updateLinks(interfaceType);
+//			    bodyPanel.clear();
+//			    bodyPanel.add(browsePanel);
 				break;
 				
 			case UPLOAD_NEW_VERSION:
