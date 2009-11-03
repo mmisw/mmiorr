@@ -3,7 +3,13 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
-
+2009-11-03   1.6.0.alpha
+	- Setting version to 1.6.0.alpha reflecting all the 1.5.0.alpha30 changes below.
+	  This is also sync'ed with ontmd module.
+	  
+	- MdHelper: making Omv.acronym a required attribute since it is used for the shortName
+	 component.
+	 
 2009-11-02  1.5.0.alpha30
 	- new client-side QueryUtil to parse a query response
 

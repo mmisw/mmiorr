@@ -245,9 +245,10 @@ public class MdHelper {
 		// Omv.acronym to be used for what is supposed to be: "A short name by which an ontology 
 		// is formally known."
 		general_attr_list.add(
-				createAttrDef(Omv.acronym)
+				createAttrDef(Omv.acronym, true)
 					.setLabel("Acronym")
 					.setTooltip("A short name by which the ontology is known")
+					.setExample("AthenaParams")
 		);
 		
 		general_attr_list.add(
