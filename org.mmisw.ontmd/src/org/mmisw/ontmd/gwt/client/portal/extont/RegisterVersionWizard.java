@@ -26,7 +26,8 @@ import com.google.gwt.user.client.Window;
  * Sequence of wizard pages to register an external ontology.
  * 
  * <p>
- * TODO complete implementation
+ * Note that the already registered ontology may be one created by the voc2rdf or
+ * vine modules (so, not necesarily an "external" ontology).
  * 
  * @author Carlos Rueda
  */

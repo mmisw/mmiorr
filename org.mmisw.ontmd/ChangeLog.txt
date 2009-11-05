@@ -2,6 +2,17 @@ org.mmisw.ontmd: MMI Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2009-11-04   1.6.1.alpha
+	Implemented #203: Allow to upload file for new version instead of in-place editing
+	- PortalMainPanel.editNewVersion: now a confirmation dialog is shown so the user can
+	  decide whether s/he wants in-place editing of the contents of the ontology (and the metadata
+	  as well), OR upload a file for the new version. The message is:
+	  
+		Do you want to do in-place editing of the contents of the ontology?
+		Click OK to proceed with in-place editing of the contents and the metadata.
+		Click Cancel to proceed with file upload and metadata editing (file upload is optional).
+
+
 2009-11-03   1.6.0.alpha
 	- Setting version to 1.6.0.alpha reflecting all the 1.5.0.alpha30 changes below.
 	  This is also sync'ed with iserver module.

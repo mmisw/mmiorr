@@ -651,7 +651,21 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 				dispatchUploadNewVersionOntology(roi);
 				return;
 			}
+			
+			// #203: Allow to upload file for new version instead of in-place editing
+			if ( ! Window.confirm(
+					"Do you want to do in-place editing of the contents of the ontology?\n" +
+					"\n" +
+					"Click OK to proceed with in-place editing of the contents and the metadata.\n" +
+					"\n" +
+					"Click Cancel to proceed with file upload and metadata editing (file upload is optional)") 
+			) {
+				dispatchUploadNewVersionOntology(roi);
+				return;
+			}
 		}
+		
+		// TODO: check if we ever get to this point in this method.
 		
 		String error = pctrl.checkCanEditOntology(ontologyInfo);
 		
@@ -668,13 +682,13 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	
 	
 	/** 
-	 * Starts the sequence to register a new version of an external ontology.
+	 * Starts the sequence to register a new version of an ontology.
 	 */
 	private void dispatchUploadNewVersionOntology(RegisteredOntologyInfo roi) {
 		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
 		if ( loginResult == null || loginResult.getError() != null ) {
 			pendingMessage = "Please, sign in, browse to the desired ontology, " +
-				"and then select \"Upload\" to register a new version."
+				"and then select \"Edit new version\" to register a new version."
 			;
 			History.newItem(PortalConsts.T_BROWSE);
 			return;
