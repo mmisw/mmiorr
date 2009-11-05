@@ -11,11 +11,13 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CellPanel;
+import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.KeyboardListener;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.PushButton;
@@ -126,9 +128,12 @@ public class OntologySelection extends VerticalPanel {
 	 */
 	private void addVocabulary(final int x, final int y) {
 		//
-		// Use a SuggestBox wirh a MultiWordSuggestOracle.
+		// Use a listBox and a SuggestBox with a MultiWordSuggestOracle.
 		//
 		
+		// #194: Can't access all ontologies from VINE drop-down
+		// ListBox added as a fix to this issue.
+		final ListBox listBox = new ListBox();
 		MultiWordSuggestOracle oracle = new MultiWordSuggestOracle("/ :"); 
 		
 		// A map from a suggestion to its corresponding RegisteredOntologyInfo:
@@ -145,9 +150,11 @@ public class OntologySelection extends VerticalPanel {
 			String lab = ontologyInfo.getDisplayLabel();
 			String uri = ontologyInfo.getUri();
 			
+			
 			// include a star as a convenience to see the whole list if the user types in a star: 
 			String suggestion = "* " +uri+ " : " +lab;
 			
+			listBox.addItem(uri+ " : " +lab, suggestion);
 			suggestions.put(suggestion, ontologyInfo);
 			oracle.add(suggestion);
 		}
@@ -200,6 +207,24 @@ public class OntologySelection extends VerticalPanel {
 		popup.setText("Select a vocabulary");
 //		hp.add(new HTML("Elements are displayed as you type. Enter * to see the full list."));
 
+		
+		
+		
+		final String width = "500px";
+		listBox.setWidth(width);
+		listBox.setVisibleItemCount(Math.min(listBox.getItemCount(), 12));
+		hp.add(listBox);
+
+		listBox.addChangeListener(new ChangeListener () {
+			public void onChange(Widget sender) {
+				String value = listBox.getValue(listBox.getSelectedIndex());
+				RegisteredOntologyInfo ontologyInfo = suggestions.get(value);
+				mainPanel.notifyWorkingOntologyAdded(OntologySelection.this, ontologyInfo, popup);
+			}
+		});
+
+		
+		
 		// use a timer to request for focus in the suggest-box:
 		new Timer() {
 			public void run() {

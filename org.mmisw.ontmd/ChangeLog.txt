@@ -15,6 +15,10 @@ $Id$
 	Fixed #186: "progress info remains open after task in completed"
 	- StatusPopup: now has an internal timer to auto-hide the popup every few seconds. The popup will
 	  show up again upon any update to the status. See StatusPopup for more details.
+	  
+	Fixed #194: "Can't access all ontologies from VINE drop-down"
+	- OntologySelection.addVocabulary: added a ListBox which the user can also use to select the
+	  ontology.
 
 
 2009-11-03   1.6.0.alpha
