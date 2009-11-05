@@ -11,6 +11,10 @@ $Id$
 		Do you want to do in-place editing of the contents of the ontology?
 		Click OK to proceed with in-place editing of the contents and the metadata.
 		Click Cancel to proceed with file upload and metadata editing (file upload is optional).
+		
+	Fixed #186: "progress info remains open after task in completed"
+	- StatusPopup: now has an internal timer to auto-hide the popup every few seconds. The popup will
+	  show up again upon any update to the status. See StatusPopup for more details.
 
 
 2009-11-03   1.6.0.alpha
