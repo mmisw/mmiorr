@@ -3,6 +3,18 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+
+2009-11-10   1.6.2.alpha2
+	Issue #214: "Direct registration of ontology"
+	- providing service Server.registerOntologyDirectly
+	- new helper class OoiCi
+	- OoiCi.registerOntologyDirectly: this service allows to register an RDF file without
+	  any modifications to it. It handles new entries as well as new version for existing entries.
+	  It accepts and dispatches a "graphId" parameter intended to indicate the desired model
+	  graph at the "Ont" service back-end. At time of writing such service is not yet implemented
+	  in the "Ont" module.
+
+
 2009-11-03   1.6.0.alpha
 	- Setting version to 1.6.0.alpha reflecting all the 1.5.0.alpha30 changes below.
 	  This is also sync'ed with ontmd module.

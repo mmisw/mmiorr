@@ -184,14 +184,21 @@ public class OntServiceUtil {
 	 * "ont" service.
 	 * 
 	 * @param uriModel  The URI of the desired ontlogy.
+	 * @param graphId   desired grapth to be updated. Can be null meaning the main graph.
 	 * @return true iff "ont" responds with an OK return code.
 	 * @throws Exception
 	 */
-	public static boolean loadOntologyInGraph(String uriModel) throws Exception {
+	public static boolean loadOntologyInGraph(String uriModel, String graphId) throws Exception {
 		
 		String ontServiceUrl = ServerConfig.Prop.ONT_SERVICE_URL.getValue();
 		uriModel = URLEncoder.encode(uriModel, "UTF-8");
-		String ontServiceRequest = ontServiceUrl + "?_lo=" +uriModel;
+		String ontServiceRequest;
+		if ( graphId != null && graphId.trim().length() > 0 ) {
+			ontServiceRequest = ontServiceUrl + "?_gi=" +graphId.trim()+ "&_lo=" +uriModel;
+		}
+		else {
+			ontServiceRequest = ontServiceUrl + "?_lo=" +uriModel;
+		}
 		int statusCode = HttpUtil.httpGetStatusCode(ontServiceRequest);
 		
 		return statusCode == HttpStatus.SC_OK;

@@ -149,4 +149,23 @@ public interface IServer {
 	UserInfoResult getUserInfo(String username);
 	CreateUpdateUserAccountResult createUpdateUserAccount(Map<String,String> values);
 
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////
+	// OOI CI semantic prototype
+	
+	/**
+	 * Registers an ontology file "directly," meaning with no changes at all in the contents of the file.
+	 * 
+	 * @param loginResult               user info
+	 * @param registeredOntologyInfo    current registration, if any, to create new version
+	 * @param createOntologyInfo        info for the new registration
+	 * @param graphId                   desired grapth to be updated
+	 * @return
+	 */
+	public RegisterOntologyResult registerOntologyDirectly(
+			LoginResult loginResult, 
+			RegisteredOntologyInfo registeredOntologyInfo,
+			CreateOntologyInfo createOntologyInfo, 
+			String graphId
+	);
 }

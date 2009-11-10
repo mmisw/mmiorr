@@ -2243,7 +2243,7 @@ public class Server implements IServer {
 				
 				// issue #168 fix:
 				// request that the ontology be loaded in the "ont" graph:
-				OntServiceUtil.loadOntologyInGraph(uri);
+				OntServiceUtil.loadOntologyInGraph(uri, null);
 			}
 			else {
 				registerOntologyResult.setError(res);
@@ -2343,7 +2343,7 @@ public class Server implements IServer {
 				
 				// issue #168 fix:
 				// request that the ontology be loaded in the "ont" graph:
-				OntServiceUtil.loadOntologyInGraph(uri);
+				OntServiceUtil.loadOntologyInGraph(uri, null);
 			}
 			else {
 				registerOntologyResult.setError(res);
@@ -2475,7 +2475,7 @@ public class Server implements IServer {
 				
 				// issue #168 fix:
 				// request that the ontology be loaded in the "ont" graph:
-				OntServiceUtil.loadOntologyInGraph(uri);
+				OntServiceUtil.loadOntologyInGraph(uri, null);
 			}
 			else {
 				registerOntologyResult.setError(res);
@@ -2819,4 +2819,18 @@ public class Server implements IServer {
 		return result;
 		
 	}
+	
+	
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////
+	// OOI CI semantic prototype
+	public RegisterOntologyResult registerOntologyDirectly(
+			LoginResult loginResult, 
+			RegisteredOntologyInfo registeredOntologyInfo,
+			CreateOntologyInfo createOntologyInfo, 
+			String graphId
+	) {
+		return OoiCi.registerOntologyDirectly(loginResult, registeredOntologyInfo, createOntologyInfo, graphId);
+	}
+
 }
