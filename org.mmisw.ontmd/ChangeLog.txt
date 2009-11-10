@@ -2,6 +2,35 @@ org.mmisw.ontmd: MMI Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+
+2009-11-09   1.6.2.alpha
+	Issue #214: "Direct registration of ontology" 
+	- First version implemented
+	- this version only processes hosting type "re-hosted"
+	
+	- updated UploadServlet to allow extension
+	- new server/DirectRegistrationServlet extends UploadServlet
+	- new public/direg.html -- form for demonstrating the functionality
+	- updated Main.gwt.xml, web.xml
+	
+	DirectRegistrationServlet extends UploadServlet to inherit the basic upload
+	functionality. Overwrites processItems to process the rest of the registration process.
+	
+	Information for the client:
+	--------------------------	
+	The fields in the POST request must indicate:
+		- username/password: MMI ORR user submitting the ontology
+		- ontologyUri:  URI associated with the submitted ontology
+		- file:  the selected file in the local system
+	
+	Note:
+		1) the client should indicate the ontology URI (ie., this is not
+			obtained automatically from the contents of the ontology)
+		2) if the ontology URI is already registered, then the submitting user must be
+			the same.
+			
+	
+
 2009-11-04   1.6.1.alpha
 	Implemented #203: Allow to upload file for new version instead of in-place editing
 	- PortalMainPanel.editNewVersion: now a confirmation dialog is shown so the user can

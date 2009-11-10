@@ -106,4 +106,15 @@
 		<url-pattern>/download</url-pattern>
 	</servlet-mapping>
 
+	<servlet>
+		<servlet-name>direg</servlet-name>
+		<servlet-class>org.mmisw.ontmd.gwt.server.DirectRegistrationServlet</servlet-class>
+		<load-on-startup>5</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>direg</servlet-name>
+		<url-pattern>/direg</url-pattern>
+	</servlet-mapping>
+
 </web-app>

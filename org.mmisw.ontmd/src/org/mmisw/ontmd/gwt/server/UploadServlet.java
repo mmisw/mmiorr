@@ -35,7 +35,7 @@ public class UploadServlet extends HttpServlet {
 	private static final long MAX_FILE_SIZE = -1L;
 	
 	
-	private final Log log = LogFactory.getLog(UploadServlet.class);
+	protected final Log log = LogFactory.getLog(UploadServlet.class);
 	
 	
 	private static File preUploadsDir;
@@ -43,7 +43,7 @@ public class UploadServlet extends HttpServlet {
 	
 	public void init() throws ServletException {
 		super.init();
-		log.info("initializing upload service ...");
+		log.info("initializing " +getClass().getSimpleName()+ " service ...");
 		try {
 			PortalConfig.getInstance().init(getServletConfig(), null, true);
 			preUploadsDir = new File(PortalConfig.Prop.ONTMD_PRE_UPLOADS_DIR.getValue());
@@ -57,7 +57,7 @@ public class UploadServlet extends HttpServlet {
 	
 	public void destroy() {
 		super.destroy();
-		log.info("destroy called.\n\n");
+		log.info("destroy called " +getClass().getSimpleName()+ "\n\n");
 	}
 
 
@@ -98,57 +98,48 @@ public class UploadServlet extends HttpServlet {
 			return;
 		}
 		
-		
-		// Process the uploaded items
-		Iterator<?> iter = items.iterator();
-		while (iter.hasNext()) {
-		    FileItem item = (FileItem) iter.next();
-
-		    if (item.isFormField()) {
-		        processFormField(item);
-		    } 
-		    else {
-		        processUploadedFile(request, response, item);
-		    }
-		}
+		processItems(request, response, items);
 	}
 	
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	/** 
+	 * Processes the uploaded items.
+	 *  In this class, the form fields are ignored. Just the file is processed, ie., 
+	 *  a local copy is made.
+	 * @throws IOException 
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
-	}
-	
-	private void processUploadedFile(HttpServletRequest request, HttpServletResponse response,
-			FileItem item) 
-	throws IOException {
-		
-		String ct = item.getContentType();
-		if ( log.isDebugEnabled() ) {
-			log.debug("processUploadedFile: item=" +item);
-			log.debug("getContentType=" +ct);
-		}
+	protected void processItems(HttpServletRequest request,
+			HttpServletResponse response, List<?> items) throws IOException {
 		
 		PrintWriter out = response.getWriter();
 		response.setContentType("text/plain");
-		
+
 		try {
-			String sessionId = request.getSession().getId();
-			File file = File.createTempFile("ontmd_" +sessionId+"_", ".tmp", preUploadsDir );
-			String filename = file.getAbsolutePath();
-			InputStream is = item.getInputStream();
-			PrintWriter os = new PrintWriter(file);
-			IOUtils.copy(is, os);
+			File file = null;
 			
-			os.flush();
-			os.close();
-			
-			out.println("<success><filename>" +filename+ "</filename></success>");
-			if ( log.isDebugEnabled() ) {
-				log.debug("temporary file: " +filename);
+			Iterator<?> iter = items.iterator();
+			while (iter.hasNext()) {
+			    FileItem item = (FileItem) iter.next();
+	
+			    if (item.isFormField()) {
+			        processFormField(item);
+			    } 
+			    else {
+			        file = processUploadedFile(request, item);
+			    }
 			}
 			
+			if ( file != null ) {
+				String filename = file.getAbsolutePath();
+
+				out.println("<success><filename>" +filename+ "</filename></success>");
+				if ( log.isDebugEnabled() ) {
+					log.debug("temporary file: " +filename);
+				}
+			}
+			else {
+				log.error("SC_BAD_REQUEST: No file included");
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No file included");
+			}
 		}
 		catch (Exception ex) {
 			out.println("<error>" +ex.getMessage()+ "</error>");
@@ -158,7 +149,46 @@ public class UploadServlet extends HttpServlet {
 	}
 
 
-	private void processFormField(FileItem item) {
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
+	}
+	
+	/**
+	 * Returns the temporary file in the local system.
+	 * Returns null is the item's associated size is zero (which happens when the
+	 * client does not specify a file).
+	 */
+	protected File processUploadedFile(HttpServletRequest request, FileItem item) 
+	throws IOException {
+		
+		long size = item.getSize();
+		if ( log.isDebugEnabled() ) {
+			log.debug("processUploadedFile: item=" +item);
+			log.debug("getContentType=" +item.getContentType());
+			log.debug("getSize=" +size);
+		}
+		
+		if ( size == 0 ) {
+			return null;
+		}
+		
+		String sessionId = request.getSession().getId();
+		File file = File.createTempFile("ontmd_" +sessionId+"_", ".tmp", preUploadsDir );
+		InputStream is = item.getInputStream();
+		PrintWriter os = new PrintWriter(file);
+		IOUtils.copy(is, os);
+
+		os.flush();
+		os.close();
+
+		return file;
+	}
+
+	/** nothing done in this class */
+	protected void processFormField(FileItem item) {
 		// ignored
 	}
 

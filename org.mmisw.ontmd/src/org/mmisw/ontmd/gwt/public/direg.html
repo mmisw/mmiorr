@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <title>ORR Direct ontology registration in re-hosted mode</title>
+  </head>
+
+  <body>
+   
+    <h3> ORR Direct ontology registration in re-hosted mode</h3>  
+
+    <form name="dr" method="post" action="direg" enctype="multipart/form-data">
+
+	<b>User submitting</b><br />
+    		username: <input type="text" id="username" name="username" size="40" /><br />
+    		password: <input type="password" id="password" name="password"  size="40" /><br />
+
+    	<br /><br />
+
+    	Ontology URI: <input type="text" id="ontologyUri" name="ontologyUri" size="80"
+    	              value="http://example.com/test1" /><br />
+    	
+    	<br /><br />
+		
+    	Ontology file: <input type="file" name="ontologyFile" size="80">
+    	
+    	<br /><br />
+    	
+    	<input type="submit" value="Register ontology" />
+    	
+    </form>
+  </body>
+</html>

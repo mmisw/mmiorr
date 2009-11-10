@@ -45,11 +45,25 @@ public class PortalImpl  {
 	
 	
 	private IServer iserver;
-
-
 	
 	
-	public PortalImpl(String ontServiceUrl, String bioportalRestUrl) {
+	private static PortalImpl instance = null;
+	
+	
+	public static PortalImpl getInstance() {
+		return instance;
+	}
+	
+	public static PortalImpl createInstance(String ontServiceUrl, String bioportalRestUrl) {
+		if ( instance != null ) {
+			throw new IllegalStateException(PortalImpl.class.getName()+ " instance already created");
+		}
+		instance = new PortalImpl(ontServiceUrl, bioportalRestUrl);
+		return instance;
+	}
+
+	
+	private PortalImpl(String ontServiceUrl, String bioportalRestUrl) {
 		log.info("initializing " +appInfo.getAppName()+ "...");
 		appInfo.setVersion(
 				PortalConfig.Prop.VERSION.getValue()+ " (" +

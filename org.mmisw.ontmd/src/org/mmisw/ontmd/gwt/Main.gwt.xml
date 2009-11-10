@@ -24,6 +24,8 @@
 	
 	<servlet path="/upload" class="org.mmisw.ontmd.gwt.server.UploadServlet"/>
 	
+	<servlet path="/direg" class="org.mmisw.ontmd.gwt.server.DirectRegistrationServlet"/>
+	
 	<!-- servlet path="/voc2rdfService" class="org.mmisw.ontmd.gwt.server.voc2rdf.Voc2RdfServiceImpl"/ -->
 	
 </module>
