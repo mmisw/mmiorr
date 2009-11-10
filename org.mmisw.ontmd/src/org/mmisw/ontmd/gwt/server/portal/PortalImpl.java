@@ -186,4 +186,17 @@ public class PortalImpl  {
 		return iserver.createUpdateUserAccount(values);
 	}
 	
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////
+	// OOI CI semantic prototype
+	public RegisterOntologyResult registerOntologyDirectly(
+			LoginResult loginResult, 
+			RegisteredOntologyInfo registeredOntologyInfo,
+			CreateOntologyInfo createOntologyInfo, 
+			String graphId
+	) {
+		return iserver.registerOntologyDirectly(loginResult, registeredOntologyInfo, createOntologyInfo, graphId);
+	}
+
+	
 }

@@ -3,10 +3,13 @@ package org.mmisw.ontmd.gwt.server;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -17,7 +20,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.mmisw.iserver.core.util.Utf8Util;
 import org.mmisw.iserver.core.util.Util2;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.HostingType;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.OtherDataCreationInfo;
@@ -146,6 +148,11 @@ public class DirectRegistrationServlet extends UploadServlet {
 		
 		LoginResult loginResult = validateUser(fields, out);
 		
+		String graphId = fields.get("graphId");
+		if ( graphId == null || graphId.trim().length() == 0 ) {
+			graphId = "";
+		}
+
 		
 		TempOntologyInfo tempOntologyInfo = getTempOntologyInfo(file);
 		
@@ -156,7 +163,7 @@ public class DirectRegistrationServlet extends UploadServlet {
 			//
 			// Case: new ontology.
 			//
-			registerNewOntology(loginResult, ontologyUri, tempOntologyInfo);
+			registerNewOntology(loginResult, ontologyUri, tempOntologyInfo, graphId);
 			
 			StringBuffer responseString = new StringBuffer();
 			
@@ -164,6 +171,7 @@ public class DirectRegistrationServlet extends UploadServlet {
 			
 			responseString.append("<success>\n");
 			responseString.append("  <ontologyUri>" +ontologyUri+ "</ontologyUri>\n");
+			responseString.append("  <graphId>" +graphId+ "</graphId>\n");
 			responseString.append("  <msg>" +msg+ "</msg>\n");
 			responseString.append("</success>\n");
 			
@@ -178,7 +186,7 @@ public class DirectRegistrationServlet extends UploadServlet {
 			//
 			// Case: new version for existing ontology.
 			//
-			registerNewVersion(loginResult, ontologyUri, registeredOntologyInfo, tempOntologyInfo);
+			registerNewVersion(loginResult, ontologyUri, registeredOntologyInfo, tempOntologyInfo, graphId);
 			
 			StringBuffer responseString = new StringBuffer();
 			
@@ -186,6 +194,7 @@ public class DirectRegistrationServlet extends UploadServlet {
 			
 			responseString.append("<success>\n");
 			responseString.append("  <ontologyUri>" +ontologyUri+ "</ontologyUri>\n");
+			responseString.append("  <graphId>" +graphId+ "</graphId>\n");
 			responseString.append("  <msg>" +msg+ "</msg>\n");
 			responseString.append("</success>\n");
 			
@@ -251,7 +260,8 @@ public class DirectRegistrationServlet extends UploadServlet {
 	private RegisterOntologyResult registerNewOntology(
 			LoginResult loginResult,
 			String ontologyUri,
-			TempOntologyInfo tempOntologyInfo
+			TempOntologyInfo tempOntologyInfo,
+			String graphId
 	) throws Exception {
 		
 		CreateOntologyInfo createOntologyInfo = new CreateOntologyInfo();
@@ -267,12 +277,7 @@ public class DirectRegistrationServlet extends UploadServlet {
 		// set info of original ontology:
 		createOntologyInfo.setBaseOntologyInfo(tempOntologyInfo);
 		
-		CreateOntologyResult createOntologyResult = portal.createOntology(createOntologyInfo);
-		if ( createOntologyResult.getError() != null ) {
-			throw new Exception("Error creating ontology for registration: " +createOntologyResult.getError());
-		}
-		
-		RegisterOntologyResult registerOntologyResult = portal.registerOntology(createOntologyResult, loginResult);
+		RegisterOntologyResult registerOntologyResult = portal.registerOntologyDirectly(loginResult, null, createOntologyInfo, graphId);
 		if ( registerOntologyResult.getError() != null ) {
 			throw new Exception("Error registering ontology: " +registerOntologyResult.getError());
 		}
@@ -297,7 +302,8 @@ public class DirectRegistrationServlet extends UploadServlet {
 			LoginResult loginResult, 
 			String ontologyUri,
 			RegisteredOntologyInfo registeredOntologyInfo,
-			TempOntologyInfo tempOntologyInfo
+			TempOntologyInfo tempOntologyInfo,
+			String graphId
 	) throws Exception {
 		
 		// verify hostingType is re-hosted:
@@ -332,12 +338,7 @@ public class DirectRegistrationServlet extends UploadServlet {
 		// set info of original ontology:
 		createOntologyInfo.setBaseOntologyInfo(tempOntologyInfo);
 		
-		CreateOntologyResult createOntologyResult = portal.createOntology(createOntologyInfo);
-		if ( createOntologyResult.getError() != null ) {
-			throw new Exception("Error creating ontology for registration: " +createOntologyResult.getError());
-		}
-		
-		RegisterOntologyResult registerOntologyResult = portal.registerOntology(createOntologyResult, loginResult);
+		RegisterOntologyResult registerOntologyResult = portal.registerOntologyDirectly(loginResult, registeredOntologyInfo, createOntologyInfo, graphId);
 		if ( registerOntologyResult.getError() != null ) {
 			throw new Exception("Error registering ontology: " +registerOntologyResult.getError());
 		}
@@ -353,6 +354,7 @@ public class DirectRegistrationServlet extends UploadServlet {
 	 */
 	private void setSomeValues(LoginResult loginResult, CreateOntologyInfo createOntologyInfo) {
 		
+		////////////////////////////////////////////////////////////////////
 		// contactName: first, try firstname/lastname from userInfo:
 		String contactName= "";
 		
@@ -375,6 +377,14 @@ public class DirectRegistrationServlet extends UploadServlet {
 		
 		Map<String, String> values = new HashMap<String, String>();
 		values.put(Omv.hasCreator.getURI(), contactName);
+		
+		////////////////////////////////////////////////////////////////////
+		// version:
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+		String version = sdf.format(new Date(System.currentTimeMillis()));
+		values.put(Omv.version.getURI(), version);
+		
 		createOntologyInfo.setMetadataValues(values);
 	}
 
