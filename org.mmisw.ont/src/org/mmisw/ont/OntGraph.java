@@ -97,17 +97,16 @@ public class OntGraph {
 	 * @throws ServletException
 	 */
 	void init() throws ServletException {
-		final boolean withInference = true;
-		log.info("init called. withInference=" +withInference);
-		
-		aquaUploadsDir = OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY.getValue();
-		
 		if ( _model == null ) {
+			final boolean withInference = true;
+			log.info("init called. withInference=" +withInference);
+			
+			aquaUploadsDir = OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY.getValue();
 			_doInitModel(withInference);
 			log.info("init complete.");
 		}
 		else {
-			log.debug("init: already initialized.");
+			log.debug("init: already initialized (withInference = " +(_infModel != null)+ ")");
 		}
 	}
 	
@@ -154,7 +153,10 @@ public class OntGraph {
 				log.info("creation of inference model completed successfully. (" +(endTime-startTime)+ " ms)");
 				
 				// this takes time -- do not do it for now
-//				log.info("estimated size of inference model: " +_infModel.size());
+				//log.info("estimated size of inference model: " +_infModel.size());
+			}
+			else {
+				// Log.error messages have been already generated.
 			}
 		}
 		else {
@@ -248,7 +250,7 @@ public class OntGraph {
 		
 		String full_path = aquaUploadsDir+ "/" +ontology.file_path + "/" + ontology.filename;
 
-		log.info("Loading: " +full_path);
+		log.info("Loading: " +full_path+ " in graph");
 
 		if ( USE_UNVERSIONED ) {
 			OntModel model = JenaUtil.loadModel(full_path, false);
@@ -264,21 +266,17 @@ public class OntGraph {
 					log.error("shouldn't happen", e);
 					return;
 				}
+				log.info("Ont-resolvable ontology loaded in graph.");
 			}
 			else {
-				log.info("    RH: " +full_path);
 				model2update.add(model);
+				log.info("Re-hosted ontology loaded in graph.");
 			}
 		}
 		else {
 			String absPath = "file:" + full_path;
 			try {
 				model2update.read(absPath, "", null);
-
-				// TODO processImports: true or false?
-				//			boolean processImports = false;
-				//			Model model_ = JenaUtil.loadModel(absPath, processImports);
-				//			_model.add(model_);
 			} 
 			catch (Exception e) {
 				log.error("Unable to add " + absPath + " to model");

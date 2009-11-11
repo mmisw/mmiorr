@@ -180,18 +180,9 @@ public class Db {
 				ontology.file_path = rs.getString(3);
 				
 				ontology.filename = rs.getString(4);
-
-
-				// TODO Remove this OLD way to determine filename
-//				try {
-//					URL uri_ = new URL(ontologyUri);
-//					ontology.filename = new File(uri_.getPath()).getName();
-//				}
-//				catch (MalformedURLException e) {
-//					// should not occur.
-//					log.debug("should not occur.", e);
-//				}
 				
+				ontology.setUri(ontologyUri);
+
 				return ontology;
 			}
 		}

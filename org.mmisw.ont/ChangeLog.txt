@@ -4,6 +4,15 @@ $Id$
 
 ChangeLog
 
+
+2009-11-10   1.3.15.beta
+	- Fixed issue #218: Request to (re)load re-hosted ontology in graph fails
+		- Db.getOntology(String ontologyUri): was missing an "ontology.setUri(ontologyUri);" assignment--fixed.
+	
+	-  Issue 219: Ability to maintain multiple graphs 
+		- Reviewing OntGraph and possible mechanism to have multiple graphs.
+	
+
 2009-10-06   1.3.14.beta
 	- issue #196 capture omv:reference
 		Omv: added omv:reference
