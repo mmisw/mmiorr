@@ -157,6 +157,7 @@ public class Portal {
 				if ( loginResult.getError() != null ) {
 					Main.log("login error: " +loginResult.getError());
 					Main.log("Continuing with startGui");
+					loginResult = null;
 				}
 				else {
 					Main.log("login ok: " +userInfo.getUsername());

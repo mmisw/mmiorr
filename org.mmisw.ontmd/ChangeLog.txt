@@ -2,6 +2,10 @@ org.mmisw.ontmd: MMI Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2009-11-11   1.6.2.alpha3
+	Issue 212: remove "only index" option for registering external ontology
+	- Done. RegisterNewPage2
+	
 2009-11-10   1.6.2.alpha3
 
 	Issue 207: Remember me on this computer

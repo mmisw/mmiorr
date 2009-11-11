@@ -51,6 +51,12 @@ class RegisterNewPage2 extends BasePage {
 		rbs = new RadioButton[HostingType.values().length];
 		int i = 0;
 		for ( HostingType hostingType: HostingType.values() ) {
+			
+			if ( hostingType == HostingType.INDEXED ) {
+				// Issue 212: remove "only index" option for registering external ontology
+				continue;
+			}
+			
 			rbs[i++] = new RButton(hostingType);
 		}
 		nextButton.setEnabled(false);
