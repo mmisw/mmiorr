@@ -7,6 +7,7 @@ import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.ontmd.gwt.client.CookieMan;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.portal.OntologyTable.IQuickInfo;
 
@@ -280,6 +281,7 @@ public class PortalControl {
 	}
 	
 	public void userSignedOut() {
+		CookieMan.forgetPassword();
 		portalMainPanel.userSignedOut();
 		cancelEdit();
 	}

@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
+import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.ontmd.gwt.client.CookieMan;
 import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.CookieMan.UserInfo;
 import org.mmisw.ontmd.gwt.client.rpc.PortalBaseInfo;
 import org.mmisw.ontmd.gwt.client.vine.VineMain;
 
@@ -120,7 +123,14 @@ public class Portal {
 				portalBaseInfo = bInfo;
 				Main.log("PortalBaseInfo: Ont service = " +portalBaseInfo.getOntServiceUrl());
 				PortalMainPanel portalMainPanel = new PortalMainPanel(params, ontologyInfos);
-				main.startGui(params, portalMainPanel);
+				
+				UserInfo userInfo = CookieMan.getUserInfo();
+				if ( userInfo != null && userInfo.getPassword() != null ) {
+					loginAndStartGui(userInfo, params, portalMainPanel);
+				}
+				else {
+					main.startGui(params, portalMainPanel);
+				}
 			}
 		};
 
@@ -128,6 +138,38 @@ public class Portal {
 		Main.ontmdService.getPortalBaseInfo(callback);
 	}
 
+
+	/**
+	 * Attempts to login the user stored in the cookie and then starts the GUI.
+	 */
+	private void loginAndStartGui(final UserInfo userInfo, final Map<String, String> params, final PortalMainPanel portalMainPanel) {
+
+		AsyncCallback<LoginResult> callback = new AsyncCallback<LoginResult>() {
+
+			public void onFailure(Throwable ex) {
+				String error = ex.getMessage();
+				Main.log("login error: " +error);
+				Main.log("Continuing with startGui");
+				main.startGui(params, portalMainPanel);
+			}
+
+			public void onSuccess(LoginResult loginResult) {
+				if ( loginResult.getError() != null ) {
+					Main.log("login error: " +loginResult.getError());
+					Main.log("Continuing with startGui");
+				}
+				else {
+					Main.log("login ok: " +userInfo.getUsername());
+					CookieMan.setUserInfo(userInfo);
+				}
+				PortalControl.getInstance().loginOk(loginResult);
+				main.startGui(params, portalMainPanel);
+			}
+			
+		};
+		Main.log("authenticating remembered user in this computer...");
+		Main.ontmdService.authenticateUser(userInfo.getUsername(), userInfo.getPassword(), callback);
+	}
 
 	void refreshListAllOntologies() {
 		

@@ -4,11 +4,13 @@ import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
+import org.mmisw.ontmd.gwt.client.CookieMan.UserInfo;
 import org.mmisw.ontmd.gwt.client.portal.PortalControl;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CellPanel;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -26,7 +28,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Captures login info and starts the upload to the registry.
+ * The login panel.
  * 
  * @author Carlos Rueda
  */
@@ -44,6 +46,10 @@ public class LoginPanel {
 			login();
 		}
 	});
+	
+	
+	private CheckBox rememberMeCheckBox = new CheckBox("Remember me on this computer");
+	
 
 	private PushButton resetPasswordButton = new PushButton("Reset password", new ClickListener() {
 		public void onClick(Widget sender) {
@@ -104,10 +110,9 @@ public class LoginPanel {
 		);
 		row++;
 
+		createUsernameAndPasswordTextBoxes();
 		
 		panel.setWidget(row, 0, new Label("Username:"));
-		userName = new TextBox();
-		userName.setWidth("200");
 		panel.setWidget(row, 1, userName);
 		panel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
@@ -118,8 +123,6 @@ public class LoginPanel {
 		row++;
 
 		panel.setWidget(row, 0, new Label("Password:"));
-		userPassword = new PasswordTextBox();
-		userPassword.setWidth("200");
 		panel.setWidget(row, 1, userPassword);
 		panel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
@@ -136,6 +139,13 @@ public class LoginPanel {
 		);
 		row++;
 		
+		
+		panel.getFlexCellFormatter().setColSpan(row, 0, 3);
+		panel.setWidget(row, 0, rememberMeCheckBox);
+		panel.getFlexCellFormatter().setAlignment(row, 0, 
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		row++;
 		
 		panel.getFlexCellFormatter().setColSpan(row, 0, 3);
 		panel.setWidget(row, 0, statusLabel);
@@ -174,6 +184,22 @@ public class LoginPanel {
 		return panel;
 	}
 	
+	private void createUsernameAndPasswordTextBoxes() {
+		userName = new TextBox();
+		userName.setWidth("200");
+		userPassword = new PasswordTextBox();
+		userPassword.setWidth("200");
+		
+		UserInfo userInfo = CookieMan.getUserInfo();
+		if ( userInfo != null ) {
+			userName.setText(userInfo.getUsername());
+			if ( userInfo.getPassword() != null ) {
+				userPassword.setText(userInfo.getPassword());
+				rememberMeCheckBox.setChecked(true);
+			}
+		}
+	}
+
 	public void logout() {
 		userPassword.setText("");
 		statusMessage("");
@@ -215,7 +241,7 @@ public class LoginPanel {
 		doLogin(username, password);
 	}
 	
-	private void doLogin(String userName, String userPassword) {
+	private void doLogin(final String userName, final String userPassword) {
 		
 		AsyncCallback<LoginResult> callback = new AsyncCallback<LoginResult>() {
 
@@ -232,7 +258,15 @@ public class LoginPanel {
 					statusError(loginResult.getError());
 				}
 				else {
-					Main.log("login ok: " +loginResult.getUserName());
+					Main.log("login ok: " +userName);
+					
+					if ( rememberMeCheckBox.isChecked() ) {
+						CookieMan.setUserInfo(userName, userPassword);
+					}
+					else {
+						CookieMan.setUserInfo(userName, null);
+					}
+					
 					statusMessage("OK");
 					PortalControl.getInstance().loginOk(loginResult);
 				}
