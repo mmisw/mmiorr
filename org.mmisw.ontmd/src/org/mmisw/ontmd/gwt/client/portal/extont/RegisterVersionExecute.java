@@ -14,15 +14,11 @@ import org.mmisw.ontmd.gwt.client.util.MyDialog;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupListener;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Use to review and register a new version of a registered ontology.
@@ -87,39 +83,19 @@ class RegisterVersionExecute {
 	private void reviewCompleted(final MyDialog popup, final CreateOntologyResult createOntologyResult) {
 		String error = createOntologyResult.getError();
 		
+		//  Issue 211: Remove unnecesary registration confirmation dialogs
+		if ( error == null ) {
+			doRegister(popup, createOntologyResult);
+			return;
+		}
+
 		StringBuffer sb = new StringBuffer();
 		
 		VerticalPanel vp = new VerticalPanel();
 		vp.setSpacing(4);
-
-		if ( error == null ) {
-			vp.add(new Label("Ontology URI: " +createOntologyResult.getUri()));
-			
-			vp.add(new Label("You can now register the new version of your ontology or close this " +
-					"dialog to continue editing the contents."));
-			
-			// prepare uploadButton
-			PushButton registerButton = new PushButton("Register", new ClickListener() {
-				public void onClick(Widget sender) {
-					register(popup, true, createOntologyResult);
-				}
-			});
-			registerButton.setTitle("Registers the new version of the ontology");
-
-			popup.getButtonsPanel().insert(registerButton, 0);
-			
-//			vp.add(new Label("Contents:"));
-			
-//			metadataPanel.resetToNewValues(ontologyInfoPre, createOntologyResult, false, false);
-			
-//			sb.append(createOntologyResult.getRdf());
-		}
-		else {
-			sb.append(error);
-		}
+		sb.append(error);
 		
 		String msg = sb.toString();
-		
 		
 		popup.getTextArea().setText(msg);
 		popup.getDockPanel().add(vp, DockPanel.NORTH);
@@ -129,15 +105,6 @@ class RegisterVersionExecute {
 		popup.center();
 
 		Main.log("Review result: " +msg);
-
-	}
-
-	private void register(MyDialog popup, boolean confirm, CreateOntologyResult createOntologyResult) {
-		if ( confirm && 
-			! Window.confirm("This action will commit your ontology into the MMI Registry") ) {
-			return;
-		}
-		doRegister(popup, createOntologyResult);
 	}
 
 	private void doRegister(MyDialog createPopup, CreateOntologyResult createOntologyResult) {
@@ -211,6 +178,7 @@ class RegisterVersionExecute {
 		Main.log("Registration result: " +msg);
 
 		final MyDialog popup = new MyDialog(null);
+		popup.setCloseButtonText("Return to ontology list");
 		popup.setText(error == null ? "Registration of new version completed sucessfully" : "Error");
 		popup.addTextArea(null).setText(msg);
 		popup.getTextArea().setSize("600", "150");

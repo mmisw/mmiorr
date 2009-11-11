@@ -145,7 +145,7 @@ class RegisterVersionPage1 extends BasePage {
 		// OR this is running in my dev environment (for testing)
 		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
 		if ( (loginResult != null && loginResult.isAdministrator())
-		||   GWT.isClient()
+		||   !GWT.isScript()
 		) {
 			buttons.add(detailsButton);
 		}
@@ -155,11 +155,6 @@ class RegisterVersionPage1 extends BasePage {
 		panel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
-
-//		panel.setWidget(row, 1, detailsButton);
-//		panel.getFlexCellFormatter().setAlignment(row, 1, 
-//				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
-//		);
 		row++;
 
 		

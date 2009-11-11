@@ -680,6 +680,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		Main.log("Registration result: " +msg);
 
 		final MyDialog popup = new MyDialog(null);
+		popup.setCloseButtonText("Return to ontology list");
 		popup.setText(error == null ? "Registration completed sucessfully" : "Error");
 		popup.addTextArea(null).setText(msg);
 		popup.getTextArea().setSize("600", "150");

@@ -95,6 +95,12 @@ public class MyDialog extends DialogBox {
 		return panel;
 	}
 	
+	public void setCloseButtonText(String text) {
+		if ( closeButton != null ) {
+			closeButton.setText(text);
+		}
+	}
+	
 	public HorizontalPanel getButtonsPanel() {
 		return buttonsPanel;
 	}

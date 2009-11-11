@@ -53,10 +53,10 @@ public class OntologyTable extends FlexTable {
 	private HTML authorHeaderHtml = new HTML("Author");
 	private HTML versionHeaderHtml = new HTML("Version");
 	private HTML submitterHeaderHtml = new HTML("Submitter");
-	
-	private String sortColumn = "name";
-	
-	private int sortFactor = 1;
+
+	// #209: list of ontologies ordered by time of registration; most recent first
+	private String sortColumn = "version";
+	private int sortFactor = -1;
 	
 	private Comparator<RegisteredOntologyInfo> cmp = new Comparator<RegisteredOntologyInfo>() {
 		public int compare(RegisteredOntologyInfo o1, RegisteredOntologyInfo o2) {

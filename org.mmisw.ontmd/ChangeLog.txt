@@ -2,6 +2,21 @@ org.mmisw.ontmd: MMI Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2009-11-10   1.6.2.alpha3
+	Issue 209: list of ontologies ordered by time of registration; most recent first
+	- Done, see OntologyTable: sortColumn, sortFactor.
+	
+	Issue 208: "return to ontology browser" instead of "close"
+	- Done. Added MyDialog.setCloseButtonText(String text) and called in appropriate places. 
+	
+	Issue 211: Remove unnecesary registration confirmation dialogs
+	- Done in RegisterNewExecute and RegisterVersionExecute
+	
+	Other:
+		- the "details" button (that shows the initial evaluation of the metadata of an uloaded file)
+		is now *only* included if the user is an administrator or the code is running not as Script.	
+	
+	
 2009-11-10   1.6.2.alpha2
 	Issue #214: "Direct registration of ontology"
 	- see iserver: using new service IServer.registerOntologyDirectly.

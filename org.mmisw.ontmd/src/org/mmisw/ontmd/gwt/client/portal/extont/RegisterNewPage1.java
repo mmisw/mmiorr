@@ -148,7 +148,7 @@ class RegisterNewPage1 extends BasePage {
 		// OR this is running in my dev environment (for testing)
 		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
 		if ( (loginResult != null && loginResult.isAdministrator())
-		||   GWT.isClient()
+		||   !GWT.isScript()
 		) {
 			buttons.add(detailsButton);
 		}
