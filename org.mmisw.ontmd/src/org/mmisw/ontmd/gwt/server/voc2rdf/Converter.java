@@ -420,11 +420,15 @@ public class Converter {
 			
 			if ( id == 0 && keyIsUri ) {
 				// just use the simple name given in this column
-				resourceString = getGoodName(row, id, allowColon).toLowerCase();
+				//#221 retain the original camelCase in the URLs
+//				resourceString = getGoodName(row, id, allowColon).toLowerCase();
+				resourceString = getGoodName(row, id, allowColon);
 			}
 			else {
 				// "locate" the individual within the namespace of the ontology
-				resourceString = ns_ + getGoodName(row, id, allowColon).toLowerCase();
+				//#221 retain the original camelCase in the URLs
+//				resourceString = ns_ + getGoodName(row, id, allowColon).toLowerCase();
+				resourceString = ns_ + getGoodName(row, id, allowColon);
 			}
 			
 			Individual ind = newOntModel.createIndividual(resourceString, cs);

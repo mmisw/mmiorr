@@ -2,6 +2,11 @@ org.mmisw.ontmd: MMI Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2009-11-13   1.6.2.alpha4
+	Issue #221 retain the original camelCase in the URLs
+	fixed (see iserver module)
+		
+	
 2009-11-11   1.6.2.alpha3
 	Issue 212: remove "only index" option for registering external ontology
 	- Done. RegisterNewPage2
