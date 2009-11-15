@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<project name="org.mmisw.mmiorr.client" default="run" basedir=".">
+<project name="org.mmisw.mmiorr.client" default="retrieve" basedir=".">
 
-	<!-- Use -D to specify/overwrite the following args to the program, eg:
-		ant -Dusername=MyUserName -Dpassword=MyPassword
+	<!-- 
+		Use -D to specify/overwrite the following args to the program, eg:
+		ant -Dusername=MyUserName -Dpassword=MyPassword register
+		ant -Dformat=n3 retrieve
 	-->
-	<property name="file" value="etc/test1.owl"/>
 	<property name="ontologyUri" value="http://example.org/test1"/>
+	
+	<property name="file" value="etc/test1.owl"/>
 	<property name="username" value=""/>
 	<property name="password" value=""/>
 	<property name="graphId" value="ooi-ci"/>
+	
+	<property name="format" value="owl"/>
+
 	
 	
 	  <property name="build.dir" value="_generated"/>
@@ -30,7 +36,7 @@
 	    </javac>
 	  </target>
 
-	  <target name="run" depends="compile">
+	  <target name="register" depends="compile">
 	    <java classname="org.mmisw.mmiorr.client.RegisterOntology">
 	     <classpath refid="project.class.path"/>
 	    	<arg value="${username}"/>
@@ -38,6 +44,24 @@
 	    	<arg value="${ontologyUri}"/>
 	    	<arg value="${file}"/>
 	    	<arg value="${graphId}"/>
+	    </java>
+	  </target>
+
+	  <target name="retrieve" depends="compile" description="retrieves latest version">
+	    <java classname="org.mmisw.mmiorr.client.RetrieveOntology">
+	     <classpath refid="project.class.path"/>
+	    	<arg value="${ontologyUri}"/>
+	    	<arg value="${format}"/>
+	    </java>
+	  </target>
+
+	  <target name="retrieveVersion" depends="compile" description="retrieves a given version">
+	  	<fail unless="version" message="version argument is missing.  Use -Dversion=desiredVersion"/>
+	    <java classname="org.mmisw.mmiorr.client.RetrieveOntology">
+	     <classpath refid="project.class.path"/>
+	    	<arg value="${ontologyUri}"/>
+	    	<arg value="${format}"/>
+	    	<arg value="${version}"/>
 	    </java>
 	  </target>
 
