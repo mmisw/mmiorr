@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="org.mmisw.mmiorr.client" default="run" basedir=".">
+
+	<!-- Use -D to specify/overwrite the following args to the program, eg:
+		ant -Dusername=MyUserName -Dpassword=MyPassword
+	-->
+	<property name="file" value="etc/test1.owl"/>
+	<property name="ontologyUri" value="http://example.org/test1"/>
+	<property name="username" value=""/>
+	<property name="password" value=""/>
+	<property name="graphId" value="ooi-ci"/>
+	
+	
+	  <property name="build.dir" value="_generated"/>
+
+	  <path id="project.class.path">
+	    <pathelement path="${java.class.path}/"/>
+	    <pathelement path="${build.dir}/classes/"/>
+		<fileset dir="lib">
+			<include name="*.jar" />
+		</fileset>
+	  	
+	  </path>
+
+	  <target name="compile">
+	    <mkdir dir="${build.dir}/classes"/>
+	    <javac srcdir="src" destdir="${build.dir}/classes" 
+	    	includes="**" debug="on" debuglevel="lines,vars,source">
+	      <classpath refid="project.class.path"/>
+	    </javac>
+	  </target>
+
+	  <target name="run" depends="compile">
+	    <java classname="org.mmisw.mmiorr.client.RegisterOntology">
+	     <classpath refid="project.class.path"/>
+	    	<arg value="${username}"/>
+	    	<arg value="${password}"/>
+	    	<arg value="${ontologyUri}"/>
+	    	<arg value="${file}"/>
+	    	<arg value="${graphId}"/>
+	    </java>
+	  </target>
+
+
+	  <target name="clean">
+	    <delete>
+	      <fileset dir="${build.dir}" includes="**/*.class"/>
+	    </delete>
+	  </target>
+
+
+</project>

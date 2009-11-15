@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns="http://example.org/test1/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:omvmmi="http://mmisw.org/ont/mmi/20081020/ontologyMetadata/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:omv="http://omv.ontoware.org/2005/05/ontology#"
+    xml:base="http://example.org/test1">
+    <owl:Ontology rdf:about="">
+        <omvmmi:hasResourceType>test1</omvmmi:hasResourceType>
+        <omv:description>Test ontology to demonstrate direct registration in the MMI ORR</omv:description>
+        <omv:uri>http://example.org/test1</omv:uri>
+        <omvmmi:hasContentCreator>CR</omvmmi:hasContentCreator>
+        <omv:name>Test 1</omv:name>
+        <omv:acronym>OOI-CI-text1</omv:acronym>
+        <omv:hasCreator>CR</omv:hasCreator>
+    </owl:Ontology>
+    <owl:Class rdf:about="http://example.org/test1/DemoClass">
+        <rdfs:label>DemoClass</rdfs:label>
+    </owl:Class>
+    <owl:DatatypeProperty rdf:about="http://example.org/test1/description">
+        <rdfs:domain rdf:resource="http://example.org/test1/DemoClass"/>
+        <rdfs:label>description</rdfs:label>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/test1/name">
+        <rdfs:domain rdf:resource="http://example.org/test1/DemoClass"/>
+        <rdfs:label>name</rdfs:label>
+    </owl:DatatypeProperty>
+    <DemoClass rdf:about="http://example.org/test1/termOne">
+        <description>description of termOne</description>
+        <name>termOne</name>
+        <rdfs:label>termOne</rdfs:label>
+    </DemoClass>
+    <DemoClass rdf:about="http://example.org/test1/termTwo">
+        <description>description of termTwo</description>
+        <name>termTwo</name>
+        <rdfs:label>termTwo</rdfs:label>
+    </DemoClass>
+    <DemoClass rdf:about="http://example.org/test1/termThree">
+        <description>description of termThree</description>
+        <name>termThree</name>
+        <rdfs:label>termThree</rdfs:label>
+    </DemoClass>
+</rdf:RDF>
