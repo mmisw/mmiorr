@@ -15,6 +15,11 @@ import org.apache.commons.httpclient.methods.GetMethod;
 public class RetrieveOntology {
 	static final String URI_RESOLVER = "http://mmisw.org/ont/";
 
+	public static class RetrieveResult {
+		public int status;
+		public String contents;
+	}
+
 	/**
 	 * See build.xml
 	 */
@@ -24,13 +29,14 @@ public class RetrieveOntology {
 		String format = args[arg++];
 		String version = arg < args.length ? args[arg++] : null;
 		
-		String contents = retrieve(ontologyUri, version, format);
-		System.out.println(contents);
+		RetrieveResult result = retrieve(ontologyUri, version, format);
+		System.out.println("Response status: " +result.status+ ": " +HttpStatus.getStatusText(result.status));
+		System.out.println("Response body:\n" +result.contents);
 	}
 	
 	
 	
-	public static String retrieve(String ontologyUri, String version, String format) throws Exception {
+	public static RetrieveResult retrieve(String ontologyUri, String version, String format) throws Exception {
 		
 		String ontServiceUrl = URI_RESOLVER;
 		ontologyUri = URLEncoder.encode(ontologyUri, "UTF-8");
@@ -44,14 +50,16 @@ public class RetrieveOntology {
 		HttpClient client = new HttpClient();
 	    GetMethod meth = new GetMethod(ontServiceRequest);
 	    try {
-	        client.executeMethod(meth);
+	    	RetrieveResult result = new RetrieveResult();
+	    	result.status = client.executeMethod(meth);
 
-	        if (meth.getStatusCode() == HttpStatus.SC_OK) {
-	            return meth.getResponseBodyAsString(Integer.MAX_VALUE);
+	        if (result.status == HttpStatus.SC_OK) {
+	        	result.contents = meth.getResponseBodyAsString(Integer.MAX_VALUE);
 	        }
 	        else {
-	          throw new Exception("Unexpected failure: " + meth.getStatusLine().toString());
+	        	result.contents = meth.getStatusLine().toString();
 	        }
+	        return result;
 	    }
 	    finally {
 	        meth.releaseConnection();

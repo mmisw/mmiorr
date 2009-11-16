@@ -23,8 +23,15 @@ import org.apache.commons.io.IOUtils;
  * @author Carlos Rueda
  */
 public class RegisterOntology {
-	static final String FORM_ACTION = "http://mmisw.org/orr/direg";
+	private static final String FORM_ACTION = "http://mmisw.org/orr/direg";
 
+	
+	public static class RegistrationResult {
+		public int status;
+		public String message;
+	}
+	
+	
 	/**
 	 * See build.xml
 	 */
@@ -36,18 +43,20 @@ public class RegisterOntology {
 		String fileName = args[arg++];
 		String graphId =  args[arg++];
 		
-		register(username, password, ontologyUri, fileName, graphId);
+		String fileContents = IOUtils.toString(new FileReader(fileName));
+
+		RegistrationResult result = register(username, password, ontologyUri, fileName, fileContents, graphId);
+		System.out.println("Response status: " +result.status+ ": " +HttpStatus.getStatusText(result.status));
+		System.out.println("Response body:\n" +result.message);
 	}
 	
 	
 	
-	public static String register(String username, String password, 
-			String ontologyUri, String fileName, String graphId
+	public static RegistrationResult register(String username, String password, 
+			String ontologyUri, String fileName, String fileContents, String graphId
 	) throws HttpException, IOException {
 		
-		String contents = IOUtils.toString(new FileReader(fileName));
-		
-		PartSource partSource = new ByteArrayPartSource(fileName, contents.getBytes());
+		PartSource partSource = new ByteArrayPartSource(fileName, fileContents.getBytes());
 		
 		System.out.println("Executing POST request to " +FORM_ACTION);
 		PostMethod post = new PostMethod(FORM_ACTION);
@@ -64,11 +73,10 @@ public class RegisterOntology {
 			HttpClient client = new HttpClient();
 			client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
 
-			int status = client.executeMethod(post);
-			String msg = post.getResponseBodyAsString();
-			System.out.println("Response status: " +status+ ": " +HttpStatus.getStatusText(status));
-			System.out.println("Response body:\n" +msg);
-			return msg;
+			RegistrationResult result = new RegistrationResult();
+			result.status = client.executeMethod(post);
+			result.message = post.getResponseBodyAsString();
+			return result;
 		} 
 		finally {
 			post.releaseConnection();

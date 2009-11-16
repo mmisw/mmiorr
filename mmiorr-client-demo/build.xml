@@ -8,14 +8,13 @@
 	-->
 	<property name="ontologyUri" value="http://example.org/test1"/>
 	
-	<property name="file" value="etc/test1.owl"/>
+	<property name="file" value="resource/test1.owl"/>
 	<property name="username" value=""/>
 	<property name="password" value=""/>
 	<property name="graphId" value="ooi-ci"/>
 	
 	<property name="format" value="owl"/>
 
-	
 	
 	  <property name="build.dir" value="_generated"/>
 
@@ -63,6 +62,15 @@
 	    	<arg value="${format}"/>
 	    	<arg value="${version}"/>
 	    </java>
+	  </target>
+
+
+	  <target name="test" >
+	  	<junit printsummary="yes" haltonfailure="yes">
+	  	  <formatter type="plain"/>
+	  	  <classpath refid="project.class.path"/>
+	  	  <test name="org.mmisw.mmiorr.client.test.MmiOrrTest"/>
+	  	</junit>
 	  </target>
 
 

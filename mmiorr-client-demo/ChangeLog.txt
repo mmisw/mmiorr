@@ -1,0 +1,11 @@
+org.mmisw.mmiorr.client
+Carlos Rueda  -  MBARI
+November 2009
+
+2009-11-15
+	- new MmiOrrTest, initially with preparations for test CIDEVDM-42
+	
+	
+2009-11-14
+	- Started this mini project to demonstrating interaction with MMI ORR
+
