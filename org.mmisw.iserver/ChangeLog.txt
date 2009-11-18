@@ -4,6 +4,44 @@ Created: 2009-05-13
 $Id$
 
 
+2009-11-17   1.6.2.alpha5
+	Issue #222 - duplicate of issue #43: Handle non-UTF8 inputs 
+	
+	New Utf8Util.readFileWithConversionToUtf8: tested internally but yet to be called at
+	appropriate places.  TODO
+	
+	Committed:
+		Util2.java
+		Utf8Util.java
+		ReadFileResult.java (new)
+		
+	Modified locally but not yet committed (as they need updates):
+		- Server.java
+		- TempOntologyHelper.java
+	
+	***NOTE: update the following text about a preliminary approach***
+	
+	- Not yet doing any conversion. But I did the following change to check for UTF-8 because
+	  the attached theme.owl is actually read by Jena without problem event though that the
+	  file does not pass the UTF-8 test.
+	  
+	  New utility methods:
+	  	- Util2.readRdfWithCheckingUtf8(File file)
+	  	- Util2.loadModelWithCheckingUtf8(File file)
+	  These two methods first try to read the model using Jena immediately; if this is OK, then
+	  just continue with that. But if the Jena call fails, then, these methods do the UTF-8 test
+	  in an attempt to be more specific about the cause of the load error.
+	  
+	  Well, also fixed the following:
+	  In the process of creating the temporary file in ServerConfig.ONTMD_PREVIEW_DIR from the one
+	  coming fron the upload step (see PortalConfig.Prop.ONTMD_PRE_UPLOADS in ontmd module),
+	  the FileWriter was created with the default charset. Now creating with "UTF-8" explicitly.
+	  See Server._writeRdfToFile
+	***  
+	
+	
+	
+	
 2009-11-13   1.6.2.alpha4
 	Issue #221 retain the original camelCase in the URLs
 	- VocabCreator: removed toLowerCase conversions in:

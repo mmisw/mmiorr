@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringReader;
@@ -14,12 +15,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.commons.io.IOExceptionWithCause;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.MdHelper;
 import org.mmisw.iserver.gwt.client.rpc.BaseResult;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXParseException;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.Ontology;
@@ -28,6 +31,7 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.shared.JenaException;
 
 import edu.drexel.util.rdf.JenaUtil;
 
@@ -337,6 +341,127 @@ public class Util2 {
 		}
 	}
 
+
+	/**
+	 * Reads an RDF file. This is as {@link #readRdf(File)} but if Jena fails to load the file,
+	 * then it checks if the problem is related with the parsing or UTF-8 encoding.
+	 * The idea is to be a bit more specific about the UTF-8-related error if that's the most
+	 * likely case.
+	 * 
+	 * @param file the file to read in
+	 * @return the contents of the text file.
+	 * @throws IOException 
+	 */
+	public static String readRdfWithCheckingUtf8(File file) throws IOException {
+		
+		// make sure the file can be loaded as a model:
+		String uriFile = file.toURI().toString();
+		try {
+			JenaUtil.loadModel(uriFile, false);
+		}
+		catch (Throwable jenaExc) {
+			// XML parse exception?
+			String errorMessage = getXmlParseExceptionErrorMessage(jenaExc);
+			if ( errorMessage != null ) {
+				throw new IOExceptionWithCause(errorMessage, jenaExc);
+			}
+			
+			// the following verifyUtf8 was done before I wrote and called the getXmlParseExceptionErrorMessage 
+			// method above;   just keeping the verifyUtf8 here although perhaps it's redundant:
+			
+			// perhaps because not UTF-8? Try the check directly:
+			try {
+				Utf8Util.verifyUtf8(file);
+			}
+			catch (Exception utfExc) {
+				// yes, it seems the problem is the encoding"
+				String error = jenaExc.getMessage();
+				jenaExc.printStackTrace();
+				throw new IOExceptionWithCause(error, jenaExc);
+			}
+
+			// other kind of problem:
+			String error = jenaExc.getClass().getName()+ " : " +jenaExc.getMessage();
+			throw new IOException(error);
+		}
+		
+		InputStream is = null;
+		try {
+			is = new FileInputStream(file);
+			String rdf = IOUtils.toString(is);
+			return rdf;
+		}
+		finally {
+			IOUtils.closeQuietly(is);
+		}
+	}
+
+
+	/**
+	 * Reads an RDF file into an OntModel. 
+	 * If Jena fails to load the file,
+	 * then it checks if the problem is related with the encoding UTF-8.
+	 * The idea is to be a bit more specific about the UTF-8-related error if that's the most
+	 * likely case.
+	 * 
+	 * @param file
+	 * @return
+	 * @throws IOException
+	 */
+	public static OntModel loadModelWithCheckingUtf8(File file) throws IOException {
+		String uriFile = file.toURI().toString();
+		try {
+			OntModel model = JenaUtil.loadModel(uriFile, false);
+			return model;
+		}
+		catch ( Throwable jenaExc ) {
+			// XML parse exception?
+			String errorMessage = getXmlParseExceptionErrorMessage(jenaExc);
+			if ( errorMessage != null ) {
+				throw new IOExceptionWithCause(errorMessage, jenaExc);
+			}
+			
+			// the following verifyUtf8 was done before I wrote and called the getXmlParseExceptionErrorMessage 
+			// method above;   just keeping the verifyUtf8 here although perhaps it's redundant:
+			
+			// perhaps because not UTF-8? Try the check directly:
+			try {
+				Utf8Util.verifyUtf8(file);
+			}
+			catch (Exception utfExc) {
+				// yes, it seems the problem is the encoding"
+				String error = jenaExc.getMessage();
+				throw new IOExceptionWithCause(error, utfExc);
+			}
+
+			// other kind of problem:
+			String error = jenaExc.getClass().getName()+ " : " +jenaExc.getMessage();
+			throw new IOException(error);
+		}	
+	}
+	
+	
+	private static String getXmlParseExceptionErrorMessage(Throwable jenaExc) {
+		if ( ! (jenaExc instanceof JenaException ) ) {
+			return null;
+		}
+		
+		Throwable cause = jenaExc.getCause();
+		if ( ! (cause instanceof SAXParseException ) ) {
+			return null;
+		}
+		
+		SAXParseException spe = (SAXParseException) cause;
+		String errorMessage = spe.toString() +
+			"\n  Line number: " + spe.getLineNumber()+" Column number: " +spe.getColumnNumber()
+//			+(spe.getPublicId() != null ? "\n Public ID: " + spe.getPublicId() : "" )
+//			+(spe.getSystemId() != null ? "\n System ID: " + spe.getSystemId() : "" )
+		;
+
+		return errorMessage;
+			
+	}
+	
 	/**
 	 * Returns the URI associated with xml:base, if defined in the document. If xml:base is not defined, 
 	 * then it returns file.toURI().toString(). 
