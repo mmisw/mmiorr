@@ -1,8 +1,10 @@
 package org.mmisw.ontmd.gwt.server;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.List;
@@ -178,7 +180,9 @@ public class UploadServlet extends HttpServlet {
 		String sessionId = request.getSession().getId();
 		File file = File.createTempFile("ontmd_" +sessionId+"_", ".tmp", preUploadsDir );
 		InputStream is = item.getInputStream();
-		PrintWriter os = new PrintWriter(file);
+		OutputStream os = new FileOutputStream(file);
+		// don't use PrintWriter os = new PrintWriter(file) to avoid any potential conversions;
+		// the file should be handled as binary.
 		IOUtils.copy(is, os);
 
 		os.flush();
