@@ -139,7 +139,14 @@ public class OntGraph {
 		}
 		
 		for ( Ontology ontology : onts ) {
-			loadOntology(ontology);
+			String full_path = aquaUploadsDir+ "/" +ontology.file_path + "/" + ontology.filename;
+			log.info("Loading: " +full_path+ " in graph");
+			try {
+				_loadOntology(ontology, full_path);
+			}
+			catch (Throwable ex) {
+				log.error("Error loading ontology: " +full_path+ " (continuing..)", ex);
+			}
 		}
 		
 		log.info("size of base model: " +_model.size());
@@ -245,13 +252,13 @@ public class OntGraph {
 	 * @param ontology
 	 */
 	public void loadOntology(Ontology ontology) {
-		
-		final Model model2update = _infModel != null ? _infModel : _model;
-		
 		String full_path = aquaUploadsDir+ "/" +ontology.file_path + "/" + ontology.filename;
-
 		log.info("Loading: " +full_path+ " in graph");
+		_loadOntology(ontology, full_path);
+	}
 
+	private void _loadOntology(Ontology ontology, String full_path) {
+		final Model model2update = _infModel != null ? _infModel : _model;
 		if ( USE_UNVERSIONED ) {
 			OntModel model = JenaUtil.loadModel(full_path, false);
 
@@ -282,5 +289,6 @@ public class OntGraph {
 				log.error("Unable to add " + absPath + " to model");
 			}
 		}
+		
 	}
 }

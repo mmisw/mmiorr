@@ -3,7 +3,7 @@ package org.mmisw.ont;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.StringReader;
+import java.io.OutputStream;
 import java.net.URISyntaxException;
 
 import javax.servlet.ServletException;
@@ -450,15 +450,17 @@ public class UriResolver {
 				switch ( ontFormat ) {
 				case RDFXML: {
 					response.setContentType("Application/rdf+xml");
-					StringReader is = OntServlet.serializeModel(termModel, "RDF/XML-ABBREV");
-					IOUtils.copy(is, os);
+//					StringReader is = OntServlet.serializeModel(termModel, "RDF/XML-ABBREV");
+//					IOUtils.copy(is, os);
+					OntServlet.serializeModelToOutputStream(termModel, "RDF/XML-ABBREV", os);
 					break;
 				}
 				case N3 : {
 					String contentType = "text/plain";  // NOTE: "text/rdf+n3" is not registered.
 					response.setContentType(contentType);
-					StringReader is = OntServlet.serializeModel(termModel, "N3");
-					IOUtils.copy(is, os);
+//					StringReader is = OntServlet.serializeModel(termModel, "N3");
+//					IOUtils.copy(is, os);
+					OntServlet.serializeModelToOutputStream(termModel, "N3", os);
 					break;
 				}
 				default:
@@ -489,8 +491,9 @@ public class UriResolver {
 				response.setContentType("Application/rdf+xml");
 				
 				if ( unversionedRequest ) {
-					StringReader is = OntServlet.serializeModel(unversionedModel, "RDF/XML-ABBREV");
-					IOUtils.copy(is, os);
+//					StringReader is = OntServlet.serializeModel(unversionedModel, "RDF/XML-ABBREV");
+//					IOUtils.copy(is, os);
+					OntServlet.serializeModelToOutputStream(unversionedModel, "RDF/XML-ABBREV", os);
 				}
 				else {
 					FileInputStream is = new FileInputStream(file);
@@ -503,12 +506,14 @@ public class UriResolver {
 				response.setContentType(contentType);
 				
 				if ( unversionedRequest ) {
-					StringReader is = OntServlet.serializeModel(unversionedModel, "N3");
-					IOUtils.copy(is, os);
+//					StringReader is = OntServlet.serializeModel(unversionedModel, "N3");
+//					IOUtils.copy(is, os);
+					OntServlet.serializeModelToOutputStream(unversionedModel, "N3", os);
 				}
 				else {
-					StringReader is = _getN3(file);
-					IOUtils.copy(is, os);
+//					StringReader is = _getN3(file);
+//					IOUtils.copy(is, os);
+					_getN3(file, os);
 				}
 				break;
 			}
@@ -525,13 +530,14 @@ public class UriResolver {
 	/** 
 	 * Creates the N3 version of the model stored in the given file. 
 	 */
-	private StringReader _getN3(File file) {
+	private void _getN3(File file, OutputStream os) {
 		log.debug("_getN3: " +file);
 		Model model = ModelFactory.createDefaultModel();
 		String absPath = "file:" + file.getAbsolutePath();
 		model.read(absPath, "", null);
 		
-		return OntServlet.serializeModel(model, "N3");
+//		return OntServlet.serializeModel(model, "N3");
+		OntServlet.serializeModelToOutputStream(model, "N3", os);
 	}
 
 

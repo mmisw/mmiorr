@@ -2,6 +2,7 @@ package org.mmisw.ont;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
@@ -589,7 +590,9 @@ public class OntServlet extends HttpServlet {
 	 * Gets the serialization of a model in the given language.
 	 * <p>
 	 * (Similar to JenaUtil.getOntModelAsString(OntModel model).) 
+	 * @deprecated Use {{@link #serializeModelToOutputStream(Model, String, OutputStream)}
 	 */
+	@Deprecated
 	static StringReader serializeModel(Model model, String lang) {
 		StringWriter sw = new StringWriter();
 		String uriForEmptyPrefix = model.getNsPrefixURI("");
@@ -606,6 +609,26 @@ public class OntServlet extends HttpServlet {
 
 		StringReader reader = new StringReader(sw.toString());
 		return reader;
+	}
+
+
+	/** 
+	 * Gets the serialization of a model in the given language.
+	 * <p>
+	 * (Similar to JenaUtil.getOntModelAsString(OntModel model).) 
+	 */
+	static void serializeModelToOutputStream(Model model, String lang, OutputStream os) {
+		String uriForEmptyPrefix = model.getNsPrefixURI("");
+		RDFWriter writer = model.getWriter(lang);
+		String baseUri = null;
+		if ( uriForEmptyPrefix != null ) {
+			baseUri = JenaUtil2.removeTrailingFragment(uriForEmptyPrefix);
+			writer.setProperty("xmlbase", baseUri);
+		}
+		writer.setProperty("showXmlDeclaration", "true");
+		writer.setProperty("relativeURIs", "same-document");
+		writer.setProperty("tab", "4");
+		writer.write(model, os, baseUri);
 	}
 
 

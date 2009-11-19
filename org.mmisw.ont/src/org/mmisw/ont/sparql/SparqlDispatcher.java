@@ -148,6 +148,8 @@ public class SparqlDispatcher {
 		else {
 			response.setContentType(queryResult.getContentType());
 		}
+		
+		// FIXME: UTF-8 encoding especially for RDF/XML output
 		StringReader is = new StringReader(result);
 		ServletOutputStream os = response.getOutputStream();
 		IOUtils.copy(is, os);

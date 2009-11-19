@@ -117,7 +117,7 @@ public class UriResolver2 {
 				log.debug(this.getClass().getName()+ ": dispatching with outFormat=" +req.outFormat);
 			}
 
-			StringReader is = null;
+			ServletOutputStream os = req.response.getOutputStream();
 
 			///////////////////////////////////////////////////////////////////
 			// OWL
@@ -125,14 +125,16 @@ public class UriResolver2 {
 			||   req.outFormat.equalsIgnoreCase("rdf")
 			) {
 				req.response.setContentType("Application/rdf+xml");
-				is = OntServlet.serializeModel(model, "RDF/XML-ABBREV");
+//				is = OntServlet.serializeModel(model, "RDF/XML-ABBREV");
+				OntServlet.serializeModelToOutputStream(model, "RDF/XML-ABBREV", os);
 			}
 			
 			///////////////////////////////////////////////////////////////////
 			// N3
 			else if ( req.outFormat.equalsIgnoreCase("n3") ) {
 				req.response.setContentType("text/plain");
-				is = OntServlet.serializeModel(model, "N3");
+//				is = OntServlet.serializeModel(model, "N3");
+				OntServlet.serializeModelToOutputStream(model, "N3", os);
 			}
 			
 			///////////////////////////////////////////////////////////////////
@@ -178,7 +180,8 @@ public class UriResolver2 {
 				DotGenerator dot = new DotGenerator(model, includeLegend);
 				StringWriter sw = new StringWriter();
 				dot.generateDot(sw, "Input: " +ontologyUri);
-				is = new StringReader(sw.toString());
+				StringReader is = new StringReader(sw.toString());
+				IOUtils.copy(is, os);
 			}
 			
 			///////////////////////////////////////////////////////////////////
@@ -190,8 +193,6 @@ public class UriResolver2 {
 				return;
 			}
 			
-			ServletOutputStream os = req.response.getOutputStream();
-			IOUtils.copy(is, os);
 			os.close();
 		}
 		
