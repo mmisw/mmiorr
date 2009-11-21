@@ -17,7 +17,7 @@ public class RetrieveOntology {
 
 	public static class RetrieveResult {
 		public int status;
-		public String contents;
+		public String body;
 	}
 
 	/**
@@ -31,7 +31,7 @@ public class RetrieveOntology {
 		
 		RetrieveResult result = retrieve(ontologyUri, version, format);
 		System.out.println("Response status: " +result.status+ ": " +HttpStatus.getStatusText(result.status));
-		System.out.println("Response body:\n" +result.contents);
+		System.out.println("Response body:\n" +result.body);
 	}
 	
 	
@@ -54,10 +54,10 @@ public class RetrieveOntology {
 	    	result.status = client.executeMethod(meth);
 
 	        if (result.status == HttpStatus.SC_OK) {
-	        	result.contents = meth.getResponseBodyAsString(Integer.MAX_VALUE);
+	        	result.body = meth.getResponseBodyAsString(Integer.MAX_VALUE);
 	        }
 	        else {
-	        	result.contents = meth.getStatusLine().toString();
+	        	result.body = meth.getStatusLine().toString();
 	        }
 	        return result;
 	    }

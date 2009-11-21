@@ -10,7 +10,15 @@ Third-party libraries (included in lib/):
 	- apache commons-logging
 	- apache commons-codec
 	
+	- junit, ant-junit (required for unit testing)
+	- jena, jenatest, iri, icu4j (Jena libs required for some unit tests)
 	
+	
+- Running RegisterOntology
+- Running RetrieveOntology
+- Running the tests
+
+
 Running RegisterOntology:
 
 This program demonstrates the direct registration of an ontology file in the 
@@ -125,4 +133,31 @@ retrieve:
 
 BUILD SUCCESSFUL
 Total time: 0 seconds
+
+
+Running the tests
+
+$ ant  -Dusername=carueda -Dpassword=xxxxxx test 
+Buildfile: build.xml
+
+initexec:
+
+compile:
+    [javac] Compiling 1 source file to /Users/carueda/mmiworkspace/mmiorr-client-demo/_generated/classes
+
+test:
+    [junit] Running org.mmisw.mmiorr.client.test.MmiOrrTest
+    [junit] Testsuite: org.mmisw.mmiorr.client.test.MmiOrrTest
+    [junit] Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 1.876 sec
+    [junit] Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 1.876 sec
+    [junit] ------------- Standard Output ---------------
+    [junit] Executing POST request to http://mmisw.org/orr/direg
+    [junit] HTTP GET: http://mmisw.org/ont/?uri=http%3A%2F%2Fexample.org%2Ftest1&form=owl
+    [junit] ------------- ---------------- ---------------
+    [junit] 
+    [junit] Testcase: test42 took 1.872 sec
+
+BUILD SUCCESSFUL
+Total time: 2 seconds
+
 

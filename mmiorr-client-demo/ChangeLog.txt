@@ -2,6 +2,10 @@ org.mmisw.mmiorr.client
 Carlos Rueda  -  MBARI
 November 2009
 
+2009-11-20
+	- completed MmiOrrTest for test CIDEVDM-42, http://ci.oceanobservatories.org/tasks/browse/CIDEVDM-42
+	- jena libraries included for the comparison of models (using isIsomorphicWith)
+
 2009-11-15
 	- new MmiOrrTest, initially with preparations for test CIDEVDM-42
 	
