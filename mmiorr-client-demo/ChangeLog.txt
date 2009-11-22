@@ -2,8 +2,12 @@ org.mmisw.mmiorr.client
 Carlos Rueda  -  MBARI
 November 2009
 
+2009-11-22
+	- re-organized tests mainly to separate registration tests from the retrieval/comparison tests.
+	- completed CIDEVDM-30 test, http://ci.oceanobservatories.org/tasks/browse/CIDEVDM-30
+
 2009-11-20
-	- completed MmiOrrTest for test CIDEVDM-42, http://ci.oceanobservatories.org/tasks/browse/CIDEVDM-42
+	- completed CIDEVDM-42 test, http://ci.oceanobservatories.org/tasks/browse/CIDEVDM-42
 	- jena libraries included for the comparison of models (using isIsomorphicWith)
 
 2009-11-15

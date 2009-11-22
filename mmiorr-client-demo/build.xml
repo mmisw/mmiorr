@@ -1,14 +1,26 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<project name="org.mmisw.mmiorr.client" default="retrieve" basedir=".">
+<project name="org.mmisw.mmiorr.client" default="compile" basedir=".">
 
-	<!-- 
-		Use -D to specify args required by some of the targets, eg:
-		
-		ant -Dusername=MyUserName -Dpassword=MyPassword register
-		ant -Dformat=n3 retrieve
-		ant -Dformat=n3 -Dversion=20091115T072359  retrieveVersion
-		ant -Dusername=MyUserName -Dpassword=MyPassword test
+	<!--
+	See README.txt
+	 
+	Run registration tests:
+	   ant -Dusername=MyUserName -Dpassword=MyPassword registrationTests
+	   
+	Run retrieval and comparison tests: 
+	   ant retrievalTests
+	   
+	Run all tests: 
+	   ant -Dusername=MyUserName -Dpassword=MyPassword allTests
+	
+	Other examples:   
+	
+	ant -Dusername=MyUserName -Dpassword=MyPassword register
+	ant -Dformat=n3 retrieve
+	ant -Dformat=n3 -Dversion=20091115T072359  retrieveVersion
+	
 	-->
+	
 	<property name="ontologyUri" value="http://example.org/test1"/>
 	
 	<property name="file" value="resource/test1.owl"/>
@@ -28,7 +40,7 @@
 	  	
 	  </path>
 
-	  <target name="initexec" >
+	  <target name="loginInfo" >
 	  	<fail unless="username" message="username argument is missing.  Use -D"/>
 	  	<fail unless="password" message="password argument is missing.  Use -D"/>
       </target>
@@ -41,7 +53,32 @@
 	    </javac>
 	  </target>
 
-	  <target name="register" depends="compile,initexec">
+
+	  <target name="registrationTests" depends="loginInfo,compile"
+	  	   description="Registration operations; username/password required">
+	  	<junit printsummary="yes" haltonfailure="yes" fork="yes">
+	  	  <jvmarg value="-Dusername=${username}"/>
+	  	  <jvmarg value="-Dpassword=${password}"/>
+	  	  <formatter type="plain" usefile="no" />
+	  	  <classpath refid="project.class.path"/>
+	  	  <test name="org.mmisw.mmiorr.client.test.RegistrationTest"/>
+	  	</junit>
+	  </target>
+
+	  <target name="retrievalTests" depends="compile">
+	  	<junit printsummary="yes" haltonfailure="yes" fork="yes">
+	  	  <formatter type="plain" usefile="no" />
+	  	  <classpath refid="project.class.path"/>
+	  	  <test name="org.mmisw.mmiorr.client.test.RetrievalTest"/>
+	  	</junit>
+	  </target>
+
+	<target name="allTests" depends="registrationTests,retrievalTests" 
+	  description="All tests starting from registration">
+	</target>
+
+	
+	  <target name="register" depends="compile,loginInfo">
 	    <java classname="org.mmisw.mmiorr.client.RegisterOntology">
 	     <classpath refid="project.class.path"/>
 	    	<arg value="${username}"/>
@@ -70,18 +107,8 @@
 	    </java>
 	  </target>
 
-
-	  <target name="test" depends="initexec,compile">
-	  	<junit printsummary="yes" haltonfailure="yes" fork="yes">
-	  	  <jvmarg value="-Dusername=${username}"/>
-	  	  <jvmarg value="-Dpassword=${password}"/>
-	  	  <formatter type="plain" usefile="no" />
-	  	  <classpath refid="project.class.path"/>
-	  	  <test name="org.mmisw.mmiorr.client.test.MmiOrrTest"/>
-	  	</junit>
-	  </target>
-
-
+	
+	
 	  <target name="clean">
 	    <delete>
 	      <fileset dir="${build.dir}" includes="**/*.class"/>
