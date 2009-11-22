@@ -5,6 +5,7 @@ November 2009
 2009-11-22
 	- re-organized tests mainly to separate registration tests from the retrieval/comparison tests.
 	- completed CIDEVDM-30 test, http://ci.oceanobservatories.org/tasks/browse/CIDEVDM-30
+	- completed CIDEVDM-31 test, http://ci.oceanobservatories.org/tasks/browse/CIDEVDM-31
 
 2009-11-20
 	- completed CIDEVDM-42 test, http://ci.oceanobservatories.org/tasks/browse/CIDEVDM-42

@@ -36,6 +36,8 @@ under my account. If that's the case, you can just run the retrieval and compari
 If you want to try your own ontologies using your ORR account, you may have to adjust some of the 
 affected retrieval and comparison tests accordingly.
 
+The following is the general registration of an ontology:
+
 	$ ant  -Dusername=carueda -Dpassword=xxxxx registrationTests
 	Buildfile: build.xml
 	
@@ -65,6 +67,46 @@ affected retrieval and comparison tests accordingly.
 	
 	BUILD SUCCESSFUL
 	Total time: 1 second
+
+The following is the generation of a new version of an ontology by adding properties to a resource,
+int this case adding a new description for the term http://example.org/test1/termThree (see UpdateTest):
+
+	$ ant  -Dusername=carueda -Dpassword=xxxxx updateTests
+	Buildfile: build.xml
+	
+	loginInfo:
+	
+	compile:
+	
+	updateTests:
+	    [junit] Running org.mmisw.mmiorr.client.test.UpdateTest
+	    [junit] Testsuite: org.mmisw.mmiorr.client.test.UpdateTest
+	    [junit] Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 3.099 sec
+	    [junit] Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 3.099 sec
+	    [junit] ------------- Standard Output ---------------
+	    [junit] ** test31
+	    [junit] ** retrieveOntology
+	    [junit] HTTP GET: http://mmisw.org/ont/?uri=http%3A%2F%2Fexample.org%2Ftest1&form=owl
+	    [junit] New statement: [http://example.org/test1/termThree, http://example.org/test1/description, "Generated description 1258932618157"]
+	    [junit] ** registerOntology
+	    [junit] Executing POST request to http://mmisw.org/orr/direg
+	    [junit] Registration response:
+	    [junit]    <success>
+	    [junit]      <ontologyUri>http://example.org/test1</ontologyUri>
+	    [junit]      <graphId>ooi-ci</graphId>
+	    [junit]      <msg>New version of ontology registered</msg>
+	    [junit]    </success>
+	    [junit]    
+	    [junit]    
+	    [junit] ** retrieveOntology
+	    [junit] HTTP GET: http://mmisw.org/ont/?uri=http%3A%2F%2Fexample.org%2Ftest1&form=owl
+	    [junit] ------------- ---------------- ---------------
+	    [junit] 
+	    [junit] Testcase: test31 took 3.09 sec
+	
+	BUILD SUCCESSFUL
+	Total time: 4 seconds
+
 
 
 Retrieval and comparison tests

@@ -3,10 +3,12 @@ package org.mmisw.mmiorr.client.test;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.RDFWriter;
 
 
 /**
@@ -49,4 +51,26 @@ public class Utils {
 		model.read(new StringReader(contents), null);
 		return model;
 	}
+	
+	/**
+	 * Serializes a model
+	 */	
+	public static String getOntModelAsString(Model model, String lang) {
+		StringWriter sw = new StringWriter();
+		RDFWriter writer = model.getWriter(lang);
+		String baseUri = null;
+		String uriForEmptyPrefix = model.getNsPrefixURI("");
+		if ( uriForEmptyPrefix != null ) {
+			// remove trailing fragment, if any
+			baseUri = uriForEmptyPrefix.replaceAll("(/|#)+$", "");
+			writer.setProperty("xmlbase", baseUri);
+		}
+		writer.setProperty("showXmlDeclaration", "true");
+		writer.setProperty("relativeURIs", "same-document");
+		writer.setProperty("tab", "4");
+		writer.write(model, sw, baseUri);
+		return sw.getBuffer().toString();
+
+	}
+
 }
