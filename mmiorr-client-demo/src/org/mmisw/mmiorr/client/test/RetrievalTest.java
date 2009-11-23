@@ -1,6 +1,7 @@
 package org.mmisw.mmiorr.client.test;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Test;
@@ -27,7 +28,7 @@ public class RetrievalTest extends BaseTestCase {
 		String format = "owl";
 		String version = null;
 		
-		RetrieveResult retrievalResult = RetrieveOntology.retrieve(ontologyUri, version, format);
+		RetrieveResult retrievalResult = RetrieveOntology.retrieveOntology(ontologyUri, version, format);
 		assertEquals(HttpStatus.SC_OK, retrievalResult.status);
 		assertNotNull(retrievalResult.body);
 		assertTrue(retrievalResult.body.contains("<rdf:RDF"));
@@ -68,7 +69,7 @@ public class RetrievalTest extends BaseTestCase {
 		String format = "owl";
 		String version = null;
 		
-		RetrieveResult retrievalResult = RetrieveOntology.retrieve(termUri, version, format);
+		RetrieveResult retrievalResult = RetrieveOntology.retrieveOntology(termUri, version, format);
 		assertEquals(HttpStatus.SC_OK, retrievalResult.status);
 		assertNotNull(retrievalResult.body);
 		System.out.println("Term retrieval response:" +
@@ -98,5 +99,28 @@ public class RetrievalTest extends BaseTestCase {
 		
 	}
 	
+
+
+	/**
+	 * <a href="http://ci.oceanobservatories.org/tasks/browse/CIDEVDM-30">CIDEVDM-32</a>
+	 * This test is done with a fully-hosted vocabulary.
+	 * @throws Exception
+	 */
+	@Test
+	public void test32() throws Exception {
+		System.out.println("** test32");
+		
+		List<String> versions = RetrieveOntology.getVersions(vocabularyUri);
+		System.out.println(vocabularyUri+ ": Available versions: " +versions);
+		
+		// retrieve each of the available versions:
+		// note, no need to pass the "version" parameter because the URI is already in versioned form.
+		for ( String vocabularyVersion : versions ) {
+			RetrieveResult retrievalResult = RetrieveOntology.retrieveOntology(vocabularyVersion, null, "owl");
+			assertEquals(HttpStatus.SC_OK, retrievalResult.status);
+			assertNotNull(retrievalResult.body);
+			assertTrue(retrievalResult.body.contains("<rdf:RDF"));
+		}
+	}
 
 }

@@ -1,6 +1,8 @@
 package org.mmisw.mmiorr.client;
 
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
@@ -29,22 +31,16 @@ public class RetrieveOntology {
 		String format = args[arg++];
 		String version = arg < args.length ? args[arg++] : null;
 		
-		RetrieveResult result = retrieve(ontologyUri, version, format);
+		RetrieveResult result = retrieveOntology(ontologyUri, version, format);
 		System.out.println("Response status: " +result.status+ ": " +HttpStatus.getStatusText(result.status));
 		System.out.println("Response body:\n" +result.body);
 	}
 	
 	
-	
-	public static RetrieveResult retrieve(String ontologyUri, String version, String format) throws Exception {
-		
-		String ontServiceUrl = URI_RESOLVER;
-		ontologyUri = URLEncoder.encode(ontologyUri, "UTF-8");
-		String ontServiceRequest = ontServiceUrl + "?uri=" +ontologyUri;
-		ontServiceRequest += "&form=" +format;
-		if ( version != null ) {
-			ontServiceRequest += "&version=" +version;
-		}
+	/**
+	 * A helper method to perform an HTTP GET request.
+	 */
+	public static RetrieveResult httpGet(String ontServiceRequest) throws Exception {
 		System.out.println("HTTP GET: " +ontServiceRequest);
 		
 		HttpClient client = new HttpClient();
@@ -64,7 +60,44 @@ public class RetrieveOntology {
 	    finally {
 	        meth.releaseConnection();
 	    }
+	}
 
+	
+	/**
+	 * Retrieves an ontology.
+	 */
+	public static RetrieveResult retrieveOntology(String ontologyUri, String version, String format) throws Exception {
+		
+		String ontServiceUrl = URI_RESOLVER;
+		ontologyUri = URLEncoder.encode(ontologyUri, "UTF-8");
+		String ontServiceRequest = ontServiceUrl + "?uri=" +ontologyUri;
+		ontServiceRequest += "&form=" +format;
+		if ( version != null ) {
+			ontServiceRequest += "&version=" +version;
+		}
+		
+		return httpGet(ontServiceRequest);
+	}
+	
+	/**
+	 * Gets the available versions for a fully-hosted ontology
+	 * @param ontologyUri URI of the fully-hosted ontology. Note that tis URI
+	 *                    is self-resolvable.
+	 * @return
+	 * @throws Exception
+	 */
+	public static List<String> getVersions(String ontologyUri) throws Exception {
+		
+		String ontServiceUrl = ontologyUri;
+		String ontServiceRequest = ontServiceUrl + "?_versions";
+		
+		RetrieveResult result = httpGet(ontServiceRequest);
+
+		List<String> list = new ArrayList<String>();
+		for ( String line : result.body.split("\n") ) {
+			list.add(line.trim());
+		}
+		return list;
 	}
 
 }

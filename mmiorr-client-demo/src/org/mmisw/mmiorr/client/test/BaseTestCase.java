@@ -24,6 +24,9 @@ public abstract class BaseTestCase extends TestCase {
 	protected static String descriptionUri;
 	
 	
+	protected static String vocabularyUri;
+	
+	
 	// obtained by testRetrievalOfOntology()
 	protected static String retrievedOntologyContents;
 	
@@ -39,6 +42,8 @@ public abstract class BaseTestCase extends TestCase {
 		descriptionUri = System.getProperty("descriptionUri", "http://example.org/test1/description");
 		fileName = System.getProperty("fileName", "resource/test1.owl");
 		graphId = System.getProperty("graphId", "ooi-ci");
+		
+		vocabularyUri = System.getProperty("vocabularyUri", "http://mmisw.org/ont/mmi/device");
 	}
 	
 

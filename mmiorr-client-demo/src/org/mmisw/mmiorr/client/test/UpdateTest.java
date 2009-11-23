@@ -36,7 +36,7 @@ public class UpdateTest extends BaseTestCase {
 		String format = "owl";
 		String version = null;
 		
-		RetrieveResult retrievalResult = RetrieveOntology.retrieve(ontologyUri, version, format);
+		RetrieveResult retrievalResult = RetrieveOntology.retrieveOntology(ontologyUri, version, format);
 		assertEquals(HttpStatus.SC_OK, retrievalResult.status);
 		assertNotNull(retrievalResult.body);
 		assertTrue(retrievalResult.body.contains("<rdf:RDF"));
