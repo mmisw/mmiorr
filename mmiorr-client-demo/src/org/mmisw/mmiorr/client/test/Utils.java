@@ -47,6 +47,11 @@ public class Utils {
 
 	/** reads a term model from a string */
 	public static Model readTermModel(String contents) throws IOException {
+		return readModel(contents);
+	}
+	
+	/** reads an RDF model from a string */
+	public static Model readModel(String contents) throws IOException {
 		Model model = ModelFactory.createDefaultModel();
 		model.read(new StringReader(contents), null);
 		return model;

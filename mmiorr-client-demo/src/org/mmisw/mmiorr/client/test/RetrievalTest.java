@@ -11,8 +11,11 @@ import org.mmisw.mmiorr.client.RetrieveOntology.RetrieveResult;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
@@ -104,11 +107,12 @@ public class RetrievalTest extends BaseTestCase {
 	/**
 	 * <a href="http://ci.oceanobservatories.org/tasks/browse/CIDEVDM-30">CIDEVDM-32</a>
 	 * This test is done with a fully-hosted vocabulary.
+	 * 32a: retrieval of all versions associated with an ontology URI
 	 * @throws Exception
 	 */
 	@Test
-	public void test32() throws Exception {
-		System.out.println("** test32");
+	public void test32a() throws Exception {
+		System.out.println("** test32a");
 		
 		List<String> versions = RetrieveOntology.getVersions(vocabularyUri);
 		System.out.println(vocabularyUri+ ": Available versions: " +versions);
@@ -121,6 +125,78 @@ public class RetrievalTest extends BaseTestCase {
 			assertNotNull(retrievalResult.body);
 			assertTrue(retrievalResult.body.contains("<rdf:RDF"));
 		}
+	}
+
+	
+	/**
+	 * <a href="http://ci.oceanobservatories.org/tasks/browse/CIDEVDM-30">CIDEVDM-32</a>
+	 * Retrieves metadata directly from a fully-hosted ontology.
+	 * @throws Exception
+	 */
+	private void retrieveMetadataFromOntology() throws Exception {
+		System.out.println("** retrieveMetadataFromOntology");
+		
+		String format = "owl";
+		String version = null;
+		
+		RetrieveResult retrievalResult = RetrieveOntology.retrieveOntology(vocabularyUri, version, format);
+		assertEquals(HttpStatus.SC_OK, retrievalResult.status);
+		assertNotNull(retrievalResult.body);
+		assertTrue(retrievalResult.body.contains("<rdf:RDF"));
+		OntModel model = Utils.readOntModel(retrievalResult.body);
+		
+		// the following shows the metadata ie. properties with vocabularyUri as subject:
+		// false: not included to avoid cluttering the test output
+		if ( false ) {
+			Resource ontologyResource = ResourceFactory.createResource(vocabularyUri);
+			StmtIterator metadata = model.listStatements(ontologyResource, null, (RDFNode) null);
+			while ( metadata.hasNext() ) {
+				Statement stmt = metadata.nextStatement();
+				System.out.println("\t" +stmt.getPredicate()+ " -> " +stmt.getObject());
+			}
+		}
+	}
+	
+	/**
+	 * <a href="http://ci.oceanobservatories.org/tasks/browse/CIDEVDM-30">CIDEVDM-32</a>
+	 * Retrieves metadata via a DESCRIBE query.
+	 * @throws Exception
+	 */
+	private void retrieveMetadataViaDescribe() throws Exception {
+		System.out.println("** retrieveMetadataViaDescribe");
+		
+		RetrieveResult describeResult = RetrieveOntology.describeUri(vocabularyUri, "owl");
+		assertEquals(HttpStatus.SC_OK, describeResult.status);
+		assertNotNull(describeResult.body);
+		assertTrue(describeResult.body.contains("<rdf:RDF"));
+		Model describeModel = Utils.readModel(describeResult.body);
+
+		// the following shows the metadata ie. properties with vocabularyUri as subject:
+		// false: not included to avoid cluttering the test output
+		if ( false ) {
+			Resource ontologyResource = ResourceFactory.createResource(vocabularyUri);
+			StmtIterator describeMetatada = describeModel.listStatements(ontologyResource, null, (RDFNode) null);
+			while ( describeMetatada.hasNext() ) {
+				Statement stmt = describeMetatada.nextStatement();
+				System.out.println("\t" +stmt.getPredicate()+ " -> " +stmt.getObject());
+			}
+		}
+	}
+	
+	/**
+	 * <a href="http://ci.oceanobservatories.org/tasks/browse/CIDEVDM-30">CIDEVDM-32</a>
+	 * This test is done with a fully-hosted vocabulary.
+	 * 32b: retrieval of metadata associated with an ontology URI: two ways: from the
+	 * ontology itself, and via a DESCRIBE query.
+	 * @throws Exception
+	 */
+	@Test
+	public void test32b() throws Exception {
+		System.out.println("** test32b");
+		
+		retrieveMetadataFromOntology();
+		
+		retrieveMetadataViaDescribe();
 	}
 
 }

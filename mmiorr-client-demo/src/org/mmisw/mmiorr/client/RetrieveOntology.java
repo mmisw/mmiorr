@@ -100,4 +100,20 @@ public class RetrieveOntology {
 		return list;
 	}
 
+	/**
+	 * Issues a DESCRIBE query for the given URI.
+	 */
+	public static RetrieveResult describeUri(String uri, String format) throws Exception {
+		
+		String ontServiceUrl = URI_RESOLVER;
+		uri = URLEncoder.encode(uri , "UTF-8");
+		// The query is: DESCRIBE <uri>
+		// Need to encode < (%3C) and > (%3E)
+		String query = "describe%3C" +uri+ "%3E";
+		String ontServiceRequest = ontServiceUrl + "?form=" +format+ "&sparql=" +query;
+		
+		return httpGet(ontServiceRequest);
+	}
+	
+
 }

@@ -9,8 +9,10 @@ November 2009
 	- completed CIDEVDM-32 test, http://ci.oceanobservatories.org/tasks/browse/CIDEVDM-32
 	  Note that this test is with a fully-hosted ontology, because the URI request also
 	  accepts the "_versions" parameter to obtain the available versions.
-	  The ORR could provide a more complete service including the ability to provide the
-	  versions for any registered entry, perhaps even in an RDF format.
+	  (The ORR could provide a more complete service including the ability to provide the
+	  versions for any registered entry, perhaps even in an RDF format.)
+	  Two ways to retrieve the metadata are demonstrated: directly from the model once
+	  the concrete ontology is retrieved; and via a DESCRIBE query.
 
 2009-11-20
 	- completed CIDEVDM-42 test, http://ci.oceanobservatories.org/tasks/browse/CIDEVDM-42
