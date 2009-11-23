@@ -13,6 +13,9 @@ November 2009
 	  versions for any registered entry, perhaps even in an RDF format.)
 	  Two ways to retrieve the metadata are demonstrated: directly from the model once
 	  the concrete ontology is retrieved; and via a DESCRIBE query.
+	  
+	- completed CIDEVDM-49 test, http://ci.oceanobservatories.org/tasks/browse/CIDEVDM-49
+	  These are some SPARQL queries. Output format "csv".
 
 2009-11-20
 	- completed CIDEVDM-42 test, http://ci.oceanobservatories.org/tasks/browse/CIDEVDM-42

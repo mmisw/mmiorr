@@ -84,7 +84,15 @@
 	  	</junit>
 	  </target>
 
-	<target name="allTests" depends="registrationTests,retrievalTests" 
+	  <target name="queryTests" depends="compile">
+	  	<junit printsummary="yes" haltonfailure="yes" fork="yes">
+	  	  <formatter type="plain" usefile="no" />
+	  	  <classpath refid="project.class.path"/>
+	  	  <test name="org.mmisw.mmiorr.client.test.QueryTest"/>
+	  	</junit>
+	  </target>
+
+	<target name="allTests" depends="registrationTests,retrievalTests,queryTests" 
 	  description="All tests starting from registration">
 	</target>
 

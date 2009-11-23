@@ -115,5 +115,15 @@ public class RetrieveOntology {
 		return httpGet(ontServiceRequest);
 	}
 	
+	/**
+	 * Issues a SPARQL query using HTTP GET
+	 */
+	public static RetrieveResult queryGet(String query, String format) throws Exception {
+		String ontServiceUrl = URI_RESOLVER;
+		query = URLEncoder.encode(query , "UTF-8");
+		String ontServiceRequest = ontServiceUrl + "?form=" +format+ "&sparql=" +query;
+		
+		return httpGet(ontServiceRequest);
+	}
 
 }

@@ -150,6 +150,28 @@ Retrieval and comparison tests
 	BUILD SUCCESSFUL
 	Total time: 1 second
 
+SPARQL queries
+	$ ant queryTests
+	Buildfile: build.xml
+	
+	compile:
+	
+	queryTests:
+	    [junit] Running org.mmisw.mmiorr.client.test.QueryTest
+	    [junit] Testsuite: org.mmisw.mmiorr.client.test.QueryTest
+	    [junit] Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.563 sec
+	    [junit] Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.563 sec
+	    [junit] ------------- Standard Output ---------------
+	    [junit] ** test47
+	    [junit] HTTP GET: http://mmisw.org/ont/?form=csv&sparql=SELECT+%3Fp+%3Fo+WHERE+%7B+++%3Chttp%3A%2F%2Fmotherlode.ucar.edu%3A8080%2Fthredds%2FfileServer%2Fstation%2Fmetar%2FSurface_METAR_20091106_0000.nc%3E+++%3Fp+%3Fo+%7D
+	    [junit] HTTP GET: http://mmisw.org/ont/?form=csv&sparql=PREFIX+rdfs%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E+SELECT+%3Fs+WHERE+%7B%3Fs+rdfs%3AisDefinedBy+%3Chttp%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2F%3E.+%7D+
+	    [junit] HTTP GET: http://mmisw.org/ont/?form=csv&sparql=PREFIX+rdf%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%3E+PREFIX+rdfs%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E+SELECT+%3Fcomment+WHERE+%7B+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23%3E+rdfs%3Acomment+%3Fcomment+%7D+
+	    [junit] ------------- ---------------- ---------------
+	    [junit] 
+	    [junit] Testcase: test47 took 0.552 sec
+	
+	BUILD SUCCESSFUL
+	Total time: 1 second
 
 
 ** Registering ontologies **
