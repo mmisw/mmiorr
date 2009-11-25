@@ -25,12 +25,28 @@ public class DotGeneratorProgram {
 	 */
 	public static void main(String[] args) {
 		
+		boolean classDiagram = false;   // TODO make this a parameter
+		
 		boolean includeLegend = false; // TODO make this a parameter
+		
 		
 		if (args.length == 0 ) {
 			args = new String[] {
+					
+//					"file:////Users/carueda/Desktop/OntDev/mydevice1.owl"
+					"file:////Users/carueda/Desktop/OntDev/BobMorris/cesn.rdf"
+//					"file:////Users/carueda/Desktop/OntDev/mmi-devices/myOrgDevices.owl"
+					
+//					"http://compass.edina.ac.uk/ontologies/instruments_v3.owl"
+					
+//					"file:///Users/carueda/mmiworkspace/ooi-semantic_prototype/src/main/resources/fui.owl"
+//					"file:///Users/carueda/mmiworkspace/ooi-semantic_prototype/src/main/resources/cdm.owl"
+					
+//					"file:///Users/carueda/mmiworkspace/mmisw/device.owl"
+					
 //					"http://mmisw.org/ont/mmi/device"
-					"file:///Users/carueda/mmiworkspace/mmisw/device.owl"
+//					"file:////Users/carueda/Desktop/OntDev/BobMorris/cesn-stripped.owl"
+//					"file:////Users/carueda/Desktop/OntDev/BobMorris/instrumentsByMfr.owl"
 //					"file:///Users/carueda/Desktop/OntDev/mmisw/device.owl"
 //					"http://mmisw.org/ont/mmi/20090512T011137/device"
 //					"http://mmisw.org/ont/univmemphis/20090422T011238/sensor"
@@ -43,6 +59,7 @@ public class DotGeneratorProgram {
 //					"file:///Users/carueda/Downloads/BioPortalMetadata_v0.2_v0.2.owl"
 //					"http://ontoware.org/frs/download.php/663/OMV_v2.4.1.owl"
 //					"http://mmisw.org/ont/mmi/20090519T125341/general"
+//					"http://ontoware.org/frs/download.php/663/OMV_v2.4.1.owl"
 			};
 		}
 		else if ( args[0].equals("--help") ) {
@@ -53,7 +70,7 @@ public class DotGeneratorProgram {
 		String uriModel = args[0];
 		Model model = loadModel(uriModel);
 		
-		DotGenerator dotGenerator = new DotGenerator(model, includeLegend);
+		DotGenerator dotGenerator = new DotGenerator(model, classDiagram, includeLegend);
 		
 		PrintWriter pw = new PrintWriter(System.out, true);
 		
@@ -64,6 +81,10 @@ public class DotGeneratorProgram {
 	private static OntModel loadModel(String uriModel) {
 		OntModel model = createDefaultOntModel();
 		uriModel = JenaUtil2.removeTrailingFragment(uriModel);
+		
+		model.setDynamicImports(false);
+		model.getDocumentManager().setProcessImports(false);
+		
 		model.read(uriModel);
 		return model;
 	}

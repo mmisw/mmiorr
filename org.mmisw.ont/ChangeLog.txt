@@ -5,6 +5,12 @@ $Id$
 ChangeLog
 
 
+2009-11-24   1.4.1.beta
+	- DotGenerator: generate instance diagram (see comments in the class).
+	  TODO: eventually provide this functionality in a separate module so it's easier
+	  to deploy as a standalone tool.
+	
+	
 2009-11-18   1.4.0.beta
 	Issue #222 - duplicate of issue #43: Handle non-UTF8 and UTF8 inputs
 	- New OntServlet.serializeModelToOutputStream(Model model, String lang, OutputStream os), 

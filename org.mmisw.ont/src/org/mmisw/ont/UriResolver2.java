@@ -176,8 +176,9 @@ public class UriResolver2 {
 			else if ( req.outFormat.equalsIgnoreCase("dot") ) {
 				req.response.setContentType("text/plain");
 				String ontologyUri = req.fullRequestedUri;
+				boolean classDiagram = Util.getParam(req.request, "cd", null) != null; 
 				boolean includeLegend = Util.getParam(req.request, "il", null) != null; 
-				DotGenerator dot = new DotGenerator(model, includeLegend);
+				DotGenerator dot = new DotGenerator(model, classDiagram, includeLegend);
 				StringWriter sw = new StringWriter();
 				dot.generateDot(sw, "Input: " +ontologyUri);
 				StringReader is = new StringReader(sw.toString());

@@ -20,11 +20,19 @@ import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 
 /**
  * Generates dot for a given ontology.
+ * 
+ * It currently works a bit differently depending on whether it is generating a
+ * class diagram (in particular to generate subClassOf connections) or
+ * an instance diagram. This doesn't need to be separated but it turnded out like
+ * because of very quick updates without much attention to any better strategy.
  * 
  * <p>
  * Preliminary implementation, functional but needs lots of code clean up.
@@ -34,28 +42,73 @@ import com.hp.hpl.jena.vocabulary.OWL;
  */
 public class DotGenerator {
 
-	private static String PREFIXES =
+	//use label instead of local name?
+	private static final boolean USE_LABEL = true;
+	
+	// do not include rdfs:comment when generating instance diagram?
+	private static final boolean IGNORE_RDFS_COMMENT = true;
+
+
+	private static final String PREFIXES =
 		"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
 		"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
 		"PREFIX owl: <http://www.w3.org/2002/07/owl#>\n"
 	;
 
+	
+	
+	private static final String CLASSES_QUERY = PREFIXES + 
+		"SELECT ?class " +
+		"WHERE { ?class rdf:type owl:Class . }"
+	;
+
+	private static final String INSTANCES_QUERY = PREFIXES + 
+		"SELECT ?instance " +
+		"WHERE { ?instance rdf:type ?class . }"
+	;
+
+	private static final String CLASS_STYLE = 
+		"[ " +
+			"shape=record, " +
+			"fillcolor=cornsilk, " +
+			"style=filled, " +
+			"fontname=\"helvetica\", " +
+			"fontsize=14, " +
+		"];"
+	;
+
+	private static final String INSTANCE_STYLE = 
+		"[ " +
+			"shape=box, " +
+			"fillcolor=burlywood1, " +
+			"style=filled, " +
+			"fontname=\"helvetica\", " +
+			"fontsize=12, " +
+		"]; "
+	;
+	
 
 	private Model ontModel;
 	private PrintWriter pw;
 	
 	private boolean includeLegend = false;
 	
+	
+	private boolean classDiagram = true;
+	
+	
 	/** 
-	 * Creates a dot generator
+	 * Creates a dot generator for a class diagram.
 	 * 
 	 * @param ontModel The model to read
-	 * @param ontologyUri corresponding URI
+	 * @param classDiagram true to generate class diagram; false to generate instance diagram
 	 */
-	public DotGenerator(Model ontModel, boolean includeLegend) {
+	public DotGenerator(Model ontModel, boolean classDiagram, boolean includeLegend) {
 		this.ontModel = ontModel;
 		this.includeLegend = includeLegend;
+		this.classDiagram = classDiagram;
 	}
+	
 
 	/**
 	 * Generates the dot.
@@ -100,27 +153,50 @@ public class DotGenerator {
 
 		pw.println();
 		
-		List<EntityInfo> entities = _classes();
+		List<EntityInfo> entities = _entities();
 		
-		for ( EntityInfo entityInfo : entities ) {
-			String name = entityInfo.getLocalName();
-			String label = "{ " +name;
-			
+		if ( classDiagram ) {
+			for ( EntityInfo entityInfo : entities ) {
+				String name = entityInfo.getLocalName();
+				String label = "{ " +name;
+				for ( PropValue pv : entityInfo.getProps() ) {
+					label += " |{" +pv.getPropName()+ " | " +pv.getValueName()+ " }";
+				}
+				label += " }";
 
-			for ( PropValue pv : entityInfo.getProps() ) {
-				label += " |{" +pv.getPropName()+ " | " +pv.getValueName()+ " }";
+				pw.println("  \"" +name+ "\"   [ shape=record, label=\"" +label+ "\" ]");
 			}
-			
-			
-			label += " }";
-			
-			pw.println("  \"" +name+ "\"   [ shape=record, label=\"" +label+ "\" ]");	
 		}
 	
 		pw.println();
 
-		_hierarchy(ontModel);
-		_objectProperties(ontModel);
+		if ( classDiagram ) {
+			_hierarchy(ontModel);
+			_objectProperties(ontModel);
+		}
+		else {
+			List<RdfTypeTriple> classes = _instanceProperties(ontModel);
+			for ( RdfTypeTriple rtt : classes ) {
+				pw.println("\n  \"" +rtt.className+ "\" " +CLASS_STYLE);
+			}
+			
+			for ( RdfTypeTriple rtt : classes ) {
+				
+				pw.println("  "
+						+ "\"" +rtt.className+ "\""
+						+ " -> " 
+						+ "\"" +rtt.instance+ "\""
+						+ "   [ " +
+								"label=\"" +"type"+ "\", " +
+								"dir=back, " +
+								"color=darkgreen, " +
+								"fontcolor=darkgreen, " +
+								"arrowtail=vee, " +
+							"]"
+				);	
+
+			}
+		}
 		
 		
 		if ( includeLegend ) {
@@ -146,13 +222,12 @@ public class DotGenerator {
 
 	
 	private void _outNodeStyles() {
-		pw.println("  node [ " +
-				"shape=box, " +
-				"fillcolor=cornsilk, " +
-				"style=filled, " +
-				"fontname=\"helvetica\", " +
-				"]; "
-		);
+		if ( classDiagram ) {
+			pw.println("  node " +CLASS_STYLE);
+		}
+		else {
+			pw.println("  node " +INSTANCE_STYLE);
+		}
 	}
 
 	
@@ -191,15 +266,11 @@ public class DotGenerator {
 
 
 	
-	private List<EntityInfo> _classes() {
+	private List<EntityInfo> _entities() {
 		
 		List<EntityInfo> entities = new ArrayList<EntityInfo>();
 		
-		final String CLASSES_QUERY = PREFIXES + 
-			"SELECT ?class " +
-			"WHERE { ?class rdf:type owl:Class . }"
-		;
-		Query query = QueryFactory.create(CLASSES_QUERY);
+		Query query = QueryFactory.create(classDiagram ? CLASSES_QUERY : INSTANCES_QUERY);
 		QueryExecution qe = QueryExecutionFactory.create(query, ontModel);
 		
 		ResultSet results = qe.execSelect();
@@ -250,6 +321,7 @@ public class DotGenerator {
 		return entities;
 	}
 	
+	// this is only for class diagram
 	private void _hierarchy(Model model) {
 		String SUBCLASS_QUERY = PREFIXES + 
 			"SELECT ?sub ?sup " +
@@ -341,7 +413,7 @@ public class DotGenerator {
 					continue;
 				}
 
-				String localName;
+				String localName = null;
 				
 				if ( rdfNode.isLiteral() ) {
 					Literal lit = (Literal) rdfNode;
@@ -349,7 +421,20 @@ public class DotGenerator {
 				}
 				else if ( rdfNode.isResource() ) {
 					Resource rsr = (Resource) rdfNode;
-					localName = rsr.getLocalName();
+					
+					if ( USE_LABEL ) {   
+						Statement stmt = rsr.getProperty(RDFS.label);
+						if ( stmt != null ) {
+							String label = stmt.getString();
+							if ( label != null && label.trim().length() > 0 ) {
+								localName = label;
+							}
+						}
+					}
+					
+					if ( localName == null ) {
+						localName = rsr.getLocalName();
+					}
 				}
 				else {
 					localName = String.valueOf(rdfNode);
@@ -370,8 +455,6 @@ public class DotGenerator {
 				_outObjectProp(domain, prop, range);
 			}
 		}
-		
-
 	}
 
 
@@ -407,8 +490,23 @@ public class DotGenerator {
 				if ( varName.equals("prop") ) {
 					if ( rdfNode.isResource() ) {
 						Resource r = (Resource) rdfNode;
-						propName = r.getLocalName();
 						propUri = r.getURI();
+
+						
+						if ( USE_LABEL ) {   
+							Statement stmt = r.getProperty(RDFS.label);
+							if ( stmt != null ) {
+								String label = stmt.getString();
+								if ( label != null && label.trim().length() > 0 ) {
+									propName = label;
+								}
+							}
+						}
+						
+						if ( propName == null ) {
+							propName = r.getLocalName();
+						}
+
 					}
 					else {
 						propName = rdfNode.toString();
@@ -453,6 +551,126 @@ public class DotGenerator {
 	}
 
 	
+	private static class RdfTypeTriple {
+		String instance;
+		String className;
+		
+		RdfTypeTriple(String instance, String className) {
+			this.instance = instance;
+			this.className = className;
+		}
+		
+	}
+	/**
+	 * this is only for instance diagram
+	 * @param model
+	 * @return list of classes
+	 */
+	private List<RdfTypeTriple> _instanceProperties(Model model) {
+		final String PROPERTIES_QUERY = PREFIXES + 
+			"SELECT ?sbj ?prd ?obj " +
+			"WHERE { ?sbj ?prd ?obj . }"
+		;
+		
+		
+		List<RdfTypeTriple> classes = new ArrayList<RdfTypeTriple>();
+		
+		Query query = QueryFactory.create(PROPERTIES_QUERY);
+		QueryExecution qe = QueryExecutionFactory.create(query, model);
+		
+		ResultSet results = qe.execSelect();
+		
+		while ( results.hasNext() ) {
+			QuerySolution sol = results.nextSolution();
+			
+			String prd = null;
+			String sbj = null;
+			String obj = null;
+			
+			Iterator<?> varNames = sol.varNames();
+			boolean isRdfType = false;
+			boolean isClassToOmit = false;
+			while ( varNames.hasNext() ) {
+				String varName = String.valueOf(varNames.next());
+				RDFNode rdfNode = sol.get(varName);
+				
+				if ( rdfNode.isAnon() ) {
+					continue;
+				}
+
+				if ( IGNORE_RDFS_COMMENT 
+				&& varName.equals("prd") && RDFS.comment.equals(rdfNode) ) {
+					continue;
+				}
+				
+				if ( varName.equals("prd") ) {
+					isRdfType = RDF.type.equals(rdfNode) ;
+				}
+				
+				String localName = null;
+				
+				if ( rdfNode.isLiteral() ) {
+					Literal lit = (Literal) rdfNode;
+					localName = String.valueOf(lit.getValue());
+				}
+				else if ( rdfNode.isResource() ) {
+					Resource rsr = (Resource) rdfNode;
+					
+					if ( varName.equals("obj") ) {
+						isClassToOmit =  
+							    OWL.Thing.equals(rsr)
+							||  OWL.Class.equals(rsr)
+							||  RDFS.Class.equals(rsr)
+						    ||  OWL.DatatypeProperty.equals(rsr)
+						    ||  OWL.ObjectProperty.equals(rsr)
+						;
+					}
+					
+					if ( USE_LABEL ) {   
+						Statement stmt = rsr.getProperty(RDFS.label);
+						if ( stmt != null ) {
+							String label = stmt.getString();
+							if ( label != null && label.trim().length() > 0 ) {
+								localName = label;
+							}
+						}
+					}
+					
+					if ( localName == null ) {
+						localName = rsr.getLocalName();
+					}
+				}
+				else {
+					localName = String.valueOf(rdfNode);
+				}
+				
+				if ( varName.equals("prd") ) {
+					prd = localName;
+				}
+				else if ( varName.equals("sbj") ) {
+					sbj = localName;
+				}
+				else if ( varName.equals("obj") ) {
+					obj = localName;
+				}
+			}
+			
+			if ( prd != null && sbj != null && obj != null ) {
+				if ( isRdfType ) {
+					if ( ! isClassToOmit ) {
+						classes.add(new RdfTypeTriple(sbj, obj));
+					}
+				}
+				else {
+					_outObjectProp(sbj, prd, obj);
+				}
+			}
+			
+		}
+		
+		return classes;
+	}
+
 	
 }
 
