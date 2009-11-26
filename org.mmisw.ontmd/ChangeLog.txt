@@ -3,6 +3,13 @@ Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
 
+2009-11-24   1.6.2.alpha6
+	- User account creation improved. Upon creation, the interface goes to the
+	  update mode of the panel.
+	Fixed Issue 226: Phone field is required
+	- It's optional now.
+
+
 2009-11-24   1.6.2.alpha5
 	Issue #222 - duplicate of issue #43: Handle non-UTF8 and UTF8 inputs
 	- Changes completed in iserver module.

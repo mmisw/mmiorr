@@ -209,17 +209,21 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 
 	public void userAccountCreatedOrUpdated(boolean created, final LoginResult loginResult) {
 		if ( created ) {
-			// the timer is to let the user account panel to show any final messages
-			// for a little while before going to a new page:
-			new Timer() {
-				public void run() {
-					loginOk(loginResult);
-				}
-			}.schedule(1000);
+			userAccountCreated(loginResult);
 		}
 		// Else: nothing--let the user account panel continue.
 	}
 
+	private void userAccountCreated(final LoginResult loginResult) {
+		// do the loginOk thing:
+		loginOk(loginResult);
+		// and refresh the user account in update mode:
+		DeferredCommand.addCommand(new Command() {
+			public void execute() {
+				dispatchUserAccount(true);
+			}
+		});
+	}
 	
 	public void loginOk(final LoginResult loginResult) {
 		pctrl.setLoginResult(loginResult);
@@ -260,7 +264,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 				dispatchSearchTerms();		
 			}
 			else if ( historyToken.toLowerCase().equals(PortalConsts.T_USER_ACCOUNT) ) {
-				dispatchCreateAccount();		
+				dispatchUserAccount(false);		
 			}
 			else if ( historyToken.toLowerCase().equals(PortalConsts.T_SIGN_IN) ) {
 				PortalControl.getInstance().userToSignIn();
@@ -299,7 +303,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 
 	
 	
-	private void dispatchCreateAccount() {
+	private void dispatchUserAccount(boolean accountJustCreated) {
 		OntologyPanel ontologyPanel = pctrl.getOntologyPanel();
 		if ( ontologyPanel != null ) {
 			ontologyPanel.cancel();
@@ -315,7 +319,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		
 	    bodyPanel.clear();
 		bodyPanel.add(userAccountPanel.getWidget());
-		userAccountPanel.dispatch();
+		userAccountPanel.dispatch(accountJustCreated);
 	}
 
 

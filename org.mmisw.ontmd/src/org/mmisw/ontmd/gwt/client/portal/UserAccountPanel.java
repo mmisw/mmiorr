@@ -9,6 +9,7 @@ import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.UserInfoResult;
 import org.mmisw.ontmd.gwt.client.Main;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CellPanel;
@@ -34,6 +35,8 @@ import com.google.gwt.user.client.ui.Widget;
  * @author Carlos Rueda
  */
 public class UserAccountPanel extends VerticalPanel {
+	private static final int MIN_PW_LENGHT = 6;
+
 	private final HorizontalPanel widget = new HorizontalPanel();
 	
 	private final CellPanel container = new VerticalPanel();
@@ -61,6 +64,8 @@ public class UserAccountPanel extends VerticalPanel {
 
 	
 	private final HTML statusLabel = new HTML("");
+
+	private boolean accountJustCreated;
 	
 	
 	private void _addTb(String name, String label) {
@@ -117,12 +122,12 @@ public class UserAccountPanel extends VerticalPanel {
 		return widget;
 	}
 	
-	public void dispatch() {
+	public void dispatch(boolean accountJustCreated) {
+		this.accountJustCreated = accountJustCreated;
 		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
 		String userLoggedIn = (loginResult != null && loginResult.getError() == null) ?
 				loginResult.getUserName() : null
 		;
-
 
 		String nameToFocus;
 		if ( userLoggedIn != null ) {
@@ -173,7 +178,12 @@ public class UserAccountPanel extends VerticalPanel {
 						}
 				    }
 
-					statusMessage("");
+					if ( accountJustCreated ) {
+						statusMessage("Your account has been created.");
+					}
+					else {
+						statusMessage("");
+					}
 				}
 				_enable(true);
 			}
@@ -287,10 +297,14 @@ public class UserAccountPanel extends VerticalPanel {
 			}
 			
 			if ( value.length() == 0 ) {
-				statusError("Missing value for field: " +entry.label);
-				tb.setFocus(true);
-				tb.selectAll();
-				return null;
+				// Issue 226: Phone field is required
+				// allow the following to be empty (optional):
+				if ( ! name.equals("phone") ) {
+					statusError("Missing value for field: " +entry.label);
+					tb.setFocus(true);
+					tb.selectAll();
+					return null;
+				}
 			}
 			else if ( name.equals("email") ) {
 				// basic check:  something@something:
@@ -317,6 +331,11 @@ public class UserAccountPanel extends VerticalPanel {
 			// now, check passwords:
 			if ( values.get("password").length() == 0 ) {
 				statusError("Missing password");
+				tbs.get("password").tb.setFocus(true);
+				return null;
+			}
+			else if ( GWT.isScript() && values.get("password").length() < MIN_PW_LENGHT ) {
+				statusError("Password too short");
 				tbs.get("password").tb.setFocus(true);
 				return null;
 			}
