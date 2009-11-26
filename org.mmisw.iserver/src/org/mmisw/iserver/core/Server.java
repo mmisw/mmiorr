@@ -35,7 +35,6 @@ import org.mmisw.iserver.core.util.MailSender;
 import org.mmisw.iserver.core.util.OntServiceUtil;
 import org.mmisw.iserver.core.util.QueryUtil;
 import org.mmisw.iserver.core.util.TempOntologyHelper;
-import org.mmisw.iserver.core.util.Utf8Util;
 import org.mmisw.iserver.core.util.Util2;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.BaseOntologyInfo;
@@ -50,7 +49,6 @@ import org.mmisw.iserver.gwt.client.rpc.MappingDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.OtherDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
-import org.mmisw.iserver.gwt.client.rpc.ReadFileResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
@@ -285,7 +283,7 @@ public class Server implements IServer {
 				catch (URISyntaxException e) {
 					// shouldn't happen.
 					
-					String error = "Shouldn't not happen: ont-resolvable URI is not an MmiUri: " 
+					String error = "Shouldn't happen: ont-resolvable URI is not an MmiUri: " 
 						+ontologyUri+ "  Error: " +e.getMessage();
 					log.error("getUnversionedToOntologyInfoListMap: " +error, e);
 					continue;
@@ -329,15 +327,17 @@ public class Server implements IServer {
 			
 		}
 		
-		// sort all list by descending versionNumber
+		// sort all lists by descending versionNumber
+		Comparator<RegisteredOntologyInfo> comparator = new Comparator<RegisteredOntologyInfo>() {
+			public int compare(RegisteredOntologyInfo arg0, RegisteredOntologyInfo arg1) {
+				return - arg0.getVersionNumber().compareTo(arg1.getVersionNumber());
+			}
+		};
 		for ( String unversionedUri : unversionedToVersioned.keySet() ) {
 			List<RegisteredOntologyInfo> versionedList = unversionedToVersioned.get(unversionedUri);
-			Collections.sort(versionedList, new Comparator<RegisteredOntologyInfo>() {
-				public int compare(RegisteredOntologyInfo arg0, RegisteredOntologyInfo arg1) {
-					return - arg0.getVersionNumber().compareTo(arg1.getVersionNumber());
-				}
-			});
+			Collections.sort(versionedList, comparator);
 		}
+		
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("getUnversionedToOntologyInfoListMap: " +unversionedToVersioned.size()+ " ontologies.");

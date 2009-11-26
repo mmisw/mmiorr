@@ -4,6 +4,11 @@ Created: 2009-05-13
 $Id$
 
 
+2009-11-24   1.6.2.alpha6
+	- UserAccountCreatorUpdater: detect duplicate username error to report a more
+	  meaningful error message.
+	  
+	
 2009-11-24   1.6.2.alpha5
 	Issue #222 - duplicate of issue #43: Handle non-UTF8 and UTF8 inputs
 	- NO conversions are attempted (I wrote some preliminary code for that but it's now

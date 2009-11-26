@@ -122,6 +122,16 @@ class UserAccountCreatorUpdater {
 			return;
 		}
 		
+		if ( xa.containsTag("errorCode") ) {
+			if ( response.contains("Duplicate") ) {
+				result.setError("Please try a different username");
+			}
+			else {
+				result.setError("Could not create/update account. Please try again later.");
+			}
+			return;
+		}
+		
 		// Assign appropriate values to loginResult object
 		String sessionId = xa.getString("success/sessionId");
 		String id = xa.getString("success/data/user/id");
