@@ -279,11 +279,13 @@ class RegisterNewPage1 extends BasePage {
 			public void onFailure(Throwable thr) {
 				enable(true);
 				Main.log("calling getTempOntologyInfo ... failure! ");
-				statusHtml.setHTML("<font color=\"red\">Error</font>");
 				String error = thr.getClass().getName()+ ": " +thr.getMessage();
 				while ( (thr = thr.getCause()) != null ) {
 					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
 				}
+				statusHtml.setHTML("<font color=\"red\">Error</font>"
+//						+"<pre>" +error+ "</pre>"
+				);
 				Window.alert(error);
 			}
 
@@ -398,9 +400,13 @@ class RegisterNewPage1 extends BasePage {
 		String error = tempOntologyInfo.getError();
 		if ( error != null ) {
 			nextButton.setEnabled(false);
-			statusHtml.setHTML("<font color=\"red\">Error</font>");
+			statusHtml.setHTML("<font color=\"red\">Error: Make sure it is an RDF file in UTF-8 encoding.</font>"
+//					+"<br/>" +
+//					error.replaceAll("\n|\n\r|\r", "\n<br/>")
+//					+ "</pre>"
+			);
 			Window.alert("Error reading file.\n" +
-					"Make sure it is an RDF file in ASCII or UTF-8 encoding.\n" +
+					"Make sure it is an RDF file in UTF-8 encoding.\n" +
 					"\n" +
 					"Server reports:\n\n" +error);
 			return;

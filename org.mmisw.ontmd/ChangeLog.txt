@@ -3,8 +3,19 @@ Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
 
+2009-11-24   1.6.2.alpha5
+	Issue #222 - duplicate of issue #43: Handle non-UTF8 and UTF8 inputs
+	- Changes completed in iserver module.
+	- Detection of non-UTF-8 tested with {iserver}/resource/theme-windows-1250.owl
+	- In general, the handling of UTF-8 should be complete now.
+
+2009-11-18   1.6.2.alpha5
+	issue #138: Can't select AGU as authority abbreviation
+	- FieldWithChoose: make sure no item is selected so we get an change event on the 
+	  first item (needed for firefox at least).
+	
 2009-11-17   1.6.2.alpha5
-	Issue #222 - duplicate of issue #43: Handle non-UTF8 inputs 
+	Issue #222 - duplicate of issue #43: Handle non-UTF8 and UTF8 inputs
 	As part of this revision, I did this adjustment:
 	- UploadServlet: uploaded file should be handled as binary, so now a
 	   FileOutputStream is used to capture the contents instead of a FileWriter.

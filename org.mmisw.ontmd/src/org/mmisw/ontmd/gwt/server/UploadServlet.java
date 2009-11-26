@@ -1,10 +1,7 @@
 package org.mmisw.ontmd.gwt.server;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.List;
@@ -18,7 +15,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -179,14 +175,21 @@ public class UploadServlet extends HttpServlet {
 		
 		String sessionId = request.getSession().getId();
 		File file = File.createTempFile("ontmd_" +sessionId+"_", ".tmp", preUploadsDir );
-		InputStream is = item.getInputStream();
-		OutputStream os = new FileOutputStream(file);
-		// don't use PrintWriter os = new PrintWriter(file) to avoid any potential conversions;
-		// the file should be handled as binary.
-		IOUtils.copy(is, os);
-
-		os.flush();
-		os.close();
+		
+		try {
+			item.write(file);
+		}
+		catch (Exception e) {
+			throw new IOException("Cannot write uploaded file to " +file);
+		}
+//		InputStream is = item.getInputStream();
+//		OutputStream os = new FileOutputStream(file);
+//		// don't use PrintWriter os = new PrintWriter(file) to avoid any potential conversions;
+//		// the file should be handled as binary.
+//		IOUtils.copy(is, os);
+//
+//		os.flush();
+//		os.close();
 
 		return file;
 	}
