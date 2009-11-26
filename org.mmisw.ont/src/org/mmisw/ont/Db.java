@@ -121,14 +121,7 @@ public class Db {
 			throw new ServletException(e);
 		}
 		finally {
-			if ( _con != null ) {
-				try {
-					_con.close();
-				}
-				catch (SQLException e) {
-					log.warn("Error closing connection", e);
-				}
-			}
+			_closeConnectionQuietly(_con);
 		}
 		
 		return null;
@@ -190,14 +183,7 @@ public class Db {
 			throw new ServletException(e);
 		}
 		finally {
-			if ( _con != null ) {
-				try {
-					_con.close();
-				}
-				catch (SQLException e) {
-					log.warn("Error closing connection", e);
-				}
-			}
+			_closeConnectionQuietly(_con);
 		}
 		
 		return null;
@@ -355,14 +341,7 @@ public class Db {
 			throw new ServletException(e);
 		}
 		finally {
-			if ( _con != null ) {
-				try {
-					_con.close();
-				}
-				catch (SQLException e) {
-					log.warn("Error closing connection", e);
-				}
-			}
+			_closeConnectionQuietly(_con);
 		}
 		
 		return onts;
@@ -380,11 +359,14 @@ public class Db {
 	}
 
 	/**
-	 * Returns the list of the latest versions of all ontologies in the database.
+	 * Returns the list of all ontologies in the database.
 	 * 
 	 * @return
 	 * @throws ServletException
+	 * @deprecated Use {@link #getAllOntologies(boolean)}
 	 */
+	// TODO Remove this deprecated method
+	@Deprecated
 	List<Ontology> getOntologies() throws ServletException {
 		List<Ontology> onts = new ArrayList<Ontology>();
 		Connection _con = null;
@@ -416,17 +398,93 @@ public class Db {
 			throw new ServletException(e);
 		}
 		finally {
-			if ( _con != null ) {
-				try {
-					_con.close();
-				}
-				catch (SQLException e) {
-					log.warn("Error closing connection", e);
-				}
-			}
+			_closeConnectionQuietly(_con);
 		}
 	
 		return onts;
+	}
+
+	
+	/**
+	 * Gets the list of registered ontologies.
+	 * Always with URIs in *versioned* form for the full-hosted entries.
+	 * 
+	 * @param allVersions true to report ALL versions of all ontologies;
+	 *                    false to return just the lastest versions
+	 * @return
+	 * @throws ServletException
+	 */
+	List<Ontology> getAllOntologies(boolean allVersions) throws ServletException {
+		
+		List<Ontology> onts = new ArrayList<Ontology>();
+		Map<String,Ontology> mostRecent = new LinkedHashMap<String,Ontology>();
+		
+		// If allVersions==true, we add to onts immediately; otherwise
+		// we keep track of the most recent ontology for each ontology_id in mostRecent.
+		// See below.
+		
+		Connection _con = null;
+		try {
+			_con = getConnection();
+			Statement _stmt = _con.createStatement();
+
+			// note that this is sorted in increasing ontology_id,version_number
+			String query = 
+				"select v.id, v.ontology_id, v.file_path, f.filename, v.urn " +
+				"from v_ncbo_ontology v, ncbo_ontology_file f " +
+				"where v.id = f.ontology_version_id " +
+				"order by v.ontology_id, v.version_number";
+
+			ResultSet rs = _stmt.executeQuery(query);
+			
+	        while ( rs.next() ) {
+
+	        	Ontology ontology = new Ontology();
+	        	ontology.id = rs.getString(1);
+	        	ontology.ontology_id = rs.getString(2);
+	        	ontology.file_path = rs.getString(3);
+	        	ontology.filename = rs.getString(4);
+	        	ontology.setUri(rs.getString(5));
+	        	
+	        	if ( allVersions ) {
+	        		// just add item immediately:
+	        		onts.add(ontology);
+	        	}
+	        	else {
+	        		// "update" the most recent item for this ontology_id
+	        		mostRecent.put(ontology.ontology_id, ontology);
+	        	}
+	        }
+
+	        if ( allVersions ) {
+	        	// just return the list
+	        	return onts;
+	        }
+	        else {
+	        	// add all the most recent items:
+	        	for ( Ontology ontology : mostRecent.values() ) {
+	        		onts.add(ontology);
+	        	}
+	        	return onts;
+	        }
+		} 
+		catch (SQLException e) {
+			throw new ServletException(e);
+		}
+		finally {
+			_closeConnectionQuietly(_con);
+		}
+	}
+	
+	private void _closeConnectionQuietly(Connection _con) {
+		if ( _con != null ) {
+			try {
+				_con.close();
+			}
+			catch (SQLException e) {
+				log.error("error closing connection", e);
+			}
+		}		
 	}
 
 	/**
@@ -468,14 +526,7 @@ public class Db {
 			throw new ServletException(e);
 		}
 		finally {
-			if ( _con != null ) {
-				try {
-					_con.close();
-				}
-				catch (SQLException e) {
-					log.warn("Error closing connection", e);
-				}
-			}
+			_closeConnectionQuietly(_con);
 		}
 	}
 }

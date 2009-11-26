@@ -5,6 +5,14 @@ $Id$
 ChangeLog
 
 
+2009-11-24   1.4.2.beta
+	Fixed Issue 223: ontology graph with all versions
+	- Db.getOntologies() deprecated: the comment says "Returns the list of the latest versions..." but that
+	  is not accurate; it returns all versions.
+	- new method getAllOntologies(boolean allVersions) with the correct behavior.
+	- Called in OntGraph._doInitModel.
+	  
+	
 2009-11-24   1.4.1.beta
 	- DotGenerator: generate instance diagram (see comments in the class).
 	  TODO: eventually provide this functionality in a separate module so it's easier

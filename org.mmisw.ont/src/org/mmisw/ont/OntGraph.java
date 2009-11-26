@@ -28,7 +28,7 @@ import edu.drexel.util.rdf.JenaUtil;
 
 
 /**
- * Handles the "big" graph of all existing ontologies.
+ * Handles the "big" graph of all registered ontologies.
  * 
  * @author Carlos Rueda
  */
@@ -85,8 +85,8 @@ public class OntGraph {
 
 
 	/**
-	 * Initializes the graph with all ontologies 
-	 * as returned by {@link org.mmisw.ont.Db#getOntologies()}.
+	 * Initializes the graph with all latest version of the ontologies 
+	 * as returned by {@link org.mmisw.ont.Db#getAllOntologies(boolean) with false argument}.
 	 * 
 	 * <p>
 	 * Inference is enabled by default. If inference should be disabled,
@@ -132,10 +132,18 @@ public class OntGraph {
 		_model = ModelFactory.createDefaultModel();
 		
 		// get the list of (latest-version) ontologies:
-		List<Ontology> onts = db.getOntologies();
+		// fixed Issue 223: ontology graph with all versions
+		// now using new correct method to obtain the latest versions:
+		final boolean allVersions = false;
+		List<Ontology> onts = db.getAllOntologies(allVersions);
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("Using unversioned ontologies: " +USE_UNVERSIONED);
+			
+			log.debug("About to load the following ontologies: ");
+			for ( Ontology ontology : onts ) {
+				log.debug(ontology.ontology_id+ " :: " +ontology.getUri());
+			}
 		}
 		
 		for ( Ontology ontology : onts ) {
