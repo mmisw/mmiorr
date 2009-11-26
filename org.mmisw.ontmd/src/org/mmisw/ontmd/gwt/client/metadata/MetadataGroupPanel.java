@@ -198,11 +198,15 @@ public class MetadataGroupPanel extends VerticalPanel {
 					}
 				}
 			}
-			
-			else {
+			else if ( !editing ) {
 				int nl = attr.getNumberOfLines();
 				ViewOnlyCell voCell = new ViewOnlyCell(nl, "600");
 				widget = voCell;
+			}
+			else {
+				int nl = attr.getNumberOfLines();
+				TextBoxBase tb = Util.createTextBoxBase(nl, "600", cl);
+				widget = tb;
 			}
 			
 			if ( resourceTypeWidget != null && resourceTypeWidget.resourceTypeAttrDef == attr ) {
