@@ -130,6 +130,7 @@ public class Portal {
 				}
 				else {
 					main.startGui(params, portalMainPanel);
+					portalMainPanel.dispatch();
 				}
 			}
 		};
@@ -151,6 +152,7 @@ public class Portal {
 				Main.log("login error: " +error);
 				Main.log("Continuing with startGui");
 				main.startGui(params, portalMainPanel);
+				portalMainPanel.dispatch();
 			}
 
 			public void onSuccess(LoginResult loginResult) {
@@ -165,6 +167,7 @@ public class Portal {
 				}
 				PortalControl.getInstance().loginOk(loginResult);
 				main.startGui(params, portalMainPanel);
+				portalMainPanel.dispatch();
 			}
 			
 		};

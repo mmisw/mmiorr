@@ -135,7 +135,10 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	    this.add(headerPanel);
 	    this.add(controlsPanel);
 	    this.add(bodyPanel);
-
+	    
+	}
+	
+	void dispatch() {
 	    String historyToken = History.getToken();
 	    if ( historyToken != null && historyToken.trim().length() > 0 ) {
 			Main.log("history token = " +historyToken);

@@ -5,7 +5,10 @@ $Id$
 
 2009-11-24   1.6.2.alpha7
 	- some improvement in display of metadata in view-only mode: not using
-	  a textbox but HTML. This is also preparation to include clickable links
+	  a textbox but HTML. This is also preparation to include clickable links.
+	  
+	- direct visit to ...#voc2rdf and ...#vine didn't properly check that the user
+	  may be already logged in. Now it goes to the tool immediately if the user is logged in.
 	  
 	  
 2009-11-24   1.6.2.alpha6
