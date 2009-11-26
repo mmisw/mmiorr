@@ -3,6 +3,11 @@ Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
 
+2009-11-24   1.6.2.alpha7
+	- some improvement in display of metadata in view-only mode: not using
+	  a textbox but HTML. This is also preparation to include clickable links
+	  
+	  
 2009-11-24   1.6.2.alpha6
 	- User account creation improved. Upon creation, the interface goes to the
 	  update mode of the panel.

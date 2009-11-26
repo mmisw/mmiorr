@@ -18,6 +18,7 @@ import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -42,6 +43,30 @@ public class MetadataGroupPanel extends VerticalPanel {
 			super();
 			this.attr = attr;
 			this.widget = widget;
+		}
+	}
+	
+	
+	private static class ViewOnlyCell extends HorizontalPanel {
+		// a TextBoxBase was used before.
+//		TextBoxBase tb = Util.createTextBoxBase(nl, "900", cl);
+//		widget = tb;
+
+		private HTML html = new HTML();
+		
+		public ViewOnlyCell(int nl, String width) {
+			super();
+			setSpacing(5);
+			setWidth(width);
+			add(html);
+		}
+
+		public String getText() {
+			return html.getText();
+		}
+
+		public void setText(String value) {
+			html.setText(value);
 		}
 	}
 	
@@ -90,6 +115,11 @@ public class MetadataGroupPanel extends VerticalPanel {
 
 	private Widget createForm(boolean editing) {
 		FlexTable panel = new FlexTable();
+		
+		if ( ! editing ) {
+			panel.setStylePrimaryName("MetadataPanel");
+			panel.setBorderWidth(1);
+		}
 		
 		int row = 0;
 
@@ -171,8 +201,8 @@ public class MetadataGroupPanel extends VerticalPanel {
 			
 			else {
 				int nl = attr.getNumberOfLines();
-				TextBoxBase tb = Util.createTextBoxBase(nl, "500", cl);
-				widget = tb;
+				ViewOnlyCell voCell = new ViewOnlyCell(nl, "600");
+				widget = voCell;
 			}
 			
 			if ( resourceTypeWidget != null && resourceTypeWidget.resourceTypeAttrDef == attr ) {
@@ -187,12 +217,14 @@ public class MetadataGroupPanel extends VerticalPanel {
 			                  attr.getTooltip() +
 			                  "<br/><br/><div align=\"right\">(" +attr.getUri()+ ")</div>";
 			panel.setWidget(row, 0, new TLabel(label, editing && attr.isRequired(), tooltip ));
-
-			panel.setWidget(row, 1, widget);
+			
+//			panel.getFlexCellFormatter().addStyleName(row, 0, "MetadataPanel-header");
 			panel.getFlexCellFormatter().setWidth(row, 0, "250");
 			panel.getFlexCellFormatter().setAlignment(row, 0, 
 					HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
 			);
+
+			panel.setWidget(row, 1, widget);
 			panel.getFlexCellFormatter().setAlignment(row, 1, 
 					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 			);
@@ -286,6 +318,9 @@ public class MetadataGroupPanel extends VerticalPanel {
 			
 			if ( elem.widget instanceof TextBoxBase ) {
 				value = ((TextBoxBase) elem.widget).getText();
+			}
+			else if ( elem.widget instanceof ViewOnlyCell ) {
+				value = ((ViewOnlyCell) elem.widget).getText();
 			}
 			else if ( elem.widget instanceof ListBox ) {
 				ListBox lb = (ListBox) elem.widget;
@@ -452,6 +487,9 @@ public class MetadataGroupPanel extends VerticalPanel {
 			
 			if ( elem.widget instanceof TextBoxBase ) {
 				((TextBoxBase) elem.widget).setText(value);
+			}
+			if ( elem.widget instanceof ViewOnlyCell ) {
+				((ViewOnlyCell) elem.widget).setText(value);
 			}
 			else if ( elem.widget instanceof ListBox ) {
 				ListBox lb = (ListBox) elem.widget;

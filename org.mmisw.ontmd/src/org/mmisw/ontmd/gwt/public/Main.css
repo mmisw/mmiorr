@@ -246,4 +246,20 @@ SearchResultsTable {
 }
   
 
+.MetadataPanel {
+  background-color: #ffffff;
+  border-spacing: 0px;
+  border-collapse: collapse;
+  border: 1px solid #dee7ec;
+  padding: 3px;
+}
+
+.MetadataPanel-header {
+  text-align: right;
+  width: 250px;
+  padding: 3px;
+  border: 1px solid #dee7ec;
+  background-color: #eef7fc;
+}
+
 
