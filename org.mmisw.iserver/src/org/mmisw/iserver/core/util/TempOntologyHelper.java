@@ -84,20 +84,22 @@ public class TempOntologyHelper {
 		
 		File file = new File(full_path);
 		
-		try {
-			Utf8Util.verifyUtf8(file);
-		}
-		catch (Exception e) {
-			String error = "Error in file: " +e.getMessage();
-			log.error(error, e);
-			tempOntologyInfo.setError(error);
-			return tempOntologyInfo;
-		}
-		
 		String rdf;
 		
 		try {
-			rdf = Util2.readRdf(file);
+			rdf = Util2.readRdfWithCheckingUtf8(file);
+			
+			// conversion to UTF-8: the following code was not finally enabled
+//			ReadFileResult result = Utf8Util.readFileWithConversionToUtf8(file);
+//			if ( result.getError() != null ) {
+//				String error = "Cannot read RDF model: " +full_path+ " : " +result.getError()+ "\n"
+//					+ result.getLogInfo();
+//				log.info(error);
+//				tempOntologyInfo.setError(error);
+//				return tempOntologyInfo;
+//			}
+//			System.out.println(result.getLogInfo());
+//			rdf = result.getContents();
 		}
 		catch (Throwable e) {
 			String error = "Cannot read RDF model: " +full_path+ " : " +e.getMessage();
@@ -106,6 +108,7 @@ public class TempOntologyHelper {
 			return tempOntologyInfo;
 		}
 
+		
 		if ( includeRdf ) {
 			tempOntologyInfo.setRdf(rdf);
 		}

@@ -363,6 +363,24 @@ public class Util2 {
 			// XML parse exception?
 			String errorMessage = getXmlParseExceptionErrorMessage(jenaExc);
 			if ( errorMessage != null ) {
+				// Ok, we know it's a parse exception and we could throw error right here;
+				
+				// But let's try to capture what the possible charsets are:
+				// TODO: this re-test may be adding significant processing time especially for large
+				// files--the overall detection/verification mechanism should a one-pass thing.
+				
+				try {
+					Utf8Util.verifyUtf8(file);
+				}
+				catch (Exception utfExc) {
+					String utfError = utfExc.getMessage();
+					errorMessage += "\n\n" + utfError;
+				}
+				
+				if ( log.isDebugEnabled() ) {
+					log.debug("readRdfWithCheckingUtf8: " +errorMessage);
+				}
+				
 				throw new IOExceptionWithCause(errorMessage, jenaExc);
 			}
 			
@@ -374,7 +392,7 @@ public class Util2 {
 				Utf8Util.verifyUtf8(file);
 			}
 			catch (Exception utfExc) {
-				// yes, it seems the problem is the encoding"
+				// yes, it seems the problem is the encoding
 				String error = jenaExc.getMessage();
 				jenaExc.printStackTrace();
 				throw new IOExceptionWithCause(error, jenaExc);
@@ -388,7 +406,7 @@ public class Util2 {
 		InputStream is = null;
 		try {
 			is = new FileInputStream(file);
-			String rdf = IOUtils.toString(is);
+			String rdf = IOUtils.toString(is, "UTF-8");
 			return rdf;
 		}
 		finally {
@@ -436,11 +454,17 @@ public class Util2 {
 
 			// other kind of problem:
 			String error = jenaExc.getClass().getName()+ " : " +jenaExc.getMessage();
-			throw new IOException(error);
+			throw new IOExceptionWithCause(error, jenaExc);
 		}	
 	}
 	
 	
+	/**
+	 * Helper to determine it's a SAXParseException so we can provide a bit of more
+	 * information.
+	 * @param jenaExc
+	 * @return
+	 */
 	private static String getXmlParseExceptionErrorMessage(Throwable jenaExc) {
 		if ( ! (jenaExc instanceof JenaException ) ) {
 			return null;
@@ -452,7 +476,7 @@ public class Util2 {
 		}
 		
 		SAXParseException spe = (SAXParseException) cause;
-		String errorMessage = spe.toString() +
+		String errorMessage = spe.getMessage() +
 			"\n  Line number: " + spe.getLineNumber()+" Column number: " +spe.getColumnNumber()
 //			+(spe.getPublicId() != null ? "\n Public ID: " + spe.getPublicId() : "" )
 //			+(spe.getSystemId() != null ? "\n System ID: " + spe.getSystemId() : "" )

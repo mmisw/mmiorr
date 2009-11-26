@@ -4,8 +4,22 @@ Created: 2009-05-13
 $Id$
 
 
+2009-11-24   1.6.2.alpha5
+	Issue #222 - duplicate of issue #43: Handle non-UTF8 and UTF8 inputs
+	- NO conversions are attempted (I wrote some preliminary code for that but it's now
+	  commented out.  See Utf8Util.convertToUtf8).
+	- Instead, the file is tried to be read with Jena and, if it fails, then the catched exception is
+	  examined to extract any parse-exception; also the Utf8Util'ity to verify UTF-8 is called
+	  to complement the message with the possible charsets.
+	- Tested with resource/theme-windows-1250.owl (a file in windows-1250 encoding)
+	- In general, the handling of UTF-8 should be complete now.
+	  
+	
+2009-11-18   1.6.2.alpha5
+	- OntologyUploader: set "UTF-8" charset explicitly to the filePart
+
 2009-11-17   1.6.2.alpha5
-	Issue #222 - duplicate of issue #43: Handle non-UTF8 inputs 
+	Issue #222 - duplicate of issue #43: Handle non-UTF8 and UTF8 inputs
 	
 	New Utf8Util.readFileWithConversionToUtf8: tested internally but yet to be called at
 	appropriate places.  TODO

@@ -31,11 +31,12 @@ import com.hp.hpl.jena.vocabulary.DC;
 class OntologyUploader {
 	
 	static final String ONTOLOGIES  = "/ontologies";
+
+	private static final String CHARSET_UTF8 = "UTF-8";
 	
 	private final Log log = LogFactory.getLog(OntologyUploader.class);
 	
-	
-	private PartSource partSource;
+	private FilePart filePart;
 	private String uri;
 	private LoginResult loginResult;
 	
@@ -63,14 +64,16 @@ class OntologyUploader {
 			String ontologyId, String ontologyUserId,
 			Map<String, String> values
 	) throws Exception {
-		PartSource partSource = new ByteArrayPartSource(fileName, RDF.getBytes());
 		
-		this.partSource = partSource;
 		this.uri = uri;
 		this.loginResult = loginResult;
 		this.ontologyId = ontologyId;
 		this.ontologyUserId = ontologyUserId;
 		this.values = values;
+		
+		PartSource partSource = new ByteArrayPartSource(fileName, RDF.getBytes(CHARSET_UTF8));
+		filePart = new FilePart("filePath", partSource);
+		filePart.setCharSet(CHARSET_UTF8);
 	}
 	
 
@@ -93,7 +96,7 @@ class OntologyUploader {
 		try {
 			List<Part> partList = new ArrayList<Part>();
 			
-			partList.add(new FilePart("filePath", partSource));
+			partList.add(filePart);
 			partList.add(new StringPart("sessionid", sessionId));
 			
 			

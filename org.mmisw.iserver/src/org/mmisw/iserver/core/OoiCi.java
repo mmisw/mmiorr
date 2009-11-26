@@ -1,7 +1,6 @@
 package org.mmisw.iserver.core;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
@@ -9,10 +8,12 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.util.OntServiceUtil;
+import org.mmisw.iserver.core.util.Utf8Util;
 import org.mmisw.iserver.core.util.Util2;
 import org.mmisw.iserver.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
+import org.mmisw.iserver.gwt.client.rpc.ReadFileResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
@@ -62,10 +63,24 @@ public class OoiCi {
 		File file = new File(full_path);
 		String rdf;
 		try {
-			rdf = Util2.readRdf(file);
+//			rdf = Util2.readRdf(file);
+			rdf = Util2.readRdfWithCheckingUtf8(file);
+			
+			// conversion to UTF-8: the following code was not finally enabled
+//			ReadFileResult result = Utf8Util.readFileWithConversionToUtf8(file);
+//			if ( result.getError() != null ) {
+//				String error = "Cannot read RDF model: " +full_path+ " : " +result.getError()+ "\n"
+//					+ result.getLogInfo();
+//				log.info(error);
+//				registerOntologyResult.setError(error);
+//				return registerOntologyResult;
+//			}
+//			System.out.println(result.getLogInfo());
+//			rdf = result.getContents();
+			
 		}
-		catch (IOException e) {
-			String error = "Unexpected: IO error while reading from: " +full_path+ " : " +e.getMessage();
+		catch (Throwable e) {
+			String error = "Unexpected: error while reading from: " +full_path+ " : " +e.getMessage();
 			log.info(error);
 			registerOntologyResult.setError(error);
 			return registerOntologyResult;

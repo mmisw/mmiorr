@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -49,6 +50,7 @@ import org.mmisw.iserver.gwt.client.rpc.MappingDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.OtherDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
+import org.mmisw.iserver.gwt.client.rpc.ReadFileResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
@@ -967,19 +969,9 @@ public class Server implements IServer {
 			log.info("Loading model: " +full_path);
 
 			File file = new File(full_path);
-			try {
-				Utf8Util.verifyUtf8(file);
-			}
-			catch (Exception e) {
-				String error = "Error reading model: " +e.getMessage();
-				log.error(error, e);
-				createOntologyResult.setError(error);
-				return createOntologyResult;
-			}
 			
-			String uriFile = file.toURI().toString();
 			try {
-				model = JenaUtil.loadModel(uriFile, false);
+				model = Util2.loadModelWithCheckingUtf8(file);
 			}
 			catch ( Throwable ex ) {
 				String error = "Unexpected error: " +ex.getClass().getName()+ " : " +ex.getMessage();
@@ -1171,7 +1163,7 @@ public class Server implements IServer {
 		String rdf = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV") ;  // XXX newOntModel);
 		
 		//TODO: pons: print result RDF for testing
-		System.out.println(rdf);
+		//System.out.println(rdf);
 		if ( log.isDebugEnabled() ) {
 			if ( createOntologyResult.isPreserveOriginalBaseNamespace() ) {
 				log.debug(rdf);
@@ -1187,25 +1179,7 @@ public class Server implements IServer {
 		File reviewedFile = new File(previewDir, newContentsFileName);
 		createOntologyResult.setFullPath(reviewedFile.getAbsolutePath());
 
-		PrintWriter os;
-		try {
-			os = new PrintWriter(reviewedFile);
-		}
-		catch (FileNotFoundException e) {
-			log.info("Unexpected: file not found: " +reviewedFile);
-			createOntologyResult.setError("Unexpected: file not found: " +reviewedFile);
-			return createOntologyResult;
-		}
-		StringReader is = new StringReader(rdf);
-		try {
-			IOUtils.copy(is, os);
-			os.flush();
-		}
-		catch (IOException e) {
-			log.info("Unexpected: IO error while writing to: " +reviewedFile);
-			createOntologyResult.setError("Unexpected: IO error while writing to: " +reviewedFile);
-			return createOntologyResult;
-		}
+		_writeRdfToFile(rdf, reviewedFile, createOntologyResult);
 
 		// Done.
 
@@ -1311,19 +1285,9 @@ public class Server implements IServer {
 			log.info("Loading model: " +full_path);
 
 			File file = new File(full_path);
-			try {
-				Utf8Util.verifyUtf8(file);
-			}
-			catch (Exception e) {
-				String error = "Error reading model: " +e.getMessage();
-				log.error(error, e);
-				createOntologyResult.setError(error);
-				return createOntologyResult;
-			}
 			
-			String uriFile = file.toURI().toString();
 			try {
-				model = OntModelUtil.loadModel(uriFile, false);
+				model = Util2.loadModelWithCheckingUtf8(file);
 			}
 			catch ( Throwable ex ) {
 				String error = "Unexpected error: " +ex.getClass().getName()+ " : " +ex.getMessage();
@@ -1505,15 +1469,33 @@ public class Server implements IServer {
 		
 		File reviewedFile = new File(previewDir, newContentsFileName);
 		createOntologyResult.setFullPath(reviewedFile.getAbsolutePath());
+		
+		_writeRdfToFile(rdf, reviewedFile, createOntologyResult);
 
+		// Done.
+
+		return createOntologyResult;
+	}
+
+	
+	
+	
+	private void _writeRdfToFile(String rdf, File reviewedFile, CreateOntologyResult createOntologyResult) {
 		PrintWriter os;
 		try {
-			os = new PrintWriter(reviewedFile);
+			// #43: Handle non-UTF8 inputs
+			// Previously new PrintWriter(reviewedFile) ie., default charset; now "UTF-8":
+			os = new PrintWriter(reviewedFile, "UTF-8");
 		}
 		catch (FileNotFoundException e) {
 			log.info("Unexpected: file not found: " +reviewedFile);
 			createOntologyResult.setError("Unexpected: file not found: " +reviewedFile);
-			return createOntologyResult;
+			return;
+		}
+		catch (UnsupportedEncodingException e) {
+			log.info("Unexpected: cannot create file in UTF-8 encoding: " +reviewedFile);
+			createOntologyResult.setError("cannot create file in UTF-8 encoding: " +reviewedFile);
+			return;
 		}
 		StringReader is = new StringReader(rdf);
 		try {
@@ -1523,16 +1505,10 @@ public class Server implements IServer {
 		catch (IOException e) {
 			log.info("Unexpected: IO error while writing to: " +reviewedFile);
 			createOntologyResult.setError("Unexpected: IO error while writing to: " +reviewedFile);
-			return createOntologyResult;
+			return;
 		}
-
-		// Done.
-
-		return createOntologyResult;
 	}
 
-	
-	
 	
 	// TODO remove when new mechanism is in place.
 	private CreateOntologyResult createOntology_oldMethod(CreateOntologyInfo createOntologyInfo) {
@@ -1768,19 +1744,9 @@ public class Server implements IServer {
 			log.info("Loading model: " +full_path);
 
 			File file = new File(full_path);
-			try {
-				Utf8Util.verifyUtf8(file);
-			}
-			catch (Exception e) {
-				String error = "Error reading model: " +e.getMessage();
-				log.error(error, e);
-				createOntologyResult.setError(error);
-				return createOntologyResult;
-			}
 			
-			String uriFile = file.toURI().toString();
 			try {
-				model = JenaUtil.loadModel(uriFile, false);
+				model = Util2.loadModelWithCheckingUtf8(file);
 			}
 			catch ( Throwable ex ) {
 				String error = "Unexpected error: " +ex.getClass().getName()+ " : " +ex.getMessage();
@@ -2009,25 +1975,7 @@ public class Server implements IServer {
 		File reviewedFile = new File(previewDir, newContentsFileName);
 		createOntologyResult.setFullPath(reviewedFile.getAbsolutePath());
 
-		PrintWriter os;
-		try {
-			os = new PrintWriter(reviewedFile);
-		}
-		catch (FileNotFoundException e) {
-			log.info("Unexpected: file not found: " +reviewedFile);
-			createOntologyResult.setError("Unexpected: file not found: " +reviewedFile);
-			return createOntologyResult;
-		}
-		StringReader is = new StringReader(rdf);
-		try {
-			IOUtils.copy(is, os);
-			os.flush();
-		}
-		catch (IOException e) {
-			log.info("Unexpected: IO error while writing to: " +reviewedFile);
-			createOntologyResult.setError("Unexpected: IO error while writing to: " +reviewedFile);
-			return createOntologyResult;
-		}
+		_writeRdfToFile(rdf, reviewedFile, createOntologyResult);
 
 		// Done.
 
@@ -2131,20 +2079,27 @@ public class Server implements IServer {
 		log.info("registerOntology: Reading in temporary file: " +full_path);
 		
 		File file = new File(full_path);
-		if ( ! file.canRead() ) {
-			String error = "Unexpected: cannot read: " +full_path;
-			log.info(error);
-			registerOntologyResult.setError(error);
-			return registerOntologyResult;
-		}
 		
 		// Get resulting model:
 		String rdf;
 		try {
-			rdf = Util2.readRdf(file);
+//			rdf = Util2.readRdf(file);
+			rdf = Util2.readRdfWithCheckingUtf8(file);
+
+			// conversion to UTF-8: the following code was not finally enabled
+//			ReadFileResult result = Utf8Util.readFileWithConversionToUtf8(file);
+//			if ( result.getError() != null ) {
+//				String error = "Cannot read RDF model: " +full_path+ " : " +result.getError()+ "\n"
+//					+ result.getLogInfo();
+//				log.info(error);
+//				registerOntologyResult.setError(error);
+//				return registerOntologyResult;
+//			}
+//			System.out.println(result.getLogInfo());
+//			rdf = result.getContents();
 		}
-		catch (IOException e) {
-			String error = "Unexpected: IO error while reading from: " +full_path+ " : " +e.getMessage();
+		catch (Throwable e) {
+			String error = "Unexpected: error while reading from: " +full_path+ " : " +e.getMessage();
 			log.info(error);
 			registerOntologyResult.setError(error);
 			return registerOntologyResult;
@@ -2269,20 +2224,26 @@ public class Server implements IServer {
 		log.info("registerOntology: Reading in temporary file: " +full_path);
 		
 		File file = new File(full_path);
-		if ( ! file.canRead() ) {
-			String error = "Unexpected: cannot read: " +full_path;
-			log.info(error);
-			registerOntologyResult.setError(error);
-			return registerOntologyResult;
-		}
 		
 		// Get resulting model:
 		String rdf;
 		try {
-			rdf = Util2.readRdf(file);
+			rdf = Util2.readRdfWithCheckingUtf8(file);
+			
+			// conversion to UTF-8: the following code was not finally enabled
+//			ReadFileResult result = Utf8Util.readFileWithConversionToUtf8(file);
+//			if ( result.getError() != null ) {
+//				String error = "Cannot read RDF model: " +full_path+ " : " +result.getError()+ "\n"
+//					+ result.getLogInfo();
+//				log.info(error);
+//				registerOntologyResult.setError(error);
+//				return registerOntologyResult;
+//			}
+//			System.out.println(result.getLogInfo());
+//			rdf = result.getContents();
 		}
-		catch (IOException e) {
-			String error = "Unexpected: IO error while reading from: " +full_path+ " : " +e.getMessage();
+		catch (Throwable e) {
+			String error = "Unexpected: error while reading from: " +full_path+ " : " +e.getMessage();
 			log.info(error);
 			registerOntologyResult.setError(error);
 			return registerOntologyResult;
@@ -2380,10 +2341,23 @@ public class Server implements IServer {
 		// Get resulting model:
 		String rdf;
 		try {
-			rdf = Util2.readRdf(file);
+//			rdf = Util2.readRdf(file);
+			rdf = Util2.readRdfWithCheckingUtf8(file);
+			
+			// conversion to UTF-8: the following code was not finally enabled
+//			ReadFileResult result = Utf8Util.readFileWithConversionToUtf8(file);
+//			if ( result.getError() != null ) {
+//				String error = "Cannot read RDF model: " +full_path+ " : " +result.getError()+ "\n"
+//					+ result.getLogInfo();
+//				log.info(error);
+//				registerOntologyResult.setError(error);
+//				return registerOntologyResult;
+//			}
+//			System.out.println(result.getLogInfo());
+//			rdf = result.getContents();
 		}
-		catch (IOException e) {
-			String error = "Unexpected: IO error while reading from: " +full_path+ " : " +e.getMessage();
+		catch (Throwable e) {
+			String error = "Unexpected: error while reading from: " +full_path+ " : " +e.getMessage();
 			log.info(error);
 			registerOntologyResult.setError(error);
 			return registerOntologyResult;

@@ -881,7 +881,7 @@ public class QueryUtil {
 		OntModel model = createDefaultOntModel();
 		uriModel = JenaUtil2.removeTrailingFragment(uriModel);
 		
-		StringReader sr = new StringReader(new String(bytes));
+		StringReader sr = new StringReader(new String(bytes, "UTF-8"));
 		
 //		model.read(uriModel);
 		model.read(sr, uriModel);
