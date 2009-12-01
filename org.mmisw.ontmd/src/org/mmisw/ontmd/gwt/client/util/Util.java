@@ -31,6 +31,40 @@ import com.google.gwt.user.client.ui.UIObject;
  * @author Carlos Rueda
  */
 public class Util {
+	
+	/**
+	 * Regex from: https://wave.google.com/wave/?pli=1#restored:wave:googlewave.com!w%252BsFbGJUukA
+	 * retrieved nov/30/2009.
+	 * I included the necessary back slashes and removed all the (?#Label) statements.
+	 * Also, removed the leading ^ and the trailing $ so the regex can eventually be also used
+	 * to detect multiple URLs.
+	 */
+	private static final String URL_BASE_REGEX = 
+		"(?:(?:ht|f)tp(?:s?)\\:\\/\\/|~\\/|\\/)?(?:\\w+:\\w+@)?(?:(?:[-\\w]+\\.)+" +
+		"(?:com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|edu|co\\.uk|ac\\.uk|museum|travel|[a-z]{2}))" +
+		"(?::[\\d]{1,5})?(?:(?:(?:\\/(?:[-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|\\/)+|\\?|#)?" +
+		"(?:(?:\\?(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)" +
+		"(?:&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*)*" +
+		"(?:#(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)?"
+	;
+	
+	/** Regex for a single URL */
+	private static final String ONE_URL_REGEX = "^" +URL_BASE_REGEX+ "$";
+	
+	/** 
+	 * Determines if the given string is a URL.
+	 * Implementation based on the regex from <a href="https://wave.google.com/wave/?pli=1#restored:wave:googlewave.com!w%252BsFbGJUukA"
+	 * >here</a>, retrieved on nov/30/2009.
+	 * 
+	 * @param str the string to examine
+	 * @return true iff the given string is a URL.
+	 */
+	public static boolean isUrl(String str) {
+		return str.matches(ONE_URL_REGEX);
+	}
+	
+	
+
     static native String getLocationSearch() /*-{
 	    return $wnd.location.search;
 	}-*/ ;

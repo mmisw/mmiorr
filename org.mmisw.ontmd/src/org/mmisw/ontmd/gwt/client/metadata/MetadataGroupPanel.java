@@ -52,6 +52,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 //		TextBoxBase tb = Util.createTextBoxBase(nl, "900", cl);
 //		widget = tb;
 
+		private String text = "";
 		private HTML html = new HTML();
 		
 		public ViewOnlyCell(int nl, String width) {
@@ -62,11 +63,18 @@ public class MetadataGroupPanel extends VerticalPanel {
 		}
 
 		public String getText() {
-			return html.getText();
+			return text;
 		}
 
-		public void setText(String value) {
-			html.setText(value);
+		public void setText(String text) {
+			this.text = text;
+			if ( Util.isUrl(text) ) {
+				String link = "<a target=\"_blank\" href=\"" +text+ "\">" +text+ "</a>";
+				html.setHTML(link);
+			}
+			else {
+				html.setText(text);
+			}
 		}
 	}
 	
@@ -517,5 +525,4 @@ public class MetadataGroupPanel extends VerticalPanel {
 
 		formChanged();
 	}
-	
 }

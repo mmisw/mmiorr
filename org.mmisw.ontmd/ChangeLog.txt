@@ -3,7 +3,20 @@ Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
 
+2009-11-30   1.7.0.alpha
+	- Setting version to 1.7.0.alpha reflecting all the 1.6.1+ changes below.
+	  This is also sync'ed with iserver module.
+	- Current Ont version: MMI Ontology and Term URI Resolver. Version 1.4.2.beta (20091125194637)
+	
+	Issue 146: metadata panel: improve display including clickable URL when possible
+	- Now with clickable links. See Util.isUrl(String str) and call in MetadataGroupPanel.ViewOnlyCell
+	  This only applies when the whole attribute value matches a URL regex.
+	  TODO: detect and make clickable links for URLs embedded in a single value. Because of
+	  GWT limitations in the emulation of the JRE library, this may require help from the server side. 
+	  
+	
 2009-11-24   1.6.2.alpha7
+	Issue 146: metadata panel: improve display including clickable URL when possible
 	- some improvement in display of metadata in view-only mode: not using
 	  a textbox but HTML. This is also preparation to include clickable links.
 	  
@@ -25,7 +38,7 @@ $Id$
 	- In general, the handling of UTF-8 should be complete now.
 
 2009-11-18   1.6.2.alpha5
-	issue #138: Can't select AGU as authority abbreviation
+	issue #139: Can't select AGU as authority abbreviation
 	- FieldWithChoose: make sure no item is selected so we get an change event on the 
 	  first item (needed for firefox at least).
 	
