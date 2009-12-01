@@ -137,8 +137,8 @@ public class FieldWithChoose  extends HorizontalPanel implements SourcesChangeEv
 		final MyDialog popup = new MyDialog(vp);
 		
 		listBox.setVisibleItemCount(Math.min(options.size(), 12));
-		// make sure no item is selected so we get an change event on the first item (needed for firefox at least):
-		// (see issue #138: Can't select AGU as authority abbreviation)
+		// make sure no item is selected so we get a change event on the first item (needed for firefox at least):
+		// (see issue #139: Can't select AGU as authority abbreviation)
 		listBox.setSelectedIndex(-1);
 
 		listBox.addChangeListener(new ChangeListener () {
