@@ -35,13 +35,18 @@ public class Util {
 	/**
 	 * Regex from: https://wave.google.com/wave/?pli=1#restored:wave:googlewave.com!w%252BsFbGJUukA
 	 * retrieved nov/30/2009.
-	 * I included the necessary back slashes and removed all the (?#Label) statements.
-	 * Also, removed the leading ^ and the trailing $ so the regex can eventually be also used
+	 * Changes:
+	 * <ul>
+	 * <li>Included the necessary back slashes
+	 * <li>Removed all the (?#Label) statements
+	 * <li>Added the "int" TLD 
+	 * <li>removed the leading ^ and the trailing $ so the regex can eventually be also used
 	 * to detect multiple URLs.
+	 * </ul>
 	 */
 	private static final String URL_BASE_REGEX = 
 		"(?:(?:ht|f)tp(?:s?)\\:\\/\\/|~\\/|\\/)?(?:\\w+:\\w+@)?(?:(?:[-\\w]+\\.)+" +
-		"(?:com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|edu|co\\.uk|ac\\.uk|museum|travel|[a-z]{2}))" +
+		"(?:com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|edu|co\\.uk|ac\\.uk|museum|travel|int|[a-z]{2}))" +
 		"(?::[\\d]{1,5})?(?:(?:(?:\\/(?:[-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|\\/)+|\\?|#)?" +
 		"(?:(?:\\?(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)" +
 		"(?:&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*)*" +
