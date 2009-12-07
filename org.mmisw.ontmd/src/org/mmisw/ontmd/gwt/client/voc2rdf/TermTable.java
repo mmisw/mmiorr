@@ -164,7 +164,6 @@ public class TermTable extends VerticalPanel {
 //		_updatePositions(HEADER_ROW, CONTROL_COL + 1 + col);
 	}
 	
-	
 	/**
 	 * Sets a cell in this table in client coordinates.
 	 * @param row
@@ -172,9 +171,21 @@ public class TermTable extends VerticalPanel {
 	 * @param text
 	 */
 	public void setCell(int row, int col, String text) {
+		setCell(row, col, text, false);
+	}	
+	
+	/**
+	 * Sets a cell in this table in client coordinates.
+	 * @param row
+	 * @param col
+	 * @param text
+	 * @param html true if text is in HTML
+	 */
+	public void setCell(int row, int col, String text, boolean html) {
 		int actualRow = FIRST_REGULAR_ROW + row;
 		int actualCol = col + 1;
-		_setWidget(actualRow, actualCol, new TableCell(actualRow, actualCol, text));
+		Widget tableCell = new TableCell(actualRow, actualCol, text, html);
+		_setWidget(actualRow, actualCol, tableCell);
 //		_updatePositions(actualRow, actualCol);
 	}
 
@@ -707,7 +718,13 @@ public class TermTable extends VerticalPanel {
 			else {
 				contents.setSize("30px", "16px");
 			}
-			contents.setText(text);
+			
+			if ( html ) {
+				contents.setHTML(text);
+			}
+			else {
+				contents.setText(text);
+			}
 
 			focusPanel = new FocusPanel(contents);
 			focusPanel.setStylePrimaryName("TermTable-termField");

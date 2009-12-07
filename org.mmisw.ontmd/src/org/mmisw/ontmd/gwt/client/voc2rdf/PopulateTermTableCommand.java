@@ -2,6 +2,7 @@ package org.mmisw.ontmd.gwt.client.voc2rdf;
 
 import java.util.List;
 
+import org.mmisw.ontmd.gwt.client.portal.Portal;
 import org.mmisw.ontmd.gwt.client.util.IRow;
 
 import com.google.gwt.user.client.IncrementalCommand;
@@ -26,12 +27,16 @@ abstract class PopulateTermTableCommand implements IncrementalCommand {
 	
 	private boolean started;
 	private boolean preDone;
+	
+	private boolean firstColIsUri;
 
 
 	PopulateTermTableCommand(TermTable termTable, List<IRow> rows) {
 		this.termTable = termTable;
 		this.rows = rows;
 		headerCols = termTable.getHeaderCols();
+		
+		firstColIsUri = headerCols.size() > 0 && headerCols.get(0).equalsIgnoreCase("uri");
 		
 		rowInTermTable = -1;
 
@@ -113,7 +118,15 @@ abstract class PopulateTermTableCommand implements IncrementalCommand {
 			for ( int c = 0; c < numCols; c++ ) {
 				String colVal = irow.getColValue(headerCols.get(c));
 				colVal = colVal != null ? colVal.trim() : "";
-				termTable.setCell(rowInTermTable, c, colVal);
+				
+				if ( c == 0 && firstColIsUri && colVal.length() > 0 ) {
+					String link = Portal.portalBaseInfo.getOntServiceUrl()+ "?form=html&uri=" +colVal;
+					String str = "<a target=\"_blank\" href=\"" +link+ "\">" +colVal+ "</a>";
+					termTable.setCell(rowInTermTable, c, str, true);
+				}
+				else {
+					termTable.setCell(rowInTermTable, c, colVal);
+				}
 			}
 		}
 		

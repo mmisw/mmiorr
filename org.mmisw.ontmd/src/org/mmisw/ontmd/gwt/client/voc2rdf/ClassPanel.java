@@ -3,12 +3,13 @@ package org.mmisw.ontmd.gwt.client.voc2rdf;
 import java.util.List;
 import java.util.Map;
 
+import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.client.metadata.ResourceTypeWidget;
 import org.mmisw.ontmd.gwt.client.portal.IVocabPanel;
+import org.mmisw.ontmd.gwt.client.portal.Portal;
 import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
-import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
@@ -334,6 +335,8 @@ public class ClassPanel extends VerticalPanel implements TermTableInterface {
 		private HTML statusHtml;
 		
 		private boolean preDone;
+		
+		private boolean firstColIsUri;
 
 
 		ImportCommand(char separator, String text, HTML statusHtml) {
@@ -364,6 +367,8 @@ public class ClassPanel extends VerticalPanel implements TermTableInterface {
 				List<String> headerCols = TermTableCreator.parseLine(lines[0], separator);
 				numHeaderCols = headerCols.size();
 				incrTermTable = new TermTable(ClassPanel.this, numHeaderCols, false);
+				
+				firstColIsUri = numHeaderCols > 0 && headerCols.get(0).equalsIgnoreCase("uri");
 				
 				// header:
 				for ( int c = 0; c < numHeaderCols; c++ ) {
@@ -437,7 +442,14 @@ public class ClassPanel extends VerticalPanel implements TermTableInterface {
 				incrTermTable.addRow(numCols);
 				for ( int c = 0; c < numCols; c++ ) {
 					String str = cols.get(c).trim();
-					incrTermTable.setCell(rowInTermTable, c, str);
+					if ( c == 0 && firstColIsUri && str.length() > 0 ) {
+						String link = Portal.portalBaseInfo.getOntServiceUrl()+ "?form=html&uri=" +str;
+						str = "<a target=\"_blank\" href=\"" +link+ "\">" +text+ "</a>";
+						incrTermTable.setCell(rowInTermTable, c, str, true);
+					}
+					else {
+						incrTermTable.setCell(rowInTermTable, c, str);
+					}
 				}
 				
 				// any missing columns? 
