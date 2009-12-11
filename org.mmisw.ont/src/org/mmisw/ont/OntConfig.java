@@ -31,6 +31,9 @@ class OntConfig {
 		
 		PORTAL_SERVICE_URL            ("portal.service.url"),
 		
+		AGRAPH_TS_DIR                 ("agraph.ts.dir"),
+		AGRAPH_TS_NAME                 ("agraph.ts.name"),
+		
 		;
 		
 		private String name;

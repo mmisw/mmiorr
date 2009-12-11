@@ -38,6 +38,14 @@
 			<param-name>aquaportal.datasource</param-name>
 			<param-value>@aquaportal.datasource@</param-value>
 		</init-param>
+		<init-param>
+			<param-name>agraph.ts.dir</param-name>
+			<param-value>@agraph.ts.dir@</param-value>
+		</init-param>
+		<init-param>
+			<param-name>agraph.ts.name</param-name>
+			<param-value>@agraph.ts.name@</param-value>
+		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet-mapping>

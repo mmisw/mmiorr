@@ -5,6 +5,29 @@ $Id$
 ChangeLog
 
 
+2009-12-10   1.5.0.beta1
+
+	*** Started enabling AllegroGraph as persistent triple store ***
+	Just preliminary code changes
+	
+	- sample.build.properties, OntConfig: new parameters:
+		agraph.ts.dir  - base dir for triple stores
+		agraph.ts.name - name of main triple store
+	- OntGraphMem.java: Copy of OntGraph.java right before the new changes, 894 11/25/09 7:43 PM 
+	- included agraph.jar
+	
+	- OntGraph: just preliminary code for initialization of AllegroGraph
+	  Next: 
+	    init(): should just set up the _ts (no reinitialization as the store is persistent)
+	    reinit(): should be only to reset the whole triple store -- to be called upon a
+	    special call to the servlet
+	    
+	    getModel(): reimplementation may be via the Jena interface provide by allegroGraph
+	    (haven't examined this part yet)
+	
+	
+
+
 2009-11-24   1.4.2.beta
 	Fixed Issue 223: ontology graph with all versions
 	- Db.getOntologies() deprecated: the comment says "Returns the list of the latest versions..." but that

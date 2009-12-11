@@ -26,22 +26,18 @@ import com.hp.hpl.jena.util.PrintUtil;
 
 import edu.drexel.util.rdf.JenaUtil;
 
-import com.franz.agbase.AllegroGraph;
-import com.franz.agbase.AllegroGraphConnection;
-import com.franz.agbase.AllegroGraphException;
-import com.franz.agbase.TriplesIterator;
-import com.franz.agbase.URINode;
-
-
+//
+// Copy of OntGraph.java 894 11/25/09 7:43 PM
+//
 
 /**
  * Handles the "big" graph of all registered ontologies.
  * 
  * @author Carlos Rueda
  */
-public class OntGraph {
+public class OntGraphMem {
 	
-	private final Log log = LogFactory.getLog(OntGraph.class);
+	private final Log log = LogFactory.getLog(OntGraphMem.class);
 	
 	/** Load the unversioned form of the ontologies? 
 	 * (Set to false to get the original behavior--load "versioned" ontologies).
@@ -66,12 +62,6 @@ public class OntGraph {
 	
 	
 	private String aquaUploadsDir;
-	private String tripleStoreDir;
-	private String tripleStoreName;
-	
-	
-	private AllegroGraphConnection _ags;
-	private AllegroGraph _ts;
 
 	
 	/**
@@ -82,7 +72,7 @@ public class OntGraph {
 	 *        
 	 * @param db The database helper.
 	 */
-	OntGraph(OntConfig ontConfig, Db db) {
+	OntGraphMem(OntConfig ontConfig, Db db) {
 		this.db = db;
 	}
 
@@ -110,17 +100,12 @@ public class OntGraph {
 	 * @throws ServletException
 	 */
 	void init() throws ServletException {
-		if ( _ts == null ) {
+		if ( _model == null ) {
 			final boolean withInference = true;
 			log.info("init called. withInference=" +withInference);
 			
 			aquaUploadsDir = OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY.getValue();
-			tripleStoreDir = OntConfig.Prop.AGRAPH_TS_DIR.getValue();
-			tripleStoreName = OntConfig.Prop.AGRAPH_TS_NAME.getValue();
-			
-			_startTripleStore();
-//			_doInitModel(withInference);
-			
+			_doInitModel(withInference);
 			log.info("init complete.");
 		}
 		else {
@@ -128,26 +113,6 @@ public class OntGraph {
 		}
 	}
 	
-	private void _startTripleStore() throws ServletException {
-		_ags = new AllegroGraphConnection();
-		try {
-			_ags.enable();
-		} 
-		catch (Exception e) {
-			throw new ServletException("Error connecting to triple store server.", e);
-		}
-
-		// Access a store -- default is read-write access
-		log.debug("Access: open a store, creating if necessary.");
-		try {
-			_ts = _ags.access(tripleStoreName, tripleStoreDir);
-		}
-		catch (AllegroGraphException e) {
-			throw new ServletException("Error accessing triple store.", e);
-		}
-		log.debug("Triple store open.");
-	}
-
 	/**
 	 * Reinitializes the graph.
 	 * @param withInference true to enable inference.
@@ -165,9 +130,9 @@ public class OntGraph {
 	 * @throws ServletException
 	 */
 	private void _doInitModel(boolean withInference) throws ServletException {
-//		_infModel = null;  // make sure loadOntology(ontology) below does not use _infModel
-//		
-//		_model = ModelFactory.createDefaultModel();
+		_infModel = null;  // make sure loadOntology(ontology) below does not use _infModel
+		
+		_model = ModelFactory.createDefaultModel();
 		
 		// get the list of (latest-version) ontologies:
 		// fixed Issue 223: ontology graph with all versions
@@ -195,26 +160,26 @@ public class OntGraph {
 			}
 		}
 		
-//		log.info("size of base model: " +_model.size());
+		log.info("size of base model: " +_model.size());
 		
-//		if ( withInference ) {
-//			log.info("starting creation of inference model...");
-//			long startTime = System.currentTimeMillis();
-//			_infModel = _createInfModel();
-//			if ( _infModel != null ) {
-//				long endTime = System.currentTimeMillis();
-//				log.info("creation of inference model completed successfully. (" +(endTime-startTime)+ " ms)");
-//				
-//				// this takes time -- do not do it for now
-//				//log.info("estimated size of inference model: " +_infModel.size());
-//			}
-//			else {
-//				// Log.error messages have been already generated.
-//			}
-//		}
-//		else {
-//			_infModel = null;
-//		}
+		if ( withInference ) {
+			log.info("starting creation of inference model...");
+			long startTime = System.currentTimeMillis();
+			_infModel = _createInfModel();
+			if ( _infModel != null ) {
+				long endTime = System.currentTimeMillis();
+				log.info("creation of inference model completed successfully. (" +(endTime-startTime)+ " ms)");
+				
+				// this takes time -- do not do it for now
+				//log.info("estimated size of inference model: " +_infModel.size());
+			}
+			else {
+				// Log.error messages have been already generated.
+			}
+		}
+		else {
+			_infModel = null;
+		}
 
 		if ( false && log.isDebugEnabled() ) {
 			log.debug("_listStatements:");
@@ -257,40 +222,40 @@ public class OntGraph {
 	}
 
 
-//	/**
-//	 * 1) load the skos properties model into the base model _model
-//	 * 2) create reasoner and InfModel.
-//	 * @return the created InfModel
-//	 */
-//	private InfModel _createInfModel() {
-//		//
-//		// 1) load the skos properties model into the base model _model:
-//		//
-//		String propsSrc = _getResource(INF_PROPERTIES_MODEL_NAME);
-//		if ( propsSrc == null ) {
-//			return null;
-//		}
-//		
-//		Model propsModel = ModelFactory.createDefaultModel();
-//		StringReader sr = new StringReader(propsSrc);
-//		propsModel.read(sr, "dummyBase", "N3");
-//		_model.add(propsModel);
-//		log.info("Added properties model:\n\t" +propsSrc.replaceAll("\n", "\n\t"));
-//
-//		
-//		//
-//		// 2) create reasoner and InfModel:
-//		//
-//		String rulesSrc = _getResource(INF_RULES_NAME);
-//		if ( rulesSrc == null ) {
-//			return null;
-//		}
-//		log.info("Creating InfModel with rules:\n\t" +rulesSrc.replaceAll("\n", "\n\t"));
-//		List<?> rules = Rule.parseRules(rulesSrc);
-//		Reasoner reasoner = new GenericRuleReasoner(rules);
-//		InfModel im = ModelFactory.createInfModel(reasoner, _model);
-//		return im;
-//	}
+	/**
+	 * 1) load the skos properties model into the base model _model
+	 * 2) create reasoner and InfModel.
+	 * @return the created InfModel
+	 */
+	private InfModel _createInfModel() {
+		//
+		// 1) load the skos properties model into the base model _model:
+		//
+		String propsSrc = _getResource(INF_PROPERTIES_MODEL_NAME);
+		if ( propsSrc == null ) {
+			return null;
+		}
+		
+		Model propsModel = ModelFactory.createDefaultModel();
+		StringReader sr = new StringReader(propsSrc);
+		propsModel.read(sr, "dummyBase", "N3");
+		_model.add(propsModel);
+		log.info("Added properties model:\n\t" +propsSrc.replaceAll("\n", "\n\t"));
+
+		
+		//
+		// 2) create reasoner and InfModel:
+		//
+		String rulesSrc = _getResource(INF_RULES_NAME);
+		if ( rulesSrc == null ) {
+			return null;
+		}
+		log.info("Creating InfModel with rules:\n\t" +rulesSrc.replaceAll("\n", "\n\t"));
+		List<?> rules = Rule.parseRules(rulesSrc);
+		Reasoner reasoner = new GenericRuleReasoner(rules);
+		InfModel im = ModelFactory.createInfModel(reasoner, _model);
+		return im;
+	}
 
 	/**
 	 * Loads the given model into the graph.
