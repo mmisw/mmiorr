@@ -31,7 +31,7 @@ import edu.drexel.util.rdf.OwlModel;
  * 
  * @author Carlos Rueda
  */
-class UnversionedConverter {
+public class UnversionedConverter {
 	
 	// 2009-06-03 Disabling the alteration of attribute values (so the contents will be exactly
 	// as those of the versioned ontology):
@@ -48,7 +48,7 @@ class UnversionedConverter {
 	 * @param mmiUri The URI of the correspoding latest version.
 	 * @return the unversioned version. null if an error occurs, which will be logged.
 	 */
-	static OntModel getUnversionedModel(OntModel model, MmiUri mmiUri) {
+	public static OntModel getUnversionedModel(OntModel model, MmiUri mmiUri) {
 		
 		//
 		// NOTE: I'm copying/adapting code from OntMdServiceImpl.review(..):

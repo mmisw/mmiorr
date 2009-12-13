@@ -15,6 +15,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.OntServlet.Request;
+import org.mmisw.ont.graph.IOntGraph;
 import org.mmisw.ont.util.Accept;
 import org.mmisw.ont.util.Util;
 
@@ -66,7 +67,7 @@ public class UriResolver {
 	private Request req;
 	
 	
-	public UriResolver(OntConfig ontConfig, Db db, OntGraph ontGraph) {
+	public UriResolver(OntConfig ontConfig, Db db, IOntGraph ontGraph) {
 		this.ontConfig = ontConfig;
 		this.db = db;
 

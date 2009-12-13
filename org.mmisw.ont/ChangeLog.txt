@@ -5,6 +5,43 @@ $Id$
 ChangeLog
 
 
+2009-12-12   1.5.0.beta1
+	*** Continuing enabling AllegroGraph as persistent triple store ***
+	- IOntGraph: removed getModel; added executeQuery
+	- OntGraphAG: each major operation opens/uses/closes a connection
+	- sample.build.properties, OntConfig: Parameters:
+		agraph.host - server host
+		agraph.port - server port
+		agraph.ts.dir  - base dir for triple stores
+		agraph.ts.name - name of main triple store
+	- IOntGraph.Factory removed (replaced by the OntGraph proxy as follows)
+	- New OntGraph as a proxy to the actual implementation. In particular, init(), which is called
+	  after the config info is available, does the actual instantiation. If the config parameter 
+	  agraph.host is given, then the AllegroGraph implementation is used; otherwise the OntGraphMem one.
+	
+	NOTE: query processing time seems rather slow, for example for some simple queries like:
+	   select ?s ?p ?o where { ?s ?p ?o } limit 1
+	Similar queries using the standalone AgWebView seem to run much faster. 
+	TODO: improve performance.
+	
+	TODO: Enable rules for mappings as in the memory-based implementation.
+	
+
+2009-12-11   1.5.0.beta1
+	*** Continuing enabling AllegroGraph as persistent triple store ***
+	
+	- New package org.mmisw.ont.graph with IOntGraph as common interface for the memory-based
+	  implementation and the new AllegroGraph implementation.
+	- IOntGraph.Factory provides the construction of the implementation. For now, the
+	  selection of the implementation is hard-coded while I do the preparation and
+	  tests (eventually I can enable the "old" memory-based implementation to allow the
+	  commit of other unrelated changes and from there bew able to create other releases 
+	  while the new AllegroGraph triple store is completed).
+	- As one of the dependencies is for dispatching SPARQL queries, I extracted 
+	  the QueryResult type from the Sparql class to eventually add the query dispatch 
+	  operation to IOntGraph.
+	  
+	
 2009-12-10   1.5.0.beta1
 
 	*** Started enabling AllegroGraph as persistent triple store ***

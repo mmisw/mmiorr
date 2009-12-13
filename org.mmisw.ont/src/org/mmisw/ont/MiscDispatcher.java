@@ -662,10 +662,10 @@ public class MiscDispatcher {
 		// report the db info and whether the file can be read or not:
 		out.println(" Ontology entry FOUND: <br/>");
 		out.println("<pre>");
-		out.println("                 id: " + ontology.id);
-		out.println("        ontology_id: " + ontology.ontology_id);
-		out.println("          file_path: " + ontology.file_path);
-		out.println("           filename: " + ontology.filename);
+		out.println("                 id: " + ontology.getId());
+		out.println("        ontology_id: " + ontology.getOntologyId());
+		out.println("          file_path: " + ontology.getFilePath());
+		out.println("           filename: " + ontology.getFilename());
 		out.println("</pre>");
 		out.println(" Full path: <code>" + file.getAbsolutePath() + "</code> ");
 		out.println(" Can read it: <code>" + file.canRead() + "</code> <br/>");

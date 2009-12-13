@@ -6,7 +6,7 @@ package org.mmisw.ont;
  * 
  * @author Carlos Rueda
  */
-class OntUtil {
+public class OntUtil {
 	private OntUtil() {}
 	
 	/**
@@ -23,7 +23,7 @@ class OntUtil {
 	 * @throws IllegalStateException if the configuration object returns a null value for the 
 	 *         {@link OntConfig.Prop.ONT_SERVICE_URL} parameter.
 	 */
-	static boolean isOntResolvableUri(String uri) {
+	public static boolean isOntResolvableUri(String uri) {
 		 String ontServiceUrl = OntConfig.Prop.ONT_SERVICE_URL.getValue();
 		 if ( ontServiceUrl == null ) {
 			 throw new IllegalStateException("OntConfig.Prop.ONT_SERVICE_URL.getValue() returned null");

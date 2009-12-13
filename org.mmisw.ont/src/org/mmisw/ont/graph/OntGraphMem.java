@@ -1,4 +1,4 @@
-package org.mmisw.ont;
+package org.mmisw.ont.graph;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +12,14 @@ import javax.servlet.ServletException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.ont.Db;
+import org.mmisw.ont.MmiUri;
+import org.mmisw.ont.OntConfig;
+import org.mmisw.ont.OntUtil;
+import org.mmisw.ont.Ontology;
+import org.mmisw.ont.UnversionedConverter;
+import org.mmisw.ont.sparql.QueryResult;
+import org.mmisw.ont.sparql.Sparql;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.InfModel;
@@ -28,6 +36,8 @@ import edu.drexel.util.rdf.JenaUtil;
 
 //
 // Copy of OntGraph.java 894 11/25/09 7:43 PM
+// except that it implements the new interface IOntGraph for refactoring purposes
+// while developing other implementations.
 //
 
 /**
@@ -35,16 +45,10 @@ import edu.drexel.util.rdf.JenaUtil;
  * 
  * @author Carlos Rueda
  */
-public class OntGraphMem {
+public class OntGraphMem implements IOntGraph {
 	
 	private final Log log = LogFactory.getLog(OntGraphMem.class);
 	
-	/** Load the unversioned form of the ontologies? 
-	 * (Set to false to get the original behavior--load "versioned" ontologies).
-	 */
-	private static final boolean USE_UNVERSIONED = true;
-
-
 	/** Servlet resource containing the model with properties for inference purposes */
 	private static final String INF_PROPERTIES_MODEL_NAME = "inf_properties.n3";
 	
@@ -82,9 +86,18 @@ public class OntGraphMem {
 	 * 
 	 * @return the model as described.
 	 */
-	public Model getModel() {
+	private Model _getModel() throws Exception {
 		return _infModel != null ? _infModel : _model;
 	}
+	
+	/**
+	 * Returns null in this implementation.
+	 */
+	public QueryResult executeQuery(String sparqlQuery, String form) throws Exception {
+		QueryResult queryResult = Sparql.executeQuery(_getModel(), sparqlQuery, form);
+		return queryResult;
+	}
+
 
 
 	/**
@@ -99,7 +112,7 @@ public class OntGraphMem {
 	 * Does nothing if already initialized.
 	 * @throws ServletException
 	 */
-	void init() throws ServletException {
+	public void init() throws ServletException {
 		if ( _model == null ) {
 			final boolean withInference = true;
 			log.info("init called. withInference=" +withInference);
@@ -112,13 +125,21 @@ public class OntGraphMem {
 			log.debug("init: already initialized (withInference = " +(_infModel != null)+ ")");
 		}
 	}
+
+	/**
+	 *  Nohing done in this implementation.
+	 */
+	public void reindex(boolean wait) throws ServletException {
+		
+	}
 	
+
 	/**
 	 * Reinitializes the graph.
 	 * @param withInference true to enable inference.
 	 * @throws ServletException
 	 */
-	void reinit(boolean withInference) throws ServletException {
+	public void reinit(boolean withInference) throws ServletException {
 		log.info("reinit called. withInference=" +withInference);
 		_doInitModel(withInference);
 		log.info("reinit complete.");
@@ -145,12 +166,12 @@ public class OntGraphMem {
 			
 			log.debug("About to load the following ontologies: ");
 			for ( Ontology ontology : onts ) {
-				log.debug(ontology.ontology_id+ " :: " +ontology.getUri());
+				log.debug(ontology.getOntologyId()+ " :: " +ontology.getUri());
 			}
 		}
 		
 		for ( Ontology ontology : onts ) {
-			String full_path = aquaUploadsDir+ "/" +ontology.file_path + "/" + ontology.filename;
+			String full_path = aquaUploadsDir+ "/" +ontology.getFilePath() + "/" + ontology.getFilename();
 			log.info("Loading: " +full_path+ " in graph");
 			try {
 				_loadOntology(ontology, full_path);
@@ -262,8 +283,8 @@ public class OntGraphMem {
 	 * If inference is enabled, then it updates the corresponding inference model.
 	 * @param ontology
 	 */
-	public void loadOntology(Ontology ontology) {
-		String full_path = aquaUploadsDir+ "/" +ontology.file_path + "/" + ontology.filename;
+	public void loadOntology(Ontology ontology) throws Exception {
+		String full_path = aquaUploadsDir+ "/" +ontology.getFilePath() + "/" + ontology.getFilename();
 		log.info("Loading: " +full_path+ " in graph");
 		_loadOntology(ontology, full_path);
 	}

@@ -21,6 +21,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.ont.graph.IOntGraph;
+import org.mmisw.ont.graph.OntGraph;
 import org.mmisw.ont.sparql.SparqlDispatcher;
 import org.mmisw.ont.util.Accept;
 import org.mmisw.ont.util.Util;
@@ -48,7 +50,7 @@ public class OntServlet extends HttpServlet {
 	
 	private final OntConfig ontConfig = new OntConfig();
 	private final Db db = new Db(ontConfig);
-	private final OntGraph ontGraph = new OntGraph(ontConfig, db);
+	private final IOntGraph ontGraph = new OntGraph(ontConfig, db);
 	
 	
 	private final MiscDispatcher miscDispatcher = new MiscDispatcher(ontConfig, db);
@@ -200,8 +202,6 @@ public class OntServlet extends HttpServlet {
 	 * and retrieval of version information.
 	 */
 	public void init() throws ServletException {
-		log.info("init");
-		
 		log.info(TITLE+ ": initializing");
 		
 		try {
@@ -216,6 +216,8 @@ public class OntServlet extends HttpServlet {
 
 			db.init();
 			ontGraph.init();
+			
+			log.info(FULL_TITLE+ ": init complete.");
 		} 
 		catch (Exception ex) {
 			log.error("Cannot initialize: " +ex.getMessage(), ex);
@@ -303,6 +305,13 @@ public class OntServlet extends HttpServlet {
 			String _reload = Util.getParam(req.request, "_reload", "");
 			boolean withInference = _reload.length() == 0 || _reload.equals("inf");
 			ontGraph.reinit(withInference);
+			return;
+		}
+		// reindex graph?
+		if ( Util.yes(req.request, "_reidx")  ) {
+			String _reidx = Util.getParam(req.request, "_reidx", "");
+			boolean wait = _reidx.length() == 0 || _reidx.equals("wait");
+			ontGraph.reindex(wait);
 			return;
 		}
 		
@@ -561,7 +570,7 @@ public class OntServlet extends HttpServlet {
 	 */
 	static File getFullPath(Ontology ontology, OntConfig ontConfig, Log log) {
 		String full_path = OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY.getValue() 
-			+ "/" +ontology.file_path + "/" + ontology.filename;
+			+ "/" +ontology.getFilePath() + "/" + ontology.getFilename();
 		
 		File file = new File(full_path);
 		
@@ -634,7 +643,7 @@ public class OntServlet extends HttpServlet {
 
 	/**
 	 * Loads the ontology indicated with the "_lo" parameter in the request.
-	 * The value is takes as the URI of the ontology.
+	 * The value is taken as the URI of the ontology.
 	 */
 	private void _loadOntologyIntoGraph(Request req) throws ServletException, IOException {
 		String ontUri = Util.getParam(req.request, "_lo", "");
@@ -663,7 +672,13 @@ public class OntServlet extends HttpServlet {
 		if ( log.isDebugEnabled() ) {
 			log.debug("_loadOntologyIntoGraph: loading " +ontUri);
 		}
-		ontGraph.loadOntology(ontology);
+		try {
+			ontGraph.loadOntology(ontology);
+		}
+		catch (Exception e) {
+			log.error("Error loading ontology.", e);
+			throw new ServletException("Error loading ontology.", e);
+		}
 		
 		req.response.setContentType("text/plain");
 		ServletOutputStream os = req.response.getOutputStream();

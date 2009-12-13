@@ -23,6 +23,7 @@
 		<pathelement path="WebContent/WEB-INF/lib/icu4j_3_4.jar" />
 		<pathelement path="WebContent/WEB-INF/lib/arq.jar" />
 		<pathelement path="WebContent/WEB-INF/lib/concurrent.jar" />
+		<pathelement path="WebContent/WEB-INF/lib/agraph.jar" />
 	</path>
 
 	<target name="init">
@@ -81,7 +82,7 @@
 	</target>
 
 	
-	<target name="prepate2war" depends="jar">
+	<target name="prepare2war" depends="jar">
 		<!-- prepare tmp.WebContent -->
 		<copy todir="${build.dir}/tmp.WebContent">
 			<fileset dir="WebContent">
@@ -117,6 +118,8 @@
 				<filter token="aquaportal.uploads.directory" value="${aquaportal.uploads.directory}" />
 				<filter token="aquaportal.voc2rdf.dir" value="${aquaportal.voc2rdf.dir}" />
 				<filter token="aquaportal.datasource" value="${aquaportal.datasource}" />
+				<filter token="agraph.host" value="${agraph.host}" />
+				<filter token="agraph.port" value="${agraph.port}" />
 				<filter token="agraph.ts.dir" value="${agraph.ts.dir}" />
 				<filter token="agraph.ts.name" value="${agraph.ts.name}" />
 			</filterset>
@@ -142,7 +145,7 @@
 	</target>
 	
 	
-	<target name="war" depends="prepate2war">
+	<target name="war" depends="prepare2war">
 		<war warfile="${build.dir}/ont.war" webxml="${build.dir}/tmp.WebContent/WEB-INF/web.xml">
 			<fileset dir="${build.dir}/tmp.WebContent" />
 			<lib dir="${build.dir}/tmp.web-inf-lib" />

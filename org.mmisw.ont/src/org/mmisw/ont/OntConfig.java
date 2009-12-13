@@ -11,7 +11,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author Carlos Rueda
  */
-class OntConfig {
+public class OntConfig {
 	
 	/**
 	 * The Names of the properties that are used by the Ont service.
@@ -31,8 +31,10 @@ class OntConfig {
 		
 		PORTAL_SERVICE_URL            ("portal.service.url"),
 		
+		AGRAPH_HOST                   ("agraph.host"),
+		AGRAPH_PORT                   ("agraph.port"),
 		AGRAPH_TS_DIR                 ("agraph.ts.dir"),
-		AGRAPH_TS_NAME                 ("agraph.ts.name"),
+		AGRAPH_TS_NAME                ("agraph.ts.name"),
 		
 		;
 		

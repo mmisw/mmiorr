@@ -43,6 +43,14 @@
 			<param-value>@agraph.ts.dir@</param-value>
 		</init-param>
 		<init-param>
+			<param-name>agraph.host</param-name>
+			<param-value>@agraph.host@</param-value>
+		</init-param>
+		<init-param>
+			<param-name>agraph.port</param-name>
+			<param-value>@agraph.port@</param-value>
+		</init-param>
+		<init-param>
 			<param-name>agraph.ts.name</param-name>
 			<param-value>@agraph.ts.name@</param-value>
 		</init-param>

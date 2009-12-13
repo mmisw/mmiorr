@@ -31,36 +31,6 @@ import com.hp.hpl.jena.rdf.model.Model;
 @Unfinished(priority=Unfinished.Priority.MEDIUM)
 public class Sparql {
 	
-	public static class QueryResult {
-		private String result;
-		private String contentType;
-		private boolean isEmpty;
-
-		public void setResult(String result) {
-			this.result = result;
-		}
-
-		public void setContentType(String contentType) {
-			this.contentType = contentType;
-		}
-		public String getResult() {
-			return result;
-		}
-
-		public String getContentType() {
-			return contentType;
-		}
-
-		public boolean isEmpty() {
-			return isEmpty;
-		}
-
-		public void setIsEmpty(boolean isEmpty) {
-			this.isEmpty = isEmpty;
-		}
-		
-	}
-
 	/**
 	 * Executes a SPARQL query against the given model.
 	 * 

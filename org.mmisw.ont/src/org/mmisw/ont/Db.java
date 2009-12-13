@@ -98,11 +98,11 @@ public class Db {
 
 			if ( rs.next() ) {
 				Ontology ontology = new Ontology();
-				ontology.id = rs.getString(1);
-				ontology.ontology_id = rs.getString(2);
-				ontology.file_path = rs.getString(3);
+				ontology.setId(rs.getString(1));
+				ontology.setOntologyId(rs.getString(2));
+				ontology.setFilePath(rs.getString(3));
 
-				ontology.filename = rs.getString(4);
+				ontology.setFilename(rs.getString(4));
 				
 				// TODO Remove this OLD way to determine filename
 //				try {
@@ -168,11 +168,11 @@ public class Db {
 
 			if ( rs.next() ) {
 				Ontology ontology = new Ontology();
-				ontology.id = rs.getString(1);
-				ontology.ontology_id = rs.getString(2);
-				ontology.file_path = rs.getString(3);
+				ontology.setId(rs.getString(1));
+				ontology.setOntologyId(rs.getString(2));
+				ontology.setFilePath(rs.getString(3));
 				
-				ontology.filename = rs.getString(4);
+				ontology.setFilename(rs.getString(4));
 				
 				ontology.setUri(ontologyUri);
 
@@ -315,14 +315,14 @@ public class Db {
 
 			while ( rs.next() ) {
 				Ontology ontology = new Ontology();
-				ontology.id = rs.getString(1);
-				ontology.ontology_id = rs.getString(2);
-				ontology.file_path = rs.getString(3);
+				ontology.setId(rs.getString(1));
+				ontology.setOntologyId(rs.getString(2));
+				ontology.setFilePath(rs.getString(3));
 				
 				String ontologyUri = rs.getString(4);
 				ontology.setUri(ontologyUri);
 
-				ontology.filename = rs.getString(5);
+				ontology.setFilename(rs.getString(5));
 				onts.add(ontology);
 				
 				// TODO Remove this OLD way to determine filename
@@ -386,10 +386,10 @@ public class Db {
 			
 	        while ( rs.next() ) {
 	        	Ontology ontology = new Ontology();
-	        	ontology.id = rs.getString(1);
-	        	ontology.ontology_id = rs.getString(2);
-	        	ontology.file_path = rs.getString(3);
-	        	ontology.filename = rs.getString(4);
+	        	ontology.setId(rs.getString(1));
+	        	ontology.setOntologyId(rs.getString(2));
+	        	ontology.setFilePath(rs.getString(3));
+	        	ontology.setFilename(rs.getString(4));
 	        	ontology.setUri(rs.getString(5));
 	        	onts.add(ontology);
 	        }
@@ -414,7 +414,7 @@ public class Db {
 	 * @return
 	 * @throws ServletException
 	 */
-	List<Ontology> getAllOntologies(boolean allVersions) throws ServletException {
+	public List<Ontology> getAllOntologies(boolean allVersions) throws ServletException {
 		
 		List<Ontology> onts = new ArrayList<Ontology>();
 		Map<String,Ontology> mostRecent = new LinkedHashMap<String,Ontology>();
@@ -440,10 +440,10 @@ public class Db {
 	        while ( rs.next() ) {
 
 	        	Ontology ontology = new Ontology();
-	        	ontology.id = rs.getString(1);
-	        	ontology.ontology_id = rs.getString(2);
-	        	ontology.file_path = rs.getString(3);
-	        	ontology.filename = rs.getString(4);
+	        	ontology.setId(rs.getString(1));
+	        	ontology.setOntologyId(rs.getString(2));
+	        	ontology.setFilePath(rs.getString(3));
+	        	ontology.setFilename(rs.getString(4));
 	        	ontology.setUri(rs.getString(5));
 	        	
 	        	if ( allVersions ) {
@@ -452,7 +452,7 @@ public class Db {
 	        	}
 	        	else {
 	        		// "update" the most recent item for this ontology_id
-	        		mostRecent.put(ontology.ontology_id, ontology);
+	        		mostRecent.put(ontology.getOntologyId(), ontology);
 	        	}
 	        }
 
