@@ -42,9 +42,6 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  */
 public class DotGenerator {
 
-	//use label instead of local name?
-	private static final boolean USE_LABEL = true;
-	
 	// do not include rdfs:comment when generating instance diagram?
 	private static final boolean IGNORE_RDFS_COMMENT = true;
 
@@ -96,7 +93,10 @@ public class DotGenerator {
 	
 	private boolean classDiagram = true;
 	
+	//use label instead of local name?
+	private boolean useLabel = true;
 	
+
 	/** 
 	 * Creates a dot generator for a class diagram.
 	 * 
@@ -109,6 +109,16 @@ public class DotGenerator {
 		this.classDiagram = classDiagram;
 	}
 	
+	/**
+	 * Sets whether the rdfs:label should be used to label property edeges instead of the local name
+	 * of the property.
+	 * @param useLabel
+	 */
+	public void setUseLabel(boolean useLabel) {
+		this.useLabel = useLabel;
+	}
+
+
 
 	/**
 	 * Generates the dot.
@@ -422,7 +432,7 @@ public class DotGenerator {
 				else if ( rdfNode.isResource() ) {
 					Resource rsr = (Resource) rdfNode;
 					
-					if ( USE_LABEL ) {   
+					if ( useLabel ) {   
 						Statement stmt = rsr.getProperty(RDFS.label);
 						if ( stmt != null ) {
 							String label = stmt.getString();
@@ -493,7 +503,7 @@ public class DotGenerator {
 						propUri = r.getURI();
 
 						
-						if ( USE_LABEL ) {   
+						if ( useLabel ) {   
 							Statement stmt = r.getProperty(RDFS.label);
 							if ( stmt != null ) {
 								String label = stmt.getString();
@@ -626,7 +636,7 @@ public class DotGenerator {
 						;
 					}
 					
-					if ( USE_LABEL ) {   
+					if ( useLabel ) {   
 						Statement stmt = rsr.getProperty(RDFS.label);
 						if ( stmt != null ) {
 							String label = stmt.getString();
