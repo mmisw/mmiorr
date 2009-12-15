@@ -228,6 +228,12 @@ public class OntServlet extends HttpServlet {
 	
 	public void destroy() {
 		log.info(FULL_TITLE+ ": destroy called.\n\n");
+		try {
+			ontGraph.destroy();
+		}
+		catch (ServletException e) {
+			log.error("error while destroyng graph object", e);
+		}
 	}
 	
 	
