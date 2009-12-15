@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:omvmmi="http://mmisw.org/ont/mmi/20081020/ontologyMetadata/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:omv="http://omv.ontoware.org/2005/05/ontology#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns="http://localhost:8080/ont/mmitest/vocres/"
+    xml:base="http://localhost:8080/ont/mmitest/vocres">
+    <owl:Ontology rdf:about="">
+        <omv:hasCreator>cr</omv:hasCreator>
+        <omv:usedOntologyEngineeringTool rdf:resource="http://mmisw.org/ont/mmi/20081020/ontologyMetadata/voc2rdf"/>
+        <omvmmi:origMaintainerCode>mmitest</omvmmi:origMaintainerCode>
+        <dc:creator>carlos</dc:creator>
+        <omv:name>vocres test infernece</omv:name>
+        <omv:description>to test inference</omv:description>
+        <omv:creationDate>2009-12-15T06:49:10+0000</omv:creationDate>
+        <dc:date>2009-09-10T02:23:21+0000</dc:date>
+        <dc:description>the mappings are defined in another ontology</dc:description>
+        <omvmmi:hasContentCreator>cr</omvmmi:hasContentCreator>
+        <omvmmi:creditRequired>not specified</omvmmi:creditRequired>
+        <omv:version>Latest terms per null</omv:version>
+        <omv:acronym>vocres</omv:acronym>
+        <omvmmi:hasResourceType>test</omvmmi:hasResourceType>
+        <omv:uri>http://localhost:8080/ont/mmitest/vocres</omv:uri>
+    </owl:Ontology>
+    <owl:Class rdf:about="http://localhost:8080/ont/mmitest/vocres/BazClass">
+        <rdfs:label>bazClass</rdfs:label>
+    </owl:Class>
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/ont/mmitest/vocres/name">
+        <rdfs:domain rdf:resource="http://localhost:8080/ont/mmitest/vocres/BazClass"/>
+        <rdfs:label>name</rdfs:label>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/ont/mmitest/vocres/description">
+        <rdfs:domain rdf:resource="http://localhost:8080/ont/mmitest/vocres/BazClass"/>
+        <rdfs:label>description</rdfs:label>
+    </owl:DatatypeProperty>
+    <BazClass rdf:about="http://localhost:8080/ont/mmitest/vocres/a">
+        <description>definition for a</description>
+        <name>a</name>
+        <rdfs:label>a</rdfs:label>
+    </BazClass>
+    <BazClass rdf:about="http://localhost:8080/ont/mmitest/vocres/c">
+        <description>definition for c</description>
+        <name>c</name>
+        <rdfs:label>c</rdfs:label>
+    </BazClass>
+    <BazClass rdf:about="http://localhost:8080/ont/mmitest/vocres/b">
+        <description>definition for b</description>
+        <name>b</name>
+        <rdfs:label>b</rdfs:label>
+    </BazClass>
+    <BazClass rdf:about="http://localhost:8080/ont/mmitest/vocres/d">
+        <description>definition for d</description>
+        <name>d</name>
+        <rdfs:label>d</rdfs:label>
+    </BazClass>
+</rdf:RDF>

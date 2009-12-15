@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:omvmmi="http://mmisw.org/ont/mmi/20081020/ontologyMetadata/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:j.0="http://www.w3.org/2008/05/skos#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:omv="http://omv.ontoware.org/2005/05/ontology#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns="http://localhost:8080/ont/mmitest/mapres/"
+    xml:base="http://localhost:8080/ont/mmitest/mapres">
+    <owl:Ontology rdf:about="">
+        <omv:description>to test inference</omv:description>
+        <omv:acronym>mapres</omv:acronym>
+        <omv:version>Latest terms per null</omv:version>
+        <dc:date>2009-12-15T05:11:34+0000</dc:date>
+        <omv:creationDate>2009-12-15T06:47:56+0000</omv:creationDate>
+        <omvmmi:hasResourceType>test</omvmmi:hasResourceType>
+        <omvmmi:hasContentCreator>cr</omvmmi:hasContentCreator>
+        <omvmmi:creditRequired>not specified</omvmmi:creditRequired>
+        <omv:uri>http://localhost:8080/ont/mmitest/mapres</omv:uri>
+        <omv:name>mappings on vocres for testing inference</omv:name>
+        <omv:usedOntologyEngineeringTool rdf:resource="http://mmisw.org/ont/mmi/20081020/ontologyMetadata/vine"/>
+        <omvmmi:origMaintainerCode>mmitest</omvmmi:origMaintainerCode>
+        <dc:creator>cr</dc:creator>
+        <dc:description>to test inference</dc:description>
+        <omv:hasCreator>cr</omv:hasCreator>
+    </owl:Ontology>
+    <rdf:Description rdf:about="http://localhost:8080/ont/mmitest/vocres/a">
+        <j.0:exactMatch>
+            <rdf:Description rdf:about="http://localhost:8080/ont/mmitest/vocres/b">
+                <j.0:exactMatch>
+                    <rdf:Description rdf:about="http://localhost:8080/ont/mmitest/vocres/c">
+                        <j.0:exactMatch rdf:resource="http://localhost:8080/ont/mmitest/vocres/d"/>
+                    </rdf:Description>
+                </j.0:exactMatch>
+            </rdf:Description>
+        </j.0:exactMatch>
+    </rdf:Description>
+</rdf:RDF>
