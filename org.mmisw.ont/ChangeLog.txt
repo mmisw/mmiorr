@@ -19,6 +19,8 @@ ChangeLog
 			PREFIX skos: <http://www.w3.org/2008/05/skos#>
 			PREFIX vocres: <http://localhost:8080/ont/mmitest/vocres/>
 			SELECT ?o WHERE {vocres:a skos:exactMatch ?o. }
+			
+	NOTE: DISABLING THE JENA INFERENCE MODEL: makes query processing TOO slow!!
 		  
 	
 

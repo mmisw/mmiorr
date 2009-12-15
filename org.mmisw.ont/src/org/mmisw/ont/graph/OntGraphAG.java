@@ -390,16 +390,19 @@ public class OntGraphAG implements IOntGraph {
 		try {
 			Model model = _getModel(_ag);
 
-			//
-			// Create Jena inference model
-			// TODO: there is perhaps a mechanism to encode the rules in the triple store
-			// so it's not necessary to associate them every time a query is issued.
-			//
-			long start = System.currentTimeMillis();
-			InfModel infModel = _createInfModel(model);
-			log.debug("Inference model created in " +AgUtils.elapsedTime(start));
-			QueryResult queryResult = Sparql.executeQuery(infModel, sparqlQuery, form);
+			if ( false ) {
+				// NOTE: this is disabled--very poor performance
+				//
+				// Create Jena inference model
+				// TODO: there is perhaps a mechanism to encode the rules in the triple store
+				// so it's not necessary to associate them every time a query is issued.
+				//
+				long start = System.currentTimeMillis();
+				model = _createInfModel(model);
+				log.debug("Inference model created in " +AgUtils.elapsedTime(start));
+			}
 			
+			QueryResult queryResult = Sparql.executeQuery(model, sparqlQuery, form);
 			return queryResult;
 		}
 		finally {
