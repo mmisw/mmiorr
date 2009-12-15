@@ -3,6 +3,7 @@ package org.mmisw.ont.util;
 import java.io.PrintWriter;
 
 import org.mmisw.ont.JenaUtil2;
+import org.mmisw.ont.util.DotGenerator.What;
 
 import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -25,16 +26,28 @@ public class DotGeneratorProgram {
 	 */
 	public static void main(String[] args) {
 		
-		boolean classDiagram = false;   // TODO make this a parameter
+		// TODO make this a parameter
+		What whatDiagram = What.CLASS_INSTANCE_DIAGRAM;   
 		
 		boolean includeLegend = false; // TODO make this a parameter
+
+		boolean useLabel = true; // TODO make this a parameter
+
+		boolean ignoreRdfsComment = true; // TODO make this a parameter
 		
 		
 		if (args.length == 0 ) {
 			args = new String[] {
 					
+					"file:///Users/carueda/mmiworkspace/org.mmisw.ontmd2/onts/mmiorr.owl"
+//					"http://xmlns.com/foaf/spec/index.rdf"
+
+//					"file:////Users/carueda/Desktop/OntDev/obj_vs_datatype/approach_1.owl"
+//					"file:////Users/carueda/Desktop/OntDev/obj_vs_datatype/approach_2.owl"
+//					"file:////Users/carueda/Desktop/OntDev/obj_vs_datatype/approach_3.owl"
+					
 //					"file:////Users/carueda/Desktop/OntDev/mydevice1.owl"
-					"file:////Users/carueda/Desktop/OntDev/BobMorris/cesn.rdf"
+//					"file:////Users/carueda/Desktop/OntDev/BobMorris/cesn.rdf"
 //					"file:////Users/carueda/Desktop/OntDev/mmi-devices/myOrgDevices.owl"
 					
 //					"http://compass.edina.ac.uk/ontologies/instruments_v3.owl"
@@ -70,7 +83,11 @@ public class DotGeneratorProgram {
 		String uriModel = args[0];
 		Model model = loadModel(uriModel);
 		
-		DotGenerator dotGenerator = new DotGenerator(model, classDiagram, includeLegend);
+		DotGenerator dotGenerator = new DotGenerator(model, includeLegend);
+		
+		dotGenerator.setDiagramType(whatDiagram);
+		dotGenerator.setUseLabel(useLabel);
+		dotGenerator.setIgnoreRdfsComment(ignoreRdfsComment);
 		
 		PrintWriter pw = new PrintWriter(System.out, true);
 		
