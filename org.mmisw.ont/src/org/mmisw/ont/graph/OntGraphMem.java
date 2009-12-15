@@ -1,15 +1,11 @@
 package org.mmisw.ont.graph;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.servlet.ServletException;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.Db;
@@ -20,6 +16,7 @@ import org.mmisw.ont.Ontology;
 import org.mmisw.ont.UnversionedConverter;
 import org.mmisw.ont.sparql.QueryResult;
 import org.mmisw.ont.sparql.Sparql;
+import org.mmisw.ont.util.Util;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.InfModel;
@@ -49,9 +46,10 @@ public class OntGraphMem implements IOntGraph {
 	
 	private final Log log = LogFactory.getLog(OntGraphMem.class);
 	
-	/** Servlet resource containing the model with properties for inference purposes */
-	private static final String INF_PROPERTIES_MODEL_NAME = "inf_properties.n3";
+	/** Servlet resource containing the model with properties for inference purposes, N3 format */
+	private static final String INF_PROPERTIES_MODEL_NAME_N3 = "inf_properties.n3";
 	
+
 	/** Servlet resource containing the rules for inference purposes */
 	private static final String INF_RULES_NAME = "inf_rules.txt";
 
@@ -124,6 +122,11 @@ public class OntGraphMem implements IOntGraph {
 		else {
 			log.debug("init: already initialized (withInference = " +(_infModel != null)+ ")");
 		}
+	}
+
+	/** nothing done here */
+	public void destroy() throws ServletException {
+		// nothing
 	}
 
 	/**
@@ -219,29 +222,6 @@ public class OntGraphMem implements IOntGraph {
 		}
 	}
 	
-	/**
-	 * helper method to retrieve the contents of a resource in the classpath .
-	 */
-	private String _getResource(String resourceName) {
-		InputStream infRulesStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName);
-		if ( infRulesStream == null ) {
-			log.error(resourceName+ ": resource not found -- check classpath");
-			return null;
-		}
-		StringWriter output = new StringWriter();
-		try {
-			IOUtils.copy(infRulesStream, output);
-			return output.toString();
-		}
-		catch (IOException e) {
-			log.error(resourceName+ ": cannot read resource", e);
-			return null;
-		}
-		finally {
-			IOUtils.closeQuietly(infRulesStream);
-		}
-	}
-
 
 	/**
 	 * 1) load the skos properties model into the base model _model
@@ -252,7 +232,7 @@ public class OntGraphMem implements IOntGraph {
 		//
 		// 1) load the skos properties model into the base model _model:
 		//
-		String propsSrc = _getResource(INF_PROPERTIES_MODEL_NAME);
+		String propsSrc = Util.getResource(log, INF_PROPERTIES_MODEL_NAME_N3);
 		if ( propsSrc == null ) {
 			return null;
 		}
@@ -267,7 +247,7 @@ public class OntGraphMem implements IOntGraph {
 		//
 		// 2) create reasoner and InfModel:
 		//
-		String rulesSrc = _getResource(INF_RULES_NAME);
+		String rulesSrc = Util.getResource(log, INF_RULES_NAME);
 		if ( rulesSrc == null ) {
 			return null;
 		}

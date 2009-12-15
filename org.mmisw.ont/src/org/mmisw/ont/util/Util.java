@@ -1,7 +1,9 @@
 package org.mmisw.ont.util;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -18,6 +20,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
 import org.mmisw.ont.Db;
 
 /**
@@ -235,6 +239,30 @@ public class Util {
 			report = sec + " sec";
 		}
 		return report;
+	}
+
+	
+	/**
+	 * helper method to retrieve the contents of a resource in the classpath .
+	 */
+	public static String getResource(Log log, String resourceName) {
+		InputStream infRulesStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName);
+		if ( infRulesStream == null ) {
+			log.error(resourceName+ ": resource not found -- check classpath");
+			return null;
+		}
+		StringWriter output = new StringWriter();
+		try {
+			IOUtils.copy(infRulesStream, output);
+			return output.toString();
+		}
+		catch (IOException e) {
+			log.error(resourceName+ ": cannot read resource", e);
+			return null;
+		}
+		finally {
+			IOUtils.closeQuietly(infRulesStream);
+		}
 	}
 
 	private Util() {}

@@ -5,6 +5,23 @@ $Id$
 ChangeLog
 
 
+2009-12-14   1.5.0.beta2
+	*** Continuing enabling AllegroGraph as persistent triple store ***
+	- Re-enabling inferences (issue #175 Enable inference mechanism)
+	- OntGraphAG.doReInitModel: 
+		- load the skos properties model, inf_properties.nt (N-triples format required)
+	- OntGraphAG.executeQuery: 
+		- creates a Jena inference model on the fly using inf_rules.txt as in OntGraphMem.
+		  TODO: there is perhaps a mechanism to encode the rules in the triple store
+		         so it's not necessary to associate them every time a query is issued.
+		- NOTE: although the inference model creation takes a fraction of a second (in my test
+		  environment), a query involving the inference rules seems rather slow, 15 secs:
+			PREFIX skos: <http://www.w3.org/2008/05/skos#>
+			PREFIX vocres: <http://localhost:8080/ont/mmitest/vocres/>
+			SELECT ?o WHERE {vocres:a skos:exactMatch ?o. }
+		  
+	
+
 2009-12-12   1.5.0.beta1
 	*** Continuing enabling AllegroGraph as persistent triple store ***
 	- IOntGraph: removed getModel; added executeQuery

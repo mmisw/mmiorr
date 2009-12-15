@@ -16,6 +16,7 @@ import org.mmisw.ont.Ontology;
 import org.mmisw.ont.UnversionedConverter;
 import org.mmisw.ont.sparql.QueryResult;
 import org.mmisw.ont.sparql.Sparql;
+import org.mmisw.ont.util.Util;
 
 import com.franz.agbase.AllegroGraph;
 import com.franz.agbase.AllegroGraphConnection;
@@ -25,7 +26,12 @@ import com.franz.agjena.AllegroGraphModel;
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.GraphMaker;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.InfModel;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.reasoner.Reasoner;
+import com.hp.hpl.jena.reasoner.rulesys.GenericRuleReasoner;
+import com.hp.hpl.jena.reasoner.rulesys.Rule;
 
 import edu.drexel.util.rdf.JenaUtil;
 
@@ -36,7 +42,13 @@ import edu.drexel.util.rdf.JenaUtil;
  * @author Carlos Rueda
  */
 public class OntGraphAG implements IOntGraph {
-	
+
+	/** Servlet resource containing the model with properties for inference purposes, N-triples format */
+	private static final String INF_PROPERTIES_MODEL_NAME_NT = "inf_properties.nt";
+
+	/** Servlet resource containing the rules for inference purposes */
+	private static final String INF_RULES_NAME = "inf_rules.txt";
+
 	private final Log log = LogFactory.getLog(OntGraphAG.class);
 	
 	private String serverHost;
@@ -165,6 +177,11 @@ public class OntGraphAG implements IOntGraph {
 		log.info("init complete.");
 	}
 	
+	/** nothing done here */
+	public void destroy() throws ServletException {
+		// nothing
+	}
+
 
 	public void reindex(boolean wait) throws ServletException {
 		log.info("reindex called. wait=" +wait);
@@ -246,6 +263,9 @@ public class OntGraphAG implements IOntGraph {
 			}
 		}
 		
+		// enable inferencing:
+		_loadSkosProperties(_ag);
+		
 		long numberOfTriples = -1;
 		try {
 			numberOfTriples = _ag.ts.numberOfTriples();
@@ -256,6 +276,49 @@ public class OntGraphAG implements IOntGraph {
 		}
 		return numberOfTriples;
 	}
+	
+	/**
+	 * load the skos properties model
+	 */
+	private void _loadSkosProperties(Ag _ag) {
+		
+		//
+		// 1) load the skos properties model into the base model _model:
+		//
+		String propsSrc = Util.getResource(log, INF_PROPERTIES_MODEL_NAME_NT);
+		if ( propsSrc == null ) {
+			return;
+		}
+		
+		// now, update graph with model captured in serialization
+		try {
+			AgUtils.parseWithTiming(_ag.ts, false, propsSrc);
+		}
+		catch (AllegroGraphException e) {
+			log.error("Error parsing/loading RDF in graph.", e);
+		}
+
+		log.info("Added properties model:\n\t" +propsSrc.replaceAll("\n", "\n\t"));
+
+	}
+
+	
+	/**
+	 * Create reasoner and InfModel.
+	 * @return the created InfModel
+	 */
+	private InfModel _createInfModel(Model model) {
+		String rulesSrc = Util.getResource(log, INF_RULES_NAME);
+		if ( rulesSrc == null ) {
+			return null;
+		}
+		log.info("Creating InfModel with rules:\n\t" +rulesSrc.replaceAll("\n", "\n\t"));
+		List<?> rules = Rule.parseRules(rulesSrc);
+		Reasoner reasoner = new GenericRuleReasoner(rules);
+		InfModel im = ModelFactory.createInfModel(reasoner, model);
+		return im;
+	}
+
 	
 	/**
 	 * Loads the given model into the graph.
@@ -307,7 +370,7 @@ public class OntGraphAG implements IOntGraph {
 		
 		// now, update graph with model captured in serialization
 		try {
-			AgUtils.parseRdfWithTiming(_ag.ts, serialization);
+			AgUtils.parseWithTiming(_ag.ts, true, serialization);
 		}
 		catch (AllegroGraphException e) {
 			log.error("Error parsing/loading RDF in graph.", e);
@@ -326,7 +389,17 @@ public class OntGraphAG implements IOntGraph {
 		Ag _ag = new Ag();
 		try {
 			Model model = _getModel(_ag);
-			QueryResult queryResult = Sparql.executeQuery(model, sparqlQuery, form);
+
+			//
+			// Create Jena inference model
+			// TODO: there is perhaps a mechanism to encode the rules in the triple store
+			// so it's not necessary to associate them every time a query is issued.
+			//
+			long start = System.currentTimeMillis();
+			InfModel infModel = _createInfModel(model);
+			log.debug("Inference model created in " +AgUtils.elapsedTime(start));
+			QueryResult queryResult = Sparql.executeQuery(infModel, sparqlQuery, form);
+			
 			return queryResult;
 		}
 		finally {

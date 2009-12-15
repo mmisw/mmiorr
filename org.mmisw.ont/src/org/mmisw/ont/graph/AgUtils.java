@@ -57,15 +57,15 @@ public class AgUtils {
 		System.out.println(tr.toString());
 	}
 
-	public static void showResults(ValueSetIterator it) throws AllegroGraphException {
+	public static void showResults(Log log, ValueSetIterator it) throws AllegroGraphException {
 		String[] var = it.getNames();
 	    System.out.println("Number of solutions: " + it.getCount());
 	    for (int i=0; it.hasNext(); i++) {
 			ValueObject[] objects = it.next();
-			System.out.println("Solution " + (i+1) + ":");
+			log.info("Solution " + (i+1) + ":");
 			for (int j = 0; j < objects.length; j++) {
 				ValueObject term = objects[j];
-				System.out.println("  " + var[j] + " = " + printValueObject(term));
+				log.info("  " + var[j] + " = " + printValueObject(term));
 			}
 		}
 	}
@@ -197,29 +197,36 @@ public class AgUtils {
 
 	
 	/**
-	 * Parses and loads RDF/XML contents into the default graph and time the load.
+	 * Parses and loads contents into the default graph and time the load.
 	 * 
 	 * @param ts A triple store 
-	 * @param rdfString RDF/XML contents
+	 * @param contents string to parse
 	 * @throws AllegroGraphException
 	 */
-	public static void parseRdfWithTiming(AllegroGraph ts, String rdfString) throws AllegroGraphException {
-		parseRdfWithTiming(ts, rdfString, "");
+	public static void parseWithTiming(AllegroGraph ts, boolean rdfXml, String contents) throws AllegroGraphException {
+		parseWithTiming(ts, rdfXml, contents, "");
 	}
 	
 	/**
-	 * Parses and loads RDF/XML contents into the specified graph and time the load.
+	 * Parses and loads contents into the specified graph and time the load.
 	 * 
 	 * @param ts A triple store 
-	 * @param rdfString RDF/XML contents
+	 * @param rdfXml true if contents is in RDF/XML; false if N-triples
+	 * @param contents string to parse
 	 * @param graph The context to load
 	 * @throws AllegroGraphException
 	 */
-	public static void parseRdfWithTiming(AllegroGraph ts, String rdfString, Object graph) throws AllegroGraphException {
+	public static void parseWithTiming(AllegroGraph ts, boolean rdfXml, String contents, Object graph) throws AllegroGraphException {
 		log.debug("Parsing and loading RDF contents...");
 		long start = System.currentTimeMillis();
 		String baseUri = "TODO";
-		long n = ts.parseRDFXML(rdfString, graph, baseUri);
+		long n;
+		if ( rdfXml ) {
+			n = ts.parseRDFXML(contents, graph, baseUri);
+		}
+		else {
+			n = ts.parseNTriples(contents, graph);
+		}
 		log.debug("Done loading " + n + " triples in " + elapsedTime(start));
 	}
 

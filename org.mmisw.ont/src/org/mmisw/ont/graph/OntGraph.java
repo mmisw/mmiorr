@@ -57,6 +57,10 @@ public class OntGraph implements IOntGraph {
 		
 		_impl.init();
 	}
+	
+	public void destroy() throws ServletException {
+		_impl.destroy();
+	}
 
 	public QueryResult executeQuery(String sparqlQuery, String form) throws Exception {
 		return _impl.executeQuery(sparqlQuery, form);

@@ -1,0 +1,13 @@
+<http://www.w3.org/2008/05/skos#exactMatch> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#TransitiveProperty> .
+<http://www.w3.org/2008/05/skos#exactMatch>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Symmetric> .
+
+<http://www.w3.org/2008/05/skos#closeMatch> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Symmetric> . 
+
+<http://www.w3.org/2008/05/skos#broadMatch> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#TransitiveProperty> .
+<http://www.w3.org/2008/05/skos#broadMatch> <http://www.w3.org/2002/07/owl#inverseOf>         <http://www.w3.org/2008/05/skos#narrowMatch> .
+
+<http://www.w3.org/2008/05/skos#narrowMatch> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#TransitiveProperty> .
+<http://www.w3.org/2008/05/skos#narrowMatch> <http://www.w3.org/2002/07/owl#inverseOf>         <http://www.w3.org/2008/05/skos#broadMatch> .
+
+<http://www.w3.org/2008/05/skos#relatedMatch> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Symmetric> . 
+	

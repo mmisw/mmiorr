@@ -35,6 +35,12 @@ public interface IOntGraph {
 	public void init() throws ServletException;
 	
 	/**
+	 * Called by OntServlet when it is destroyed.
+	 * @throws ServletException
+	 */
+	public void destroy() throws ServletException;
+	
+	/**
 	 * Reinitializes the graph.
 	 * @param withInference true to enable inference.
 	 * @throws ServletException
