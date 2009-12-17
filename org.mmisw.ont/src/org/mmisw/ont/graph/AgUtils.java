@@ -1,7 +1,11 @@
 package org.mmisw.ont.graph;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.ont.util.Util;
 
 import com.franz.agbase.AllegroGraph;
 import com.franz.agbase.AllegroGraphConnection;
@@ -59,7 +63,7 @@ public class AgUtils {
 
 	public static void showResults(Log log, ValueSetIterator it) throws AllegroGraphException {
 		String[] var = it.getNames();
-	    System.out.println("Number of solutions: " + it.getCount());
+	    log.debug("Number of solutions: " + it.getCount());
 	    for (int i=0; it.hasNext(); i++) {
 			ValueObject[] objects = it.next();
 			log.info("Solution " + (i+1) + ":");
@@ -69,7 +73,205 @@ public class AgUtils {
 			}
 		}
 	}
+	
+	
+	/** Formats the results in CSV */
+	static String getResultInCsv(Log log, ValueSetIterator it) {
+		StringWriter sw = new StringWriter();
+		PrintWriter out = new PrintWriter(sw);
+		
+//	    log.debug("Number of solutions: " + it.getCount());
+		
+		String comma = "";
 
+		// header
+		String[] var = it.getNames();
+	    for ( int i = 0; i < var.length; i++ ) {
+			String value = var[i];
+			if ( value.indexOf(',') >= 0 ) {
+				value = "\"" +value+ "\"";
+			}
+			out.printf("%s%s", comma, value);
+			comma = ",";
+		}
+		out.printf("%n");
+		
+	    for (int i=0; it.hasNext(); i++) {
+	    	ValueObject[] objects = it.next();
+//	    	log.info("Solution " + (i+1) + ":");
+			comma = "";
+	    	for (int j = 0; j < objects.length; j++) {
+	    		ValueObject term = objects[j];
+	    		String value = printValueObject(term);
+				if ( value.indexOf(',') >= 0 ) {
+					value = "\"" +value+ "\"";
+				}
+				out.printf("%s%s", comma, value);
+				comma = ",";
+	    	}
+			out.printf("%n");
+	    }
+
+		return sw.toString();
+	}
+
+	/** Formats the results in JSON */
+	// TODO!!
+	static String getResultInJson(Log log, ValueSetIterator it) {
+		StringWriter sw = new StringWriter();
+		PrintWriter out = new PrintWriter(sw);
+		
+//	    log.debug("Number of solutions: " + it.getCount());
+		
+		String comma = "";
+
+		// header
+		String[] var = it.getNames();
+	    for ( int i = 0; i < var.length; i++ ) {
+			String value = var[i];
+			if ( value.indexOf(',') >= 0 ) {
+				value = "\"" +value+ "\"";
+			}
+			out.printf("%s%s", comma, value);
+			comma = ",";
+		}
+		out.printf("%n");
+		
+	    for (int i=0; it.hasNext(); i++) {
+	    	ValueObject[] objects = it.next();
+//	    	log.info("Solution " + (i+1) + ":");
+			comma = "";
+	    	for (int j = 0; j < objects.length; j++) {
+	    		ValueObject term = objects[j];
+	    		String value = printValueObject(term);
+				if ( value.indexOf(',') >= 0 ) {
+					value = "\"" +value+ "\"";
+				}
+				out.printf("%s%s", comma, value);
+				comma = ",";
+	    	}
+			out.printf("%n");
+	    }
+
+		return sw.toString();
+	}
+	
+
+	/** Formats the results in HTML */
+	static String getResultInHtml(Log log, ValueSetIterator it) {
+		StringWriter sw = new StringWriter();
+		PrintWriter out = new PrintWriter(sw);
+		
+//	    log.debug("Number of solutions: " + it.getCount());
+		
+		
+		out.printf("<table class=\"inline\">%n");
+
+		// header
+		out.printf("<tr>%n");
+		String[] var = it.getNames();
+	    for ( int i = 0; i < var.length; i++ ) {
+			String value = var[i];
+			out.printf("\t<th>%s</th>%n", Util.toHtml(value.toString()));
+		}
+		out.printf("</tr>%n");
+		
+	    for (int i=0; it.hasNext(); i++) {
+	    	out.printf("<tr>%n");
+	    	ValueObject[] objects = it.next();
+//	    	log.info("Solution " + (i+1) + ":");
+	    	for (int j = 0; j < objects.length; j++) {
+	    		ValueObject term = objects[j];
+	    		String value = printValueObject(term);
+	    		
+				String link = Util.getLink(value);
+				if ( link != null ) {
+					out.printf("\t<td><a href=\"%s\">%s</a></td>%n", link, Util.toHtml(value));
+				}
+				else {
+					out.printf("\t<td>%s</td>%n", Util.toHtml(value));
+				}
+
+	    		
+	    	}
+	    	out.printf("</tr>%n");
+	    }
+	    
+	    out.printf("</table>%n");
+
+		return sw.toString();
+	}
+
+	
+	public static void showResults(Log log, TriplesIterator it) throws AllegroGraphException {
+	    for (int i=0; it.hasNext(); i++) {
+			Triple triple = it.next();
+			log.info("Solution " + (i+1) + ": " +triple);
+		}
+	}
+
+	
+	/** Formats the results in HTML 
+	 * @throws AllegroGraphException */
+	static String getResultInHtml(Log log, TriplesIterator it) throws AllegroGraphException {
+		StringWriter sw = new StringWriter();
+		PrintWriter out = new PrintWriter(sw);
+		
+		out.printf("<table class=\"inline\">%n");
+
+	    for (int i=0; it.hasNext(); i++) {
+	    	out.printf("<tr>%n");
+	    	Triple triple = it.next();
+	    	
+	    	String[] objects = { triple.getSubjectLabel(), triple.getPredicateLabel(), triple.getObjectLabel() };
+	    	for (int j = 0; j < objects.length; j++) {
+	    		String value = objects[j];
+	    		
+				String link = Util.getLink(value);
+				if ( link != null ) {
+					out.printf("\t<td><a href=\"%s\">%s</a></td>%n", link, Util.toHtml(value));
+				}
+				else {
+					out.printf("\t<td>%s</td>%n", Util.toHtml(value));
+				}
+	    	}
+	    	out.printf("</tr>%n");
+	    }
+
+		out.printf("</table>%n");
+
+		return sw.toString();
+	}
+
+	/** Formats the results in Ntriples 
+	 * @throws AllegroGraphException */
+	static String getResultInNTriples(Log log, TriplesIterator it) throws AllegroGraphException {
+		StringWriter sw = new StringWriter();
+		PrintWriter out = new PrintWriter(sw);
+		
+	    for (int i=0; it.hasNext(); i++) {
+	    	Triple triple = it.next();
+	    	out.printf("%s %s %s%n", triple.getSubjectLabel(), triple.getPredicateLabel(), triple.getObjectLabel());
+	    }
+
+		return sw.toString();
+	}
+	
+	/** Formats the results in CSV 
+	 * @throws AllegroGraphException */
+	static String getResultInCsv(Log log, TriplesIterator it) throws AllegroGraphException {
+		StringWriter sw = new StringWriter();
+		PrintWriter out = new PrintWriter(sw);
+		
+	    for (int i=0; it.hasNext(); i++) {
+	    	Triple triple = it.next();
+	    	out.printf("\"%s\",\"%s\",\"%s\"%n", triple.getSubjectLabel(), triple.getPredicateLabel(), triple.getObjectLabel());
+	    }
+
+		return sw.toString();
+	}
+	
+	
 	public static String printValueObject(ValueObject o) {
 		String result;
 		if (o == null) {
@@ -278,6 +480,7 @@ public class AgUtils {
 	}
 	
 	
+	@SuppressWarnings("unused")
 	private static void addStatements(AllegroGraph ts) throws AllegroGraphException {
 		
 		// Add a single triple to the store
@@ -327,6 +530,7 @@ public class AgUtils {
 	
 	
 	
+	@SuppressWarnings("unused")
 	private static void loadRdf(AllegroGraph ts, String filename, String graphUri) throws AllegroGraphException {
 
 		// Load a server-side file in RDF/XML format into the store's default graph.
@@ -362,6 +566,7 @@ public class AgUtils {
 	}
 
 	
+	@SuppressWarnings("unused")
 	private static void removeAllStatements(AllegroGraph ts, Object context) throws AllegroGraphException {
 		ts.removeStatements(null, null, null, context);
 		System.out.println("numberOfTriples = " + ts.numberOfTriples());

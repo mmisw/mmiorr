@@ -3,14 +3,10 @@ package org.mmisw.ont.sparql;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.List;
 
 import org.mmisw.ont.JenaUtil2;
-import org.mmisw.ont.MmiUri;
 import org.mmisw.ont.util.Unfinished;
 import org.mmisw.ont.util.Util;
 
@@ -71,7 +67,7 @@ public class Sparql {
 				
 				JenaUtil2.removeUnusedNsPrefixes(model_);
 				
-				String str = JenaUtil2.getOntModelAsString(model_, "RDF/XML-ABBREV");	
+				String str;	
 				
 				if ( form == null || form.equalsIgnoreCase("owl") || form.equalsIgnoreCase("rdf") ) {
 					str = JenaUtil2.getOntModelAsString(model_, "RDF/XML-ABBREV");
@@ -150,7 +146,7 @@ public class Sparql {
 					String varName = String.valueOf(varNames.next());
 					String varValue = String.valueOf(sol.get(varName));
 					
-					String link = getLink(varValue);
+					String link = Util.getLink(varValue);
 					if ( link != null ) {
 						out.printf("\t<td><a href=\"%s\">%s</a></td>%n", link, Util.toHtml(varValue));
 					}
@@ -166,37 +162,6 @@ public class Sparql {
 		return sw.toString();
 	}
 	
-	/** 
-	 * Returns a string that can be used as a link. 
-	 * If it is an MmiUri, a ".html" is appended;
-	 * otherwise, if it is a valid URL, it is returned as it is;
-	 * otherwise, null is returned.
-	 * 
-	 * @param value a potential URL
-	 * @return the string that can be used as a link as stated above; null if value is not a URL.
-	 */
-	private static String getLink(String value) {
-		// try mmiUri:
-		try {
-			MmiUri mmiUri = new MmiUri(value);
-			return mmiUri.getTermUri() + ".html";
-		}
-		catch (URISyntaxException e1) {
-			// ignore. Try URL below.
-		}
-		
-		// try regular URL:
-		try {
-			URL url = new URL(value);
-			return url.toString();
-		}
-		catch (MalformedURLException e) {
-			// ignore.
-		}
-		
-		return null;
-	}
-
 	/** Formats the results in JSON */
 	private static String _jsonSelectResults(ResultSet results) {
 		

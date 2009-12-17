@@ -21,11 +21,18 @@ import org.mmisw.ont.util.Util;
 import com.franz.agbase.AllegroGraph;
 import com.franz.agbase.AllegroGraphConnection;
 import com.franz.agbase.AllegroGraphException;
+import com.franz.agbase.AllegroGraphSerializer;
+import com.franz.agbase.RDFN3Serializer;
+import com.franz.agbase.SPARQLQuery;
+import com.franz.agbase.TriplesIterator;
+import com.franz.agbase.ValueSetIterator;
 import com.franz.agjena.AllegroGraphGraphMaker;
 import com.franz.agjena.AllegroGraphModel;
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.GraphMaker;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.InfModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -44,7 +51,24 @@ import edu.drexel.util.rdf.JenaUtil;
 public class OntGraphAG implements IOntGraph {
 
 	/** Servlet resource containing the model with properties for inference purposes, N-triples format */
+	@SuppressWarnings("unused")
 	private static final String INF_PROPERTIES_MODEL_NAME_NT = "inf_properties.nt";
+	
+	/** SKOS properties */
+	private static final String[][] SKOS_PROPS = {
+			{ "!skos:exactMatch", "!rdf:type", "!owl:TransitiveProperty" },
+			{ "!skos:exactMatch", "!rdf:type", "!owl:Symmetric" },
+			
+			{ "!skos:closeMatch", "!rdf:type", "!owl:Symmetric" },
+
+			{ "!skos:broadMatch", "!rdf:type", "!owl:TransitiveProperty" },
+			{ "!skos:broadMatch", "!owl:inverseOf", "!skos:narrowMatch" },
+
+			{ "!skos:narrowMatch", "!rdf:type", "!owl:TransitiveProperty" },
+			
+			{ "!skos:relatedMatch", "!rdf:type", "!owl:Symmetric" },
+	};
+
 
 	/** Servlet resource containing the rules for inference purposes */
 	private static final String INF_RULES_NAME = "inf_rules.txt";
@@ -281,25 +305,16 @@ public class OntGraphAG implements IOntGraph {
 	 * load the skos properties model
 	 */
 	private void _loadSkosProperties(Ag _ag) {
-		
-		//
-		// 1) load the skos properties model into the base model _model:
-		//
-		String propsSrc = Util.getResource(log, INF_PROPERTIES_MODEL_NAME_NT);
-		if ( propsSrc == null ) {
-			return;
-		}
-		
-		// now, update graph with model captured in serialization
 		try {
-			AgUtils.parseWithTiming(_ag.ts, false, propsSrc);
+			_ag.ts.registerNamespace("skos","http://www.w3.org/2008/05/skos#");
+			for (int i = 0; i < SKOS_PROPS.length; i++) {
+				_ag.ts.addStatement(SKOS_PROPS[i][0], SKOS_PROPS[i][1], SKOS_PROPS[i][2]);
+				log.info("Added statement: " +SKOS_PROPS[i][0]+ " " +SKOS_PROPS[i][1]+ " " +SKOS_PROPS[i][2]);
+			}
 		}
 		catch (AllegroGraphException e) {
-			log.error("Error parsing/loading RDF in graph.", e);
+			log.error("Error adding statements to graph.", e);
 		}
-
-		log.info("Added properties model:\n\t" +propsSrc.replaceAll("\n", "\n\t"));
-
 	}
 
 	
@@ -386,6 +401,167 @@ public class OntGraphAG implements IOntGraph {
 	 * @throws Exception 
 	 */
 	public QueryResult executeQuery(String sparqlQuery, String form) throws Exception {
+		Ag _ag = new Ag();
+		try {
+			return _executeQuery(_ag, sparqlQuery, form);
+		}
+		finally {
+			_ag.end();
+		}
+	}
+	
+	
+	private QueryResult _executeQuery(Ag _ag, String sparqlQuery, String form) throws Exception {
+		QueryResult queryResult = new QueryResult();
+
+		SPARQLQuery sq = new SPARQLQuery();
+		sq.setTripleStore(_ag.ts);
+		sq.setQuery(sparqlQuery);
+		sq.setIncludeInferred(true);
+		
+		boolean useRun = false;
+		
+		
+		if ( form == null ) {
+			form = "html";
+		}
+
+		if ( form.equalsIgnoreCase("owl") || form.equalsIgnoreCase("rdf") ) {
+			useRun = true;
+			sq.setResultsFormat("sparql-xml");
+			// TODO: contentType should be sparql-related
+			queryResult.setContentType("Application/rdf+xml");
+		}
+		// else: TODO what other formats are possible?
+		
+		if ( useRun ) {
+			String res = sq.run();
+			queryResult.setIsEmpty(res.trim().length() == 0);
+			queryResult.setResult(res);
+			
+			return queryResult;
+		}
+		
+		// use Jena to determine what kind of query this is (AG doesn't seem to provide an operation for this)
+		// so we call the appropriate execution method:
+		Query query = QueryFactory.create(sparqlQuery);
+
+		// only one of these results is captured
+		TriplesIterator tripleIter = null;
+		ValueSetIterator valSetIter = null;
+		Boolean askResult = null;
+
+		
+		queryResult.setContentType("text/plain");
+
+		// SELECT
+		if ( query.isSelectType() ) {
+			valSetIter = sq.select();
+		}
+		// DESCRIBE
+		else if ( query.isDescribeType() ) {
+			tripleIter = sq.describe();
+		}
+		// CONSTRUCT
+		else if ( query.isConstructType() ) {
+			tripleIter = sq.construct();
+		}
+		// ASK
+		else if ( query.isAskType() ) {
+			askResult = Boolean.valueOf(sq.ask());
+		}
+
+		if ( valSetIter != null ) {
+			queryResult.setIsEmpty(! valSetIter.hasNext());
+			String res;
+			
+			if ( form.equalsIgnoreCase("html") ) {
+				queryResult.setContentType("text/html");
+				res = AgUtils.getResultInHtml(log, valSetIter);
+			}
+			else if ( form.equalsIgnoreCase("n3") ) {
+				// TODO N3 (using CSV for now)
+				queryResult.setContentType("text/plain");
+				res = AgUtils.getResultInCsv(log, valSetIter);
+			}
+			else if ( form.equalsIgnoreCase("nt") ) {
+				// TODO NTriples (using CSV for now)
+				queryResult.setContentType("text/plain");
+				res = AgUtils.getResultInCsv(log, valSetIter);
+			}
+			else if ( form.equalsIgnoreCase("csv") ) {
+				queryResult.setContentType("text/plain");
+				res = AgUtils.getResultInCsv(log, valSetIter);
+			}
+			else if ( form.equalsIgnoreCase("json") ) {
+				queryResult.setContentType("application/json");
+				res = AgUtils.getResultInJson(log, valSetIter);
+			}
+			else {
+				queryResult.setContentType("text/html");
+				res = AgUtils.getResultInHtml(log, valSetIter);
+			}
+			
+			queryResult.setResult(res);
+		}
+		else if ( tripleIter != null ) {
+			queryResult.setIsEmpty(! tripleIter.hasNext());
+			
+			// TODO: NOTE: the AG serializers are not working (not even in the examples provided by them)
+			
+			String res = null;
+			
+			if ( form.equalsIgnoreCase("html") ) {
+				queryResult.setContentType("text/html");
+				res = AgUtils.getResultInHtml(log, tripleIter);
+			}
+			else if ( form.equalsIgnoreCase("n3") ) {
+				queryResult.setContentType("text/plain");
+				AllegroGraphSerializer serializer = new RDFN3Serializer();
+				serializer.setDestination(null); // ie., to string to be returned by run()
+				Object resObj = serializer.run(tripleIter);
+				res = String.valueOf(resObj);
+			}
+			else if ( form.equalsIgnoreCase("nt") ) {
+				queryResult.setContentType("text/plain");
+				res = AgUtils.getResultInNTriples(log, tripleIter);
+//				AllegroGraphSerializer serializer = new NTriplesSerializer();
+//				serializer.setDestination(null); // ie., to string to be returned by run()
+//				Object resObj = serializer.run(tripleIter);
+//				res = String.valueOf(resObj);
+			}
+			else if ( form.equalsIgnoreCase("csv") ) {
+				queryResult.setContentType("text/plain");
+				res = AgUtils.getResultInCsv(log, tripleIter);
+			}
+			else if ( form.equalsIgnoreCase("json") ) {
+				queryResult.setContentType("text/plain");
+//				queryResult.setContentType("application/json");
+//				res = AgUtils.getResultInJson(log, tripleIter);
+			}
+			else {
+				queryResult.setContentType("text/html");
+				res = AgUtils.getResultInHtml(log, tripleIter);
+			}
+			
+			queryResult.setResult(res);
+		}
+		else if ( askResult != null ) {
+			queryResult.setIsEmpty(false);
+			queryResult.setResult(askResult.toString());
+		}
+		else {
+			log.debug("SHOULD NOT HAPPEN: unexpected type of query");
+			queryResult.setIsEmpty(false);
+			queryResult.setResult("Internal error: unexpected type of query. Please report this bug.");
+		}
+
+		return queryResult;
+	}
+
+	
+	@SuppressWarnings("unused")
+	private QueryResult executeQuery2(String sparqlQuery, String form) throws Exception {
 		Ag _ag = new Ag();
 		try {
 			Model model = _getModel(_ag);

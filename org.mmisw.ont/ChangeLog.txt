@@ -5,6 +5,13 @@ $Id$
 ChangeLog
 
 
+2009-12-16   1.5.0.beta3
+	*** Continuing enabling AllegroGraph as persistent triple store ***
+	- enabling direct SPARQL query dispatch with AllegroGraph so reasoning can be enabled.
+	- unfortunately, AG serializers are not working ...
+	- TODO: query dispatch according to desired format needs more work and clean-up!
+	 
+
 2009-12-14   1.5.0.beta2
 	*** Continuing enabling AllegroGraph as persistent triple store ***
 	- Re-enabling inferences (issue #175 Enable inference mechanism)
