@@ -9,6 +9,8 @@ ChangeLog
 	- org.mmisw.ont.graph.allegro: new package for AG related types
 	- org.mmisw.ont.graph.mem: new package for the previous memory based model
 	
+	- OntGraphAG.init(): populates triple store and also indexes it.
+	
 	Have been looking at other possible triple stores (Open Anzo, 4store, sesame, TDB, ...)
 	in other to have other options. 
 	

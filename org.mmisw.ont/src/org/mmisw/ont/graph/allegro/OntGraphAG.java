@@ -211,23 +211,27 @@ public class OntGraphAG implements IOntGraph {
 
 
 	public void reindex(boolean wait) throws ServletException {
-		log.info("reindex called. wait=" +wait);
 		Ag _ag = new Ag();
+		try {
+			_reindex(_ag, wait);
+		}
+		finally {
+			_ag.end();
+		}
+	}
+	
+	private void _reindex(Ag _ag, boolean wait) throws ServletException {
+		log.info("reindex called. wait=" +wait);
 		long start = System.currentTimeMillis();
 		try {
 			_ag.ts.indexAllTriples(wait);
 			_ag.debugIndexInfo();
+			log.info("reindex completed (" +AgUtils.elapsedTime(start)+ ")");
 		}
 		catch (AllegroGraphException e) {
 			log.error("Error reindexing", e);
 			throw new ServletException("Error reindexing", e);
 		}
-		finally {
-			_ag.end();
-		}
-		
-		log.info("reindex completed (" +AgUtils.elapsedTime(start)+ ")");
-		
 	}
 	
 	/**
@@ -240,10 +244,15 @@ public class OntGraphAG implements IOntGraph {
 		log.info("Creating connection to triple store ...");
 		Ag _ag = new Ag();
 		try {
+			// populate the triple store:
 			long start = System.currentTimeMillis();
 			long numberOfTriples = _doReInitModel(_ag);
-			log.debug("reinit completed (" +AgUtils.elapsedTime(start)+ ").  " +
+			log.debug("triple store populated (" +AgUtils.elapsedTime(start)+ ").  " +
 					"#triples= " +numberOfTriples);
+			
+			// index:
+			boolean wait = true;
+			_reindex(_ag, wait);
 		}
 		finally {
 			_ag.end();
