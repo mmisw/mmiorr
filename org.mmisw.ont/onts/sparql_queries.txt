@@ -1,0 +1,82 @@
+# misc queries
+# Note: some of them apply onlhy to my local dev environment; others to
+# the MMI ORR repository, and others to any.
+
+
+SELECT  ?s ?p ?o 
+FROM <http://mmisw.org/ont/mmi/device>
+WHERE {?s ?p ?o. } 
+LIMIT 20
+
+
+# the object properties in the OntDev graph:
+PREFIX ontdev: <http://mmisw.org/ont/mmi/device/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+SELECT ?domain ?objectProperty ?range 
+FROM <http://mmisw.org/ont/mmi/device>
+WHERE { ?objectProperty rdf:type owl:ObjectProperty .
+        ?objectProperty rdfs:domain ?domain .
+        ?objectProperty rdfs:range ?range . 
+}
+
+
+
+PREFIX ontdev: <http://mmisw.org/ont/mmi/device/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+SELECT ?domain ?objectProperty ?range 
+WHERE { 
+        ?objectProperty rdf:type owl:ObjectProperty .
+        ?objectProperty rdfs:domain ?domain .
+        ?domain rdfs:label ?domlabel
+        FILTER regex(?domlabel, "device") .
+        ?objectProperty rdfs:range ?range .
+}
+
+
+PREFIX omv: <http://omv.ontoware.org/2005/05/ontology#>
+SELECT  DISTINCT ?creator 
+WHERE { ?s omv:hasCreator ?creator. }
+
+
+
+
+PREFIX omv: <http://omv.ontoware.org/2005/05/ontology#>
+SELECT  ?acronym ?resource ?creator 
+WHERE { 
+    ?resource omv:hasCreator ?creator. 
+    ?resource omv:acronym ?acronym. 
+} 
+
+
+
+PREFIX skos: <http://www.w3.org/2008/05/skos#>
+PREFIX vocres: <http://mmisw.org/ont/testing/vocres/>
+SELECT ?o WHERE {vocres:a skos:exactMatch ?o. }
+
+
+PREFIX ontdev: <http://mmisw.org/ont/mmi/device/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+SELECT ?subclass 
+WHERE { {?subclass rdfs:subClassOf ontdev:PhysicalProperty }
+UNION
+      { ?subclass rdfs:subClassOf ontdev:MeasurementCapability } }
+      
+      
+   
+PREFIX skos: <http://www.w3.org/2008/05/skos#>
+PREFIX vocres: <http://localhost:8080/ont/mmitest/vocres/>
+SELECT ?o WHERE {vocres:a skos:exactMatch ?o. }
+
+
+PREFIX skos: <http://www.w3.org/2008/05/skos#>
+SELECT ?p ?o {skos:exactMatch ?p ?o. }
+
+
+
+

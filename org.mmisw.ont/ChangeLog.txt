@@ -6,13 +6,34 @@ ChangeLog
 
 
 2009-12-18   1.5.0.beta4
+	Have been looking at other possible triple stores (Open Anzo, 4store, sesame, TDB, ...)
+	
+2009-12-18   1.5.0.beta4
 	- org.mmisw.ont.graph.allegro: new package for AG related types
 	- org.mmisw.ont.graph.mem: new package for the previous memory based model
 	
 	- OntGraphAG.init(): populates triple store and also indexes it.
 	
-	Have been looking at other possible triple stores (Open Anzo, 4store, sesame, TDB, ...)
-	in other to have other options. 
+	Fortunately, no strange behavior on the MMIWEB deployment. 
+	Here are some stats:
+	
+	Reload (http://mmisw.org/ont/?_reload):
+		- 140 ontologies to be loaded
+		- triple store populated in 1:10.706 minutes:seconds  
+		- #triples= 92651
+		- indexing completed in 11.015 seconds
+		
+	Query involving inference:
+		PREFIX skos: <http://www.w3.org/2008/05/skos#>
+		PREFIX vocres: <http://mmisw.org/ont/testing/vocres/>
+		SELECT ?o WHERE {vocres:a skos:exactMatch ?o. }
+	Processed in 1.35 seconds:  (see http://code.google.com/p/mmisw/issues/detail?id=175)
+		http://mmisw.org/ont/testing/vocres/b
+		http://mmisw.org/ont/testing/vocres/d
+		http://mmisw.org/ont/testing/vocres/c
+		
+	(the same query took 12 seconds before indexing).
+	
 	
 
 2009-12-17   1.5.0.beta4
