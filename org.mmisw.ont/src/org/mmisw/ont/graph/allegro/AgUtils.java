@@ -1,4 +1,4 @@
-package org.mmisw.ont.graph;
+package org.mmisw.ont.graph.allegro;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -27,7 +27,7 @@ import com.franz.agbase.ValueSetIterator;
  * 
  * @author Carlos Rueda
  */
-public class AgUtils {
+class AgUtils {
 
 	private static final Log log = LogFactory.getLog(AgUtils.class);
 	
@@ -396,19 +396,6 @@ public class AgUtils {
 		System.out.println("Done loading " + n + " triples in " + elapsedTime(start));
 	}
 
-
-	
-	/**
-	 * Parses and loads contents into the default graph and time the load.
-	 * 
-	 * @param ts A triple store 
-	 * @param contents string to parse
-	 * @throws AllegroGraphException
-	 */
-	public static void parseWithTiming(AllegroGraph ts, boolean rdfXml, String contents) throws AllegroGraphException {
-		parseWithTiming(ts, rdfXml, contents, "");
-	}
-	
 	/**
 	 * Parses and loads contents into the specified graph and time the load.
 	 * 
@@ -419,11 +406,12 @@ public class AgUtils {
 	 * @throws AllegroGraphException
 	 */
 	public static void parseWithTiming(AllegroGraph ts, boolean rdfXml, String contents, Object graph) throws AllegroGraphException {
-		log.debug("Parsing and loading RDF contents...");
+		log.debug("Parsing and loading RDF contents into graph " +String.valueOf(graph)+ " ...");
 		long start = System.currentTimeMillis();
-		String baseUri = "TODO";
 		long n;
 		if ( rdfXml ) {
+			// TODO baseUri for ts.parseRDFXML
+			String baseUri = "TODO";
 			n = ts.parseRDFXML(contents, graph, baseUri);
 		}
 		else {

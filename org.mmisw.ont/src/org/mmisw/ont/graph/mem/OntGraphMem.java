@@ -1,4 +1,4 @@
-package org.mmisw.ont.graph;
+package org.mmisw.ont.graph.mem;
 
 import java.io.StringReader;
 import java.net.URISyntaxException;
@@ -14,6 +14,7 @@ import org.mmisw.ont.OntConfig;
 import org.mmisw.ont.OntUtil;
 import org.mmisw.ont.Ontology;
 import org.mmisw.ont.UnversionedConverter;
+import org.mmisw.ont.graph.IOntGraph;
 import org.mmisw.ont.sparql.QueryResult;
 import org.mmisw.ont.sparql.Sparql;
 import org.mmisw.ont.util.Util;
@@ -32,8 +33,8 @@ import com.hp.hpl.jena.util.PrintUtil;
 import edu.drexel.util.rdf.JenaUtil;
 
 //
-// Copy of OntGraph.java 894 11/25/09 7:43 PM
-// except that it implements the new interface IOntGraph for refactoring purposes
+// Copy of org.mmisw.ont.OntGraph.java 894 11/25/09 7:43 PM
+// except that it implements the new interface IOntGraph (initially for refactoring purposes)
 // while developing other implementations.
 //
 
@@ -74,7 +75,7 @@ public class OntGraphMem implements IOntGraph {
 	 *        
 	 * @param db The database helper.
 	 */
-	OntGraphMem(OntConfig ontConfig, Db db) {
+	public OntGraphMem(OntConfig ontConfig, Db db) {
 		this.db = db;
 	}
 

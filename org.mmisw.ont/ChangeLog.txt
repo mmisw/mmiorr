@@ -5,6 +5,27 @@ $Id$
 ChangeLog
 
 
+2009-12-18   1.5.0.beta4
+	- org.mmisw.ont.graph.allegro: new package for AG related types
+	- org.mmisw.ont.graph.mem: new package for the previous memory based model
+	
+	Have been looking at other possible triple stores (Open Anzo, 4store, sesame, TDB, ...)
+	in other to have other options. 
+	
+
+2009-12-17   1.5.0.beta4
+	*** Continuing enabling AllegroGraph as persistent triple store ***
+	- Enabling association of named graphs
+	- OntGraphAG._loadOntology:
+		- ontologyUri used as graph name for the ontology
+	- Argh!: tests of this on my local AG installation caused some very weird behavior!
+	  - at some point I got the "exceeded 50 million triple limit"! (my local repository
+	    is less than 30K triples!)
+	  - query performance really bad! actually it may be not working at all (even though that
+	    'top' shows me >99% cpu usage!
+	  - however, the deployment at MMIWEB seems to be working fine.
+	  
+	
 2009-12-16   1.5.0.beta3
 	*** Continuing enabling AllegroGraph as persistent triple store ***
 	- enabling direct SPARQL query dispatch with AllegroGraph so reasoning can be enabled.

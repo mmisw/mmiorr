@@ -1,4 +1,4 @@
-package org.mmisw.ont.graph;
+package org.mmisw.ont.graph.allegro;
 
 import java.net.URISyntaxException;
 import java.util.List;
@@ -14,6 +14,7 @@ import org.mmisw.ont.OntConfig;
 import org.mmisw.ont.OntUtil;
 import org.mmisw.ont.Ontology;
 import org.mmisw.ont.UnversionedConverter;
+import org.mmisw.ont.graph.IOntGraph;
 import org.mmisw.ont.sparql.QueryResult;
 import org.mmisw.ont.sparql.Sparql;
 import org.mmisw.ont.util.Util;
@@ -102,19 +103,20 @@ public class OntGraphAG implements IOntGraph {
 		AllegroGraph ts;
 		
 		Ag() throws ServletException {
-			ags = new AllegroGraphConnection();
-			ags.setHost(serverHost);
-			ags.setPort(serverPort);
-			
+			log.info("Connecting to triple store...");
 			try {
+				ags = new AllegroGraphConnection();
+				ags.setHost(serverHost);
+				ags.setPort(serverPort);
 				ags.enable();
 			} 
-			catch (Exception e) {
+			catch (Throwable e) {
 				throw new ServletException("Error connecting to triple store server.", e);
 			}
 
 			try {
 				ts = ags.access(tripleStoreName, tripleStoreDir);
+				log.info("CONNECTED");
 			}
 			catch (AllegroGraphException e) {
 				throw new ServletException("Error accessing triple store.", e);
@@ -152,6 +154,7 @@ public class OntGraphAG implements IOntGraph {
 				ags.disable();
 				ags = null;
 			}
+			log.info("CONNECTION CLOSED");
 		}
 	}
 
@@ -164,7 +167,7 @@ public class OntGraphAG implements IOntGraph {
 	 *        
 	 * @param db The database helper.
 	 */
-	OntGraphAG(OntConfig ontConfig, Db db) {
+	public OntGraphAG(OntConfig ontConfig, Db db) {
 		this.db = db;
 	}
 
@@ -234,6 +237,7 @@ public class OntGraphAG implements IOntGraph {
 	 */
 	public void reinit(boolean withInference) throws ServletException {
 		log.info("reinit called. withInference=" +withInference);
+		log.info("Creating connection to triple store ...");
 		Ag _ag = new Ag();
 		try {
 			long start = System.currentTimeMillis();
@@ -270,7 +274,7 @@ public class OntGraphAG implements IOntGraph {
 		if ( log.isDebugEnabled() ) {
 			log.debug("Using unversioned ontologies: " +USE_UNVERSIONED);
 			
-			log.debug("About to load the following ontologies: ");
+			log.debug("About to load the following " +onts.size()+ " ontologies: ");
 			for ( Ontology ontology : onts ) {
 				log.debug(ontology.getOntologyId()+ " :: " +ontology.getUri());
 			}
@@ -353,18 +357,22 @@ public class OntGraphAG implements IOntGraph {
 	}
 
 	private void _loadOntology(Ag _ag, Ontology ontology, String full_path) {
+		
+		String ontologyUri = ontology.getUri();
 		String serialization;
 		
 		if ( USE_UNVERSIONED ) {
 			OntModel model = JenaUtil.loadModel(full_path, false);
 
-			if ( OntUtil.isOntResolvableUri(ontology.getUri()) ) {
+			if ( OntUtil.isOntResolvableUri(ontologyUri) ) {
 				MmiUri mmiUri;
 				try {
-					mmiUri = new MmiUri(ontology.getUri());
+					mmiUri = new MmiUri(ontologyUri);
 					OntModel unversionedModel = UnversionedConverter.getUnversionedModel(model, mmiUri);
 					
 					serialization = JenaUtil2.getOntModelAsString(unversionedModel, "RDF/XML-ABBREV");
+					
+					ontologyUri = mmiUri.copyWithVersion(null).getOntologyUri();
 				}
 				catch (URISyntaxException e) {
 					log.error("shouldn't happen", e);
@@ -385,7 +393,8 @@ public class OntGraphAG implements IOntGraph {
 		
 		// now, update graph with model captured in serialization
 		try {
-			AgUtils.parseWithTiming(_ag.ts, true, serialization);
+			Object graph = "<" +ontologyUri+ ">";
+			AgUtils.parseWithTiming(_ag.ts, true, serialization, graph);
 		}
 		catch (AllegroGraphException e) {
 			log.error("Error parsing/loading RDF in graph.", e);

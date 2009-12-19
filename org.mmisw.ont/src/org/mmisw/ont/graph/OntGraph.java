@@ -7,6 +7,8 @@ import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.Db;
 import org.mmisw.ont.OntConfig;
 import org.mmisw.ont.Ontology;
+import org.mmisw.ont.graph.allegro.OntGraphAG;
+import org.mmisw.ont.graph.mem.OntGraphMem;
 import org.mmisw.ont.sparql.QueryResult;
 
 /**
@@ -41,6 +43,9 @@ public class OntGraph implements IOntGraph {
 			//
 			// If the AllegroGraph server host is given, then use the OntGraphAG implementation;
 			// otherwise, use the OntGraphMem implementation:
+			//
+			// TODO: other parameters can be used to determine the actual implementation and/or
+			// particular settings.
 			//
 			String serverHost = OntConfig.Prop.AGRAPH_HOST.getValue();
 			boolean useAllegroGraph = serverHost != null && serverHost.trim().length() > 0;
