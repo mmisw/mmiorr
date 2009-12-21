@@ -5,6 +5,11 @@ $Id$
 ChangeLog
 
 
+2009-12-18   1.5.0.beta5
+	- OntGraphAG.loadOntology: load ontology and lauch indexing of new triples
+	- OntGraphAG._loadOntology: remove all statements associated with the graph before
+	  parsing the new contents.
+
 2009-12-18   1.5.0.beta4
 	Have been looking at other possible triple stores (Open Anzo, 4store, sesame, TDB, ...)
 	

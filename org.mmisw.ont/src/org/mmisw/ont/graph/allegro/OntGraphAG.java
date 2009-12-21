@@ -358,6 +358,10 @@ public class OntGraphAG implements IOntGraph {
 			String full_path = aquaUploadsDir+ "/" +ontology.getFilePath() + "/" + ontology.getFilename();
 			log.info("Loading: " +full_path+ " in graph");
 			_loadOntology(_ag, ontology, full_path);
+			
+			// lauch indexing of new triples in the background and return:
+			boolean wait = false;
+			_ag.ts.indexNewTriples(wait);
 		}
 		finally {
 			_ag.end();
@@ -402,7 +406,16 @@ public class OntGraphAG implements IOntGraph {
 		
 		// now, update graph with model captured in serialization
 		try {
+			// this is the affected graph:
 			Object graph = "<" +ontologyUri+ ">";
+			
+			// first, remove all statements associated with the graph:
+			if ( log.isDebugEnabled() ) {
+				log.debug("Removing all statements in graph " +graph+ " ...");
+			}
+			_ag.ts.removeStatements(null, null, null, graph);
+			
+			// now, create the new graph:
 			AgUtils.parseWithTiming(_ag.ts, true, serialization, graph);
 		}
 		catch (AllegroGraphException e) {
