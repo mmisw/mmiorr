@@ -9,6 +9,14 @@ ChangeLog
 	- OntGraphAG.loadOntology: load ontology and lauch indexing of new triples
 	- OntGraphAG._loadOntology: remove all statements associated with the graph before
 	  parsing the new contents.
+	- OntGraphAG.init: report (log.info): index flavors, unindexed threshold, unindexed triples, total triples.
+	  Note: no action is taken if the reported unindexed triples is > 0 at init time; this is because:
+	  	- reinit always reindexes all triples
+	  	- loadOntology indexes the new triples
+	  Normally, unindexed triples at init time should be zero.
+	  
+	  NOTE: the setUnindexedThreshold is not yet used, so no automatic reindexing of the triple store is enabled. 
+	  
 
 2009-12-18   1.5.0.beta4
 	Have been looking at other possible triple stores (Open Anzo, 4store, sesame, TDB, ...)

@@ -1,6 +1,7 @@
 package org.mmisw.ont.graph.allegro;
 
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -191,6 +192,10 @@ public class OntGraphAG implements IOntGraph {
 		Ag _ag = new Ag();
 		try {
 			log.info("AllegroGraph Server version = " +_ag.ags.getServerVersion());
+			String[] idxFlavors = _ag.ts.getIndexFlavors();
+			log.info(" Index flavors = " +(idxFlavors == null ? "null" : Arrays.asList(idxFlavors)));
+			log.info(" unindexed threshold = " +_ag.ts.getUnindexedThreshold());
+			log.info(" #unindexed triples = " +_ag.ts.getUnindexedTripleCount());
 			log.info(" #triples = " +_ag.ts.numberOfTriples());
 		}
 		catch (AllegroGraphException e) {
@@ -293,7 +298,8 @@ public class OntGraphAG implements IOntGraph {
 			String full_path = aquaUploadsDir+ "/" +ontology.getFilePath() + "/" + ontology.getFilename();
 			log.info("Loading: " +full_path+ " in graph");
 			try {
-				_loadOntology(_ag, ontology, full_path);
+				boolean clearGraphFirst = false;  // the triple store starts empty; see above
+				_loadOntology(_ag, ontology, full_path, clearGraphFirst);
 			}
 			catch (Throwable ex) {
 				log.error("Error loading ontology: " +full_path+ " (continuing..)", ex);
@@ -357,7 +363,8 @@ public class OntGraphAG implements IOntGraph {
 		try {
 			String full_path = aquaUploadsDir+ "/" +ontology.getFilePath() + "/" + ontology.getFilename();
 			log.info("Loading: " +full_path+ " in graph");
-			_loadOntology(_ag, ontology, full_path);
+			boolean clearGraphFirst = true;
+			_loadOntology(_ag, ontology, full_path, clearGraphFirst);
 			
 			// lauch indexing of new triples in the background and return:
 			boolean wait = false;
@@ -369,7 +376,7 @@ public class OntGraphAG implements IOntGraph {
 
 	}
 
-	private void _loadOntology(Ag _ag, Ontology ontology, String full_path) {
+	private void _loadOntology(Ag _ag, Ontology ontology, String full_path, boolean clearGraphFirst) {
 		
 		String ontologyUri = ontology.getUri();
 		String serialization;
@@ -409,11 +416,13 @@ public class OntGraphAG implements IOntGraph {
 			// this is the affected graph:
 			Object graph = "<" +ontologyUri+ ">";
 			
-			// first, remove all statements associated with the graph:
-			if ( log.isDebugEnabled() ) {
-				log.debug("Removing all statements in graph " +graph+ " ...");
+			if ( clearGraphFirst ) {
+				// first, remove all statements associated with the graph:
+				if ( log.isDebugEnabled() ) {
+					log.debug("Removing all statements in graph " +graph+ " ...");
+				}
+				_ag.ts.removeStatements(null, null, null, graph);
 			}
-			_ag.ts.removeStatements(null, null, null, graph);
 			
 			// now, create the new graph:
 			AgUtils.parseWithTiming(_ag.ts, true, serialization, graph);
