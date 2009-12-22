@@ -97,6 +97,9 @@ public class TempOntologyHelper {
 		
 		tempOntologyInfo.setNamespace(uriForEmpty);
 		if ( uriForEmpty != null ) {
+			
+			tempOntologyInfo.setIsOntResolvable(OntServiceUtil.isOntResolvableUri(uriForEmpty));
+			
 			// get shortName as the last piece in the path but discarding any query piece
 			String path = uriForEmpty;
 			int idx = Math.max(Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\')), path.lastIndexOf(':'));

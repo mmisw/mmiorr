@@ -20,11 +20,15 @@ public class TempOntologyInfo extends BaseOntologyInfo {
 	/** message to describe details about the metadata contents of the ontology */
 	private String details;
 	
-	/** the value of the associated xml:base */
+	/** the value of the associated namespace (ontology URI) */
 	private String namespace;
 	
 	/** corresponding shortName */
 	private String shortName;
+
+	/** is the ontology URI (namespace) resolvable by the Ont service? */
+	private boolean isOntResolvable;
+	
 	
 	// to be moved out from here
 	private boolean preserveOriginalBaseNamespace;
@@ -95,6 +99,19 @@ public class TempOntologyInfo extends BaseOntologyInfo {
 	}
 	public String getShortName() {
 		return shortName;
+	}
+
+
+	public void setIsOntResolvable(boolean isOntResolvable) {
+		this.isOntResolvable = isOntResolvable;
+	}
+
+	/**
+	 * is the ontology URI (namespace) resolvable by the Ont service?
+	 * @return
+	 */
+	public boolean isOntResolvable() {
+		return isOntResolvable;
 	}
 
 }

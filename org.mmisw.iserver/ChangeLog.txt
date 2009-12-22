@@ -18,6 +18,8 @@ $Id$
 		- Server.createOntologyFullyHosted, no transfer to new namespace is necessary (nothing to be transferred);
 	  But note that the namespace *is* required in Server.createOntologyReHosted.
 		
+	- TempOntologyInfo: new field isOntResolvable that a client (the ORR portal) can use to determine whether
+	  it's appropriate to register an ontology in re-hosted mode. Set by TempOntologyHelper.getTempOntologyInfo. 
 
 2009-11-30   1.7.0.alpha
 	- Setting version to 1.7.0.alpha reflecting all the 1.6.1+ changes below.
