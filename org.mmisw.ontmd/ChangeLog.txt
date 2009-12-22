@@ -4,12 +4,12 @@ $Id$
 
 
 2009-12-21   1.7.2.alpha
-	Issue #213: ontology with hash fragment separator not handled appropriately
+	Fixed Issue #213: ontology with hash fragment separator not handled appropriately
 	Proper handling of new submission with *no* original namespace associated.
 	See related changes in iserver module.
 	
 	RegisterNewPageReHosted: If namespace of submitted ontology isOntResolvable (new TempOntologyInfo method),
-	then it cannot be registered in re-hosted mode. An error message explain that the ontology would have
+	then it cannot be registered in re-hosted mode. An error message explains that the ontology would have
 	to be registered in fully hosted mode.
 	
 
