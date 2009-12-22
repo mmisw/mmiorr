@@ -980,14 +980,9 @@ public class Server implements IServer {
 				return createOntologyResult;
 			}
 			
-			uriForEmpty = Util2.getDefaultNamespace(file, createOntologyResult);
-
-			if ( uriForEmpty == null ) {
-				String error = "Cannot get base URI for the ontology";
-				log.info(error);
-				createOntologyResult.setError(error);
-				return createOntologyResult;
-			}
+			// get original namespace associated with the ontology, if any:
+			uriForEmpty = Util2.getDefaultNamespace(model, file, createOntologyResult);
+			// 2009-12-21: previously returning error if uriForEmpty==null. Not anymore; see below.
 			
 			newContentsFileName = file.getName();
 		}
@@ -1021,13 +1016,7 @@ public class Server implements IServer {
 		}
 
 			
-
-		
-		log.info("createOntology: using '" +uriForEmpty+ "' as base URI");
-		
 		final String original_ns_ = uriForEmpty;
-		log.info("original namespace: " +original_ns_);
-
 		
 		String ns_;
 		String base_;
@@ -1046,9 +1035,18 @@ public class Server implements IServer {
 		model.setNsPrefix("", ns_);
 
 
-		// Update statements  according to the new namespace:
-		Util2.replaceNameSpace(model, original_ns_, ns_);
-			
+		if ( original_ns_ != null ) {
+			// Update statements  according to the new namespace:
+			log.info("createOntologyFullyHosted: original namespace: '" +uriForEmpty+ "'. " +
+				"Elements here will be transferred to new namespace " +ns_
+			);
+			Util2.replaceNameSpace(model, original_ns_, ns_);
+		}
+		else {
+			log.info("createOntologyFullyHosted: no original namespace, so no transfer will be done.");
+		}
+		
+
 		
 		
 		/////////////////////////////////////////////////////////////////
@@ -1297,19 +1295,10 @@ public class Server implements IServer {
 			}
 			
 			ont = OntModelUtil.getOntology(model);
-			if ( ont != null ) {
-				uriForEmpty = ont.getURI();	
-			}
-			else {
-				uriForEmpty = Util2.getDefaultNamespace(file, createOntologyResult);
-			}
-
-			if ( uriForEmpty == null ) {
-				String error = "Cannot get base URI for the ontology";
-				log.error(error);
-				createOntologyResult.setError(error);
-				return createOntologyResult;
-			}
+			
+			// get original namespace associated with the ontology, if any:
+			uriForEmpty = Util2.getDefaultNamespace(model, file, createOntologyResult);
+			// 2009-12-21: previously returning error if uriForEmpty==null. Not anymore; see below.
 			
 			newContentsFileName = file.getName();
 		}
@@ -1344,22 +1333,20 @@ public class Server implements IServer {
 		}
 
 			
-		log.info("createOntology: using '" +uriForEmpty+ "' as base URI");
 		
-		final String original_ns_ = uriForEmpty;
 		final String original_base_ = JenaUtil2.removeTrailingFragment(uriForEmpty);
-		log.info("original namespace: " +original_ns_);
 
 		// and this is the info for the requested URI:
 		final String ontUri = createOntologyInfo.getUri();
 		final String ns_ = JenaUtil2.appendFragment(ontUri);
 		final String base_ = JenaUtil2.removeTrailingFragment(ontUri);
 
+		log.info("createOntologyReHosted: original namespace: '" +original_base_+ "'");
 		if ( ! original_base_.equals(base_) ) {
 			// In this re-hosted case, we force the original URI and the new URI to be the same.
 			// This may happen only in the case of a submission of a new version.
-			String error = "The new base URI (" +original_base_+ ") is not equal to the registered " +
-					"base URI (" +base_+ ") "
+			String error = "The new base URI (" +base_+ ") is not equal to the registered " +
+				"base URI (" +original_base_+ ") "
 			;
 			log.debug(error);
 			createOntologyResult.setError(error);
@@ -1511,6 +1498,7 @@ public class Server implements IServer {
 
 	
 	// TODO remove when new mechanism is in place.
+	@SuppressWarnings("deprecation")
 	private CreateOntologyResult createOntology_oldMethod(CreateOntologyInfo createOntologyInfo) {
 			
 		log.info("createOntology: called.");
@@ -1755,7 +1743,7 @@ public class Server implements IServer {
 				return createOntologyResult;
 			}
 			
-			uriForEmpty = Util2.getDefaultNamespace(file, createOntologyResult);
+			uriForEmpty = Util2.getDefaultNamespace(model, file, createOntologyResult);
 
 			if ( uriForEmpty == null ) {
 				String error = "Cannot get base URI for the ontology";

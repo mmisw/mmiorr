@@ -20,7 +20,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.MdHelper;
+import org.mmisw.iserver.core.ontmodel.OntModelUtil;
 import org.mmisw.iserver.gwt.client.rpc.BaseResult;
+import org.mmisw.iserver.gwt.client.rpc.Errorable;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
 
@@ -485,7 +487,7 @@ public class Util2 {
 		return errorMessage;
 			
 	}
-	
+
 	/**
 	 * Returns the URI associated with xml:base, if defined in the document. If xml:base is not defined, 
 	 * then it returns file.toURI().toString(). 
@@ -497,30 +499,60 @@ public class Util2 {
 	 * @param baseResult  setError(e) will be called if not value can be obtained
 	 * @return  the namespace.  null in case of not finding any value.
 	 */
-	public static String getDefaultNamespace(File file, BaseResult baseResult) {
 
-		// See issue #174 (which supercedes issue #140).
+	/**
+	 * Gets the namespace associated with the given model. The first namespace according to
+	 * the following sequence is returned:
+	 * <ul>
+	 * <li> URI of the first ontology resource, if any, associated to the model;
+	 * <li> namespace associated with the empty prefix, if any;
+	 * <li> URI of the xml:base of the document, if any;
+	 * <li> null, otherwise.
+	 * </ul>
+	 * 
+	 * @param model
+	 * @param file
+	 * @param baseResult
+	 * @return
+	 */
+	public static String getDefaultNamespace(OntModel model, File file, Errorable baseResult) {
+
+		// See issues #213, #174
 		
-		String namespace = null;
+		// try the first ontology resource, if any:
+		Ontology ont = OntModelUtil.getOntology(model);
+		if ( ont != null ) {
+			String namespace = ont.getURI();	
+			return namespace;
+		}
+		
+		// try namespace of the empty prefix, if any:
+		String namespace = model.getNsPrefixURI("");
+		if ( namespace != null ) {
+			return namespace;
+			
+		}
+
+		// finally, try the xml:base:
 		try {
 			String rdf;
 			rdf = readRdf(file);
 			URI xmlBaseUri = XmlBaseExtractor.getXMLBase(new InputSource(new StringReader(rdf)));
 			if ( xmlBaseUri != null ) {
 				namespace = xmlBaseUri.toString();
-			}
-			else {
-				namespace = file.toURI().toString();
+				return namespace;
 			}
 		}
 		catch (Exception e) {
 			String error = "error while trying to read xml:base attribute: " +e.getMessage();
 			log.info(error, e);
 			baseResult.setError(error);
-			return null;
 		}
-		return namespace;
+		
+		
+		return null;
 	}
+	
 
 //	OLD getDefaultNamespace
 //	/**

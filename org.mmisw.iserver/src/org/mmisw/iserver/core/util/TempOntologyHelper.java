@@ -1,8 +1,6 @@
 package org.mmisw.iserver.core.util;
 
 import java.io.File;
-import java.io.StringReader;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -18,7 +16,6 @@ import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.ont.JenaUtil2;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
-import org.xml.sax.InputSource;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -84,61 +81,47 @@ public class TempOntologyHelper {
 		
 		File file = new File(full_path);
 		
-		String rdf;
-		
+		OntModel model;
 		try {
-			rdf = Util2.readRdfWithCheckingUtf8(file);
-			
-			// conversion to UTF-8: the following code was not finally enabled
-//			ReadFileResult result = Utf8Util.readFileWithConversionToUtf8(file);
-//			if ( result.getError() != null ) {
-//				String error = "Cannot read RDF model: " +full_path+ " : " +result.getError()+ "\n"
-//					+ result.getLogInfo();
-//				log.info(error);
-//				tempOntologyInfo.setError(error);
-//				return tempOntologyInfo;
-//			}
-//			System.out.println(result.getLogInfo());
-//			rdf = result.getContents();
+			model = Util2.loadModelWithCheckingUtf8(file);
 		}
-		catch (Throwable e) {
-			String error = "Cannot read RDF model: " +full_path+ " : " +e.getMessage();
-			log.info(error, e);
+		catch ( Throwable ex ) {
+			String error = "Unexpected error: " +ex.getClass().getName()+ " : " +ex.getMessage();
+			log.info(error);
 			tempOntologyInfo.setError(error);
 			return tempOntologyInfo;
 		}
-
 		
-		if ( includeRdf ) {
-			tempOntologyInfo.setRdf(rdf);
+		String uriForEmpty = Util2.getDefaultNamespace(model, file, tempOntologyInfo);
+		// 2009-12-21: previously returning error if uriForEmpty==null. Not anymore; see below.
+		
+		tempOntologyInfo.setNamespace(uriForEmpty);
+		if ( uriForEmpty != null ) {
+			// get shortName as the last piece in the path but discarding any query piece
+			String path = uriForEmpty;
+			int idx = Math.max(Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\')), path.lastIndexOf(':'));
+			String shortName = idx < 0 ? path : path.substring(idx + 1);
+			int idxQ = shortName.lastIndexOf('?');
+			if ( idxQ >= 0 ) {
+				shortName = shortName.substring(0, idxQ);
+			}
+			tempOntologyInfo.setShortName(shortName);
 		}
 		
-		URI xmlBaseUri;
-		try {
-			xmlBaseUri = XmlBaseExtractor.getXMLBase(new InputSource(new StringReader(rdf)));
-			if ( xmlBaseUri != null ) {
-				tempOntologyInfo.setXmlBase(xmlBaseUri.toString());
-				// get shortName as the last piece in the path but discarding any query piece
-				String path = xmlBaseUri.getPath();
-				if ( path != null ) {
-					int idx = Math.max(Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\')), path.lastIndexOf(':'));
-					String shortName = idx < 0 ? path : path.substring(idx + 1);
-					int idxQ = shortName.lastIndexOf('?');
-					if ( idxQ >= 0 ) {
-						shortName = shortName.substring(0, idxQ);
-					}
-					tempOntologyInfo.setShortName(shortName);
-				}
+
+		if ( includeRdf ) {
+			try {
+				String rdf = Util2.readRdfWithCheckingUtf8(file);
+				tempOntologyInfo.setRdf(rdf);
+			}
+			catch (Throwable e) {
+				String error = "Cannot read RDF model: " +full_path+ " : " +e.getMessage();
+				log.info(error, e);
+				tempOntologyInfo.setError(error);
+				return tempOntologyInfo;
 			}
 		}
-		catch (Exception e) {
-			String error = "error while trying to read xml:base attribute: " +e.getMessage()+ ". " +
-					"Continuing assuming ontology does not contain xml:base";
-			log.error(error, e);
-			// Continue.
-		}
-
-
+		
 		// prepare the rest of the ontology info:
 		String error = prepareOntologyInfo(file, tempOntologyInfo);
 		if ( error != null ) {
