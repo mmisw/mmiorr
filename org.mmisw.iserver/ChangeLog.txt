@@ -4,7 +4,7 @@ Created: 2009-05-13
 $Id$
 
 2009-12-21   1.7.2.alpha
-	Issue #213: ontology with hash fragment separator not handled appropriately
+	Fixed Issue #213: ontology with hash fragment separator not handled appropriately
 	- Util2.getDefaultNamespace(OntModel model, File file, BaseResult baseResult): now follows
 	  this sequence (note also that the model parameter has been reinserted):
 		- URI of the first ontology resource, if any, associated to the model;
