@@ -2,6 +2,7 @@ package org.mmisw.ontmd.gwt.client.portal.extont;
 
 
 import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
+import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.portal.PortalConsts;
 
@@ -22,7 +23,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 class RegisterNewPageReHosted extends BasePage {
 	
 	private VerticalPanel contents = new VerticalPanel();
-	private String uri = null;
+	
+	private TempOntologyInfo tempOntologyInfo = null;
 	protected HTML infoHtml = new HTML("(No URI indicated)");
 	
 	
@@ -57,34 +59,33 @@ class RegisterNewPageReHosted extends BasePage {
 		contents.add(panel);
 	}
 	
-	void updateUri(String uri) {
-		this.uri = uri;
-		infoHtml.setHTML(
-			"<br/>" +
-			"You have chosen your ontology " +
-			(uri != null ? "<b>" +uri+ "</b>" : "") +
-			"<br/>" +
-			"to be <b>re-hosted</b> at the MMI ORR." +
-			"<br/>" +
-			"<br/>" +
-			"<br/>" +
-			"Please, see this <a target=\"_blank\" href=\"" +PortalConsts.REG_TYPE_HELP_PAGE+ "\"" +
-					">manual page</a> for details." +
-			"<br/>" 
-		);
-	}
-	
 	public void activate() {
+		
+		String error = null;
+		
+		final String uri = tempOntologyInfo != null ? tempOntologyInfo.getUri() : null;
 		if ( uri == null ) {
-			nextButton.setEnabled(false);
-			String error = "<font color=\"red\">" +  
-				"Sorry, your file can not be registered. " +
+			error = "<font color=\"red\">" +  
+				"Error: your file cannot be registered. " +
 				"</font>" +
 				"<br/>" +
 				"A URI is required to register your ontology in re-hosted mode, and this URI " +
 				"is obtained from the contents of your file. However, no appropriate namespace was found " +
 				"in your file." 
 			;
+		}
+		else if ( tempOntologyInfo.isOntResolvable() ) {
+			error = "<font color=\"red\">" +  
+				"Error: your ontology cannot be registered in re-hosted mode. " +
+				"</font>" +
+				"<br/>" +
+				"The associated URI corresponds to a fully hosted URI. You will need to register the " +
+				"the ontology in fully hosted mode."
+			;
+		}
+		
+		if ( error != null ) {
+			nextButton.setEnabled(false);
 			statusHtml.setHTML(error);
 			return;
 		}
@@ -165,6 +166,26 @@ class RegisterNewPageReHosted extends BasePage {
 			}
 		};
 		Main.ontmdService.resolveUri(uri, callback);
+	}
+
+	void updateTempOntologyInfo(TempOntologyInfo tempOntologyInfo) {
+		this.tempOntologyInfo = tempOntologyInfo;
+		
+		String uri = tempOntologyInfo != null ? tempOntologyInfo.getUri() : null;
+		infoHtml.setHTML(
+			"<br/>" +
+			"You have chosen your ontology " +
+			(uri != null ? "<b>" +uri+ "</b>" : "") +
+			"<br/>" +
+			"to be <b>re-hosted</b> at the MMI ORR." +
+			"<br/>" +
+			"<br/>" +
+			"<br/>" +
+			"Please, see this <a target=\"_blank\" href=\"" +PortalConsts.REG_TYPE_HELP_PAGE+ "\"" +
+					">manual page</a> for details." +
+			"<br/>" 
+		);
+
 	}
 
 }

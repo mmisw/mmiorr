@@ -115,7 +115,7 @@ public class RegisterNewWizard extends BaseWizard {
 					pageFullyHosted = null;
 					pageIndexed = null;
 				}
-				pageReHosted.updateUri(getTempOntologyInfo().getNamespace());
+				pageReHosted.updateTempOntologyInfo(getTempOntologyInfo());
 				nextPage = pageReHosted;
 				break;
 			case INDEXED:

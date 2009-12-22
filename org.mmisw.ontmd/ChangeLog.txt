@@ -8,6 +8,10 @@ $Id$
 	Proper handling of new submission with *no* original namespace associated.
 	See related changes in iserver module.
 	
+	RegisterNewPageReHosted: If namespace of submitted ontology isOntResolvable (new TempOntologyInfo method),
+	then it cannot be registered in re-hosted mode. An error message explain that the ontology would have
+	to be registered in fully hosted mode.
+	
 
 2009-12-06   1.7.1.alpha
 	- If header is "URI" in first column of TermTable, then the cells are now links to open
