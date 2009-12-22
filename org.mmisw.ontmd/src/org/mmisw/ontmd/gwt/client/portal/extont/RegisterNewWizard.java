@@ -115,7 +115,7 @@ public class RegisterNewWizard extends BaseWizard {
 					pageFullyHosted = null;
 					pageIndexed = null;
 				}
-				pageReHosted.updateUri(getTempOntologyInfo().getXmlBase());
+				pageReHosted.updateUri(getTempOntologyInfo().getNamespace());
 				nextPage = pageReHosted;
 				break;
 			case INDEXED:
@@ -124,7 +124,7 @@ public class RegisterNewWizard extends BaseWizard {
 					pageReHosted = null;
 					pageFullyHosted = null;
 				}
-				pageIndexed.updateUri(getTempOntologyInfo().getXmlBase());
+				pageIndexed.updateUri(getTempOntologyInfo().getNamespace());
 				nextPage = pageIndexed;
 				break;
 			}
@@ -412,8 +412,8 @@ public class RegisterNewWizard extends BaseWizard {
 			return pageFullyHosted.getOntologyUri();
 		}
 		else {
-			String xmlBase = getTempOntologyInfo().getXmlBase();
-			return xmlBase;
+			String namespace = getTempOntologyInfo().getNamespace();
+			return namespace;
 		}
 	}
 

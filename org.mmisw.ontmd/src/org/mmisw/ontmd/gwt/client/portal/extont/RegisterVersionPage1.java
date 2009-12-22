@@ -247,7 +247,8 @@ class RegisterVersionPage1 extends BasePage {
 			}
 
 			public void onSubmitComplete(FormSubmitCompleteEvent event) {
-				statusHtml.setHTML("<font color=\"blue\">Examining ontology ...</font>");
+				statusHtml.setHTML("<img src=\"" +GWT.getModuleBaseURL()+ "images/loading.gif\"> " +
+					"<i><font color=\"blue\">Please wait, examining ontology ...</font></i>");
 				String results = event.getResults();
 				Main.log("onSubmitComplete: " +results);
 				if ( results != null ) {
@@ -397,10 +398,10 @@ class RegisterVersionPage1 extends BasePage {
 		
 		getWizard().ontologyInfoObtained(tempOntologyInfo);
 		
-		String xmlBase = tempOntologyInfo.getXmlBase();
+		String namespace = tempOntologyInfo.getNamespace();
 		String html = "<font color=\"green\">Ontology loaded in work space.</font>" +
 				"<br/>" +
-				"Ontology URI: <b>" +(xmlBase != null ? xmlBase : "undefined") + "</b>"
+				"Ontology URI: <b>" +(namespace != null ? namespace : "undefined") + "</b>"
 		;
 		
 		RegisteredOntologyInfo roi = getWizard().getRegisteredOntologyInfo();
@@ -409,7 +410,7 @@ class RegisterVersionPage1 extends BasePage {
 		
 		switch ( hostingType ) {
 		case FULLY_HOSTED:
-			if ( xmlBase != null ) {
+			if ( namespace != null ) {
 				html += "<br/>Note: entities in this namespace will be moved to " +uri;
 			}
 			nextButton.setEnabled(true);
@@ -421,8 +422,8 @@ class RegisterVersionPage1 extends BasePage {
 
 		case RE_HOSTED:
 			error = null;
-			if ( xmlBase != null ) {
-				if ( ! uri.equals(xmlBase) ) {
+			if ( namespace != null ) {
+				if ( ! uri.equals(namespace) ) {
 					error = "<br/><font color=\"red\">Error: Ontology URI must be " +uri;
 				}
 			}

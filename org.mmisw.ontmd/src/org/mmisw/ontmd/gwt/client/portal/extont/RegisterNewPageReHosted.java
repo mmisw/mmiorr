@@ -5,6 +5,7 @@ import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.portal.PortalConsts;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -60,7 +61,8 @@ class RegisterNewPageReHosted extends BasePage {
 		this.uri = uri;
 		infoHtml.setHTML(
 			"<br/>" +
-			"You have chosen your ontology <b>" +uri+ "</b>" +
+			"You have chosen your ontology " +
+			(uri != null ? "<b>" +uri+ "</b>" : "") +
 			"<br/>" +
 			"to be <b>re-hosted</b> at the MMI ORR." +
 			"<br/>" +
@@ -74,12 +76,25 @@ class RegisterNewPageReHosted extends BasePage {
 	
 	public void activate() {
 		if ( uri == null ) {
+			nextButton.setEnabled(false);
+			String error = "<font color=\"red\">" +  
+				"Sorry, your file can not be registered. " +
+				"</font>" +
+				"<br/>" +
+				"A URI is required to register your ontology in re-hosted mode, and this URI " +
+				"is obtained from the contents of your file. However, no appropriate namespace was found " +
+				"in your file." 
+			;
+			statusHtml.setHTML(error);
 			return;
 		}
 		
 		// check that the uri is NOT registered already
 		enable(false);
-		statusHtml.setHTML("<font color=\"blue\">Checking URI ...</font>");
+		
+		statusHtml.setHTML("<img src=\"" +GWT.getModuleBaseURL()+ "images/loading.gif\"> " +
+				"<i><font color=\"blue\">Please wait, checking URI ...</font></i>");
+				
 		
 		AsyncCallback<ResolveUriResult> callback = new AsyncCallback<ResolveUriResult>() {
 			public void onFailure(Throwable thr) {

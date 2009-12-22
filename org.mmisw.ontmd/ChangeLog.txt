@@ -3,6 +3,12 @@ Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
 
+2009-12-21   1.7.2.alpha
+	Issue #213: ontology with hash fragment separator not handled appropriately
+	Proper handling of new submission with *no* original namespace associated.
+	See related changes in iserver module.
+	
+
 2009-12-06   1.7.1.alpha
 	- If header is "URI" in first column of TermTable, then the cells are now links to open
 	  the "HTML" version of the term using the "Ont" service. 

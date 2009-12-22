@@ -255,7 +255,8 @@ class RegisterNewPage1 extends BasePage {
 			}
 
 			public void onSubmitComplete(FormSubmitCompleteEvent event) {
-				statusHtml.setHTML("<font color=\"blue\">Examining ontology ...</font>");
+				statusHtml.setHTML("<img src=\"" +GWT.getModuleBaseURL()+ "images/loading.gif\"> " +
+					"<i><font color=\"blue\">Please wait, examining ontology ...</font></i>");
 				String results = event.getResults();
 				Main.log("onSubmitComplete: " +results);
 				if ( results != null ) {
@@ -414,12 +415,12 @@ class RegisterNewPage1 extends BasePage {
 		
 		getWizard().ontologyInfoObtained(tempOntologyInfo);
 		
-		String xmlBase = tempOntologyInfo.getXmlBase();
+		String namespace = tempOntologyInfo.getNamespace();
 		nextButton.setEnabled(true);
 		statusHtml.setHTML(
 				"<font color=\"green\">Ontology loaded in work space.</font>" +
 				"<br/>" +
-				"Ontology URI: <b>" +(xmlBase != null ? xmlBase : "undefined") + "</b>" +
+				"Ontology URI: <b>" +(namespace != null ? namespace : "undefined") + "</b>" +
 				"<br/>" +
 				"Click Next to continue." 
 		);

@@ -278,7 +278,8 @@ class UploadOntologyPanel extends VerticalPanel {
 			}
 
 			public void onSubmitComplete(FormSubmitCompleteEvent event) {
-				statusLoad.setHTML("<font color=\"blue\">Examining ontology ...</font>");
+				statusLoad.setHTML("<img src=\"" +GWT.getModuleBaseURL()+ "images/loading.gif\"> " +
+					"<i><font color=\"blue\">Please wait, examining ontology ...</font></i>");
 				String results = event.getResults();
 				Main.log("onSubmitComplete: " +results);
 				if ( results != null ) {
