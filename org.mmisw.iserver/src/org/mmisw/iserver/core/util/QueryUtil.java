@@ -184,37 +184,34 @@ public class QueryUtil {
 		
 		// now, determine the type of ontology data to be created:
 		
-		// TODO: the next search for SKOS relations is not complete; it's just an initial idea.
-		List<Mapping> mappings = _getSkosRelations(null, ontModel);
-		boolean containSkos = mappings.size() > 0;
-		if ( ! containSkos ) {
-			// try looking into the individuals:
-			for ( IndividualInfo individualInfo : individuals ) {
-				List<PropValue> indivProps = individualInfo.getProps();
-				for ( PropValue propValue: indivProps ) {
-					if ( propValue.getPropName().matches(".*Match.*") ) {
-						containSkos = true;
-					}
-				}
-			}
-		}
-		
 		OntologyData ontologyData;
 		
-		// determine type of ontologyData to create
+		if ( OntServiceUtil.isOntResolvableUri(ontologyUri) ) {
+			// apply the ad hoc rules to determine type of ontology only if 
+			// the ontologyUri is resolvable by the Ont service:
+			List<Mapping> mappings = _getSkosRelations(null, ontModel);
+			boolean containSkos = _containsSkos(ontModel, mappings, individuals);
 		
-		// TODO NOTE: these are just heuristics to determine the ontologyData type:
-		// Pending: use omv:useOntologyEngineeringTool for example.
-		
-		if ( containSkos ) {
-			baseOntologyInfo.setType("mapping");
-			ontologyData = _createMappingOntologyData(baseOntologyData, mappings, individuals);
-		}
-		else if ( classes.size() == 1 && individuals.size() > 0 && containDatatype ) {
-			baseOntologyInfo.setType("vocabulary");
-			ontologyData = _createVocabularyOntologyData(baseOntologyData);
+			// determine type of ontologyData to create
+			
+			// TODO NOTE: these are just heuristics to determine the ontologyData type:
+			// Pending: use omv:useOntologyEngineeringTool for example.
+			
+			if ( containSkos ) {
+				baseOntologyInfo.setType("mapping");
+				ontologyData = _createMappingOntologyData(baseOntologyData, mappings, individuals);
+			}
+			else if ( classes.size() == 1 && individuals.size() > 0 && containDatatype ) {
+				baseOntologyInfo.setType("vocabulary");
+				ontologyData = _createVocabularyOntologyData(baseOntologyData);
+			}
+			else {
+				baseOntologyInfo.setType("other");
+				ontologyData = _createOtherOntologyData(baseOntologyData);
+			}
 		}
 		else {
+			// otherwise (the URI is not Ont resolvable), always create the "other" type of ontology data
 			baseOntologyInfo.setType("other");
 			ontologyData = _createOtherOntologyData(baseOntologyData);
 		}
@@ -226,6 +223,25 @@ public class QueryUtil {
 	}
 	
 	
+	// TODO: the next search for SKOS relations is not complete; it's just an initial idea.
+	private static boolean _containsSkos(OntModel ontModel, List<Mapping> mappings, List<IndividualInfo> individuals) {
+		if ( mappings.size() > 0 ) {
+			return true;
+		}
+		// try looking into the individuals:
+		for ( IndividualInfo individualInfo : individuals ) {
+			List<PropValue> indivProps = individualInfo.getProps();
+			for ( PropValue propValue: indivProps ) {
+				if ( propValue.getPropName().matches(".*Match.*") ) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+
+
 	/**
 	 * It assigns the classInfo corresponding to the domain for each property.
 	 * @param classes      List of known classes

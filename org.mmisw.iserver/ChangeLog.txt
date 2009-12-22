@@ -20,6 +20,11 @@ $Id$
 		
 	- TempOntologyInfo: new field isOntResolvable that a client (the ORR portal) can use to determine whether
 	  it's appropriate to register an ontology in re-hosted mode. Set by TempOntologyHelper.getTempOntologyInfo. 
+	  
+	- QueryUtil.getEntities(BaseOntologyInfo baseOntologyInfo, OntModel ontModel): If the ontology URI is
+	  Ont resolvable, apply the ad hoc rules to determine type of ontology; otherwise (ie., the ontology is
+	  re-hosted), always create the "other" type of ontology data.
+	  
 
 2009-11-30   1.7.0.alpha
 	- Setting version to 1.7.0.alpha reflecting all the 1.6.1+ changes below.
