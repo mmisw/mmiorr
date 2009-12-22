@@ -78,5 +78,22 @@ PREFIX skos: <http://www.w3.org/2008/05/skos#>
 SELECT ?p ?o {skos:exactMatch ?p ?o. }
 
 
+# properties over a given domain:
+prefix devont: <http://mmisw.org/ont/mmi/device/>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+select ?prop ?range 
+where { 
+    ?prop rdfs:domain devont:MeasurementCapability.
+    ?prop rdfs:range ?range.
+}
 
+
+# all properties in a given graph:
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+select ?domain ?prop ?range 
+from <http://mmisw.org/ont/mmi/device>
+where { 
+    ?prop rdfs:domain ?domain.
+    ?prop rdfs:range ?range.
+}
 
