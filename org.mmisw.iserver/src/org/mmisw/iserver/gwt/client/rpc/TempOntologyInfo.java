@@ -20,13 +20,10 @@ public class TempOntologyInfo extends BaseOntologyInfo {
 	/** message to describe details about the metadata contents of the ontology */
 	private String details;
 	
-	/** the value of the associated namespace (ontology URI) */
-	private String namespace;
-	
 	/** corresponding shortName */
 	private String shortName;
 
-	/** is the ontology URI (namespace) resolvable by the Ont service? */
+	/** is the ontology URI resolvable by the Ont service? */
 	private boolean isOntResolvable;
 	
 	
@@ -85,15 +82,6 @@ public class TempOntologyInfo extends BaseOntologyInfo {
 	}
 
 
-	public String getNamespace() {
-		return namespace;
-	}
-
-
-	public void setNamespace(String namespace) {
-		this.namespace = namespace;
-	}
-
 	public void setShortName(String shortName) {
 		this.shortName = shortName;
 	}
@@ -107,7 +95,7 @@ public class TempOntologyInfo extends BaseOntologyInfo {
 	}
 
 	/**
-	 * is the ontology URI (namespace) resolvable by the Ont service?
+	 * is the ontology URI resolvable by the Ont service?
 	 * @return
 	 */
 	public boolean isOntResolvable() {

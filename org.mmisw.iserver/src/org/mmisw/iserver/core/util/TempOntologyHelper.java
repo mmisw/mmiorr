@@ -95,7 +95,7 @@ public class TempOntologyHelper {
 		String uriForEmpty = Util2.getDefaultNamespace(model, file, tempOntologyInfo);
 		// 2009-12-21: previously returning error if uriForEmpty==null. Not anymore; see below.
 		
-		tempOntologyInfo.setNamespace(uriForEmpty);
+		tempOntologyInfo.setUri(uriForEmpty);
 		if ( uriForEmpty != null ) {
 			
 			tempOntologyInfo.setIsOntResolvable(OntServiceUtil.isOntResolvableUri(uriForEmpty));
@@ -179,12 +179,7 @@ public class TempOntologyHelper {
 			debugOntModel(model);
 		}
 		
-		// set URI equal to the full path:
-		tempOntologyInfo.setUri(uriModel);
-
 		Resource ontRes = JenaUtil.getFirstIndividual(model, OWL.Ontology);
-		
-		//-_getBaseInfoIfNull();
 		
 		StringBuilder moreDetails = new StringBuilder();
 		

@@ -3,6 +3,10 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2009-12-22   1.7.3.alpha
+	- TempOntologyInfo: removed 'namespace' attribute; the 'uri' one is used instead.
+	
+
 2009-12-21   1.7.2.alpha
 	Fixed Issue #213: ontology with hash fragment separator not handled appropriately
 	- Util2.getDefaultNamespace(OntModel model, File file, BaseResult baseResult): now follows
