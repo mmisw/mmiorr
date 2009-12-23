@@ -8,7 +8,7 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
- * The end page when the user indicates fully hosting type
+ * The end page when the user indicates re-hosting type
  * 
  * @author Carlos Rueda
  */

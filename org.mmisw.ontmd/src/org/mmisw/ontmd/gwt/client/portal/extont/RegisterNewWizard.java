@@ -20,9 +20,6 @@ import com.google.gwt.user.client.Window;
 /**
  * Sequence of wizard pages to register an external ontology.
  * 
- * <p>
- * TODO complete implementation
- * 
  * @author Carlos Rueda
  */
 public class RegisterNewWizard extends BaseWizard {
@@ -124,7 +121,7 @@ public class RegisterNewWizard extends BaseWizard {
 					pageReHosted = null;
 					pageFullyHosted = null;
 				}
-				pageIndexed.updateUri(getTempOntologyInfo().getNamespace());
+				pageIndexed.updateUri(getTempOntologyInfo().getUri());
 				nextPage = pageIndexed;
 				break;
 			}
@@ -412,7 +409,7 @@ public class RegisterNewWizard extends BaseWizard {
 			return pageFullyHosted.getOntologyUri();
 		}
 		else {
-			String namespace = getTempOntologyInfo().getNamespace();
+			String namespace = getTempOntologyInfo().getUri();
 			return namespace;
 		}
 	}

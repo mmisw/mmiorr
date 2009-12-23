@@ -3,6 +3,10 @@ Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
 
+2009-12-22   1.7.3.alpha
+	- changes according to removal of TempOntologyInfo's namespace attribute in iserver module.
+	- minor comments update. 
+	
 2009-12-21   1.7.2.alpha
 	Fixed Issue #213: ontology with hash fragment separator not handled appropriately
 	Proper handling of new submission with *no* original namespace associated.

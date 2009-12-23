@@ -38,9 +38,6 @@ import com.google.gwt.user.client.ui.Widget;
  * <p>
  * Based on UploadLocalOntologyPanel, which will be eventually removed.
  * 
- * <p>
- * TODO complete implementation
- * 
  * @author Carlos Rueda
  */
 class RegisterNewPage1 extends BasePage {
@@ -250,7 +247,8 @@ class RegisterNewPage1 extends BasePage {
 		formPanel.addFormHandler(new FormHandler() {
 
 			public void onSubmit(FormSubmitEvent event) {
-				statusHtml.setHTML("<font color=\"blue\">Loading ...</font>");
+				statusHtml.setHTML("<img src=\"" +GWT.getModuleBaseURL()+ "images/loading.gif\"> " +
+					"<i><font color=\"blue\">Please wait, loading ontology ...</font></i>");
 				Main.log("onSubmit.");
 			}
 
@@ -415,7 +413,7 @@ class RegisterNewPage1 extends BasePage {
 		
 		getWizard().ontologyInfoObtained(tempOntologyInfo);
 		
-		String namespace = tempOntologyInfo.getNamespace();
+		String namespace = tempOntologyInfo.getUri();
 		nextButton.setEnabled(true);
 		statusHtml.setHTML(
 				"<font color=\"green\">Ontology loaded in work space.</font>" +

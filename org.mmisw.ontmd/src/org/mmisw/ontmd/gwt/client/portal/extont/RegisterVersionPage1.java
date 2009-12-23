@@ -37,9 +37,6 @@ import com.google.gwt.user.client.ui.Widget;
  * This page is for allowing the user to "upload" the ontology into the working
  * space. (Note: do not confuse "upload" with "register".)
  * 
- * <p>
- * TODO complete implementation
- * 
  * @author Carlos Rueda
  */
 class RegisterVersionPage1 extends BasePage {
@@ -398,7 +395,7 @@ class RegisterVersionPage1 extends BasePage {
 		
 		getWizard().ontologyInfoObtained(tempOntologyInfo);
 		
-		String namespace = tempOntologyInfo.getNamespace();
+		String namespace = tempOntologyInfo.getUri();
 		String html = "<font color=\"green\">Ontology loaded in work space.</font>" +
 				"<br/>" +
 				"Ontology URI: <b>" +(namespace != null ? namespace : "undefined") + "</b>"

@@ -15,8 +15,6 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * In this page the user indicate the type of hosting.
  * 
- * TODO not implemented yet
- * 
  * @author Carlos Rueda
  */
 class RegisterNewPage2 extends BasePage {
