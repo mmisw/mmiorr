@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -529,4 +531,57 @@ public class Db {
 			_closeConnectionQuietly(_con);
 		}
 	}
+	
+	/**
+	 * Gets all registered users.
+	 * @return
+	 */
+	public List<Map<String,String>> getAllUserInfos() throws ServletException {
+		// to format date_created appropriately (xsd dateTime)
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+		
+		List<Map<String,String>> list = new ArrayList<Map<String,String>>();
+		Connection _con = null;
+		try {
+			_con = getConnection();
+			Statement _stmt = _con.createStatement();
+
+			String query = 
+				"select id, username, email, firstname, lastname, phone, date_created " +
+				"from ncbo_user " +
+				"order by date_created " ;
+			
+			ResultSet rs = _stmt.executeQuery(query);
+			
+			while ( rs.next() ) {
+				ResultSetMetaData md = rs.getMetaData();
+				Map<String,String> props = new LinkedHashMap<String,String>();
+			
+				for ( int i = 1, count = md.getColumnCount(); i <= count; i++ ) {
+					String value = rs.getString(i);
+					if ( value != null ) {
+						String colName = md.getColumnName(i);
+						
+						if ( colName.equals("date_created") ) {
+							Timestamp date_created = rs.getTimestamp(i);
+							value = sdf.format(date_created);
+						}
+						
+						props.put(colName , value);
+					}
+				}
+				
+	        	list.add(props);
+	        }
+			
+			return list;
+		}
+		catch (SQLException e) {
+			throw new ServletException(e);
+		}
+		finally {
+			_closeConnectionQuietly(_con);
+		}
+	}
+
 }

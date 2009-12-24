@@ -27,8 +27,13 @@ import org.mmisw.ont.sparql.SparqlDispatcher;
 import org.mmisw.ont.util.Accept;
 import org.mmisw.ont.util.Util;
 
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 /**
  * The entry point.
@@ -308,16 +313,18 @@ public class OntServlet extends HttpServlet {
 		
 		// reload graph?
 		if ( Util.yes(req.request, "_reload")  ) {
-			String _reload = Util.getParam(req.request, "_reload", "");
-			boolean withInference = _reload.length() == 0 || _reload.equals("inf");
-			ontGraph.reinit(withInference);
+			_reload(req);
 			return;
 		}
 		// reindex graph?
 		if ( Util.yes(req.request, "_reidx")  ) {
-			String _reidx = Util.getParam(req.request, "_reidx", "");
-			boolean wait = _reidx.length() == 0 || _reidx.equals("wait");
-			ontGraph.reindex(wait);
+			_reindex(req);
+			return;
+		}
+		
+		// get users RDF?
+		if ( Util.yes(req.request, "_usrsrdf")  ) {
+			_getUsersRdf(req);
 			return;
 		}
 		
@@ -744,6 +751,85 @@ public class OntServlet extends HttpServlet {
 		}
 		
 		req.response.setContentType("text/plain");
+		ServletOutputStream os = req.response.getOutputStream();
+		IOUtils.write(result, os);
+		os.close();
+	}
+
+	
+	/**
+	 * Executes the reload operation.
+	 */
+	private void _reload(Request req) throws ServletException, IOException {
+		String _reload = Util.getParam(req.request, "_reload", "");
+		boolean withInference = _reload.length() == 0 || _reload.equals("inf");
+		ontGraph.reinit(withInference);
+	}
+	
+	/**
+	 * Executes the reindex operation.
+	 */
+	private void _reindex(Request req) throws ServletException, IOException {
+		String _reidx = Util.getParam(req.request, "_reidx", "");
+		boolean wait = _reidx.length() == 0 || _reidx.equals("wait");
+		ontGraph.reindex(wait);
+	}
+	
+	/**
+	 * Responds an RDF with registered users.
+	 */
+	private void _getUsersRdf(Request req) throws ServletException, IOException {
+		final String MMIORR_NS = "http://mmisw.org/ont/mmi/mmiorr/";
+		final String USERS_NS = "http://mmisw.org/ont/mmiorr-internal/users/";
+		
+		final Model model = ModelFactory.createDefaultModel();
+		final Resource userClass = model.createResource( MMIORR_NS + "User" );
+		model.setNsPrefix("mmiorr", MMIORR_NS);
+		model.setNsPrefix("usr", USERS_NS);
+		
+		final String[][] fieldPropNames = {
+				{ "username",  "hasUserName" },
+				{ "firstname", "hasFirstName" },
+				{ "lastname",  "hasLastName" },
+				{ "email",     "hasEmail" },
+				{ "date_created", "hasDateCreated" },
+		};
+		
+		List<Map<String, String>> list = db.getAllUserInfos();
+		for (Map<String, String> user : list) {
+			
+			String username = user.get("username");
+			if ( username == null || username.length() == 0 ) {
+				continue;
+			}
+			
+			Resource userInstance = model.createResource( USERS_NS + username );
+			
+			// type:
+			model.add(userInstance, RDF.type, userClass);
+			
+			for (String[] fieldPropName : fieldPropNames ) {
+				
+				String propValue = user.get(fieldPropName[0]);
+				
+				if ( propValue == null || propValue.length() == 0 ) {
+					continue;
+				}
+				
+				Property propUri = model.createProperty( MMIORR_NS , fieldPropName[1] );
+				
+				if ( "hasDateCreated".equals(fieldPropName[1]) ) {
+					model.add(userInstance, propUri, propValue,  XSDDatatype.XSDdateTime);
+				}
+				else {
+					model.addLiteral(userInstance, propUri, propValue);
+				}
+			}
+		}
+		
+		String result = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV");
+		
+		req.response.setContentType("application/rdf+xml");
 		ServletOutputStream os = req.response.getOutputStream();
 		IOUtils.write(result, os);
 		os.close();
