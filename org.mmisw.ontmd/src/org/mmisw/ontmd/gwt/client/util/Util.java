@@ -31,6 +31,8 @@ import com.google.gwt.user.client.ui.UIObject;
  * @author Carlos Rueda
  */
 public class Util {
+	private static String[] TESTING_AUTHORITIES = { "mmitest", "testing", "test", };
+	private static String[] INTERNAL_AUTHORITIES = { "mmiorr-internal", };
 	
 	/**
 	 * Regex from: https://wave.google.com/wave/?pli=1#restored:wave:googlewave.com!w%252BsFbGJUukA
@@ -187,9 +189,33 @@ public class Util {
 		return lb;
 	}
 	
+    /**
+     * Tells if the ontology is a "testing" one, according to the authority component.
+     * @param oi
+     * @return
+     */
     public static boolean isTestingOntology(RegisteredOntologyInfo oi) {
-    	String authority = oi.getAuthority();
-    	return authority.equalsIgnoreCase("mmitest")
-		    || authority.equalsIgnoreCase("testing");
+    	String authority = oi.getAuthority().toLowerCase();
+    	for ( String testAuth : TESTING_AUTHORITIES ) {
+    		if ( authority.equals(testAuth) ) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
+    /**
+     * Tells if the ontology is "internal", according to the authority component.
+     * @param oi
+     * @return
+     */
+    public static boolean isInternalOntology(RegisteredOntologyInfo oi) {
+    	String authority = oi.getAuthority().toLowerCase();
+    	for ( String testAuth : INTERNAL_AUTHORITIES ) {
+    		if ( authority.equals(testAuth) ) {
+    			return true;
+    		}
+    	}
+    	return false;
     }
 }

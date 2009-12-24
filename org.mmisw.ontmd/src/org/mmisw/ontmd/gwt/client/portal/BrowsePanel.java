@@ -100,20 +100,20 @@ public class BrowsePanel extends VerticalPanel {
 			ontologyInfos = allOntologyInfos;
 		}
 		else {
-			// not admin: remove entries with "test"-like name in the authority unless is owned
-			// by the logged-in user, if any
+			// not admin: remove "testing" and "internal" entries unless owned
+			// by the logged-in user, if any:
 			
+			String userId = loginResult != null ? loginResult.getUserId() : null;
 			ontologyInfos = new ArrayList<RegisteredOntologyInfo>();
 			
 			for ( RegisteredOntologyInfo oi : allOntologyInfos ) {
-				if ( ! Util.isTestingOntology(oi) ) {
-					ontologyInfos.add(oi);
-				}
-				else {
-					String userId = loginResult != null ? loginResult.getUserId() : null;
+				if ( Util.isTestingOntology(oi) || Util.isInternalOntology(oi) ) {
 					if ( userId != null && userId.equals(oi.getOntologyUserId()) ) {
 						ontologyInfos.add(oi);	
 					}
+				}
+				else {
+					ontologyInfos.add(oi);
 				}
 			}
 		}

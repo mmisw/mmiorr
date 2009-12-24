@@ -26,9 +26,15 @@ import com.google.gwt.user.client.ui.Widget;
  * @author Carlos Rueda
  */
 public class OntologyTable extends FlexTable {
-	private static final String TESTING_ONT_MARK = "<b><font color=\"red\" size=\"-1\">T</font></b>";
+	private static String _mark(String mk) { 
+		return "<sup><font color=\"red\" size=\"-2\">" +mk+ "</font></sup>";
+	}
+	private static final String TESTING_ONT_MARK = _mark("(T)");
 	private static final String TESTING_ONT_TOOLTIP = "A testing ontology";
 
+	private static final String INTERNAL_ONT_MARK = _mark("(int)");
+	private static final String INTERNAL_ONT_TOOLTIP = "An internal ontology";
+	
 // TODO Use utility ViewTable 
 	
 	
@@ -288,12 +294,14 @@ public class OntologyTable extends FlexTable {
 			Widget nameWidget;
 			
 			Hyperlink hlink = new Hyperlink(name, historyToken);
-			if ( Util.isTestingOntology(oi) ) {
+			boolean isTesting = Util.isTestingOntology(oi);
+			boolean isInternal = isTesting ? false : Util.isInternalOntology(oi);
+			if ( isTesting || isInternal ) {
 				// add a mark
 				HorizontalPanel hp = new HorizontalPanel();
 				hp.add(hlink);
-				HTML html = new HTML(TESTING_ONT_MARK);
-				html.setTitle(TESTING_ONT_TOOLTIP);
+				HTML html = new HTML(isTesting ? TESTING_ONT_MARK: INTERNAL_ONT_MARK);
+				html.setTitle(isTesting ? TESTING_ONT_TOOLTIP : INTERNAL_ONT_TOOLTIP);
 				hp.add(html);
 				nameWidget = hp;
 			}

@@ -3,6 +3,22 @@ Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
 
+2009-12-23   1.8.0.alpha
+	Preparing for handling "internal" ontologies. An internal ontology provides supporting information
+	for the MMI ORR. 
+	
+	An internal ontology is visible only to administrators and its owner.
+	- Util.isInternalOntology: determines if an ontology is "internal" according to the authority component,
+	  currently, "mmiorr-internal". In general, internal ontologies are to be fully hosted.
+	  
+	- See http://marinemetadata.org/community/teams/tech/mmiorront
+	- See http://mmisw.org/orr/#http://mmisw.org/ont/mmi/mmiorr
+	
+	- The planned internal ontologies are:
+		.../mmiorr-internal/users - mmiorr:User instances -- to be updated automatically 
+		.../mmiorr-internal/groups - mmiorr:Group instances
+	
+
 2009-12-22   1.7.3.alpha
 	- changes according to removal of TempOntologyInfo's namespace attribute in iserver module.
 	- minor comments update. 
