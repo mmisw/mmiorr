@@ -233,6 +233,20 @@ public class OntServiceUtil {
 		return props;
 	}
 	
+	
+	/**
+	 * Gets the (synthetic) users RDF from the "Ont" service.
+	 * @throws Exception
+	 */
+	public static String getUsersRdf() throws Exception {
+		
+		String ontServiceUrl = ServerConfig.Prop.ONT_SERVICE_URL.getValue();
+		String ontServiceRequest = ontServiceUrl + "?_usrsrdf";
+		String str = HttpUtil.getAsString(ontServiceRequest);
+		
+		return str;
+	}
+
 
 }
 

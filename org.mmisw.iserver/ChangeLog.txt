@@ -3,6 +3,13 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2009-12-23   1.8.0.alpha
+	Preparing for handling "internal" ontologies. An internal ontology provides supporting information
+	for the MMI ORR. 
+
+	- New service Server.prepareUsersOntology(LoginResult loginResult, String usersUri)
+
+
 2009-12-22   1.7.3.alpha
 	- TempOntologyInfo: removed 'namespace' attribute; the 'uri' one is used instead.
 	

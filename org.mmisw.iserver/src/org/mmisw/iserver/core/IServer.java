@@ -10,6 +10,7 @@ import org.mmisw.iserver.gwt.client.rpc.CreateUpdateUserAccountResult;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
+import org.mmisw.iserver.gwt.client.rpc.PrepareUsersOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
@@ -168,4 +169,13 @@ public interface IServer {
 			CreateOntologyInfo createOntologyInfo, 
 			String graphId
 	);
+	
+	
+	/**
+	 * Prepares the users instantiation ontology.
+	 * @param loginResult Only the administrator can perform this operation.
+	 * @param usersUri the URI of the ontology to be created/updated.
+	 * @return result of the operation.
+	 */
+	public PrepareUsersOntologyResult prepareUsersOntology(LoginResult loginResult, String usersUri);
 }

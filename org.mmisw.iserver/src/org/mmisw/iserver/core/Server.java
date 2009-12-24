@@ -48,6 +48,7 @@ import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MappingDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.OtherDataCreationInfo;
+import org.mmisw.iserver.gwt.client.rpc.PrepareUsersOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
@@ -2793,6 +2794,23 @@ public class Server implements IServer {
 			String graphId
 	) {
 		return OoiCi.registerOntologyDirectly(loginResult, registeredOntologyInfo, createOntologyInfo, graphId);
+	}
+
+	
+	public PrepareUsersOntologyResult prepareUsersOntology(LoginResult loginResult, String usersUri) {
+		PrepareUsersOntologyResult result = new PrepareUsersOntologyResult();
+		
+		try {
+			RegisteredOntologyInfo usersOntology = getOntologyInfo(usersUri);
+			InternalManager.prepareUsersOntology(loginResult, usersUri, usersOntology, result);
+		}
+		catch (Exception e) {
+			String error = e.getMessage();
+			result.setError(error);
+			log.error(error, e);
+		}
+		
+		return result;
 	}
 
 }
