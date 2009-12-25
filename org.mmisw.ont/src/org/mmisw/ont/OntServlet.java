@@ -6,9 +6,12 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -396,6 +399,10 @@ public class OntServlet extends HttpServlet {
 			return;
 		}
 		
+		if ( log.isDebugEnabled() ) {
+			log.debug("_dispatchUri: ontOrEntUri=" +ontOrEntUri);
+		}
+		
 		Ontology ontology = null;
 		
 		// explicit version?
@@ -465,26 +472,50 @@ public class OntServlet extends HttpServlet {
 	 * @throws ServletException
 	 */
 	private Ontology getRegisteredOntology(String potentialOntUri) throws ServletException {
+		if ( log.isDebugEnabled() ) {
+			log.debug("getRegisteredOntology: potentialOntUri=" +potentialOntUri);
+		}
+
 		Ontology ontology = null;
 		if ( OntUtil.isOntResolvableUri(potentialOntUri) ) {
 			
+			if ( log.isDebugEnabled() ) {
+				log.debug("getRegisteredOntology: isOntResolvableUri.");
+			}
+
 			try {
 				MmiUri mmiUri = new MmiUri(potentialOntUri);
 				if ( mmiUri.getVersion() == null ) {
 					// unversioned request.  Get most recent
+					if ( log.isDebugEnabled() ) {
+						log.debug("getRegisteredOntology: unversioned request.");
+					}
+					
 					ontology = db.getMostRecentOntologyVersion(mmiUri);
 				}
 				else {
 					// versioned request. Just try to use the argument as given:
+					if ( log.isDebugEnabled() ) {
+						log.debug("getRegisteredOntology: versioned request.");
+					}
+
 					ontology = db.getOntology(potentialOntUri);
 				}
 			}
 			catch (URISyntaxException e) {
 				// Not an MmiUri. Just try to use the argument as given:
+				if ( log.isDebugEnabled() ) {
+					log.debug("getRegisteredOntology: not an MmiUri.");
+				}
+
 				ontology = db.getOntology(potentialOntUri);
 			}
 		}
 		else {
+			if ( log.isDebugEnabled() ) {
+				log.debug("getRegisteredOntology: is NOT OntResolvableUri.");
+			}
+
 			ontology = db.getOntology(potentialOntUri);
 		}
 		
@@ -776,16 +807,22 @@ public class OntServlet extends HttpServlet {
 	}
 	
 	/**
-	 * Responds an RDF with registered users.
+	 * Responds an RDF with registered users. Every user URI will be *versioned* with the current time.
 	 */
 	private void _getUsersRdf(Request req) throws ServletException, IOException {
 		final String MMIORR_NS = "http://mmisw.org/ont/mmi/mmiorr/";
-		final String USERS_NS = "http://mmisw.org/ont/mmiorr-internal/users/";
+		
+		Date date = new Date(System.currentTimeMillis());
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd'T'hhmmss");
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+		String version = sdf.format(date);
+
+		final String users_ns = OntConfig.Prop.ONT_SERVICE_URL.getValue()+ "/mmiorr-internal/" +version+ "/users/";
 		
 		final Model model = ModelFactory.createDefaultModel();
 		final Resource userClass = model.createResource( MMIORR_NS + "User" );
 		model.setNsPrefix("mmiorr", MMIORR_NS);
-		model.setNsPrefix("usr", USERS_NS);
+		model.setNsPrefix("", users_ns);
 		
 		final String[][] fieldPropNames = {
 				{ "username",  "hasUserName" },
@@ -803,7 +840,7 @@ public class OntServlet extends HttpServlet {
 				continue;
 			}
 			
-			Resource userInstance = model.createResource( USERS_NS + username );
+			Resource userInstance = model.createResource( users_ns + username );
 			
 			// type:
 			model.add(userInstance, RDF.type, userClass);
