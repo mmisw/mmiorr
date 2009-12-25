@@ -37,6 +37,7 @@ import org.mmisw.iserver.gwt.client.rpc.CreateUpdateUserAccountResult;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
+import org.mmisw.iserver.gwt.client.rpc.PrepareUsersOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
@@ -1451,4 +1452,9 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	public CreateUpdateUserAccountResult createUpdateUserAccount(Map<String,String> values) {
 		return portal.createUpdateUserAccount(values);
 	}
+	
+	public PrepareUsersOntologyResult prepareUsersOntology(LoginResult loginResult) {
+		return portal.prepareUsersOntology(loginResult);
+	}
+
 }

@@ -8,6 +8,7 @@ public class PortalConsts {
 	private PortalConsts() {}
 	
 	
+	public static final String T_ADMIN = "admin";
 	public static final String T_BROWSE = "b";
 	public static final String T_SEARCH_TERMS = "st";
 	public static final String T_USER_ACCOUNT = "ua";

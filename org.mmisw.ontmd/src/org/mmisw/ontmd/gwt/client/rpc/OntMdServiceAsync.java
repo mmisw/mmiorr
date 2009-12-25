@@ -10,6 +10,7 @@ import org.mmisw.iserver.gwt.client.rpc.CreateUpdateUserAccountResult;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
+import org.mmisw.iserver.gwt.client.rpc.PrepareUsersOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
 import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
@@ -119,4 +120,6 @@ public interface OntMdServiceAsync {
 	void resetUserPassword(String username, AsyncCallback<ResetPasswordResult> callback);
 	void getUserInfo(String username, AsyncCallback<UserInfoResult> callback);
 	void createUpdateUserAccount(Map<String,String> values, AsyncCallback<CreateUpdateUserAccountResult> callback);
+	
+	void prepareUsersOntology(LoginResult loginResult, AsyncCallback<PrepareUsersOntologyResult> callback);
 }

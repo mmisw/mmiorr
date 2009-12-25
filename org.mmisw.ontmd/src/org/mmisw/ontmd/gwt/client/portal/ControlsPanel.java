@@ -68,6 +68,7 @@ public class ControlsPanel extends HorizontalPanel {
 	}
 	
 	private void _createButtons(InterfaceType type) {
+		controls.setBorderWidth(1);
 		switch ( type ) {
 		case BROWSE:
 			_prepareBrowseButtons();
@@ -95,14 +96,25 @@ public class ControlsPanel extends HorizontalPanel {
 		case ENTITY_NOT_FOUND:
 			
 			break;
+			
+		case ADMIN:
+			_prepareAdminButtons();
+			break;
 		}
 	}
 
+	private void _prepareAdminButtons() {
+		controls.setBorderWidth(0);
+		HTML html = new HTML("<blockquote><h2>Admin interface</h2></blockquote>"); 
+		controls.add(html);
+	}
+	
 	private void _prepareSearchTermsButtons() {
+		controls.setBorderWidth(0);
 		String ontServiceUrl = Portal.portalBaseInfo.getOntServiceUrl();
 		String sparqlPage = ontServiceUrl+ "/sparql.html";
-		HTML sparqlButton = new HTML("<a target=\"_blank\" href=\"" +sparqlPage+ 
-				"\">Advanced search with SPARQL</a>");
+		HTML sparqlButton = new HTML("<blockquote><a target=\"_blank\" href=\"" +sparqlPage+ 
+				"\">Advanced search with SPARQL</a></blockquote>");
 		controls.add(sparqlButton);
 	}
 	

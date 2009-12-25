@@ -3,6 +3,12 @@ Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
 
+2009-12-24   1.8.0.alpha
+	New Admin interface intended to provide various admin operations.
+	Initially with creation of the "internal" users instantiation ontology.
+	See modules iserver and ont.
+	 
+
 2009-12-23   1.8.0.alpha
 	Preparing for handling "internal" ontologies. An internal ontology provides supporting information
 	for the MMI ORR. 

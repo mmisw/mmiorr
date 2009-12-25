@@ -15,6 +15,7 @@ import org.mmisw.iserver.gwt.client.rpc.CreateUpdateUserAccountResult;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
+import org.mmisw.iserver.gwt.client.rpc.PrepareUsersOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
 import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
@@ -199,4 +200,7 @@ public class PortalImpl  {
 	}
 
 	
+	public PrepareUsersOntologyResult prepareUsersOntology(LoginResult loginResult) {
+		return iserver.prepareUsersOntology(loginResult);
+	}
 }

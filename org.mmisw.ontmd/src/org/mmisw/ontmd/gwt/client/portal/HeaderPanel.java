@@ -29,6 +29,8 @@ public class HeaderPanel extends FlexTable {
 	private HorizontalPanel linksPanel1 = new HorizontalPanel();
 	private HorizontalPanel linksPanel2 = new HorizontalPanel();
 	
+	private Hyperlink adminLink = new Hyperlink("<b>Admin</b>", true, PortalConsts.T_ADMIN);
+	
 	private Hyperlink browseLink = new Hyperlink("Browse", PortalConsts.T_BROWSE);
 	private Hyperlink searchLink = new Hyperlink("Search terms", PortalConsts.T_SEARCH_TERMS);
 	
@@ -48,6 +50,7 @@ public class HeaderPanel extends FlexTable {
 	HeaderPanel() {
 		super();
 		
+		adminLink.setTitle("Administrative interface");
 		searchLink.setTitle("Allows to search terms in all registered ontologies");
 		
 		linksPanel1.setSpacing(4);
@@ -97,6 +100,7 @@ public class HeaderPanel extends FlexTable {
 		case USER_ACCOUNT:
 		case ENTITY_VIEW:
 		case ENTITY_NOT_FOUND:
+		case ADMIN:
 			widgets2.add(browseLink);
 			widgets2.add(searchLink);
 			break;
@@ -123,6 +127,11 @@ public class HeaderPanel extends FlexTable {
 		widgets.add(helpButton);
 		widgets.add(touButton);
 		
+		
+		if ( type != InterfaceType.ADMIN && loginResult != null && loginResult.isAdministrator() ) {
+			widgets2.add(adminLink);
+		}
+
 		// now assign to linksPanels
 		linksPanel1.clear();
 		linksPanel2.clear();

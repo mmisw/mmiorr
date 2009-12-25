@@ -51,6 +51,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		ENTITY_NOT_FOUND,
 		UPLOAD_ONTOLOGY,
 		UPLOAD_NEW_VERSION,
+		ADMIN,
 	};
 	
 	
@@ -284,6 +285,10 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 			else if ( historyToken.toLowerCase().equals(PortalConsts.T_REGISTER_EXTERNAL) ) {
 				dispatchUploadOntology();
 			}
+			else if ( historyToken.toLowerCase().equals(PortalConsts.T_ADMIN) ) {
+				dispatchAdmin();		
+			}
+
 			else {
 				String uri = historyToken.trim();
 				Main.log("onHistoryChanged: URI: " +uri);
@@ -916,5 +921,24 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		browsePanel.searchOntologies(searchString, doneCmd);
 	}
 
+
+	private void dispatchAdmin() {
+		
+		OntologyPanel ontologyPanel = pctrl.getOntologyPanel();
+		if ( ontologyPanel != null ) {
+			ontologyPanel.cancel();
+			pctrl.setOntologyInfo(null);
+			pctrl.setOntologyPanel(null);
+		}
+		
+		AdminPanel adminPanel = new AdminPanel();
+
+		interfaceType = InterfaceType.ADMIN;
+	    controlsPanel.showMenuBar(interfaceType);
+	    headerPanel.updateLinks(interfaceType);
+		
+	    bodyPanel.clear();
+		bodyPanel.add(adminPanel);
+	}
 
 }
