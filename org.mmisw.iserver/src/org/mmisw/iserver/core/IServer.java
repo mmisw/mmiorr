@@ -173,9 +173,9 @@ public interface IServer {
 	
 	/**
 	 * Prepares the users instantiation ontology.
+	 * 
 	 * @param loginResult Only the administrator can perform this operation.
-	 * @param usersUri the URI of the ontology to be created/updated.
 	 * @return result of the operation.
 	 */
-	public PrepareUsersOntologyResult prepareUsersOntology(LoginResult loginResult, String usersUri);
+	public PrepareUsersOntologyResult prepareUsersOntology(LoginResult loginResult);
 }

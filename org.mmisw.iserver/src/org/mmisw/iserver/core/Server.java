@@ -2797,12 +2797,11 @@ public class Server implements IServer {
 	}
 
 	
-	public PrepareUsersOntologyResult prepareUsersOntology(LoginResult loginResult, String usersUri) {
+	public PrepareUsersOntologyResult prepareUsersOntology(LoginResult loginResult) {
 		PrepareUsersOntologyResult result = new PrepareUsersOntologyResult();
 		
 		try {
-			RegisteredOntologyInfo usersOntology = getOntologyInfo(usersUri);
-			InternalManager.prepareUsersOntology(loginResult, usersUri, usersOntology, result);
+			InternalManager.prepareUsersOntology(this, loginResult, result);
 		}
 		catch (Exception e) {
 			String error = e.getMessage();

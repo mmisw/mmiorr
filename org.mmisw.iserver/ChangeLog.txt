@@ -3,6 +3,10 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2009-12-24   1.8.0.alpha
+	- Server.prepareUsersOntology(LoginResult loginResult) now reports the URI, which is given by the Ont service.
+	  
+	  
 2009-12-23   1.8.0.alpha
 	Preparing for handling "internal" ontologies. An internal ontology provides supporting information
 	for the MMI ORR. 

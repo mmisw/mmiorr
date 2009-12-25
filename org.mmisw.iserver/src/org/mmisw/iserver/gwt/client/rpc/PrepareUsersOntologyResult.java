@@ -24,7 +24,7 @@ public class PrepareUsersOntologyResult extends BaseResult {
 	}
 
 	public String toString() {
-		return getClass().getSimpleName()+"{uri=" +uri+ ", info=" +info+", error=" +error+ "}";
+		return "PrepareUsersOntologyResult{uri=" +uri+ ", info=" +info+", error=" +error+ "}";
 	}
 
 	/** Sets the URI of the users instantiation ontology */

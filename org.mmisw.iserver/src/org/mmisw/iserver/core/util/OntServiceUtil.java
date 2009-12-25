@@ -6,6 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.ServerConfig;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
 import org.mmisw.ont.JenaUtil2;
@@ -24,6 +26,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 public class OntServiceUtil {
 	private OntServiceUtil() {}
 	
+	private static final Log log = LogFactory.getLog(OntServiceUtil.class);
 	
 	/**
 	 * Resolves a URI against the "Ont" service.
@@ -79,6 +82,9 @@ public class OntServiceUtil {
 	 * @throws Exception
 	 */
 	public static OntModel retrieveModel(String uriModel, String version) throws Exception {
+		if ( log.isDebugEnabled() ) {
+			log.debug("retrieveModel: uri: " +uriModel+ "  version: " +version);
+		}
 		
 		String str = resolveOntologyUri(uriModel, version, "application/rdf+xml");
 		
@@ -87,7 +93,14 @@ public class OntServiceUtil {
 		
 		StringReader sr = new StringReader(str);
 		
-		model.read(sr, uriModel);
+		try {
+			model.read(sr, uriModel);
+		}
+		catch (Exception e) {
+			log.error("Error reading model.", e);
+			log.error("The retrieved contents:\n" +str);
+			throw e;
+		}
 		
 		return model;
 	}
