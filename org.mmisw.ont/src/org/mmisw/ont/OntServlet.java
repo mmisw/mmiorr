@@ -6,12 +6,9 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -24,19 +21,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.ont.admin.AdminDispatcher;
 import org.mmisw.ont.graph.IOntGraph;
 import org.mmisw.ont.graph.OntGraph;
 import org.mmisw.ont.sparql.SparqlDispatcher;
 import org.mmisw.ont.util.Accept;
 import org.mmisw.ont.util.Util;
 
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.RDF;
 
 /**
  * The entry point.
@@ -78,13 +71,16 @@ public class OntServlet extends HttpServlet {
 	// but also in other requests as I moved to it instead of original UriResolver.
 	private final UriResolver2 uriResolver2 = new UriResolver2(ontConfig, db, ontGraph);
 	
+	
+	private final AdminDispatcher adminDispatcher = new AdminDispatcher(db);
+	
 	/**
 	 * A request object. It keep info associated with the request from the client.
 	 */
-	class Request {
+	public class Request {
 		final ServletContext servletContext;
 		final HttpServletRequest request; 
-		final HttpServletResponse response;
+		public final HttpServletResponse response;
 		
 		final List<String> userAgentList;
 		
@@ -327,7 +323,7 @@ public class OntServlet extends HttpServlet {
 		
 		// get users RDF?
 		if ( Util.yes(req.request, "_usrsrdf")  ) {
-			_getUsersRdf(req);
+			adminDispatcher.getUsersRdf(req);
 			return;
 		}
 		
@@ -695,7 +691,9 @@ public class OntServlet extends HttpServlet {
 			req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing value for _lo parameter");
 			return;
 		}
-		
+
+//		String graphId = Util.getParam(req.request, "_gi", "");
+
 		// explicit version?
 		if ( req.version != null ) {
 			req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "version parameter not accepted with _lo parameter");
@@ -804,72 +802,6 @@ public class OntServlet extends HttpServlet {
 		String _reidx = Util.getParam(req.request, "_reidx", "");
 		boolean wait = _reidx.length() == 0 || _reidx.equals("wait");
 		ontGraph.reindex(wait);
-	}
-	
-	/**
-	 * Responds an RDF with registered users. Every user URI will be *versioned* with the current time.
-	 */
-	private void _getUsersRdf(Request req) throws ServletException, IOException {
-		final String MMIORR_NS = "http://mmisw.org/ont/mmi/mmiorr/";
-		
-		Date date = new Date(System.currentTimeMillis());
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd'T'hhmmss");
-		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-		String version = sdf.format(date);
-
-		final String users_ns = OntConfig.Prop.ONT_SERVICE_URL.getValue()+ "/mmiorr-internal/" +version+ "/users/";
-		
-		final Model model = ModelFactory.createDefaultModel();
-		final Resource userClass = model.createResource( MMIORR_NS + "User" );
-		model.setNsPrefix("mmiorr", MMIORR_NS);
-		model.setNsPrefix("", users_ns);
-		
-		final String[][] fieldPropNames = {
-				{ "username",  "hasUserName" },
-				{ "firstname", "hasFirstName" },
-				{ "lastname",  "hasLastName" },
-				{ "email",     "hasEmail" },
-				{ "date_created", "hasDateCreated" },
-		};
-		
-		List<Map<String, String>> list = db.getAllUserInfos();
-		for (Map<String, String> user : list) {
-			
-			String username = user.get("username");
-			if ( username == null || username.length() == 0 ) {
-				continue;
-			}
-			
-			Resource userInstance = model.createResource( users_ns + username );
-			
-			// type:
-			model.add(userInstance, RDF.type, userClass);
-			
-			for (String[] fieldPropName : fieldPropNames ) {
-				
-				String propValue = user.get(fieldPropName[0]);
-				
-				if ( propValue == null || propValue.length() == 0 ) {
-					continue;
-				}
-				
-				Property propUri = model.createProperty( MMIORR_NS , fieldPropName[1] );
-				
-				if ( "hasDateCreated".equals(fieldPropName[1]) ) {
-					model.add(userInstance, propUri, propValue,  XSDDatatype.XSDdateTime);
-				}
-				else {
-					model.addLiteral(userInstance, propUri, propValue);
-				}
-			}
-		}
-		
-		String result = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV");
-		
-		req.response.setContentType("application/rdf+xml");
-		ServletOutputStream os = req.response.getOutputStream();
-		IOUtils.write(result, os);
-		os.close();
 	}
 
 }

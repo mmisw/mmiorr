@@ -4,6 +4,10 @@ $Id$
 
 ChangeLog
 
+2009-12-28   1.6.0.beta3
+	- OntGraphAG: removed unused code.
+	- Reviewing how to associate user-specified named graphs..
+	
 2009-12-24   1.6.0.beta2
 	- OntServlet._getUsersRdf: adjustments. Versioned URIs (using current time). Empty prefix associated with
 	  the versioned URI.
