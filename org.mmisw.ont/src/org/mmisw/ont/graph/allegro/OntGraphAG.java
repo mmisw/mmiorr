@@ -17,8 +17,6 @@ import org.mmisw.ont.Ontology;
 import org.mmisw.ont.UnversionedConverter;
 import org.mmisw.ont.graph.IOntGraph;
 import org.mmisw.ont.sparql.QueryResult;
-import org.mmisw.ont.sparql.Sparql;
-import org.mmisw.ont.util.Util;
 
 import com.franz.agbase.AllegroGraph;
 import com.franz.agbase.AllegroGraphConnection;
@@ -28,19 +26,9 @@ import com.franz.agbase.RDFN3Serializer;
 import com.franz.agbase.SPARQLQuery;
 import com.franz.agbase.TriplesIterator;
 import com.franz.agbase.ValueSetIterator;
-import com.franz.agjena.AllegroGraphGraphMaker;
-import com.franz.agjena.AllegroGraphModel;
-import com.hp.hpl.jena.graph.Graph;
-import com.hp.hpl.jena.graph.GraphMaker;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.rdf.model.InfModel;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.reasoner.Reasoner;
-import com.hp.hpl.jena.reasoner.rulesys.GenericRuleReasoner;
-import com.hp.hpl.jena.reasoner.rulesys.Rule;
 
 import edu.drexel.util.rdf.JenaUtil;
 
@@ -72,9 +60,6 @@ public class OntGraphAG implements IOntGraph {
 	};
 
 
-	/** Servlet resource containing the rules for inference purposes */
-	private static final String INF_RULES_NAME = "inf_rules.txt";
-
 	private final Log log = LogFactory.getLog(OntGraphAG.class);
 	
 	private String serverHost;
@@ -88,7 +73,7 @@ public class OntGraphAG implements IOntGraph {
 	
 	
 	/**
-	 * AllegroGraph connection. Use idiom:
+	 * AllegroGraph connection. Usage idiom:
 	 * <pre>
 	 *   Ag ag = new Ag();
 	 *   try {
@@ -338,23 +323,6 @@ public class OntGraphAG implements IOntGraph {
 
 	
 	/**
-	 * Create reasoner and InfModel.
-	 * @return the created InfModel
-	 */
-	private InfModel _createInfModel(Model model) {
-		String rulesSrc = Util.getResource(log, INF_RULES_NAME);
-		if ( rulesSrc == null ) {
-			return null;
-		}
-		log.info("Creating InfModel with rules:\n\t" +rulesSrc.replaceAll("\n", "\n\t"));
-		List<?> rules = Rule.parseRules(rulesSrc);
-		Reasoner reasoner = new GenericRuleReasoner(rules);
-		InfModel im = ModelFactory.createInfModel(reasoner, model);
-		return im;
-	}
-
-	
-	/**
 	 * Loads the given model into the graph.
 	 * @param ontology
 	 */
@@ -597,49 +565,6 @@ public class OntGraphAG implements IOntGraph {
 		}
 
 		return queryResult;
-	}
-
-	
-	@SuppressWarnings("unused")
-	private QueryResult executeQuery2(String sparqlQuery, String form) throws Exception {
-		Ag _ag = new Ag();
-		try {
-			Model model = _getModel(_ag);
-
-			if ( false ) {
-				// NOTE: this is disabled--very poor performance
-				//
-				// Create Jena inference model
-				// TODO: there is perhaps a mechanism to encode the rules in the triple store
-				// so it's not necessary to associate them every time a query is issued.
-				//
-				long start = System.currentTimeMillis();
-				model = _createInfModel(model);
-				log.debug("Inference model created in " +AgUtils.elapsedTime(start));
-			}
-			
-			QueryResult queryResult = Sparql.executeQuery(model, sparqlQuery, form);
-			return queryResult;
-		}
-		finally {
-			_ag.end();
-		}
-	}
-
-	private Model _getModel(Ag _ag) throws Exception {
-		if ( log.isDebugEnabled() ) {
-			log.debug("getModel: getting model from graph..");
-		}
-		
-	    GraphMaker maker = new AllegroGraphGraphMaker(_ag.ts);
-	    Graph defaultGraph = maker.getGraph();
-	    Model model = new AllegroGraphModel(defaultGraph);
-	    
-	    if ( log.isDebugEnabled() ) {
-	    	log.debug("Getting model from graph... Done.");
-	    }
-	    
-		return model;
 	}
 
 }
