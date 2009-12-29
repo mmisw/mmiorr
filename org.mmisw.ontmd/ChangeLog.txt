@@ -2,6 +2,9 @@ org.mmisw.ontmd: MMI Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2009-12-28   1.8.1.alpha
+	- AdminPanel moved to new package org.mmisw.ontmd.gwt.client.portal.admin 
+	- preliminary Server.createGroupsOntology (management of internal resources still under revision)
 
 2009-12-24   1.8.0.alpha
 	New Admin interface intended to provide various admin operations.
