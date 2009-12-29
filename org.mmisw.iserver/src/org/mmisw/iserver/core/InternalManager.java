@@ -93,8 +93,8 @@ public class InternalManager {
 			result.setInfo(res);
 			
 			// TODO: indicate graph for the internal information.
-			// for now, only associting with graph of the same URI:
-			String graphId = unversUsersUri;
+			// for now, only associting with graph of the same URI, so we indicate null here::
+			String graphId = null;
 			
 			// request that the ontology be loaded in the desired graph:
 			OntServiceUtil.loadOntologyInGraph(unversUsersUri, graphId);
@@ -191,8 +191,8 @@ public class InternalManager {
 			result.setInfo(res);
 			
 			// TODO: indicate graph for the internal information.
-			// for now, only associting with graph of the same URI:
-			String graphId = unversGroupsUri;
+			// for now, only associting with graph of the same URI, so we indicate null here:
+			String graphId = null;
 			
 			// request that the ontology be loaded in the desired graph:
 			OntServiceUtil.loadOntologyInGraph(unversGroupsUri, graphId);
