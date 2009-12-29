@@ -2,6 +2,10 @@ org.mmisw.mmiorr.client
 Carlos Rueda  -  MBARI
 November 2009
 
+2009-12-29
+	- skip some tests when the ORR deployment being tested does not correspond to the fully
+	  hosted ontologies in those tests.
+	
 2009-12-28
 	- The graphId can now be passed for the registrationTests, for example: -DgraphId=MyGraphID 
 	  This facilitates the testing of the named graph capability that it's being enabled in the repository. 

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Test;
+import org.mmisw.mmiorr.client.MmiOrr;
 import org.mmisw.mmiorr.client.RetrieveOntology;
 import org.mmisw.mmiorr.client.RetrieveOntology.RetrieveResult;
 
@@ -114,6 +115,12 @@ public class RetrievalTest extends BaseTestCase {
 	public void test32a() throws Exception {
 		System.out.println("** test32a");
 		
+		if ( !vocabularyUri.startsWith(MmiOrr.ontService) ) {
+			System.out.println("SKIPPING test32a as vocabularyUri (" +vocabularyUri+ ") is assumed to be " +
+					"fully hosted but the Ont service being tested is elsewhere: " +MmiOrr.ontService);
+			return;
+		}
+		
 		List<String> versions = RetrieveOntology.getVersions(vocabularyUri);
 		System.out.println(vocabularyUri+ ": Available versions: " +versions);
 		
@@ -136,6 +143,12 @@ public class RetrievalTest extends BaseTestCase {
 	private void retrieveMetadataFromOntology() throws Exception {
 		System.out.println("** retrieveMetadataFromOntology");
 		
+		if ( !vocabularyUri.startsWith(MmiOrr.ontService) ) {
+			System.out.println("SKIPPING retrieveMetadataFromOntology as vocabularyUri (" +vocabularyUri+ ") is assumed to be " +
+					"fully hosted but the Ont service being tested is elsewhere: " +MmiOrr.ontService);
+			return;
+		}
+
 		String format = "owl";
 		String version = null;
 		
