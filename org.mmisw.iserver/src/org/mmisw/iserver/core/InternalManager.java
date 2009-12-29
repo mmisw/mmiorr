@@ -1,15 +1,18 @@
 package org.mmisw.iserver.core;
 
 import java.io.StringReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.util.AquaUtil;
 import org.mmisw.iserver.core.util.OntServiceUtil;
+import org.mmisw.iserver.gwt.client.rpc.InternalOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
-import org.mmisw.iserver.gwt.client.rpc.PrepareUsersOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.ont.JenaUtil2;
 import org.mmisw.ont.MmiUri;
@@ -41,7 +44,7 @@ public class InternalManager {
 	static void prepareUsersOntology(
 			IServer server,
 			LoginResult loginResult, 
-			PrepareUsersOntologyResult result
+			InternalOntologyResult result
 	) throws Exception {
 		
 		log.debug("prepareUsersOntology called.");
@@ -73,7 +76,7 @@ public class InternalManager {
 		}
 		
 		// set some associated attributes for the registration:
-		Map<String, String> newValues = _getValues(loginResult, version);
+		Map<String, String> newValues = _getValues(loginResult, "MMI ORR Users", version);
 		String fileName = AquaUtil.getAquaportalFilename(unversUsersUri);
 		
 		// register:
@@ -115,14 +118,174 @@ public class InternalManager {
 	}
 
 
-	private static Map<String, String> _getValues(LoginResult loginResult, String version) {
+	private static Map<String, String> _getValues(LoginResult loginResult, String name, String version) {
 		Map<String, String> values = new HashMap<String, String>();
 		
-		values.put(Omv.name.getURI(), "MMI ORR Users");
+		values.put(Omv.name.getURI(), name);
 		values.put(Omv.hasCreator.getURI(), loginResult.getUserName());
 		values.put(Omv.version.getURI(), version);
 		
 		return values;
 	}
+
+	private static String _getVersionCurrentTime() {
+		Date date = new Date(System.currentTimeMillis());
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd'T'hhmmss");
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+		String version = sdf.format(date);
+		return version;
+	}
+
+
+	/**
+	 * Creates and registers the groups instantiation ontology.
+	 * @param server Used to obtain previous version, if any.
+	 * @param loginResult Only the administrator can perform this operation.
+	 * @param result to return the result of the operation
+	 * @throws Exception 
+	 */
+	static void createGroupsOntology(
+			IServer server,
+			LoginResult loginResult, 
+			InternalOntologyResult result
+	) throws Exception {
+		
+		log.debug("createGroupsOntology called.");
+		
+		if ( loginResult == null || ! loginResult.isAdministrator() ) {
+			result.setError("Only an administrator can perform this operation.");
+			return;
+		}
+		
+		final String unversGroupsUri = ServerConfig.Prop.ONT_SERVICE_URL.getValue()+ "/mmiorr-internal/groups";
+		
+		RegisteredOntologyInfo groupsOntology = server.getOntologyInfo(unversGroupsUri);
+		if ( groupsOntology != null ) {
+			result.setError(unversGroupsUri+ ": ontology already registered.");
+			return;
+		}
+		
+		final String ontologyId = null;
+		final String ontologyUserId = null;
+
+		String version = _getVersionCurrentTime();
+		// set some associated attributes for the registration:
+		Map<String, String> newValues = _getValues(loginResult, "MMI ORR Groups",  version);
+		String fileName = AquaUtil.getAquaportalFilename(unversGroupsUri);
+		
+		// the versioned form for the registration:
+		String versionedUsersUri = new MmiUri(unversGroupsUri).copyWithVersion(version).getOntologyUri();
+		
+		String rdf = _getGroupsRdf(versionedUsersUri, version);
+		// register:
+		OntologyUploader createOnt = new OntologyUploader(
+				versionedUsersUri , fileName, rdf , 
+				loginResult,
+				ontologyId, ontologyUserId,
+				newValues
+		);
+		String res = createOnt.create();
+		
+		if ( res.startsWith("OK") ) {
+			result.setUri(unversGroupsUri);
+			result.setInfo(res);
+			
+			// TODO: indicate graph for the internal information.
+			// for now, only associting with graph of the same URI:
+			String graphId = unversGroupsUri;
+			
+			// request that the ontology be loaded in the desired graph:
+			OntServiceUtil.loadOntologyInGraph(unversGroupsUri, graphId);
+			
+			log.info("createGroupsOntology = " +result);
+		}
+		else {
+			result.setError(res);
+		}
+	}
+
+	/**
+	 * Responds the basic RDF for groups.
+	 */
+	private static String _getGroupsRdf(String versionedUsersUri, String version) {
+		final String MMIORR_NS = "http://mmisw.org/ont/mmi/mmiorr/";
+		
+		log.debug("_getGroupsRdf called.");
+		
+		final String groups_ns = ServerConfig.Prop.ONT_SERVICE_URL.getValue()+ "/mmiorr-internal/" +version+ "/groups/";
+		
+		final Model model = ModelFactory.createDefaultModel();
+		model.setNsPrefix("mmiorr", MMIORR_NS);
+		model.setNsPrefix("", groups_ns);
+		
+		String result = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV");
+		return result;
+	}
+
+
+//	/**
+//	 * Adds a group instance to the groups instantiation ontology.
+//	 * @param server Used to obtain previous version, if any.
+//	 * @param loginResult Only the administrator can perform this operation.
+//	 * @param result to return the result of the operation
+//	 * @throws Exception 
+//	 */
+//	static void createGroup(
+//			IServer server,
+//			LoginResult loginResult,
+//			String groupId,
+//			String groupDescription,
+//			InternalOntologyResult result
+//	) throws Exception {
+//		
+//		log.debug("createGroup called.");
+//		
+//		if ( loginResult == null || ! loginResult.isAdministrator() ) {
+//			result.setError("Only an administrator can perform this operation.");
+//			return;
+//		}
+//		
+//		final String unversGroupsUri = ServerConfig.Prop.ONT_SERVICE_URL.getValue()+ "/mmiorr-internal/groups";
+//		
+//		RegisteredOntologyInfo groupsOntology = server.getOntologyInfo(unversGroupsUri);
+//		if ( groupsOntology == null ) {
+//			result.setError(unversGroupsUri+ ": does not exist.");
+//			return;
+//		}
+//		
+//		String ontologyId = groupsOntology.getOntologyId();
+//		String ontologyUserId = groupsOntology.getOntologyUserId();
+//		
+//		String version = _getVersionCurrentTime();
+//		// set some associated attributes for the registration:
+//		Map<String, String> newValues = _getValues(loginResult, "MMI ORR Groups",  version);
+//		String fileName = AquaUtil.getAquaportalFilename(unversGroupsUri);
+//		
+//		// register:
+//		OntologyUploader createOnt = new OntologyUploader(
+//				generatedUsersUri, fileName, rdf, 
+//				loginResult,
+//				ontologyId, ontologyUserId,
+//				newValues
+//		);
+//		String res = createOnt.create();
+//		
+//		if ( res.startsWith("OK") ) {
+//			result.setUri(unversGroupsUri);
+//			result.setInfo(res);
+//			
+//			// TODO: indicate graph for the internal information.
+//			// for now, only associting with graph of the same URI:
+//			String graphId = unversGroupsUri;
+//			
+//			// request that the ontology be loaded in the desired graph:
+//			OntServiceUtil.loadOntologyInGraph(unversGroupsUri, graphId);
+//			
+//			log.info("prepareUsersOntology = " +result);
+//		}
+//		else {
+//			result.setError(res);
+//		}
+//	}
 
 }

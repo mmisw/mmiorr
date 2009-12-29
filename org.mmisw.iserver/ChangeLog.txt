@@ -3,6 +3,9 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2009-12-28   1.8.1.alpha
+	- preliminary Server.createGroupsOntology (management of internal resources still under revision) 
+
 2009-12-24   1.8.0.alpha
 	- Server.prepareUsersOntology(LoginResult loginResult) now reports the URI, which is given by the Ont service.
 	  

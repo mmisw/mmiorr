@@ -48,7 +48,7 @@ import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MappingDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.OtherDataCreationInfo;
-import org.mmisw.iserver.gwt.client.rpc.PrepareUsersOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.InternalOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
@@ -2797,8 +2797,8 @@ public class Server implements IServer {
 	}
 
 	
-	public PrepareUsersOntologyResult prepareUsersOntology(LoginResult loginResult) {
-		PrepareUsersOntologyResult result = new PrepareUsersOntologyResult();
+	public InternalOntologyResult prepareUsersOntology(LoginResult loginResult) {
+		InternalOntologyResult result = new InternalOntologyResult();
 		
 		try {
 			InternalManager.prepareUsersOntology(this, loginResult, result);
@@ -2812,4 +2812,19 @@ public class Server implements IServer {
 		return result;
 	}
 
+	public InternalOntologyResult createGroupsOntology(LoginResult loginResult) {
+		InternalOntologyResult result = new InternalOntologyResult();
+		
+		try {
+			InternalManager.createGroupsOntology(this, loginResult, result);
+		}
+		catch (Exception e) {
+			String error = e.getMessage();
+			result.setError(error);
+			log.error(error, e);
+		}
+		
+		return result;
+	}
+	
 }

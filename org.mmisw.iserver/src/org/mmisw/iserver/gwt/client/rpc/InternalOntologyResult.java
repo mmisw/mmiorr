@@ -2,17 +2,17 @@ package org.mmisw.iserver.gwt.client.rpc;
 
 
 /**
- * Info about the result of preparing the users ontology.
+ * Info about the result of preparing one of the internal ontologies.
  * 
  * @author Carlos Rueda
  */
-public class PrepareUsersOntologyResult extends BaseResult {
+public class InternalOntologyResult extends BaseResult {
 	private static final long serialVersionUID = 1L;
 
 	private String uri = null;
 	private String info = null;
 
-	public PrepareUsersOntologyResult() {
+	public InternalOntologyResult() {
 	}
 
 	public String getInfo() {
@@ -24,7 +24,7 @@ public class PrepareUsersOntologyResult extends BaseResult {
 	}
 
 	public String toString() {
-		return "PrepareUsersOntologyResult{uri=" +uri+ ", info=" +info+", error=" +error+ "}";
+		return "InternalOntologyResult{uri=" +uri+ ", info=" +info+", error=" +error+ "}";
 	}
 
 	/** Sets the URI of the users instantiation ontology */

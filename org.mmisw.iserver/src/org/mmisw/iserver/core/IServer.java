@@ -10,7 +10,7 @@ import org.mmisw.iserver.gwt.client.rpc.CreateUpdateUserAccountResult;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
-import org.mmisw.iserver.gwt.client.rpc.PrepareUsersOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.InternalOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
@@ -177,5 +177,12 @@ public interface IServer {
 	 * @param loginResult Only the administrator can perform this operation.
 	 * @return result of the operation.
 	 */
-	public PrepareUsersOntologyResult prepareUsersOntology(LoginResult loginResult);
+	public InternalOntologyResult prepareUsersOntology(LoginResult loginResult);
+	
+	/**
+	 * Creates and registers the groups instantiation ontology.
+	 * @param loginResult Only the administrator can perform this operation.
+	 * @return result of the operation.
+	 */
+	public InternalOntologyResult createGroupsOntology(LoginResult loginResult);
 }
