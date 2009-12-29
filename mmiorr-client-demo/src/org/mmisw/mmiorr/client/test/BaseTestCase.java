@@ -12,6 +12,9 @@ import junit.framework.TestCase;
  */
 public abstract class BaseTestCase extends TestCase {
 
+	// By default, http://mmisw.org/ont
+	protected static String ontServiceUrl;
+	
 	protected static String username;
 	protected static String password;
 	
@@ -36,6 +39,8 @@ public abstract class BaseTestCase extends TestCase {
 
 	@Before
 	protected void setUp() {
+		ontServiceUrl = System.getProperty("ontServiceUrl", "http://mmisw.org/ont");
+		
 		ontologyUri = System.getProperty("ontologyUri", "http://example.org/test1");
 		termUri = System.getProperty("termUri", "http://example.org/test1/termThree");
 		nameUri = System.getProperty("nameUri", "http://example.org/test1/name");

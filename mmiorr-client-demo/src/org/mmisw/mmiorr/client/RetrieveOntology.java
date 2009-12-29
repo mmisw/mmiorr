@@ -15,7 +15,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
  * @author Carlos Rueda
  */
 public class RetrieveOntology {
-	static final String URI_RESOLVER = "http://mmisw.org/ont/";
+	static final String URI_RESOLVER = MmiOrr.ontService;
 
 	public static class RetrieveResult {
 		public int status;

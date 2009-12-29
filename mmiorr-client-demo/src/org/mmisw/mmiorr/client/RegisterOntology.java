@@ -23,7 +23,7 @@ import org.apache.commons.io.IOUtils;
  * @author Carlos Rueda
  */
 public class RegisterOntology {
-	private static final String FORM_ACTION = "http://mmisw.org/orr/direg";
+	private static final String FORM_ACTION = MmiOrr.direg;
 
 	
 	public static class RegistrationResult {
