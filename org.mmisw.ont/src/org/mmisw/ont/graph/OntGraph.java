@@ -7,6 +7,7 @@ import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.Db;
 import org.mmisw.ont.OntConfig;
 import org.mmisw.ont.Ontology;
+import org.mmisw.ont.admin.AdminDispatcher;
 import org.mmisw.ont.graph.allegro.OntGraphAG;
 import org.mmisw.ont.graph.mem.OntGraphMem;
 import org.mmisw.ont.sparql.QueryResult;
@@ -22,7 +23,10 @@ public class OntGraph implements IOntGraph {
 	private IOntGraph _impl;
 	private OntConfig _ontConfig;
 	private Db _db;
+	
+	private AdminDispatcher _adminDispatcher;
 
+	
 	/**
 	 * Creates the proxy.
 	 * {@link #init()} instantiates the actual implementation, once the configuration
@@ -33,9 +37,10 @@ public class OntGraph implements IOntGraph {
 	 *        
 	 * @param db The database helper.
 	 */
-	public OntGraph(OntConfig ontConfig, Db db) {
+	public OntGraph(OntConfig ontConfig, Db db, AdminDispatcher adminDispatcher) {
 		this._ontConfig = ontConfig;
 		this._db = db;
+		this._adminDispatcher = adminDispatcher;
 	}
 	
 	public void init() throws ServletException {
@@ -52,7 +57,7 @@ public class OntGraph implements IOntGraph {
 
 			if ( useAllegroGraph  ) {
 				log.info("createOntGraph: Using AllegroGraph");
-				_impl = new OntGraphAG(_ontConfig, _db);
+				_impl = new OntGraphAG(_ontConfig, _db, _adminDispatcher);
 			}
 			else {
 				log.info("createOntGraph: Using OntGraphMem");
@@ -71,8 +76,8 @@ public class OntGraph implements IOntGraph {
 		return _impl.executeQuery(sparqlQuery, form);
 	}
 
-	public void loadOntology(Ontology ontology) throws Exception {
-		_impl.loadOntology(ontology);
+	public void loadOntology(Ontology ontology, String graphId) throws Exception {
+		_impl.loadOntology(ontology, graphId);
 	}
 
 	public void reindex(boolean wait) throws ServletException {

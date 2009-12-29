@@ -6,8 +6,34 @@ ChangeLog
 
 2009-12-28   1.6.0.beta3
 	- OntGraphAG: removed unused code.
-	- Reviewing how to associate user-specified named graphs..
 	- new AdminDispatcher: helper for OntServlet
+	
+	Processing the association of user-specified named graphs:
+	
+	- IOntGraph.loadOntology(ontology, graphId): now with the graphId parameter.
+	  Only processed by the OntGraphAG implementation.
+	
+	- new build property ont.internal.dir (/Users/Shared/mmiregistry/internal) to store some internal
+	  resources, currently the graphs.rdf file, which is used to store the user-specified graphs
+	  following the RDFG vocabulary (http://www.w3.org/2004/03/trix/rdfg-1)
+	  
+	- AdminDispatcher: besides the SKOS-related statments for inference, the supporting statements also
+	  include a statement for the transitive property of rdfg:subGraphOf (not tested yet).
+	  
+	- OntGraphAG._loadOntology: the graphId (if given) is converted to a "well-formed" URI in case it matches
+	  a simple fragment:
+	     graphUri = OntConfig.Prop.ONT_SERVICE_URL.getValue() + "/mmiorr-internal/graphs/ + graphId
+	  For example, if graphId=="ooi-ci", then the resulting URI of the graph is
+	     http://mmisw.org/ont/mmiorr-internal/graphs/ooi-ci
+	  in the case of the MMI deployment.
+	  
+	  Note that all statements of a registered ontology with URI <ouri> are loaded in the graph with the same 
+	  URI <ouri> in the triple store (using the context parameter in the AG APIs).
+	  When the user specifies a desired <graphUri> for the ontology, the graph identified
+	  by <ouri> is made a subClassOf the graph identified by <graphUri>.
+	  See OntGraphAG._addSubGraph.
+	  
+	
 	
 2009-12-24   1.6.0.beta2
 	- OntServlet._getUsersRdf: adjustments. Versioned URIs (using current time). Empty prefix associated with

@@ -51,7 +51,10 @@ public class OntServlet extends HttpServlet {
 	
 	private final OntConfig ontConfig = new OntConfig();
 	private final Db db = new Db(ontConfig);
-	private final IOntGraph ontGraph = new OntGraph(ontConfig, db);
+	
+	private final AdminDispatcher adminDispatcher = new AdminDispatcher(db);
+	
+	private final IOntGraph ontGraph = new OntGraph(ontConfig, db, adminDispatcher);
 	
 	
 	private final MiscDispatcher miscDispatcher = new MiscDispatcher(ontConfig, db);
@@ -72,7 +75,6 @@ public class OntServlet extends HttpServlet {
 	private final UriResolver2 uriResolver2 = new UriResolver2(ontConfig, db, ontGraph);
 	
 	
-	private final AdminDispatcher adminDispatcher = new AdminDispatcher(db);
 	
 	/**
 	 * A request object. It keep info associated with the request from the client.
@@ -220,6 +222,8 @@ public class OntServlet extends HttpServlet {
 
 			db.init();
 			ontGraph.init();
+			
+			adminDispatcher.init();
 			
 			log.info(FULL_TITLE+ ": init complete.");
 		} 
@@ -692,7 +696,7 @@ public class OntServlet extends HttpServlet {
 			return;
 		}
 
-//		String graphId = Util.getParam(req.request, "_gi", "");
+		String graphId = Util.getParam(req.request, "_gi", null);
 
 		// explicit version?
 		if ( req.version != null ) {
@@ -715,7 +719,7 @@ public class OntServlet extends HttpServlet {
 			log.debug("_loadOntologyIntoGraph: loading " +ontUri);
 		}
 		try {
-			ontGraph.loadOntology(ontology);
+			ontGraph.loadOntology(ontology, graphId);
 		}
 		catch (Exception e) {
 			log.error("Error loading ontology.", e);

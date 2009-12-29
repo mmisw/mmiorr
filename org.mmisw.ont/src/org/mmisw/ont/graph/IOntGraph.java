@@ -69,10 +69,24 @@ public interface IOntGraph {
 	
 	/**
 	 * Loads the given model into the graph.
-	 * @param ontology
+	 * 
+	 * <p>
+	 * If the user-specified graph is not given (null), then it is loaded into the default graph.
+	 * 
+	 * <p>
+	 * Note that every ontology has its own associated graph, whose ID is &lt;ouri>, where ouri is the ontology's
+	 * URI. All statements in the ontology are directly associated with this graph &lt;ouri>.
+	 * 
+	 * If a graphId is given, then the graph &lt;ouri> will be made a subGraphOf of graphId.
+	 * Otherwise, no such subGraphOf property is created.
+	 * 
+	 * @param ontology The ontology to be loaded.
+	 * 
+	 * @param graphId User-specified graph as explained above. Can be null.
+	 * 
 	 * @throws Exception if there is some error  (for example, triple store
-	 * server is down or timed out).
+	 * 				server is down or timed out).
 	 */
-	public void loadOntology(Ontology ontology) throws Exception;
+	public void loadOntology(Ontology ontology, String graphId) throws Exception;
 
 }

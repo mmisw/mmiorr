@@ -122,6 +122,7 @@
 				<filter token="agraph.port" value="${agraph.port}" />
 				<filter token="agraph.ts.dir" value="${agraph.ts.dir}" />
 				<filter token="agraph.ts.name" value="${agraph.ts.name}" />
+				<filter token="ont.internal.dir"   value="${ont.internal.dir}" />
 			</filterset>
 		</copy>
 

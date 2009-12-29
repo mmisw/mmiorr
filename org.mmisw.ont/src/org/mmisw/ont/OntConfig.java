@@ -36,6 +36,8 @@ public class OntConfig {
 		AGRAPH_TS_DIR                 ("agraph.ts.dir"),
 		AGRAPH_TS_NAME                ("agraph.ts.name"),
 		
+		ONT_INTERNAL_DIR              ("ont.internal.dir"),
+		
 		;
 		
 		private String name;

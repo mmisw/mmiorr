@@ -1,7 +1,13 @@
 package org.mmisw.ont.admin;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringReader;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +29,12 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
+
+import edu.drexel.util.rdf.JenaUtil;
 
 
 
@@ -34,6 +45,44 @@ import com.hp.hpl.jena.vocabulary.RDF;
  */
 public class AdminDispatcher {
 	
+	private static File internalDir;
+	private static File graphsFile;
+
+	private static final String RDFG_NS = "http://www.w3.org/2004/03/trix/rdfg-1/";
+	
+	
+	private static final Resource rdfgGraph = ResourceFactory.createResource(RDFG_NS + "Graph");
+	private static final Property rdfgSubGraphOf = ResourceFactory.createProperty(RDFG_NS + "subGraphOf");
+	
+	
+	private static final String[][] SUPPORTING_NAMESPACES = new String[][] {
+			{ "skos", "http://www.w3.org/2008/05/skos#" }, 
+			{ "rdfg", "http://www.w3.org/2004/03/trix/rdfg-1/" }, 
+		};
+		
+
+	
+	private static final String[][] SUPPORTING_STATEMENTS = {
+		
+			//////// SKOS
+			{ "!skos:exactMatch", "!rdf:type", "!owl:TransitiveProperty" },
+			{ "!skos:exactMatch", "!rdf:type", "!owl:Symmetric" },
+			
+			{ "!skos:closeMatch", "!rdf:type", "!owl:Symmetric" },
+
+			{ "!skos:broadMatch", "!rdf:type", "!owl:TransitiveProperty" },
+			{ "!skos:broadMatch", "!owl:inverseOf", "!skos:narrowMatch" },
+
+			{ "!skos:narrowMatch", "!rdf:type", "!owl:TransitiveProperty" },
+			
+			{ "!skos:relatedMatch", "!rdf:type", "!owl:Symmetric" },
+			
+			//////// RDFG
+			{ "!rdfg:subGraphOf", "!rdf:type", "!owl:TransitiveProperty" },
+
+	};
+
+	
 	private final Log log = LogFactory.getLog(AdminDispatcher.class);
 	
 	private Db db;
@@ -42,6 +91,43 @@ public class AdminDispatcher {
 		this.db = db;
 	}
 
+	
+	/**
+	 * Gets prefix-namespace pairs for some required namespaces
+	 * 
+	 * @return the namespaces.
+	 */
+	public String[][] getSupportingNamespaces() {
+		return SUPPORTING_NAMESPACES;
+	}
+
+	/**
+	 * Gets the list of supporting statements
+	 * 
+	 * @return the statements.
+	 */
+	public String[][] getSupportingStatements() {
+		return SUPPORTING_STATEMENTS;
+	}
+
+	/**
+	 * Initializes some internal resources.
+	 * 
+	 * @throws ServletException
+	 */
+	public void init() throws ServletException {
+		log.info("init called.");
+		
+		internalDir = new File(OntConfig.Prop.ONT_INTERNAL_DIR.getValue());
+		graphsFile = new File(internalDir, "graphs.rdf");
+		
+		log.info("internalDir: " +internalDir);
+		log.info("graphsFile: " +graphsFile);
+
+		// create graphs file if not already created:
+		getGraphsModel();
+	}
+	
 	
 	/**
 	 * Responds an RDF with registered users. Every user URI will be *versioned* with the current time.
@@ -111,6 +197,139 @@ public class AdminDispatcher {
 		os.close();
 	}
 
+
+	/**
+	 * Updates the internal graphs resource.
+	 * 
+	 * @param subGraphUri    URI of subject of the subGraphOf property. Assumed to be wel-formed.
+	 * @param superGraphUri  URI of object of the subGraphOf property. Assumed to be wel-formed.
+	 * 
+	 * @return corresponding statements suitable to update the main graph.
+	 */
+	public List<Statement> newSubGraph(String subGraphUri, String superGraphUri) {
+		
+		Model model = getGraphsModel();
+		
+		List<Statement> statements = new ArrayList<Statement>();
+		
+		Resource subGraphRes = ResourceFactory.createResource(subGraphUri);
+		Resource superGraphRes = ResourceFactory.createResource(superGraphUri);
+		
+		statements.add(ResourceFactory.createStatement(subGraphRes, RDF.type, rdfgGraph));
+		statements.add(ResourceFactory.createStatement(superGraphRes, RDF.type, rdfgGraph));
+		statements.add(ResourceFactory.createStatement(subGraphRes, rdfgSubGraphOf, superGraphRes));
+		
+		for (Statement stmt : statements) {
+			model.add(stmt);
+			log.debug("newSubGraph: added statement: " +stmt);
+		}
+		
+		try {
+			updateGraphsFile(model);
+		}
+		catch (Exception e) {
+			log.error("Cannot write out to file " +graphsFile, e);
+		}
+		
+		return statements;
+	}
 	
 	
+	public String getWellFormedGraphUri(String uri) {
+		// remove any leading/trailing angle brackets:
+		uri = uri.trim().replaceAll("^<+|>+$", "");
+		
+		if ( uri.matches("(\\w|-)+") ) {
+			// uri is just word characters or the hyphen: use this as local name for the
+			// final absolute URI:
+			if ( uri.matches("^\\d.*") ) {
+				uri = "_" +uri;
+			}
+			uri = OntConfig.Prop.ONT_SERVICE_URL.getValue() + "/mmiorr-internal/graphs/" +uri;
+		}
+		
+		return uri;
+	}
+
+	
+	/**
+	 * Gets the statements in the internal resources.
+	 * 
+	 * @return corresponding statements suitable to update the main graph.
+	 */
+	public List<Statement> getInternalStatements() {
+		
+		Model model = getGraphsModel();
+		if ( model == null ) {
+			return null;
+		}
+		
+		List<Statement> statements = new ArrayList<Statement>();
+		
+		StmtIterator stmsIter = model.listStatements();
+		while ( stmsIter.hasNext() ) {
+			Statement stmt = stmsIter.nextStatement();
+			statements.add(stmt);
+		}
+		
+		return statements;
+	}
+	
+
+
+	/**
+	 * Gets the current contents of the graphs file. If the file does not exist, it is created
+	 * with an initial contents.
+	 * 
+	 * @return the model for the graphs file.
+	 */
+	private Model getGraphsModel() {
+		
+		Model model = JenaUtil.createDefaultRDFModel();
+		boolean createFile = false;
+		
+		if ( ! graphsFile.isFile() ) {
+			if ( ! internalDir.isDirectory() ) {
+				if ( ! internalDir.mkdirs() ) {
+					log.error("Cannot create directory " +internalDir);
+					return null;
+				}
+			}
+			createFile = true;
+		}
+		
+		if ( createFile ) {
+			String[][] namespaces = getSupportingNamespaces();
+			for ( String[] ns : namespaces ) {
+				model.setNsPrefix(ns[0], ns[1]);
+			}
+			try {
+				model.write(new FileOutputStream(graphsFile), "RDF/XML-ABBREV");
+				log.info(graphsFile+ ": model created.");
+			}
+			catch (FileNotFoundException e) {
+				log.error("Cannot write out to file " +graphsFile, e);
+				return null;
+			}
+		}
+		else {
+			model.read(graphsFile.toURI().toString());
+			log.info(graphsFile+ ": model read in.");
+		}
+		
+		return model;
+	}
+
+	private void updateGraphsFile(Model model) throws Exception {
+		String rdf = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV");
+		_writeRdfToFile(rdf, graphsFile);
+	}
+	
+	private static void _writeRdfToFile(String rdf, File reviewedFile) throws Exception {
+		PrintWriter os = new PrintWriter(reviewedFile, "UTF-8");
+		StringReader is = new StringReader(rdf);
+		IOUtils.copy(is, os);
+		os.flush();
+	}
+
 }

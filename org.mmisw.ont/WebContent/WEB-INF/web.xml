@@ -17,6 +17,11 @@
 		</init-param>
 		
 		<init-param>
+			<param-name>ont.internal.dir</param-name>
+			<param-value>@ont.internal.dir@</param-value>
+		</init-param>
+		
+		<init-param>
 			<param-name>appserver.host</param-name>
 			<param-value>@appserver.host@</param-value>
 		</init-param>

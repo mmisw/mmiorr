@@ -263,8 +263,9 @@ public class OntGraphMem implements IOntGraph {
 	 * Loads the given model into the graph.
 	 * If inference is enabled, then it updates the corresponding inference model.
 	 * @param ontology
+	 * @param graphId IGNORED
 	 */
-	public void loadOntology(Ontology ontology) throws Exception {
+	public void loadOntology(Ontology ontology, String graphId) throws Exception {
 		String full_path = aquaUploadsDir+ "/" +ontology.getFilePath() + "/" + ontology.getFilename();
 		log.info("Loading: " +full_path+ " in graph");
 		_loadOntology(ontology, full_path);

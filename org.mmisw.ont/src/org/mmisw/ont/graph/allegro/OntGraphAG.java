@@ -15,6 +15,7 @@ import org.mmisw.ont.OntConfig;
 import org.mmisw.ont.OntUtil;
 import org.mmisw.ont.Ontology;
 import org.mmisw.ont.UnversionedConverter;
+import org.mmisw.ont.admin.AdminDispatcher;
 import org.mmisw.ont.graph.IOntGraph;
 import org.mmisw.ont.sparql.QueryResult;
 
@@ -29,6 +30,8 @@ import com.franz.agbase.ValueSetIterator;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
 
 import edu.drexel.util.rdf.JenaUtil;
 
@@ -44,21 +47,6 @@ public class OntGraphAG implements IOntGraph {
 	@SuppressWarnings("unused")
 	private static final String INF_PROPERTIES_MODEL_NAME_NT = "inf_properties.nt";
 	
-	/** SKOS properties */
-	private static final String[][] SKOS_PROPS = {
-			{ "!skos:exactMatch", "!rdf:type", "!owl:TransitiveProperty" },
-			{ "!skos:exactMatch", "!rdf:type", "!owl:Symmetric" },
-			
-			{ "!skos:closeMatch", "!rdf:type", "!owl:Symmetric" },
-
-			{ "!skos:broadMatch", "!rdf:type", "!owl:TransitiveProperty" },
-			{ "!skos:broadMatch", "!owl:inverseOf", "!skos:narrowMatch" },
-
-			{ "!skos:narrowMatch", "!rdf:type", "!owl:TransitiveProperty" },
-			
-			{ "!skos:relatedMatch", "!rdf:type", "!owl:Symmetric" },
-	};
-
 
 	private final Log log = LogFactory.getLog(OntGraphAG.class);
 	
@@ -68,6 +56,7 @@ public class OntGraphAG implements IOntGraph {
 	private String tripleStoreName;
 
 	private final Db db;
+	private final AdminDispatcher adminDispatcher;
 	
 	private String aquaUploadsDir;
 	
@@ -153,8 +142,9 @@ public class OntGraphAG implements IOntGraph {
 	 *        
 	 * @param db The database helper.
 	 */
-	public OntGraphAG(OntConfig ontConfig, Db db) {
+	public OntGraphAG(OntConfig ontConfig, Db db, AdminDispatcher adminDispatcher) {
 		this.db = db;
+		this.adminDispatcher = adminDispatcher;
 	}
 
 
@@ -283,8 +273,12 @@ public class OntGraphAG implements IOntGraph {
 			String full_path = aquaUploadsDir+ "/" +ontology.getFilePath() + "/" + ontology.getFilename();
 			log.info("Loading: " +full_path+ " in graph");
 			try {
+				// NOTE: the graphId here is null; the graph relationships are added below.
+				String graphId = null;
+				
 				boolean clearGraphFirst = false;  // the triple store starts empty; see above
-				_loadOntology(_ag, ontology, full_path, clearGraphFirst);
+				
+				_loadOntology(_ag, ontology, graphId, full_path, clearGraphFirst);
 			}
 			catch (Throwable ex) {
 				log.error("Error loading ontology: " +full_path+ " (continuing..)", ex);
@@ -292,7 +286,16 @@ public class OntGraphAG implements IOntGraph {
 		}
 		
 		// enable inferencing:
-		_loadSkosProperties(_ag);
+		_loadSupportingStatements(_ag);
+		
+		// load internal resources (graph relationships, etc.):
+		try {
+			_loadInternalResources(_ag);
+		}
+		catch (AllegroGraphException e) {
+			log.error("Error loading internal resources", e);
+			// but continue.
+		}
 		
 		long numberOfTriples = -1;
 		try {
@@ -306,14 +309,19 @@ public class OntGraphAG implements IOntGraph {
 	}
 	
 	/**
-	 * load the skos properties model
+	 * load supporting statements for inference
 	 */
-	private void _loadSkosProperties(Ag _ag) {
+	private void _loadSupportingStatements(Ag _ag) {
 		try {
-			_ag.ts.registerNamespace("skos","http://www.w3.org/2008/05/skos#");
-			for (int i = 0; i < SKOS_PROPS.length; i++) {
-				_ag.ts.addStatement(SKOS_PROPS[i][0], SKOS_PROPS[i][1], SKOS_PROPS[i][2]);
-				log.info("Added statement: " +SKOS_PROPS[i][0]+ " " +SKOS_PROPS[i][1]+ " " +SKOS_PROPS[i][2]);
+			String[][] namespaces = adminDispatcher.getSupportingNamespaces();
+			for ( String[] ns : namespaces ) {
+				_ag.ts.registerNamespace(ns[0], ns[1]);
+			}
+			
+			String[][] statements = adminDispatcher.getSupportingStatements();
+			for ( String[] statement : statements ) {
+				_ag.ts.addStatement(statement[0], statement[1], statement[2]);
+				log.info("Added statement: " +statement[0]+ " " +statement[1]+ " " +statement[2]);
 			}
 		}
 		catch (AllegroGraphException e) {
@@ -323,16 +331,37 @@ public class OntGraphAG implements IOntGraph {
 
 	
 	/**
-	 * Loads the given model into the graph.
-	 * @param ontology
+	 * load internal resources (graphs, etc) in the triple store.
+	 * @throws AllegroGraphException 
 	 */
-	public void loadOntology(Ontology ontology) throws Exception {
+	private void _loadInternalResources(Ag _ag) throws AllegroGraphException {
+		log.info("_loadInternalResources called.");
+		List<Statement> statements = adminDispatcher.getInternalStatements();
+		
+		// then, update the triple store with the corresponding statements:
+		if ( statements != null ) {
+			for (Statement  stmt : statements) {
+				String sbj = stmt.getSubject().getURI();
+				String prd = stmt.getPredicate().getURI();
+				String obj = ((Resource) stmt.getObject()).getURI();
+	
+				sbj = '<' + sbj + '>';
+				prd = '<' + prd + '>';
+				obj = '<' + obj + '>';
+				
+				_ag.ts.addStatement(sbj, prd, obj);
+				log.info("Added statement: " +stmt);
+			}
+		}		
+	}
+
+	public void loadOntology(Ontology ontology, String graphId) throws Exception {
 		Ag _ag = new Ag();
 		try {
 			String full_path = aquaUploadsDir+ "/" +ontology.getFilePath() + "/" + ontology.getFilename();
-			log.info("Loading: " +full_path+ " in graph");
+			log.info("Loading: " +full_path+ " in graph: " +(graphId == null ? "(default graph)" : graphId));
 			boolean clearGraphFirst = true;
-			_loadOntology(_ag, ontology, full_path, clearGraphFirst);
+			_loadOntology(_ag, ontology, graphId, full_path, clearGraphFirst);
 			
 			// lauch indexing of new triples in the background and return:
 			boolean wait = false;
@@ -344,7 +373,21 @@ public class OntGraphAG implements IOntGraph {
 
 	}
 
-	private void _loadOntology(Ag _ag, Ontology ontology, String full_path, boolean clearGraphFirst) {
+	/**
+	 * Loads an ontology to the given graph.
+	 * 
+	 * @param _ag
+	 * @param ontology
+	 * @param graphId User-specified graph. Can be null.
+	 * @param full_path
+	 * @param clearGraphFirst true to remove all statements associated with the graph directly associated with the
+	 *        ontology.
+	 *        
+	 * @return the URI of the user-specified graphId, if any.
+	 */
+	private String _loadOntology(Ag _ag, Ontology ontology, String graphId, String full_path, boolean clearGraphFirst) {
+		
+		String graphUri = null;
 		
 		String ontologyUri = ontology.getUri();
 		String serialization;
@@ -364,7 +407,7 @@ public class OntGraphAG implements IOntGraph {
 				}
 				catch (URISyntaxException e) {
 					log.error("shouldn't happen", e);
-					return;
+					return null;
 				}
 				log.info("To load Ont-resolvable ontology in graph.");
 			}
@@ -381,25 +424,67 @@ public class OntGraphAG implements IOntGraph {
 		
 		// now, update graph with model captured in serialization
 		try {
-			// this is the affected graph:
-			Object graph = "<" +ontologyUri+ ">";
+			// this is the graph for the ontology itself. 
+			// All the statements in the ontology are associated with this graph.
+			String ownGraph = "<" +ontologyUri+ ">";
 			
 			if ( clearGraphFirst ) {
 				// first, remove all statements associated with the graph:
 				if ( log.isDebugEnabled() ) {
-					log.debug("Removing all statements in graph " +graph+ " ...");
+					log.debug("Removing all statements in graph " +ownGraph+ " ...");
 				}
-				_ag.ts.removeStatements(null, null, null, graph);
+				_ag.ts.removeStatements(null, null, null, ownGraph);
 			}
 			
 			// now, create the new graph:
-			AgUtils.parseWithTiming(_ag.ts, true, serialization, graph);
+			AgUtils.parseWithTiming(_ag.ts, true, serialization, ownGraph);
+			
+			
+			// now, add the subGraphOf relationship if graphId != null
+			if ( graphId != null ) {
+				String ownGraphUri = adminDispatcher.getWellFormedGraphUri(ownGraph);
+				graphUri = adminDispatcher.getWellFormedGraphUri(graphId);
+				_addSubGraph(_ag, ownGraphUri, graphUri);
+			}
+			
 		}
 		catch (AllegroGraphException e) {
 			log.error("Error parsing/loading RDF in graph.", e);
 		}
+		
+		return graphUri;
 	}
 	
+	/**
+	 * Updates the graphs resource and then the triple store.
+	 * @param _ag
+	 * @param subGraphUri  Assumed to be well-formed
+	 * @param superGraphUri  Assumed to be well-formed
+	 * @throws AllegroGraphException
+	 */
+	private void _addSubGraph(Ag _ag, String subGraphUri, String superGraphUri) throws AllegroGraphException {
+		
+		// first, update the graphs resource:
+		List<Statement> statements = adminDispatcher.newSubGraph(subGraphUri, superGraphUri);
+		
+		// then, update the triple store with the corresponding statements:
+		if ( statements != null ) {
+			for (Statement  stmt : statements) {
+				String sbj = stmt.getSubject().getURI();
+				String prd = stmt.getPredicate().getURI();
+				String obj = ((Resource) stmt.getObject()).getURI();
+	
+				sbj = '<' + sbj + '>';
+				prd = '<' + prd + '>';
+				obj = '<' + obj + '>';
+				
+				_ag.ts.addStatement(sbj, prd, obj);
+				log.info("Added statement: " +stmt);
+			}
+		}		
+	}
+
+
 	/**
 	 * Executes a SPARQL query.
 	 * 
