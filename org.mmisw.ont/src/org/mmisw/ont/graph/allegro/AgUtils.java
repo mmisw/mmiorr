@@ -5,6 +5,7 @@ import java.io.StringWriter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.ont.JenaUtil2;
 import org.mmisw.ont.util.Util;
 
 import com.franz.agbase.AllegroGraph;
@@ -13,6 +14,7 @@ import com.franz.agbase.AllegroGraphException;
 import com.franz.agbase.BlankNode;
 import com.franz.agbase.EncodedLiteral;
 import com.franz.agbase.LiteralNode;
+import com.franz.agbase.ResourceNode;
 import com.franz.agbase.Triple;
 import com.franz.agbase.TriplesIterator;
 import com.franz.agbase.UPI;
@@ -20,6 +22,14 @@ import com.franz.agbase.URINode;
 import com.franz.agbase.ValueNode;
 import com.franz.agbase.ValueObject;
 import com.franz.agbase.ValueSetIterator;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.rdf.model.Statement;
+
+import edu.drexel.util.rdf.JenaUtil;
 
 /**
  * Some AllegroGraph utilities, some of them copied from the AllegroGraph demonstration
@@ -242,16 +252,76 @@ class AgUtils {
 
 		return sw.toString();
 	}
+	
+	
+	/**
+	 * Gets a jena model for the given iterator. 
+	 * @throws AllegroGraphException 
+	 */
+	static Model getModel(Log log, TriplesIterator it) throws AllegroGraphException {
+		
+		Model model = JenaUtil.createDefaultRDFModel();
+		
+	    while ( it.hasNext() ) {
+	    	Triple triple = it.next();
+	    	String objLab = triple.getObjectLabel();
+	    	
+	    	Resource sbj = ResourceFactory.createResource(triple.getSubjectLabel());
+	    	Property prd = ResourceFactory.createProperty(triple.getPredicateLabel());
+	    	RDFNode obj;
+			
+			if ( triple.getObject() instanceof ResourceNode ) {
+				obj = ResourceFactory.createResource(objLab);
+			}
+			else {
+				obj = ResourceFactory.createPlainLiteral(objLab);
+			}
+			Statement stmt = ResourceFactory.createStatement(sbj, prd, obj);	
+	    	
+			model.add(stmt);
+	    }
+	    
+		return model;
+	}
 
-	/** Formats the results in Ntriples 
-	 * @throws AllegroGraphException */
+
+	/**
+	 * Formats the results in RDF/XML 
+	 * @throws AllegroGraphException 
+	 */
+	static String getResultInRdf(Log log, TriplesIterator it) throws AllegroGraphException {
+		Model model = getModel(log, it);
+	    String str = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV");
+		return str;
+	}
+	
+	/**
+	 * Formats the results in N3 
+	 * @throws AllegroGraphException 
+	 */
+	static String getResultInN3(Log log, TriplesIterator it) throws AllegroGraphException {
+		Model model = getModel(log, it);
+		String str = JenaUtil2.getOntModelAsString(model, "N3");
+		return str;
+	}
+	
+	/**
+	 * Formats the results in Ntriples 
+	 * @throws AllegroGraphException 
+	 */
 	static String getResultInNTriples(Log log, TriplesIterator it) throws AllegroGraphException {
 		StringWriter sw = new StringWriter();
 		PrintWriter out = new PrintWriter(sw);
 		
-	    for (int i=0; it.hasNext(); i++) {
+	    while ( it.hasNext() ) {
 	    	Triple triple = it.next();
-	    	out.printf("%s %s %s%n", triple.getSubjectLabel(), triple.getPredicateLabel(), triple.getObjectLabel());
+	    	String objLab = triple.getObjectLabel();
+	    	ValueNode obj = triple.getObject();
+	    	boolean objIsUri = obj instanceof ResourceNode;
+			
+			objLab = objIsUri ? '<' +objLab+ '>' : '"' +objLab+ '"';
+	    	
+	    	out.printf("<%s> <%s> %s%n", triple.getSubjectLabel(), triple.getPredicateLabel(), objLab);
 	    }
 
 		return sw.toString();

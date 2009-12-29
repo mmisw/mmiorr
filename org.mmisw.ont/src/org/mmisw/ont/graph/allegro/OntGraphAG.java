@@ -23,6 +23,7 @@ import com.franz.agbase.AllegroGraph;
 import com.franz.agbase.AllegroGraphConnection;
 import com.franz.agbase.AllegroGraphException;
 import com.franz.agbase.AllegroGraphSerializer;
+import com.franz.agbase.NTriplesSerializer;
 import com.franz.agbase.RDFN3Serializer;
 import com.franz.agbase.SPARQLQuery;
 import com.franz.agbase.TriplesIterator;
@@ -505,6 +506,11 @@ public class OntGraphAG implements IOntGraph {
 	
 	
 	private QueryResult _executeQuery(Ag _ag, String sparqlQuery, String form) throws Exception {
+		
+		if ( form == null ) {
+			form = "html";
+		}
+		
 		QueryResult queryResult = new QueryResult();
 
 		SPARQLQuery sq = new SPARQLQuery();
@@ -514,18 +520,19 @@ public class OntGraphAG implements IOntGraph {
 		
 		boolean useRun = false;
 		
-		
-		if ( form == null ) {
-			form = "html";
-		}
+		// NOTE about AG bugs: 
+		// 1) SPARQLQuery.run throws an exception! argh!
+		// 2) the AG serializers are not working (not even in the examples provided by them)
 
-		if ( form.equalsIgnoreCase("owl") || form.equalsIgnoreCase("rdf") ) {
-			useRun = true;
-			sq.setResultsFormat("sparql-xml");
-			// TODO: contentType should be sparql-related
-			queryResult.setContentType("Application/rdf+xml");
-		}
-		// else: TODO what other formats are possible?
+		// because of 1), commenting out the following so SPARQLQuery.run() is not called below.
+//		if ( form.equalsIgnoreCase("owl") || form.equalsIgnoreCase("rdf") ) {
+//			useRun = true;
+//			sq.setResultsFormat("sparql-xml");
+//			// TODO: contentType should be sparql-related
+//			queryResult.setContentType("Application/rdf+xml");
+//		}
+//		// else: TODO what other formats are possible?
+
 		
 		if ( useRun ) {
 			String res = sq.run();
@@ -604,24 +611,39 @@ public class OntGraphAG implements IOntGraph {
 			
 			String res = null;
 			
-			if ( form.equalsIgnoreCase("html") ) {
+			if ( form.equalsIgnoreCase("owl") || form.equalsIgnoreCase("rdf") ) {
+				queryResult.setContentType("Application/rdf+xml");
+				res = AgUtils.getResultInRdf(log, tripleIter);
+			}
+			else if ( form.equalsIgnoreCase("html") ) {
 				queryResult.setContentType("text/html");
 				res = AgUtils.getResultInHtml(log, tripleIter);
 			}
 			else if ( form.equalsIgnoreCase("n3") ) {
 				queryResult.setContentType("text/plain");
-				AllegroGraphSerializer serializer = new RDFN3Serializer();
-				serializer.setDestination(null); // ie., to string to be returned by run()
-				Object resObj = serializer.run(tripleIter);
-				res = String.valueOf(resObj);
+				if ( true ) {
+					res = AgUtils.getResultInN3(log, tripleIter);
+				}
+				else {
+					// AG serializers do not work.
+					AllegroGraphSerializer serializer = new RDFN3Serializer();
+					serializer.setDestination(null); // ie., to string to be returned by run()
+					Object resObj = serializer.run(tripleIter);
+					res = String.valueOf(resObj);
+				}
 			}
 			else if ( form.equalsIgnoreCase("nt") ) {
 				queryResult.setContentType("text/plain");
-				res = AgUtils.getResultInNTriples(log, tripleIter);
-//				AllegroGraphSerializer serializer = new NTriplesSerializer();
-//				serializer.setDestination(null); // ie., to string to be returned by run()
-//				Object resObj = serializer.run(tripleIter);
-//				res = String.valueOf(resObj);
+				if ( true ) {
+					res = AgUtils.getResultInNTriples(log, tripleIter);
+				}
+				else {
+					// AG serializers do not work.
+					AllegroGraphSerializer serializer = new NTriplesSerializer();
+					serializer.setDestination(null); // ie., to string to be returned by run()
+					Object resObj = serializer.run(tripleIter);
+					res = String.valueOf(resObj);
+				}
 			}
 			else if ( form.equalsIgnoreCase("csv") ) {
 				queryResult.setContentType("text/plain");

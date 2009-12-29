@@ -4,6 +4,22 @@ $Id$
 
 ChangeLog
 
+2009-12-29   1.6.0.beta3
+	- NOTE about AllegroGraph bugs. See OntGraphAG._executeQuery:
+	  1) SPARQLQuery.run throws an exception! Documentation in this regard is very little. So, I'm
+	     calling the other methods to execute the various query flavors.
+	  2) the AG serializers are not working (not even in the examples provided by them). So, I'm
+	  creating a jena Model from the results and then using the jena serializer.
+	  TODO: this is already working for some of the requests but needs to be completed.
+	  Examples:
+	     http://localhost:8080/ont?uri=http://example.org/test1/termThree&form=n3
+	     http://localhost:8080/ont?uri=http://example.org/test1/termThree&form=owl
+	     http://localhost:8080/ont?uri=http://example.org/test1/termThree&form=rdf
+	     http://localhost:8080/ont?uri=http://example.org/test1/termThree&form=csv
+	     http://localhost:8080/ont?uri=http://example.org/test1/termThree&form=html
+	  NOTE that this functionality is particularly for terms (not for whole ontologies)
+	  
+	
 2009-12-28   1.6.0.beta3
 	- OntGraphAG: removed unused code.
 	- new AdminDispatcher: helper for OntServlet
