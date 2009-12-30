@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.vocabulary.Option;
 
@@ -218,4 +219,16 @@ public class Util {
     	}
     	return false;
     }
+    
+	/**
+	 * Tells if the logged in user is the ORR admin
+	 * @param loginResult
+	 * @return
+	 */
+    public static boolean isOrrAdmin(LoginResult loginResult) {
+		return loginResult != null && loginResult.isAdministrator()
+		    && ( loginResult.getUserName().equals("carueda") || loginResult.getUserName().equals("orr") )
+		;
+	}
+
 }

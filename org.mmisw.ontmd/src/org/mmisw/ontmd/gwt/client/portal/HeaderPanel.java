@@ -6,6 +6,7 @@ import java.util.List;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.portal.PortalMainPanel.InterfaceType;
+import org.mmisw.ontmd.gwt.client.util.Util;
 
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
@@ -128,7 +129,7 @@ public class HeaderPanel extends FlexTable {
 		widgets.add(touButton);
 		
 		
-		if ( type != InterfaceType.ADMIN && loginResult != null && loginResult.isAdministrator() ) {
+		if ( type != InterfaceType.ADMIN && Util.isOrrAdmin(loginResult) ) {
 			widgets2.add(adminLink);
 		}
 
@@ -154,6 +155,5 @@ public class HeaderPanel extends FlexTable {
 		}
 
 	}
-	
 
 }

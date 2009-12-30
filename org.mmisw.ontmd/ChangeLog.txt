@@ -4,6 +4,8 @@ $Id$
 
 2009-12-29   1.8.1.alpha
 	- build.xml: generate orr.war (instead of old ontmd.war)
+	- Util.isOrrAdmin: Tells if the logged in user is the ORR admin.
+	- Used by HeaderPanel to include the Admin interface link.
 	
 2009-12-28   1.8.1.alpha
 	- AdminPanel moved to new package org.mmisw.ontmd.gwt.client.portal.admin 
