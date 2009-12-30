@@ -148,7 +148,7 @@
 			</filterset>
 		</copy>
 
-        <war warfile="${build.dir}/ontmd.war" webxml="${build.dir}/tmp.WebContent/WEB-INF/web.xml">
+        <war warfile="${build.dir}/orr.war" webxml="${build.dir}/tmp.WebContent/WEB-INF/web.xml">
                 <fileset dir="www/org.mmisw.ontmd.gwt.Main" />
         	    <fileset dir="${build.dir}/tmp.WebContent" />
                 <lib dir="base_war/WEB-INF/lib" />
