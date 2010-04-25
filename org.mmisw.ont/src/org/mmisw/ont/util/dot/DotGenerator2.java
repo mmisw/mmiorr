@@ -1,0 +1,427 @@
+package org.mmisw.ont.util.dot;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.hp.hpl.jena.ontology.DataRange;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFList;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.vocabulary.XSD;
+
+/**
+ * new implementation in progress..
+ * 
+ * @author Carlos Rueda
+ */
+public class DotGenerator2 extends DotGenerator {
+	
+	// this works specifically on an OntModel
+	private OntModel _ontModel;
+	
+	private Info _info;
+	
+	
+	private final Set<Resource> _generatedClasses = new HashSet<Resource>();
+	private final Set<Resource> _generatedInstances = new HashSet<Resource>();
+	
+
+	protected DotGenerator2(Model model) {
+		super(model);
+		if ( ! (model instanceof OntModel ) ) {
+			throw new IllegalArgumentException();
+		}
+		this._ontModel = (OntModel) model;
+		_info = new Info(_ontModel);
+	}
+
+	public void setUseLabel(boolean useLabel) {
+		super.setUseLabel(useLabel);
+		_info.setUseLabel(useLabel);
+	}
+
+	@Override
+	protected void generateContents() {
+		_outCommonAttributes();
+		_outAll();
+	}
+	
+	private void _outCommonAttributes() {
+		pw.println("  node [ fontname=\"helvetica\", fontsize=14, ];");
+		pw.println("  edge [ fontname=\"helvetica\", fontsize=10, ];");
+	}
+	
+	private void _outAll() {
+		
+		StringBuffer dataRangeEdges = null;//new StringBuffer();
+	
+		_outDataRanges(dataRangeEdges == null);
+
+		_outClasses(dataRangeEdges);
+		if ( dataRangeEdges != null ) {
+			_outEdgesToDataRanges(dataRangeEdges);
+		}
+		
+		_outSubClassDeclarations();
+		
+		_outObjectProperties();
+
+		boolean includeTypesInLabel = true;
+		boolean withDataTypeProps = true;
+		_outInstances(includeTypesInLabel, withDataTypeProps);
+		if( ! includeTypesInLabel ) {
+			_outInstantiations();
+		}
+		
+		_outOtherStatements();
+	
+	}
+	
+	
+	private void _outDataRanges(boolean includeName) {
+		
+		Map<String, DataRange> dataRanges = _info.getDataRanges();
+		if ( dataRanges.isEmpty() ) {
+			return;
+		}
+		
+		pw.println("\n" +
+				" //////////\n" +
+				" // data ranges");
+
+		_outNodeDataRangeStyle(includeName);
+		
+		
+		for ( String id : dataRanges.keySet() ) {
+			DataRange dataRange = dataRanges.get(id);
+			String name = _info.getDataRangeName(id);
+			
+			StringBuffer label = new StringBuffer("{");
+			String separator = "";
+			if ( includeName ) {
+				label.append(name);
+				separator = "|";
+			}
+			List<String> list = _getDataRangeElementList(dataRange);
+			for ( String elem : list ) {
+				label.append(separator +elem);
+				separator = "|";
+			}
+			label.append("}");
+				
+			pw.println("  \"" +id+ "\"  [ label=\"" +label+ "\" ]");
+		}
+	}
+	
+	private void _outNodeDataRangeStyle(boolean includingName) {
+		pw.println("  node [ shape=record, fillcolor=burlywood1, style=filled, " +
+				"fontsize=" +(includingName ? 10 : 8)+ ", ]; ");
+	}
+
+
+			
+	private void _outClasses(StringBuffer dataRangeEdges) {
+		
+		pw.println("\n" +
+				" //////////\n" +
+				" // classes");
+
+		_outNodeClassStyles();
+		
+		for ( Resource clazz : _info.getClazzes() ) {
+			String name = clazz.getURI();
+			String label = _info.getLabel(clazz);
+			
+			
+			//
+			String shapeRecord = "";
+			String suffix = _getDataTypePropsLabelSuffixForClass(clazz, dataRangeEdges);
+			if ( suffix != null ) {
+				label = "{" +label + suffix+ "}";
+				shapeRecord = "shape=record,";
+			}
+		
+			pw.println("  \"" +name+ "\"   [ " +shapeRecord+ " label=\"" +label+ "\" ]");
+			
+			_generatedClasses.add(clazz);
+		}
+		
+	}
+	
+	private String _getDataTypePropsLabelSuffixForClass(Resource clazz, StringBuffer dataRangeEdges) {
+		StringBuffer sb = new StringBuffer();
+
+		Collection<Resource> props = _info.getProperties(clazz);
+		if ( props != null ) {
+			for ( final Resource prop : props ) {
+				String prdLabel = _info.getLabel(prop);
+				Set<Resource> ranges = _info.getRanges(prop);
+				if ( ranges != null ) {
+					for ( Resource range : ranges ) {
+
+						if ( XSD.getURI().equals(range.getNameSpace()) ) {
+							// datatype property
+							String objLabel = _info.getLabel(range);
+
+							sb.append("|" + "{" +prdLabel+ "|" +objLabel+ "}");
+						}
+						
+						else if (range.isAnon() ) {
+							String id = range.getId().getLabelString();
+							
+							if ( dataRangeEdges == null ) {
+								String objLabel = "?";
+								String name = _info.getDataRangeName(id);
+								if ( name != null ) {
+									objLabel = "[" +name+ "]";
+								}
+
+								sb.append("|" + "{" +prdLabel+ "|" +objLabel+ "}");
+							}
+							else {
+								dataRangeEdges.append("  \"" +clazz.getURI()+ "\"  ->  \"" +id+ "\"  [ label=\"" +prdLabel+ "\" ]; \n");
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return sb.length() > 0  ? sb.toString() : null;
+	}
+
+	
+	private void _outEdgesToDataRanges(StringBuffer dataRangeEdges) {
+		pw.println("\n" +
+				" ////////////////////\n" +
+				" // edges to data ranges");
+
+		_outEdgeToDataRangeStyle();
+		
+		pw.println(dataRangeEdges);
+	}
+	
+	private void _outEdgeToDataRangeStyle() {
+		pw.println("  edge [ dir=back, color=darkgreen, fontcolor=darkgreen, fontsize=8, arrowhead=vee, arrowtail=none, arrowsize=0.8]; "
+		);
+	}
+
+	
+	private List<String> _getDataRangeElementList(DataRange dataRange) {
+		List<String> list = new ArrayList<String>();
+		if ( dataRange != null ) {
+			RDFList rdfList = dataRange.getOneOf();
+			while ( rdfList != null && ! rdfList.isEmpty() ) {
+				RDFNode elem = rdfList.getHead();
+				Literal obj = (Literal) elem;
+				String name = obj.getLexicalForm();
+				list.add(name);
+				rdfList = rdfList.getTail();
+			}
+		}
+		return list;
+	}
+	
+
+	private void _outSubClassDeclarations() {
+		
+		pw.println("\n" +
+				" ////////////////////////\n" +
+				" // subclass declarations");
+
+		_outSubclassStyle();
+		
+		for ( Resource clazz : _info.getClazzes() ) {
+			Collection<Resource> supers = _info.getSuperClasses(clazz);
+			if ( supers == null ) {
+				continue;
+			}
+			
+			for ( Resource superClazz : supers ) {
+				String superClazzName = superClazz.getURI();
+			
+				String subClazzName = clazz.getURI();
+				
+				if ( _generatedClasses.contains(superClazz) && _generatedClasses.contains(clazz) ) {
+					pw.println("  \"" +superClazzName+ "\"  ->  \"" + subClazzName+ "\""  );
+				}
+			}
+		}
+		
+	}
+
+
+
+	private void _outInstances(boolean includeTypesInLabel, boolean withDataTypeProps) {
+		
+		pw.println("\n" +
+				" /////////////\n" +
+				" // instances");
+
+		_outNodeInstanceStyle();
+
+		for ( Resource instance : _info.getInstances() ) {
+			Set<Resource> types = _info.getTypes(instance);
+			if ( types != null ) {
+				String instName = instance.getURI();
+				String label = instance.getLocalName();
+				
+				if ( includeTypesInLabel ) {
+					label += ": ";
+					String comma = "";
+					for ( Resource type : types ) {
+						String clazzLabel = _info.getLabel(type);
+						label += comma + clazzLabel;
+						comma = ", ";
+					}
+				}
+				
+				String shapeRecord = "";
+				
+				if ( withDataTypeProps ) {
+					String suffix = _getDataTypePropsLabelSuffixForInstance(instance);
+					if ( suffix != null ) {
+						label = "{" +label + suffix+ "}";
+						shapeRecord = "shape=record,";
+					}
+				}
+				
+				pw.println("  \"" +instName+ "\"   [ " +shapeRecord+ " label=\"" +label+ "\" ]");
+				
+				_generatedInstances.add(instance);
+			}
+		}
+	}
+
+	
+	private String _getDataTypePropsLabelSuffixForInstance(Resource instance) {
+		StringBuffer sb = new StringBuffer();
+		Set<Statement> stmts = _info.getDataTypePropertyInstantiations(instance);
+		if ( stmts != null ) {
+			for (Statement stmt : stmts ) {
+				Property prd = stmt.getPredicate();
+				Literal obj = (Literal) stmt.getObject();
+				
+				String prdLabel = _info.getLabel(prd);
+				String objLabel = obj.getString();
+				
+				sb.append("|" + "{" +prdLabel+ "|" +objLabel+ "}");
+			}
+		}
+		return sb.length() > 0  ? sb.toString() : null;
+	}
+	
+	
+	private void _outInstantiations() {
+		
+		pw.println("\n" +
+				" //////////////////\n" +
+				" // instanciations");
+
+		_outEdgeInstantiationStyle();
+		
+		
+		for ( Resource instance : _info.getInstances() ) {
+			String instName = instance.getURI();
+			Set<Resource> types = _info.getTypes(instance);
+			if ( types != null ) {
+				
+				for ( Resource type : types ) {
+					
+					if ( _generatedClasses.contains(type) ) {
+						String clazzName = type.getURI();
+						pw.println("  \"" +clazzName+ "\"  ->  \"" + instName+ "\" ");
+					}
+				}
+			}
+		}
+	}
+
+	
+	private void _outObjectProperties() {
+		
+		pw.println("\n" +
+				" ////////////////////\n" +
+				" // properties");
+
+		_outEdgeOtherRelationStyle();
+		
+		for ( Resource prop : _info.getAllProperties() ) {
+			
+			for ( Resource domain: _info.getDomains(prop) ) {
+				
+				for ( Resource range: _info.getRanges(prop) ) {
+					
+					String domainName = domain.getURI();
+					String rangeName = range.getURI();
+					
+					if ( _generatedClasses.contains(domain) && _generatedClasses.contains(range) ) {
+
+						String label = _info.getLabel(prop);;
+						pw.println("  \"" +domainName+ "\"  ->  \"" +rangeName+ "\"  [ label=\"" +label+ "\" ]");
+					}
+				}
+			}
+		}
+		
+	}
+
+	private void _outOtherStatements() {
+		
+		pw.println("\n" +
+				" ////////////////////\n" +
+				" // other statements");
+
+		_outEdgeOtherRelationStyle();
+		
+		for ( Statement stmt : _info.getStatements() ) {
+			
+			// TODO for now, ignoring statements about ontology resource
+			if ( _info.containsOntology(stmt.getSubject()) ) {
+				continue;
+			}
+			
+			Resource sbj = stmt.getSubject();
+			String sbjName = sbj.getURI();
+			Property prd = stmt.getPredicate();
+			RDFNode obj = stmt.getObject();
+			String objName = obj.isResource() ? 
+					((Resource) obj).getURI() : ((Literal) obj).getString();
+					
+
+			String label = _info.getLabel(prd);
+			
+			if ( _generatedClasses.contains(sbj) 
+			||   _generatedInstances.contains(sbj) ) 
+			{
+				pw.println("  \"" +sbjName+ "\"  ->  \"" + objName+ "\"  [ label=\"" +label+ "\" ]");
+			}
+		}
+		
+	}
+
+	private void _outEdgeOtherRelationStyle() {
+		pw.println("  edge [ dir=back, color=darkgreen, fontcolor=darkgreen, fontsize=10, arrowhead=vee, arrowtail=none, arrowsize=1.0]; "
+		);
+	}
+
+	
+	private void _outEdgeInstantiationStyle() {
+		pw.println("  edge [ dir=normal, color=black, fontcolor=black, label=\"a\", fontsize=10, arrowtail=vee, arrowhead=none, arrowsize=1.0];");
+	}
+
+	private void _outSubclassStyle() {
+		pw.println("  edge   [ dir=back, arrowtail=onormal, arrowhead=none, arrowsize=2.0, ]; ");
+	}
+
+
+}
