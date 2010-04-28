@@ -22,13 +22,12 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.XSD;
 
 /**
- * new implementation in progress..
+ * Jena-based implementation. 
  * 
  * @author Carlos Rueda
  */
 public class DotGeneratorJenaImpl extends BaseDotGenerator {
 	
-	// this works specifically on an OntModel
 	private OntModel _ontModel;
 	
 	private JenaInfo _info;
@@ -42,18 +41,27 @@ public class DotGeneratorJenaImpl extends BaseDotGenerator {
 		super();
 	}
 	
-	public void loadModel() {
+	public void loadModel(String ontUri) {
+		super.loadModel(ontUri);
 		this._ontModel = ModelLoader.loadModel(_ontUri, includeImports);
 		_info = new JenaInfo(_ontModel);
 	}
 
 	public void setUseLabel(boolean useLabel) {
+		_verifyState();
 		super.setUseLabel(useLabel);
 		_info.setUseLabel(useLabel);
 	}
 
+	private void _verifyState() {
+		if ( _info == null ) {
+			throw new IllegalStateException();
+		}
+	}
+
 	@Override
 	protected void generateContents() {
+		_verifyState();
 		_outCommonAttributes();
 		_outAll();
 	}

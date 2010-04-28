@@ -1,5 +1,7 @@
 MMI Ont2Dot ChangeLog
 
 2010-04-28
-	Initial version.
+	Initial version. Functional but with parameters not yet fully processed
+	nor captured from the command line.
+	Also, no good packaging yet; run the program with ``mvn exec:java''
 	

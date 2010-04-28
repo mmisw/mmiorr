@@ -12,7 +12,7 @@ import java.util.Date;
  */
 public abstract class BaseDotGenerator implements IDotGenerator {
 	
-	public static final What DEFAULT_DIAGRAM_TYPE = What.CLASS_INSTANCE_DIAGRAM;
+	public static final DiagramType DEFAULT_DIAGRAM_TYPE = DiagramType.CLASS_INSTANCE_DIAGRAM;
 	
 	public static final boolean DEFAULT_INCLUDE_IMPORTS = false;
 	public static final boolean DEFAULT_INCLUDE_LEGEND = false;
@@ -47,7 +47,7 @@ public abstract class BaseDotGenerator implements IDotGenerator {
 	protected boolean includeLegend = DEFAULT_INCLUDE_LEGEND;
 	
 	
-	protected What whatDiagram = DEFAULT_DIAGRAM_TYPE;
+	protected DiagramType whatDiagram = DEFAULT_DIAGRAM_TYPE;
 	
 	//use label instead of local name?
 	protected boolean useLabel = true;
@@ -74,19 +74,13 @@ public abstract class BaseDotGenerator implements IDotGenerator {
 		this.includeImports = include;
 	}
 
-	/**
-	 * @param includeLegend
-	 */ 
 	public void setIncludeLegend(boolean includeLegend) {
 		this.includeLegend = includeLegend;
 	}
 	
 
-	/**
-	 * Sets the type of diagram to generate
-	 */
-	public void setDiagramType(What what) {
-		this.whatDiagram = what;
+	public void setDiagramType(DiagramType dt) {
+		this.whatDiagram = dt;
 	}
 
 
