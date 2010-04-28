@@ -44,6 +44,21 @@
         </configuration>
       </plugin>
 
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2-beta-5</version>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <archive>
+            <manifest>
+              <mainClass>org.mmisw.ont2dot.Ont2Dot</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+
   	</plugins>
   </build>
   <dependencies>

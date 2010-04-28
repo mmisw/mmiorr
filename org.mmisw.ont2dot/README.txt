@@ -13,6 +13,8 @@ $ java -jar ont2dot.jar http://mmisw.org/ont/mmi/device
   Note: the above jar execution assumes that the dependent jars are in the classpath.
   Using Maven, you can run:
   $ mvn exec:java -Dexec.args="http://mmisw.org/ont/mmi/device"
+  Or, you can generate a self-contained jar with:
+  $ mvn assembly:assembly
 
 # use Graphviz to generate the desired graphical representation, eg:
 $ dot -Tpng device.dot > device.png
