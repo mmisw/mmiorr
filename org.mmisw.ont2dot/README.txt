@@ -7,13 +7,14 @@ generate the final output format.
 
 Example usage:  (command-line interface is not very flexible at the moment)
 
-$ java -jar ont2dot.jar http://mmisw.org/ont/mmi/device device.dot
+# generate dot (device.dot in this example)
+$ java -jar ont2dot.jar http://mmisw.org/ont/mmi/device
 
-Note: the above jar execution assumes that the dependent jars are in the classpath.
-If you are a Maven user, you can run for example:
-$ mvn exec:java -Dexec.args="http://mmisw.org/ont/mmi/device device.dot"
+  Note: the above jar execution assumes that the dependent jars are in the classpath.
+  Using Maven, you can run:
+  $ mvn exec:java -Dexec.args="http://mmisw.org/ont/mmi/device"
 
-Then, use Graphviz to generate the desired graphical represenation, eg:
+# use Graphviz to generate the desired graphical representation, eg:
 $ dot -Tpng device.dot > device.png
 
 NOTE: The implementation is functional but incomplete. The code structure is
