@@ -2,6 +2,7 @@ package org.mmisw.ont.util.dot;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.Set;
 
 import com.hp.hpl.jena.ontology.DataRange;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.Restriction;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -75,7 +77,7 @@ public class DotGenerator2 extends DotGenerator {
 		
 		_outObjectProperties();
 
-		boolean includeTypesInLabel = true;
+		boolean includeTypesInLabel = false;
 		boolean withDataTypeProps = true;
 		_outInstances(includeTypesInLabel, withDataTypeProps);
 		if( ! includeTypesInLabel ) {
@@ -112,8 +114,10 @@ public class DotGenerator2 extends DotGenerator {
 				separator = "|";
 			}
 			List<String> list = _getDataRangeElementList(dataRange);
+			// sort and left-justify the elements:
+			Collections.sort(list);
 			for ( String elem : list ) {
-				label.append(separator +elem);
+				label.append(separator +elem+ "\\l");
 				separator = "|";
 			}
 			label.append("}");
@@ -397,7 +401,19 @@ public class DotGenerator2 extends DotGenerator {
 			String objName = obj.isResource() ? 
 					((Resource) obj).getURI() : ((Literal) obj).getString();
 					
-
+			if ( obj.isAnon() ) {
+				String id = ((Resource) obj).getId().getLabelString();
+				objName = id;
+				Map<String, Restriction> restrictions = _info.getRestrictions();
+				Restriction restr = restrictions.get(id);
+				if ( restr != null ) {
+					objName = _getRestrictionDescription(restr);
+				}
+			}
+			else if ( objName == null ) {
+				objName = "?";
+			}
+			
 			String label = _info.getLabel(prd);
 			
 			if ( _generatedClasses.contains(sbj) 
@@ -407,6 +423,34 @@ public class DotGenerator2 extends DotGenerator {
 			}
 		}
 		
+	}
+
+	
+	/** Gets a string representation of the given restriction.
+	 * NOTE: impl very preliminar and incomplete, based on checking possible type of restriction 
+	 * using the various restr.isSomething methods. I would expect some appropriate
+	 * visitor here to make this "switch"  (note the RDFVisitor is no the one).
+	 */
+	private String _getRestrictionDescription(Restriction restr) {
+
+		final StringBuffer sb = new StringBuffer();
+
+		if ( restr.isSomeValuesFromRestriction() ) {
+			sb.append("some ...");
+		}
+		else if ( restr.isCardinalityRestriction() ) {
+			sb.append("card ...");
+		}
+		else if ( restr.isAllDifferent() ) {
+			sb.append("allDif ...");
+		}
+		else {
+			sb.append("...");
+		}
+		
+		String descrip = "(Restr: " +sb+ ")";
+		
+		return descrip;
 	}
 
 	private void _outEdgeOtherRelationStyle() {

@@ -42,8 +42,18 @@ public class NewDotGeneratorProgram {
 		if (args.length == 0 ) {
 			args = new String[] {
 					
+//					"file:///Users/carueda/mmiworkspace/devont/SSN/vaisalawm30.owl"
+//					"file:///Users/carueda/mmiworkspace/devont/SSN/devontacc-example.owl"
+
+//					"file:///Users/carueda/Desktop/MMI/ICAN/icans.rdf"
+//					"file:///Users/carueda/Desktop/MMI/ICAN/coas.rdf"
+					
 //					"file:///Users/carueda/mmiworkspace/devont/AccuracyExample/devontacc-example.owl"
 					"file:///Users/carueda/mmiworkspace/devont/device/device.owl"
+
+					
+//					"file:///Users/carueda/mmiworkspace/devont/multibeam/multibeam.owl"
+//					"http://mmisw.org/ont/r2r/multibeam"
 					
 					
 //					"file:///Users/carueda/mmiworkspace/mmisw/device.owl"
@@ -51,7 +61,6 @@ public class NewDotGeneratorProgram {
 //					"http://www.xspan.org/obo.owl"
 //					"file:///Users/carueda/jdlb.owl"
 					
-//					"http://mmisw.org/ont/r2r/multibeam"
 //					"file:///Users/carueda/mmiworkspace/devont/multibeam/sonont.owl"
 					
 //					"file:///Users/carueda/mmiworkspace/org.mmisw.ont/onts/mmiorr.owl"

@@ -9,10 +9,12 @@ import java.util.Set;
 
 import com.hp.hpl.jena.ontology.DataRange;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.Restriction;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
@@ -27,6 +29,9 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  */
 class Info {
 	
+	/** Missing resource in {@link OWL} */
+    private  static final Resource OWL_NAMED_INDIVIDUAL = ResourceFactory.createProperty(OWL.NS, "NamedIndividual");
+    
 	private final Map<String, Resource> _classes = new HashMap<String, Resource>();
 
 	private final Map<String, Set<Resource>> _superClasses = new HashMap<String, Set<Resource>>();
@@ -51,6 +56,10 @@ class Info {
 	private final Map<String, DataRange> _dataRanges = new LinkedHashMap<String, DataRange>();
 	private final Map<String, String> _dataRangeNames = new HashMap<String, String>();
 
+	
+	private final Map<String, Restriction> _restrictions = new LinkedHashMap<String, Restriction>();
+	
+	
 	private Set<Statement> _stmts = new HashSet<Statement>();
 	
 	
@@ -117,6 +126,8 @@ class Info {
 				||   OWL.FunctionalProperty.equals(objRsr)
 				||   OWL.inverseOf.equals(objRsr)
 				||   OWL.Class.equals(objRsr)
+				||   OWL.AnnotationProperty.equals(objRsr)
+				||   OWL_NAMED_INDIVIDUAL.equals(objRsr)
 				) {
 					continue;
 				}
@@ -157,6 +168,17 @@ class Info {
 			String dataRangeName = "DR_" + String.valueOf(nextDataRangeIndex++);
 			_dataRangeNames.put(id, dataRangeName );
 		}
+		
+
+		
+		ExtendedIterator restrs = ontModel.listRestrictions();
+		while ( restrs.hasNext() ) {
+			Restriction restr = (Restriction) restrs.next();
+			String id = restr.isAnon() ? restr.getId().getLabelString() : restr.getURI();
+			_restrictions.put(id , restr);
+//			System.out.println("XXXXXX " +id);
+		}
+
 	}
 	
 	public Map<String, DataRange> getDataRanges() {
@@ -312,6 +334,9 @@ class Info {
 		return _dataRangeNames.get(id);
 	}
 
+	public Map<String, Restriction> getRestrictions() {
+		return _restrictions;
+	}
 }
 
 

@@ -4,6 +4,15 @@ $Id$
 
 ChangeLog
 
+2010-04-28
+	Graphviz dot format generation: 
+	re-writing this part; getting better but still incomplete.
+	
+	
+2010-04-05   1.7.0.beta1
+	- Removal of an ontology ...
+	
+	
 2009-12-29   1.6.0.beta3
 	- NOTE about AllegroGraph bugs. See OntGraphAG._executeQuery:
 	  1) SPARQLQuery.run throws an exception! Documentation in this regard is very little. So, I'm
