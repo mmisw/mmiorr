@@ -162,45 +162,59 @@ public class DotGenerator2 extends DotGenerator {
 	}
 	
 	private String _getDataTypePropsLabelSuffixForClass(Resource clazz, StringBuffer dataRangeEdges) {
-		StringBuffer sb = new StringBuffer();
 
 		Collection<Resource> props = _info.getProperties(clazz);
-		if ( props != null ) {
-			for ( final Resource prop : props ) {
-				String prdLabel = _info.getLabel(prop);
-				Set<Resource> ranges = _info.getRanges(prop);
-				if ( ranges != null ) {
-					for ( Resource range : ranges ) {
+		if ( props == null ) {
+			return null;
+		}
+		
+		// collect the fields (each field: {prdLabel|objLabel}) in this list;
+		// then sort it; then put everything in a string: 
+		List<String> fields = new ArrayList<String>();
+		
+		for ( final Resource prop : props ) {
+			String prdLabel = _info.getLabel(prop);
+			Set<Resource> ranges = _info.getRanges(prop);
+			if ( ranges != null ) {
+				for ( Resource range : ranges ) {
 
-						if ( XSD.getURI().equals(range.getNameSpace()) ) {
-							// datatype property
-							String objLabel = _info.getLabel(range);
+					if ( XSD.getURI().equals(range.getNameSpace()) ) {
+						// datatype property
+						String objLabel = _info.getLabel(range);
 
-							sb.append("|" + "{" +prdLabel+ "|" +objLabel+ "}");
+						fields.add("{" +prdLabel+ "|" +objLabel+ "}");
+					}
+
+					else if (range.isAnon() ) {
+						String id = range.getId().getLabelString();
+
+						if ( dataRangeEdges == null ) {
+							String objLabel = "?";
+							String name = _info.getDataRangeName(id);
+							if ( name != null ) {
+								objLabel = "[" +name+ "]";
+							}
+
+							fields.add("{" +prdLabel+ "|" +objLabel+ "}");
 						}
-						
-						else if (range.isAnon() ) {
-							String id = range.getId().getLabelString();
-							
-							if ( dataRangeEdges == null ) {
-								String objLabel = "?";
-								String name = _info.getDataRangeName(id);
-								if ( name != null ) {
-									objLabel = "[" +name+ "]";
-								}
-
-								sb.append("|" + "{" +prdLabel+ "|" +objLabel+ "}");
-							}
-							else {
-								dataRangeEdges.append("  \"" +clazz.getURI()+ "\"  ->  \"" +id+ "\"  [ label=\"" +prdLabel+ "\" ]; \n");
-							}
+						else {
+							dataRangeEdges.append("  \"" +clazz.getURI()+ "\"  ->  \"" +id+ "\"  [ label=\"" +prdLabel+ "\" ]; \n");
 						}
 					}
 				}
 			}
 		}
-		
-		return sb.length() > 0  ? sb.toString() : null;
+		if ( fields.size() > 0 ) {
+			Collections.sort(fields);
+			StringBuffer sb = new StringBuffer();
+			for ( String field : fields ) {
+				sb.append("|" + field);
+			}
+			return sb.toString();
+		}
+		else {
+			return null;
+		}
 	}
 
 	
@@ -308,7 +322,10 @@ public class DotGenerator2 extends DotGenerator {
 
 	
 	private String _getDataTypePropsLabelSuffixForInstance(Resource instance) {
-		StringBuffer sb = new StringBuffer();
+		// collect the fields (each field: {prdLabel|objLabel}) in this list;
+		// then sort it; then put everything in a string: 
+		List<String> fields = new ArrayList<String>();
+
 		Set<Statement> stmts = _info.getDataTypePropertyInstantiations(instance);
 		if ( stmts != null ) {
 			for (Statement stmt : stmts ) {
@@ -318,10 +335,22 @@ public class DotGenerator2 extends DotGenerator {
 				String prdLabel = _info.getLabel(prd);
 				String objLabel = obj.getString();
 				
-				sb.append("|" + "{" +prdLabel+ "|" +objLabel+ "}");
+				fields.add("{" +prdLabel+ "|" +objLabel+ "}");
 			}
 		}
-		return sb.length() > 0  ? sb.toString() : null;
+		
+		if ( fields.size() > 0 ) {
+			Collections.sort(fields);
+			StringBuffer sb = new StringBuffer();
+			for ( String field : fields ) {
+				sb.append("|" + field);
+			}
+			return sb.toString();
+		}
+		else {
+			return null;
+		}
+
 	}
 	
 	
