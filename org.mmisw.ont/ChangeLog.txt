@@ -7,6 +7,8 @@ ChangeLog
 2010-04-28
 	Re-writing of Graphviz dot format generation moved to new module
 	org.mmisw.ont2dot
+	TODO: remove DotGenerator class and update dispatcher to use the new module.
+	
 	
 	
 2010-04-05   1.7.0.beta1

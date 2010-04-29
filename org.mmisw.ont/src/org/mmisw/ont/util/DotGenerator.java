@@ -30,6 +30,9 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 
 /**
+ * NOTE: Re-writing of Graphviz dot format generation in module org.mmisw.ont2dot
+ * TODO: remove this class and update dispatcher to use the new module.
+ *
  * Generates dot for a given ontology.
  * 
  * It currently works a bit differently depending on whether it is generating a
@@ -43,6 +46,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  * @author Carlos Rueda
  * @version $Id$
  */
+@Deprecated
 public class DotGenerator {
 	
 	public enum What { CLASS_INSTANCE_DIAGRAM, CLASS_DIAGRAM, INSTANCE_DIAGRAM,  };
