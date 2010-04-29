@@ -5,8 +5,8 @@ $Id$
 ChangeLog
 
 2010-04-28
-	Graphviz dot format generation: 
-	re-writing this part; getting better but still incomplete.
+	Re-writing of Graphviz dot format generation moved to new module
+	org.mmisw.ont2dot
 	
 	
 2010-04-05   1.7.0.beta1
