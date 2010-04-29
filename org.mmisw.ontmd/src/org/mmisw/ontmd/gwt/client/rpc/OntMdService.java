@@ -12,6 +12,7 @@ import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.InternalOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.UnregisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
 import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
@@ -194,4 +195,6 @@ public interface OntMdService extends RemoteService {
 	
 	public InternalOntologyResult prepareUsersOntology(LoginResult loginResult);
 	public InternalOntologyResult createGroupsOntology(LoginResult loginResult);
+	
+	public UnregisterOntologyResult unregisterOntology(LoginResult loginResult, RegisteredOntologyInfo oi);
 }

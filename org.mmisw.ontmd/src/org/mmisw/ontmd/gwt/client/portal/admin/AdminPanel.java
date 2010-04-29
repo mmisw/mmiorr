@@ -34,6 +34,7 @@ public class AdminPanel extends VerticalPanel {
 	});
 	
 	
+	private HTML preambleHtml = new HTML();
 	private HTML statusHtml = new HTML();
 	private TextArea infoTextArea = new TextArea();
 	
@@ -45,8 +46,26 @@ public class AdminPanel extends VerticalPanel {
 		infoTextArea.setSize("650px", "350px");
 		super.setSpacing(5);
 		
+		boolean isAdmin = false;
+		
+		if ( PortalControl.getInstance().getLoginResult() != null ) {
+			LoginResult loginResult = PortalControl.getInstance().getLoginResult();
+			isAdmin =  loginResult.isAdministrator();
+		}
+
+		add(preambleHtml);
+		
+		if ( ! isAdmin ) {
+			preambleHtml.setHTML("<font color=\"red\">This interface is only available to ORR admin users.");
+			preambleHtml.setHeight("100px");
+			return;
+		}
+		
+		preambleHtml.setHTML("<font color=\"green\">NOTE: Experimental interface! Use only if you know what you are doing.");
+		
 		prepareUsersButton.setTitle("Creates/updates the users instantiation ontology");
 		createGroupsButton.setTitle("Creates the groups instantiation ontology");
+		
 		
 		add(prepareUsersButton);
 		add(createGroupsButton);

@@ -14,6 +14,7 @@ import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
 import org.mmisw.iserver.gwt.client.rpc.OtherOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.UnregisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.ontmd.gwt.client.LoginPanel;
@@ -33,9 +34,12 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.WindowCloseListener;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.KeyboardListener;
+import com.google.gwt.user.client.ui.PopupListener;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
@@ -940,6 +944,104 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		
 	    bodyPanel.clear();
 		bodyPanel.add(adminPanel);
+	}
+
+	
+	public void unregisterOntology(LoginResult loginResult, RegisteredOntologyInfo roi) {
+		if ( Window.confirm(
+				"Are you sure you want to unregister this ontology?\n" +
+				"\n" +
+				"Ontology URI: " +roi.getUri()+ "\n" +
+				"Version: " +roi.getVersionNumber()+ "\n" +
+				"\n" +
+				"Click OK to proceed with the removal (this cannot be undone!)\n" +
+		"\n")
+		) {
+			_doUnregisterOntology(loginResult, roi);
+		}
+	}
+
+	private void _doUnregisterOntology(final LoginResult loginResult, final RegisteredOntologyInfo oi) {
+		
+		final MyDialog popup = new MyDialog(null);
+		popup.addTextArea(null).setSize("600", "150");
+		popup.getTextArea().setText("please wait ...");
+		PortalControl.getInstance().notifyActivity(true);
+		popup.setText("Unregistering ontology ...");
+		popup.center();
+		popup.show();
+
+		AsyncCallback<UnregisterOntologyResult> callback = new AsyncCallback<UnregisterOntologyResult>() {
+			public void onFailure(Throwable thr) {
+				PortalControl.getInstance().notifyActivity(false);
+				Window.alert(thr.toString());
+			}
+
+			public void onSuccess(UnregisterOntologyResult result) {
+				Main.log("UnregisterOntologyResult obtained: " +result);
+				PortalControl.getInstance().notifyActivity(false);
+				unregistrationCompleted(popup, result);
+			}
+		};
+
+		Main.log("Calling ontmdService.unregisterOntology ...");
+		Main.ontmdService.unregisterOntology(loginResult, oi, callback);
+	}
+
+	private void unregistrationCompleted(MyDialog registrationPopup, final UnregisterOntologyResult unregisterOntologyResult) {
+		
+		registrationPopup.hide();
+		
+		String error = unregisterOntologyResult.getError();
+		
+		StringBuffer sb = new StringBuffer();
+		
+		VerticalPanel vp = new VerticalPanel();
+		vp.setSpacing(6);
+		
+		if ( error == null ) {
+
+			String uri = unregisterOntologyResult.getUri();
+			String versionNumber = unregisterOntologyResult.getVersionNumber();
+
+			vp.add(new HTML("The ontology has been unregistered. <br/>\n" +
+					"<br/>\n" +
+					"Ontology URI: " +uri+ "<br/>\n" +
+					"Version: " +versionNumber+ "<br/>\n" +
+					"\n"
+			));
+			
+			vp.add(new HTML("<br/>For diagnostics, this is the response from the back-end server:"));
+
+			sb.append(unregisterOntologyResult.getInfo());
+		}
+		else {
+			sb.append(error);
+		}
+		
+		String msg = sb.toString();
+		Main.log("Unregistration result: " +msg);
+
+		final MyDialog popup = new MyDialog(null);
+		popup.setCloseButtonText("Return to ontology list");
+		popup.setText(error == null ? "Unregistration completed" : "Error");
+		popup.addTextArea(null).setText(msg);
+		popup.getTextArea().setSize("600", "150");
+		
+		popup.getDockPanel().add(vp, DockPanel.NORTH);
+		popup.center();
+		
+		popup.addPopupListener(new PopupListener() {
+			public void onPopupClosed(PopupPanel sender, boolean autoClosed) {
+				_completedUnregisterOntology(unregisterOntologyResult);
+			}
+		});
+		popup.show();
+	}
+
+	private void _completedUnregisterOntology(UnregisterOntologyResult unregisterOntologyResult) {
+		dispatchMainPanel(true);
+		History.newItem(PortalConsts.T_BROWSE);
 	}
 
 }

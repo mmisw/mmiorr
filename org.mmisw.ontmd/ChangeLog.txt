@@ -1,7 +1,11 @@
-org.mmisw.ontmd: MMI Portal
+org.mmisw.ontmd: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-04-xx   1.9.0.alpha
+	Continuing implementation of admin operations
+	- unregister ontology
+	
 2009-12-29   1.8.1.alpha
 	- build.xml: generate orr.war (instead of old ontmd.war)
 	- Util.isOrrAdmin: Tells if the logged in user is the ORR admin.

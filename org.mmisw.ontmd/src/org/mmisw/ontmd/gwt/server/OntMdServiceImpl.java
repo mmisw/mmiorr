@@ -35,16 +35,19 @@ import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.CreateUpdateUserAccountResult;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
+import org.mmisw.iserver.gwt.client.rpc.InternalOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
-import org.mmisw.iserver.gwt.client.rpc.InternalOntologyResult;
-import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
 import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryResult;
+import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.UnregisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.UserInfoResult;
+import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.ont.JenaUtil2;
@@ -57,8 +60,6 @@ import org.mmisw.ontmd.gwt.client.rpc.OntMdService;
 import org.mmisw.ontmd.gwt.client.rpc.OntologyInfoPre;
 import org.mmisw.ontmd.gwt.client.rpc.PortalBaseInfo;
 import org.mmisw.ontmd.gwt.client.rpc.ReviewResult_Old;
-import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
 import org.mmisw.ontmd.gwt.client.rpc.UploadResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
 import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
@@ -1459,6 +1460,10 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 
 	public InternalOntologyResult createGroupsOntology(LoginResult loginResult) {
 		return portal.createGroupsOntology(loginResult);
+	}
+
+	public UnregisterOntologyResult unregisterOntology(LoginResult loginResult, RegisteredOntologyInfo oi) {
+		return portal.unregisterOntology(loginResult, oi);
 	}
 	
 }

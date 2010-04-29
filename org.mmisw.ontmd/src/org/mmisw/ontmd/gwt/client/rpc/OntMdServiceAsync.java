@@ -12,6 +12,7 @@ import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.InternalOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.UnregisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
 import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
@@ -123,4 +124,6 @@ public interface OntMdServiceAsync {
 	
 	void prepareUsersOntology(LoginResult loginResult, AsyncCallback<InternalOntologyResult> callback);
 	void createGroupsOntology(LoginResult loginResult, AsyncCallback<InternalOntologyResult> callback);
+	
+	void unregisterOntology(LoginResult loginResult, RegisteredOntologyInfo oi, AsyncCallback<UnregisterOntologyResult> callback);
 }

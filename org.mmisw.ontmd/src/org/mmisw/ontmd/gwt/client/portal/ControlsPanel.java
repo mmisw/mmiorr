@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.ontmd.gwt.client.portal.PortalControl.ExternalViewersInfo;
 import org.mmisw.ontmd.gwt.client.portal.PortalMainPanel.InterfaceType;
@@ -241,6 +242,21 @@ public class ControlsPanel extends HorizontalPanel {
 			controls.add(button);
 			buttons.add(button);
 		}
+		
+		if ( oi != null && PortalControl.getInstance().getLoginResult() != null ) {
+			final LoginResult loginResult = PortalControl.getInstance().getLoginResult();
+			if ( loginResult != null && loginResult.isAdministrator() ) {
+				final RegisteredOntologyInfo roi = oi;
+				button = new PushButton("Unregister", new ClickListener() {
+					public void onClick(Widget sender) {
+						unregisterOntology(loginResult, roi);
+					}
+				});
+				controls.add(button);
+				buttons.add(button);
+			}
+		}
+
 	}
 
 	private void _prepareOntologyEditButtons(boolean includeReviewAndRegister) {
@@ -386,4 +402,8 @@ public class ControlsPanel extends HorizontalPanel {
 		return mb;
 	}
 
+	
+	private void unregisterOntology(LoginResult loginResult, RegisteredOntologyInfo oi) {
+		pctrl.unregisterOntology(loginResult, oi);
+	}
 }

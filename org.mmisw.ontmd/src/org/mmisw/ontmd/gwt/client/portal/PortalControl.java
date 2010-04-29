@@ -417,4 +417,9 @@ public class PortalControl {
 	public void searchOntologies(String searchString, Command doneCmd) {
 		portalMainPanel.searchOntologies(searchString, doneCmd);
 	}
+	
+	public void unregisterOntology(LoginResult loginResult, RegisteredOntologyInfo oi) {
+		portalMainPanel.unregisterOntology(loginResult, oi);
+	}
+
 }

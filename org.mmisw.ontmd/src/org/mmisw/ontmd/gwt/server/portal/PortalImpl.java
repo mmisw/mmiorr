@@ -16,13 +16,14 @@ import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.InternalOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
+import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
 import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryResult;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.UnregisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.UserInfoResult;
 import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
 import org.mmisw.ontmd.gwt.client.rpc.PortalBaseInfo;
@@ -206,5 +207,10 @@ public class PortalImpl  {
 	
 	public InternalOntologyResult createGroupsOntology(LoginResult loginResult) {
 		return iserver.createGroupsOntology(loginResult);
+	}
+	
+	
+	public UnregisterOntologyResult unregisterOntology(LoginResult loginResult, RegisteredOntologyInfo oi) {
+		return iserver.unregisterOntology(loginResult, oi);
 	}
 }
