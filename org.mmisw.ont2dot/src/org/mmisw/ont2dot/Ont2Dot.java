@@ -36,12 +36,14 @@ public class Ont2Dot {
 		
 		String outFile = null;
 		PrintWriter pw = null;
+		boolean stdOut = false;
 		
 		if (args.length == 0 || args[0].equals("--help") ) {
 			System.out.println(
 					"USAGE: Ont2Dot <ontology-uri> [outputFile]\n" +
-					"  outputFile: name of the putput file; can be ``-''  for stdout. " +
-					"  By default, the name is taken from the URI with ``.dot'' appended."
+					"  outputFile: name of the putput file; can be ``-''  for stdout.\n" +
+					"  By default, the name is taken from the URI with ``.dot'' appended.\n" +
+					"The name of the generated file is printed to stdout, unless ``-'' was used."
 			);
 			return;
 		}
@@ -55,14 +57,18 @@ public class Ont2Dot {
 		if ( outFile != null ) {
 			if ( outFile.equals("-") ) {
 				pw = new PrintWriter(System.out, true);
+				stdOut = true;
 			}
-			else {
-				pw = new PrintWriter(new FileWriter(outFile), true);
-			}
-		} 
+		}
 		else {
+			// from URI
 			outFile = new File(new URL(ontUri).getFile()).getName();
-			outFile += ".dot";
+		}
+		
+		if ( ! stdOut ) {
+			if ( ! outFile.toLowerCase().endsWith(".dot") ) {
+				outFile += ".dot";
+			}
 			pw = new PrintWriter(new FileWriter(outFile), true);
 		}
 
@@ -79,6 +85,9 @@ public class Ont2Dot {
 		
 		dotGenerator.generateDot(pw, "Input: " +ontUri);
 		
+		if ( ! stdOut ) {
+			System.out.println(outFile);
+		}
 	}
 	
 }
