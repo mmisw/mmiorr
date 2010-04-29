@@ -24,6 +24,10 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 
 /**
+ * Collects info that will be used to generate the dot output.
+ * Note: Some requests here to the Jena library may seem too low-level, but for
+ * some reason some of the high-level calls I've tried don't return anything.
+ * TODO look into this when time permits.
  * 
  * @author Carlos Rueda
  */
