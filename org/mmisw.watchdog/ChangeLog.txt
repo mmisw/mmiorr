@@ -1,0 +1,7 @@
+watchdog ChangeLog
+
+2010-04-28
+	Initial version based on Luis' code.
+	Only CF conversion is included. Other conversions to be included as
+	we work on them. 
+	
