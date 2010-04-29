@@ -1,8 +1,8 @@
-org.mmisw.iserver 
+org.mmisw.iserver - ORR Client Library
 Carlos Rueda  -  http://marinemetadata.org
 May 2009
 
-Core interface to registry server
+This module provides a library for clients to interact with the registry server
 
 Goals:
 	More flexible design

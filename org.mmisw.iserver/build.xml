@@ -38,6 +38,8 @@
   	
   	<pathelement path="base_war/WEB-INF/lib/activation.jar"/>
 	<pathelement path="base_war/WEB-INF/lib/mail.jar"/>
+  	
+  	<pathelement path="base_war/WEB-INF/lib/junit.jar"/>
   </path>
 
 	<target name="init">

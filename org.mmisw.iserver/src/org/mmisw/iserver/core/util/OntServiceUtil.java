@@ -261,5 +261,25 @@ public class OntServiceUtil {
 	}
 
 
+	/**
+	 * Makes the request to the "ont" service to remove the given ontology.
+	 * 
+	 * @param ontUri  The URI of the desired ontlogy.
+	 * @param version the version to be removed.
+	 * @return true iff "ont" responds with an OK return code.
+	 * @throws Exception
+	 */
+	public static boolean unregisterOntology(String ontUri, String version) throws Exception {
+		
+		String ontServiceUrl = ServerConfig.Prop.ONT_SERVICE_URL.getValue();
+		ontUri = URLEncoder.encode(ontUri, "UTF-8");
+		version = URLEncoder.encode(version, "UTF-8");
+		String ontServiceRequest = ontServiceUrl + "?_unr=" +ontUri+ "&version=" +version;
+		int statusCode = HttpUtil.httpGetStatusCode(ontServiceRequest);
+		
+		return statusCode == HttpStatus.SC_OK;
+	}
+	
+
 }
 

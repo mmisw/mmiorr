@@ -52,6 +52,7 @@ import org.mmisw.iserver.gwt.client.rpc.InternalOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.UnregisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
 import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
@@ -2827,4 +2828,48 @@ public class Server implements IServer {
 		return result;
 	}
 	
+	
+	public UnregisterOntologyResult unregisterOntology(LoginResult loginResult, RegisteredOntologyInfo oi) {
+		UnregisterOntologyResult result = new UnregisterOntologyResult();
+		
+		log.debug("unregisterOntology called.");
+		
+		if ( loginResult == null || ! loginResult.isAdministrator() ) {
+			String error = "Unregister ontology: Only an administrator can perform this operation.";
+			log.debug(error);
+			result.setError(error);
+			return result;
+		}
+
+		String ontUri = oi.getUri();
+		String version = oi.getVersionNumber();
+
+		result.setUri(ontUri);
+		result.setVersionNumber(version);
+
+		String error = null;
+		Throwable thr = null;
+		
+		try {
+			if ( ! OntServiceUtil.unregisterOntology(ontUri, version) ) {
+				error = "Unregister ontology: Ont service could not perform the removal. Please try again later.";
+			}
+		}
+		catch (Exception e) {
+			error = e.getMessage();
+			thr = e;
+		}
+		
+		if ( error != null ) {
+			log.debug(error, thr);
+			result.setError(error);
+			return result;
+		}
+		else {
+			result.setInfo("Unregistration completed.");
+		}
+		
+		return result;
+		
+	}
 }

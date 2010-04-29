@@ -500,7 +500,7 @@ public class QueryUtil {
 	 * @param ontModel
 	 * @param ontologyUri
 	 */
-	private static List<IndividualInfo> _getIndividuals(List<IndividualInfo> entities,
+	public static List<IndividualInfo> _getIndividuals(List<IndividualInfo> entities,
 			OntModel ontModel, String ontologyUri) {
 		
 		if ( entities == null ) {
