@@ -4,6 +4,9 @@ $Id$
 
 ChangeLog
 
+2010-04-28   1.7.0.beta1
+	- continuing unregistration of ontology ...
+
 2010-04-28
 	Re-writing of Graphviz dot format generation moved to new module
 	org.mmisw.ont2dot

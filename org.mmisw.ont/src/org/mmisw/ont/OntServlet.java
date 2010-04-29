@@ -356,6 +356,12 @@ public class OntServlet extends HttpServlet {
 			return;
 		}
 		
+		// unregister ontology?
+		if ( Util.yes(req.request, "_unr")  ) {
+			_unregisterOntology(req);
+			return;
+		}
+		
 
 		
 		//////////////////////////////////////////////////////////////////////
@@ -807,5 +813,29 @@ public class OntServlet extends HttpServlet {
 		boolean wait = _reidx.length() == 0 || _reidx.equals("wait");
 		ontGraph.reindex(wait);
 	}
+
+	
+	/**
+	 * _unr=ontUri
+	 */
+	private void _unregisterOntology(Request req) throws ServletException, IOException {
+		
+		String ontUri = Util.getParam(req.request, "_unr", "");
+		if ( ontUri.length() == 0 ) {
+			req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing ontology URI");
+			return;
+		}
+
+		// TODO ...
+		StringBuffer result = new StringBuffer();
+		result.append("removing " +ontUri+ " ... (NOT REALLY)\n");
+			
+		
+		req.response.setContentType("text/plain");
+		ServletOutputStream os = req.response.getOutputStream();
+		IOUtils.write(result, os);
+		os.close();
+	}
+
 
 }
