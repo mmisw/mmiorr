@@ -61,7 +61,7 @@ public class SKOSCFCreator {
 	private Property canonical_units;
 
 	public static void main(String[] args) throws IOException {
-		String fileIn = "src/main/resources/inout/cf-standard-name-table.xml";
+		String fileIn = "src/main/resources/input/cf-standard-name-table.xml";
 		String fileOut = "src/main/resources/output/cf.owl";
 		SKOSCFCreator creatorCF = new SKOSCFCreator(fileIn, fileOut);
 		creatorCF.convertAndSave();
