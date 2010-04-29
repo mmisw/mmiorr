@@ -40,10 +40,12 @@ public class Ont2Dot {
 		
 		if (args.length == 0 || args[0].equals("--help") ) {
 			System.out.println(
+					"\n" +
+					"MMI Ont2Dot\n" +
 					"USAGE: Ont2Dot <ontology-uri> [outputFile]\n" +
-					"  outputFile: name of the putput file; can be ``-''  for stdout.\n" +
+					"  outputFile: output file name; can be ``-''  for stdout.\n" +
 					"  By default, the name is taken from the URI with ``.dot'' appended.\n" +
-					"The name of the generated file is printed to stdout, unless ``-'' was used."
+					"The name of the generated file is printed to stdout, unless ``-'' was indicated.\n"
 			);
 			return;
 		}
