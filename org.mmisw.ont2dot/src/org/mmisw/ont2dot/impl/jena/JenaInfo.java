@@ -1,6 +1,7 @@
 package org.mmisw.ont2dot.impl.jena;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -35,6 +36,8 @@ class JenaInfo {
 	
 	/** Missing resource in {@link OWL} */
     private  static final Resource OWL_NAMED_INDIVIDUAL = ResourceFactory.createProperty(OWL.NS, "NamedIndividual");
+
+	private static final Set<Resource> EMPTY_RESOURCE_SET = Collections.emptySet();
     
 	private final Map<String, Resource> _classes = new HashMap<String, Resource>();
 
@@ -303,11 +306,13 @@ class JenaInfo {
 	}
 	
 	public Set<Resource> getDomains(Resource prop) {
-		return _propsDomains.get(prop);
+		Set<Resource> domains = _propsDomains.get(prop);
+		return domains != null ? domains : EMPTY_RESOURCE_SET;
 	}
 
 	public Set<Resource> getRanges(Resource prop) {
-		return _propRanges.get(prop);
+		Set<Resource> ranges = _propRanges.get(prop);
+		return ranges != null ? ranges : EMPTY_RESOURCE_SET;
 	}
 
 	private void _addOntology(Resource sbj) {
