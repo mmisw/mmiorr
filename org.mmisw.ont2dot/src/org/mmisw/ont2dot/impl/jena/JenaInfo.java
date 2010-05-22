@@ -38,6 +38,8 @@ class JenaInfo {
     private  static final Resource OWL_NAMED_INDIVIDUAL = ResourceFactory.createProperty(OWL.NS, "NamedIndividual");
 
 	private static final Set<Resource> EMPTY_RESOURCE_SET = Collections.emptySet();
+
+	private static final boolean PUT_ANY_FOR_MISSING_RANGES = true;
     
 	private final Map<String, Resource> _classes = new HashMap<String, Resource>();
 
@@ -51,7 +53,7 @@ class JenaInfo {
 	private final Map<Resource, Set<Resource>> _clazzProps = new HashMap<Resource, Set<Resource>>();
 	
 	// property -> domains
-	private final Map<Resource, Set<Resource>> _propsDomains = new HashMap<Resource, Set<Resource>>();
+	private final Map<Resource, Set<Resource>> _propDomains = new HashMap<Resource, Set<Resource>>();
 	// property -> ranges
 	private final Map<Resource, Set<Resource>> _propRanges = new HashMap<Resource, Set<Resource>>();
 
@@ -166,6 +168,17 @@ class JenaInfo {
 			}
 		}
 		
+		if ( PUT_ANY_FOR_MISSING_RANGES ) {
+			// put RDFS.Resource as range for all properties with given domain
+			// but missing range:
+			for ( Resource prop : _propDomains.keySet() ) {
+				if ( ! _propRanges.containsKey(prop) ) {
+					_putRange(prop , RDFS.Resource);
+				}
+			}
+		}
+		
+		
 		int nextDataRangeIndex = 1;
 		ExtendedIterator<?> dataRanges = ontModel.listDataRanges();
 		while ( dataRanges.hasNext() ) {
@@ -258,10 +271,10 @@ class JenaInfo {
 
 	
 	private void _putDomain(Resource prop, Resource domain) {
-		Set<Resource> domains = _propsDomains.get(prop);
+		Set<Resource> domains = _propDomains.get(prop);
 		if ( domains == null ) {
 			domains = new HashSet<Resource>();
-			_propsDomains.put(prop, domains);
+			_propDomains.put(prop, domains);
 		}
 		domains.add(domain);
 		_putClazzProperty(domain, prop);
@@ -306,10 +319,18 @@ class JenaInfo {
 	}
 	
 	public Set<Resource> getDomains(Resource prop) {
-		Set<Resource> domains = _propsDomains.get(prop);
+		Set<Resource> domains = _propDomains.get(prop);
 		return domains != null ? domains : EMPTY_RESOURCE_SET;
 	}
 
+	/**
+	 * All the ranges of a given property.
+	 * Note that RDFS.Resource is given as range for a property with given domain
+	 * but missing range.
+	 * 
+	 * @param prop
+	 * @return
+	 */
 	public Set<Resource> getRanges(Resource prop) {
 		Set<Resource> ranges = _propRanges.get(prop);
 		return ranges != null ? ranges : EMPTY_RESOURCE_SET;

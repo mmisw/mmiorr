@@ -19,6 +19,7 @@ import com.hp.hpl.jena.rdf.model.RDFList;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.vocabulary.RDFS;
 import com.hp.hpl.jena.vocabulary.XSD;
 
 /**
@@ -28,6 +29,9 @@ import com.hp.hpl.jena.vocabulary.XSD;
  */
 public class DotGeneratorJenaImpl extends BaseDotGenerator {
 	
+	/** Representation to use when a property has not explicitly given range */
+	private static final String ANY = "Any";
+
 	private OntModel _ontModel;
 	
 	private JenaInfo _info;
@@ -183,33 +187,35 @@ public class DotGeneratorJenaImpl extends BaseDotGenerator {
 		
 		for ( final Resource prop : props ) {
 			String prdLabel = _info.getLabel(prop);
-			Set<Resource> ranges = _info.getRanges(prop);
-			if ( ranges != null ) {
-				for ( Resource range : ranges ) {
+			
+			for ( Resource range : _info.getRanges(prop) ) {
 
-					if ( XSD.getURI().equals(range.getNameSpace()) ) {
-						// datatype property
-						String objLabel = _info.getLabel(range);
+				if ( XSD.getURI().equals(range.getNameSpace()) ) {
+					// datatype property
+					String objLabel = _info.getLabel(range);
+
+					fields.add("{" +prdLabel+ "|" +objLabel+ "}");
+				}
+
+				else if (range.isAnon() ) {
+					String id = range.getId().getLabelString();
+
+					if ( dataRangeEdges == null ) {
+						String objLabel = "?";
+						String name = _info.getDataRangeName(id);
+						if ( name != null ) {
+							objLabel = "[" +name+ "]";
+						}
 
 						fields.add("{" +prdLabel+ "|" +objLabel+ "}");
 					}
-
-					else if (range.isAnon() ) {
-						String id = range.getId().getLabelString();
-
-						if ( dataRangeEdges == null ) {
-							String objLabel = "?";
-							String name = _info.getDataRangeName(id);
-							if ( name != null ) {
-								objLabel = "[" +name+ "]";
-							}
-
-							fields.add("{" +prdLabel+ "|" +objLabel+ "}");
-						}
-						else {
-							dataRangeEdges.append("  \"" +clazz.getURI()+ "\"  ->  \"" +id+ "\"  [ label=\"" +prdLabel+ "\" ]; \n");
-						}
+					else {
+						dataRangeEdges.append("  \"" +clazz.getURI()+ "\"  ->  \"" +id+ "\"  [ label=\"" +prdLabel+ "\" ]; \n");
 					}
+				}
+
+				else if ( range.equals(RDFS.Resource) ) {
+					fields.add("{" +prdLabel+ "|" +ANY+ "}");
 				}
 			}
 		}
