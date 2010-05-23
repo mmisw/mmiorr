@@ -5,12 +5,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.hp.hpl.jena.ontology.DataRange;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.Restriction;
+import com.hp.hpl.jena.ontology.UnionClass;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -43,7 +45,11 @@ class JenaInfo {
     
 	private final Map<String, Resource> _classes = new HashMap<String, Resource>();
 
+	// classURI -> direct super classes
 	private final Map<String, Set<Resource>> _superClasses = new HashMap<String, Set<Resource>>();
+	
+	// classURI -> direct sub classes
+	private final Map<String, Set<Resource>> _subClasses = new HashMap<String, Set<Resource>>();
 	
 	private final Map<Resource, Set<Resource>> _instances = new HashMap<Resource, Set<Resource>>();
 
@@ -69,6 +75,9 @@ class JenaInfo {
 	private final Map<String, Restriction> _restrictions = new LinkedHashMap<String, Restriction>();
 	
 	
+	private final Map<String, UnionClass> _unionClasses = new LinkedHashMap<String, UnionClass>();
+	
+	
 	private Set<Statement> _stmts = new HashSet<Statement>();
 	
 	
@@ -79,6 +88,14 @@ class JenaInfo {
 	
 	JenaInfo(OntModel ontModel) {
 		JenaInfo _info = this;
+		
+		ExtendedIterator<UnionClass> unionClasses = ontModel.listUnionClasses();
+		while ( unionClasses.hasNext() ) {
+			UnionClass uclass = (UnionClass) unionClasses.next();
+			String id = uclass.isAnon() ? uclass.getId().getLabelString() : uclass.getURI();
+			_unionClasses.put(id , uclass);
+//			System.err.println("XXXXXX UnionClass " +id+ " -> " +uclass);
+		}
 		
 		StmtIterator iter = ontModel.listStatements();
 		while ( iter.hasNext() ) {
@@ -116,7 +133,7 @@ class JenaInfo {
 			
 			if ( RDFS.subClassOf.equals(prd)  ) {
 				Resource objRsr = (Resource) obj;
-				_info._putSuperClazz(sbj, objRsr);
+				_info._putSubAndSuperClazz(sbj, objRsr);
 			}
 			
 			else if ( RDF.type.equals(prd) ) {
@@ -196,9 +213,8 @@ class JenaInfo {
 			Restriction restr = (Restriction) restrs.next();
 			String id = restr.isAnon() ? restr.getId().getLabelString() : restr.getURI();
 			_restrictions.put(id , restr);
-//			System.out.println("XXXXXX " +id);
+//			System.err.println("XXXXXX Restriction " +id+ " -> " +restr);
 		}
-
 	}
 	
 	public Map<String, DataRange> getDataRanges() {
@@ -236,6 +252,23 @@ class JenaInfo {
 		}
 	}
 
+	private void _putSubAndSuperClazz(Resource subClazz, Resource superClazz) {
+		_putSubClazz(subClazz, superClazz);
+		_putSuperClazz(subClazz, superClazz);
+		
+		_putClazz(subClazz);
+		_putClazz(superClazz);
+	}
+
+	private void _putSubClazz(Resource subClazz, Resource superClazz) {
+		Set<Resource> subs = _subClasses.get(superClazz.getURI());
+		if ( subs == null ) {
+			subs = new HashSet<Resource>();
+			_subClasses.put(superClazz.getURI(), subs);
+		}
+		subs.add(subClazz);
+	}
+	
 	private void _putSuperClazz(Resource subClazz, Resource superClazz) {
 		Set<Resource> supers = _superClasses.get(subClazz.getURI());
 		if ( supers == null ) {
@@ -243,11 +276,8 @@ class JenaInfo {
 			_superClasses.put(subClazz.getURI(), supers);
 		}
 		supers.add(superClazz);
-		
-		_putClazz(subClazz);
-		_putClazz(superClazz);
 	}
-
+	
 	private void _putInstance(Resource instance, Resource clazz) {
 		Set<Resource> clazzes = _instances.get(instance);
 		if ( clazzes == null ) {
@@ -276,8 +306,31 @@ class JenaInfo {
 			domains = new HashSet<Resource>();
 			_propDomains.put(prop, domains);
 		}
-		domains.add(domain);
-		_putClazzProperty(domain, prop);
+		
+		if ( domain.isAnon() ) {
+			String id = domain.getId().getLabelString();
+			UnionClass unionClass = _unionClasses.get(id);
+			List<RDFNode> operands = unionClass.getOperands().asJavaList();
+			for ( RDFNode node : operands ) {
+				if ( node instanceof Resource ) {
+					Resource rsr = (Resource) node;
+					if ( ! rsr.isAnon() ) {
+						// rsr should be a class
+						domains.add(rsr);
+						_putClazzProperty(rsr, prop);
+					}
+					else {
+						// TODO: it's a "complex" operand -- need generic mechanism
+						// to handle this case.
+					}
+				}
+			}
+			
+		}
+		else {
+			domains.add(domain);
+			_putClazzProperty(domain, prop);
+		}
 	}
 
 	private void _putRange(Resource prop, Resource range) {
@@ -294,6 +347,10 @@ class JenaInfo {
 		return _classes.values();
 	}
 	
+	public Resource getClass(String classUri) {
+		return _classes.get(classUri);
+	}
+	
 	public Collection<Resource> getInstances() {
 		return _instances.keySet();
 	}
@@ -302,8 +359,43 @@ class JenaInfo {
 		return _instances.get(instance);
 	}
 	
+	/** never null */
+	public Collection<Resource> getSubClasses(Resource superClazz) {
+		Set<Resource> set = _subClasses.get(superClazz.getURI());
+		return set != null ? set : EMPTY_RESOURCE_SET;
+	}
+
+	/** never null */
 	public Collection<Resource> getSuperClasses(Resource subClazz) {
-		return _superClasses.get(subClazz.getURI());
+		Set<Resource> set = _superClasses.get(subClazz.getURI());
+		return set != null ? set : EMPTY_RESOURCE_SET;
+	}
+	
+	/**
+	 * Says if a class is present in a class tree
+	 * @param clazz  class to check
+	 * @param rootClass Root class of the tree
+	 * @return true iff class is rootClass or a descendent.
+	 */
+	public boolean presentInTree(Resource clazz, Resource rootClass) {
+		// to prevent possible circular subClassOf:
+		Set<Resource> checkedClasses = new HashSet<Resource>();
+		return _presentInTree(clazz, rootClass, checkedClasses);
+	}
+	private boolean _presentInTree(Resource clazz, Resource rootClass, Set<Resource> checkedClasses) {
+		if ( clazz.equals(rootClass) ) {
+			return true;
+		}
+		if ( checkedClasses.contains(rootClass) ) {
+			return false;
+		}
+		checkedClasses.add(rootClass);
+		for (Resource subClass : getSubClasses(rootClass) ) {
+			if ( _presentInTree(clazz, subClass, checkedClasses) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public Collection<Resource> getAllProperties() {

@@ -9,8 +9,6 @@ import java.io.Writer;
  */
 public interface IDotGenerator {
 	
-	public enum DiagramType { CLASS_INSTANCE_DIAGRAM, CLASS_DIAGRAM, INSTANCE_DIAGRAM,  };
-
 	/**
 	 * Loads the given model dor subsequent generation.
 	 */
@@ -28,11 +26,6 @@ public interface IDotGenerator {
 	public void setIncludeLegend(boolean includeLegend);
 	
 	/**
-	 * Sets the type of diagram to generate
-	 */
-	public void setDiagramType(DiagramType dt);
-	
-	/**
 	 * Should the rdfs:labels be used for display instead of the local name of the
 	 * properties?
 	 * @param useLabel
@@ -43,7 +36,19 @@ public interface IDotGenerator {
 	 * Ignore rdfs:comments?
 	 * @param ignoreRdfsComment
 	 */
-	public void setIgnoreRdfsComment(boolean ignoreRdfsComment);
+	public void includeRdfsComment(boolean ignoreRdfsComment);
+	
+	/**
+	 * Indicates that the class hierarchy rooted at the given class should be
+	 * "separated" for purposes of showing object properties. That is, any object property with
+	 * range in any class in the hierarchy will be indicated in the body of the domain
+	 * class and not with an arrow to the range class.
+	 * This helps reduce cluttering of the diagram, especially for common attributes
+	 * used in many classes.
+	 * 
+	 * @param classUri URI of the root class.
+	 */
+	public void separateClassHierarchy(String classUri);
 	
 	/**
 	 * Generates the output format.

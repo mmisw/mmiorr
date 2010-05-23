@@ -40,6 +40,13 @@ public class DotGeneratorJenaImpl extends BaseDotGenerator {
 	private final Set<Resource> _generatedClasses = new HashSet<Resource>();
 	private final Set<Resource> _generatedInstances = new HashSet<Resource>();
 	
+	
+	
+	/**
+	 * All the separated classes, set up by {@link #_setSeparatedClasses()}.
+	 */
+	private final Set<Resource> _separatedClasses = new HashSet<Resource>();
+
 
 	public DotGeneratorJenaImpl() {
 		super();
@@ -49,13 +56,9 @@ public class DotGeneratorJenaImpl extends BaseDotGenerator {
 		super.loadModel(ontUri);
 		this._ontModel = ModelLoader.loadModel(_ontUri, includeImports);
 		_info = new JenaInfo(_ontModel);
-	}
-
-	public void setUseLabel(boolean useLabel) {
-		_verifyState();
-		super.setUseLabel(useLabel);
 		_info.setUseLabel(useLabel);
 	}
+
 
 	private void _verifyState() {
 		if ( _info == null ) {
@@ -66,10 +69,38 @@ public class DotGeneratorJenaImpl extends BaseDotGenerator {
 	@Override
 	protected void generateContents() {
 		_verifyState();
+		_setSeparatedClasses();
 		_outCommonAttributes();
 		_outAll();
 	}
 	
+	private void _setSeparatedClasses() {
+		_separatedClasses.clear();
+		for ( String classUri : _separatedRootClassesUris ) {
+			Resource clazz = _info.getClass(classUri);
+			if ( clazz != null ) {
+				_separatedClasses.add(clazz);
+				_addSeparatedChildren(clazz);
+			}
+			else {
+				// not in the ontology -- ignore.
+				System.err.println(" WARNING: " +classUri+ ": class not found");
+				continue;
+			}
+		}
+	}
+
+	/** recursive routine to add all descendents */
+	private void _addSeparatedChildren(Resource superClazz) {
+		for ( Resource clazz : _info.getSubClasses(superClazz) ) {
+			// check it's not already contained to properly handle possible cycles:
+			if ( ! _separatedClasses.contains(clazz) ) {
+				_separatedClasses.add(clazz);
+				_addSeparatedChildren(clazz);
+			}
+		}
+	}
+
 	private void _outCommonAttributes() {
 		pw.println("  node [ fontname=\"helvetica\", fontsize=14, ];");
 		pw.println("  edge [ fontname=\"helvetica\", fontsize=10, ];");
@@ -197,6 +228,23 @@ public class DotGeneratorJenaImpl extends BaseDotGenerator {
 					fields.add("{" +prdLabel+ "|" +objLabel+ "}");
 				}
 
+				else if ( _separatedClasses.contains(range) ) {
+					// tree rooted at range should be separated. 
+					// So, only generate the connection domain -> range if the domain 
+					// is contained in the tree rooted at range:
+					if ( _info.presentInTree(clazz, range) ) {
+						// connection is generated elsewhere.
+					}
+					else {
+						String objLabel = _info.getLabel(range);
+						fields.add("{" +prdLabel+ "|" +objLabel+ "}");
+					}
+				}
+
+				else if ( range.equals(RDFS.Resource) ) {
+					fields.add("{" +prdLabel+ "|" +ANY+ "}");
+				}
+
 				else if (range.isAnon() ) {
 					String id = range.getId().getLabelString();
 
@@ -212,10 +260,6 @@ public class DotGeneratorJenaImpl extends BaseDotGenerator {
 					else {
 						dataRangeEdges.append("  \"" +clazz.getURI()+ "\"  ->  \"" +id+ "\"  [ label=\"" +prdLabel+ "\" ]; \n");
 					}
-				}
-
-				else if ( range.equals(RDFS.Resource) ) {
-					fields.add("{" +prdLabel+ "|" +ANY+ "}");
 				}
 			}
 		}
@@ -274,12 +318,7 @@ public class DotGeneratorJenaImpl extends BaseDotGenerator {
 		_outSubclassStyle();
 		
 		for ( Resource clazz : _info.getClazzes() ) {
-			Collection<Resource> supers = _info.getSuperClasses(clazz);
-			if ( supers == null ) {
-				continue;
-			}
-			
-			for ( Resource superClazz : supers ) {
+			for ( Resource superClazz : _info.getSuperClasses(clazz) ) {
 				String superClazzName = superClazz.getURI();
 			
 				String subClazzName = clazz.getURI();
@@ -409,6 +448,19 @@ public class DotGeneratorJenaImpl extends BaseDotGenerator {
 				
 				for ( Resource range: _info.getRanges(prop) ) {
 					
+					if ( _separatedClasses.contains(range) ) {
+						// tree rooted at range should be separated. 
+						// So, only generate the connection domain -> range if the domain 
+						// is contained in the tree rooted at range:
+						if ( _info.presentInTree(domain, range) ) {
+							// OK, generate the connection.
+						}
+						else {
+							// skip the connection for this property:
+							continue;
+						}
+					}
+					
 					String domainName = domain.getURI();
 					String rangeName = range.getURI();
 					
@@ -510,6 +562,5 @@ public class DotGeneratorJenaImpl extends BaseDotGenerator {
 	private void _outSubclassStyle() {
 		pw.println("  edge   [ dir=back, arrowtail=onormal, arrowhead=none, arrowsize=2.0, ]; ");
 	}
-
 
 }

@@ -1,7 +1,34 @@
 MMI Ont2Dot ChangeLog
 
 2010-05-22
-	"Any" used as a range (ie., RDFS:Resource) when not explicitly given for a property.
+	- "Any" used as a range (ie., RDFS:Resource) when not explicitly given for a property.
+	
+	- separateClassHierarchy(String classUri) included:
+		Indicates that the class hierarchy rooted at the given class should be
+		"separated" for purposes of showing object properties. That is, any object
+		property with range in any class in the hierarchy will be indicated in the body
+		of the domain class and not with an arrow to the range class, but only when the
+		domain class is NOT part of the tree rooted at the range class.
+		This helps reduce cluttering of the diagram, especially for common attributes
+		used in many classes.
+		
+	- Options now accepted in the main program. For example:
+	    Ont2Dot --separate http://mmisw.org/ont/mmi/device/TypedValue \
+	                 http://mmisw.org/ont/mmi/device
+	  to indicate a class hierarchy to be "separated" in the diagram.
+	  
+	- "Globbing" is supported in the --separate argument, eg:
+	  http://mmisw.org/ont/mmi/device/{TypedValue,PhysicalProperty,ModelID}
+	  is a shorthand for the arguments:
+	     http://mmisw.org/ont/mmi/device/TypedValue
+	     http://mmisw.org/ont/mmi/device/PhysicalProperty
+	     http://mmisw.org/ont/mmi/device/ModelID
+	  
+	- UnionClass now handled in a preliminary way: a property with domain in a union of
+	  classes is now properly dispatched, but only for the operands that are non-anonymous.
+	  TODO generic way to handle OwlClass'es (see jena's OntModel.listClasses()).
+
+		
 	
 2010-04-28
 	Initial version. Functional but with parameters not yet fully processed
