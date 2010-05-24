@@ -5,9 +5,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.mmisw.ont.vocabulary.Omv;
+
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NsIterator;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 /**
  * Some of the methods in JenaUtil but with some adjustments.
@@ -106,6 +112,25 @@ public class JenaUtil2 {
 				model.removeNsPrefix(prefix);
 			}
 		}
+	}
+
+	/**
+	 * NOTE: only the first ontology is taken into account
+	 * @param ontModel
+	 * @return value of {@link Omv#version}, or null if missing.
+	 */
+	public static String getOmvVersion(OntModel ontModel) {
+		ExtendedIterator onts = ontModel.listOntologies();
+		if ( onts == null || ! onts.hasNext() ) {
+			return null;
+		}
+		// NOTE: only the first ontology is taken into account
+		Ontology ontology = (Ontology) onts.next();
+		RDFNode node = ontology.getPropertyValue(Omv.version);
+		if ( node == null ) {
+			return null;
+		}
+		return node.toString();
 	}
 
 }

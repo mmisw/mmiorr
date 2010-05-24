@@ -65,7 +65,8 @@ public class UnversionedConverter {
 
 		///////////////////////////////////////////////////////////////////
 		// version:
-		String version = "Latest terms per " +mmiUri.getVersion();
+		// bug #243 String version = "Latest terms per " +mmiUri.getVersion();
+		String version = JenaUtil2.getOmvVersion(model);
 
 		///////////////////////////////////////////////////////////////////
 		// final URI is just the mmiUri but without version:
@@ -152,7 +153,9 @@ public class UnversionedConverter {
 		// Set internal attributes, which are updated in the newValues map itself
 		// so we facilite the processing below:
 		newValues.put(Omv.uri.getURI(), base_);
-		newValues.put(Omv.version.getURI(), version);
+		if ( version != null ) {
+			newValues.put(Omv.version.getURI(), version);
+		}
 		
 		newValues.put(Omv.creationDate.getURI(), creationDate);
 
@@ -217,7 +220,9 @@ public class UnversionedConverter {
 		// Update attributes in model:
 		
 		ont_.addProperty(Omv.uri, base_);
-		ont_.addProperty(Omv.version, version);
+		if ( version != null ) {
+			ont_.addProperty(Omv.version, version);
+		}
 		ont_.addProperty(Omv.creationDate, creationDate);
 
 		////////////////////////////////////////////////////////////////////////
