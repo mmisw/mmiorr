@@ -10,6 +10,7 @@ public class Test {
 				    "{TypedValue,PhysicalProperty,ModelID, Manufacturer}",
 				
 				"file:/Users/carueda/mmiworkspace/devont/device/device.owl"
+//				 "http://mmisw.org/ont/mmi/device"
 		});
 	}
 }

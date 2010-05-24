@@ -412,7 +412,7 @@ public class DotGeneratorJenaImpl extends BaseDotGenerator {
 		
 		pw.println("\n" +
 				" //////////////////\n" +
-				" // instanciations");
+				" // instantiations");
 
 		_outEdgeInstantiationStyle();
 		
@@ -561,6 +561,11 @@ public class DotGeneratorJenaImpl extends BaseDotGenerator {
 
 	private void _outSubclassStyle() {
 		pw.println("  edge   [ dir=back, arrowtail=onormal, arrowhead=none, arrowsize=2.0, ]; ");
+	}
+
+	@Override
+	protected String getOntologyVersionInfo() {
+		return _info.getOntologyVersionInfo();
 	}
 
 }

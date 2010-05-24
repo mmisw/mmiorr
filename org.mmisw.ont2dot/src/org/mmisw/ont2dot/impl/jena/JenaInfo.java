@@ -1,5 +1,6 @@
 package org.mmisw.ont2dot.impl.jena;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import java.util.Set;
 
 import com.hp.hpl.jena.ontology.DataRange;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.ontology.Restriction;
 import com.hp.hpl.jena.ontology.UnionClass;
 import com.hp.hpl.jena.rdf.model.Literal;
@@ -38,6 +40,8 @@ class JenaInfo {
 	
 	/** Missing resource in {@link OWL} */
     private  static final Resource OWL_NAMED_INDIVIDUAL = ResourceFactory.createProperty(OWL.NS, "NamedIndividual");
+
+    private  static final Property OMV_VERSION = ResourceFactory.createProperty("http://omv.ontoware.org/2005/05/ontology#version");
 
 	private static final Set<Resource> EMPTY_RESOURCE_SET = Collections.emptySet();
 
@@ -84,10 +88,14 @@ class JenaInfo {
 	//use label instead of local name?
 	private boolean _useLabel = true;
 
+	
+	private String ontologyVersionInfo = null;
 
 	
 	JenaInfo(OntModel ontModel) {
 		JenaInfo _info = this;
+		
+		_prepareInfoAboutOntology(ontModel);
 		
 		ExtendedIterator<UnionClass> unionClasses = ontModel.listUnionClasses();
 		while ( unionClasses.hasNext() ) {
@@ -217,6 +225,64 @@ class JenaInfo {
 		}
 	}
 	
+	private void _prepareInfoAboutOntology(OntModel ontModel) {
+		
+		ontologyVersionInfo = null;
+		
+		ExtendedIterator<Ontology> onts = ontModel.listOntologies();
+		if ( onts == null || ! onts.hasNext() ) {
+			return;
+		}
+
+		List<Ontology> list = new ArrayList<Ontology>();
+		while ( onts.hasNext() ) {
+			Ontology ontology = onts.next();
+			list.add(ontology);
+		}
+		
+		if ( list.size() == 0 ) {
+			return;
+		}
+		
+		boolean includeOntUri = list.size() > 1 ;
+		StringBuffer sb = new StringBuffer();
+		String newLine = "";
+		for ( Ontology ontology : list ) {
+			String ontUri = ontology.getURI();
+			System.err.println("_prepareInfoAboutOntology: ontUri: " +ontUri);
+			String versionFrom = null;
+			String versionValue = null;
+			RDFNode node = ontology.getPropertyValue(OMV_VERSION);
+			if ( node != null ) {
+				versionFrom = "(from omv:version)";
+				versionValue = node.toString();
+			}
+			else {
+				versionValue = ontology.getVersionInfo();
+				if ( versionValue != null ) {
+					versionFrom = "(from owl:versionInfo)";
+				}
+			}
+			if ( versionValue == null ) {
+				versionValue = "(info not found)";
+				versionFrom = "";
+			}
+			if ( includeOntUri ) {
+				sb.append(ontUri+ " ");
+			}
+			sb.append("Version: " +versionValue + " " + versionFrom + newLine);
+			newLine = "\n";
+		}
+		
+		ontologyVersionInfo = sb.toString();
+	}
+
+	
+	/** Info about the version of the ontology(ies), maybe multiple \n-separated lines */
+	public String getOntologyVersionInfo() {
+		return ontologyVersionInfo;
+	}
+
 	public Map<String, DataRange> getDataRanges() {
 		return _dataRanges;
 	}
