@@ -18,12 +18,19 @@ $ mvn exec:java -Dexec.args="http://mmisw.org/ont/mmi/device"
 # Use Graphviz to generate the desired graphical representation, eg:
 $ dot -Tpng device.dot > device.png
 
-NOTE: The implementation is functional for both classes and individuals but
+Call the program with no arguments to get a synopsis of usage.
+
+Please note: 
+
+- The implementation is functional for both classes and individuals but
 incomplete in many aspects. Command-line interface is not very flexible and not
-all parameters in the code are processed. The code structure is intended to
-facilitate various possible implementations of a very generic IDotGenerator
-interface. Only a Jena-based implementation is included at the moment. A next
-version will probably include an implementation based on the OWL API -
-http://owlapi.sf.net/.
+all parameters in the code are processed. Handling of anonymous nodes is
+minimal, so there may be missing elements in the output; "null" labels or
+descriptions in the output may also occur.
+
+- The code structure is very preliminary but intended to facilitate various
+possible implementations of a generic IDotGenerator interface. Only a Jena-based
+implementation is included at the moment. A next version will probably include
+an implementation based on the OWL API - http://owlapi.sf.net/.
 
 Enjoy.
