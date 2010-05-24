@@ -17,6 +17,7 @@ import org.mmisw.ont2dot.util.O2dUtil;
 public abstract class BaseDotGenerator implements IDotGenerator {
 	
 	public static final boolean DEFAULT_INCLUDE_IMPORTS = false;
+	public static final boolean DEFAULT_INCLUDE_URLS = false;
 	public static final boolean DEFAULT_INCLUDE_LEGEND = false;
 	
 	
@@ -45,6 +46,8 @@ public abstract class BaseDotGenerator implements IDotGenerator {
 	protected PrintWriter pw;
 	
 	protected boolean includeImports = DEFAULT_INCLUDE_IMPORTS;
+	
+	protected boolean includeUrls = DEFAULT_INCLUDE_URLS;
 
 	protected boolean includeLegend = DEFAULT_INCLUDE_LEGEND;
 	
@@ -82,9 +85,10 @@ public abstract class BaseDotGenerator implements IDotGenerator {
 	}
 
 	
-	/**
-	 * @param include
-	 */ 
+	public void setIncludeUrls(boolean include) {
+		this.includeUrls = include;
+	}
+	
 	public void setIncludeImports(boolean include) {
 		this.includeImports = include;
 	}

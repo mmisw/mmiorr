@@ -26,6 +26,7 @@ public class Ont2Dot {
 		"\n" +
 		"options:\n" +
 		"  --includeImports\n" +
+		"  --includeUrls\n" +
 		"  --noRdfsLabel\n" +
 		"  --includeRdfsComment\n" +
 		"  --includeLegend\n" +
@@ -62,6 +63,7 @@ public class Ont2Dot {
 		
 		// ensure defaults:
 		dotGenerator.setIncludeImports(false);
+		dotGenerator.setIncludeUrls(false);
 		dotGenerator.setUseLabel(true);
 		dotGenerator.includeRdfsComment(false);
 		dotGenerator.setIncludeLegend(false);
@@ -77,6 +79,10 @@ public class Ont2Dot {
 			else if ( args[arg].equals("--includeImport") ) {
 				dotGenerator.setIncludeImports(true);
 				header += "--includeImport " + "\n";
+			}
+			else if ( args[arg].equals("--includeUrls") ) {
+				dotGenerator.setIncludeUrls(true);
+				header += "--includeUrls " + "\n";
 			}
 			else if ( args[arg].equals("--noRdfsLabel") ) {
 				dotGenerator.setUseLabel(false);

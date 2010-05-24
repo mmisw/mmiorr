@@ -15,10 +15,15 @@ public interface IDotGenerator {
 	public void loadModel(String ontUri) ;
 
 	/**
+	 * Include URL=entityURI to the generated elements?
+	 */
+	public void setIncludeUrls(boolean include) ;
+
+	/**
 	 * Should the imports be loaded as well?
 	 */
 	public void setIncludeImports(boolean include) ;
-
+	
 	/**
 	 * 
 	 * @param includeLegend

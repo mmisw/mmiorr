@@ -197,8 +197,11 @@ public class DotGeneratorJenaImpl extends BaseDotGenerator {
 				label = "{" +label + suffix+ "}";
 				shapeRecord = "shape=record,";
 			}
+			
+			String urlStr = includeUrls ? " URL=\"" +clazz.getURI()+ "\"" : "";
 		
-			pw.println("  \"" +name+ "\"   [ " +shapeRecord+ " label=\"" +label+ "\" ]");
+			pw.println("  \"" +name+ "\"   [ " +shapeRecord+ " label=\"" +label+ "\" " +
+					urlStr+ " ]");
 			
 			_generatedClasses.add(clazz);
 		}
@@ -258,7 +261,11 @@ public class DotGeneratorJenaImpl extends BaseDotGenerator {
 						fields.add("{" +prdLabel+ "|" +objLabel+ "}");
 					}
 					else {
-						dataRangeEdges.append("  \"" +clazz.getURI()+ "\"  ->  \"" +id+ "\"  [ label=\"" +prdLabel+ "\" ]; \n");
+						String urlStr = includeUrls ? " URL=\"" +prop.getURI()+ "\"" : "";
+						
+						dataRangeEdges.append("  \"" +clazz.getURI()+ "\"  ->  " +
+								"\"" +id+ "\"  [ label=\"" +prdLabel+ "\" " +
+								urlStr+ " ]; \n");
 					}
 				}
 			}
@@ -367,7 +374,10 @@ public class DotGeneratorJenaImpl extends BaseDotGenerator {
 					}
 				}
 				
-				pw.println("  \"" +instName+ "\"   [ " +shapeRecord+ " label=\"" +label+ "\" ]");
+				String urlStr = includeUrls ? " URL=\"" +instance.getURI()+ "\"" : "";
+				
+				pw.println("  \"" +instName+ "\"   [ " +shapeRecord+ " label=\"" +label+ "\" " +
+						urlStr+ " ]");
 				
 				_generatedInstances.add(instance);
 			}
@@ -466,8 +476,11 @@ public class DotGeneratorJenaImpl extends BaseDotGenerator {
 					
 					if ( _generatedClasses.contains(domain) && _generatedClasses.contains(range) ) {
 
-						String label = _info.getLabel(prop);;
-						pw.println("  \"" +domainName+ "\"  ->  \"" +rangeName+ "\"  [ label=\"" +label+ "\" ]");
+						String urlStr = includeUrls ? " URL=\"" +prop.getURI()+ "\"" : "";
+						
+						String label = _info.getLabel(prop);
+						pw.println("  \"" +domainName+ "\"  ->  \"" +rangeName+ "\"  [ label=\"" +label+ "\" " +
+								urlStr+ " ]");
 					}
 				}
 			}
@@ -515,7 +528,10 @@ public class DotGeneratorJenaImpl extends BaseDotGenerator {
 			if ( _generatedClasses.contains(sbj) 
 			||   _generatedInstances.contains(sbj) ) 
 			{
-				pw.println("  \"" +sbjName+ "\"  ->  \"" + objName+ "\"  [ label=\"" +label+ "\" ]");
+				String urlStr = includeUrls ? " URL=\"" +prd.getURI()+ "\"" : "";
+				
+				pw.println("  \"" +sbjName+ "\"  ->  \"" + objName+ "\"  [ label=\"" +label+ "\" " +
+						urlStr+ " ]");
 			}
 		}
 		
