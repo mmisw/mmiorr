@@ -4,6 +4,17 @@ $Id$
 
 ChangeLog
 
+2010-06-14   1.7.0.beta3
+	Continuing unregistration of ontology (issue #242)
+	- OntConfig: new BIOPORTAL_REST_URL property similar to the one in ontmd2 module, ie.,
+	  URL of the "aquaportal" REST endpoint. Keeping the prefix "bioportal" because that's the
+	  one used in ontmd2 (so it's easier to track-- TODO: general clean-up).
+	  
+	- New OntologyDeleter for the basic removal from the bioportal back-end
+	- OntServelet._unregisterOntology: TODO remove ontology from relevant named graphs.
+	
+	
+
 2010-05-23   1.7.0.beta2
 	- Issue #243 fixed.
 	  UnversionedConverter: omv:version obtained from the model itself with a new utility

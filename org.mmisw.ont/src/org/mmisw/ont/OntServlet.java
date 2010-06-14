@@ -22,6 +22,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.admin.AdminDispatcher;
+import org.mmisw.ont.admin.OntologyDeleter;
 import org.mmisw.ont.graph.IOntGraph;
 import org.mmisw.ont.graph.OntGraph;
 import org.mmisw.ont.sparql.SparqlDispatcher;
@@ -826,16 +827,54 @@ public class OntServlet extends HttpServlet {
 			return;
 		}
 
-		// TODO ...
-		StringBuffer result = new StringBuffer();
-		result.append("removing " +ontUri+ " ... (NOT REALLY)\n");
-			
+		String version = Util.getParam(req.request, "version", "");
+		if ( version.length() == 0 ) {
+			req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing ontology version");
+			return;
+		}
 		
+		String uriAndVerion = "ontUri=" +ontUri+ "  version=" +version;
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug("_unregisterOntology: Deleting " +uriAndVerion);
+		}
+		
+		// get ontology ID (version specific) from the database
+		Ontology ontology = db.getOntologyVersion(ontUri, version);
+		if ( ontology == null ) {
+			if ( log.isDebugEnabled() ) {
+				log.debug("_unregisterOntology: NOT FOUND " +uriAndVerion);
+			}
+			req.response.sendError(HttpServletResponse.SC_NOT_FOUND, uriAndVerion);
+			return;
+		}
+		
+		// TODO capture sessionId appropriately
+		String sessionId = "9c188a9b8de0fe0c21b9322b72255fb939a68bb2";
+		OntologyDeleter del = new OntologyDeleter(sessionId , ontology.getId());
+		
+		String result;
+		try {
+			result = del.execute();
+		}
+		catch (Exception e) {
+			throw new ServletException("Error requesting deletion", e);
+		}
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug("_unregisterOntology: " +uriAndVerion+ ". Result from aquaportal " +result);
+		}
+		
+		if ( result.startsWith("OK:") ) {
+			// deletion successful.  Remove ontology from graph:
+			// TODO Remove ontology from relevant graphs
+//			ontGraph.
+		}
+
 		req.response.setContentType("text/plain");
 		ServletOutputStream os = req.response.getOutputStream();
 		IOUtils.write(result, os);
 		os.close();
 	}
-
 
 }

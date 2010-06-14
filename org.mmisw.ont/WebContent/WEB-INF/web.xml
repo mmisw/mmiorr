@@ -59,6 +59,12 @@
 			<param-name>agraph.ts.name</param-name>
 			<param-value>@agraph.ts.name@</param-value>
 		</init-param>
+
+		<init-param>
+			<param-name>bioportal.rest.url</param-name>
+			<param-value>@bioportal.rest.url@</param-value>
+		</init-param>
+
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet-mapping>
