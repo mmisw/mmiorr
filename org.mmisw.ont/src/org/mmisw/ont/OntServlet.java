@@ -817,7 +817,19 @@ public class OntServlet extends HttpServlet {
 
 	
 	/**
-	 * _unr=ontUri
+	 * Unregisters a concrete version of an ontology.
+	 * 
+	 * Required parameter: _unr=ontUri
+	 * Option parameter: version=vvv
+	 * 
+	 * If the ontUri is "ont"-resolvable and can be parsed as an MmiUri, then the version will be
+	 * extracted from it if it's in versioned form. If both the "version" parameter and the version
+	 * from the MmiUri can be obtained, then it checks that they are the same. If it is a non-versioned
+	 * MmiUri, then the ontUri is adjusted to include the given version for purposes of searching
+	 * the database.
+	 * 
+	 * <p>
+	 * TODO: removal of ontology statements from the relevant named graphs.
 	 */
 	private void _unregisterOntology(Request req) throws ServletException, IOException {
 		
@@ -827,11 +839,56 @@ public class OntServlet extends HttpServlet {
 			return;
 		}
 
-		String version = Util.getParam(req.request, "version", "");
-		if ( version.length() == 0 ) {
-			req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing ontology version");
-			return;
+		// Determine the concrete version to be deleted.
+		// This is based on the parameter "version" or the versioned URI, as appropriate.
+		
+		// version from parameter "version" if given:
+		String version = Util.getParam(req.request, "version", null);
+
+		// version from versioned ontology mmiUri, if given:
+		String version2 = null;
+		
+		if ( OntUtil.isOntResolvableUri(ontUri) ) {
+			try {
+				MmiUri mmiUri = new MmiUri(ontUri);
+				version2 = mmiUri.getVersion();
+				
+				if ( version2 == null || version2.length() == 0 ) {
+					// insert the version fragment so we are able to search in the database
+					ontUri = mmiUri.copyWithVersion(version).getOntologyUri();
+					if ( log.isDebugEnabled() ) {
+						log.debug("_unregisterOntology: inserted version fragment: " +ontUri);
+					}
+
+				}
+			}
+			catch (URISyntaxException e) {
+				// Not an MmiUri. Just try to use the argument as given:
+				// continue below.
+			}
 		}
+
+		if ( version == null || version.length() == 0 ) {
+			if ( version2 == null || version2.length() == 0 ) {
+				req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing ontology version");
+				return;
+			}
+			
+			// take version from the MmiUri:
+			version = version2;
+		}
+		else {
+			// version parameter given.
+			// If the two versions are given, check they are the same:
+			if ( version2 != null && ! version.equals(version2) ) {
+				req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "version mismatch");
+				return;
+			}
+		}
+		
+		// we have the desired version:
+		assert version != null && version.length() > 0 ;
+
 		
 		String uriAndVerion = "ontUri=" +ontUri+ "  version=" +version;
 		
