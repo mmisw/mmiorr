@@ -97,3 +97,20 @@ where {
     ?prop rdfs:range ?range.
 }
 
+# subgraphs of a given graph
+PREFIX rdfg: <http://www.w3.org/2004/03/trix/rdfg-1/>
+SELECT ?subgraph ?supergraph 
+WHERE { ?subgraph rdfg:subGraphOf ?supergraph }
+limit 10
+
+# properties in a given (super)graph:
+PREFIX rdfg:<http://www.w3.org/2004/03/trix/rdfg-1/>
+SELECT ?s ?p ?o 
+WHERE { ?g rdfg:subGraphOf <http://mmisw.org/ont/mmiorr-internal/graphs/ooi-ci>
+  GRAPH ?g { 
+    ?s ?p ?o
+  }
+}
+limit 10
+
+
