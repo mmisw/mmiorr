@@ -2,6 +2,12 @@ org.mmisw.ontmd: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-06-14   1.9.0.alpha
+	Issue #242: "admin interface to remove an ontology" implemented:
+	- Changes in Ont and iserver modules completed.
+	- Changes in this ontmd module completed.
+	Note: the deletion option is only available for the ORR admin user.
+
 2010-04-xx   1.9.0.alpha
 	Continuing implementation of admin operations
 	- unregister ontology
