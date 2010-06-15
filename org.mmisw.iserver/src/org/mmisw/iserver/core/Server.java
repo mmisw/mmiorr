@@ -2852,7 +2852,9 @@ public class Server implements IServer {
 		
 		try {
 			if ( ! OntServiceUtil.unregisterOntology(ontUri, version) ) {
-				error = "Unregister ontology: Ont service could not perform the removal. Please try again later.";
+				error = "Unregister ontology: Ont service could not perform the removal. " +
+						"Please try again later.\n\n" +
+						"If the problem persists, please notify the developers.";
 			}
 		}
 		catch (Exception e) {

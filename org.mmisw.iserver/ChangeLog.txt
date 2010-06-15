@@ -3,8 +3,10 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
-2010-04-xx   1.9.0.alpha
-	Adding
+2010-06-14   1.9.0.alpha
+	Issue #242: "admin interface to remove an ontology" implemented:
+	- Changes in Ont module completed.
+	- Changes in this iserver module completed.
 
 2009-12-28   1.8.1.alpha
 	- preliminary Server.createGroupsOntology (management of internal resources still under revision) 
