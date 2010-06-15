@@ -5,14 +5,34 @@ $Id$
 ChangeLog
 
 2010-06-14   1.7.0.beta3
-	Continuing unregistration of ontology (issue #242)
+	Issue #242: "admin interface to remove an ontology" implemented:
 	- OntConfig: new BIOPORTAL_REST_URL property similar to the one in ontmd2 module, ie.,
 	  URL of the "aquaportal" REST endpoint. Keeping the prefix "bioportal" because that's the
 	  one used in ontmd2 (so it's easier to track-- TODO: general clean-up).
 	  
 	- New OntologyDeleter for the basic removal from the bioportal back-end
-	- OntServelet._unregisterOntology: TODO remove ontology from relevant named graphs.
 	
+	- OntServlet._unregisterOntology: calls the above and also updates the graphs resource
+	  and the triple store.
+	
+	- Moved getRegisteredOntologyLatestVersion(String potentialOntUri) from OntServlet to Db.
+	
+	- New org.mmisw.ont.vocabulary.Rdfg for definitions in http://www.w3.org/2004/03/trix/rdfg-1/
+	
+	Update of new graphs:
+	- Note: The graphs resource (<internal-dir>/graphs.rdf) was not updated upon regular submission
+	  of a new ontology. That is, the following statement was not added to it:
+	     <new ontology URI> rdf:type <rdfg:Graph>. 
+	  This is done now, see call to adminDispatcher.newGraph(ownGraphUri) in OntGraphAG._loadOntology.
+	  Prior to this change, the following query:
+			PREFIX rdfg: <http://www.w3.org/2004/03/trix/rdfg-1/>
+			PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+			SELECT ?graph 
+			WHERE { ?graph rdf:type rdfg:Graph }
+	  returned only a couple of solutions corresponding to previous tests with the direct registration 
+	  mechanism, which was the only method passing non-null value for the graphId, thus triggering the 
+	  whole addition of graph-related statements.
+	  
 	
 
 2010-05-23   1.7.0.beta2

@@ -89,4 +89,15 @@ public interface IOntGraph {
 	 */
 	public void loadOntology(Ontology ontology, String graphId) throws Exception;
 
+	
+	/**
+	 * Removes an ontology.
+	 * This means, 
+	 * i) removes all statements associated with the "proper" graph (ie., the
+	 * graph whose URI is the same as the ontology URI); 
+	 * ii) removes all subGraphOf relationships with the "proper" graph as subject.
+	 * 
+	 * @param ontology
+	 */
+	public void removeOntology(Ontology ontology) throws Exception ;
 }

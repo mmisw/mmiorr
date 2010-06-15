@@ -305,4 +305,12 @@ public class OntGraphMem implements IOntGraph {
 		}
 		
 	}
+
+	/**
+	 * NOT IMPLEMENTED (focus is on OntGrapghAG implementation)
+	 */
+	public void removeOntology(Ontology ontology) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 }

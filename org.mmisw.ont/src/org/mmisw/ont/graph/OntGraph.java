@@ -88,4 +88,8 @@ public class OntGraph implements IOntGraph {
 		_impl.reinit(withInference);
 	}
 
+	public void removeOntology(Ontology ontology) throws Exception {
+		_impl.removeOntology(ontology);
+	}
+
 }

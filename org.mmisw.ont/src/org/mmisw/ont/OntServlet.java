@@ -711,7 +711,7 @@ public class OntServlet extends HttpServlet {
 			return;
 		}
 
-		Ontology ontology = getRegisteredOntologyLatestVersion(ontUri);
+		Ontology ontology = db.getRegisteredOntologyLatestVersion(ontUri);
 		
 		if ( ontology == null ) {
 			if ( log.isDebugEnabled() ) {
@@ -721,7 +721,7 @@ public class OntServlet extends HttpServlet {
 			return;
 		}
 		
-		// Load the stored stored ontology:
+		// Load the stored ontology:
 		if ( log.isDebugEnabled() ) {
 			log.debug("_loadOntologyIntoGraph: loading " +ontUri);
 		}
@@ -739,38 +739,6 @@ public class OntServlet extends HttpServlet {
 		os.close();
 	}
 
-	/**
-	 * Gets the latest version of a registered ontology
-	 * 
-	 * @param potentialOntUri. The URI that will be used to try to find a corresponding registered
-	 *                     ontology. If this is an "ont resolvable" uri, any explicit version is
-	 *                     ignored.
-	 * @return the ontology if found; null if not found.
-	 * @throws ServletException
-	 */
-	private Ontology getRegisteredOntologyLatestVersion(String potentialOntUri) throws ServletException {
-		log.debug("getRegisteredOntologyLatestVersion: " +potentialOntUri);
-		Ontology ontology = null;
-		if ( OntUtil.isOntResolvableUri(potentialOntUri) ) {
-			try {
-				MmiUri mmiUri = new MmiUri(potentialOntUri);
-				// ignore version:
-				mmiUri = mmiUri.copyWithVersion(null);
-				ontology = db.getMostRecentOntologyVersion(mmiUri);
-			}
-			catch (URISyntaxException e) {
-				// Not an MmiUri. Just try to use the argument as given:
-				ontology = db.getOntology(potentialOntUri);
-			}
-		}
-		else {
-			ontology = db.getOntology(potentialOntUri);
-		}
-		
-		return ontology;
-	}
-
-	
 	/**
 	 * _usri=username
 	 */
@@ -828,8 +796,6 @@ public class OntServlet extends HttpServlet {
 	 * MmiUri, then the ontUri is adjusted to include the given version for purposes of searching
 	 * the database.
 	 * 
-	 * <p>
-	 * TODO: removal of ontology statements from the relevant named graphs.
 	 */
 	private void _unregisterOntology(Request req) throws ServletException, IOException {
 		
@@ -923,9 +889,15 @@ public class OntServlet extends HttpServlet {
 		}
 		
 		if ( result.startsWith("OK:") ) {
-			// deletion successful.  Remove ontology from graph:
-			// TODO Remove ontology from relevant graphs
-//			ontGraph.
+			// successful deletion from bioportal back-end.  
+			// Remove ontology from graph:
+			try {
+				ontGraph.removeOntology(ontology);
+			}
+			catch (Exception e) {
+				log.error("Error removing ontology from graph", e);
+				throw new ServletException("Error removing ontology from graph", e);
+			}
 		}
 
 		req.response.setContentType("text/plain");

@@ -83,7 +83,7 @@ public class Db {
 	 * @throws ServletException
 	 * @throws SQLException 
 	 */
-	Ontology getOntologyVersion(String ontologyUri, String version) throws ServletException {
+	Ontology getOntologyVersion(final String ontologyUri, final String version) throws ServletException {
 		Connection _con = null;
 		try {
 			_con = getConnection();
@@ -100,6 +100,7 @@ public class Db {
 
 			if ( rs.next() ) {
 				Ontology ontology = new Ontology();
+				ontology.setUri(ontologyUri);
 				ontology.setId(rs.getString(1));
 				ontology.setOntologyId(rs.getString(2));
 				ontology.setFilePath(rs.getString(3));
@@ -359,6 +360,39 @@ public class Db {
 		Ontology ont = onts.get(0);
 		return ont;
 	}
+	
+	
+	/**
+	 * Gets the latest version of a registered ontology
+	 * 
+	 * @param potentialOntUri. The URI that will be used to try to find a corresponding registered
+	 *                     ontology. If this is an "ont resolvable" uri, any explicit version is
+	 *                     ignored.
+	 * @return the ontology if found; null if not found.
+	 * @throws ServletException
+	 */
+	public Ontology getRegisteredOntologyLatestVersion(String potentialOntUri) throws ServletException  {
+		log.debug("getRegisteredOntologyLatestVersion: " +potentialOntUri);
+		Ontology ontology = null;
+		if ( OntUtil.isOntResolvableUri(potentialOntUri) ) {
+			try {
+				MmiUri mmiUri = new MmiUri(potentialOntUri);
+				// ignore version:
+				mmiUri = mmiUri.copyWithVersion(null);
+				ontology = getMostRecentOntologyVersion(mmiUri);
+			}
+			catch (URISyntaxException e) {
+				// Not an MmiUri. Just try to use the argument as given:
+				ontology = getOntology(potentialOntUri);
+			}
+		}
+		else {
+			ontology = getOntology(potentialOntUri);
+		}
+		
+		return ontology;
+	}
+
 
 	/**
 	 * Returns the list of all ontologies in the database.

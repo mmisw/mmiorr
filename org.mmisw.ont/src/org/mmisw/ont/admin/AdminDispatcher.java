@@ -23,6 +23,7 @@ import org.mmisw.ont.Db;
 import org.mmisw.ont.JenaUtil2;
 import org.mmisw.ont.OntConfig;
 import org.mmisw.ont.OntServlet.Request;
+import org.mmisw.ont.vocabulary.Rdfg;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -48,12 +49,6 @@ public class AdminDispatcher {
 	private static File internalDir;
 	private static File graphsFile;
 
-	private static final String RDFG_NS = "http://www.w3.org/2004/03/trix/rdfg-1/";
-	
-	
-	private static final Resource rdfgGraph = ResourceFactory.createResource(RDFG_NS + "Graph");
-	private static final Property rdfgSubGraphOf = ResourceFactory.createProperty(RDFG_NS + "subGraphOf");
-	
 	
 	private static final String[][] SUPPORTING_NAMESPACES = new String[][] {
 			{ "skos", "http://www.w3.org/2008/05/skos#" }, 
@@ -197,12 +192,40 @@ public class AdminDispatcher {
 		os.close();
 	}
 
+	
+	
+
+	/**
+	 * Adds a new graph to the internal graphs resource.
+	 * 
+	 * @param graphUri    URI of the graph. Assumed to be well-formed.
+	 */
+	public void newGraph(String graphUri) {
+		
+		Model model = getGraphsModel();
+		
+		Resource subGraphRes = ResourceFactory.createResource(graphUri);
+		
+		Statement stmt = ResourceFactory.createStatement(subGraphRes, RDF.type, Rdfg.Graph);
+		model.add(stmt);
+		log.debug("newGraph: added statement: " +stmt);
+		
+		try {
+			updateGraphsFile(model);
+		}
+		catch (Exception e) {
+			log.error("Cannot write out to file " +graphsFile, e);
+		}
+	}
+	
+
+	
 
 	/**
 	 * Updates the internal graphs resource.
 	 * 
-	 * @param subGraphUri    URI of subject of the subGraphOf property. Assumed to be wel-formed.
-	 * @param superGraphUri  URI of object of the subGraphOf property. Assumed to be wel-formed.
+	 * @param subGraphUri    URI of subject of the subGraphOf property. Assumed to be well-formed.
+	 * @param superGraphUri  URI of object of the subGraphOf property. Assumed to be well-formed.
 	 * 
 	 * @return corresponding statements suitable to update the main graph.
 	 */
@@ -215,9 +238,9 @@ public class AdminDispatcher {
 		Resource subGraphRes = ResourceFactory.createResource(subGraphUri);
 		Resource superGraphRes = ResourceFactory.createResource(superGraphUri);
 		
-		statements.add(ResourceFactory.createStatement(subGraphRes, RDF.type, rdfgGraph));
-		statements.add(ResourceFactory.createStatement(superGraphRes, RDF.type, rdfgGraph));
-		statements.add(ResourceFactory.createStatement(subGraphRes, rdfgSubGraphOf, superGraphRes));
+		statements.add(ResourceFactory.createStatement(subGraphRes, RDF.type, Rdfg.Graph));
+		statements.add(ResourceFactory.createStatement(superGraphRes, RDF.type, Rdfg.Graph));
+		statements.add(ResourceFactory.createStatement(subGraphRes, Rdfg.subGraphOf, superGraphRes));
 		
 		for (Statement stmt : statements) {
 			model.add(stmt);
@@ -234,6 +257,38 @@ public class AdminDispatcher {
 		return statements;
 	}
 	
+	
+	
+	/**
+	 * Updates the internal graphs resource by removing all statements associated with given subGraphUri.
+	 * So it removes:
+	 * <ul>
+	 *   <li> <code>&lt;subGraphUri> &lt;Rdfg.subGraphOf> null</code>
+	 *   <li> <code>&lt;subGraphUri> &lt;RDF.type> &lt;Rdfg.Graph></code>
+	 * </ul>
+	 * 
+	 * @param subGraphUri    URI of subject of the subGraphOf property. Assumed to be well-formed.
+	 */
+	public void removeSubGraphStatements(String subGraphUri) {
+		
+		Model model = getGraphsModel();
+		
+		Resource subGraphRes = ResourceFactory.createResource(subGraphUri);
+		
+		// remove all rdfg:subGraphOf statements:
+		model.removeAll(subGraphRes, Rdfg.subGraphOf, null);
+		
+		// remove type rdfg:Graph statement:
+		model.remove(subGraphRes, RDF.type, Rdfg.Graph);
+		
+		try {
+			updateGraphsFile(model);
+		}
+		catch (Exception e) {
+			log.error("Cannot write out to file " +graphsFile, e);
+		}
+	}
+
 	
 	public String getWellFormedGraphUri(String uri) {
 		// remove any leading/trailing angle brackets:
@@ -323,6 +378,7 @@ public class AdminDispatcher {
 	private void updateGraphsFile(Model model) throws Exception {
 		String rdf = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV");
 		_writeRdfToFile(rdf, graphsFile);
+		log.info(graphsFile+ ": model updated.");
 	}
 	
 	private static void _writeRdfToFile(String rdf, File reviewedFile) throws Exception {

@@ -97,7 +97,7 @@ where {
     ?prop rdfs:range ?range.
 }
 
-# subgraphs of a given graph
+# some subGraphOf statements
 PREFIX rdfg: <http://www.w3.org/2004/03/trix/rdfg-1/>
 SELECT ?subgraph ?supergraph 
 WHERE { ?subgraph rdfg:subGraphOf ?supergraph }
@@ -113,4 +113,22 @@ WHERE { ?g rdfg:subGraphOf <http://mmisw.org/ont/mmiorr-internal/graphs/ooi-ci>
 }
 limit 10
 
+# supergraphs of a given graph
+PREFIX rdfg: <http://www.w3.org/2004/03/trix/rdfg-1/>
+SELECT ?supergraph 
+WHERE { <http://example.org/test1> rdfg:subGraphOf ?supergraph }
+limit 10
+
+# some graphs 
+PREFIX rdfg: <http://www.w3.org/2004/03/trix/rdfg-1/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT ?graph 
+WHERE { ?graph rdf:type rdfg:Graph }
+limit 10
+
+
+# all types of a URI to see that it includes the rdfg:Graph type
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT ?type 
+WHERE { <http://localhost:8080/ont/testing/titi> rdf:type ?type }
 

@@ -18,6 +18,7 @@ import org.mmisw.ont.UnversionedConverter;
 import org.mmisw.ont.admin.AdminDispatcher;
 import org.mmisw.ont.graph.IOntGraph;
 import org.mmisw.ont.sparql.QueryResult;
+import org.mmisw.ont.vocabulary.Rdfg;
 
 import com.franz.agbase.AllegroGraph;
 import com.franz.agbase.AllegroGraphConnection;
@@ -33,6 +34,7 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 import edu.drexel.util.rdf.JenaUtil;
 
@@ -364,7 +366,7 @@ public class OntGraphAG implements IOntGraph {
 			boolean clearGraphFirst = true;
 			_loadOntology(_ag, ontology, graphId, full_path, clearGraphFirst);
 			
-			// lauch indexing of new triples in the background and return:
+			// launch indexing of new triples in the background and return:
 			boolean wait = false;
 			_ag.ts.indexNewTriples(wait);
 		}
@@ -383,12 +385,10 @@ public class OntGraphAG implements IOntGraph {
 	 * @param full_path
 	 * @param clearGraphFirst true to remove all statements associated with the graph directly associated with the
 	 *        ontology.
-	 *        
-	 * @return the URI of the user-specified graphId, if any.
 	 */
-	private String _loadOntology(Ag _ag, Ontology ontology, String graphId, String full_path, boolean clearGraphFirst) {
+	private void _loadOntology(Ag _ag, Ontology ontology, String graphId, String full_path, boolean clearGraphFirst) {
 		
-		String graphUri = null;
+		String graphUri;
 		
 		String ontologyUri = ontology.getUri();
 		String serialization;
@@ -408,7 +408,7 @@ public class OntGraphAG implements IOntGraph {
 				}
 				catch (URISyntaxException e) {
 					log.error("shouldn't happen", e);
-					return null;
+					return ;
 				}
 				log.info("To load Ont-resolvable ontology in graph.");
 			}
@@ -423,14 +423,17 @@ public class OntGraphAG implements IOntGraph {
 			serialization = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV");
 		}
 		
+		///////////////////////////////////////////////////////////////
 		// now, update graph with model captured in serialization
+		///////////////////////////////////////////////////////////////
+		
 		try {
-			// this is the graph for the ontology itself. 
+			// 'ownGraph' is the graph for the ontology itself. 
 			// All the statements in the ontology are associated with this graph.
-			String ownGraph = "<" +ontologyUri+ ">";
+			final String ownGraph = "<" +ontologyUri+ ">";
 			
 			if ( clearGraphFirst ) {
-				// first, remove all statements associated with the graph:
+				// remove all statements associated with the graph:
 				if ( log.isDebugEnabled() ) {
 					log.debug("Removing all statements in graph " +ownGraph+ " ...");
 				}
@@ -441,9 +444,12 @@ public class OntGraphAG implements IOntGraph {
 			AgUtils.parseWithTiming(_ag.ts, true, serialization, ownGraph);
 			
 			
+			// add the graph statement to the graphs resource:
+			String ownGraphUri = adminDispatcher.getWellFormedGraphUri(ownGraph);
+			adminDispatcher.newGraph(ownGraphUri);
+			
 			// now, add the subGraphOf relationship if graphId != null
 			if ( graphId != null ) {
-				String ownGraphUri = adminDispatcher.getWellFormedGraphUri(ownGraph);
 				graphUri = adminDispatcher.getWellFormedGraphUri(graphId);
 				_addSubGraph(_ag, ownGraphUri, graphUri);
 			}
@@ -453,8 +459,8 @@ public class OntGraphAG implements IOntGraph {
 			log.error("Error parsing/loading RDF in graph.", e);
 		}
 		
-		return graphUri;
 	}
+	
 	
 	/**
 	 * Updates the graphs resource and then the triple store.
@@ -485,7 +491,115 @@ public class OntGraphAG implements IOntGraph {
 		}		
 	}
 
+	public void removeOntology(Ontology ontology) throws Exception {
+		Ag _ag = new Ag();
+		try {
+			log.info("Removing: id=" +ontology.getId()+ " of ontologyId=" +ontology.getOntologyId()+ " ...");
+			_removeOntology(_ag, ontology);
+		}
+		finally {
+			_ag.end();
+		}
 
+	}
+
+	/**
+	 * i) removes all statements associated with the "proper" graph (ie., the
+	 * graph whose URI is the same as the ontology URI); 
+	 * <p>
+	 * ii) removes all subGraphOf relationships with the "proper" graph as subject.
+	 * 
+	 * @param _ag
+	 * @param ontology
+	 * @throws Exception 
+	 *        
+	 */
+	private void _removeOntology(Ag _ag, Ontology ontology) throws Exception {
+		
+		String ontologyUri = ontology.getUri();
+		
+		if ( USE_UNVERSIONED ) {
+
+			if ( OntUtil.isOntResolvableUri(ontologyUri) ) {
+				MmiUri mmiUri;
+				try {
+					mmiUri = new MmiUri(ontologyUri);
+					ontologyUri = mmiUri.copyWithVersion(null).getOntologyUri();
+				}
+				catch (URISyntaxException e) {
+					log.error("shouldn't happen", e);
+					return ;
+				}
+				log.debug("About to remove Ont-resolvable ontology from graph.");
+			}
+			else {
+				log.debug("About to remove re-hosted ontology from graph.");
+			}
+		}
+		// Else: nothing -- just keep the given ontologyUri.
+		
+		// now, update graph:
+
+		// this is the graph for the ontology itself. 
+		// All the statements in the ontology are associated with this graph.
+		String ownGraph = "<" +ontologyUri+ ">";
+		
+		try {
+			// first, remove all statements associated with the ownGraph:
+			if ( log.isDebugEnabled() ) {
+				log.debug("Removing all statements in graph " +ownGraph+ " ...");
+			}
+			_ag.ts.removeStatements(null, null, null, ownGraph);
+		}
+		catch (AllegroGraphException e) {
+			log.error("Error removing ontology statements from graph.", e);
+			return;
+		}
+		
+		// if any, get latest version that may remain:
+		Ontology latestOntology = null;
+		try {
+			latestOntology = db.getRegisteredOntologyLatestVersion(ontologyUri);
+		}
+		catch (ServletException e) {
+			log.warn("Warning: error while trying to retrieve existing version of ontology. Ignoring error.", e);
+		}
+			
+		if ( latestOntology != null ) {
+			// there still is an existing ontology version. So, no need
+			// for more updates, ie., any existing subGraphOf statements will remain valid.
+			log.debug("_removeOntology: No need to remove subGraphOf statements");
+		}
+		else {
+			// ontologyUri completely gone.
+			// So, remove all the subGraphOf relationships with ownGraph as subject
+			String ownGraphUri = adminDispatcher.getWellFormedGraphUri(ownGraph);
+			_removeSubGraphStatements(_ag, ownGraphUri);
+		}			
+		
+	}
+
+	/**
+	 * Updates the graphs resource and then the triple store.
+	 * @param _ag
+	 * @param subGraphUri  Assumed to be well-formed
+	 * @throws AllegroGraphException
+	 */
+	private void _removeSubGraphStatements(Ag _ag, String subGraphUri) throws AllegroGraphException {
+		
+		log.debug("_removeSubGraphStatements: removing subGraphOf statements");
+		
+		// remove the statements from the graphs resource:
+		adminDispatcher.removeSubGraphStatements(subGraphUri);
+		
+		// then, update the triple store with the corresponding statements:
+		_ag.ts.removeStatements("<" +subGraphUri+ ">", "<" +Rdfg.subGraphOf.getURI()+ ">", null);
+		_ag.ts.removeStatement("<" +subGraphUri+ ">", "<" +RDF.type.getURI()+ ">", "<" +Rdfg.Graph.getURI()+ ">");
+		
+	}
+
+	
+	
 	/**
 	 * Executes a SPARQL query.
 	 * 
