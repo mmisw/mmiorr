@@ -66,13 +66,17 @@ public class OntServlet extends HttpServlet {
 	private final UriDispatcher uriDispatcher = new UriDispatcher(sparqlDispatcher);
 
 	
-	private final UriResolver uriResolver = new UriResolver(ontConfig, db, ontGraph);
+	// TODO remove UriResolver.
+//	private final UriResolver uriResolver = new UriResolver(ontConfig, db, ontGraph);
 	
 	//
 	// NOTE: Refactoring underway
 	// I keep both instances of UriResolver and the new UriResolver2.
 	private final UriResolver2 uriResolver2 = new UriResolver2(ontConfig, db, ontGraph);
 	
+	
+	// previously in UriResolver
+	private final RegularFileDispatcher regularFileDispatcher = new RegularFileDispatcher();
 	
 	
 	/**
@@ -372,7 +376,10 @@ public class OntServlet extends HttpServlet {
 				req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing uri parameter");
 				return;
 			}
-			_dispatchUri(req, ontOrEntUri);
+			if ( ! _dispatchUri(req, ontOrEntUri) ) {
+				// the explicit given uri could not be resolved, so respond with NOT_FOUND
+				req.response.sendError(HttpServletResponse.SC_NOT_FOUND, ontOrEntUri);
+			}
 			return;
 		}
 		
@@ -395,15 +402,20 @@ public class OntServlet extends HttpServlet {
 			return;
 		}
 		
+		
+		boolean resolved = false;
 
 		if ( req.mmiUri != null ) {
-			log.debug("_dispatchUri(req, req.mmiUri.getTermUri())");
-			_dispatchUri(req, req.mmiUri.getTermUri());
-			return;
+			log.debug("To dispatch MmiUri: " +req.mmiUri);
+			resolved = _dispatchUri(req, req.mmiUri.getTermUri());
 		}
 		else {
-			log.debug("_dispatchUri(req, req.fullRequestedUri)");
-			_dispatchUri(req, req.fullRequestedUri);
+			log.debug("To dispatch non-MmiUri: " +req.fullRequestedUri);
+		}
+		
+		if ( ! resolved ) {
+			// try to resolve request as a regular resource.
+			regularFileDispatcher.dispatch(req.servletContext, req.request, req.response);
 			return;
 		}
 		
@@ -442,8 +454,13 @@ public class OntServlet extends HttpServlet {
 	 * Dispatches the given uri.
 	 * If the uri corresponds to a stored ontology, then the ontology is resolved
 	 * as it were a regular self-served ontology.
+	 * If the uri corresponds to an entity (ie, that can be resolved to a non-empty result using SPARQL),
+	 * then it is dispatched here.
+	 * Otherwise, return false--not dispatched here.
+	 * 
+	 * @return true iff dispatch completed here.
 	 */
-	private void _dispatchUri(Request req, String ontOrEntUri) throws ServletException, IOException {
+	private boolean _dispatchUri(Request req, String ontOrEntUri) throws ServletException, IOException {
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("_dispatchUri: ontOrEntUri=" +ontOrEntUri);
@@ -471,7 +488,7 @@ public class OntServlet extends HttpServlet {
 						// versioned request AND explicit version parameter -> BAD REQUEST:
 						req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, 
 								"Versioned URI and \"version\" parameter requested simultaneously; both values must be equal.");
-						return;
+						return true;
 					}
 				}
 				else {
@@ -502,10 +519,11 @@ public class OntServlet extends HttpServlet {
 			req.ontology = ontology;
 			req.ontology.setUri(ontOrEntUri);
 			uriResolver2.serviceForOntology(req);
+			return true;
 		}
 		else {
-			// dispatch entity URI (not complete ontology).
-			uriDispatcher.dispatchEntityUri(req.request, req.response);
+			// try to dispatch entity URI (not complete ontology).
+			return uriDispatcher.dispatchEntityUri(req.request, req.response, ontOrEntUri);
 		}
 	}
 

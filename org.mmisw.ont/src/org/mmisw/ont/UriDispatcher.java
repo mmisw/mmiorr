@@ -50,16 +50,22 @@ public class UriDispatcher {
 
 	
 	/**
-	 * Dispatches the URI indicated with the "uri" parameter in the request.
-	 * The URI is assumed to be for a term or entity, not for a whole ontology.
+	 * Dispatches the given uri, which is assumed to be for a term or entity, not for a whole ontology.
+	 * @param request
+	 * @param response
+	 * @param entityUri
+	 * @return true iff the uri was dispatched here.
+	 * @throws ServletException
+	 * @throws IOException
 	 */
-	void dispatchEntityUri(HttpServletRequest request, HttpServletResponse response) 
+	boolean dispatchEntityUri(HttpServletRequest request, HttpServletResponse response, String entityUri) 
 	throws ServletException, IOException {
-		String entityUri = Util.getParam(request, "uri", "");
-		if ( entityUri.length() == 0 ) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing uri parameter");
-			return;
-		}
+		
+//		String entityUri = Util.getParam(request, "uri", "");
+//		if ( entityUri.length() == 0 ) {
+//			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing uri parameter");
+//			return;
+//		}
 		
 		String outFormat = Util.getParam(request, "form", "owl");
 		
@@ -68,7 +74,7 @@ public class UriDispatcher {
 		}
 		
 		if ( outFormat.equalsIgnoreCase("html") || outFormat.equalsIgnoreCase("csv") ) {
-			_dispatchUriHtml(request, response, entityUri);
+			return _dispatchUriHtml(request, response, entityUri);
 		}
 		else if ( outFormat.equalsIgnoreCase("owl")
 			 ||   outFormat.equalsIgnoreCase("rdf")	 
@@ -76,39 +82,43 @@ public class UriDispatcher {
 			 ||   outFormat.equalsIgnoreCase("json")	 
 			 ||   outFormat.equalsIgnoreCase("nt")	 
 		) {
-			_dispatchUriOntologyFormat(request, response, entityUri, outFormat);
+			return _dispatchUriOntologyFormat(request, response, entityUri, outFormat);
 		}
 		else {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "output format not recognized: " +outFormat);
-			return;
+			return true;
 		}
 	}
 
 
 	/**
 	 * Dispatches with a CONSTRUCT query.
+	 * @return true iff dispatch completed here.
 	 */
-	private void _dispatchUriOntologyFormat(HttpServletRequest request, HttpServletResponse response, 
+	private boolean _dispatchUriOntologyFormat(HttpServletRequest request, HttpServletResponse response, 
 		String entityUri, String outFormat) 
 	throws IOException, ServletException {
 		
 		String query = PROPS_CONSTRUCT_QUERY_TEMPLATE.replaceAll("\\{E\\}", entityUri);
 		
-		// note, we pass the entityUri such that, if the result es empty, then 404 is returned
-		sparqlDispatcher.execute(request, response, query, entityUri);
+		// note, pass null so the called can continue the dispatch if the query get empty result
+		String requestedEntity = null;
+		return sparqlDispatcher.execute(request, response, query, requestedEntity);
 	}
 
 
 	/**
 	 * Dispatches with a SELECT query.
+	 * @return true iff dispatch completed here.
 	 */
-	private void _dispatchUriHtml(HttpServletRequest request, HttpServletResponse response, 
+	private boolean _dispatchUriHtml(HttpServletRequest request, HttpServletResponse response, 
 		String entityUri) 
 	throws ServletException, IOException {
 		
 		String query = PROPS_SELECT_QUERY_TEMPLATE.replaceAll("\\{E\\}", entityUri);
 		
-		// note, we pass the entityUri such that, if the result es empty, then 404 is returned
-		sparqlDispatcher.execute(request, response, query, entityUri);
+		// note, pass null so the called can continue the dispatch if the query get empty result
+		String requestedEntity = null;
+		return sparqlDispatcher.execute(request, response, query, requestedEntity);
 	}
 }

@@ -93,20 +93,20 @@ public class RegularFileDispatcher {
 		out.println("<body>");
 		out.println("<br/>");
 		out.println(
-				"<div align=\"center\">" +
-				"<table>" +
-				"<tr valign=\"center\">" +
-				"<td align=\"center\">" +
-				"<a href=\"http://marinemetadata.org/semanticframework\">" +
+				"<div align=\"center\">" + "\n" +
+				"<table>" + "\n" +
+				"<tr valign=\"center\">" + "\n" +
+				"<td align=\"center\">" + "\n" +
+				"<a href=\"http://marinemetadata.org/semanticframework\">" + 
 				"<img src=\"" +contextPath + "/img/" +"semantic_framework.jpg" + "\" border=\"0\"" +
-						"alt=\"MMI Semantic Framework\"/>" +
-				"</a>" +
-				"<br/>" +
-				"<br/>" +
-				"<b>" +OntServlet.TITLE+ "</b>" +
+						"alt=\"MMI Semantic Framework\"/>" + "\n" +
+				"</a>" + "\n" +
+				"<br/>" + 
+				"<br/>" + "\n" +
+				"<b>" +OntServlet.TITLE+ "</b>" + "\n" +
 				"</br>This service is part of the " +
 				"<a href=\"http://marinemetadata.org/semanticframework\">" +
-				"MMI Semantic Framework</a>" +
+				"MMI Semantic Framework</a>" + "\n" +
 				"<br/>" +
 				"<br/>" +
 				"<font color=\"gray\" size=\"-2\">" +OntServlet.FULL_TITLE+ "</font>" +

@@ -14,6 +14,8 @@ ChangeLog
 	  no explicit format (via file extension or 'form' parameter) will resolve to "html"
 	  thus causing a redirection to the ORR portal. Previously this would resolve in 
 	  the "owl" response. 
+	- Various adjustments to properly dispatch a regular file after the normal URI 
+	  resolution steps fail.
 
 
 2010-06-15   1.9.2.alpha   (note: syncing version with iserver and orr modules)

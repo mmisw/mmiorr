@@ -27,11 +27,14 @@ import edu.drexel.util.rdf.JenaUtil;
 
 
 /**
+ * @deprecated  NOT USED anymore, to be removed.
+ * 
  * The "ont" service to resolve ontology and term URIs.
  * 
  * @author Carlos Rueda
  * @version $Id$
  */
+@Deprecated
 public class UriResolver {
 	
 	//
