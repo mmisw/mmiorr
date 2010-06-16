@@ -181,6 +181,9 @@ public class FieldWithChoose  extends HorizontalPanel implements SourcesChangeEv
 				popup.hide();
 			}
 		});
+		// Fix to issue #245:"cannot find authority abbreviation after typing a few letters"
+		// just set limit of the suggest box to the number of options
+		suggestBox.setLimit(options.size());
 		////////////////////////////////////////////////////////////
 		
 		vp.add(suggestBox);
