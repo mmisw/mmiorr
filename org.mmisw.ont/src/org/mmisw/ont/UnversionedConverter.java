@@ -72,6 +72,7 @@ public class UnversionedConverter {
 		// if Omv.version value is missing, "recover" it from omv:creationDate
 		if ( version == null ) {
 			version = JenaUtil2.getVersionFromCreationDate(model);
+			log.info("Using omv.creationDate to assign omv.version: " +version);
 		}
 
 		///////////////////////////////////////////////////////////////////

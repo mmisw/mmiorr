@@ -167,7 +167,7 @@ public class JenaUtil2 {
 	public static String getVersionFromCreationDate(OntModel model) {
 		String version = null;
 		String creationDate = JenaUtil2.getOntologyPropertyValue(model, Omv.creationDate);
-		if ( creationDate == null ) {
+		if ( creationDate != null ) {
 			version = _getVersionFromCreationDate(creationDate);
 		}
 		
