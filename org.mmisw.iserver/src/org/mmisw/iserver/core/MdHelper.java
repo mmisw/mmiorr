@@ -109,6 +109,17 @@ public class MdHelper {
 	// map: propUri -> Property
 	private static Map<String,Property> uriPropMap = new HashMap<String,Property>();
 	
+	
+	static {
+		// issue #252: "omv:version gone?"
+		// make sure omv:version is in the uriPropMap:
+		uriPropMap.put(Omv.version.getURI(), Omv.version);
+		// With this assignment, new ontologies (either created with voc2rdf, vine, or uploaded
+		// both fully-hosted and rehosted, will have the omv:version property assigned to the ontology resource.
+		// Note: This is part of the solution as the already registered ontologies with no omv:version 
+		// will need some other mechanism to re-assign it.
+	}
+	
 	// map: propUri -> AttrDef
 	private static Map<String,AttrDef> uriAttrDefMap = new HashMap<String,AttrDef>();
 	

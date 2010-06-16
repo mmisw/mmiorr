@@ -66,7 +66,13 @@ public class UnversionedConverter {
 		///////////////////////////////////////////////////////////////////
 		// version:
 		// bug #243 String version = "Latest terms per " +mmiUri.getVersion();
-		String version = JenaUtil2.getOmvVersion(model);
+		String version = JenaUtil2.getOntologyPropertyValue(model, Omv.version);
+		
+		// issue 252: "omv:version gone?"
+		// if Omv.version value is missing, "recover" it from omv:creationDate
+		if ( version == null ) {
+			version = JenaUtil2.getVersionFromCreationDate(model);
+		}
 
 		///////////////////////////////////////////////////////////////////
 		// final URI is just the mmiUri but without version:
@@ -231,7 +237,6 @@ public class UnversionedConverter {
 		
 		return model;
 	}
-	
 	
 	/**
 	 * Replaces a namespace in a model.

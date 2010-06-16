@@ -2,6 +2,10 @@ org.mmisw.ontmd: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-06-15   1.9.2.alpha   (note: syncing version with iserver and Ont modules)
+	Fixed issue #252: "omv:version gone?"
+	Relevant changes only in the Ont and iserver modules.
+
 2010-06-15   1.9.1.alpha
 	- Fixed issue #245:"cannot find authority abbreviation after typing a few letters"
 	  FieldWithChoose: just set limit of the suggest box to the number of options.

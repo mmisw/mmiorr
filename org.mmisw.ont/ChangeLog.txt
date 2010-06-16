@@ -4,6 +4,22 @@ $Id$
 
 ChangeLog
 
+2010-06-15   1.9.2.alpha   (note: syncing version with iserver and orr modules)
+	Issue #252: "omv:version gone?".
+	- In general, the solution is to obtain a synthetic omv.version value taken from omv.creationDate value.
+	- Methods created as part of the fix:
+		- JenaUtil2.getVersionFromCreationDate(OntModel model)
+		- JenaUtil2.setVersionFromCreationDateIfNecessary(OntModel ontModel)
+	  Called by:
+	  	- UnversionedConverter: to take care of adding omv.version to the unversioned response
+	  	- UriResolver2: for cases where UnversionedConverter is not used.
+	  	
+	- Note that the solution above is to take care of already registered ontologies that are missing
+	  the omv.version property. The iserver module also has a corresponding fix so new submissions 
+	  now will have this property assigned.
+	  
+	  
+	
 2010-06-14   1.7.0.beta3
 	Issue #242: "admin interface to remove an ontology" implemented:
 	- OntConfig: new BIOPORTAL_REST_URL property similar to the one in ontmd2 module, ie.,

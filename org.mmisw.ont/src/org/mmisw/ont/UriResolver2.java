@@ -446,6 +446,14 @@ public class UriResolver2 {
 			if ( req.version == null && req.mmiUri != null && req.mmiUri.getVersion() == null ) {
 				model = UnversionedConverter.getUnversionedModel(originalModel, req.mmiUri);
 			}
+			// issue #252: "omv:version gone?"
+			else {
+				String assignedVersion = JenaUtil2.setVersionFromCreationDateIfNecessary(model);
+				if ( assignedVersion != null ) {
+					// there actually was a synthetic assignment to omv.version
+					log.info("synthetic assignment to omv.version: " +assignedVersion);
+				}
+			}
 
 			resp = new OntologyResponse(model);
 		}
