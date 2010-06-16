@@ -293,31 +293,33 @@ public class OntologyTable extends FlexTable {
 			
 			Widget nameWidget;
 			
-			Hyperlink hlink = new Hyperlink(name, historyToken);
+			Hyperlink nameLink = new Hyperlink(name, historyToken);
+			Hyperlink uriLink = new Hyperlink(uri, historyToken);
+			
 			boolean isTesting = Util.isTestingOntology(oi);
 			boolean isInternal = isTesting ? false : Util.isInternalOntology(oi);
 			if ( isTesting || isInternal ) {
 				// add a mark
 				HorizontalPanel hp = new HorizontalPanel();
-				hp.add(hlink);
+				hp.add(nameLink);
 				HTML html = new HTML(isTesting ? TESTING_ONT_MARK: INTERNAL_ONT_MARK);
 				html.setTitle(isTesting ? TESTING_ONT_TOOLTIP : INTERNAL_ONT_TOOLTIP);
 				hp.add(html);
 				nameWidget = hp;
 			}
 			else {
-				nameWidget = hlink;
+				nameWidget = nameLink;
 			}
-
-			if ( clickListenerToHyperlinks != null ) {
-				hlink.addClickListener(clickListenerToHyperlinks);
-			}
-				
 
 			nameWidget.setTitle(tooltip);
-			
-			Widget uriWidget = new Hyperlink(uri, historyToken);
-			
+
+			if ( clickListenerToHyperlinks != null ) {
+				nameLink.addClickListener(clickListenerToHyperlinks);
+				// issue #257:"version selection window remains open"
+				// the listener was not added to the uri. Fixed.
+				uriLink.addClickListener(clickListenerToHyperlinks);
+			}
+				
 			int col = 0;
 			if ( quickInfo != null ) {
 				flexPanel.setWidget(row, col, quickInfo.getWidget(oi, includeVersionInLinks, !isVersionsTable));
@@ -327,7 +329,7 @@ public class OntologyTable extends FlexTable {
 				col++;
 			}
 			
-			flexPanel.setWidget(row, col, uriWidget);
+			flexPanel.setWidget(row, col, uriLink);
 			flexPanel.getFlexCellFormatter().setAlignment(row, col, 
 					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 			);

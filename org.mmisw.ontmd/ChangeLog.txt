@@ -2,6 +2,10 @@ org.mmisw.ontmd: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-06-16   1.9.3.alpha
+	Fixed issue #257:"version selection window remains open"
+	- OntologyTable: add listener also to the uri element.
+
 2010-06-15   1.9.2.alpha   (note: syncing version with iserver and Ont modules)
 	Fixed issue #252: "omv:version gone?"
 	Relevant changes only in the Ont and iserver modules.
