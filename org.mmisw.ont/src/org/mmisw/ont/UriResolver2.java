@@ -125,6 +125,9 @@ public class UriResolver2 {
 			if ( req.outFormat.equalsIgnoreCase("owl")
 			||   req.outFormat.equalsIgnoreCase("rdf")
 			) {
+				if ( log.isDebugEnabled() ) {
+					log.debug(this.getClass().getName()+ ": Serializing to RDF/XML-ABBREV");
+				}
 				req.response.setContentType("Application/rdf+xml");
 //				is = OntServlet.serializeModel(model, "RDF/XML-ABBREV");
 				OntServlet.serializeModelToOutputStream(model, "RDF/XML-ABBREV", os);
@@ -157,9 +160,6 @@ public class UriResolver2 {
 				else {
 					ontologyUri = req.fullRequestedUri;
 				}
-				
-				//the "old" ontmd mechanism:
-				//String url = "http://mmisw.org/ontmd?ontologyUri=" +ontologyUri;
 				
 				String portalServiceUrl = OntConfig.Prop.PORTAL_SERVICE_URL.getValue();
 				
@@ -413,6 +413,10 @@ public class UriResolver2 {
 	 */
 	void serviceForOntology(Request req) throws ServletException, IOException {
 		this.req = req;
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug("serviceForOntology: req: " +req);
+		}
 		
 		Response resp = null;
 		

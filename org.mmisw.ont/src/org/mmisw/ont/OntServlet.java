@@ -71,14 +71,12 @@ public class OntServlet extends HttpServlet {
 	//
 	// NOTE: Refactoring underway
 	// I keep both instances of UriResolver and the new UriResolver2.
-	// uriResolver2 is used only when the parameter "ur2" is included in the request
-	// but also in other requests as I moved to it instead of original UriResolver.
 	private final UriResolver2 uriResolver2 = new UriResolver2(ontConfig, db, ontGraph);
 	
 	
 	
 	/**
-	 * A request object. It keep info associated with the request from the client.
+	 * A request object. It keeps info associated with the request from the client.
 	 */
 	public class Request {
 		final ServletContext servletContext;
@@ -163,40 +161,42 @@ public class OntServlet extends HttpServlet {
 			version = versionTest;
 
 			if ( log.isDebugEnabled() ) {
-				List<String> pcList = Util.getHeader(request, "PC-Remote-Addr");
-				log.debug("__Request: fullRequestedUri: " +fullRequestedUri);
-
-				StringBuilder sbParams = new StringBuilder("{");
-				Map<String, String[]> params = Util.getParams(request);
-				for ( String key: params.keySet() ) {
-					sbParams.append(key+ "=>" + Arrays.asList(params.get(key))+ ",");	
-				}
-				sbParams.append("}");
-				log.debug("                    Params: " +sbParams);
-
-				
-				log.debug("                 user-agent: " +userAgentList);
-				log.debug("             PC-Remote-Addr: " +pcList);
-				log.debug("             Accept entries: " +accept.getEntries());
-				log.debug("           Dominating entry: \"" +accept.dominating+ "\"");
-
-				// filter out Googlebot?
-				if ( false ) {   // Disabled as the robots.txt is now active.
-					for ( String ua: userAgentList ) {
-						if ( ua.matches(".*Googlebot.*") ) {
-							log.debug("returning NO_CONTENT to googlebot");
-							try {
-								response.sendError(HttpServletResponse.SC_NO_CONTENT);
-							}
-							catch (IOException ignore) {
-							}
-							return;
-						}
-					}
-				}
+				_debug();
 			}
-			
+		}
 
+
+		private void _debug() {
+			List<String> pcList = Util.getHeader(request, "PC-Remote-Addr");
+			String dominating = accept.dominating == null ? null : "\"" +accept.dominating+ "\"";
+			log.debug("__Request: fullRequestedUri: " +fullRequestedUri);
+
+			StringBuilder sbParams = new StringBuilder("{");
+			Map<String, String[]> params = Util.getParams(request);
+			for ( String key: params.keySet() ) {
+				sbParams.append(key+ "=>" + Arrays.asList(params.get(key))+ ",");	
+			}
+			sbParams.append("}");
+			log.debug("                     Params: " +sbParams);
+			
+			log.debug("                 user-agent: " +userAgentList);
+			log.debug("             PC-Remote-Addr: " +pcList);
+			log.debug("             Accept entries: " +accept.getEntries());
+			log.debug("           Dominating entry: " +dominating);
+			
+			log.debug("                     mmiUri: " +mmiUri);
+			log.debug("                  outFormat: " +outFormat);
+			log.debug("                    version: " +version);			
+		}
+		
+		public String toString() {
+			return "<" +
+				"fullRequestedUri=" +fullRequestedUri+
+				" mmiUri=" +mmiUri+
+				" outFormat=" +outFormat+
+				" version=" +version+
+				">"
+			;			
 		}
 	}
 	
@@ -246,8 +246,34 @@ public class OntServlet extends HttpServlet {
 	}
 	
 	
+	/**
+	 * If userAgentList contains Googlebot, it dispatches the request with a
+	 * NO_CONTENT response and returns true; otherwise returns false.
+	 */
+	private boolean _filterOutGooglebot(Request req) {
+		for ( String ua: req.userAgentList ) {
+			if ( ua.matches(".*Googlebot.*") ) {
+				log.debug("returning NO_CONTENT to googlebot");
+				try {
+					req.response.sendError(HttpServletResponse.SC_NO_CONTENT);
+				}
+				catch (IOException ignore) {
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	private void dispatch(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		Request req = new Request(getServletContext(), request, response);
+		
+		if ( false ) {   // Disabled as the robots.txt is now active.
+			if ( _filterOutGooglebot(req) ) {
+				return;
+			}
+		}
 		
 		// first, see if there are any testing requests to dispatch 
 		
@@ -340,7 +366,13 @@ public class OntServlet extends HttpServlet {
 		
 		// if the "uri" parameter is included, resolve by the given URI
 		if ( Util.yes(req.request, "uri") ) {
-			_dispatchUri(req);
+			// get (ontology or entity) URI from the parameter:
+			String ontOrEntUri = Util.getParam(req.request, "uri", "");
+			if ( ontOrEntUri.length() == 0 ) {
+				req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing uri parameter");
+				return;
+			}
+			_dispatchUri(req, ontOrEntUri);
 			return;
 		}
 		
@@ -364,23 +396,33 @@ public class OntServlet extends HttpServlet {
 		}
 		
 
-		
-		//////////////////////////////////////////////////////////////////////
-		// now, main dispatcher:
-
-		if ( Util.yes(req.request, "ur2")  ) {
-			uriResolver2.service(req);
+		if ( req.mmiUri != null ) {
+			log.debug("_dispatchUri(req, req.mmiUri.getTermUri())");
+			_dispatchUri(req, req.mmiUri.getTermUri());
+			return;
 		}
 		else {
-			uriResolver.service(req);
+			log.debug("_dispatchUri(req, req.fullRequestedUri)");
+			_dispatchUri(req, req.fullRequestedUri);
+			return;
 		}
+		
+//		//////////////////////////////////////////////////////////////////////
+//		// old dispatching:
+//
+//		if ( Util.yes(req.request, "ur2")  ) {
+//			uriResolver2.service(req);
+//		}
+//		else {
+//			uriResolver.service(req);
+//		}
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		dispatch(request, response);
+		doGet(request, response);
 	}
 	
 	/**
@@ -390,21 +432,18 @@ public class OntServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		dispatch(request, response);
+		if ( log.isDebugEnabled() ) {
+			log.debug("\n");
+		}
 	}
 	
 	
 	/**
-	 * Dispatches the URI indicated with the "uri" parameter in the request.
+	 * Dispatches the given uri.
 	 * If the uri corresponds to a stored ontology, then the ontology is resolved
 	 * as it were a regular self-served ontology.
 	 */
-	private void _dispatchUri(Request req) throws ServletException, IOException {
-		// get (ontology or entity) URI from the parameter:
-		String ontOrEntUri = Util.getParam(req.request, "uri", "");
-		if ( ontOrEntUri.length() == 0 ) {
-			req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing uri parameter");
-			return;
-		}
+	private void _dispatchUri(Request req, String ontOrEntUri) throws ServletException, IOException {
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("_dispatchUri: ontOrEntUri=" +ontOrEntUri);

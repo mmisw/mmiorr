@@ -4,6 +4,18 @@ $Id$
 
 ChangeLog
 
+2010-06-16   1.9.3.alpha
+	Issue #252: "omv:version gone?".
+	- Fix completed.
+	- Note: as part of the fix, OntServlet now also calls _dispatchUri() where
+	  the old dispatching mechanism was in place. This goes toward unifying various
+	  refactoring attemtps. A consequence of this is that content negotiation is now
+	  honored where it was not previously. For Firefox in particular, a request with 
+	  no explicit format (via file extension or 'form' parameter) will resolve to "html"
+	  thus causing a redirection to the ORR portal. Previously this would resolve in 
+	  the "owl" response. 
+
+
 2010-06-15   1.9.2.alpha   (note: syncing version with iserver and orr modules)
 	Issue #252: "omv:version gone?".
 	- In general, the solution is to obtain a synthetic omv.version value taken from omv.creationDate value.
