@@ -4,6 +4,12 @@ $Id$
 
 ChangeLog
 
+2010-06-17   1.9.4.alpha
+	#158: "Mechanism for tracking accesses to ontologies/terms"
+	Preliminary preparations using Google analytics:
+	- Asynchronous snippet inserted at the bottom of the <head> section in sparql.html.
+	  See ORR's ChangeLog.txt
+
 2010-06-16   1.9.3.alpha
 	Issue #252: "omv:version gone?".
 	- Fix completed.
