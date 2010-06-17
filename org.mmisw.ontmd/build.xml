@@ -107,13 +107,30 @@
 	</jar>
   </target>
 
-    <target name="war" depends="jar, gwt-compile">
+  <target name="gaDef" if="ga.uanumber" description="sets ga_snippet when ga.aunumber is defined">
+  	<loadfile property="ga_snippet" srcFile="base_war/WEB-INF/classes/ga_snippet.js">
+  	  <filterchain>
+  	    <expandproperties/>
+  	  </filterchain>
+  	</loadfile>
+  </target>
+  <target name="gaUndef" unless="ga.uanumber" description="sets ga_snippet to empty when ga.aunumber is not defined">
+  	<property name="ga_snippet" value=""/>
+  	<property name="ga.uanumber" value=""/> <!-- make sure is empty for token replacement below -->
+  </target>
+  <target name="ga" depends="gaDef, gaUndef"
+   description="note: gaDef dependency must run before gaUndef">
+  	<echo message="ga_snippet = '${ga_snippet}'"/>
+  </target>
+
+    <target name="war" depends="jar, gwt-compile, ga">
     	<!-- prepare tmp.WebContent -->
 		<copy todir="${build.dir}/tmp.WebContent">
 			<fileset dir="base_war">
 				<exclude name="WEB-INF/web.xml" />
 				<exclude name="WEB-INF/lib**" />
 				<exclude name="WEB-INF/classes/log4j.xml" />
+				<exclude name="WEB-INF/classes/ga_snippet.js" />
 			</fileset>
 		</copy>
 
@@ -149,6 +166,13 @@
 			</filterset>
 		</copy>
 
+		<copy file="src/org/mmisw/ontmd/gwt/public/index.html" 
+			tofile="${build.dir}/tmp.WebContent/index.html" overwrite="true">
+			<filterset>
+				<filter token="ga_snippet"  value="${ga_snippet}" />
+			</filterset>
+		</copy>
+
         <war warfile="${build.dir}/orr.war" webxml="${build.dir}/tmp.WebContent/WEB-INF/web.xml">
                 <fileset dir="www/org.mmisw.ontmd.gwt.Main" />
         	    <fileset dir="${build.dir}/tmp.WebContent" />
@@ -158,6 +182,7 @@
         <delete includeEmptyDirs="true" failonerror="false">
                 <fileset dir="${build.dir}/tmp.WebContent" />
         </delete>
+    	
     </target>     	
 
   <target name="clean">

@@ -51,8 +51,13 @@ public class PortalConfig {
 		 */
 		ONTBROWSER_SERVICE_URL         ("ontbrowser.service.url", "http://localhost:8080/browser"),
 		
-		MAIL_USER                     ("mail.usr", null),
-		MAIL_PASSWORD                 ("mail.pw", null),
+		
+		// Note: when I test the password reset functionality from within eclipse, I put the correct 
+		// mail values here. This is because I haven't found an easy way to get these from 
+		// build.properties (perhaps GWT 2.x has better support for this situation). 
+		MAIL_USER                     ("mail.usr", "-"),
+		MAIL_PASSWORD                 ("mail.pw",  "-"),
+		
 		
 		/** Google analytics UA number (aka web property ID) */
 		GA_UA_NUMBER                  ("ga.uanumber", null, false),

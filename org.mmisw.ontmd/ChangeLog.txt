@@ -9,19 +9,20 @@ $Id$
 	- sample.build.properties: new ga.uanumber property
 	- PortalConfig.GA_UA_NUMBER captures this property
 	- PortalBaseInfo.gaUaNumber added
-	- GaUtil: new class for GA utilities, which includes check to PortalBaseInfo.getGaUaNumber()
-	  to actually perform the tracker javascript calls.
+	- GaUtil: new class for GA JSNI based utilities, which includes check to 
+	  PortalBaseInfo.getGaUaNumber() to actually perform the tracker javascript calls.
+		  GaUtil.trackEvent(category, action, opt_label, opt_value)  
+		  GaUtil.trackPageview()  
+		  GaUtil.trackPageview(pageName)
 	
-	- Asynchronous snippet inserted at the bottom of the <head> section in index.html:
-	  See http://code.google.com/apis/analytics/docs/tracking/asyncTracking.html
-	  NOTE: TODO: set up of index.html and other related resources should be more dynamic 
-	  depending on whether or not the build property ga.uanumber has been defined. 
-	  For the moment I'm hard-coding this during this preliminary testing.
-	  
-	- Some JSNI based utilities:
-	  GaUtil.trackEvent(category, action, opt_label, opt_value)  
-	  GaUtil.trackPageview()  
-	  GaUtil.trackPageview(pageName)
+	- Asynchronous snippet:
+	  - new base_war/WEB_INF/classes/ga_snipped.js with parameter ${ga.uanumber}
+	  - build.xml: if ga.uanumber is defined, then a parameter ga_snipped is initialized with
+	    the contents of ga_snipped.js with replacement of the ${ga.uanumber}. Then, this snippet is
+	    inserted at the bottom of the <head> section in index.html(*), which now has a token
+	    @ga_snippet@.  If ga.uanumber is NOT defined, @ga_snippet@ is replaced by an empty string. 
+	    
+	  (*) See http://code.google.com/apis/analytics/docs/tracking/asyncTracking.html
 	  
 	- PortalMainPanel.onHistoryChanged(historyToken) calls GaUtil.trackPageview(historyToken)
 	  TODO determine when to use trackEvent instead of trackPageview.
