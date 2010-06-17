@@ -11,12 +11,15 @@ import org.mmisw.ontmd.gwt.client.portal.PortalMainPanel.InterfaceType;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.HistoryListener;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -367,12 +370,28 @@ public class ControlsPanel extends HorizontalPanel {
 				}
 		);
 		
-		ontologyTable.setOntologyInfos(ontologyInfos, pctrl.getLoginResult());
-		
 		vp.add(ontologyTable);
+		
+		ontologyTable.setOntologyInfos(ontologyInfos, pctrl.getLoginResult());
 
-		popup.center();
-		popup.show();
+		// close the popup if history changes:
+		History.addHistoryListener(new HistoryListener() {
+			public void onHistoryChanged(String historyToken) {
+				popup.setAnimationEnabled(false);
+				popup.hide();
+			}
+		});
+		
+//		popup.center();
+//		popup.show();
+		popup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
+			public void setPosition(int offsetWidth, int offsetHeight) {
+				int left = (Window.getClientWidth() - offsetWidth) / 3;
+				int top = (Window.getClientHeight() - offsetHeight) / 3;
+				popup.setPopupPosition(left, top);
+			}
+		});
+
 	}
 	
 	private MenuItem _createMenuItemVersions(final RegisteredOntologyInfo oi) {

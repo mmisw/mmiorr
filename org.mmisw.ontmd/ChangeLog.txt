@@ -5,6 +5,11 @@ $Id$
 2010-06-16   1.9.3.alpha
 	Fixed issue #257:"version selection window remains open"
 	- OntologyTable: add listener also to the uri element.
+	
+	- ControlsPanel.launchVersions:
+	  - close dialog upon any change in browser history (this was kind of a bug)
+	  - better location for the dialog using popup.setPopupPositionAndShow
+	  
 
 2010-06-15   1.9.2.alpha   (note: syncing version with iserver and Ont modules)
 	Fixed issue #252: "omv:version gone?"
