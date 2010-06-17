@@ -85,28 +85,6 @@ public class Util {
 	    return $wnd.location.protocol;
 	}-*/ ;
 
-	////////////////////////////////////////////////////////////////
-	// <analytics>
-	
-	public static native void trackPageview() /*-{
-		$wnd._gaq.push(['_trackPageview']);
-	}-*/ ;
-	
-	public static void trackPageview(String pageName) {
-		if ( ! pageName.startsWith("/") ) {
-			pageName = "/" +pageName;
-			_trackPageview(pageName);
-		}
-	}
-	
-	private static native void _trackPageview(String pageName) /*-{
-		$wnd._gaq.push(['_trackPageview', pageName]);
-	}-*/ ;
-	
-	// </analytics>
-	////////////////////////////////////////////////////////////////
-	
-	
 
 	/** @return the map of given parameter. Never null */
 	public static Map<String,String> getParams() {

@@ -14,16 +14,16 @@ import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
 import org.mmisw.iserver.gwt.client.rpc.OtherOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.UnregisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.UnregisterOntologyResult;
 import org.mmisw.ontmd.gwt.client.LoginPanel;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.portal.admin.AdminPanel;
 import org.mmisw.ontmd.gwt.client.portal.extont.RegisterNewWizard;
 import org.mmisw.ontmd.gwt.client.portal.extont.RegisterVersionWizard;
+import org.mmisw.ontmd.gwt.client.util.GaUtil;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
-import org.mmisw.ontmd.gwt.client.util.Util;
 import org.mmisw.ontmd.gwt.client.vine.VineMain;
 
 import com.google.gwt.core.client.GWT;
@@ -265,8 +265,8 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		
 		Main.log("onHistoryChanged: historyToken: " +historyToken);
 		
-		// TODO condition this call:
-		Util.trackPageview(historyToken);
+		// TODO trackPageview or trackEvent?
+		GaUtil.trackPageview(historyToken);
 		
 		historyToken = historyToken.trim();
 		if ( historyToken.length() > 0 ) {

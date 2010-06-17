@@ -13,6 +13,7 @@ public class PortalBaseInfo implements Serializable {
 	private String appServerUrl;
 	private String ontServiceUrl;
 	private String ontbrowserServiceUrl;
+	private String gaUaNumber;
 	
 	
 	/**
@@ -52,7 +53,21 @@ public class PortalBaseInfo implements Serializable {
 	public void setOntbrowserServiceUrl(String ontbrowserServiceUrl) {
 		this.ontbrowserServiceUrl = ontbrowserServiceUrl;
 	}
+
+	/**
+	 * Sets the google analytics UA number
+	 * @param gaUaNumber
+	 */
+	public void setGaUaNumber(String gaUaNumber) {
+		this.gaUaNumber = gaUaNumber;
+	}
 	
-	
+	/**
+	 * Gets the google analytics UA number
+	 * @return the google analytics UA number
+	 */
+	public String getGaUaNumber() {
+		return gaUaNumber;
+	}
 	
 }

@@ -7,7 +7,10 @@ $Id$
 	Preliminary preparations using Google analytics:
 	
 	- sample.build.properties: new ga.uanumber property
-	- PortalConfig.GA_UA_NUMBER will capture this property (not used yet)
+	- PortalConfig.GA_UA_NUMBER captures this property
+	- PortalBaseInfo.gaUaNumber added
+	- GaUtil: new class for GA utilities, which includes check to PortalBaseInfo.getGaUaNumber()
+	  to actually perform the tracker javascript calls.
 	
 	- Asynchronous snippet inserted at the bottom of the <head> section in index.html:
 	  See http://code.google.com/apis/analytics/docs/tracking/asyncTracking.html
@@ -15,9 +18,14 @@ $Id$
 	  depending on whether or not the build property ga.uanumber has been defined. 
 	  For the moment I'm hard-coding this during this preliminary testing.
 	  
-	- Utilities:
-	  Util.trackPageview()  
-	  Util.trackPageview(String pageName)
+	- Some JSNI based utilities:
+	  GaUtil.trackEvent(category, action, opt_label, opt_value)  
+	  GaUtil.trackPageview()  
+	  GaUtil.trackPageview(pageName)
+	  
+	- PortalMainPanel.onHistoryChanged(historyToken) calls GaUtil.trackPageview(historyToken)
+	  TODO determine when to use trackEvent instead of trackPageview.
+	  
 	    
 	  
 2010-06-16   1.9.4.alpha
