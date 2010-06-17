@@ -23,6 +23,7 @@ import org.mmisw.ontmd.gwt.client.portal.admin.AdminPanel;
 import org.mmisw.ontmd.gwt.client.portal.extont.RegisterNewWizard;
 import org.mmisw.ontmd.gwt.client.portal.extont.RegisterVersionWizard;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
+import org.mmisw.ontmd.gwt.client.util.Util;
 import org.mmisw.ontmd.gwt.client.vine.VineMain;
 
 import com.google.gwt.core.client.GWT;
@@ -263,6 +264,9 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	public void onHistoryChanged(String historyToken) {
 		
 		Main.log("onHistoryChanged: historyToken: " +historyToken);
+		
+		// TODO condition this call:
+		Util.trackPageView(historyToken);
 		
 		historyToken = historyToken.trim();
 		if ( historyToken.length() > 0 ) {

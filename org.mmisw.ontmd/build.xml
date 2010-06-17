@@ -134,6 +134,7 @@
 				<filter token="ontmd.authority.class"    value="${ontmd.authority.class}" />
 				<filter token="mail.usr"                 value="${mail.usr}" />
 				<filter token="mail.pw"                  value="${mail.pw}" />
+				<filter token="ga.account"               value="${ga.account}" />
 			</filterset>
 		</copy>
 

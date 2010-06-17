@@ -85,6 +85,14 @@ public class Util {
 	    return $wnd.location.protocol;
 	}-*/ ;
 
+	// TODO parameterize appropriately (preliminary tests)
+	public static native void trackPageView(String pageName) /*-{
+	    try {
+			var pageTracker = _gat._getTracker("UA-16970585-1");
+			pageTracker._trackPageview(pageName);
+		} catch(err) {}
+	}-*/ ;
+	
 
 	/** @return the map of given parameter. Never null */
 	public static Map<String,String> getParams() {

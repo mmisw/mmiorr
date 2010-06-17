@@ -2,6 +2,18 @@ org.mmisw.ontmd: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-06-16   1.9.4.alpha
+	#158: "Mechanism for tracking accesses to ontologies/terms"
+	- preliminary preparations using Google analytics:
+		- sample.build.properties: new ga.account property
+		- Util.trackPageView(String pageName).  
+		  See http://groups.google.com/group/Google-Web-Toolkit/browse_thread/thread/61912b40a2ca7b2a/
+		  which is old but it's my starting point for the moment.
+		- index.html: nserted tracking code.  TODO: this should be more dynamic depending
+		  on whether the build property ga.account has been defined.
+		  
+	
+	
 2010-06-16   1.9.3.alpha
 	Fixed issue #257:"version selection window remains open"
 	- OntologyTable: add listener also to the uri element.
