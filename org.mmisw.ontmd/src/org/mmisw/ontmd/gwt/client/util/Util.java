@@ -92,7 +92,14 @@ public class Util {
 		$wnd._gaq.push(['_trackPageview']);
 	}-*/ ;
 	
-	public static native void trackPageview(String pageName) /*-{
+	public static void trackPageview(String pageName) {
+		if ( ! pageName.startsWith("/") ) {
+			pageName = "/" +pageName;
+			_trackPageview(pageName);
+		}
+	}
+	
+	private static native void _trackPageview(String pageName) /*-{
 		$wnd._gaq.push(['_trackPageview', pageName]);
 	}-*/ ;
 	
