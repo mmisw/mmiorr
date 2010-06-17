@@ -2664,6 +2664,23 @@ public class Server implements IServer {
 	public ResetPasswordResult resetUserPassword(String username) {
 		ResetPasswordResult result = new ResetPasswordResult();
 		
+		// Issue 258:"reset password in effect but lost if error while sending email"
+		// Part of the fix is to first check the mail account parameters are given:
+		final String mail_user = ServerConfig.Prop.MAIL_USER.getValue();
+		final String mail_password = ServerConfig.Prop.MAIL_PASSWORD.getValue();
+		if ( mail_user == null || mail_user.equals("-") ) {
+			String error = "Email server account not configured. Please report this bug. (u)";
+			result.setError(error);
+			log.error(error);
+			return result;
+		}
+		if ( mail_password == null  || mail_password.equals("-") ) {
+			String error = "Email server account not configured. Please report this bug. (p)";
+			result.setError(error);
+			log.error(error);
+			return result;
+		}
+
 		///////////////////////////////////////////////////////////////
 		// Get email address for the user
 		UserInfoResult userInfoResult = getUserInfo(username);
@@ -2696,20 +2713,6 @@ public class Server implements IServer {
 		
 		///////////////////////////////////////////////////////////////
 		// send email with new password
-		String mail_user = ServerConfig.Prop.MAIL_USER.getValue();
-		String mail_password = ServerConfig.Prop.MAIL_PASSWORD.getValue();
-		if ( mail_user == null ) {
-			String error = "Email server account not configured. Please report this bug. (u)";
-			result.setError(error);
-			log.error(error);
-			return result;
-		}
-		if ( mail_password == null ) {
-			String error = "Email server account not configured. Please report this bug. (p)";
-			result.setError(error);
-			log.error(error);
-			return result;
-		}
 		
 		boolean debug = false;
 		final String from = "MMI-ORR <techlead@marinemetadata.org>";

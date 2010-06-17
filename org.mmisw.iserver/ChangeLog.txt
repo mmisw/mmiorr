@@ -3,6 +3,12 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2010-06-17   1.9.4.alpha
+	Issue 258:"reset password in effect but lost if error while sending email"
+	- Server.resetUserPassword: Part of the fix is to first check the mail account 
+	  parameters are given.
+	  
+
 2010-06-15   1.9.2.alpha    (note: syncing version with Ont and orr modules)
 	Issue #252: "omv:version gone?"
 	- MdHelper.static { uriPropMap.put(Omv.version.getURI(), Omv.version); }
