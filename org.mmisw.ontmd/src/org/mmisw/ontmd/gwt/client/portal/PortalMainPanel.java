@@ -266,7 +266,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		Main.log("onHistoryChanged: historyToken: " +historyToken);
 		
 		// TODO condition this call:
-		Util.trackPageView(historyToken);
+		Util.trackPageview(historyToken);
 		
 		historyToken = historyToken.trim();
 		if ( historyToken.length() > 0 ) {

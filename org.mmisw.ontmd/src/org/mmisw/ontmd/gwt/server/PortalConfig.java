@@ -54,8 +54,8 @@ public class PortalConfig {
 		MAIL_USER                     ("mail.usr", null),
 		MAIL_PASSWORD                 ("mail.pw", null),
 		
-		/** Google analytics account */
-		GA_ACCOUNT                    ("ga.account", null, false),
+		/** Google analytics UA number (aka web property ID) */
+		GA_UA_NUMBER                  ("ga.uanumber", null, false),
 
 		;
 		

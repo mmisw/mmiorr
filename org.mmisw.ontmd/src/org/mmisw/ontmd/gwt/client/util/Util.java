@@ -85,13 +85,20 @@ public class Util {
 	    return $wnd.location.protocol;
 	}-*/ ;
 
-	// TODO parameterize appropriately (preliminary tests)
-	public static native void trackPageView(String pageName) /*-{
-	    try {
-			var pageTracker = _gat._getTracker("UA-16970585-1");
-			pageTracker._trackPageview(pageName);
-		} catch(err) {}
+	////////////////////////////////////////////////////////////////
+	// <analytics>
+	
+	public static native void trackPageview() /*-{
+		$wnd._gaq.push(['_trackPageview']);
 	}-*/ ;
+	
+	public static native void trackPageview(String pageName) /*-{
+		$wnd._gaq.push(['_trackPageview', pageName]);
+	}-*/ ;
+	
+	// </analytics>
+	////////////////////////////////////////////////////////////////
+	
 	
 
 	/** @return the map of given parameter. Never null */
