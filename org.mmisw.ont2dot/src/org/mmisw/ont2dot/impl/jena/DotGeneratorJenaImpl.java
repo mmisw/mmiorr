@@ -19,6 +19,8 @@ import com.hp.hpl.jena.rdf.model.RDFList;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.hp.hpl.jena.vocabulary.XSD;
 
@@ -223,7 +225,7 @@ public class DotGeneratorJenaImpl extends BaseDotGenerator {
 			String prdLabel = _info.getLabel(prop);
 			
 			for ( Resource range : _info.getRanges(prop) ) {
-
+				
 				if ( XSD.getURI().equals(range.getNameSpace()) ) {
 					// datatype property
 					String objLabel = _info.getLabel(range);
@@ -247,7 +249,23 @@ public class DotGeneratorJenaImpl extends BaseDotGenerator {
 				else if ( range.equals(RDFS.Resource) ) {
 					fields.add("{" +prdLabel+ "|" +ANY+ "}");
 				}
-
+				
+				
+				// adhoc prefixing
+				if ( RDFS.getURI().equals(range.getNameSpace()) ) {
+					String name = _info.getLabel(range);
+					fields.add("{" +prdLabel+ "|" +"rdfs:" + name+ "}");
+				}
+				if ( RDF.getURI().equals(range.getNameSpace()) ) {
+					String name = _info.getLabel(range);
+					fields.add("{" +prdLabel+ "|" +"rdf:" + name+ "}");
+				}
+				if ( OWL.getURI().equals(range.getNameSpace()) ) {
+					String name = _info.getLabel(range);
+					fields.add("{" +prdLabel+ "|" +"owl:" + name+ "}");
+				}
+				
+				
 				else if (range.isAnon() ) {
 					String id = range.getId().getLabelString();
 
