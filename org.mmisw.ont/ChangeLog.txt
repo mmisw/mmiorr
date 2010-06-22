@@ -4,6 +4,28 @@ $Id$
 
 ChangeLog
 
+2010-06-21   1.9.5.alpha
+	#158: "Mechanism for tracking accesses to ontologies/terms"
+	Testing Rhino+EnvJs as a way to trigger the analytics event from this server side module.
+	- js.jar from ftp://ftp.mozilla.org/pub/mozilla.org/js/rhino1_7R2.zip
+	- env.rhino.1.2.js from http://www.envjs.com/dist/env.rhino.1.2.js 
+	- ga.html: just an empty html page for GA to insert needed elements
+	- ga.js: the tradition GA snippet: http://code.google.com/apis/analytics/docs/tracking/gaTrackingOverview.html#standardSetup
+	- Analytics: new class supporting the generation of events to the GA engine.
+	
+	NOTE: the original env.rhino.1.2.js throws the following exception when it is loaded via
+	Analytics._addEnvJsScript():
+	org.mozilla.javascript.EcmaError: ReferenceError: "print" is not defined. (/Users/Shared/mmiregistry/ga/env.rhino.1.2.js#1295)
+	
+	Looking at http://env-js.appspot.com/doc/apis#platform-log, I'm "fixing" this by simply defining:	
+		Envjs.log = function(string){
+		   //do something with the string
+		   return;
+		};
+	Now, no exception is thrown.
+	NEXT: to see that the actual events are being detected by the GA engine.
+	
+	
 2010-06-17   1.9.4.alpha
 	#158: "Mechanism for tracking accesses to ontologies/terms"
 	Preliminary preparations using Google analytics:

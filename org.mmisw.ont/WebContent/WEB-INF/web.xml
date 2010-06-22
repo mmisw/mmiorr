@@ -65,6 +65,15 @@
 			<param-value>@bioportal.rest.url@</param-value>
 		</init-param>
 
+		<init-param>
+			<param-name>ga.uanumber</param-name>
+			<param-value>@ga.uanumber@</param-value>
+		</init-param>
+		<init-param>
+			<param-name>ga.dir</param-name>
+			<param-value>@ga.dir@</param-value>
+		</init-param>
+
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet-mapping>

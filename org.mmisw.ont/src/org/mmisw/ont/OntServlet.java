@@ -27,6 +27,7 @@ import org.mmisw.ont.graph.IOntGraph;
 import org.mmisw.ont.graph.OntGraph;
 import org.mmisw.ont.sparql.SparqlDispatcher;
 import org.mmisw.ont.util.Accept;
+import org.mmisw.ont.util.Analytics;
 import org.mmisw.ont.util.Util;
 
 import com.hp.hpl.jena.rdf.model.Model;
@@ -77,6 +78,9 @@ public class OntServlet extends HttpServlet {
 	
 	// previously in UriResolver
 	private final RegularFileDispatcher regularFileDispatcher = new RegularFileDispatcher();
+	
+	// Analytics
+	private final Analytics analytics = Analytics.getInstance();
 	
 	
 	/**
@@ -229,6 +233,8 @@ public class OntServlet extends HttpServlet {
 			ontGraph.init();
 			
 			adminDispatcher.init();
+			
+			analytics.init();
 			
 			log.info(FULL_TITLE+ ": init complete.");
 		} 
@@ -465,6 +471,9 @@ public class OntServlet extends HttpServlet {
 		if ( log.isDebugEnabled() ) {
 			log.debug("_dispatchUri: ontOrEntUri=" +ontOrEntUri);
 		}
+		
+		// TODO (#158: analytics) under preliminary testing
+		analytics.trackPageview(ontOrEntUri);
 		
 		Ontology ontology = null;
 		

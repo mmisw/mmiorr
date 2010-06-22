@@ -26,6 +26,7 @@
 		<pathelement path="WebContent/WEB-INF/lib/arq.jar" />
 		<pathelement path="WebContent/WEB-INF/lib/concurrent.jar" />
 		<pathelement path="WebContent/WEB-INF/lib/agraph.jar" />
+		<pathelement path="WebContent/WEB-INF/lib/js.jar" />
 	</path>
 
 	<target name="init">
@@ -126,6 +127,8 @@
 				<filter token="agraph.ts.name" value="${agraph.ts.name}" />
 				<filter token="ont.internal.dir"   value="${ont.internal.dir}" />
 				<filter token="bioportal.rest.url" value="${bioportal.rest.url}" />
+				<filter token="ga.uanumber" value="${ga.uanumber}" />
+				<filter token="ga.dir"      value="${ga.dir}" />
 			</filterset>
 		</copy>
 

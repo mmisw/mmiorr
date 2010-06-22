@@ -43,6 +43,10 @@ public class OntConfig {
 		
 		ONT_INTERNAL_DIR              ("ont.internal.dir"),
 		
+		/** Google analytics UA number (aka web property ID) */
+		GA_UA_NUMBER                  ("ga.uanumber", false),
+		GA_DIR                        ("ga.dir", false),
+		
 		;
 		
 		private String name;
