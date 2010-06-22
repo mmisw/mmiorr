@@ -255,7 +255,12 @@ class JenaInfo {
 			RDFNode node = ontology.getPropertyValue(OMV_VERSION);
 			if ( node != null ) {
 				versionFrom = "(from omv:version)";
-				versionValue = node.toString();
+				if ( node.isLiteral() ) {
+					versionValue = ((Literal) node).getLexicalForm();
+				}
+				else {
+					versionValue = node.toString();
+				}
 			}
 			else {
 				versionValue = ontology.getVersionInfo();
