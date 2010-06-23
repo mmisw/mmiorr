@@ -31,9 +31,6 @@ import com.hp.hpl.jena.vocabulary.XSD;
  */
 public class DotGeneratorJenaImpl extends BaseDotGenerator {
 	
-	/** Representation to use when a property has not explicitly given range */
-	private static final String ANY = "Any";
-
 	private OntModel _ontModel;
 	
 	private JenaInfo _info;
@@ -246,21 +243,16 @@ public class DotGeneratorJenaImpl extends BaseDotGenerator {
 					}
 				}
 
-				else if ( range.equals(RDFS.Resource) ) {
-					fields.add("{" +prdLabel+ "|" +ANY+ "}");
-				}
-				
-				
 				// adhoc prefixing
-				if ( RDFS.getURI().equals(range.getNameSpace()) ) {
+				else if ( RDFS.getURI().equals(range.getNameSpace()) ) {
 					String name = _info.getLabel(range);
 					fields.add("{" +prdLabel+ "|" +"rdfs:" + name+ "}");
 				}
-				if ( RDF.getURI().equals(range.getNameSpace()) ) {
+				else if ( RDF.getURI().equals(range.getNameSpace()) ) {
 					String name = _info.getLabel(range);
 					fields.add("{" +prdLabel+ "|" +"rdf:" + name+ "}");
 				}
-				if ( OWL.getURI().equals(range.getNameSpace()) ) {
+				else if ( OWL.getURI().equals(range.getNameSpace()) ) {
 					String name = _info.getLabel(range);
 					fields.add("{" +prdLabel+ "|" +"owl:" + name+ "}");
 				}

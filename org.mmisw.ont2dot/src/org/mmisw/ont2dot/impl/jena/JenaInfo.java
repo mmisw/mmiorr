@@ -246,7 +246,6 @@ class JenaInfo {
 		
 		boolean includeOntUri = list.size() > 1 ;
 		StringBuffer sb = new StringBuffer();
-		String newLine = "";
 		for ( Ontology ontology : list ) {
 			String ontUri = ontology.getURI();
 			System.err.println("_prepareInfoAboutOntology: ontUri: " +ontUri);
@@ -254,7 +253,7 @@ class JenaInfo {
 			String versionValue = null;
 			RDFNode node = ontology.getPropertyValue(OMV_VERSION);
 			if ( node != null ) {
-				versionFrom = "(from omv:version)";
+				versionFrom = " (from omv:version)";
 				if ( node.isLiteral() ) {
 					versionValue = ((Literal) node).getLexicalForm();
 				}
@@ -265,7 +264,7 @@ class JenaInfo {
 			else {
 				versionValue = ontology.getVersionInfo();
 				if ( versionValue != null ) {
-					versionFrom = "(from owl:versionInfo)";
+					versionFrom = " (from owl:versionInfo)";
 				}
 			}
 			if ( versionValue == null ) {
@@ -275,8 +274,7 @@ class JenaInfo {
 			if ( includeOntUri ) {
 				sb.append(ontUri+ " ");
 			}
-			sb.append("Version: " +versionValue + " " + versionFrom + newLine);
-			newLine = "\n";
+			sb.append("Version: " +versionValue + versionFrom + "\n");
 		}
 		
 		ontologyVersionInfo = sb.toString();

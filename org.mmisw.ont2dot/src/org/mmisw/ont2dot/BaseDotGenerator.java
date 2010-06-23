@@ -156,7 +156,8 @@ public abstract class BaseDotGenerator implements IDotGenerator {
 
 		String ontVersion = getOntologyVersionInfo();
 		if ( ontVersion != null ) {
-			ontVersion = ontVersion.replaceAll("\n", "\\l\\\n");
+			// "\n" --> "\l\\n"
+			ontVersion = ontVersion.replaceAll("\n", "\\\\l\\\\\n");
 			generatedByLabel += "\\\n" + ontVersion + "\\l\\\n";
 		}
 		
