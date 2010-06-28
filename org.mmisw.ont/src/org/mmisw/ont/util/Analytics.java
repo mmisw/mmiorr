@@ -63,7 +63,11 @@ public class Analytics {
 	 * </ul>
 	 */
 	public void init() {
-		Prop[] props = { OntConfig.Prop.GA_UA_NUMBER, OntConfig.Prop.GA_DOMAIN_NAME };
+		Prop[] props = { 
+				OntConfig.Prop.GA_UA_NUMBER, 
+				OntConfig.Prop.GA_DOMAIN_NAME,
+				OntConfig.Prop.GA_DIR
+		};
 		for ( Prop prop : props ) {
 			String propValue = prop.getValue();
 			if ( propValue == null || propValue.trim().length() == 0 ) {
@@ -73,8 +77,9 @@ public class Analytics {
 		}
 		String gaUaNumber = OntConfig.Prop.GA_UA_NUMBER.getValue();
 		String gaDomainName = OntConfig.Prop.GA_DOMAIN_NAME.getValue();
-		enabled = _loadGaSnippet(gaUaNumber, gaDomainName)
-		       && _prepareGaDirectory()
+		String gaDir = OntConfig.Prop.GA_DIR.getValue();
+		enabled = _loadGaSnippet(gaUaNumber, gaDomainName, gaDir)
+		       && _prepareGaDirectory(gaDir)
 		       && _installHtml()
 		       && _installEnvJs()
 		;
@@ -84,7 +89,7 @@ public class Analytics {
 	/**
 	 * Loads the GA snippet with only ${ga.uanumber} replaced with the given number.
 	 */
-	private boolean _loadGaSnippet(String gaUaNumber, String gaDomainName) {
+	private boolean _loadGaSnippet(String gaUaNumber, String gaDomainName, String gaDir) {
 		String original = _loadResource(GA_JS);
 		if ( original == null ) {
 			return false;
@@ -92,6 +97,7 @@ public class Analytics {
 		gaSnippet = original
 					.replace("${ga.uanumber}", gaUaNumber)
 					.replace("${ga.domainName}", gaDomainName)
+					.replace("${ga.dir}", gaDir)
 		;
 		log.info(GA_JS+ ": " +gaSnippet);	
 		return true;
@@ -100,13 +106,7 @@ public class Analytics {
 	/**
 	 * 
 	 */
-	private boolean _prepareGaDirectory() {
-		String gaDir = OntConfig.Prop.GA_DIR.getValue();
-		if ( gaDir == null || gaDir.length() == 0 ) {
-			log.error(OntConfig.Prop.GA_DIR+ " not given.");
-			return false;
-		}
-		
+	private boolean _prepareGaDirectory(String gaDir) {
 		gaDirectory = new File(gaDir);
 		if ( ! gaDirectory.isDirectory() ) {
 			if ( ! gaDirectory.mkdirs() ) {
