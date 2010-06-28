@@ -197,7 +197,7 @@ public class Analytics {
 	private void _trackPageview(String pageName) {
 		String gaDir = gaDirectory.getAbsolutePath();
 		String source = 
-			gaSnippet.replace("${pageName}", pageName) + "\n" +
+			gaSnippet.replace("${ga.pageName}", pageName) + "\n" +
 			"window.location = \"file://" +gaDir+ "/" + GA_HTML+ "\";"
 		;
 		
