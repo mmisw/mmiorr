@@ -1294,6 +1294,9 @@ function __extend__(a,b) {
  */
 Envjs.log = function(string){
    //do something with the string
+   // 'print' does not resolve hece causing an error.
+   // trying with console.log ...
+   console.log('Envjs.log: %s', string);
    return;
 };
 

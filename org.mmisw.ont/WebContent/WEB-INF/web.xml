@@ -70,6 +70,10 @@
 			<param-value>@ga.uanumber@</param-value>
 		</init-param>
 		<init-param>
+			<param-name>ga.domainName</param-name>
+			<param-value>@ga.domainName@</param-value>
+		</init-param>
+		<init-param>
 			<param-name>ga.dir</param-name>
 			<param-value>@ga.dir@</param-value>
 		</init-param>

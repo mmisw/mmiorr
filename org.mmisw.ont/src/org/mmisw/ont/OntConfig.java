@@ -45,6 +45,7 @@ public class OntConfig {
 		
 		/** Google analytics UA number (aka web property ID) */
 		GA_UA_NUMBER                  ("ga.uanumber", false),
+		GA_DOMAIN_NAME                ("ga.domainName", false),
 		GA_DIR                        ("ga.dir", false),
 		
 		;

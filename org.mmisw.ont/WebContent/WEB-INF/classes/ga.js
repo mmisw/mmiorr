@@ -2,5 +2,8 @@ var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "htt
 document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
 try{
   var pageTracker = _gat._getTracker("${ga.uanumber}");
+  pageTracker._setDomainName("${domainName}");
   pageTracker._trackPageview("${pageName}");
-} catch(err) {}
+} catch(err) {
+  console.log('Analytics: Error while executing pageTracker stuff', err);
+}

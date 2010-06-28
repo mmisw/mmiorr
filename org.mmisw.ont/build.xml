@@ -127,8 +127,9 @@
 				<filter token="agraph.ts.name" value="${agraph.ts.name}" />
 				<filter token="ont.internal.dir"   value="${ont.internal.dir}" />
 				<filter token="bioportal.rest.url" value="${bioportal.rest.url}" />
-				<filter token="ga.uanumber" value="${ga.uanumber}" />
-				<filter token="ga.dir"      value="${ga.dir}" />
+				<filter token="ga.uanumber"   value="${ga.uanumber}" />
+				<filter token="ga.domainName" value="${ga.domainName}" />
+				<filter token="ga.dir"        value="${ga.dir}" />
 			</filterset>
 		</copy>
 
