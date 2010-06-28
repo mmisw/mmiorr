@@ -191,7 +191,7 @@ public class Analytics {
 		String gaDir = gaDirectory.getAbsolutePath();
 		String source = 
 			gaSnippet.replace("${pageName}", pageName) + "\n" +
-			"window.location = \"" +gaDir+ "/" + GA_HTML+ "\";"
+			"window.location = \"file://" +gaDir+ "/" + GA_HTML+ "\";"
 		;
 		
 		log.debug("About to evaluate string: [\n" +source+ "\n]");
@@ -223,6 +223,6 @@ public class Analytics {
 		File file = new File(gaDirectory, ENV_JS);
 	    Reader in = new FileReader (file);
 	    cx.evaluateReader(scope, in, file.getAbsolutePath(), 1, null);
-	    log.debug("_addEnvJsScript: ecvaluated.");
+	    log.debug("_addEnvJsScript: evaluated.");
 	}
 }

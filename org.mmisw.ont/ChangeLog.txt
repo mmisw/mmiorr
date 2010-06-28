@@ -4,13 +4,18 @@ $Id$
 
 ChangeLog
 
+2010-06-28   1.9.5.alpha
+	#158: "Mechanism for tracking accesses to ontologies/terms"
+	- Not yet working;  doing more attempts ...
+	
+
 2010-06-21   1.9.5.alpha
 	#158: "Mechanism for tracking accesses to ontologies/terms"
 	Testing Rhino+EnvJs as a way to trigger the analytics event from this server side module.
 	- js.jar from ftp://ftp.mozilla.org/pub/mozilla.org/js/rhino1_7R2.zip
 	- env.rhino.1.2.js from http://www.envjs.com/dist/env.rhino.1.2.js 
 	- ga.html: just an empty html page for GA to insert needed elements
-	- ga.js: the tradition GA snippet: http://code.google.com/apis/analytics/docs/tracking/gaTrackingOverview.html#standardSetup
+	- ga.js: the traditional GA snippet: http://code.google.com/apis/analytics/docs/tracking/gaTrackingOverview.html#standardSetup
 	- Analytics: new class supporting the generation of events to the GA engine.
 	
 	NOTE: the original env.rhino.1.2.js throws the following exception when it is loaded via
