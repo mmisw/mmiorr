@@ -4,9 +4,25 @@ $Id$
 
 ChangeLog
 
-2010-06-28   1.9.5.alpha
+2010-06-28   1.9.6.alpha
 	#158: "Mechanism for tracking accesses to ontologies/terms"
-	- Not yet working;  doing more attempts ...
+	More adjustments.
+	- Keeping the original definition at /Users/Shared/mmiregistry/ga/env.rhino.1.2.js#1295
+			Envjs.log = print;
+	  but I'm now defining 'print' in Analytics. The only change is now at line 246:
+			Envjs.loadImage = function(node, src) {
+			    // carueda 2010-06-28
+			    Envjs.log("loadImage: node: " +node+ "  src:" +src);
+			    return true;
+			};
+	  just to print a log message to verify the google analytics image is requested (which is the case).
+	- ga.js is now just:
+			var pageTracker = _gat._getTracker("${ga.uanumber}");
+			pageTracker._setDomainName("${ga.domainName}");
+			pageTracker._trackPageview("${ga.pageName}");
+
+	TODO: clean up.  (eg., perhaps ga.html is not needed)	
+	  	  
 	
 
 2010-06-21   1.9.5.alpha

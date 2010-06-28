@@ -243,6 +243,8 @@ Envjs.loadLocalScript = function(script){
  * @return 'true' to indicate the 'load' succeed, false otherwise
  */
 Envjs.loadImage = function(node, src) {
+    // carueda 2010-06-28
+    Envjs.log("loadImage: node: " +node+ "  src:" +src);
     return true;
 };
 
@@ -1292,13 +1294,7 @@ function __extend__(a,b) {
  *
  * @param {Object} message
  */
-Envjs.log = function(string){
-   //do something with the string
-   // 'print' does not resolve hece causing an error.
-   // trying with console.log ...
-   console.log('Envjs.log: %s', string);
-   return;
-};
+Envjs.log = print;
 
 Envjs.lineSource = function(e){
     return e&&e.rhinoException?e.rhinoException.lineSource():"(line ?)";
