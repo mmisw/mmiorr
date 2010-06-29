@@ -9,7 +9,11 @@ ChangeLog
 	More adjustments.
 	- Keeping the original definition at /Users/Shared/mmiregistry/ga/env.rhino.1.2.js#1295
 			Envjs.log = print;
-	  but I'm now defining 'print' in Analytics. The only change is now at line 246:
+	  but I'm now defining 'print' in Analytics:
+	  		function print(str) { __ont_log.debug("Analytics.print: " +str); } 
+	  where __ont_log is the logger.
+	  
+	- The only change in env.rhino.1.2.js is now at line 246:
 			Envjs.loadImage = function(node, src) {
 			    // carueda 2010-06-28
 			    Envjs.log("loadImage: node: " +node+ "  src:" +src);

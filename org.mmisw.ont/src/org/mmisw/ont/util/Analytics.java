@@ -18,6 +18,7 @@ import org.mmisw.ont.OntConfig;
 import org.mmisw.ont.OntConfig.Prop;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 
 
 /**
@@ -215,11 +216,15 @@ public class Analytics {
 	 * @param scope
 	 */
 	private void _addAdHocSymbols(Context cx, Scriptable scope) {
-		String source = 
-			"function print(str) { java.lang.System.out.println(\"Analytics.print: \" +str); }\n" +
-			"function __trim__(str) { return (str || \"\").replace( /^\\s+|\\s+$/g, \"\" ); }"
-		;
 		try {
+			Object wrappedLog = Context.javaToJS(log, scope);
+			ScriptableObject.putProperty(scope, "__ont_log", wrappedLog);
+			
+			String source = 
+//				"function print(str) { java.lang.System.out.println(\"Analytics.print: \" +str); }\n" +
+				"function print(str) { __ont_log.debug(\"Analytics.print: \" +str); }\n" +
+				"function __trim__(str) { return (str || \"\").replace( /^\\s+|\\s+$/g, \"\" ); }"
+				;
 			Object result = cx.evaluateString(scope, source, "<symbols>", 1, null);
 			log.debug("_addMissingSymbols: result: " +result);
 		}
