@@ -854,7 +854,7 @@ public class OntServlet extends HttpServlet {
 	 * Unregisters a concrete version of an ontology.
 	 * 
 	 * Required parameter: _unr=ontUri
-	 * Option parameter: version=vvv
+	 * Optional parameter: version=vvv
 	 * 
 	 * If the ontUri is "ont"-resolvable and can be parsed as an MmiUri, then the version will be
 	 * extracted from it if it's in versioned form. If both the "version" parameter and the version

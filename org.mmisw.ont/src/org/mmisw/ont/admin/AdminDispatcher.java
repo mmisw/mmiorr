@@ -218,9 +218,7 @@ public class AdminDispatcher {
 		}
 	}
 	
-
 	
-
 	/**
 	 * Updates the internal graphs resource.
 	 * 
@@ -260,32 +258,27 @@ public class AdminDispatcher {
 	
 	
 	/**
-	 * Updates the internal graphs resource by removing all statements associated with given subGraphUri.
-	 * So it removes:
-	 * <ul>
-	 *   <li> <code>&lt;subGraphUri> &lt;Rdfg.subGraphOf> null</code>
-	 *   <li> <code>&lt;subGraphUri> &lt;RDF.type> &lt;Rdfg.Graph></code>
-	 * </ul>
+	 * Removes all statements for a given subject in the internal graphs resource 
 	 * 
-	 * @param subGraphUri    URI of subject of the subGraphOf property. Assumed to be well-formed.
+	 * @param subjectUri    
+	 *                    URI of subject. Assumed to be well-formed.
 	 */
-	public void removeSubGraphStatements(String subGraphUri) {
+	public void removeAllStatementsFromSubject(String subjectUri) {
 		
 		Model model = getGraphsModel();
 		
-		Resource subGraphRes = ResourceFactory.createResource(subGraphUri);
+		Resource subGraphRes = ResourceFactory.createResource(subjectUri);
 		
-		// remove all rdfg:subGraphOf statements:
-		model.removeAll(subGraphRes, Rdfg.subGraphOf, null);
+		if ( log.isDebugEnabled() ) {
+			log.debug("removeAllStatementsFromSubject: " +subGraphRes);
+		}
 		
-		// remove type rdfg:Graph statement:
-		model.remove(subGraphRes, RDF.type, Rdfg.Graph);
-		
+		model.removeAll(subGraphRes, null, null);
 		try {
 			updateGraphsFile(model);
 		}
 		catch (Exception e) {
-			log.error("Cannot write out to file " +graphsFile, e);
+			log.error("removeAllStatementsFromSubject: Cannot write out to file " +graphsFile, e);
 		}
 	}
 

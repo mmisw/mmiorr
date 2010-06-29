@@ -4,6 +4,18 @@ $Id$
 
 ChangeLog
 
+2010-06-29   1.9.7.alpha
+	Issue #242: "admin interface to remove an ontology" was reopened because
+	there is still a statement not removed from the triple store:	
+		subject:   <THE URI OF THE REMOVED ONTOLOGY>
+		predicate: http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+		object:    http://www.w3.org/2004/03/trix/rdfg-1/Graph
+	I did various adjustments to properly remove all statements having the removed
+	ontology URI as subject (only in case the ontology would be gone completely, ie., if there
+	are previous version available, no such statements will be removed).
+	
+	
+
 2010-06-28   1.9.6.alpha
 	#158: "Mechanism for tracking accesses to ontologies/terms"
 	More adjustments.

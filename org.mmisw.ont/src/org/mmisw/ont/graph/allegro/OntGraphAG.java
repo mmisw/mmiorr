@@ -18,7 +18,6 @@ import org.mmisw.ont.UnversionedConverter;
 import org.mmisw.ont.admin.AdminDispatcher;
 import org.mmisw.ont.graph.IOntGraph;
 import org.mmisw.ont.sparql.QueryResult;
-import org.mmisw.ont.vocabulary.Rdfg;
 
 import com.franz.agbase.AllegroGraph;
 import com.franz.agbase.AllegroGraphConnection;
@@ -34,7 +33,6 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.vocabulary.RDF;
 
 import edu.drexel.util.rdf.JenaUtil;
 
@@ -507,7 +505,10 @@ public class OntGraphAG implements IOntGraph {
 	 * i) removes all statements associated with the "proper" graph (ie., the
 	 * graph whose URI is the same as the ontology URI); 
 	 * <p>
-	 * ii) removes all subGraphOf relationships with the "proper" graph as subject.
+	 * If the ontology URI will be completely gone (ie., no previous version is available), then:
+	 * <p>
+	 * ii) removes all statements having the "proper" graph as subject (in particular, subGraphOf 
+	 * relationships and the typeOf-graph statement will be removed).
 	 * 
 	 * @param _ag
 	 * @param ontology
@@ -545,7 +546,9 @@ public class OntGraphAG implements IOntGraph {
 		String ownGraph = "<" +ontologyUri+ ">";
 		
 		try {
-			// first, remove all statements associated with the ownGraph:
+			//////////////////////////////////////////////////////////////////////
+			// i) first, remove all statements associated with the ownGraph:
+			//
 			if ( log.isDebugEnabled() ) {
 				log.debug("Removing all statements in graph " +ownGraph+ " ...");
 			}
@@ -569,32 +572,37 @@ public class OntGraphAG implements IOntGraph {
 			// there still is an existing ontology version. So, no need
 			// for more updates, ie., any existing subGraphOf statements will remain valid.
 			log.debug("_removeOntology: No need to remove subGraphOf statements");
+			
+			return;
 		}
-		else {
-			// ontologyUri completely gone.
-			// So, remove all the subGraphOf relationships with ownGraph as subject
-			String ownGraphUri = adminDispatcher.getWellFormedGraphUri(ownGraph);
-			_removeSubGraphStatements(_ag, ownGraphUri);
-		}			
+
+		// here: ontologyUri completely gone.
+
+		//////////////////////////////////////////////////////////////////////
+		// ii) So, remove all statements having ownGraph as subject (in particular,
+		// subGraphOf relationships and the typeOf-graph statement will be removed):
+		//
+		String ownGraphUri = adminDispatcher.getWellFormedGraphUri(ownGraph);
+		_removeAllStatementsForSubject(_ag, ownGraphUri);
 		
 	}
 
 	/**
+	 * Removes all statements for a given subject.
 	 * Updates the graphs resource and then the triple store.
 	 * @param _ag
 	 * @param subGraphUri  Assumed to be well-formed
 	 * @throws AllegroGraphException
 	 */
-	private void _removeSubGraphStatements(Ag _ag, String subGraphUri) throws AllegroGraphException {
+	private void _removeAllStatementsForSubject(Ag _ag, String subGraphUri) throws AllegroGraphException {
 		
-		log.debug("_removeSubGraphStatements: removing subGraphOf statements");
+		log.debug("_removeAllStatementsForSubject: " +subGraphUri);
 		
 		// remove the statements from the graphs resource:
-		adminDispatcher.removeSubGraphStatements(subGraphUri);
+		adminDispatcher.removeAllStatementsFromSubject(subGraphUri);
 		
 		// then, update the triple store with the corresponding statements:
-		_ag.ts.removeStatements("<" +subGraphUri+ ">", "<" +Rdfg.subGraphOf.getURI()+ ">", null);
-		_ag.ts.removeStatement("<" +subGraphUri+ ">", "<" +RDF.type.getURI()+ ">", "<" +Rdfg.Graph.getURI()+ ">");
+		_ag.ts.removeStatements("<" +subGraphUri+ ">", null, null);
 		
 	}
 
