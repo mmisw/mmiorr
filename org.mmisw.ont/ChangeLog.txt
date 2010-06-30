@@ -4,15 +4,54 @@ $Id$
 
 ChangeLog
 
-2010-06-29   1.9.7.alpha
+2010-06-29   1.9.8.alpha    
+Note: syncing version with Ont and orr modules especially because Ont now uses Jena 2.6.3
+and associated libraries.
+
+	Upgrading Jena library to 2.6.3:
+	As a general approach, I'm removing all the "old" libraries that have a corresponding JAR in the
+	new version of Jena, and then using the ones coming with Jena:
+	
+	- Removed "old" jars from base_war/WEB_INF/lib/ associated with Jena 2.5.6 that have versions 
+	  in the new Jena:
+		-rw-r--r--  1 carueda  staff  1203860 Apr 29  2009 xercesImpl.jar
+		-rw-r--r--  1 carueda  staff  1485980 Apr 29  2009 jenatest.jar
+		-rw-r--r--  1 carueda  staff  2216624 Apr 29  2009 jena.jar
+		-rw-r--r--  1 carueda  staff   143146 Apr 29  2009 iri.jar
+		-rw-r--r--  1 carueda  staff  3147374 Apr 29  2009 icu4j_3_4.jar
+		-rw-r--r--  1 carueda  staff  1296938 Apr 29  2009 arq.jar
+		-rw-r--r--  1 carueda  staff   391834 Apr 29  2009 log4j-1.2.15.jar
+		-rw-r--r--  1 carueda  staff   121070 Apr 29  2009 junit.jar
+	
+	- base_war/WEB_INF/lib/jena/ new directory containing ALL(*) the jars associated with the latest
+	  version of Jena, which is 2.6.3:
+		-rw-r--r--@ 1 carueda  staff  1203860 Feb  5  2009 xercesImpl-2.7.1.jar
+		-rw-r--r--@ 1 carueda  staff  3233439 Feb 27  2009 icu4j-3.4.4.jar
+		-rw-r--r--@ 1 carueda  staff   198945 Feb 27  2009 junit-4.5.jar
+		-rw-r--r--@ 1 carueda  staff   358180 Jun 29  2009 log4j-1.2.13.jar
+		-rw-r--r--@ 1 carueda  staff    26514 Jul 31  2009 stax-api-1.0.1.jar
+		-rw-r--r--@ 1 carueda  staff   524224 Jul 31  2009 wstx-asl-3.2.9.jar
+		-rw-r--r--@ 1 carueda  staff   665064 Jul 31  2009 lucene-core-2.3.1.jar
+		-rw-r--r--@ 1 carueda  staff   151589 Nov 13  2009 iri-0.8.jar
+		-rw-r--r--@ 1 carueda  staff   210961 Nov 13  2009 iri-0.8-sources.jar
+		-rw-r--r--@ 1 carueda  staff     9679 Dec  3  2009 slf4j-log4j12-1.5.8.jar
+		-rw-r--r--@ 1 carueda  staff    23445 Dec  3  2009 slf4j-api-1.5.8.jar
+		-rw-r--r--@ 1 carueda  staff  1680523 May 28 14:26 arq-2.8.4.jar
+		-rw-r--r--@ 1 carueda  staff  1900385 Jun  1 14:31 jena-2.6.3.jar
+		-rw-r--r--@ 1 carueda  staff  1506473 Jun  1 14:32 jena-2.6.3-tests.jar
+	(*) I'm just following the indication in Jena-2.6.3/doc/readme.html: "Installation: ... set the Java 
+	classpath to include all the JAR files in the JENAROOT/lib/ directory."
+
+
+2010-06-29
 	Issue #242: "admin interface to remove an ontology" was reopened because
 	there is still a statement not removed from the triple store:	
 		subject:   <THE URI OF THE REMOVED ONTOLOGY>
 		predicate: http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 		object:    http://www.w3.org/2004/03/trix/rdfg-1/Graph
 	I did various adjustments to properly remove all statements having the removed
-	ontology URI as subject (only in case the ontology would be gone completely, ie., if there
-	are previous version available, no such statements will be removed).
+	ontology URI as subject, only in case where the ontology would be gone completely (if there
+	is a previous version available, no such statements will be removed).
 	
 	
 

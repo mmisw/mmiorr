@@ -253,7 +253,7 @@ public class OntGraphMem implements IOntGraph {
 			return null;
 		}
 		log.info("Creating InfModel with rules:\n\t" +rulesSrc.replaceAll("\n", "\n\t"));
-		List<?> rules = Rule.parseRules(rulesSrc);
+		List<Rule> rules = Rule.parseRules(rulesSrc);
 		Reasoner reasoner = new GenericRuleReasoner(rules);
 		InfModel im = ModelFactory.createInfModel(reasoner, _model);
 		return im;

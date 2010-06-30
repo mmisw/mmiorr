@@ -11,22 +11,11 @@
 			<include name="servlet*.jar" />
 		</fileset>
 		<pathelement path="${java.class.path}/" />
-		<pathelement path="WebContent/WEB-INF/lib/commons-httpclient-3.1.jar" />
-		<pathelement path="WebContent/WEB-INF/lib/commons-codec-1.3.jar" />
-		<pathelement path="WebContent/WEB-INF/lib/commons-fileupload-1.2.1.jar" />
-		<pathelement path="WebContent/WEB-INF/lib/commons-io-1.4.jar" />
-		<pathelement path="WebContent/WEB-INF/lib/junit.jar" />
-		<pathelement path="WebContent/WEB-INF/lib/commons-logging-1.1.1.jar" />
-		<pathelement path="WebContent/WEB-INF/lib/org.mmi.ont.util.jar" />
-		<pathelement path="WebContent/WEB-INF/lib/jena.jar" />
-		<pathelement path="WebContent/WEB-INF/lib/xercesImpl.jar" />
-		<pathelement path="WebContent/WEB-INF/lib/jenatest.jar" />
-		<pathelement path="WebContent/WEB-INF/lib/iri.jar" />
-		<pathelement path="WebContent/WEB-INF/lib/icu4j_3_4.jar" />
-		<pathelement path="WebContent/WEB-INF/lib/arq.jar" />
-		<pathelement path="WebContent/WEB-INF/lib/concurrent.jar" />
-		<pathelement path="WebContent/WEB-INF/lib/agraph.jar" />
-		<pathelement path="WebContent/WEB-INF/lib/js.jar" />
+		<fileset dir="WebContent/WEB-INF/lib">
+			<include name="*.jar" />
+			<exclude name="org.mmisw.ont.jar" />
+			<include name="jena/*.jar" />
+		</fileset>
 	</path>
 
 	<target name="init">
@@ -146,7 +135,7 @@
 		
 		<copy todir="${build.dir}/tmp.web-inf-lib" flatten="true">
 			<fileset dir="WebContent/WEB-INF/lib">
-				<include name="**.jar" />
+				<include name="**/*.jar" />
 			</fileset>
 		</copy>
 		
