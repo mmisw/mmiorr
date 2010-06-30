@@ -1,8 +1,51 @@
-org.mmisw.iserver - ORR Client Library 
+org.mmisw.iserver - ORR Client Library ("interface to the server")
 Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2010-06-29   1.9.8.alpha   (note: syncing version with Ont and orr modules)
+	Upgraded Jena library to 2.6.3:
+	As a general approach, I'm removing all the "old" libraries that have a corresponding JAR in the
+	new version of Jena, and then using the ones coming with Jena:
+	
+	- Removed "old" jars from base_war/WEB_INF/lib/ associated with Jena 2.5.6 that have versions 
+	  in the new Jena:
+		-rw-r--r--  1 carueda  staff   358085 Aug 20  2008 log4j-1.2.12.jar
+		-rw-r--r--  1 carueda  staff   121070 Oct 13  2008 junit.jar
+		-rw-r--r--  1 carueda  staff  1203860 Oct 28  2008 xercesImpl.jar
+		-rw-r--r--  1 carueda  staff  1439063 Oct 28  2008 jenatest.jar
+		-rw-r--r--  1 carueda  staff  2216624 Oct 28  2008 jena.jar
+		-rw-r--r--  1 carueda  staff   150954 Oct 28  2008 iri.jar
+		-rw-r--r--  1 carueda  staff  3147374 Oct 28  2008 icu4j_3_4.jar
+		-rw-r--r--  1 carueda  staff  1405635 Oct 28  2008 arq.jar
+		-rw-r--r--  1 carueda  staff   151637 Oct 28  2008 arq-extra.jar
+	
+	- base_war/WEB_INF/lib/jena/ new directory containing ALL(*) the jars associated with the latest
+	  version of Jena, which is 2.6.3:
+		-rw-r--r--@ 1 carueda  staff  1203860 Feb  5  2009 xercesImpl-2.7.1.jar
+		-rw-r--r--@ 1 carueda  staff  3233439 Feb 27  2009 icu4j-3.4.4.jar
+		-rw-r--r--@ 1 carueda  staff   198945 Feb 27  2009 junit-4.5.jar
+		-rw-r--r--@ 1 carueda  staff   358180 Jun 29  2009 log4j-1.2.13.jar
+		-rw-r--r--@ 1 carueda  staff    26514 Jul 31  2009 stax-api-1.0.1.jar
+		-rw-r--r--@ 1 carueda  staff   524224 Jul 31  2009 wstx-asl-3.2.9.jar
+		-rw-r--r--@ 1 carueda  staff   665064 Jul 31  2009 lucene-core-2.3.1.jar
+		-rw-r--r--@ 1 carueda  staff   151589 Nov 13  2009 iri-0.8.jar
+		-rw-r--r--@ 1 carueda  staff   210961 Nov 13  2009 iri-0.8-sources.jar
+		-rw-r--r--@ 1 carueda  staff     9679 Dec  3  2009 slf4j-log4j12-1.5.8.jar
+		-rw-r--r--@ 1 carueda  staff    23445 Dec  3  2009 slf4j-api-1.5.8.jar
+		-rw-r--r--@ 1 carueda  staff  1680523 May 28 14:26 arq-2.8.4.jar
+		-rw-r--r--@ 1 carueda  staff  1900385 Jun  1 14:31 jena-2.6.3.jar
+		-rw-r--r--@ 1 carueda  staff  1506473 Jun  1 14:32 jena-2.6.3-tests.jar
+	(*) I'm just following the indication in Jena-2.6.3/doc/readme.html: "Installation: ... set the Java 
+	classpath to include all the JAR files in the JENAROOT/lib/ directory."
+	
+2010-06-29
+	New src/org/mmisw/iserver/core/version.properties which is a template that build.xml uses
+	to create ${build.dir}/classes/org/mmisw/iserver/core/version.properties, which ServerConfig
+	now uses to initialize Prop.VERSION and Prop.BUILD.  AppInfo now includes a 'build' attribute.
+	IServer.getAppInfo() now returns accurate version information.
+	
+	
 2010-06-17   1.9.4.alpha
 	Issue 258:"reset password in effect but lost if error while sending email"
 	- Server.resetUserPassword: Part of the fix is to first check the mail account 

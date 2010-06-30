@@ -1,5 +1,13 @@
 package org.mmisw.iserver.core;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 
 /**
  * Provides the configuration parameter values.
@@ -13,7 +21,7 @@ public class ServerConfig {
 	 */
 	public enum Prop {
 		
-		VERSION                       ("iserver.app.version",  "1.5.0.beta0"),
+		VERSION                       ("iserver.app.version",  "versionPend"),
 		BUILD                         ("iserver.app.build",    "buildPend"),
 		
 		/** where the previewed files are stored: */
@@ -43,7 +51,6 @@ public class ServerConfig {
 		
 		public void setValue(String value) { this.value = value; }
 	}
-
 	
 	private static final ServerConfig instance = new ServerConfig();
 	
@@ -55,6 +62,35 @@ public class ServerConfig {
 	}
 	
 	
-	private ServerConfig() {};
+	private final Log log = LogFactory.getLog(ServerConfig.class);
+	
+	private ServerConfig() {
+		InputStream is = getClass().getResourceAsStream("version.properties");
+		if ( is == null ) {
+			log.warn("Could not get stream version.properties");
+			return;
+		}
+		Properties verProps = new Properties();
+		try {
+			verProps.load(is);
+		}
+		catch (IOException e) {
+			log.warn("Could not load version.properties", e);
+		}
+		
+		Prop[] props = { Prop.VERSION, Prop.BUILD };
+		for ( Prop prop : props ) {
+			String val = verProps.getProperty(prop.getName());
+			if ( val == null ) {
+				log.warn("version.properties does not define " +prop.getName());
+			}
+			else {
+				prop.setValue(val);
+				log.debug(prop.getName()+ " set to " +prop.getValue());
+			}
+		}
+		
+		IOUtils.closeQuietly(is);
+	}
 
 }

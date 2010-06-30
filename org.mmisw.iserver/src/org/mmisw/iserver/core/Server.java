@@ -120,10 +120,8 @@ public class Server implements IServer {
 		try {
 			ServerConfig.getInstance();
 			
-			appInfo.setVersion(
-					ServerConfig.Prop.VERSION.getValue()+ " (" +
-						ServerConfig.Prop.BUILD.getValue()  + ")"
-			);
+			appInfo.setVersion(ServerConfig.Prop.VERSION.getValue());
+			appInfo.setBuild(ServerConfig.Prop.BUILD.getValue());
 					
 			log.info(appInfo.toString());
 			

@@ -18,28 +18,11 @@
 	<pathelement path="${GWT_HOME}/gwt-dev-mac.jar"/>
 	<pathelement path="${GWT_HOME}/gwt-dev-win.jar"/>
   	
-	<pathelement path="base_war/WEB-INF/lib/commons-httpclient-3.1.jar"/>
-	<pathelement path="base_war/WEB-INF/lib/commons-codec-1.3.jar"/>
-	<pathelement path="base_war/WEB-INF/lib/jena.jar"/>
-  	<pathelement path="base_war/WEB-INF/lib/arq.jar"/>
-
-  	<pathelement path="base_war/WEB-INF/lib/commons-logging.jar"/>
-  	<pathelement path="base_war/WEB-INF/lib/log4j-1.2.12.jar"/>
-  	<pathelement path="base_war/WEB-INF/lib/commons-io-1.4.jar"/>
-  	<pathelement path="base_war/WEB-INF/lib/chardet.jar"/>
+	<fileset dir="base_war/WEB-INF/lib">
+		<include name="*.jar" />
+		<include name="jena/*.jar" />
+	</fileset>
   	
-  	<pathelement path="base_war/WEB-INF/lib/org.mmisw.ont.mmiuri.jar"/>
-  	<pathelement path="base_war/WEB-INF/lib/org.mmisw.ont.vocabulary.jar"/>
-  	<pathelement path="base_war/WEB-INF/lib/org.mmisw.ont.misc.jar"/>
-  	
-  	<pathelement path="base_war/WEB-INF/lib/org.mmi.util.jar"/>
-  	<pathelement path="base_war/WEB-INF/lib/org.mmi.ont.util.jar"/>
-  	<pathelement path="base_war/WEB-INF/lib/datafile.jar"/>
-  	
-  	<pathelement path="base_war/WEB-INF/lib/activation.jar"/>
-	<pathelement path="base_war/WEB-INF/lib/mail.jar"/>
-  	
-  	<pathelement path="base_war/WEB-INF/lib/junit.jar"/>
   </path>
 
 	<target name="init">
@@ -57,12 +40,23 @@
     	includes="**" debug="on" debuglevel="lines,vars,source">
       <classpath refid="project.class.path"/>
     </javac>
+  	
+	<copy file="src/org/mmisw/iserver/core/version.properties" 
+		tofile="${build.dir}/classes/org/mmisw/iserver/core/version.properties" 
+		overwrite="true">
+		<filterset>
+			<filter token="iserver.app.version"  value="${iserver.app.version}" />
+			<filter token="iserver.app.build"    value="${iserver.app.build}" />
+		</filterset>
+	</copy>
+  	
   </target>
 
-  <target name="jar" depends="compile" description="Package up the project as a jar">
-	<jar destfile="base_war/WEB-INF/lib/org.mmisw.iserver.gwt.jar">
+  <target name="jar" depends="compile" description="Generates the library for MMISW clients">
+	<jar destfile="${build.dir}/org.mmisw.iserver.gwt.jar">
   		<fileset dir="${build.dir}/classes">
     		<include name="**/*.class"/>
+    		<include name="**/*.properties"/>
   		</fileset>
   		<fileset dir="src">
     		<include name="**/*.xml"/>

@@ -3,7 +3,7 @@ package org.mmisw.iserver.gwt.client.rpc;
 import java.io.Serializable;
 
 /**
- * A base class for all objects of results that can have an error.
+ * A base class for all objects or results that can have an error.
  * 
  * @author Carlos Rueda
  */

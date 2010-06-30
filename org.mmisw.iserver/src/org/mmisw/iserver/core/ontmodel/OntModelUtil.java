@@ -76,7 +76,7 @@ public class OntModelUtil {
 
 		Ontology ont = null;
 		
-		ExtendedIterator iter = mBase.listOntologies();
+		ExtendedIterator<Ontology> iter = mBase.listOntologies();
 		if ( iter.hasNext() ) {
 			ont = (Ontology) iter.next();
 		}
@@ -124,7 +124,7 @@ public class OntModelUtil {
 	
 	
 	private static OntModel setOrAddProperties(OntModel ontModel, boolean doSet, Map<String, String> values) {
-		ExtendedIterator iter = ontModel.listOntologies();
+		ExtendedIterator<Ontology> iter = ontModel.listOntologies();
 		if ( iter.hasNext() ) {
 			Ontology ont = (Ontology) iter.next();
 			for ( String uri : values.keySet() ) {

@@ -13,6 +13,7 @@ public class AppInfo implements Serializable {
 	private String appName;
 	
 	private String version;
+	private String build;
 	
 	
 	public AppInfo() {
@@ -36,8 +37,16 @@ public class AppInfo implements Serializable {
 		this.version = version;
 	}
 	
+	public String getBuild() {
+		return build;
+	}
+
+	public void setBuild(String build) {
+		this.build = build;
+	}
+
 	public String toString() {
-		return getAppName()+ (getVersion() == null ? "" : " " +getVersion());
+		return getAppName()+ " " +getVersion()+ " (" +getBuild()+ ")";
 	}
 
 }
