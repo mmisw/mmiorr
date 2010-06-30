@@ -31,10 +31,8 @@ public class Voc2RdfImpl  {
 	
 	public Voc2RdfImpl() {
 		log.info("initializing " +appInfo.getAppName()+ "...");
-		appInfo.setVersion(
-				PortalConfig.Prop.VERSION.getValue()+ " (" +
-				PortalConfig.Prop.BUILD.getValue()  + ")"
-		);
+		appInfo.setVersion(PortalConfig.Prop.VERSION.getValue());
+		appInfo.setBuild(PortalConfig.Prop.BUILD.getValue());
 
 		log.info(appInfo.toString());
 	}

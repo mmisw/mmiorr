@@ -67,14 +67,15 @@ public class PortalImpl  {
 	
 	private PortalImpl(String ontServiceUrl, String bioportalRestUrl) {
 		log.info("initializing " +appInfo.getAppName()+ "...");
-		appInfo.setVersion(
-				PortalConfig.Prop.VERSION.getValue()+ " (" +
-				PortalConfig.Prop.BUILD.getValue()  + ")"
-		);
-
+		
+		appInfo.setVersion(PortalConfig.Prop.VERSION.getValue());
+		appInfo.setBuild(PortalConfig.Prop.BUILD.getValue());
+		
 		log.info(appInfo.toString());
 		
 		iserver = Server.getInstance(ontServiceUrl, bioportalRestUrl);
+		
+		log.info("Using: " +iserver.getAppInfo());
 		
 		ServerConfig.Prop.MAIL_USER.setValue(PortalConfig.Prop.MAIL_USER.getValue());
 		ServerConfig.Prop.MAIL_PASSWORD.setValue(PortalConfig.Prop.MAIL_PASSWORD.getValue());

@@ -6,10 +6,6 @@
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/activation.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/mail.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmisw.ont.misc.jar" sourcepath="/org.mmisw.ont"/>
-	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena.jar" sourcepath="/Users/carueda/Software/Jena-2.5.6/src"/>
-	<classpathentry kind="lib" path="base_war/WEB-INF/lib/log4j-1.2.12.jar"/>
-	<classpathentry kind="lib" path="base_war/WEB-INF/lib/arq.jar"/>
-	<classpathentry kind="lib" path="base_war/WEB-INF/lib/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmi.ont.util.jar" sourcepath="/org.mmi.ont.util/src"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/commons-codec-1.3.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/commons-httpclient-3.1.jar"/>
@@ -17,10 +13,6 @@
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmi.util.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/commons-logging.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jakarta-oro-2.0.5.jar"/>
-	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jenatest.jar"/>
-	<classpathentry kind="lib" path="base_war/WEB-INF/lib/arq-extra.jar"/>
-	<classpathentry kind="lib" path="base_war/WEB-INF/lib/iri.jar"/>
-	<classpathentry kind="lib" path="base_war/WEB-INF/lib/icu4j_3_4.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/commons-io-1.4.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/concurrent.jar"/>
@@ -29,5 +21,19 @@
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmisw.iserver.gwt.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/chardet.jar"/>
 	<classpathentry kind="lib" path="/Users/carueda/Software/gwt-mac-1.5.2/gwt-user.jar"/>
+	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/arq-2.8.4.jar"/>
+	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/icu4j-3.4.4.jar"/>
+	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/iri-0.8-sources.jar"/>
+	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/iri-0.8.jar"/>
+	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/jena-2.6.3-tests.jar"/>
+	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/jena-2.6.3.jar"/>
+	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/junit-4.5.jar"/>
+	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/log4j-1.2.13.jar"/>
+	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/lucene-core-2.3.1.jar"/>
+	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/slf4j-api-1.5.8.jar"/>
+	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/slf4j-log4j12-1.5.8.jar"/>
+	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/stax-api-1.0.1.jar"/>
+	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/wstx-asl-3.2.9.jar"/>
+	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/xercesImpl-2.7.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

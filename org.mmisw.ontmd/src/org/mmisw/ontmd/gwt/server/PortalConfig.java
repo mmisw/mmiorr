@@ -133,7 +133,13 @@ public class PortalConfig {
 				}
 				prop.setValue(value);
 				if ( log != null && log.isDebugEnabled() ) {
-					log.debug(prop.getName()+ " = " +value);
+					if ( Prop.MAIL_PASSWORD == prop ) {
+						// do not show passwords:
+						log.debug(prop.getName()+ " = " +"XXXXX");
+					}
+					else {
+						log.debug(prop.getName()+ " = " +value);						
+					}
 				}
 			}
 			

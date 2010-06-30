@@ -12,6 +12,7 @@ import org.mmisw.ont.MmiUri;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.iserver.gwt.client.vocabulary.Option;
 
+import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -92,7 +93,7 @@ class MdUtil {
 		
 		Resource classRes = ResourceFactory.createResource(classMmiUri.getTermUri());
 		
-		ExtendedIterator iter = ontModel.listIndividuals(classRes);
+		ExtendedIterator<Individual> iter = ontModel.listIndividuals(classRes);
 		while ( iter.hasNext() ) {
 			Resource idv = (Resource) iter.next();
 			String idvName = idv.getLocalName();

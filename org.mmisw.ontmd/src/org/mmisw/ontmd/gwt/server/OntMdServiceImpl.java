@@ -121,10 +121,8 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		try {
 			PortalConfig.getInstance().init(servletConfig, log, true);
 			
-			appInfo.setVersion(
-					PortalConfig.Prop.VERSION.getValue()+ " (" +
-						PortalConfig.Prop.BUILD.getValue()  + ")"
-			);
+			appInfo.setVersion(PortalConfig.Prop.VERSION.getValue());
+			appInfo.setBuild(PortalConfig.Prop.BUILD.getValue());
 					
 			log.info(appInfo.toString());
 			

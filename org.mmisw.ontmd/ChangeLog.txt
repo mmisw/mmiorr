@@ -2,9 +2,50 @@ org.mmisw.ontmd: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-06-29   1.9.8.alpha   (note: syncing version with Ont and orr modules)
+	Upgraded Jena library to 2.6.3:
+	As a general approach, I'm removing all the "old" libraries that have a corresponding JAR in the
+	new version of Jena, and then using the ones coming with Jena:
+	
+	- Removed "old" jars from base_war/WEB_INF/lib/ associated with Jena 2.5.6 that have versions 
+	  in the new Jena:
+		-rw-r--r--  1 carueda  staff   151637 Aug  4  2009 arq-extra.jar
+		-rw-r--r--  1 carueda  staff  1203860 Aug  4  2009 xercesImpl.jar
+		-rw-r--r--  1 carueda  staff  1439063 Aug  4  2009 jenatest.jar
+		-rw-r--r--  1 carueda  staff  2216624 Aug  4  2009 jena.jar
+		-rw-r--r--  1 carueda  staff   150954 Aug  4  2009 iri.jar
+		-rw-r--r--  1 carueda  staff  3147374 Aug  4  2009 icu4j_3_4.jar
+		-rw-r--r--  1 carueda  staff  1405635 Aug  4  2009 arq.jar
+		-rw-r--r--  1 carueda  staff   358085 Aug  4  2009 log4j-1.2.12.jar
+	
+	- base_war/WEB_INF/lib/jena/ new directory containing ALL(*) the jars associated with the latest
+	  version of Jena, which is 2.6.3:
+		-rw-r--r--@ 1 carueda  staff  1203860 Feb  5  2009 xercesImpl-2.7.1.jar
+		-rw-r--r--@ 1 carueda  staff  3233439 Feb 27  2009 icu4j-3.4.4.jar
+		-rw-r--r--@ 1 carueda  staff   198945 Feb 27  2009 junit-4.5.jar
+		-rw-r--r--@ 1 carueda  staff   358180 Jun 29  2009 log4j-1.2.13.jar
+		-rw-r--r--@ 1 carueda  staff    26514 Jul 31  2009 stax-api-1.0.1.jar
+		-rw-r--r--@ 1 carueda  staff   524224 Jul 31  2009 wstx-asl-3.2.9.jar
+		-rw-r--r--@ 1 carueda  staff   665064 Jul 31  2009 lucene-core-2.3.1.jar
+		-rw-r--r--@ 1 carueda  staff   151589 Nov 13  2009 iri-0.8.jar
+		-rw-r--r--@ 1 carueda  staff   210961 Nov 13  2009 iri-0.8-sources.jar
+		-rw-r--r--@ 1 carueda  staff     9679 Dec  3  2009 slf4j-log4j12-1.5.8.jar
+		-rw-r--r--@ 1 carueda  staff    23445 Dec  3  2009 slf4j-api-1.5.8.jar
+		-rw-r--r--@ 1 carueda  staff  1680523 May 28 14:26 arq-2.8.4.jar
+		-rw-r--r--@ 1 carueda  staff  1900385 Jun  1 14:31 jena-2.6.3.jar
+		-rw-r--r--@ 1 carueda  staff  1506473 Jun  1 14:32 jena-2.6.3-tests.jar
+	(*) I'm just following the indication in Jena-2.6.3/doc/readme.html: "Installation: ... set the Java 
+	classpath to include all the JAR files in the JENAROOT/lib/ directory."
+
+
+2010-06-29
+	PortalImpl now logs the IServer version and build, which is now properly reported by that
+	module: log.info("Using: " +iserver.getAppInfo())
+	
+	
 2010-06-17   1.9.4.alpha
 	#158: "Mechanism for tracking accesses to ontologies/terms"
-	Preliminary preparations using Google analytics:
+	Using Google analytics:
 	
 	- sample.build.properties: new ga.uanumber property
 	- PortalConfig.GA_UA_NUMBER captures this property
