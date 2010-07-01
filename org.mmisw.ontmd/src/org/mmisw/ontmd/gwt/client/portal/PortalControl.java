@@ -326,7 +326,7 @@ public class PortalControl {
 	
 	private IQuickInfo quickInfo = new IQuickInfo() {
 		
-		public Widget getWidget(final RegisteredOntologyInfo oi, final boolean includeVersionInLinks,
+		public Widget getWidget(String name, final RegisteredOntologyInfo oi, final boolean includeVersionInLinks,
 				final boolean includeVersionsMenu) {
 			
 			if ( true ) {
@@ -337,8 +337,13 @@ public class PortalControl {
 				// Note: Edit option not included here.
 				MenuBar menu = controlsPanel.createOntologyMenuBar(oi, false, includeVersionInLinks, includeVersionsMenu);
 				MenuBar mb = new MenuBar(true);
-//				mb.addItem("<font color=\"blue\">i</font>", true, menu);
-				mb.addItem("", menu);
+				
+				if ( name != null ) {
+					mb.addItem("<font size=\"-2\" color=\"gray\">" +name+ "</font>", true, menu);
+				}
+				else {
+					mb.addItem("", menu);
+				}
 				return mb;
 			}
 			else {

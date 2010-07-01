@@ -2,6 +2,14 @@ org.mmisw.ontmd: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-06-30   1.9.8.alpha
+	- Completed Issue 44: "want sorting of columns in Browse view"
+	  Added an icon and dispatch of a popup menu with "Sort up" and "Sort down" options. 
+	  See OntologyTable.ColHeader
+	  
+	- PortalControl.quickInfo along with OntologyTable: include numbering in the browse table.
+	
+
 2010-06-29   1.9.8.alpha   (note: syncing version with Ont and orr modules)
 	Upgraded Jena library to 2.6.3:
 	As a general approach, I'm removing all the "old" libraries that have a corresponding JAR in the

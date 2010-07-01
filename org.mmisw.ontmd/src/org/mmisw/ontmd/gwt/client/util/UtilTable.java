@@ -36,7 +36,7 @@ public class UtilTable {
 	
 	private final FlexTable flexPanel = new FlexTable();
 
-	private List<HTML> headerHtmls;
+	private List<ColHeader> colHeaders;
 	
 	private String sortColumn;
 	
@@ -95,17 +95,33 @@ public class UtilTable {
 		flexPanel.setWidth("100%");
 		flexPanel.setStylePrimaryName("OntologyTable");
 		
-		headerHtmls = new ArrayList<HTML>();
+		colHeaders = new ArrayList<ColHeader>();
 		sortColumn = colLabels.length > 0 ? colLabels[0] : "";
 		
 		for ( int i = 0; i < colLabels.length; i++ ) {
-			HTML html = new HTML(colLabels[i]);
-			headerHtmls.add(html);
-			html.addClickListener(columnHeaderClickListener);
+			ColHeader colHeader = new ColHeader(colLabels[i]);
+			colHeaders.add(colHeader);
 		}
 		
 		prepareHeader();
 	}
+	
+	private class ColHeader {
+		HTML html;
+		ColHeader(String colLabel) {
+			html = new HTML("--" +colLabel+ "--");
+			html.addClickListener(columnHeaderClickListener);
+		}
+
+		Widget getWidget() {
+			return html;
+		}
+
+		String getText() {
+			return html.getText();
+		}
+	}
+	
 	
 	public void clear() {
 		flexPanel.clear();
@@ -131,9 +147,9 @@ public class UtilTable {
 		
 		flexPanel.getRowFormatter().setStylePrimaryName(row, "OntologyTable-header");
 		
-		for ( int i = 0, count = headerHtmls.size(); i < count; i++ ) {
-			HTML html = headerHtmls.get(i);
-			flexPanel.setWidget(row, i, html);
+		for ( int i = 0, count = colHeaders.size(); i < count; i++ ) {
+			ColHeader colHeader = colHeaders.get(i);
+			flexPanel.setWidget(row, i, colHeader.getWidget());
 			flexPanel.getFlexCellFormatter().setAlignment(row, i, 
 					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 			);
@@ -326,9 +342,9 @@ public class UtilTable {
 	private void _setRow(final int row, IRow irow) {
 		flexPanel.getRowFormatter().setStylePrimaryName(row, "OntologyTable-row");
 		
-		for ( int col = 0, count = headerHtmls.size(); col < count; col++ ) {
-			HTML html = headerHtmls.get(col);
-			String name = html.getText();
+		for ( int col = 0, count = colHeaders.size(); col < count; col++ ) {
+			ColHeader colHeader = colHeaders.get(col);
+			String name = colHeader.getText();
 			
 			String value = irow.getColValue(name);
 			if ( value == null ) value = "";

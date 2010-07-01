@@ -6,18 +6,23 @@ import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.util.Util;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.MenuBar;
+import com.google.gwt.user.client.ui.MenuItem;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -39,7 +44,15 @@ public class OntologyTable extends FlexTable {
 	
 	
 	static interface IQuickInfo {
-		Widget getWidget(RegisteredOntologyInfo oi, boolean includeVersionInLinks, boolean includeVersionsMenu);
+		/**
+		 * 
+		 * @param name  Used to show a label (in particular, for numbering)
+		 * @param oi
+		 * @param includeVersionInLinks
+		 * @param includeVersionsMenu
+		 * @return
+		 */
+		Widget getWidget(String name, RegisteredOntologyInfo oi, boolean includeVersionInLinks, boolean includeVersionsMenu);
 	}
 	
 	private IQuickInfo quickInfo;
@@ -52,17 +65,78 @@ public class OntologyTable extends FlexTable {
 	private boolean isAdmin = false;
 	
 	private final FlexTable flexPanel = this;
+	
+	
+	/**
+	 * Column header. Dispatches the sorting of the table.
+	 * See Issue #44: "want sorting of columns in Browse view"
+	 */
+	private class ColHeader {
+		
+		private FocusPanel focusPanel;
+		
+		ColHeader(final String colLabel) {
+			HorizontalPanel hp = new HorizontalPanel();
+			hp.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
 
-	private HTML quickInfoHeaderHtml = new HTML("");
-	private HTML nameHeaderHtml = new HTML("Name");
-	private HTML ontologyUriHeaderHtml = new HTML("URI");
-	private HTML authorHeaderHtml = new HTML("Author");
-	private HTML versionHeaderHtml = new HTML("Version");
-	private HTML submitterHeaderHtml = new HTML("Submitter");
+			HTML html = new HTML("<b>" +colLabel+ "</b>&nbsp;");
+			hp.add(html);
+
+			focusPanel = new FocusPanel(hp);
+
+			if ( colLabel.length() > 0 ) {
+				focusPanel.addClickListener(new ClickListener() {
+					public void onClick(Widget sender) {
+						_dispatchColumnHeader(colLabel);
+					}
+				});
+				hp.add(Main.images.tridown().createImage());
+			}
+		}
+
+		private void _dispatchColumnHeader(final String colName) {
+			Widget ww = focusPanel;
+			int left = ww.getAbsoluteLeft();
+			int top = ww.getAbsoluteTop() + ww.getOffsetHeight();
+
+		    MenuBar menu = new MenuBar(true);
+//		    menu.setStylePrimaryName("PopupMenu");
+		    final PopupPanel menuPopup = new PopupPanel(true);
+		    
+		    menu.addItem(new MenuItem("Sort up", new Command() {
+				public void execute() {
+					sortByColumn(colName, false);
+					menuPopup.hide();
+				}
+		    }));
+		    menu.addItem(new MenuItem("Sort down", new Command() {
+				public void execute() {
+					sortByColumn(colName, true);
+					menuPopup.hide();
+				}
+		    }));
+		    
+		    menuPopup.setWidget(menu);
+		    menuPopup.setPopupPosition(left, top);
+			menuPopup.show();
+		}
+
+		Widget getWidget() {
+			return focusPanel;
+		}
+	}
+
+
+	private ColHeader quickInfoHeaderHtml = new ColHeader("");
+	private ColHeader nameHeaderHtml = new ColHeader("Name");
+	private ColHeader ontologyUriHeaderHtml = new ColHeader("URI");
+	private ColHeader authorHeaderHtml = new ColHeader("Author");
+	private ColHeader versionHeaderHtml = new ColHeader("Version");
+	private ColHeader submitterHeaderHtml = new ColHeader("Submitter");
 
 	// #209: list of ontologies ordered by time of registration; most recent first
 	private String sortColumn = "version";
-	private int sortFactor = -1;
+	private int sortFactor = -1;    // -1=down   +1:up
 	
 	private Comparator<RegisteredOntologyInfo> cmp = new Comparator<RegisteredOntologyInfo>() {
 		public int compare(RegisteredOntologyInfo o1, RegisteredOntologyInfo o2) {
@@ -97,25 +171,21 @@ public class OntologyTable extends FlexTable {
 		}
 	};
 
-	private ClickListener columnHeaderClickListener = new ClickListener() {
-		public void onClick(Widget sender) {
-			String colName = ((HTML) sender).getText().toLowerCase();
-			if ( sortColumn.equalsIgnoreCase(colName) ) {
-				sortFactor *= -1;
-			}
-			else {
-				sortColumn = colName;
-			}
+	/**
+	 * Performs sorting of the table entries in a deferred command.
+	 */
+	private void sortByColumn(String colName, boolean down) {
+		sortFactor = down ? -1 : 1;
+		sortColumn = colName;
 
-			showProgress();
-			DeferredCommand.addCommand(new Command() {
-				public void execute() {
-					Collections.sort(ontologyInfos, cmp);
-					update();
-				}
-			});
-		}
-	};
+		showProgress();
+		DeferredCommand.addCommand(new Command() {
+			public void execute() {
+				Collections.sort(ontologyInfos, cmp);
+				update();
+			}
+		});
+	}
 
 	
 	/** given by the user */
@@ -140,12 +210,6 @@ public class OntologyTable extends FlexTable {
 		flexPanel.setWidth("100%");
 		flexPanel.setStylePrimaryName("OntologyTable");
 		
-		nameHeaderHtml.addClickListener(columnHeaderClickListener);
-		ontologyUriHeaderHtml.addClickListener(columnHeaderClickListener);
-		authorHeaderHtml.addClickListener(columnHeaderClickListener);
-		versionHeaderHtml.addClickListener(columnHeaderClickListener);
-		submitterHeaderHtml.addClickListener(columnHeaderClickListener);
-		
 		prepareHeader();
 	}
 	
@@ -162,12 +226,12 @@ public class OntologyTable extends FlexTable {
 	 * Set the sort criteria. It will have effect on the next update of the table, which
 	 * happens upon a call to {@link #setOntologyInfos(List, LoginResult)}.
 	 * 
-	 * @param sortColumn
-	 * @param increasing
+	 * @param sortColumn  Base column for the sort
+	 * @param down        true to sort down.
 	 */
-	public void setSortColumn(String sortColumn, boolean increasing) {
+	public void setSortColumn(String sortColumn, boolean down) {
 		this.sortColumn = sortColumn;
-		this.sortFactor = increasing ? 1 : -1;
+		this.sortFactor = down ? -1 : +1;
 	}
 
 
@@ -210,39 +274,39 @@ public class OntologyTable extends FlexTable {
 		
 		int col = 0;
 		if ( quickInfo != null ) {
-			flexPanel.setWidget(row, col, quickInfoHeaderHtml);
+			flexPanel.setWidget(row, col, quickInfoHeaderHtml.getWidget());
 			flexPanel.getFlexCellFormatter().setAlignment(row, col, 
 					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 			);
 			col++;
 		}
 		
-		flexPanel.setWidget(row, col, ontologyUriHeaderHtml);
+		flexPanel.setWidget(row, col, ontologyUriHeaderHtml.getWidget());
 		flexPanel.getFlexCellFormatter().setAlignment(row, col, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		col++;
 
-		flexPanel.setWidget(row, col, nameHeaderHtml);
+		flexPanel.setWidget(row, col, nameHeaderHtml.getWidget());
 		flexPanel.getFlexCellFormatter().setAlignment(row, col, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		col++;
 		
-		flexPanel.setWidget(row, col, authorHeaderHtml);
+		flexPanel.setWidget(row, col, authorHeaderHtml.getWidget());
 		flexPanel.getFlexCellFormatter().setAlignment(row, col, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		col++;
 
-		flexPanel.setWidget(row, col, versionHeaderHtml);
+		flexPanel.setWidget(row, col, versionHeaderHtml.getWidget());
 		flexPanel.getFlexCellFormatter().setAlignment(row, col, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		col++;
 
 		if ( isAdmin ) {
-			flexPanel.setWidget(row, col, submitterHeaderHtml);
+			flexPanel.setWidget(row, col, submitterHeaderHtml.getWidget());
 			flexPanel.getFlexCellFormatter().setAlignment(row, col, 
 					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 			);
@@ -322,7 +386,9 @@ public class OntologyTable extends FlexTable {
 				
 			int col = 0;
 			if ( quickInfo != null ) {
-				flexPanel.setWidget(row, col, quickInfo.getWidget(oi, includeVersionInLinks, !isVersionsTable));
+				String quickInfoName = "" +row;
+				Widget widget = quickInfo.getWidget(quickInfoName, oi, includeVersionInLinks, !isVersionsTable);
+				flexPanel.setWidget(row, col, widget);
 				flexPanel.getFlexCellFormatter().setAlignment(row, col, 
 						HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE
 				);
