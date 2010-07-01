@@ -109,8 +109,10 @@ public class UtilTable {
 	private class ColHeader {
 		HTML html;
 		ColHeader(String colLabel) {
-			html = new HTML("--" +colLabel+ "--");
-			html.addClickListener(columnHeaderClickListener);
+			html = new HTML(colLabel);
+			if ( colLabel.length() > 0 ) {
+				html.addClickListener(columnHeaderClickListener);
+			}
 		}
 
 		Widget getWidget() {
