@@ -2,7 +2,6 @@ package org.mmisw.watchdog.cf;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
@@ -18,7 +17,6 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -31,14 +29,10 @@ import com.ibm.icu.text.SimpleDateFormat;
  * 
  * @author bermudez
  * @author carueda
- * 
- * 
  */
 public class SKOSCFCreator {
-
-//	private boolean nextTermIsTopConcept = true;
-
-//	private Resource conceptScheme;
+	
+	private static final String NS = "http://mmisw.org/ont/cf/";
 
 	private Model model;
 
@@ -46,15 +40,11 @@ public class SKOSCFCreator {
 
 	private String fileOut;
 
-	private String NS = "http://mmisw.org/ont/cf/";
-
-	private StringBuffer buf;
 
 	private long begin;
 
 	
-//	private Resource skosConcept = ResourceFactory.createProperty(SKOS.NS, "Concept");
-	private Resource standardNameClass = ResourceFactory.createProperty(NS, "Standard_Name");
+	private Resource standardNameClass;
 	
 	private Resource currentTopConcept;
 
@@ -70,11 +60,8 @@ public class SKOSCFCreator {
 	public SKOSCFCreator(String fileIn, String fileOut) {
 
 		begin = System.currentTimeMillis();
-		buf = new StringBuffer(1000);
 		this.fileIn = fileIn;
 		this.fileOut = fileOut;
-		// this.NS = "http://mmisw/ont/cf/";
-
 	}
 
 	public void convertAndSave() throws IOException {
@@ -85,7 +72,7 @@ public class SKOSCFCreator {
 
 	private void createNewOntology() {
 
-		// created ontology
+		// create ontology
 		model = SKOS.getAnSKOSModel();
 		
 		model.setNsPrefix("", NS);
@@ -106,7 +93,9 @@ public class SKOSCFCreator {
 //				.createResource(NS + "parameter", skosConcept);
 //				.createResource(NS + "parameter", SKOS.Concept);
 
-		Statement stmt = model.createStatement(standardNameClass, RDF.type, OWL.Class);
+		Statement stmt;
+		
+		stmt = model.createStatement(standardNameClass, RDF.type, OWL.Class);
 		model.add(stmt);
 		
 		stmt = model.createStatement(standardNameClass, RDFS.subClassOf, SKOS.Concept);
@@ -136,13 +125,11 @@ public class SKOSCFCreator {
 			// a builder takes a boolean value meaning validation mode:
 			SAXBuilder builder = new SAXBuilder();
 
-			// simply load the document::
-			Document document;
-
-			document = builder.build(new File(fileIn));
+			// simply load the document:
+			Document document = builder.build(new File(fileIn));
 
 			Element standard_name_table = document.getRootElement();
-			List list   = standard_name_table.getChildren("entry");
+			List list = standard_name_table.getChildren("entry");
 			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
 				Element ele = (Element)iterator.next();
 				String id = (ele.getAttribute("id").getValue()).trim();
@@ -152,8 +139,6 @@ public class SKOSCFCreator {
 //				String amip = ele.getChildTextNormalize("amip");
 				
 				String description = ele.getChildTextNormalize("description");
-				
-				id = cleanStringforID(id);
 				
 				String prefLabel = id.replace('_', ' ');
 				
@@ -169,42 +154,21 @@ public class SKOSCFCreator {
 				
 				currentTopConcept.addProperty(SKOS.narrower, concept);
 				
-				appendAction("Res created "+concept);
-				
+				_log("Res created "+concept);
 			}
-			
-			
-			
-
-		} catch (JDOMException e) {
+		} 
+		catch (JDOMException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
 
-	
-
-	
-
-	private void appendAction(String action) {
-		buf.append(action + "\n");
+	private void _log(String action) {
 		System.out.println(action);
 	}
 
 	
-	public void outputLog(String logFile) {
-		try {
-			File f = new File(logFile);
-			FileWriter fw = new FileWriter(f);
-			fw.write(buf.toString());
-			fw.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
-
 	private void saveNewOntology() {
 
 		RDFWriter writer = model.getWriter("RDF/XML-ABBREV");
@@ -217,26 +181,19 @@ public class SKOSCFCreator {
 			// model.write(fo,"RDF/XML-ABBREV");
 
 			writer.write(model, fo, null);
-		} catch (Exception e) {
+		} 
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		appendAction("Time in sec of the conversion: "
-				+ (System.currentTimeMillis() - begin) / 1000);
-		appendAction("New SKOS Ontology saved in: " + fileOut);
-		appendAction("Size of the new Ontology: " + model.size());
+		_log("Time in sec of the conversion: " + (System.currentTimeMillis() - begin) / 1000);
+		_log("New SKOS Ontology saved in: " + fileOut);
+		_log("Size of the new Ontology: " + model.size());
 		File file = new File(fileOut);
 		Date date = new Date(file.lastModified());
 		SimpleDateFormat df = new SimpleDateFormat("yyy-MM-dd'T'H:mm:ss");
-		;
 
-		appendAction("Time stamp of the file " + df.format(date));
-
-	}
-
-	private String cleanStringforID(String s) {
-		return s.trim();
-
+		_log("Time stamp of the file " + df.format(date));
 	}
 
 }

@@ -1,5 +1,10 @@
 watchdog ChangeLog
 
+2010-07-12
+	- Some code clean-up
+	- Included output/cf.owl in SVN
+	- Rerun program confirming no change in behavior
+	
 2010-04-28
 	Initial version based on Luis' code.
 	Only CF conversion is included. Other conversions to be included as
