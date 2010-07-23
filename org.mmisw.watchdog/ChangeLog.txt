@@ -1,5 +1,41 @@
 watchdog ChangeLog
+Carlos Rueda - MMI/MBARI
 
+2010-07-23
+	- Preparing to use SKOS API libraries, which are now deployed in Sonatype repository.
+	
+	-  Following instructions at 
+	    https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
+	  especially re. snapshot publication (stating and release not a concern for the moment).
+	  
+	  - created ~/.m2/settings.xml with this contents:
+			<settings>
+			  <servers>
+			    <server>
+			      <id>sonatype-nexus-snapshots</id>
+			      <username>carueda</username>
+			      <password>MY JIRA PASSWORD</password>
+			    </server>
+			    <server>
+			      <id>sonatype-nexus-staging</id>
+			      <username>carueda</username>
+			      <password>MY JIRA PASSWORD</password>
+			    </server>
+			  </servers>
+			</settings>
+	  - added the following to pom.xml:
+			  <parent>
+			    <groupId>org.sonatype.oss</groupId>
+			    <artifactId>oss-parent</artifactId>
+			    <version>3</version>
+			  </parent>
+	  - deploy snapshot:
+	  		mvn clean deploy
+	  		
+	  and the snapshot is published:
+	    https://oss.sonatype.org/content/repositories/snapshots/org/mmisw/watchdog/
+
+	  
 2010-07-12
 	- Some code clean-up
 	- Included output/cf.owl in SVN
