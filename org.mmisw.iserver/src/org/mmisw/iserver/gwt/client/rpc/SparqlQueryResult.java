@@ -32,7 +32,7 @@ public class SparqlQueryResult extends BaseResult {
 
 	
 	public String toString() {
-		return "CreateVocabularyResult{query=" +query+ ", error=" +error+ "}";
+		return "SparqlQueryResult{query=" +query+ ", error=" +error+ "}";
 	}
 
 

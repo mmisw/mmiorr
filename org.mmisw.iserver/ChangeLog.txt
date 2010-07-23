@@ -3,6 +3,16 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2010-07-23   1.9.9.alpha
+	- QueryUtil: accept "csv" (besides "json") to parse result.
+	
+	NOTE: Since the use of the AllegroGraph, the Ont service is not honoring the "json" ouput format
+	for SPARQL queries (instead it replies in "csv" format).  The SmlMor module (sensorML editor)
+	is issuing queries with requested "json" format and calling QueryUtil.parseResult to parse the
+	result, which was only processing "json".  The quick fix is to request "csv" and parse "csv." 
+	The real fix for the "json" format is still pending in the Ont service. 
+	
+	
 2010-06-29   1.9.8.alpha   (note: syncing version with Ont and orr modules)
 	Upgraded Jena library to 2.6.3:
 	As a general approach, I'm removing all the "old" libraries that have a corresponding JAR in the
