@@ -10,7 +10,8 @@ $Id$
 	for SPARQL queries (instead it replies in "csv" format).  The SmlMor module (sensorML editor)
 	is issuing queries with requested "json" format and calling QueryUtil.parseResult to parse the
 	result, which was only processing "json".  The quick fix is to request "csv" and parse "csv." 
-	The real fix for the "json" format is still pending in the Ont service. 
+	The real fix for the "json" format is still pending in the Ont service,
+	see http://code.google.com/p/mmisw/issues/detail?id=261
 	
 	
 2010-06-29   1.9.8.alpha   (note: syncing version with Ont and orr modules)
