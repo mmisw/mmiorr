@@ -2,7 +2,7 @@ MMI Ont2Dot ChangeLog
 
 2010-06-22
 	- rdfs:Resource range shown as is -- ie., not using "Any" anymore.
-	- fixed bug which would prevent the version info to be properly formed when coming
+	- fixed bug which would prevent the version info from being properly formed when coming
 	  from multiple ontologies. Tested with http://sweet.jpl.nasa.gov/1.1/substance.owl
 	
 2010-06-21
