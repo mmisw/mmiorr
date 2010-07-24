@@ -1,9 +1,9 @@
-package org.mmisw.watchdog.cf;
+package org.mmisw.watchdog.cf.skosapi;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Date;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -11,7 +11,13 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-import org.mmisw.watchdog.util.SKOS;
+import org.mmisw.watchdog.cf.Cf2SkosBase;
+import org.mmisw.watchdog.util.jena.SKOS;
+import org.semanticweb.skos.SKOSConceptScheme;
+import org.semanticweb.skos.SKOSDataFactory;
+import org.semanticweb.skos.SKOSDataset;
+import org.semanticweb.skos.SKOSEntity;
+import org.semanticweb.skosapibinding.SKOSManager;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -22,56 +28,55 @@ import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.hp.hpl.jena.vocabulary.XSD;
-import com.ibm.icu.text.SimpleDateFormat;
+
 
 
 /**
+ * Cf2Skos implementation based on SKOS API.
  * 
- * @author bermudez
  * @author carueda
  */
-public class SKOSCFCreator {
+public class Cf2SkosSkosApi extends Cf2SkosBase {
 	
-	private static final String NS = "http://mmisw.org/ont/cf/";
+	protected void _doConvert() throws Exception {
+		_createNewOntology();
+		_convert();
+	}
 
+	protected void _doSave() throws IOException {
+		_saveNewOntology();
+	}
+
+	
+	///////////////////////////////////////////////////////////////////////////////
+	// private
+	///////////////////////////////////////////////////////////////////////////////
+	
 	private Model model;
 
-	private String fileIn;
-
-	private String fileOut;
-
-
-	private long begin;
-
-	
 	private Resource standardNameClass;
 	
 	private Resource currentTopConcept;
 
 	private Property canonical_units;
 
-	public static void main(String[] args) throws IOException {
-		String fileIn = "src/main/resources/input/cf-standard-name-table.xml";
-		String fileOut = "src/main/resources/output/cf.owl";
-		SKOSCFCreator creatorCF = new SKOSCFCreator(fileIn, fileOut);
-		creatorCF.convertAndSave();
-	}
+	
+	private void _createNewOntology() throws Exception {
+		
+		String baseURI = inputUrl.toString();
+		
+		SKOSManager manager = new SKOSManager();
 
-	public SKOSCFCreator(String fileIn, String fileOut) {
+		SKOSDataset dataset = manager.createSKOSDataset(URI.create(baseURI));
+		
+        SKOSDataFactory df = manager.getSKOSDataFactory();
 
-		begin = System.currentTimeMillis();
-		this.fileIn = fileIn;
-		this.fileOut = fileOut;
-	}
+        List<SKOSEntity> allEntities = new ArrayList<SKOSEntity>();
 
-	public void convertAndSave() throws IOException {
-		createNewOntology();
-		convert();
-		saveNewOntology();
-	}
+        // Create a concept scheme identified by a URI
+        SKOSConceptScheme conceptScheme1 = df.getSKOSConceptScheme(URI.create(baseURI + "#conceptScheme1"));
 
-	private void createNewOntology() {
-
+        
 		// create ontology
 		model = SKOS.getAnSKOSModel();
 		
@@ -120,13 +125,11 @@ public class SKOSCFCreator {
 
 	}
 
-	private void convert() throws IOException {
+	private void _convert() throws IOException {
 		try {
-			// a builder takes a boolean value meaning validation mode:
 			SAXBuilder builder = new SAXBuilder();
 
-			// simply load the document:
-			Document document = builder.build(new File(fileIn));
+			Document document = builder.build(inputUrl);
 
 			Element standard_name_table = document.getRootElement();
 			List list = standard_name_table.getChildren("entry");
@@ -154,7 +157,7 @@ public class SKOSCFCreator {
 				
 				currentTopConcept.addProperty(SKOS.narrower, concept);
 				
-				_log("Res created "+concept);
+				_log("\tResource created: "+concept);
 			}
 		} 
 		catch (JDOMException e) {
@@ -164,12 +167,8 @@ public class SKOSCFCreator {
 
 	}
 
-	private void _log(String action) {
-		System.out.println(action);
-	}
-
 	
-	private void saveNewOntology() {
+	private void _saveNewOntology() {
 
 		RDFWriter writer = model.getWriter("RDF/XML-ABBREV");
 		writer.setProperty("showXmlDeclaration", "true");
@@ -186,14 +185,8 @@ public class SKOSCFCreator {
 			e.printStackTrace();
 		}
 
-		_log("Time in sec of the conversion: " + (System.currentTimeMillis() - begin) / 1000);
 		_log("New SKOS Ontology saved in: " + fileOut);
 		_log("Size of the new Ontology: " + model.size());
-		File file = new File(fileOut);
-		Date date = new Date(file.lastModified());
-		SimpleDateFormat df = new SimpleDateFormat("yyy-MM-dd'T'H:mm:ss");
-
-		_log("Time stamp of the file " + df.format(date));
 	}
 
 }

@@ -32,7 +32,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *********************************************************************************/
 
-package org.mmisw.watchdog.util;
+package org.mmisw.watchdog.util.jena;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -90,10 +90,4 @@ public class SKOS {
 		return m;
 	}
 	
-	
-	
-
-	public static void main(String[] args) {
-	
-	}
 }
