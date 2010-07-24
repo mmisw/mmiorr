@@ -5,25 +5,26 @@ import java.net.URL;
 
 
 /**
- * Cf2Skos base implementation.
- * @author carueda
+ * ICf2Skos base implementation.
+ * 
+ * @author Carlos Rueda
  */
 public abstract class Cf2SkosBase implements ICf2Skos {
 	
-	public void setInput(String fileIn) throws MalformedURLException {
-		inputUrl = new URL(fileIn);
+	public void setInput(String inputUri) throws MalformedURLException {
+		inputUrl = new URL(inputUri);
 	}
 	
 	public void setNamespace(String NS) {
-		this.NS = NS;
+		this.namespace = NS;
 	}
 
 	public void convert() throws Exception {
 		_doConvert();
 	}
 
-	public void save(String fileOut) throws Exception {
-		this.fileOut = fileOut;
+	public void save(String outputFile) throws Exception {
+		this.outputFile = outputFile;
 		_doSave();
 	}
 
@@ -32,24 +33,18 @@ public abstract class Cf2SkosBase implements ICf2Skos {
 	// protected
 	///////////////////////////////////////////////////////////////////////////////
 	
-	protected String NS;
+	protected String namespace;
 	
 	protected URL inputUrl;
 	
-	protected String fileOut;
+	protected String outputFile;
 	
-	protected void _log(String action) {
-		System.out.println(action);
+	protected void _log(String msg) {
+		System.out.println(msg);
 	}
 	
 	protected abstract void _doConvert() throws Exception ;
 
 	protected abstract void _doSave() throws Exception ;
 	
-	
-	///////////////////////////////////////////////////////////////////////////////
-	// private
-	///////////////////////////////////////////////////////////////////////////////
-	
-
 }

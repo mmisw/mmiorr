@@ -2,12 +2,12 @@ watchdog ChangeLog
 Carlos Rueda - MMI/MBARI
 
 2010-07-23
-	- Modularizing (to allow multiple implementations, in particular to start testing the
+	- Changes to allow multiple implementations, in particular to start testing the
 	  SKOS API library), and enabling arguments to the program.
 	  
 	- Argh, I spent quite some time trying to make Eclipse to resolve the maven dependency 'skosapi':
-	  it shows as a directory under "Maven Dependencies".  However, I noticed that it works well
-	  if running mvn at the command-line.
+	  it shows as a directory under "Maven Dependencies" instead of the jar.  
+	  Then I noticed that it works well if running mvn from the command-line.
 	  So, I'm *manually* adding the skosapi JAR in the build path for Eclipse at least to be able
 	  to continue using the IDE with the compile facilities.
 	  

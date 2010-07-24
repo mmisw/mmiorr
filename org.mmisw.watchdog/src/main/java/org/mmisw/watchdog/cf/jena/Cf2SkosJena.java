@@ -59,7 +59,7 @@ public class Cf2SkosJena extends Cf2SkosBase {
 		// create ontology
 		model = SKOS.getAnSKOSModel();
 		
-		model.setNsPrefix("", NS);
+		model.setNsPrefix("", namespace);
 
 		// creates top concept scheme
 //		conceptScheme = model.createResource(NS + "cf", SKOS.ConceptScheme);
@@ -70,10 +70,10 @@ public class Cf2SkosJena extends Cf2SkosBase {
 //		conceptScheme.addProperty(DC.description, "CF Terms");
 
 		
-		standardNameClass = model.createProperty(NS, "Standard_Name");
+		standardNameClass = model.createResource(namespace + "Standard_Name");
 		
 		currentTopConcept = model
-				.createResource(NS + "parameter", standardNameClass);
+				.createResource(namespace + "parameter", standardNameClass);
 //				.createResource(NS + "parameter", skosConcept);
 //				.createResource(NS + "parameter", SKOS.Concept);
 
@@ -92,7 +92,7 @@ public class Cf2SkosJena extends Cf2SkosBase {
 		model.add(stmt);
 
 		
-		canonical_units = model.createProperty(NS + "canonical_units");
+		canonical_units = model.createProperty(namespace + "canonical_units");
 		
 		stmt = model.createStatement(canonical_units, RDF.type, OWL.DatatypeProperty);
 		model.add(stmt);
@@ -111,8 +111,8 @@ public class Cf2SkosJena extends Cf2SkosBase {
 			Document document = builder.build(inputUrl);
 
 			Element standard_name_table = document.getRootElement();
-			List list = standard_name_table.getChildren("entry");
-			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+			List<?> list = standard_name_table.getChildren("entry");
+			for (Iterator<?> iterator = list.iterator(); iterator.hasNext();) {
 				Element ele = (Element)iterator.next();
 				String id = (ele.getAttribute("id").getValue()).trim();
 				
@@ -124,7 +124,7 @@ public class Cf2SkosJena extends Cf2SkosBase {
 				
 				String prefLabel = id.replace('_', ' ');
 				
-				Resource concept = model.createResource(NS + id,
+				Resource concept = model.createResource(namespace + id,
 						standardNameClass);
 //						skosConcept);
 //						SKOS.Concept);
@@ -152,9 +152,9 @@ public class Cf2SkosJena extends Cf2SkosBase {
 		RDFWriter writer = model.getWriter("RDF/XML-ABBREV");
 		writer.setProperty("showXmlDeclaration", "true");
 		writer.setProperty("relativeURIs", "same-document,relative");
-		writer.setProperty("xmlbase", NS);
+		writer.setProperty("xmlbase", namespace);
 		try {
-			FileOutputStream fo = new FileOutputStream(fileOut);
+			FileOutputStream fo = new FileOutputStream(outputFile);
 			// model.setNsPrefix("",NS);
 			// model.write(fo,"RDF/XML-ABBREV");
 
@@ -164,7 +164,7 @@ public class Cf2SkosJena extends Cf2SkosBase {
 			e.printStackTrace();
 		}
 
-		_log("New SKOS Ontology saved in: " + fileOut);
+		_log("New SKOS Ontology saved in: " + outputFile);
 		_log("Size of the new Ontology: " + model.size());
 	}
 
