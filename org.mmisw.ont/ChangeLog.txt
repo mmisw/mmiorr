@@ -4,6 +4,9 @@ $Id$
 
 ChangeLog
 
+2010-07-24
+	- just generated the misc, mmiuri, and vocabulary libraries.
+	    
 2010-06-29   1.9.8.alpha    
 Note: syncing version with Ont and orr modules especially because Ont now uses Jena 2.6.3
 and associated libraries.
