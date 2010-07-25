@@ -57,7 +57,7 @@ public class Cf2SkosSkosApi extends Cf2SkosBase {
 	///////////////////////////////////////////////////////////////////////////////
 	
 	private static final String CONCEPT_SCHEME = "CfStdName";
-	private static final String TOP_CONCEPT = "Standard_Name";
+	private static final String TOP_CONCEPT = "parameter";
 
 
 	private Element standard_name_table;

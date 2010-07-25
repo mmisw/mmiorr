@@ -4,6 +4,33 @@ Carlos Rueda - MMI/MBARI
 2010-07-25
 	- better report about contents of input vocabulary.
 	
+	- Cf2SkosSkosApi: TOP_CONCEPT = "parameter" (previously, "Standard_Name")
+	  "Standard_Name" is not generated at all.
+	  Note that that C2SkosJena does generate "Standard_Name" as subClassOf skos:Concept,
+	  but this is probably unnecessary.
+	  
+	- Tested some queries like the following:
+	
+	  Get concepts that are narrower than cf:parameter:
+	
+		PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+		PREFIX cf: <http://mmisw.org/ont/cf/parameter/>
+		SELECT ?narrower
+		WHERE { cf:parameter skos:narrower ?narrower }
+		LIMIT 10	
+	  
+	  Get CF parameters with canonical units "kg m-2"
+	  
+		PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+		PREFIX cf: <http://mmisw.org/ont/cf/parameter/>
+		PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+		SELECT ?parameter  ?description
+		WHERE { ?parameter cf:canonical_units "kg m-2".
+		        ?parameter rdfs:comment ?description .
+		}
+		LIMIT 10	
+	  
+	
 2010-07-24
 	Registration:
 	- org.mmisw.watchdog.orr.RegisterOntology: Adapted from mmiorr-client-demo.
