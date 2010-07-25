@@ -13,7 +13,8 @@
 	<repositories>
 		<repository>
 			<id>sonatype-nexus-snapshots</id>
-			<name>sonatype-nexus-snapshots Maven Repository</name>
+			<name>sonatype-nexus-snapshots Maven
+				Repository</name>
 			<url>http://oss.sonatype.org/content/repositories/snapshots</url>
 		</repository>
 	</repositories>
@@ -21,11 +22,23 @@
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<plugins>
 			<plugin>
-			    <artifactId>maven-compiler-plugin</artifactId>
-			    <configuration>
-				<source>1.5</source>
-				<target>1.5</target>
-			    </configuration>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<mainClass>org.mmisw.ont2dot.Ont2Dot</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -40,6 +53,20 @@
 				</executions>
 				<configuration>
 					<mainClass>org.mmisw.watchdog.Cf</mainClass>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2-beta-5</version>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<archive>
+						<manifest>
+							<mainClass>org.mmisw.watchdog.Cf</mainClass>
+						</manifest>
+					</archive>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -64,6 +91,16 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.5.2</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.4</version>
 		</dependency>
 	</dependencies>
 </project>

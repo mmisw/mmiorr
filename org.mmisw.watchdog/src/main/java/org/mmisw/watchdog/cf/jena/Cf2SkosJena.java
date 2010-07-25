@@ -1,13 +1,12 @@
 package org.mmisw.watchdog.cf.jena;
 
 import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.StringReader;
 import java.util.Iterator;
 import java.util.List;
 
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.mmisw.watchdog.cf.Cf2SkosBase;
 import org.mmisw.watchdog.util.jena.SKOS;
@@ -31,12 +30,12 @@ import com.hp.hpl.jena.vocabulary.XSD;
  */
 public class Cf2SkosJena extends Cf2SkosBase {
 	
-	protected void _doConvert() throws IOException {
+	protected void _doConvert() throws Exception {
 		_createNewOntology();
 		_convert();
 	}
 
-	protected void _doSave() throws IOException {
+	protected void _doSave() throws Exception {
 		_saveNewOntology();
 	}
 
@@ -104,46 +103,44 @@ public class Cf2SkosJena extends Cf2SkosBase {
 
 	}
 
-	private void _convert() throws IOException {
-		try {
-			SAXBuilder builder = new SAXBuilder();
+	private String _convert() throws Exception {
+		SAXBuilder builder = new SAXBuilder();
 
-			Document document = builder.build(inputUrl);
+		Document document = builder.build(new StringReader(inputContents));
 
-			Element standard_name_table = document.getRootElement();
-			List<?> list = standard_name_table.getChildren("entry");
-			for (Iterator<?> iterator = list.iterator(); iterator.hasNext();) {
-				Element ele = (Element)iterator.next();
-				String id = (ele.getAttribute("id").getValue()).trim();
-				
-				String canonicalUnits = ele.getChildTextNormalize("canonical_units");
-//				String grib = ele.getChildTextNormalize("grib");
-//				String amip = ele.getChildTextNormalize("amip");
-				
-				String description = ele.getChildTextNormalize("description");
-				
-				String prefLabel = id.replace('_', ' ');
-				
-				Resource concept = model.createResource(namespace + id,
-						standardNameClass);
-//						skosConcept);
-//						SKOS.Concept);
-				
-				concept.addProperty(SKOS.prefLabel, prefLabel);
-				concept.addProperty(RDFS.label, id);
-				concept.addProperty(canonical_units, canonicalUnits);
-				concept.addProperty(RDFS.comment, description);
-				
-				currentTopConcept.addProperty(SKOS.narrower, concept);
-				
-				_log("\tResource created: "+concept);
-			}
-		} 
-		catch (JDOMException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		Element standard_name_table = document.getRootElement();
+
+		String version_number = standard_name_table.getAttribute("version_number").getValue().trim();
+
+		List<?> list = standard_name_table.getChildren("entry");
+		for (Iterator<?> iterator = list.iterator(); iterator.hasNext();) {
+			Element ele = (Element)iterator.next();
+			String id = (ele.getAttribute("id").getValue()).trim();
+
+			String canonicalUnits = ele.getChildTextNormalize("canonical_units");
+			//				String grib = ele.getChildTextNormalize("grib");
+			//				String amip = ele.getChildTextNormalize("amip");
+
+			String description = ele.getChildTextNormalize("description");
+
+			String prefLabel = id.replace('_', ' ');
+
+			Resource concept = model.createResource(namespace + id,
+					standardNameClass);
+			//						skosConcept);
+			//						SKOS.Concept);
+
+			concept.addProperty(SKOS.prefLabel, prefLabel);
+			concept.addProperty(RDFS.label, id);
+			concept.addProperty(canonical_units, canonicalUnits);
+			concept.addProperty(RDFS.comment, description);
+
+			currentTopConcept.addProperty(SKOS.narrower, concept);
+
+			_log("\tResource created: "+concept);
 		}
 
+		return version_number;
 	}
 
 	

@@ -1,6 +1,24 @@
 watchdog ChangeLog
 Carlos Rueda - MMI/MBARI
 
+2010-07-24
+	- Completed download from CF website and conversion, with outputs written to a given
+	  workspace directory (by default workspace/cf/).
+	  Outputs are generated if the downloaded contents correspond a new version_number 
+	  (or if --force is indicated). A workspace directory (--ws <dir>) is the only required parameter.
+	   
+	  The usage message is:
+	  
+		USAGE: org.mmisw.watchdog.Cf --ws <directory> [options]
+		  options:
+		    --input <url>         (http://cf-pcmdi.llnl.gov/documents/cf-standard-names/standard-name-table/current/cf-standard-name-table.xml)
+		    --ns <uri>            (http://mmisw.org/ont/mmi/cf/parameter/)
+		    --output <filename>   (${workspace}/${basename}-${version_number}.owl)
+		    --force               (false)
+		    --impl [jena|skosapi] (skosapi)
+	  
+	
+	
 2010-07-23
 	- Changes to allow multiple implementations, in particular to start testing the
 	  SKOS API library), and enabling arguments to the program.

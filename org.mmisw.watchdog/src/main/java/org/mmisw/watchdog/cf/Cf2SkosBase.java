@@ -1,7 +1,8 @@
 package org.mmisw.watchdog.cf;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 
 
 /**
@@ -11,16 +12,18 @@ import java.net.URL;
  */
 public abstract class Cf2SkosBase implements ICf2Skos {
 	
-	public void setInput(String inputUri) throws MalformedURLException {
-		inputUrl = new URL(inputUri);
+	public void setInput(String inputContents) {
+		this.inputContents = inputContents;
 	}
 	
 	public void setNamespace(String NS) {
 		this.namespace = NS;
 	}
 
-	public void convert() throws Exception {
+	public Map<String,String> convert() throws Exception {
+		props = new LinkedHashMap<String, String>();
 		_doConvert();
+		return props;
 	}
 
 	public void save(String outputFile) throws Exception {
@@ -35,9 +38,11 @@ public abstract class Cf2SkosBase implements ICf2Skos {
 	
 	protected String namespace;
 	
-	protected URL inputUrl;
+	protected String inputContents;
 	
 	protected String outputFile;
+	
+	protected Map<String,String> props;
 	
 	protected void _log(String msg) {
 		System.out.println(msg);

@@ -1,6 +1,7 @@
 package org.mmisw.watchdog.cf.skosapi;
 
 import java.io.File;
+import java.io.StringReader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -47,7 +48,7 @@ public class Cf2SkosSkosApi extends Cf2SkosBase {
 	}
 
 	protected void _doSave() throws Exception {
-		_saveNewOntology();
+		_saveOntology();
 	}
 
 	
@@ -86,7 +87,6 @@ public class Cf2SkosSkosApi extends Cf2SkosBase {
 	private List<AddAxiom> owlChanges;
 
 
-	
 	private void _createNewOntology() throws Exception {
 		
 		assert namespace.matches(".*(/|#)") ;
@@ -143,14 +143,14 @@ public class Cf2SkosSkosApi extends Cf2SkosBase {
 		
 		
 		SAXBuilder builder = new SAXBuilder();
-
-		Document document = builder.build(inputUrl);
+		Document document = builder.build(new StringReader(inputContents));
 
 		standard_name_table = document.getRootElement();
 		
-//		String version_number = standard_name_table.getAttribute("version_number").getValue().trim();
-//		String last_modified = standard_name_table.getAttribute("last_modified").getValue().trim();
-		// TODO assign version_number, last_modified as some properties to the ontology.
+		_getProperty(standard_name_table, "version_number");
+		_getProperty(standard_name_table, "last_modified");
+
+		// TODO assign version_number, last_modified as some properties to the ontology itself.
 		
         dataFactory = manager.getSKOSDataFactory();
 
@@ -185,6 +185,21 @@ public class Cf2SkosSkosApi extends Cf2SkosBase {
 		owlChanges = new ArrayList<AddAxiom>();
 		
 		_addOwlChange(topConceptUri, TOP_CONCEPT.replace('_', ' '), "", null, null, null);
+		
+	}
+
+	/**
+	 * Gets the value of an entity and put the corresp. entry in the props map.
+	 * @param standard_name_table
+	 * @param propName
+	 */
+	private void _getProperty(Element standard_name_table, String propName) {
+		Iterator<?> iterator = standard_name_table.getChildren(propName).iterator();
+		if ( iterator.hasNext() ) {
+			Element ele = (Element)iterator.next();
+			String propValue = ele.getTextNormalize();
+			props.put(propName, propValue);
+		}
 	}
 
 	private void _convert() throws Exception {
@@ -222,10 +237,10 @@ public class Cf2SkosSkosApi extends Cf2SkosBase {
 			_addOwlChange(conceptUri, id, description, canonicalUnits, grib, amip);
 			
 
-			_log("\t Concept created: " +id);
 		}
 
-
+		props.put("concepts", String.valueOf(concepts.size()));
+		
 		allEntities.add(conceptScheme);
 		allEntities.addAll(concepts);
 
@@ -307,15 +322,13 @@ public class Cf2SkosSkosApi extends Cf2SkosBase {
 		}
 	}
 
-	private void _saveNewOntology() throws Exception {
+	private void _saveOntology() throws Exception {
 
 		if ( outputFile.toLowerCase().startsWith("file:") ) {
 			outputFile = outputFile.substring("file:".length());
 		}
 		File file = new File(outputFile);
 		manager.save(dataset, SKOSFormatExt.RDFXML, URI.create("file:" + file.getAbsolutePath()));
-
-		_log("New SKOS Ontology saved in: " + outputFile);
 	}
 
 }

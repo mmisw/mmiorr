@@ -1,6 +1,7 @@
 package org.mmisw.watchdog.cf;
 
-import java.net.MalformedURLException;
+import java.util.Map;
+
 
 /**
  * CF-to-SKOS conversion interface.
@@ -10,8 +11,12 @@ import java.net.MalformedURLException;
 public interface ICf2Skos {
 	
 	public void setNamespace(String namespace);
-	public void setInput(String inputUri) throws MalformedURLException;
-	public void convert() throws Exception;
+	
+	public void setInput(String inputContents);
+	
+	/** Returns some properties of the input including version number */
+	public Map<String,String> convert() throws Exception;
+	
 	public void save(String outputFile) throws Exception;
 
 }
