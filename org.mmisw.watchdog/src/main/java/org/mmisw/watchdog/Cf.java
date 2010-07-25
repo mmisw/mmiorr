@@ -2,16 +2,20 @@ package org.mmisw.watchdog;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.IOUtils;
 import org.mmisw.watchdog.cf.ICf2Skos;
 import org.mmisw.watchdog.cf.jena.Cf2SkosJena;
 import org.mmisw.watchdog.cf.skosapi.Cf2SkosSkosApi;
+import org.mmisw.watchdog.orr.RegisterOntology;
+import org.mmisw.watchdog.orr.RegisterOntology.RegistrationResult;
 import org.mmisw.watchdog.util.WUtil;
 
 /**
@@ -20,20 +24,38 @@ import org.mmisw.watchdog.util.WUtil;
  * @author Carlos Rueda
  */
 public class Cf {
+	
+	/** SKOS API implementation code */
+	private static final String SKOSAPI_IMPL = "skosapi";
+
+	/** Jena implementation code */
+	private static final String JENA_IMPL = "jena";
+	
+	
 	/** Default input URI */
 	private static final String DEFAULT_INPUT = 
 		"http://cf-pcmdi.llnl.gov/documents/cf-standard-names/standard-name-table/current/cf-standard-name-table.xml";
 	
-	/** Template of output file */
-	private static final String DEFAULT_OUTPUT = "${workspace}/${basename}-${version_number}.owl";
+	/** Template of default output filename  */
+	private static final String DEFAULT_OUTPUT = "${workspace}/${basename}-${version_number}-${impl}.owl";
 	
 	/** Default namespace for resulting ontology */
-	private static final String DEFAULT_NAMESPACE = "http://mmisw.org/ont/mmi/cf/parameter/";
+	private static final String DEFAULT_NAMESPACE = "http://mmisw.org/ont/cf/parameter/";
 	
 	/** Default implementation code */
-	private static final String DEFAULT_IMPL = "skosapi";
+	private static final String DEFAULT_IMPL = JENA_IMPL;
 
 	private static final boolean DEFAULT_FORCE = false;
+
+	
+	/////////////////////////
+	// registration parameters
+	
+	/** Default ORR username */
+	private static final String ORR_DEFAULT_USERNAME = "carueda";
+	
+	private static final String ORR_DEFAULT_FORM_ACTION = "http://mmisw.org/orr/direg";
+	
 
 	
 	/**
@@ -55,6 +77,10 @@ public class Cf {
 					"    --output <filename>   (" +DEFAULT_OUTPUT+ ")\n" +
 					"    --force               (" +DEFAULT_FORCE+ ")\n" +
 					"    --impl [jena|skosapi] (" +DEFAULT_IMPL+ ")\n" +
+					"   for registration:\n" +
+					"    --username <username> (" +ORR_DEFAULT_USERNAME+ ")\n" +
+					"    --password <password> \n" +
+					"    --formAction <action> (" +ORR_DEFAULT_FORM_ACTION+ ")\n" +
 					"");
 			System.exit(0);
 		}
@@ -77,6 +103,12 @@ public class Cf {
 		String namespace = DEFAULT_NAMESPACE;
 		String impl = DEFAULT_IMPL;
 		
+		// ORR registration
+		String orrUsername = ORR_DEFAULT_USERNAME;
+		String orrPassword = null;
+		String orrFormAction = ORR_DEFAULT_FORM_ACTION;
+		
+	
 		int arg = 0;
 		for ( ; arg < args.length && args[arg].startsWith("--"); arg++ ) {
 			if ( args[arg].equals("--ws") ) {
@@ -97,9 +129,24 @@ public class Cf {
 			else if ( args[arg].equals("--impl") ) {
 				impl = args[++arg]; 
 			}
+			
+			// ORR
+			else if ( args[arg].equals("--username") ) {
+				orrUsername = args[++arg]; 
+			}
+			else if ( args[arg].equals("--password") ) {
+				orrPassword = args[++arg]; 
+			}
+			else if ( args[arg].equals("--formAction") ) {
+				orrFormAction = args[++arg]; 
+			}
 		}
 		if ( arg < args.length ) {
-			_usage("Unexpected arguments");
+			String uargs = "";
+			for ( ; arg< args.length; arg++ ) {
+				uargs += args[arg] + " ";
+			}
+			_usage("Unexpected arguments: " +uargs);
 		}
 		if ( workspace == null ) {
 			_usage("Missing required --ws parameter");
@@ -121,7 +168,22 @@ public class Cf {
 		}
 		
 		String version_number = props.get("version_number");
-		_writeOutputs(creator, workspaceDir, inputUrl, inputContents, version_number, output, force);
+		File outputFile = _writeOutputs(
+				creator, workspaceDir, inputUrl, inputContents, 
+				version_number, impl, output, force);
+		
+		if ( outputFile == null ) {
+			// outputs not written. Nothing else to do:
+			return;
+		}
+		
+		// ORR registration:
+		if ( orrPassword != null ) {
+			_registerOntology(orrUsername, orrPassword, orrFormAction, namespace, outputFile);
+		}
+		else {
+			_log("Skipping registration (indicate at least --password to perform registration)");
+		}
 	}
 
 	private void _log(String msg) {
@@ -135,10 +197,10 @@ public class Cf {
 	}
 
 	private ICf2Skos _prepareCreator(String impl) {
-		if ( impl.equalsIgnoreCase("jena")) {
+		if ( impl.equalsIgnoreCase(JENA_IMPL)) {
 			return new Cf2SkosJena();
 		}
-		else if ( impl.equalsIgnoreCase("skosapi")) {
+		else if ( impl.equalsIgnoreCase(SKOSAPI_IMPL)) {
 			return new Cf2SkosSkosApi();
 		}
 		else {
@@ -213,10 +275,10 @@ public class Cf {
 	}
 	
 	/**
-	 * Writes the outputs
+	 * Writes the outputs. Returns the output file iff outputs effectively written.
 	 */
-	private void _writeOutputs(ICf2Skos creator, File workspaceDir, 
-			URL inputUrl, String inputContents, String version_number,
+	private File _writeOutputs(ICf2Skos creator, File workspaceDir, 
+			URL inputUrl, String inputContents, String version_number, String impl,
 			String output, boolean force
 	) throws Exception {
 		
@@ -229,9 +291,9 @@ public class Cf {
 				_log("Overwriting " +downloadFile);
 			}
 			else {
-				_log(downloadFile+ " already exists");
+				_log(downloadFile+ " already exists.");
 				_log("Exiting. No output written.");
-				return;
+				return null;
 			}
 		}
 		
@@ -241,12 +303,38 @@ public class Cf {
 		
 		// save result of conversion:
 		if ( output == null ) {
-			output = nx[0] + "-" +version_number + ".owl";
+			output = nx[0] + "-" +version_number+ "-" +impl+ ".owl";
 		}
 		File outputFile = new File(workspaceDir, output);
 		
 		creator.save(outputFile.toString());
 		_log(outputFile+ ": resulting ontology saved");
+		
+		return outputFile;
 	}
+
 	
+	/**
+	 * Prepares and requestes the registration of the ontology.
+	 */
+	private void _registerOntology(
+			String username, String password,
+			String formAction, String namespace, File outputFile
+	) throws Exception{
+		
+		_log("Preparing registration of " +outputFile+ " ...");
+		
+		String fileContents = IOUtils.toString(new FileReader(outputFile));
+
+		// remove trailing separator:
+		String ontologyUri = namespace.replaceAll("(/|#)+$", "");
+		
+		String graphId = "";
+		RegistrationResult result = RegisterOntology.register(
+				username, password, ontologyUri , outputFile.toString(), fileContents, graphId, formAction);
+		
+		_log("Response status: " +result.status+ ": " +HttpStatus.getStatusText(result.status));
+		_log("Response body:\n" +result.message);
+	}
+
 }

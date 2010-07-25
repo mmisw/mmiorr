@@ -103,15 +103,18 @@ public class Cf2SkosJena extends Cf2SkosBase {
 
 	}
 
-	private String _convert() throws Exception {
+	private void _convert() throws Exception {
 		SAXBuilder builder = new SAXBuilder();
 
 		Document document = builder.build(new StringReader(inputContents));
 
 		Element standard_name_table = document.getRootElement();
 
-		String version_number = standard_name_table.getAttribute("version_number").getValue().trim();
-
+		_getProperty(standard_name_table, "version_number");
+		_getProperty(standard_name_table, "last_modified");
+		
+		int numConcepts = 0;
+		
 		List<?> list = standard_name_table.getChildren("entry");
 		for (Iterator<?> iterator = list.iterator(); iterator.hasNext();) {
 			Element ele = (Element)iterator.next();
@@ -137,10 +140,12 @@ public class Cf2SkosJena extends Cf2SkosBase {
 
 			currentTopConcept.addProperty(SKOS.narrower, concept);
 
-			_log("\tResource created: "+concept);
+			numConcepts++;
 		}
 
-		return version_number;
+		props.put("concepts", String.valueOf(numConcepts));
+		
+
 	}
 
 	

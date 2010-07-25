@@ -188,20 +188,6 @@ public class Cf2SkosSkosApi extends Cf2SkosBase {
 		
 	}
 
-	/**
-	 * Gets the value of an entity and put the corresp. entry in the props map.
-	 * @param standard_name_table
-	 * @param propName
-	 */
-	private void _getProperty(Element standard_name_table, String propName) {
-		Iterator<?> iterator = standard_name_table.getChildren(propName).iterator();
-		if ( iterator.hasNext() ) {
-			Element ele = (Element)iterator.next();
-			String propValue = ele.getTextNormalize();
-			props.put(propName, propValue);
-		}
-	}
-
 	private void _convert() throws Exception {
 		
 		List<?> list = standard_name_table.getChildren("entry");

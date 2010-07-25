@@ -29,7 +29,7 @@ The ``mvn exec:java'' command above:
 - otherwise: 
   - writes the remote file out to workspace/cf/cf-standard-name-table-{version_number}.xml
   - does conversion of this file to OWL
-  - writes result out to workspace/cf/cf-standard-name-table-{version_number}.owl
+  - writes ontology result out to workspace/cf/cf-standard-name-table-{version_number}.owl
   
 Run ``mvn exec:java'' (with no args) to get a help message.
 
@@ -38,19 +38,22 @@ Run ``mvn exec:java'' (with no args) to get a help message.
   and then ejecute the jar directly, eg.:
   $ java -jar target/watchdog-0.0.1-SNAPSHOT-jar-with-dependencies.jar
 
+== TODO ==
+
+- Only CF conversion is included. Other conversions to be included as we work on them.
+- Generate skos:hiddenLabel properties for CF aliases 
+
+- Code for registration at ORR already included but not functional yet.
+  
 === Implementation ===
 
 A generic interface ICf2Skos is used to allow different implementations of the CF conversion.
 Currently, there are two implementations: Cf2SkosJena (based on the Jena framework [2])
-and Cf2SkosSkosApi (a new implementation based on the SKOS API [3]).
+and Cf2SkosSkosApi (a new implementation based on the SKOS API [3]). Unfortunately, the latter,
+skosapi, is causing problems at the ORR (which is based on Jena: seems like it exposes limitations
+of Jena to read ontologies created with SKOS API (ie, OWLAPI).
 
 
-== TODO ==
-
-- Only CF conversion is included. Other conversions to be included as we work on them. 
-
-- Include registration of resulting ontology to MMI ORR
-  
   
 == Refs ==
 [1] http://cf-pcmdi.llnl.gov

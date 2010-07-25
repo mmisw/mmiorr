@@ -3,6 +3,5 @@
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER"/>
-	<classpathentry kind="lib" path="/Users/carueda/.m2/repository/org/mmisw/tp/skosapi/0.0.1-SNAPSHOT/skosapi-0.0.1-SNAPSHOT.jar" sourcepath="/skosapi/src"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

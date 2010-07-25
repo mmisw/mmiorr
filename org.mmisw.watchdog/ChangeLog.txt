@@ -2,6 +2,40 @@ watchdog ChangeLog
 Carlos Rueda - MMI/MBARI
 
 2010-07-24
+	Registration:
+	- org.mmisw.watchdog.orr.RegisterOntology: Adapted from mmiorr-client-demo.
+	  It allows to register the generated ontology in the MMI ORR (or other ORR deployment).
+	  To execute this step, the password of the submitting ORR user should be given:
+	     ... --password <ORR user password> ...
+
+	NOTE: The skosapi-based generation is causing problems to ORR (the Jena-based code used at ORR
+	is hanging while processing the skosapi-based ontology.  SO, I'm making "jena" the default
+	implementation for the conversion here.  This is unfortunate; the whole thing has made me
+	spend a lot of time in debugging.
+	
+	NOTE 2:  Registration is failing!  ORR has only accepted direct registration in RE-HOSTED mode;
+	I made some quick changes to accept FULLY-HOSTED but this would require a more exhaustive
+	revision in the ORR module.
+	
+	In summary:
+	 - Only running the conversion and with the Jena implementation!  (:/)
+	 
+		$ mvn -e exec:java -Dexec.args="--ws workspace/cf --force --ns http://mmisw.org/ont/cf/parameter"
+		Loading http://cf-pcmdi.llnl.gov/documents/cf-standard-names/standard-name-table/current/cf-standard-name-table.xml
+			 version_number: 14
+			 last_modified: 2010-05-12T04:54:55Z
+			 concepts: 2072
+		Overwriting workspace/cf/cf-standard-name-table-14.xml
+		workspace/cf/cf-standard-name-table-14.xml: input saved
+		New SKOS Ontology saved in: workspace/cf/cf-standard-name-table-14-jena.owl
+		Size of the new Ontology: 12440
+		workspace/cf/cf-standard-name-table-14-jena.owl: resulting ontology saved
+		Skipping registration (indicate at least --password to perform registration)
+	   
+	 And I just registered workspace/cf/cf-standard-name-table-14-jena.owl as new version of
+	 http://mmisw.org/ont/cf/parameter
+
+	Download and conversion:
 	- Completed download from CF website and conversion, with outputs written to a given
 	  workspace directory (by default workspace/cf/).
 	  Outputs are generated if the downloaded contents correspond a new version_number 
@@ -18,6 +52,8 @@ Carlos Rueda - MMI/MBARI
 		    --impl [jena|skosapi] (skosapi)
 	  
 	
+	Misc: Somehow the "Maven dependencies" in my Eclipse now properly links with the skosapi library(!).
+	      See "argh" comment below.
 	
 2010-07-23
 	- Changes to allow multiple implementations, in particular to start testing the

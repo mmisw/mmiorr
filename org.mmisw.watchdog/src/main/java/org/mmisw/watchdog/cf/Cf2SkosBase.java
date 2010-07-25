@@ -1,7 +1,10 @@
 package org.mmisw.watchdog.cf;
 
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import org.jdom.Element;
 
 
 
@@ -51,5 +54,21 @@ public abstract class Cf2SkosBase implements ICf2Skos {
 	protected abstract void _doConvert() throws Exception ;
 
 	protected abstract void _doSave() throws Exception ;
+	
+	/**
+	 * Gets the value of an entity and put the corresp. entry in the props map.
+	 * @param standard_name_table
+	 * @param propName
+	 */
+	protected void _getProperty(Element standard_name_table, String propName) {
+		Iterator<?> iterator = standard_name_table.getChildren(propName).iterator();
+		if ( iterator.hasNext() ) {
+			Element ele = (Element)iterator.next();
+			String propValue = ele.getTextNormalize();
+			props.put(propName, propValue);
+		}
+	}
+
+
 	
 }
