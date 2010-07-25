@@ -314,7 +314,24 @@ public class Cf2SkosSkosApi extends Cf2SkosBase {
 			outputFile = outputFile.substring("file:".length());
 		}
 		File file = new File(outputFile);
-		manager.save(dataset, SKOSFormatExt.RDFXML, URI.create("file:" + file.getAbsolutePath()));
+		
+		URI uri = URI.create("file:" + file.getAbsolutePath());
+		
+		// TODO NOTE: the format parameter is ignored by SKOAPI alpha; it always
+		// uses RDFXMLOntologyFormat
+		manager.save(dataset, SKOSFormatExt.RDFXML, uri);
+		
+///////////////////////////////////////////////////////////////////////////
+//		 To try other possible output format, the OWLAPI can be used directly:
+//		OWLOntologyFormat format = 
+//			new RDFXMLOntologyFormat();
+//			new OWLXMLOntologyFormat();
+//			new TurtleOntologyFormat();
+//			new ManchesterOWLSyntaxOntologyFormat();
+//			new LatexOntologyFormat();
+//		
+//		owlManager.saveOntology(owlOntology, format, uri);
+///////////////////////////////////////////////////////////////////////////
 	}
 
 }
