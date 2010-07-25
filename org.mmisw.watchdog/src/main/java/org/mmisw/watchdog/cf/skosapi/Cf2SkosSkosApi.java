@@ -321,8 +321,7 @@ public class Cf2SkosSkosApi extends Cf2SkosBase {
 		// uses RDFXMLOntologyFormat
 		manager.save(dataset, SKOSFormatExt.RDFXML, uri);
 		
-///////////////////////////////////////////////////////////////////////////
-//		 To try other possible output format, the OWLAPI can be used directly:
+		// To try other possible output format, the OWLAPI can be used directly:
 //		OWLOntologyFormat format = 
 //			new RDFXMLOntologyFormat();
 //			new OWLXMLOntologyFormat();
@@ -331,7 +330,6 @@ public class Cf2SkosSkosApi extends Cf2SkosBase {
 //			new LatexOntologyFormat();
 //		
 //		owlManager.saveOntology(owlOntology, format, uri);
-///////////////////////////////////////////////////////////////////////////
 	}
 
 }
