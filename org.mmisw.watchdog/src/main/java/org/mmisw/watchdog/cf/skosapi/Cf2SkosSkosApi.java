@@ -149,6 +149,8 @@ public class Cf2SkosSkosApi extends Cf2SkosBase {
 		
 		_getProperty(standard_name_table, "version_number");
 		_getProperty(standard_name_table, "last_modified");
+		_getProperty(standard_name_table, "institution");
+		_getProperty(standard_name_table, "contact");
 
 		// TODO assign version_number, last_modified as some properties to the ontology itself.
 		
@@ -193,6 +195,9 @@ public class Cf2SkosSkosApi extends Cf2SkosBase {
 		List<?> list = standard_name_table.getChildren("entry");
 		for (Iterator<?> iterator = list.iterator(); iterator.hasNext();) {
 			Element ele = (Element)iterator.next();
+			
+			numEntries++;
+			
 			String id = ele.getAttribute("id").getValue().trim();
 
 			String canonicalUnits = ele.getChildTextNormalize("canonical_units");
@@ -225,6 +230,7 @@ public class Cf2SkosSkosApi extends Cf2SkosBase {
 
 		}
 
+		props.put("entries", String.valueOf(numEntries));
 		props.put("concepts", String.valueOf(concepts.size()));
 		
 		allEntities.add(conceptScheme);

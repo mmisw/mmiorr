@@ -1,6 +1,9 @@
 watchdog ChangeLog
 Carlos Rueda - MMI/MBARI
 
+2010-07-25
+	- better report about contents of input vocabulary.
+	
 2010-07-24
 	Registration:
 	- org.mmisw.watchdog.orr.RegisterOntology: Adapted from mmiorr-client-demo.

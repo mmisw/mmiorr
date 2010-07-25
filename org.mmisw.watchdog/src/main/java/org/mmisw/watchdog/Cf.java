@@ -163,9 +163,7 @@ public class Cf {
 		
 		Map<String, String> props = _convert(creator, workspaceDir, inputUrl, inputContents, namespace, output, force);
 		
-		for ( Entry<String, String> entry : props.entrySet() ) {
-			_log("\t " +entry.getKey()+ ": " +entry.getValue());
-		}
+		_reportProps(props);
 		
 		String version_number = props.get("version_number");
 		File outputFile = _writeOutputs(
@@ -184,6 +182,12 @@ public class Cf {
 		else {
 			_log("Skipping registration (indicate at least --password to perform registration)");
 		}
+	}
+
+	private void _reportProps(Map<String, String> props) {
+		for ( Entry<String, String> entry : props.entrySet() ) {
+			_log(String.format("\t%20s : %s", entry.getKey(), entry.getValue()));
+		}		
 	}
 
 	private void _log(String msg) {

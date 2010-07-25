@@ -31,6 +31,7 @@ import com.hp.hpl.jena.vocabulary.XSD;
 public class Cf2SkosJena extends Cf2SkosBase {
 	
 	protected void _doConvert() throws Exception {
+		numConcepts = 0;
 		_createNewOntology();
 		_convert();
 	}
@@ -51,6 +52,9 @@ public class Cf2SkosJena extends Cf2SkosBase {
 	private Resource currentTopConcept;
 
 	private Property canonical_units;
+	
+	/** created concepts in SKOS ontology */
+	private int numConcepts;
 
 	
 	private void _createNewOntology() {
@@ -71,10 +75,7 @@ public class Cf2SkosJena extends Cf2SkosBase {
 		
 		standardNameClass = model.createResource(namespace + "Standard_Name");
 		
-		currentTopConcept = model
-				.createResource(namespace + "parameter", standardNameClass);
-//				.createResource(NS + "parameter", skosConcept);
-//				.createResource(NS + "parameter", SKOS.Concept);
+		currentTopConcept = _createConcept(namespace + "parameter");
 
 		Statement stmt;
 		
@@ -112,12 +113,15 @@ public class Cf2SkosJena extends Cf2SkosBase {
 
 		_getProperty(standard_name_table, "version_number");
 		_getProperty(standard_name_table, "last_modified");
-		
-		int numConcepts = 0;
+		_getProperty(standard_name_table, "institution");
+		_getProperty(standard_name_table, "contact");
 		
 		List<?> list = standard_name_table.getChildren("entry");
 		for (Iterator<?> iterator = list.iterator(); iterator.hasNext();) {
 			Element ele = (Element)iterator.next();
+			
+			numEntries++;
+			
 			String id = (ele.getAttribute("id").getValue()).trim();
 
 			String canonicalUnits = ele.getChildTextNormalize("canonical_units");
@@ -128,10 +132,7 @@ public class Cf2SkosJena extends Cf2SkosBase {
 
 			String prefLabel = id.replace('_', ' ');
 
-			Resource concept = model.createResource(namespace + id,
-					standardNameClass);
-			//						skosConcept);
-			//						SKOS.Concept);
+			Resource concept = _createConcept(namespace + id);
 
 			concept.addProperty(SKOS.prefLabel, prefLabel);
 			concept.addProperty(RDFS.label, id);
@@ -139,16 +140,19 @@ public class Cf2SkosJena extends Cf2SkosBase {
 			concept.addProperty(RDFS.comment, description);
 
 			currentTopConcept.addProperty(SKOS.narrower, concept);
-
-			numConcepts++;
 		}
 
+		props.put("entries", String.valueOf(numEntries));
 		props.put("concepts", String.valueOf(numConcepts));
-		
-
 	}
 
 	
+	private Resource _createConcept(String uri) {
+		Resource concept = model.createResource(uri, standardNameClass);
+		numConcepts++;
+		return concept;
+	}
+
 	private void _saveNewOntology() {
 
 		RDFWriter writer = model.getWriter("RDF/XML-ABBREV");

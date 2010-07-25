@@ -45,7 +45,11 @@ public abstract class Cf2SkosBase implements ICf2Skos {
 	
 	protected String outputFile;
 	
+	/** entries in input XML */
+	protected int numEntries;
+
 	protected Map<String,String> props;
+	
 	
 	protected void _log(String msg) {
 		System.out.println(msg);
