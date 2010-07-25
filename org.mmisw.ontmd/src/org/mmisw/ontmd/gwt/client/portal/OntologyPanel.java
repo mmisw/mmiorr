@@ -44,6 +44,8 @@ import com.google.gwt.user.client.ui.Widget;
  * @author Carlos Rueda
  */
 public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
+	
+	private final String CLASS_NAME = getClass().getName();
 
 	private CellPanel container = new VerticalPanel();
 
@@ -272,7 +274,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		boolean link = true;
 		metadataPanel.resetToOriginalValues(ontologyInfo, null, false, link);
 	
-		Main.log("OntologyPanel updateInterface, readOnly=" +readOnly);
+		Main.log(CLASS_NAME+": OntologyPanel updateInterface, readOnly=" +readOnly);
 		
 		if ( readOnly ) {
 			// coming from edit mode to view only mode-- reload data
@@ -302,10 +304,10 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			}
 
 			public void onSuccess(RegisteredOntologyInfo ontologyInfo) {
-				Main.log("RET getOntologyContents: ontologyUri = " +ontologyInfo.getUri());
+				Main.log(CLASS_NAME+": RET getOntologyContents: ontologyUri = " +ontologyInfo.getUri());
 				String error = ontologyInfo.getError();
 				if ( error != null ) {
-					Main.log("RET getOntologyContents: error = " +error);
+					Main.log(CLASS_NAME+": RET getOntologyContents: error = " +error);
 				}
 				
 				ontologyContentsRetrieved(ontologyInfo, readOnly);
@@ -319,7 +321,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		headerPanel.showProgressMessage("Loading contents. Please wait...");
 
 		metadataPanel.showProgressMessage("Loading contents. Please wait...");
-		Main.log("getOntologyContents: ontologyUri = " +ontologyInfo.getUri());
+		Main.log(CLASS_NAME+": getOntologyContents: ontologyUri = " +ontologyInfo.getUri());
 		Main.ontmdService.getOntologyContents(roi, null, callback);
 	}
 
@@ -541,13 +543,13 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			}
 
 			public void onSuccess(CreateOntologyResult result) {
-				Main.log("CreateOntologyResult obtained.");
+				Main.log(CLASS_NAME+": CreateOntologyResult obtained.");
 				PortalControl.getInstance().notifyActivity(false);
 				reviewCompleted(popup, result);
 			}
 		};
 
-		Main.log("Calling ontmdService.createOntology ...");
+		Main.log(CLASS_NAME+": Calling ontmdService.createOntology ...");
 		Main.ontmdService.createOntology(createOntologyInfo, callback);
 	}
 
@@ -596,7 +598,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 				: "Error");
 		popup.center();
 
-		Main.log("Review result: " +msg);
+		Main.log(CLASS_NAME+": Review result: " +msg);
 
 	}
 	
@@ -616,7 +618,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		popup.addTextArea(null).setText("please wait ...");
 		popup.getTextArea().setSize("600", "150");
 		
-		Main.log("Registering ontology ...");
+		Main.log(CLASS_NAME+": Registering ontology ...");
 		popup.setText("Registering ontology ...");
 		popup.center();
 		popup.show();
@@ -677,7 +679,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		}
 		
 		String msg = sb.toString();
-		Main.log("Registration result: " +msg);
+		Main.log(CLASS_NAME+": Registration result: " +msg);
 
 		final MyDialog popup = new MyDialog(null);
 		popup.setCloseButtonText("Return to ontology list");

@@ -2,6 +2,21 @@ org.mmisw.ontmd: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-07-23
+	- Some preparation to support direct registration in fully-hosted mode (so far, only
+	  re-hosted has been supported).
+	  See DirectRegistrationServlet.
+	  **NOTE** that fully-hosted is now processed but hasn't been tested. So, the 
+	  recommendation is still to indicate an ontologyUri that is NOT
+	  resolvable by the corresponding Ont service (if it is, then it will be handled as
+	  a fully-hosted submission).
+	  
+	  
+2010-07-21
+	SKOS-based vocabularies (issues #133, #149)
+	- Reviewing current code and adding some logging in preparation for necessary
+	  changes.
+
 2010-06-30   1.9.8.alpha
 	- Completed Issue 44: "want sorting of columns in Browse view"
 	  Added an icon and dispatch of a popup menu with "Sort up" and "Sort down" options. 

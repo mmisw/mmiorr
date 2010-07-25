@@ -27,6 +27,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 class RegisterVersionExecute {
 	
+	private final String CLASS_NAME = getClass().getName();
+	
 	private CreateOntologyInfo createOntologyInfo;
 
 	
@@ -52,7 +54,7 @@ class RegisterVersionExecute {
 		
 		createOntologyInfo.setUri(ontologyInfo.getUri());
 
-		Main.log("reviewAndRegisterVersionOntology starting.  HostingType: " +createOntologyInfo.getHostingType());
+		Main.log(CLASS_NAME+": reviewAndRegisterVersionOntology starting.  HostingType: " +createOntologyInfo.getHostingType());
 		
 		final MyDialog popup = new MyDialog(null);
 		popup.addTextArea(null).setSize("600", "150");
@@ -69,13 +71,13 @@ class RegisterVersionExecute {
 			}
 
 			public void onSuccess(CreateOntologyResult result) {
-				Main.log("CreateOntologyResult obtained.");
+				Main.log(CLASS_NAME+": CreateOntologyResult obtained.");
 				PortalControl.getInstance().notifyActivity(false);
 				reviewCompleted(popup, result);
 			}
 		};
 
-		Main.log("Calling ontmdService.createOntology ...");
+		Main.log(CLASS_NAME+": Calling ontmdService.createOntology ...");
 		Main.ontmdService.createOntology(createOntologyInfo, callback);
 	}
 
@@ -104,7 +106,7 @@ class RegisterVersionExecute {
 				: "Error");
 		popup.center();
 
-		Main.log("Review result: " +msg);
+		Main.log(CLASS_NAME+": Review result: " +msg);
 	}
 
 	private void doRegister(MyDialog createPopup, CreateOntologyResult createOntologyResult) {
@@ -115,7 +117,7 @@ class RegisterVersionExecute {
 		popup.addTextArea(null).setText("please wait ...");
 		popup.getTextArea().setSize("600", "150");
 		
-		Main.log("Registering new version of ontology ...");
+		Main.log(CLASS_NAME+": Registering new version of ontology ...");
 		popup.setText("Registering new version of ontology ...");
 		popup.center();
 		popup.show();
@@ -175,7 +177,7 @@ class RegisterVersionExecute {
 		}
 		
 		String msg = sb.toString();
-		Main.log("Registration result: " +msg);
+		Main.log(CLASS_NAME+": Registration result: " +msg);
 
 		final MyDialog popup = new MyDialog(null);
 		popup.setCloseButtonText("Return to ontology list");

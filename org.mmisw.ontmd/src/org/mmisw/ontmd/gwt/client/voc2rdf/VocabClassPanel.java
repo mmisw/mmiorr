@@ -728,6 +728,7 @@ public class VocabClassPanel extends BaseOntologyContentsPanel implements TermTa
 		
 		SeparatorPanel() {
 			super();
+			this.add(new Label("Separator:"));
 			String[] separators = { 
 					// label,         separator
 					"Comma (,)",        ",",

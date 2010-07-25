@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
+import org.mmisw.iserver.core.util.OntServiceUtil;
 import org.mmisw.iserver.core.util.Utf8Util;
 import org.mmisw.iserver.core.util.Util2;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
@@ -157,6 +158,8 @@ public class DirectRegistrationServlet extends UploadServlet {
 		TempOntologyInfo tempOntologyInfo = getTempOntologyInfo(file);
 		
 		String ontologyUri = fields.get("ontologyUri").trim();
+		tempOntologyInfo.setIsOntResolvable(OntServiceUtil.isOntResolvableUri(ontologyUri));
+		
 		RegisteredOntologyInfo registeredOntologyInfo = portal.getOntologyInfo(ontologyUri);
 		
 		if ( registeredOntologyInfo == null ) {
@@ -264,8 +267,15 @@ public class DirectRegistrationServlet extends UploadServlet {
 			String graphId
 	) throws Exception {
 		
+		HostingType hostingType = tempOntologyInfo.isOntResolvable() ?
+				HostingType.FULLY_HOSTED  :  HostingType.RE_HOSTED;
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug(getClass().getSimpleName()+ ".registerNewOntology: hostingType = " +hostingType);
+		}
+		
 		CreateOntologyInfo createOntologyInfo = new CreateOntologyInfo();
-		createOntologyInfo.setHostingType(HostingType.RE_HOSTED);
+		createOntologyInfo.setHostingType(hostingType);
 		createOntologyInfo.setUri(ontologyUri);
 		
 		setSomeValues(loginResult, createOntologyInfo);
@@ -306,11 +316,18 @@ public class DirectRegistrationServlet extends UploadServlet {
 			String graphId
 	) throws Exception {
 		
-		// verify hostingType is re-hosted:
 		HostingType hostingType = registeredOntologyInfo.getHostingType();
-		if ( hostingType != HostingType.RE_HOSTED ) {
-			throw new Exception("Hosting type of existing ontology is not 're-hosted'.");
+
+		// NOTE we previously required that hostingType be re-hosted.
+//		if ( hostingType != HostingType.RE_HOSTED ) {
+//			throw new Exception("Hosting type of existing ontology is not 're-hosted'.");
+//		}
+		// As of 2010-07-24, continue with whatever the associated hostingType is.
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug(getClass().getSimpleName()+ ".registerNewVersion: hostingType = " +hostingType);
 		}
+
 		
 		// verify that the submitting user is the same:
 		if ( ! loginResult.getUserId().equals(registeredOntologyInfo.getUserId()) ) {
@@ -320,7 +337,7 @@ public class DirectRegistrationServlet extends UploadServlet {
 		
 		
 		CreateOntologyInfo createOntologyInfo = new CreateOntologyInfo();
-		createOntologyInfo.setHostingType(HostingType.RE_HOSTED);
+		createOntologyInfo.setHostingType(hostingType);
 		createOntologyInfo.setUri(ontologyUri);
 		
 		createOntologyInfo.setPriorOntologyInfo(
