@@ -9,7 +9,11 @@ $Id$
 	  explain the 'Author' column.
 	  
 	- Misc: new utility class TooltipIcon that extract the icon/tooltip functionality from
-	  TLabel. TODO: Update TLabel to use TootipIcon. 
+	  TLabel. TODO: Update TLabel to use TootipIcon.
+	  
+	- Issue #264 "versions table sorted up by default"
+	  Fixed: ControlsPanel.launchVersions: call ontologyTable.setSortColumn("version", true)
+	  (2nd param should be true for 'sort down').  
 	
 	
 2010-07-23

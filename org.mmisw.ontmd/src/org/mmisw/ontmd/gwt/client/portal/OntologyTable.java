@@ -176,31 +176,30 @@ public class OntologyTable extends FlexTable {
 	
 	private Comparator<RegisteredOntologyInfo> cmp = new Comparator<RegisteredOntologyInfo>() {
 		public int compare(RegisteredOntologyInfo o1, RegisteredOntologyInfo o2) {
-			String s1 = o1.getDisplayLabel();
-			String s2 = o2.getDisplayLabel();
+			String s1, s2;
+			if ( sortColumn.equalsIgnoreCase("version") ) {
+				s1 = _getVersion(o1);
+				s2 = _getVersion(o2);
+			}
 			if ( sortColumn.equalsIgnoreCase("name") ) {
-				s1 = o1.getDisplayLabel();
-				s2 = o2.getDisplayLabel();
+				s1 = _getName(o1);
+				s2 = _getName(o2);
 			}
 			else if ( sortColumn.equalsIgnoreCase("author") ) {
-				s1 = o1.getContactName();
-				s2 = o2.getContactName();
+				s1 = _getAuthor(o1);
+				s2 = _getAuthor(o2);
 			}
 			else if ( sortColumn.equalsIgnoreCase("uri") ) {
-				s1 = o1.getUri();
-				s2 = o2.getUri();
-			}
-			else if ( sortColumn.equalsIgnoreCase("version") ) {
-				s1 = o1.getVersionNumber();
-				s2 = o2.getVersionNumber();
+				s1 = _getUri(o1);
+				s2 = _getUri(o2);
 			}
 			else if ( sortColumn.equalsIgnoreCase("submitter") ) {
-				s1 = o1.getUsername();
-				s2 = o2.getUsername();
+				s1 = _getUsername(o1);
+				s2 = _getUsername(o2);
 			}
 			else {
-				s1 = o1.getDisplayLabel();
-				s2 = o2.getDisplayLabel();
+				s1 = _getName(o1);
+				s2 = _getName(o2);
 			}
 			
 			return sortFactor * s1.compareToIgnoreCase(s2);

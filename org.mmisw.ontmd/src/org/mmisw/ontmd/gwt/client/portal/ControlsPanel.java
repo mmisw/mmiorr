@@ -359,7 +359,9 @@ public class ControlsPanel extends HorizontalPanel {
 		popup.setText("Available versions for " +oi.getUnversionedUri());
 		OntologyTable ontologyTable = new OntologyTable(PortalControl.getInstance().getQuickInfo(), true);
 		ontologyTable.setIncludeVersionInLinks(true);
-		ontologyTable.setSortColumn("version", false); // (version, false) = most recent version first. 
+		
+		final boolean sortDown = true; // (version, true) = most recent version first.
+		ontologyTable.setSortColumn("version", sortDown);  
 		
 		// this is to hide the popup when the user clicks one of the links:
 		ontologyTable.addClickListenerToHyperlinks(
