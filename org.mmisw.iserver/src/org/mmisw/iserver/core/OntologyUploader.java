@@ -19,6 +19,7 @@ import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.vocabulary.Omv;
+import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 
 import com.hp.hpl.jena.vocabulary.DC;
@@ -106,73 +107,30 @@ class OntologyUploader {
 				partList.add(new StringPart("ontologyId", ontologyId));
 			}
 				
-			
-			// if the user logged in is an administrator and ontologyUserId is not null,
-			// then use the given ontologyUserId instead of the administrator:
-			if ( loginResult.isAdministrator() && ontologyUserId != null ) {
-				//
-				// TODO: NOTE that this is possible because the back-end does not check
-				// that the session has to be used in combination with the logged in user. 
-				// So, the overall mechanism should be revisited later, especially if we upgrade.
-				//
-				partList.add(new StringPart("userId", ontologyUserId));
-			}
-			else {
-				// otherwise just use the user logged in:
-				partList.add(new StringPart("userId", loginResult.getUserId()));
-			}
-
+			String userId = _getUserId();
+			partList.add(new StringPart("userId", userId));
 			
 			partList.add(new StringPart("urn", uri));
 			
-			String displayLabel = values.get(Omv.name.getURI());
-			if ( displayLabel == null ) {
-				// shouldn't happen, but, well assign the same uri:
-				displayLabel = uri;
-			}
+			String displayLabel = _getDisplayLabel();
 			partList.add(new StringPart("displayLabel", displayLabel));
 			
-			// TODO use a proper "dateReleased" md attribute - now using Omv.creationDate
-			// NOTE: couldn't use the following directly:
-			//String dateReleased = values.get(Omv.creationDate.getURI());
-			// because it seems the REST service requires the date to be in MM/dd/yyyy format
-			String dateReleased = null;  // ... so, ...
-			if ( dateReleased == null ) {
-				// take current date to provide this field:
-				Date date = new Date(System.currentTimeMillis());
-				SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-				sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-				dateReleased = sdf.format(date);
-			}
+			String dateReleased = _getDateReleased();
 			partList.add(new StringPart("dateReleased", dateReleased));
 
-			String contactName = values.get(Omv.hasCreator.getURI());
-			if ( contactName == null ) {
-				// shouldn't happen; try with DC.creator
-				contactName = values.get(DC.creator.getURI());
-				if ( contactName == null ) {
-					// shouldn't happen; just assign ""
-					contactName = "";
-				}
-			}
+			String contactName = _getContactName();
 			partList.add(new StringPart("contactName", contactName));
 
-			// TODO: define something like: OmvMmi.contactEmail
-			String contactEmail = "";
+			String contactEmail = _getContactEmail();
 			partList.add(new StringPart("contactEmail", contactEmail));
 
-			String versionNumber = values.get(Omv.version.getURI());
-			if ( versionNumber == null ) {
-				// shouldn't happen; 
-				versionNumber = "0.0.0";
-			}
+			String versionNumber = _getVersionNumber();
 			partList.add(new StringPart("versionNumber", versionNumber));
 			
-			// TODO a more general mechanism to assign versionStatus
-			String versionStatus = "testing";
+			String versionStatus = _getVersionStatus();
 			partList.add(new StringPart("versionStatus", versionStatus));
 
-			// FIXME: the following are hard-coded for now
+			// FIXME: the following are hard-coded for now as they are NOT used by us (ORR)
 			partList.add(new StringPart("format", "OWL-DL"));
 			partList.add(new StringPart("isRemote", "0"));
 			partList.add(new StringPart("statusId", "1"));
@@ -215,5 +173,129 @@ class OntologyUploader {
 			post.releaseConnection();
 		}
 
+	}
+
+	private String _getVersionStatus() {
+		// TODO a more general mechanism to assign versionStatus
+		String versionStatus = "testing";
+		return versionStatus;
+	}
+
+
+	private String _getVersionNumber() {
+		String versionNumber = values.get(Omv.version.getURI());
+		if ( versionNumber == null ) {
+			// shouldn't happen; 
+			versionNumber = "0.0.0";
+		}
+		return versionNumber;
+	}
+
+
+	private String _getContactEmail() {
+		// TODO: define something like: OmvMmi.contactEmail
+		String contactEmail = "";
+		return contactEmail;
+	}
+
+
+	/** Gets the value for the StringPart "userId" */
+	private String _getUserId() {
+		//
+		// if the user logged in is an administrator and ontologyUserId is not null,
+		// then use the given ontologyUserId instead of the administrator:
+		//
+		if ( loginResult.isAdministrator() && ontologyUserId != null ) {
+			//
+			// TODO: NOTE this is possible because the back-end does not check
+			// that the session has to be used in combination with the logged in user. 
+			// So, the overall mechanism should be revisited later, especially if we upgrade.
+			//
+			return ontologyUserId;
+		}
+		else {
+			// otherwise just use the user logged in:
+			return loginResult.getUserId();
+		}
+	}
+
+
+	private String _getDisplayLabel() {
+		String displayLabel = values.get(Omv.name.getURI());
+		if ( displayLabel == null ) {
+			// shouldn't happen, but, well assign the same uri:
+			displayLabel = uri;
+		}
+		return displayLabel;
+	}
+
+
+	private String _getDateReleased() {
+		// TODO use a proper "dateReleased" md attribute - now using Omv.creationDate
+		// NOTE: couldn't use the following directly:
+		//String dateReleased = values.get(Omv.creationDate.getURI());
+		// because it seems the REST service requires the date to be in MM/dd/yyyy format
+		String dateReleased = null;  // ... so, ...
+		if ( dateReleased == null ) {
+			// take current date to provide this field:
+			Date date = new Date(System.currentTimeMillis());
+			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+			sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+			dateReleased = sdf.format(date);
+		}
+		return dateReleased;
+	}
+
+
+	/**
+	 * Gests the value to use for the "contact_name".
+	 * <p>
+	 * Issue #236 "Author column should show Content Creator" <br/>
+	 * 
+	 * Note: the value that is shown in the main ontology table at ORR comes from
+	 * the contact_name field in the aquaportal database. ORR could extract the
+	 * contentCreator value from the metadata associated with the ontology, but
+	 * such metadata is NOT yet available when the table is displayed (the metadata
+	 * is obtained on demand when a particular ontology is to be displayed in more detail).
+	 * So, instead of doing that change in the ORR module, the following change is done
+	 * here: use the value of OmvMmi.hasContentCreator to fill in contact_name if such
+	 * value is available; otherwise, just use the value of Omv.hasCreator or DC.creator
+	 * as was done prior to this change.
+	 */
+	private String _getContactName() {
+		// try hasContentCreator:
+		String value = values.get(OmvMmi.hasContentCreator.getURI());
+		if ( value != null ) {
+			if ( log.isDebugEnabled() ) {
+				log.debug("_getContactName: using value of OmvMmi.hasContentCreator: " +value);
+			}
+			return value;
+		}
+
+		// try Omv.hasCreator or DC.creator as before:
+		value = values.get(Omv.hasCreator.getURI());
+		if ( value != null ) {
+			if ( log.isDebugEnabled() ) {
+				log.debug("_getContactName: using value of Omv.hasCreator: " +value);
+			}
+			return value;
+		}
+		
+		// shouldn't happen; try with DC.creator
+		value = values.get(DC.creator.getURI());
+		if ( value != null ) {
+			if ( log.isDebugEnabled() ) {
+				log.debug("_getContactName: using value of DC.creator: " +value);
+			}
+			return value;
+		}
+
+		// shouldn't happen; just assign ""
+		value = "";
+		if ( log.isDebugEnabled() ) {
+			log.debug("_getContactName: no value available. Using \"\"");
+		}
+		
+		return value;
 	}
 }

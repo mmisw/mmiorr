@@ -3,6 +3,20 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2010-07-26  1.9.91.alpha
+	- Issue #236 "Author column should show Content Creator"
+	  OntologyUploader._getContactName():
+		Note: the value that is shown in the main ontology table at ORR comes from
+		the contact_name field in the aquaportal database. ORR could extract the
+		contentCreator value from the metadata associated with the ontology, but
+		such metadata is NOT yet available when the table is displayed (the metadata
+		is obtained on demand when a particular ontology is to be displayed in more detail).
+		So, instead of doing that change in the ORR module, the following change is done
+		here: use the value of OmvMmi.hasContentCreator to fill in contact_name if such
+		value is available; otherwise, just use the value of Omv.hasCreator or DC.creator
+		as was done prior to this change.
+	  
+
 2010-07-23   1.9.9.alpha
 	- QueryUtil: accept "csv" (besides "json") to parse result.
 	
