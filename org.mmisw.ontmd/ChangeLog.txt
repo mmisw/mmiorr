@@ -2,6 +2,16 @@ org.mmisw.ontmd: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-07-26  1.9.91.alpha
+	- Issue #236 "Author column should show Content Creator"
+	  Change in iserver module. See ChangeLog there.
+	  OntologyTable: it now includes tooltips for the various columns, in particular to
+	  explain the 'Author' column.
+	  
+	- Misc: new utility class TooltipIcon that extract the icon/tooltip functionality from
+	  TLabel. TODO: Update TLabel to use TootipIcon. 
+	
+	
 2010-07-23
 	- Some preparation to support direct registration in fully-hosted mode (so far, only
 	  re-hosted has been supported).

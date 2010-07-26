@@ -7,6 +7,7 @@ import java.util.List;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.util.TooltipIcon;
 import org.mmisw.ontmd.gwt.client.util.Util;
 
 import com.google.gwt.user.client.Command;
@@ -19,6 +20,7 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
@@ -73,24 +75,39 @@ public class OntologyTable extends FlexTable {
 	 */
 	private class ColHeader {
 		
+		private final HorizontalPanel hp1 = new HorizontalPanel();
 		private FocusPanel focusPanel;
 		
-		ColHeader(final String colLabel) {
-			HorizontalPanel hp = new HorizontalPanel();
-			hp.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
+		ColHeader(String colLabel) {
+			this(colLabel, null);
+		}
+		
+		ColHeader(final String colLabel, String tooltip) {
+			HorizontalPanel hp2 = new HorizontalPanel();
+			hp2.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
+			focusPanel = new FocusPanel(hp2);
 
-			HTML html = new HTML("<b>" +colLabel+ "</b>&nbsp;");
-			hp.add(html);
-
-			focusPanel = new FocusPanel(hp);
-
+			if ( tooltip != null && tooltip.length() > 0 ) {
+				Image ttIcon = new TooltipIcon(tooltip).getIcon();
+				hp1.add(ttIcon);
+			}
+			
+			hp1.add(focusPanel);
+			
 			if ( colLabel.length() > 0 ) {
+				String labelText = "<b>" +colLabel+ "</b>&nbsp;";
+				Widget labelWidget = new HTML(labelText);
+				hp2.add(labelWidget);
+
 				focusPanel.addClickListener(new ClickListener() {
 					public void onClick(Widget sender) {
 						_dispatchColumnHeader(colLabel);
 					}
 				});
-				hp.add(Main.images.tridown().createImage());
+				hp2.add(Main.images.tridown().createImage());
+			}
+			else {
+				hp2.add(new Label(""));
 			}
 		}
 
@@ -122,17 +139,36 @@ public class OntologyTable extends FlexTable {
 		}
 
 		Widget getWidget() {
-			return focusPanel;
+			return hp1;
 		}
 	}
 
 
 	private ColHeader quickInfoHeaderHtml = new ColHeader("");
-	private ColHeader nameHeaderHtml = new ColHeader("Name");
-	private ColHeader ontologyUriHeaderHtml = new ColHeader("URI");
-	private ColHeader authorHeaderHtml = new ColHeader("Author");
-	private ColHeader versionHeaderHtml = new ColHeader("Version");
-	private ColHeader submitterHeaderHtml = new ColHeader("Submitter");
+	
+	private ColHeader nameHeaderHtml = new ColHeader("Name",
+			"The one-line descriptive title for the ontology."
+	);
+	
+	private ColHeader ontologyUriHeaderHtml = new ColHeader("URI",
+			"The Uniform Resource Identifier given to the ontology."
+	);
+	
+	// Issue #236
+	private ColHeader authorHeaderHtml = new ColHeader("Author",
+			"This column shows the value of the 'Content Creator' metadata " +
+			"field for ontologies registered on or after 2010-07-26. " +
+			"(For previous submissions, the value shown may correspond to the " +
+			"'Ontology Creator' field.)"
+	);
+	
+	private ColHeader versionHeaderHtml = new ColHeader("Version",
+			"The version of the ontology."
+	);
+	
+	private ColHeader submitterHeaderHtml = new ColHeader("Submitter",
+			"Account name of the user that registered the ontology."
+	);
 
 	// #209: list of ontologies ordered by time of registration; most recent first
 	private String sortColumn = "version";
@@ -342,10 +378,10 @@ public class OntologyTable extends FlexTable {
 		for ( RegisteredOntologyInfo oi : ontologyInfos ) {
 			flexPanel.getRowFormatter().setStylePrimaryName(row, "OntologyTable-row");
 			
-			String name = oi.getDisplayLabel();
-			String uri = oi.getUri();
-			String author = oi.getContactName();
-			String version = oi.getVersionNumber();
+			String name = _getName(oi);
+			String uri = _getUri(oi);
+			String author = _getAuthor(oi);
+			String version = _getVersion(oi);
 			
 			String tooltip = uri;
 			String historyToken = uri;
@@ -420,7 +456,7 @@ public class OntologyTable extends FlexTable {
 			col++;
 			
 			if ( isAdmin ) {
-				flexPanel.setWidget(row, col, new Label(oi.getUsername()));
+				flexPanel.setWidget(row, col, new Label(_getUsername(oi)));
 				flexPanel.getFlexCellFormatter().setAlignment(row, col, 
 						HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 				);
@@ -431,5 +467,31 @@ public class OntologyTable extends FlexTable {
 		}
 
 	}
-
+	
+	/////////////////////////////////////////////////////////
+	// methods to get values for the columns
+	
+	private static String _getName(RegisteredOntologyInfo oi) {
+		return oi.getDisplayLabel();
+	}
+	private static String _getUri(RegisteredOntologyInfo oi) {
+		return oi.getUri();
+	}
+	private static String _getVersion(RegisteredOntologyInfo oi) {
+		return oi.getVersionNumber();
+	}
+	private static String _getUsername(RegisteredOntologyInfo oi) {
+		return oi.getUsername();
+	}
+	private static String _getAuthor(RegisteredOntologyInfo oi) {
+//		Re. issue #236 "Author column should show Content Creator"
+//		NOTE: a possibility would be to use the OntologyMetadata object associated with
+//		the RegisteredOntologyInfo, something like:
+//		   return oi.getOntologyMetadata().getOriginalValues().get("http://mmisw.org/ont/mmi/20081020/ontologyMetadata/hasContentCreator");
+//		BUT such metadata is not available at this point.
+//		So, here we just continue to return the contactName value.
+//
+		String author = oi.getContactName();
+		return author;
+	}
 }
