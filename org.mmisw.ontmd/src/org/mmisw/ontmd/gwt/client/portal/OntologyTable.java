@@ -181,7 +181,7 @@ public class OntologyTable extends FlexTable {
 				s1 = _getVersion(o1);
 				s2 = _getVersion(o2);
 			}
-			if ( sortColumn.equalsIgnoreCase("name") ) {
+			else if ( sortColumn.equalsIgnoreCase("name") ) {
 				s1 = _getName(o1);
 				s2 = _getName(o2);
 			}
@@ -368,6 +368,9 @@ public class OntologyTable extends FlexTable {
 		});
 	}
 	
+	/**
+	 * Performs the update of the table with the given information.
+	 */
 	private void update() {
 		
 		flexPanel.clear();
