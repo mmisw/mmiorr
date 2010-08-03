@@ -18,6 +18,7 @@ import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.util.table.IRow;
 import org.mmisw.ontmd.gwt.client.util.table.IUtilTable;
+import org.mmisw.ontmd.gwt.client.util.table.RowAdapter;
 import org.mmisw.ontmd.gwt.client.util.table.UtilTableCreator;
 
 import com.google.gwt.user.client.ui.DecoratorPanel;
@@ -239,7 +240,7 @@ public class OtherOntologyContentsPanel extends BaseOntologyContentsPanel {
 
 			vals.put("Name", entity.getLocalName());
 			
-			rows.add(new IRow() {
+			rows.add(new RowAdapter() {
 				public String getColValue(String sortColumn) {
 					return vals.get(sortColumn);
 				}

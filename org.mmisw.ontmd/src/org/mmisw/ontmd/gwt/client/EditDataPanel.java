@@ -20,6 +20,7 @@ import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData.ClassData;
 import org.mmisw.ontmd.gwt.client.portal.IVocabPanel;
 import org.mmisw.ontmd.gwt.client.util.table.IRow;
 import org.mmisw.ontmd.gwt.client.util.table.IUtilTable;
+import org.mmisw.ontmd.gwt.client.util.table.RowAdapter;
 import org.mmisw.ontmd.gwt.client.util.table.UtilTableCreator;
 import org.mmisw.ontmd.gwt.client.voc2rdf.VocabClassPanel;
 
@@ -249,7 +250,7 @@ public class EditDataPanel extends VerticalPanel {
 
 			vals.put("Name", entity.getLocalName());
 			
-			rows.add(new IRow() {
+			rows.add(new RowAdapter() {
 				public String getColValue(String sortColumn) {
 					return vals.get(sortColumn);
 				}

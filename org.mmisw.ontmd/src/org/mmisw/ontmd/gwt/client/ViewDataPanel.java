@@ -19,6 +19,7 @@ import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData.ClassData;
 import org.mmisw.ontmd.gwt.client.util.table.IRow;
 import org.mmisw.ontmd.gwt.client.util.table.IUtilTable;
+import org.mmisw.ontmd.gwt.client.util.table.RowAdapter;
 import org.mmisw.ontmd.gwt.client.util.table.UtilTableCreator;
 
 import com.google.gwt.user.client.ui.DisclosurePanel;
@@ -118,7 +119,7 @@ public class ViewDataPanel extends VerticalPanel {
 
 				vals.put("Name", entity.getLocalName());
 				
-				rows.add(new IRow() {
+				rows.add(new RowAdapter() {
 					public String getColValue(String sortColumn) {
 						return vals.get(sortColumn);
 					}
@@ -203,7 +204,7 @@ public class ViewDataPanel extends VerticalPanel {
 
 			vals.put("Name", entity.getLocalName());
 			
-			rows.add(new IRow() {
+			rows.add(new RowAdapter() {
 				public String getColValue(String sortColumn) {
 					return vals.get(sortColumn);
 				}

@@ -22,6 +22,7 @@ import org.mmisw.ontmd.gwt.client.portal.IVocabPanel;
 import org.mmisw.ontmd.gwt.client.portal.OtherOntologyContentsPanel;
 import org.mmisw.ontmd.gwt.client.portal.VineOntologyContentsPanel;
 import org.mmisw.ontmd.gwt.client.util.table.IRow;
+import org.mmisw.ontmd.gwt.client.util.table.RowAdapter;
 import org.mmisw.ontmd.gwt.client.voc2rdf.VocabClassPanel;
 
 import com.google.gwt.user.client.ui.Label;
@@ -209,7 +210,7 @@ public class DataPanel extends VerticalPanel {
 
 				vals.put("Name", entity.getLocalName());
 				
-				rows.add(new IRow() {
+				rows.add(new RowAdapter() {
 					public String getColValue(String colName) {
 						return vals.get(colName);
 					}

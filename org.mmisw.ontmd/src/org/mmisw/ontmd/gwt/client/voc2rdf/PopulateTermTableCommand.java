@@ -116,7 +116,8 @@ abstract class PopulateTermTableCommand implements IncrementalCommand {
 			rowInTermTable++;
 			termTable.addRow(numCols);
 			for ( int c = 0; c < numCols; c++ ) {
-				String colVal = irow.getColValue(headerCols.get(c));
+				String colName = headerCols.get(c);
+				String colVal = irow.getColValue(colName);
 				colVal = colVal != null ? colVal.trim() : "";
 				
 				if ( c == 0 && firstColIsUri && colVal.length() > 0 ) {
@@ -125,7 +126,7 @@ abstract class PopulateTermTableCommand implements IncrementalCommand {
 					termTable.setCell(rowInTermTable, c, str, true);
 				}
 				else {
-					termTable.setCell(rowInTermTable, c, colVal);
+					termTable.setCell(rowInTermTable, c, colVal, irow.isHtml(colName));
 				}
 			}
 		}
