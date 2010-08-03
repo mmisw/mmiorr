@@ -6,8 +6,12 @@ import org.mmisw.ontmd.gwt.client.util.table.ontab.OntologyTableSc;
 
 public class OntologyTableCreator {
 	
+	private static final boolean USE_SMARTGWT = false;
+
+
 	public static IOntologyTable create(IQuickInfo quickInfo, boolean isVersionsTable) {
-		if ( true ) {
+		
+		if ( USE_SMARTGWT ) {
 			return new OntologyTableSc(quickInfo, isVersionsTable);
 		}
 		else {
