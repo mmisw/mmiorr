@@ -7,6 +7,8 @@ import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.util.Util;
+import org.mmisw.ontmd.gwt.client.util.table.IOntologyTable;
+import org.mmisw.ontmd.gwt.client.util.table.OntologyTableCreator;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -25,7 +27,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class BrowsePanel extends VerticalPanel {
 
 	private final SelectionTree selTree = new SelectionTree(this);
-	final OntologyTable ontologyTable = new OntologyTable(PortalControl.getInstance().getQuickInfo(), false);
+	final IOntologyTable ontologyTable = OntologyTableCreator.create(PortalControl.getInstance().getQuickInfo(), false);
 
 	// all the ontologies from the registry
 	private List<RegisteredOntologyInfo> allOntologyInfos;
@@ -59,7 +61,7 @@ public class BrowsePanel extends VerticalPanel {
 	    
 	    
 	    hSplit.setLeftWidget(selTree);
-	    hSplit.setRightWidget(ontologyTable);
+	    hSplit.setRightWidget(ontologyTable.getWidget());
 		
 	    hSplit.setSplitPosition("200px");
 	    hSplit.setHeight("500px");

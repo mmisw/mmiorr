@@ -9,6 +9,8 @@ import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.ontmd.gwt.client.portal.PortalControl.ExternalViewersInfo;
 import org.mmisw.ontmd.gwt.client.portal.PortalMainPanel.InterfaceType;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
+import org.mmisw.ontmd.gwt.client.util.table.IOntologyTable;
+import org.mmisw.ontmd.gwt.client.util.table.OntologyTableCreator;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.History;
@@ -357,7 +359,7 @@ public class ControlsPanel extends HorizontalPanel {
 
 		final MyDialog popup = new MyDialog(vp);
 		popup.setText("Available versions for " +oi.getUnversionedUri());
-		OntologyTable ontologyTable = new OntologyTable(PortalControl.getInstance().getQuickInfo(), true);
+		IOntologyTable ontologyTable = OntologyTableCreator.create(PortalControl.getInstance().getQuickInfo(), true);
 		ontologyTable.setIncludeVersionInLinks(true);
 		
 		final boolean sortDown = true; // (version, true) = most recent version first.
@@ -372,7 +374,7 @@ public class ControlsPanel extends HorizontalPanel {
 				}
 		);
 		
-		vp.add(ontologyTable);
+		vp.add(ontologyTable.getWidget());
 		
 		ontologyTable.setOntologyInfos(ontologyInfos, pctrl.getLoginResult());
 

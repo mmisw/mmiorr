@@ -1,4 +1,4 @@
-package org.mmisw.ontmd.gwt.client.portal;
+package org.mmisw.ontmd.gwt.client.util.table.ontab;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -9,6 +9,7 @@ import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.util.TooltipIcon;
 import org.mmisw.ontmd.gwt.client.util.Util;
+import org.mmisw.ontmd.gwt.client.util.table.IQuickInfo;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -32,41 +33,9 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author Carlos Rueda
  */
-public class OntologyTable extends FlexTable {
-	private static String _mark(String mk) { 
-		return "<sup><font color=\"red\" size=\"-2\">" +mk+ "</font></sup>";
-	}
-	private static final String TESTING_ONT_MARK = _mark("(T)");
-	private static final String TESTING_ONT_TOOLTIP = "A testing ontology";
-
-	private static final String INTERNAL_ONT_MARK = _mark("(int)");
-	private static final String INTERNAL_ONT_TOOLTIP = "An internal ontology";
+public class OntologyTable extends BaseOntologyTable {
 	
-// TODO Use utility ViewTable 
-	
-	
-	static interface IQuickInfo {
-		/**
-		 * 
-		 * @param name  Used to show a label (in particular, for numbering)
-		 * @param oi
-		 * @param includeVersionInLinks
-		 * @param includeVersionsMenu
-		 * @return
-		 */
-		Widget getWidget(String name, RegisteredOntologyInfo oi, boolean includeVersionInLinks, boolean includeVersionsMenu);
-	}
-	
-	private IQuickInfo quickInfo;
-	
-	private boolean isVersionsTable;
-	
-
-	private List<RegisteredOntologyInfo> ontologyInfos;
-	
-	private boolean isAdmin = false;
-	
-	private final FlexTable flexPanel = this;
+	private final FlexTable flexPanel = new FlexTable();
 	
 	
 	/**
@@ -223,22 +192,13 @@ public class OntologyTable extends FlexTable {
 	}
 
 	
-	/** given by the user */
-	private ClickListener clickListenerToHyperlinks;
-	
-	
-	private boolean includeVersionInLinks = false;
-	
-	
 	/**
 	 * 
 	 * @param quickInfo
 	 * @param isVersionsTable
 	 */
-	OntologyTable(IQuickInfo quickInfo, boolean isVersionsTable) {
-		super();
-		this.quickInfo = quickInfo;
-		this.isVersionsTable = isVersionsTable;
+	public OntologyTable(IQuickInfo quickInfo, boolean isVersionsTable) {
+		super(quickInfo, isVersionsTable);
 		
 		flexPanel.setBorderWidth(1);
 		flexPanel.setCellPadding(3);
@@ -248,13 +208,8 @@ public class OntologyTable extends FlexTable {
 		prepareHeader();
 	}
 	
-	/**
-	 * By default, the version is not included in the hyperlinks.
-	 * 
-	 * @param includeVersionInLinks true to include version in the hyperlinks.
-	 */
-	public void setIncludeVersionInLinks(boolean includeVersionInLinks) {
-		this.includeVersionInLinks = includeVersionInLinks;
+	public Widget getWidget() {
+		return flexPanel;
 	}
 
 	/**
@@ -270,27 +225,14 @@ public class OntologyTable extends FlexTable {
 	}
 
 
-	/**
-	 * For subsequent creation of the entries in the table, the given listener will be
-	 * associated to the corresponding hyperlinks. So, call this before {@link #setOntologyInfos(List, LoginResult)}.
-	 * @param clickListenerToHyperlinks
-	 */
-	public void addClickListenerToHyperlinks(ClickListener clickListenerToHyperlinks) {
-		this.clickListenerToHyperlinks = clickListenerToHyperlinks;
-	}
-
-	public void setQuickInfo(IQuickInfo quickInfo) {
-		this.quickInfo = quickInfo;
-	}
-
 	public void clear() {
-		super.clear();
-		while ( getRowCount() > 0 ) {
-			removeRow(0);
+		flexPanel.clear();
+		while ( flexPanel.getRowCount() > 0 ) {
+			flexPanel.removeRow(0);
 		}
 	}
 	
-	void showProgress() {
+	public void showProgress() {
 		flexPanel.clear();
 		prepareHeader();
 		int row = 1;
@@ -356,7 +298,7 @@ public class OntologyTable extends FlexTable {
 	 * @param ontologyInfos
 	 * @param loginResult
 	 */
-	void setOntologyInfos(final List<RegisteredOntologyInfo> ontologyInfos, LoginResult loginResult) {
+	public void setOntologyInfos(final List<RegisteredOntologyInfo> ontologyInfos, LoginResult loginResult) {
 		this.ontologyInfos = ontologyInfos;
 		this.isAdmin = loginResult != null && loginResult.isAdministrator();
 		
@@ -470,30 +412,4 @@ public class OntologyTable extends FlexTable {
 
 	}
 	
-	/////////////////////////////////////////////////////////
-	// methods to get values for the columns
-	
-	private static String _getName(RegisteredOntologyInfo oi) {
-		return oi.getDisplayLabel();
-	}
-	private static String _getUri(RegisteredOntologyInfo oi) {
-		return oi.getUri();
-	}
-	private static String _getVersion(RegisteredOntologyInfo oi) {
-		return oi.getVersionNumber();
-	}
-	private static String _getUsername(RegisteredOntologyInfo oi) {
-		return oi.getUsername();
-	}
-	private static String _getAuthor(RegisteredOntologyInfo oi) {
-//		Re. issue #236 "Author column should show Content Creator"
-//		NOTE: a possibility would be to use the OntologyMetadata object associated with
-//		the RegisteredOntologyInfo, something like:
-//		   return oi.getOntologyMetadata().getOriginalValues().get("http://mmisw.org/ont/mmi/20081020/ontologyMetadata/hasContentCreator");
-//		BUT such metadata is not available at this point.
-//		So, here we just continue to return the contactName value.
-//
-		String author = oi.getContactName();
-		return author;
-	}
 }

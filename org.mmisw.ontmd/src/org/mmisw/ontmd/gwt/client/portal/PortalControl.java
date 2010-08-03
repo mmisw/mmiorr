@@ -9,7 +9,7 @@ import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.ontmd.gwt.client.CookieMan;
 import org.mmisw.ontmd.gwt.client.Main;
-import org.mmisw.ontmd.gwt.client.portal.OntologyTable.IQuickInfo;
+import org.mmisw.ontmd.gwt.client.util.table.IQuickInfo;
 
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Command;

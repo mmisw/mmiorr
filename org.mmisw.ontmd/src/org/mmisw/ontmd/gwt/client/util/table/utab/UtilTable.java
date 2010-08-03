@@ -1,4 +1,4 @@
-package org.mmisw.ontmd.gwt.client.util;
+package org.mmisw.ontmd.gwt.client.util.table.utab;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.util.table.IRow;
+import org.mmisw.ontmd.gwt.client.util.table.IUtilTable;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -27,7 +29,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author Carlos Rueda
  */
-public class UtilTable {
+public class UtilTable implements IUtilTable {
 
 	private boolean editMode;
 	

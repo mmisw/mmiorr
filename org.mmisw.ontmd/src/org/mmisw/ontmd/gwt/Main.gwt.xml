@@ -12,7 +12,11 @@
 
       <!-- Other module inherits                                      -->
       <inherits name='org.mmisw.iserver.gwt.IServer'/>
-
+      
+      <!--  smartgwt not enabled - doesn't work well with gwt 1.5.2 
+      <inherits name="com.smartgwt.SmartGwt"/> 
+      <inherits name="com.smartclient.theme.enterprise.EnterpriseResources"/>
+	  -->
 
       <!-- Specify the app entry point class.                         -->
       <entry-point class='org.mmisw.ontmd.gwt.client.Main'/>

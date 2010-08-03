@@ -16,8 +16,9 @@ import org.mmisw.iserver.gwt.client.rpc.OtherOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.ontmd.gwt.client.Main;
-import org.mmisw.ontmd.gwt.client.util.IRow;
-import org.mmisw.ontmd.gwt.client.util.UtilTable;
+import org.mmisw.ontmd.gwt.client.util.table.IRow;
+import org.mmisw.ontmd.gwt.client.util.table.IUtilTable;
+import org.mmisw.ontmd.gwt.client.util.table.UtilTableCreator;
 
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.DisclosurePanel;
@@ -227,7 +228,7 @@ public class OtherOntologyContentsPanel extends BaseOntologyContentsPanel {
 		colNames.addAll(header);
 		colNames.add(0, "Name");
 
-		UtilTable utilTable = new UtilTable(colNames);
+		IUtilTable utilTable = UtilTableCreator.create(colNames);
 		List<IRow> rows = new ArrayList<IRow>();
 		for ( EntityInfo entity : entities ) {
 			final Map<String, String> vals = new HashMap<String, String>();

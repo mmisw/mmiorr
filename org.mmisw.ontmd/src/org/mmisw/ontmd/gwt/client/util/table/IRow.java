@@ -1,4 +1,4 @@
-package org.mmisw.ontmd.gwt.client.util;
+package org.mmisw.ontmd.gwt.client.util.table;
 
 /**
  * 

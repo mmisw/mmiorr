@@ -21,7 +21,7 @@ import org.mmisw.ontmd.gwt.client.portal.BaseOntologyContentsPanel;
 import org.mmisw.ontmd.gwt.client.portal.IVocabPanel;
 import org.mmisw.ontmd.gwt.client.portal.OtherOntologyContentsPanel;
 import org.mmisw.ontmd.gwt.client.portal.VineOntologyContentsPanel;
-import org.mmisw.ontmd.gwt.client.util.IRow;
+import org.mmisw.ontmd.gwt.client.util.table.IRow;
 import org.mmisw.ontmd.gwt.client.voc2rdf.VocabClassPanel;
 
 import com.google.gwt.user.client.ui.Label;

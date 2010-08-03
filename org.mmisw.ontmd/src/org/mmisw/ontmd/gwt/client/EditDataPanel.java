@@ -12,14 +12,15 @@ import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.IndividualInfo;
 import org.mmisw.iserver.gwt.client.rpc.MappingOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.OntologyData;
-import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.OtherOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData.ClassData;
 import org.mmisw.ontmd.gwt.client.portal.IVocabPanel;
-import org.mmisw.ontmd.gwt.client.util.IRow;
-import org.mmisw.ontmd.gwt.client.util.UtilTable;
+import org.mmisw.ontmd.gwt.client.util.table.IRow;
+import org.mmisw.ontmd.gwt.client.util.table.IUtilTable;
+import org.mmisw.ontmd.gwt.client.util.table.UtilTableCreator;
 import org.mmisw.ontmd.gwt.client.voc2rdf.VocabClassPanel;
 
 import com.google.gwt.user.client.ui.DisclosurePanel;
@@ -237,7 +238,7 @@ public class EditDataPanel extends VerticalPanel {
 		colNames.addAll(header);
 		colNames.add(0, "Name");
 
-		UtilTable utilTable = new UtilTable(colNames);
+		IUtilTable utilTable = UtilTableCreator.create(colNames);
 		List<IRow> rows = new ArrayList<IRow>();
 		for ( EntityInfo entity : entities ) {
 			final Map<String, String> vals = new HashMap<String, String>();

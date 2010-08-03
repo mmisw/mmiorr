@@ -3,7 +3,7 @@ package org.mmisw.ontmd.gwt.client.voc2rdf;
 import java.util.List;
 
 import org.mmisw.ontmd.gwt.client.portal.Portal;
-import org.mmisw.ontmd.gwt.client.util.IRow;
+import org.mmisw.ontmd.gwt.client.util.table.IRow;
 
 import com.google.gwt.user.client.IncrementalCommand;
 

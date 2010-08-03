@@ -2,6 +2,30 @@ org.mmisw.ontmd: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-08-01
+	- some refactoring to prepare use of more advanced table widgets in a future version:
+	
+	  New package ...gwt.client.util.table.utab with:
+	  
+	  	- IUtilTable interface with public operations from UtilTable, which is now package-visible here.
+	  	- new factory UtilTableCreator for IUtilTable objects.
+	  	- for consistency, IRow also moved here.
+	  	
+	  New package ...gwt.client.util.table.ontab with:
+	  
+	  	- IOntologyTable interface with public operations from OntologyTable, which is now package-visible here.
+	  	- new factory OntologyTableCreator for IOntologyTable objects.
+	  	- OntologyTable's inner static interface IQuickInfo is now a top-level type here.
+	  	
+	  	
+	  Note, the two table things above will eventually be merged into one especially when we
+	  start using a common base toolkit like the smartgwt.
+	  
+	  
+	- SmartGWT test: I did a quick test to integrate smartgwt, see gwt.client.util.table.ontab.OntologyTableSgwt
+	  
+	  
+	  
 2010-07-26  1.9.91.alpha
 	- Issue #236 "Author column should show Content Creator"
 	  Change in iserver module. See ChangeLog there.
