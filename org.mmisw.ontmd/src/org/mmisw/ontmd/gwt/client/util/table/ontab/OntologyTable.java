@@ -35,7 +35,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class OntologyTable extends BaseOntologyTable {
 	
-	private final FlexTable flexPanel = new FlexTable();
+	private final FlexTable flexPanel;
 	
 	
 	/**
@@ -200,9 +200,10 @@ public class OntologyTable extends BaseOntologyTable {
 	public OntologyTable(IQuickInfo quickInfo, boolean isVersionsTable) {
 		super(quickInfo, isVersionsTable);
 		
+		flexPanel = new FlexTable();
+		flexPanel.setWidth("100%");
 		flexPanel.setBorderWidth(1);
 		flexPanel.setCellPadding(3);
-		flexPanel.setWidth("100%");
 		flexPanel.setStylePrimaryName("OntologyTable");
 		
 		prepareHeader();
@@ -233,18 +234,18 @@ public class OntologyTable extends BaseOntologyTable {
 	}
 	
 	public void showProgress() {
-		flexPanel.clear();
-		prepareHeader();
+		clear();
+		int cols = prepareHeader();
 		int row = 1;
-		flexPanel.getFlexCellFormatter().setColSpan(row, 0, 3);
+		flexPanel.getFlexCellFormatter().setColSpan(row, 0, cols);
 		flexPanel.setWidget(row, 0, new HTML("<i>one moment...</i>"));
 		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
-
 	}
 
-	private void prepareHeader() {
+	/** returns the number of columns */
+	private int prepareHeader() {
 		int row = 0;
 		
 		flexPanel.getRowFormatter().setStylePrimaryName(row, "OntologyTable-header");
@@ -290,6 +291,8 @@ public class OntologyTable extends BaseOntologyTable {
 		}
 
 		row++;
+		
+		return col + 1;
 	}
 	
 	/**
@@ -315,7 +318,7 @@ public class OntologyTable extends BaseOntologyTable {
 	 */
 	private void update() {
 		
-		flexPanel.clear();
+		clear();
 		prepareHeader();
 		int row = 1;
 		
