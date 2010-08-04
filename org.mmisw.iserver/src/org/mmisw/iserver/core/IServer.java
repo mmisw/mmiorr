@@ -117,12 +117,16 @@ public interface IServer {
 	
 	/**
 	 * 
-	 * @param uploadResults Result from the UploadServlet
+	 * @param fileType         Type of the file associated with uploadResults
+	 * @param uploadResults    Result from the UploadServlet
 	 * @param includeContents  get also metadata and data?
 	 * @param includeRdf       include the text of the RDF
 	 * @return
 	 */
-	public TempOntologyInfo getTempOntologyInfo(String uploadResults, boolean includeContents, boolean includeRdf);
+	public TempOntologyInfo getTempOntologyInfo(
+			String fileType, String uploadResults, 
+			boolean includeContents, boolean includeRdf
+	);
 	
 	
 	////////////////////////////////////////////////////////////////////////////////////////////

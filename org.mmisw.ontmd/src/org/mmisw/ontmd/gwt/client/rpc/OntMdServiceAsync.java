@@ -96,7 +96,7 @@ public interface OntMdServiceAsync {
 			AsyncCallback<RegisterOntologyResult> callback) ;
 	
 	
-	void getTempOntologyInfo(String uploadResults, boolean includeContents,
+	void getTempOntologyInfo(String fileType, String uploadResults, boolean includeContents,
 			boolean includeRdf, AsyncCallback<TempOntologyInfo> callback);
 	
 	

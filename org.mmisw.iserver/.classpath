@@ -21,7 +21,7 @@
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/iri-0.8-sources.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/iri-0.8.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/jena-2.6.3-tests.jar"/>
-	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/jena-2.6.3.jar"/>
+	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/jena-2.6.3.jar" sourcepath="/Users/carueda/Software/Jena-2.6.3/jena-2.6.3-sources.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/junit-4.5.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/log4j-1.2.13.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/lucene-core-2.3.1.jar"/>

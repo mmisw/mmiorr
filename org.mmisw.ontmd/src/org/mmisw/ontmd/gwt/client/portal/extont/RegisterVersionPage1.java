@@ -286,7 +286,8 @@ class RegisterVersionPage1 extends BasePage {
 
 		nextButton.setEnabled(false);
 		Main.log("calling getTempOntologyInfo ... ");
-		Main.ontmdService.getTempOntologyInfo(uploadResults, true, INCLUDE_RDF, callback);
+		String fileType = null; // TODO handle fileType
+		Main.ontmdService.getTempOntologyInfo(fileType, uploadResults, true, INCLUDE_RDF, callback);
 
 	}
 	

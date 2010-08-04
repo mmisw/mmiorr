@@ -148,9 +148,10 @@ public class PortalImpl  {
 	}
 	
 	
-	public TempOntologyInfo getTempOntologyInfo(String uploadResults, boolean includeContents,
+	public TempOntologyInfo getTempOntologyInfo(
+			String fileType, String uploadResults, boolean includeContents,
 			boolean includeRdf) {
-		return iserver.getTempOntologyInfo(uploadResults, includeContents, includeRdf);
+		return iserver.getTempOntologyInfo(fileType, uploadResults, includeContents, includeRdf);
 	}
 	
 	

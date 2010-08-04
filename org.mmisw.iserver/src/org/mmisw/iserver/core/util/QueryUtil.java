@@ -330,86 +330,95 @@ public class QueryUtil {
 				}
 			}
 			
-			
-			// the following is an attempt to guess the column (ie., the datatype property that
-			// was used as the 'key', so as to put that column as the first.
-			// The strategy is to see what datatype property corresponds to rdfs:label
-			
-			// diffFlags[col] will be true if the corresponding column does not seem to coincide
-			// with value of rdfs:label
-			boolean[] diffFlags = null;    
-			
-			// but we do the check for a maximum of individuals:
-			final int maxIndivs = 20;
-			int indivNum = 0;
-			for ( IndividualInfo individualInfo : individuals ) {
-
-				// will contain the value of RDFS.label.getURI() if any:
-				String rdfsLabelValue = null;
-				
-				Map<String, String> vals = new HashMap<String, String>();
-				List<PropValue> props = individualInfo.getProps();
-				for ( PropValue pv : props ) {
-					
-					if ( RDFS.label.getURI().equals(pv.getPropUri()) ) {
-						rdfsLabelValue = pv.getValueName();
-					}
-					
-					vals.put(pv.getPropName(), pv.getValueName());
-				}
-				
-				if ( rdfsLabelValue == null ) {
-					// do not continue making the check.
-					break;
-				}
-				
-				// let's ignore case, and replace spaces with underscores for purposes of
-				// the comparison below
-				rdfsLabelValue = rdfsLabelValue.toLowerCase().replace(' ', '_');
-				
-				List<String> datatypeProperties = classData.getDatatypeProperties();
-				int numCols = datatypeProperties.size();
-				if ( diffFlags == null ) {
-					diffFlags = new boolean[numCols];
-				}
-				for ( int i = 0; i < numCols; i++ ) {
-					String colValue = vals.get(datatypeProperties.get(i));
-					if ( colValue != null ) {
-						colValue = colValue.toLowerCase().replace(' ', '_');
-					}
-					diffFlags[i] = diffFlags[i] || !rdfsLabelValue.equals(colValue);
-				}
-				
-				if ( ++indivNum >= maxIndivs ) {
-					break;
-				}
-			}
-			
-			if ( diffFlags != null ) {
-				// now, pick first column whose values coincided with rdfs:label:
-				int foundColumn = -1;
-				for ( int i = 0; i < diffFlags.length; i++ ) {
-					if ( !diffFlags[i] ) {
-						foundColumn = i;
-						break;
-					}
-				}
-
-				if ( foundColumn > 0 ) {
-					// if we found the column, and that is not already the first, then
-					// make it the first:
-					List<String> datatypeProperties = classData.getDatatypeProperties();
-					String keyColumnName = datatypeProperties.remove(foundColumn);
-					datatypeProperties.add(0, keyColumnName);
-				}
-			}
+			_putKeyColumnAsFirst(classData, individuals);
 		}
-		
 		
 		return ontologyData;
 	}
 
 
+	/**
+	 * the following is an attempt to guess the datatype property that was used 
+	 * as the 'key', so as to put that column as the first. 
+	 * The strategy is to see what datatype property corresponds to rdfs:label.
+	 * 
+	 * <p>
+	 * TODO Remove this mechanims once #240 "preserve column order" is implemented.
+	 * 
+	 * @param classData
+	 * @param individuals
+	 */
+	private static void _putKeyColumnAsFirst(ClassData classData, List<IndividualInfo> individuals) {
+		// diffFlags[col] will be true if the corresponding column does not seem to coincide
+		// with value of rdfs:label
+		boolean[] diffFlags = null;    
+		
+		// but we do the check for a maximum of individuals:
+		final int maxIndivs = 20;
+		int indivNum = 0;
+		for ( IndividualInfo individualInfo : individuals ) {
+
+			// will contain the value of RDFS.label.getURI() if any:
+			String rdfsLabelValue = null;
+			
+			Map<String, String> vals = new HashMap<String, String>();
+			List<PropValue> props = individualInfo.getProps();
+			for ( PropValue pv : props ) {
+				
+				if ( RDFS.label.getURI().equals(pv.getPropUri()) ) {
+					rdfsLabelValue = pv.getValueName();
+				}
+				
+				vals.put(pv.getPropName(), pv.getValueName());
+			}
+			
+			if ( rdfsLabelValue == null ) {
+				// do not continue making the check.
+				break;
+			}
+			
+			// let's ignore case, and replace spaces with underscores for purposes of
+			// the comparison below
+			rdfsLabelValue = rdfsLabelValue.toLowerCase().replace(' ', '_');
+			
+			List<String> datatypeProperties = classData.getDatatypeProperties();
+			int numCols = datatypeProperties.size();
+			if ( diffFlags == null ) {
+				diffFlags = new boolean[numCols];
+			}
+			for ( int i = 0; i < numCols; i++ ) {
+				String colValue = vals.get(datatypeProperties.get(i));
+				if ( colValue != null ) {
+					colValue = colValue.toLowerCase().replace(' ', '_');
+				}
+				diffFlags[i] = diffFlags[i] || !rdfsLabelValue.equals(colValue);
+			}
+			
+			if ( ++indivNum >= maxIndivs ) {
+				break;
+			}
+		}
+		
+		if ( diffFlags != null ) {
+			// now, pick first column whose values coincided with rdfs:label:
+			int foundColumn = -1;
+			for ( int i = 0; i < diffFlags.length; i++ ) {
+				if ( !diffFlags[i] ) {
+					foundColumn = i;
+					break;
+				}
+			}
+
+			if ( foundColumn > 0 ) {
+				// if we found the column, and that is not already the first, then
+				// make it the first:
+				List<String> datatypeProperties = classData.getDatatypeProperties();
+				String keyColumnName = datatypeProperties.remove(foundColumn);
+				datatypeProperties.add(0, keyColumnName);
+			}
+		}
+		
+	}
 
 	private static OntologyData _createMappingOntologyData(
 			BaseOntologyData baseOntologyData, 

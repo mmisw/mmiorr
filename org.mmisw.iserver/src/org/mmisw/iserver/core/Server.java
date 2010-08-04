@@ -44,20 +44,20 @@ import org.mmisw.iserver.gwt.client.rpc.CreateUpdateUserAccountResult;
 import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.HostingType;
+import org.mmisw.iserver.gwt.client.rpc.InternalOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MappingDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.OtherDataCreationInfo;
-import org.mmisw.iserver.gwt.client.rpc.InternalOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.UnregisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
 import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryResult;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
+import org.mmisw.iserver.gwt.client.rpc.UnregisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.UserInfoResult;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo.PriorOntologyInfo;
@@ -971,7 +971,7 @@ public class Server implements IServer {
 			File file = new File(full_path);
 			
 			try {
-				model = Util2.loadModelWithCheckingUtf8(file);
+				model = Util2.loadModelWithCheckingUtf8(file, null);
 			}
 			catch ( Throwable ex ) {
 				String error = "Unexpected error: " +ex.getClass().getName()+ " : " +ex.getMessage();
@@ -1285,7 +1285,7 @@ public class Server implements IServer {
 			File file = new File(full_path);
 			
 			try {
-				model = Util2.loadModelWithCheckingUtf8(file);
+				model = Util2.loadModelWithCheckingUtf8(file, null);
 			}
 			catch ( Throwable ex ) {
 				String error = "Unexpected error: " +ex.getClass().getName()+ " : " +ex.getMessage();
@@ -1734,7 +1734,7 @@ public class Server implements IServer {
 			File file = new File(full_path);
 			
 			try {
-				model = Util2.loadModelWithCheckingUtf8(file);
+				model = Util2.loadModelWithCheckingUtf8(file, null);
 			}
 			catch ( Throwable ex ) {
 				String error = "Unexpected error: " +ex.getClass().getName()+ " : " +ex.getMessage();
@@ -2457,8 +2457,9 @@ public class Server implements IServer {
 	
 	
 	
-	public TempOntologyInfo getTempOntologyInfo(String uploadResults, boolean includeContents,
-			boolean includeRdf
+	public TempOntologyInfo getTempOntologyInfo(
+			String fileType, String uploadResults, 
+			boolean includeContents, boolean includeRdf
 	) {
 		TempOntologyInfo tempOntologyInfo = new TempOntologyInfo();
 		
@@ -2468,7 +2469,7 @@ public class Server implements IServer {
 		}
 		
 		TempOntologyHelper tempOntologyHelper = new TempOntologyHelper(metadataBaseInfo);
-		tempOntologyHelper.getTempOntologyInfo(uploadResults, tempOntologyInfo, includeRdf);
+		tempOntologyHelper.getTempOntologyInfo(fileType, uploadResults, tempOntologyInfo, includeRdf);
 		
 		if ( tempOntologyInfo.getError() != null ) {
 			return tempOntologyInfo;

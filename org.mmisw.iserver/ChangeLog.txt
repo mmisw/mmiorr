@@ -3,6 +3,46 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2010-08-03  1.9.92.alpha
+
+	Issue #133 "allow to do narrower-than hierarquies trees with indentation simple files"
+	
+	The approach is to use the "load external ontology" functionality to also allow the
+	import of a CSV file into an (SKOS) ontology. The registration itself is done in "RDF/XML".
+	
+	An example of a file that can be processed is:
+		--------------------------------------------------------------------	
+		# test input for voc2skos
+		
+		class.id = ConceptFoo
+		class.prefLabel = Concept Foo
+		
+		# the terms:
+		ID,     skos:prefLabel  , rdfs:comment,     canonical_units    
+		myid1,  my pref label 1 , my description 1, m/s
+		myid2,  my pref label 2 , my description 2, baz
+		--------------------------------------------------------------------
+	
+	See new class Voc2Skos.
+	
+	
+	The following operation has been generalized to also allow the source file to be 
+	in any of the languages recognized by Jena.
+	
+	- IServer.getTempOntologyInfo(
+			String fileType, String uploadResults, 
+			boolean includeContents, boolean includeRdf)
+	  and associated signatures in its implementation, now with new parameter 'fileType' 
+	  indicating the type of the file associated with the uploadResults.
+	  
+	  Previously, the code always assumed "RDF/XML" contents according to
+	  the call to Jena's model.read method, which by default uses that language.  
+	  Now, the fileType parameter can be any of the languages recognized by Jena 
+	  (see Utils2.JENA_LANGS), but also a special fileType, "voc2skos", which is handled 
+	  by the new class Voc2Skos. See dispatch in TempOntologyHelper.getTempOntologyInfo.
+
+
+
 2010-07-26  1.9.91.alpha
 	- Issue #236 "Author column should show Content Creator"
 	  OntologyUploader._getContactName():

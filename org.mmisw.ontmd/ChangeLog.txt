@@ -2,6 +2,37 @@ org.mmisw.ontmd: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-08-03  1.9.92.alpha
+
+	Issue #133 "allow to do narrower-than hierarquies trees with indentation simple files"
+
+	Several preparations.  
+	This functionality is being enabled via one more possible format for the
+	registration of an external file. So far, only RDF/XML was accepted. But now, besides
+	accepting the various formats supported by Jena, there is a special file type, "voc2skos",
+	to do the conversion from a text file (CSV with a special header) into SKOS.
+	The registration itself is done in "RDF/XML".
+	See iserver module.
+	
+	Note that once registered, the ontology will continue to be handled in the
+	"other" category for purposes of display (ie., not as a "voc2rdf" or "vine").
+	TODO: perhaps enable the "voc2rdf" interface?
+	An appropriate GUI for the generated SKOS vocabularies (including good
+	visualization of the hierarchy of terms) is deferred to a later version.
+	
+		
+2010-08-03
+	- IRow.isHtml(colName) added to allow client to indicate a column is in HTML.
+	
+	
+	Code clean-up:
+	- Removed the follwoing methods which were not used for a long time while the corresponding
+	  alternatives were tests:
+	  	- PortalMainPanel.createNewFromFile(CreateOntologyInfo createOntologyInfo) 
+	      (using dispatchUploadOntology()).
+		- PortalMainPanel.getOntologyInfo(String ontologyUri) (using resolveUri(String uri)).
+	
+	
 2010-08-01
 	- some refactoring to prepare use of more advanced table widgets in a future version:
 	

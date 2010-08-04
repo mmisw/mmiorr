@@ -1,21 +1,17 @@
 package org.mmisw.ontmd.gwt.client.portal;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.BaseOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.HostingType;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.OntologyData;
-import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
 import org.mmisw.iserver.gwt.client.rpc.OtherOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
-import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.UnregisterOntologyResult;
 import org.mmisw.ontmd.gwt.client.LoginPanel;
 import org.mmisw.ontmd.gwt.client.Main;
@@ -302,13 +298,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 				String uri = historyToken.trim();
 				Main.log("onHistoryChanged: URI: " +uri);
 				
-				// TODO remove unused code getOntologyInfo once resolveUri is tested.
-				if ( true ) {
-					resolveUri(uri);
-				}
-				else {  
-					getOntologyInfo(uri);
-				}
+				resolveUri(uri);
 			}
 		}
 		else {
@@ -496,73 +486,10 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	 * Dispatchs interface to register an external ontology.
 	 */
 	public void startRegisterExternal() {
-		if ( true ) {
-			History.newItem(PortalConsts.T_REGISTER_EXTERNAL);
-		}
-		else {
-			createNewFromFile(null);
-		}
+		History.newItem(PortalConsts.T_REGISTER_EXTERNAL);
 	}
 		
-	/**
-	 * Dispatchs interface to create a new ontology.
-	 * 
-	 * @param createOntologyInfo If non-null, info for the new ontology is taken from here.
-	 * 
-	 * TODO NOTE: This is a new parameter in this method while I complete the new "registration of
-	 * external" ontology functionality.
-	 */
-	private void createNewFromFile(CreateOntologyInfo createOntologyInfo) {
-		
-		OntologyPanel ontologyPanel;
-		
-		// TODO should have an OntologyPanel constructor with createOntologyInfo
-		if ( createOntologyInfo != null ) {
-			// TODO
-			
-			BaseOntologyInfo baseOntologyInfo = createOntologyInfo.getBaseOntologyInfo();
-			assert baseOntologyInfo instanceof TempOntologyInfo;
-			TempOntologyInfo tempOntologyInfo = (TempOntologyInfo) baseOntologyInfo;
-			
-			OntologyMetadata md = tempOntologyInfo.getOntologyMetadata();
-			Map<String,String> originalValues = new HashMap<String,String>();
-			
-			// TODO should be a "shortName" explicit parameter, not the acronym
-			originalValues.put("http://omv.ontoware.org/2005/05/ontology#acronym", 
-					createOntologyInfo.getShortName());
-			
-			// TODO use parameter instead of hard-coded
-			originalValues.put("http://mmisw.org/ont/mmi/20081020/ontologyMetadata/origMaintainerCode", 
-					createOntologyInfo.getAuthority());
-			
-			md.setOriginalValues(originalValues);
-			
-			ontologyPanel = new OntologyPanel(tempOntologyInfo, false, false);
-		}
-		else {
-			// TODO
-			RegisteredOntologyInfo ontologyInfo = new RegisteredOntologyInfo();
-			ontologyPanel = new OntologyPanel(ontologyInfo, false, false);
-			pctrl.setOntologyInfo(ontologyInfo);
-		}
-		
-
-		pctrl.setOntologyPanel(ontologyPanel);
-		
-		interfaceType = InterfaceType.ONTOLOGY_EDIT_NEW;
-	    controlsPanel.showMenuBar(interfaceType);
-	    headerPanel.updateLinks(interfaceType);
-	    
-		ontologyPanel.createNewFromFile(createOntologyInfo);
-		
-	    bodyPanel.clear();
-		bodyPanel.add(ontologyPanel);
-	}
-
-	
-	
 	/** Starts the sequence to register an external ontology.
-	 * This will eventually replace {@link #createNewFromFile()}.
 	 */
 	private void dispatchUploadOntology() {
 		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
@@ -871,61 +798,11 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	    bodyPanel.clear();
 	    bodyPanel.add(new HTML("<i>Loading ontology...</i>"));
 
-		Main.log("getOntologyInfo: ontologyUri = " +uri);
+		Main.log("resolveUri: " +uri);
 		Main.ontmdService.resolveUri(uri, callback);
 	}
 
 	
-	/**
-	 * Requests an ontology to the back-end and dispatches a corresponding
-	 * ontology panel.
-	 * @param ontologyUri
-	 */
-	private void getOntologyInfo(final String ontologyUri) {
-		AsyncCallback<RegisteredOntologyInfo> callback = new AsyncCallback<RegisteredOntologyInfo>() {
-			public void onFailure(Throwable thr) {
-				String error = thr.getClass().getName()+ ": " +thr.getMessage();
-				while ( (thr = thr.getCause()) != null ) {
-					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
-				}
-				Window.alert(error);
-			}
-
-			public void onSuccess(RegisteredOntologyInfo ontologyInfo) {
-				Main.log("getOntologyInfo: ontologyUri = " +ontologyUri+ ". success.");
-				
-				String error = null;
-				if ( ontologyInfo == null ) {
-					error = "<b>" +ontologyUri+ "</b>: " +
-							"<font color=\"red\">" +"Ontology not found by this URI"+ "</font>";
-				}
-				else if ( ontologyInfo.getError() != null ) {
-					error = "<font color=\"red\">" +ontologyInfo.getError()+ "</font>";
-				}
-				
-				if ( error != null ) {
-					VerticalPanel vp = new VerticalPanel();
-					vp.setSpacing(14);
-					vp.add(new HTML(error));
-					vp.add(new Hyperlink("Go to main page", PortalConsts.T_BROWSE));
-					bodyPanel.clear();
-				    bodyPanel.add(vp);
-				}
-				else {
-					boolean versionExplicit = ontologyUri.indexOf("version=") >= 0;
-					dispatchOntologyPanel(ontologyInfo, versionExplicit);
-				}
-			}
-		};
-
-	    bodyPanel.clear();
-	    bodyPanel.add(new HTML("<i>Loading ontology...</i>"));
-
-		Main.log("getOntologyInfo: ontologyUri = " +ontologyUri);
-		Main.ontmdService.getOntologyInfo(ontologyUri, callback);
-	}
-
-
 	void searchOntologies(String searchString, Command doneCmd) {
 		browsePanel.searchOntologies(searchString, doneCmd);
 	}

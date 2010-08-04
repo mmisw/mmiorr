@@ -3,6 +3,7 @@ package org.mmisw.iserver.core.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,6 +13,8 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -23,13 +26,18 @@ import org.mmisw.iserver.core.MdHelper;
 import org.mmisw.iserver.core.ontmodel.OntModelUtil;
 import org.mmisw.iserver.gwt.client.rpc.BaseResult;
 import org.mmisw.iserver.gwt.client.rpc.Errorable;
+import org.mmisw.ont.JenaUtil2;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
 
+import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.ontology.Ontology;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.RDFWriter;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
@@ -45,6 +53,19 @@ import edu.drexel.util.rdf.JenaUtil;
 public class Util2 {
 
 	private static final Log log = LogFactory.getLog(Util2.class);
+
+	/** The list of languages recognized by Jena's method model.read(String, String lang).
+	 * @see #loadModelWithCheckingUtf8(File, String)  
+	 */
+	public static final List<String> JENA_LANGS = Collections.unmodifiableList(Arrays.asList(
+		"RDF/XML",
+		"N3",
+		"N-TRIPLE",
+		"TURTLE"
+	));
+	
+	/** The default language when reading files with Jena */
+	public static final String JENA_DEFAULT_LANG = JENA_LANGS.get(0);
 	
 	
 	/**
@@ -418,20 +439,29 @@ public class Util2 {
 
 
 	/**
-	 * Reads an RDF file into an OntModel. 
+	 * Reads an ontology from a file.
+	 *  
 	 * If Jena fails to load the file,
 	 * then it checks if the problem is related with the encoding UTF-8.
 	 * The idea is to be a bit more specific about the UTF-8-related error if that's the most
 	 * likely case.
 	 * 
 	 * @param file
+	 * @param lang A language recognized by Jena. See {@link #JENA_LANGS}.
 	 * @return
+	 * @throw IllegalArgumentException if lang is not a valid language. 
 	 * @throws IOException
 	 */
-	public static OntModel loadModelWithCheckingUtf8(File file) throws IOException {
+	public static OntModel loadModelWithCheckingUtf8(File file, String lang) throws IOException {
+		
+		if ( lang != null && ! JENA_LANGS.contains(lang) ) {
+			throw new IllegalArgumentException("lang argument must be null or one of " +JENA_LANGS);
+		}
+		
+		
 		String uriFile = file.toURI().toString();
 		try {
-			OntModel model = JenaUtil.loadModel(uriFile, false);
+			OntModel model = _loadModel(uriFile, lang, false);
 			return model;
 		}
 		catch ( Throwable jenaExc ) {
@@ -460,6 +490,63 @@ public class Util2 {
 		}	
 	}
 	
+	private static OntModel _loadModel(String uriModel, String lang, boolean processImports) {
+
+		OntModel model = null;
+		uriModel = JenaUtil2.removeTrailingFragment(uriModel);
+		model = _createDefaultOntModel();
+		model.setDynamicImports(false);
+		model.getDocumentManager().setProcessImports(processImports);
+		log.info("loading model " + uriModel + "  LANG=" +lang);
+		model.read(uriModel, lang);
+		return model;
+	}
+	private static OntModel _createDefaultOntModel() {
+		OntModelSpec spec = new OntModelSpec(OntModelSpec.OWL_MEM);
+		OntDocumentManager docMang = new OntDocumentManager();
+		spec.setDocumentManager(docMang);
+		OntModel model = ModelFactory.createOntologyModel(spec, null);
+		// removeNotNeccesaryNamespaces(model);
+
+		return model;
+	}
+	public static void saveOntModelXML(OntModel model, File file,
+			String base) throws IOException {
+
+		String xmlbase = null;
+		String namespace = null;
+		
+		if ( base != null ) {
+			xmlbase = JenaUtil2.removeTrailingFragment(base);
+			namespace = JenaUtil2.appendFragment(base);
+		}
+		
+		FileOutputStream out = new FileOutputStream(file);
+		
+		try {
+			if ( false ) {
+				model.write(out, "RDF/XML-ABBREV", base);
+			}
+			else {
+				// TODO When model is OntModel, the following generates a bunch of stuff
+				RDFWriter writer = model.getWriter("RDF/XML-ABBREV");
+				writer.setProperty("showXmlDeclaration", "true");
+				writer.setProperty("relativeURIs", "same-document,relative");
+				writer.setProperty("tab", "4");
+				if ( xmlbase != null ) {
+					writer.setProperty("xmlbase", xmlbase);
+				}
+
+				writer.write(model, out, namespace);
+			}
+		}
+		finally {
+			IOUtils.closeQuietly(out);
+		}
+	}
+
+
+
 	
 	/**
 	 * Helper to determine it's a SAXParseException so we can provide a bit of more

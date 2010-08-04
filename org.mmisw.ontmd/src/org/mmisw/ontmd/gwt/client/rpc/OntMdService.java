@@ -163,7 +163,8 @@ public interface OntMdService extends RemoteService {
 	/**
 	 * Gets ontology info from a pre-loaded file.
 	 */
-	public TempOntologyInfo getTempOntologyInfo(String uploadResults, boolean includeContents,
+	public TempOntologyInfo getTempOntologyInfo(
+			String fileType, String uploadResults, boolean includeContents,
 			boolean includeRdf);
 
 

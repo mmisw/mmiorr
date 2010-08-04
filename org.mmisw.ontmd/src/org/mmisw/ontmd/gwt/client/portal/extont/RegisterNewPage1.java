@@ -66,6 +66,9 @@ class RegisterNewPage1 extends BasePage {
 	private String registryOntologyUri;
 	private PushButton selectButton;
 	
+	
+	private final FileTypePanel fileTypePanel = new FileTypePanel();
+	
 
 	/**
 	 * Creates the ontology panel where the initial ontology can be loaded
@@ -126,15 +129,23 @@ class RegisterNewPage1 extends BasePage {
 	private Widget createWidget() {
 		
 		FlexTable panel = new FlexTable();
-		
 		int row = 0;
 		
-		panel.getFlexCellFormatter().setColSpan(row, 0, 2);
+		panel.getFlexCellFormatter().setColSpan(row, 0, 3);
 		panel.setWidget(row, 0, prepareUploadPanel());
 		panel.getFlexCellFormatter().setAlignment(row, 1, 
 				HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		row++;
+		
+		int col = 0;
+		
+		panel.setWidget(row, col, fileTypePanel.getWidget());
+		panel.getFlexCellFormatter().setAlignment(row, col, 
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		col++;
+
 		
 		HorizontalPanel buttons = new HorizontalPanel();
 		if ( loadButton != null ) {
@@ -150,16 +161,12 @@ class RegisterNewPage1 extends BasePage {
 			buttons.add(detailsButton);
 		}
 		
-		panel.getFlexCellFormatter().setColSpan(row, 0, 2);
-		panel.setWidget(row, 0, buttons);
-		panel.getFlexCellFormatter().setAlignment(row, 0, 
+		panel.getFlexCellFormatter().setColSpan(row, col, 2);
+		panel.setWidget(row, col, buttons);
+		panel.getFlexCellFormatter().setAlignment(row, col, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 
-//		panel.setWidget(row, 1, detailsButton);
-//		panel.getFlexCellFormatter().setAlignment(row, 1, 
-//				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
-//		);
 		row++;
 
 		
@@ -168,7 +175,7 @@ class RegisterNewPage1 extends BasePage {
 			textArea.setReadOnly(true);
 			textArea.setSize("400px", "100px");
 
-			panel.getFlexCellFormatter().setColSpan(row, 0, 2);
+			panel.getFlexCellFormatter().setColSpan(row, 0, 3);
 			panel.setWidget(row, 0, resultPanel);
 
 			DecoratorPanel decPanel = new DecoratorPanel();
@@ -297,7 +304,8 @@ class RegisterNewPage1 extends BasePage {
 
 		nextButton.setEnabled(false);
 		Main.log("calling getTempOntologyInfo ... ");
-		Main.ontmdService.getTempOntologyInfo(uploadResults, true, INCLUDE_RDF, callback);
+		String fileType = fileTypePanel.getSelectedType();
+		Main.ontmdService.getTempOntologyInfo(fileType, uploadResults, true, INCLUDE_RDF, callback);
 
 	}
 	
@@ -437,6 +445,51 @@ class RegisterNewPage1 extends BasePage {
 	@Override
 	public RegisterNewWizard getWizard() {
 		return (RegisterNewWizard) wizard;
+	}
+	
+	
+	/**
+	 * Panel that allows to select the type of the file to be loaded. 
+	 */
+	static class FileTypePanel  {
+		
+		/** these are the serialization languages that Jena supports for reading, plus
+		    the types supported by the iserver module.
+		    TODO: obtain this from iserver itself when we have time. 
+		*/
+		private static String[] FILE_TYPES = {
+			"RDF/XML",
+			"N3",
+			"N-TRIPLE",
+			"TURTLE",
+			"voc2skos"
+		};
+		private static RadioButton[] bts = new RadioButton[FILE_TYPES.length];
+		
+		FileTypePanel() {
+			panel.add(new Label("File type: "));
+			VerticalPanel vp = new VerticalPanel();
+			panel.add(vp);
+			for ( int i = 0; i < FILE_TYPES.length; i++ ) {
+				vp.add( bts[i] = new RadioButton("filetype", FILE_TYPES[i]) );
+			}
+			bts[0].setChecked(true);
+		}
+		
+		Widget getWidget() { return panel; }
+		
+		String getSelectedType() {
+			for ( int i = 0; i < FILE_TYPES.length; i++ ) {
+				if ( bts[i].isChecked() ) {
+					return FILE_TYPES[i];
+				}
+			}
+			// getting here should not happen.
+			return FILE_TYPES[0];
+		}
+		
+		private CellPanel panel = new HorizontalPanel();
+		
 	}
 
 }

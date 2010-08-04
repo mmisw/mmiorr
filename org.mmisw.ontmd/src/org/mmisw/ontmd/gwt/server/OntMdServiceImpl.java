@@ -1407,9 +1407,11 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	}
 	
 	
-	public TempOntologyInfo getTempOntologyInfo(String uploadResults, boolean includeContents,
-			boolean includeRdf) {
-		return portal.getTempOntologyInfo(uploadResults, includeContents, includeRdf);
+	public TempOntologyInfo getTempOntologyInfo(
+			String fileType, String uploadResults, boolean includeContents,
+			boolean includeRdf
+	) {
+		return portal.getTempOntologyInfo(fileType, uploadResults, includeContents, includeRdf);
 	}
 
 	
