@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -70,6 +71,7 @@ public class Voc2Skos {
 
 		// extract the actual model generated.
 		Model model = ontModel.getBaseModel();
+//		Model model = ontModel;   // See note below.
 		
 		String xmlbase = null;
 		String namespace = null;
@@ -88,7 +90,9 @@ public class Voc2Skos {
 			writer.setProperty("relativeURIs", "same-document,relative");
 			writer.setProperty("tab", "4");
 			if ( xmlbase != null ) {
-				writer.setProperty("xmlbase", xmlbase);
+				// NOTE about namespace for xmlbase, see ChangeLog.txt 2010-08-04
+//				writer.setProperty("xmlbase", xmlbase);
+				writer.setProperty("xmlbase", namespace);
 			}
 
 			writer.write(model, out, namespace);
@@ -124,24 +128,38 @@ public class Voc2Skos {
 		}
 	}
 
+	private static final String KEY_ONTOLOGY_URI = "ontologyURI";
+	private static final String KEY_CLASS = "class";
+	private static final String KEY_INDENT_STRING = "indent.string";
+	private static final String KEY_INDENT_PROPERTY = "indent.property";
+	private static final String KEY_SEPARATOR = "separator";
+
 	/** the params that are recognized in the preamble: 
 	 * a few key properties and all the standard properties above 
 	 */
 	private static final List<String> RECOGNIZED_PARAMS_IN_PREAMBLE = 
 		new ArrayList<String>(Arrays.asList(
-			"ontologyURI",
-			"class",
-			"indent.string",
-			"indent.property",
-			"separator"
+				KEY_ONTOLOGY_URI,
+				KEY_CLASS,
+				KEY_INDENT_STRING,
+				KEY_INDENT_PROPERTY,
+				KEY_SEPARATOR
 	));
 	static {
 		RECOGNIZED_PARAMS_IN_PREAMBLE.addAll(STD_PROPS.keySet());
 	}
 
+	private static final Map<String,Property> VALID_RELATIONS = new LinkedHashMap<String,Property>();
+	static {
+		VALID_RELATIONS.put("skos:narrower", Skos.narrower);
+		VALID_RELATIONS.put("skos:broader", Skos.broader);
+	}
+
+	
 	/** pattern for defs in the preamble section:  something = something */
 	private static final Pattern PARAM_PATTERN = Pattern.compile("\\s*([^\\s=]+)\\s*=\\s*(.*)$");
-	
+
+
 	
 	////////////////////////////////////////////////////////////////////////////
 	// instance.
@@ -195,9 +213,8 @@ public class Voc2Skos {
 	}
 	
 	private void _setDefaultWorkParams() {
-		workParams.put("ontologyUri", "http://example.org");
-		workParams.put("class", "UnnamedConcept");
-		workParams.put("skos:prefLabel", "Unnamed Concept");
+		workParams.put(KEY_ONTOLOGY_URI, "http://example.org");
+		workParams.put(KEY_CLASS, "UnnamedConcept");
 	}
 
 	/**
@@ -224,7 +241,7 @@ public class Voc2Skos {
 		
 		workParams.putAll(givenParams);
 		
-		workParams.put("namespace", JenaUtil2.appendFragment(workParams.get("ontologyURI")));
+		workParams.put("namespace", JenaUtil2.appendFragment(workParams.get(KEY_ONTOLOGY_URI)));
 		
 		_debugParams("Work params: ", workParams);
 		
@@ -234,7 +251,7 @@ public class Voc2Skos {
 	}
 
 	private void _prepareModel() {
-		final String classId = workParams.get("class");
+		final String classId = workParams.get(KEY_CLASS);
 		final String namespace = workParams.get("namespace");
 		final String conceptUri = namespace + classId;
 		
@@ -291,17 +308,85 @@ public class Voc2Skos {
 		}
 	}
 	
+	
+	/** Responsible of creating the relations between concepts
+	 * according to the indented structure of the input.
+	 */
+	private class HierarchyMan {
+		private String indentString = workParams.get(KEY_INDENT_STRING);
+		private Stack<Resource> stack = indentString == null ? null : new Stack<Resource>();
+		private Property relation = indentString == null ? null : VALID_RELATIONS.get(workParams.get(KEY_INDENT_PROPERTY));
+		
+		/** processes one more concept */
+		void processConcept(String givenID, Resource concept) throws IOException {
+			if ( indentString == null ) {
+				return;
+			}
+			
+			int level = _getLevel(givenID);
+			
+			if ( stack.size() == level ) {
+				if ( stack.size() > 0 ) {
+					stack.pop();
+					if ( stack.size() > 0 ) {
+						Resource parent = stack.peek();
+						_addRelation(parent, concept);
+					}
+				}
+			}
+			else if ( stack.size() < level ) {
+				if ( stack.size() + 1 != level ) {
+					throw parser.error("Invalid indentation: new level too deep");
+				}
+				if ( stack.size() > 0 ) {
+					Resource parent = stack.peek();
+					_addRelation(parent, concept);
+				}
+			}
+			else { //  stack.size() > level 
+				while ( stack.size() > level ) {
+					stack.pop();
+				}
+				if ( stack.size() > 0 ) {
+					stack.pop();
+				}
+				if ( stack.size() > 0 ) {
+					Resource parent = stack.peek();
+					_addRelation(parent, concept);
+				}
+			}
+			stack.push(concept);
+		}
+
+		private int _getLevel(String givenID) {
+			int level = 1;
+			while ( givenID.startsWith(indentString) ) {
+				givenID = givenID.substring(indentString.length());
+				level++;
+			}
+//			_debug(" LEVEL: " +level+ "  " +givenID);
+			return level;
+		}
+		
+		private void _addRelation(Resource parent, Resource concept) {
+			_debug("RELATION: " +parent.getLocalName()+ "  " +relation.getLocalName()+ "  " +concept.getLocalName());
+			parent.addProperty(relation, concept);
+		}
+	}
+	
 	private void _parseTerms() throws IOException {
 		// Now, create the concepts.
+		
+		HierarchyMan hierMan = new HierarchyMan();
+		
 		while ( parser.hasNext() ) {
 			String[] row = parser.getNext();
 			
-			String ID = row[0].trim();
+			// keep spaces from the first column for indentation analysis:
+			final String givenID = row[0];
 			
-			if ( row.length == 0 ) {
-				// should not happen.
-				continue;
-			}
+			// and trim the string for purposes of the ID:
+			final String ID = givenID.trim();
 			
 			Resource concept;
 			String conceptURI;
@@ -314,7 +399,7 @@ public class Voc2Skos {
 				conceptURI = workParams.get("namespace") + ID;
 			}
 			concept = _createConcept(conceptURI);
-			_debug("conceptURI:  " +conceptURI);
+//			_debug("conceptURI:  " +conceptURI);
 			
 			final int count = Math.min(row.length, header.length);
 			
@@ -324,6 +409,8 @@ public class Voc2Skos {
 				
 				concept.addProperty(prop, colValue);
 			}
+			
+			hierMan.processConcept(givenID, concept);
 		}
 		
 		_debug("convert: ontology created: " +numConcepts+ " concepts.");
@@ -338,11 +425,21 @@ public class Voc2Skos {
 		}
 		paramValue = _unquote(paramValue);
 		
-		if ( "separator".equals(paramValue) ) {
+		if ( KEY_INDENT_STRING.equals(paramName) ) {
+			if ( paramValue.matches(".*\\w.*") ) {
+				throw parser.error("indent.string should not contain any alphanumeric characters: \"" +paramValue+ "\"");
+			}
+		}
+		else if ( KEY_SEPARATOR.equals(paramName) ) {
 			if ( paramValue.length() != 1 ) {
-				throw parser.error("separator string must be a single character");
+				throw parser.error("separator string must be a single character: \"" +paramValue+ "\"");
 			}
 			parser.setSeparator(paramValue.charAt(0));
+		}
+		else if ( KEY_INDENT_PROPERTY.equals(paramName) ) {
+			if ( ! VALID_RELATIONS.keySet().contains(paramValue) ) {
+				throw parser.error("indent.property should be one of: " +VALID_RELATIONS.keySet());
+			}
 		}
 
 		givenParams.put(paramName, paramValue);

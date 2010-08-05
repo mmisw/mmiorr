@@ -6,6 +6,13 @@ $Id$
 2010-08-04
 	Issue #133 "allow to do narrower-than hierarquies trees with indentation simple files"
 	
+	Now also processing indentation. The resulting SKOS file below passes the validation
+	at http://demo.semantic-web.at:8080/SkosServices/index
+	The only warning is:
+		Missing Language Tags: Found 9 occurrences of prefLabel without language tag.
+		Handles missing language tags of all sorts of SKOS labels and textual content.
+	TODO which is expected as no language tags are yet incorporated in the process.
+	
 	The example input is now (see resource/voc2skos-example.csv):
 		-----------------------------------------------------------------------------------
 		ontologyURI = "http://example.org/myont"
@@ -32,7 +39,21 @@ $Id$
 	
 	The output is in resource/voc2skos-example.rdf
 	
-	NEXT process indentation.
+	NOTE: Voc2Skos.saveOntModelXML: passing namespace to 'xmlbase' property because
+	this seems to propely generate the URIs for the various entities. If base is used
+	(ie., for an xmlbase with no trailing fragment separator), then the entity URIs are messed up.
+	In concrete, having:
+		xml:base="http://example.org/myont/"
+	entities are OK, eg.,
+		<owl:Class rdf:about="Foo"> ...
+		<Foo rdf:about="conceptB">  ...
+	but, if:
+		xml:base="http://example.org/myont"
+	then, the entities look like:
+		<owl:Class rdf:about="myont/Foo"> ...
+		<Foo rdf:about="myont/conceptB"> ...
+	
+	TODO what's going on? a Jena bug?
 	
 	
 	
