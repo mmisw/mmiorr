@@ -26,7 +26,18 @@ public class Skos {
 	public static Resource Concept = model.createResource(NS + "Concept",
 			RDFS.Class);
 	
+	public static Property prefLabel = model.createProperty(NS + "prefLabel");
+	public static Property altLabel = model.createProperty(NS + "altLabel");
+	public static Property hiddenLabel = model.createProperty(NS + "hiddenLabel");
+	
 	public static Property definition = model.createProperty(NS + "definition");
+	
+	public static Property note = model.createProperty(NS + "note");
+	public static Property changeNote = model.createProperty(NS + "changeNote");
+	public static Property editorialNote = model.createProperty(NS + "editorialNote");
+	public static Property example = model.createProperty(NS + "example");
+	public static Property historyNote = model.createProperty(NS + "historyNote");
+	public static Property scopeNote = model.createProperty(NS + "scopeNote");
 	
 	
 	public static Property hasTopConcept = 
@@ -39,9 +50,6 @@ public class Skos {
 		model.createProperty(NS + "narrower");
 	public static Property related = 
 		model.createProperty(NS + "related");
-	
-	public static Property prefLabel = 
-		model.createProperty(NS + "prefLabel");
 	
 	public static Model createModel(){
 		Model m = ModelFactory.createDefaultModel();
@@ -57,9 +65,7 @@ public class Skos {
 		return m;
 	}
 	
-	public static Resource addConceptSubClass(Model model, 
-			String conceptUri, String conceptLabel
-	) {
+	public static Resource addConceptSubClass(Model model, String conceptUri ) {
 		Resource conceptSubClass = model.createResource(conceptUri);
 		
 		Statement stmt;
@@ -70,11 +76,6 @@ public class Skos {
 		stmt = model.createStatement(conceptSubClass, RDFS.subClassOf, Skos.Concept);
 		model.add(stmt);
 
-		if ( conceptLabel != null ){
-			stmt = model.createStatement(conceptSubClass, RDFS.label, conceptLabel);
-			model.add(stmt);
-		}
-		
 		return conceptSubClass;
 	}
 	

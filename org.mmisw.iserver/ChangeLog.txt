@@ -3,6 +3,39 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2010-08-04
+	Issue #133 "allow to do narrower-than hierarquies trees with indentation simple files"
+	
+	The example input is now (see resource/voc2skos-example.csv):
+		-----------------------------------------------------------------------------------
+		ontologyURI = "http://example.org/myont"
+		class = "Foo"
+
+		skos:prefLabel = "My preferred label for Foo"
+		skos:definition = "This is a demo skos:definition for concept Foo"
+		
+		indent.string = "  "
+		indent.property = skos:narrower
+		
+		separator = ","    
+		
+		ID             ,skos:prefLabel ,skos:definition           ,myProperty 
+		conceptA       ,concept A      ,concept A definition      ,my value for concept A
+		  conceptA1    ,concept A1     ,concept A1 definition     ,my value for concept A1
+		    conceptA1a ,concept A1a    ,concept A1a definition    ,my value for concept A1a
+		    conceptA1b ,concept A1b    ,concept A1b definition    ,my value for concept A1b
+		  conceptA2    ,concept A2     ,concept A2 definition     ,my value for concept A2
+		conceptB       ,concept B      ,concept B definition      ,my value for concept B
+		  conceptB1    ,concept B1     ,concept B1 definition     ,my value for concept B1
+		conceptC       ,concept C      ,concept C definition      ,my value for concept C
+		-----------------------------------------------------------------------------------
+	
+	The output is in resource/voc2skos-example.rdf
+	
+	NEXT process indentation.
+	
+	
+	
 2010-08-03  1.9.92.alpha
 
 	Issue #133 "allow to do narrower-than hierarquies trees with indentation simple files"

@@ -1,16 +1,22 @@
 package org.mmisw.iserver.core.util;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.LineIterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.iserver.core.util.csv.BaseParser;
 import org.mmisw.ont.JenaUtil2;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -29,8 +35,8 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 public class Voc2Skos {
 
 	/**
-	 * Reads an ontology from a file that is assumed to be in CSV format.
-	 *  
+	 * Reads an ontology from a text file in the format
+	 * specified in issue #133.
 	 * 
 	 * @param file
 	 * @return
@@ -38,18 +44,12 @@ public class Voc2Skos {
 	 */
 	public static OntModel loadModel(File file) throws IOException {
 		Voc2Skos v2s = new Voc2Skos(file);
-		try {
-			Model m = v2s.convert();
-			
-			// wrap it in an OntModel and return it:
-			OntModel ontModel = ModelFactory.createOntologyModel();
-			ontModel.add(m);
-			ontModel.setNsPrefixes(m);
-			return ontModel;
-		}
-		finally {
-			IOUtils.closeQuietly(v2s.is);
-		}
+		v2s.convert();
+		// wrap it in an OntModel and return it:
+		OntModel ontModel = ModelFactory.createOntologyModel();
+		ontModel.add(v2s.model);
+		ontModel.setNsPrefixes(v2s.model);
+		return ontModel;
 	}
 	
 	/**
@@ -98,17 +98,70 @@ public class Voc2Skos {
 		}
 	}
 
-	private static final Pattern ontologyUriPattern = Pattern.compile("\\s*ontologyUri\\s*=\\s*(.*)$");
-	private static final Pattern classIdPattern = Pattern.compile("\\s*class\\.id\\s*=\\s*(.*)$");
-	private static final Pattern classPrefLabelPattern = Pattern.compile("\\s*class\\.prefLabel\\s*=\\s*(.*)$");
+	
+	/** standard properties that are recognized by its typical prefix in the preamble and 
+	 * in the header columns.
+	 * NOTE: Not exhaustive; I'm choosing the most obvious ones, taking into account that
+	 * they can have string as the range.
+	 */
+	private static final Map<String,Property> STD_PROPS = new HashMap<String,Property>();
+	static {
+		Property[] skosProps = {
+			Skos.prefLabel, Skos.altLabel, Skos.hiddenLabel, 
+			
+			Skos.definition, Skos.changeNote, Skos.editorialNote, Skos.example, 
+			Skos.historyNote, Skos.note, Skos.scopeNote
+		};
+		for ( Property prop : skosProps ) {
+			STD_PROPS.put("skos:" +prop.getLocalName(), prop);
+		}
+		
+		Property[] rdfsProps = {
+				RDFS.label, RDFS.comment, RDFS.isDefinedBy, RDFS.seeAlso,	
+		};
+		for ( Property prop : rdfsProps ) {
+			STD_PROPS.put("rdfs:" +prop.getLocalName(), prop);
+		}
+	}
+
+	/** the params that are recognized in the preamble: 
+	 * a few key properties and all the standard properties above 
+	 */
+	private static final List<String> RECOGNIZED_PARAMS_IN_PREAMBLE = 
+		new ArrayList<String>(Arrays.asList(
+			"ontologyURI",
+			"class",
+			"indent.string",
+			"indent.property",
+			"separator"
+	));
+	static {
+		RECOGNIZED_PARAMS_IN_PREAMBLE.addAll(STD_PROPS.keySet());
+	}
+
+	/** pattern for defs in the preamble section:  something = something */
+	private static final Pattern PARAM_PATTERN = Pattern.compile("\\s*([^\\s=]+)\\s*=\\s*(.*)$");
+	
+	
+	////////////////////////////////////////////////////////////////////////////
+	// instance.
+	////////////////////////////////////////////////////////////////////////////
+	
 	
 	private final Log log = LogFactory.getLog(Voc2Skos.class);
 	
+	
+	private BaseParser parser;
+	private String[] record;
 
-	private FileInputStream is;
-	private LineIterator lines;
-	private int lineno = 0;
+	private Map<String,String> givenParams;
+	
+	private String[] header;
 
+	private Map<String,String> workParams;
+	
+	private Property[] props;
+	
 	private Model model;
 	private Resource conceptSubClass;
 	private int numConcepts = 0;
@@ -116,101 +169,132 @@ public class Voc2Skos {
 	
 	
 	private Voc2Skos(File file) throws IOException{
-		this.is = new FileInputStream(file);
-		lines = IOUtils.lineIterator(is, "utf8");
+		parser = BaseParser.createParser(file);
+		givenParams = new LinkedHashMap<String,String>();
+		workParams = new LinkedHashMap<String,String>();
 	}
 	
-	private Model convert() throws IOException {
+	private void convert() throws IOException {
 		_debug("convert: start");
+		try {
+			doConvert();
+		}
+		finally {
+			parser.close();
+		}
+	}
+	
+	private void doConvert() throws IOException {
+		_setDefaultWorkParams();
 		
-		
-		String ontologyUri = "http://example.org";
-		String classId = "UnnamedConcept";
-		String classPrefLabel = "Unnamed Concept";
-		
-		// scan concept definition section; break where terms section begins
-		String line = null;
-		while ( lines.hasNext()  &&  (line = _nextLine()) != null ) {
+		_parsePreamble();
+		_prepareModel();
+		_parseHeader();
+		_prepareProperties();
+		_parseTerms();
+	}
+	
+	private void _setDefaultWorkParams() {
+		workParams.put("ontologyUri", "http://example.org");
+		workParams.put("class", "UnnamedConcept");
+		workParams.put("skos:prefLabel", "Unnamed Concept");
+	}
+
+	/**
+	 * scans preamble section; return line where terms section begins, or null.
+	 * @throws IOException 
+	 */
+	private void _parsePreamble() throws IOException {
+		while ( parser.hasNext() ) {
+			record = parser.getNext();
 			
-			Matcher matcher;
-			if ( (matcher = ontologyUriPattern.matcher(line)).matches() ) {
-				String propValue = matcher.group(1);
-				ontologyUri = propValue;
-			}
-			else if ( (matcher = classIdPattern.matcher(line)).matches() ) {
-				String propValue = matcher.group(1);
-				classId = propValue;
-			}
-			else if ( (matcher = classPrefLabelPattern.matcher(line)).matches() ) {
-				String propValue = matcher.group(1);
-				classPrefLabel = propValue;
+			if ( record.length == 1 ) {
+				Matcher matcher = PARAM_PATTERN.matcher(record[0]);
+				if ( matcher.matches() ) {
+					String paramName = matcher.group(1);
+					String paramValue = matcher.group(2);
+					_putGivenParam(paramName, paramValue);
+				}
 			}
 			else {
 				break;
 			}
 		}
-
-		if ( line == null ) {
-			throw new IOException("Expecting terms section. Line: " +lineno);
+		_debugParams("Given params: ", givenParams);
+		
+		workParams.putAll(givenParams);
+		
+		workParams.put("namespace", JenaUtil2.appendFragment(workParams.get("ontologyURI")));
+		
+		_debugParams("Work params: ", workParams);
+		
+		if ( record == null ) {
+			throw parser.error("Expecting terms section");
 		}
+	}
 
-		// here we have the header line.
-		String[] header = line.split(",");
-		if ( header.length == 0 ) {
-			throw new IOException("No header columns");
-		}
-
+	private void _prepareModel() {
+		final String classId = workParams.get("class");
+		final String namespace = workParams.get("namespace");
+		final String conceptUri = namespace + classId;
+		
 		model = Skos.createModel();
-		
-		final String namespace = ontologyUri + "/";
 		model.setNsPrefix("", namespace);
+		conceptSubClass = Skos.addConceptSubClass(model, conceptUri);
 		
-		String conceptUri = namespace + classId;
-		String conceptLabel = classPrefLabel;
-		conceptSubClass = Skos.addConceptSubClass(model, conceptUri, conceptLabel);
+		// associate indicated standard properties:
+		for ( String paramName : workParams.keySet() ) {
+			Property stdProp = STD_PROPS.get(paramName);
+			if ( stdProp != null ) {
+				conceptSubClass.addProperty(stdProp, workParams.get(paramName));
+			}
+		}
 		
-		_debug("ontologyUri: " +ontologyUri);
 		_debug("namespace:   " +namespace);
 		_debug("conceptUri:  " +conceptUri);
+		
+	}
+	
+	private void _parseHeader() throws IOException {
+		header = record;
+		if ( header.length == 0 ) {
+			throw parser.error("No header columns");
+		}
+	}
+
+	private void _prepareProperties() {
 
 		// header[0] may be "uri" (ignoring case) or any other string.
 		// If "uri", the values in first column will determine the complete URI of the term.
 		// See below.
 		//
 		
-		// props[0] is ignored--we want to keep symmetry in the subindexing
-		Property[] props = new Property[header.length];
+		// Note, props[0] not used--we want to keep symmetry in the subindexing
+		props = new Property[header.length];
 		
 		// create datatype properties -- note that we start with 2nd column
 		for ( int jj = 1; jj < header.length; jj++ ) {
 			String colName = header[jj].trim();
 			
-			if ( colName.equals("skos:prefLabel") ) {
-				props[jj] = Skos.prefLabel;
+			if ( STD_PROPS.get(colName) != null ) {
+				props[jj] = STD_PROPS.get(colName);
 			}
-			else if ( colName.equals("rdfs:comment") ) {
-				props[jj] = RDFS.comment;
-			}
-			//
-			// TODO: add other "built-in" properties -- and use a Map for them instead of these conditions.
-			//
 			else {
-				// user-given property
+				// user-given property.
 				
 				String propName = colName.replaceAll("\\s", "_"); // TODO complement correct propName
-				String propUri = namespace + propName;
+				String propUri = workParams.get("namespace") + propName;
 				props[jj] = Skos.addDatatypeProperty(model, conceptSubClass, propUri , colName);
 				
 				_debug("propUri:  " +propUri);
 			}
 		}
-
-		//
+	}
+	
+	private void _parseTerms() throws IOException {
 		// Now, create the concepts.
-		//
-		
-		while ( lines.hasNext()  &&  (line = _nextLine()) != null ) {
-			String[] row = line.split(",");
+		while ( parser.hasNext() ) {
+			String[] row = parser.getNext();
 			
 			String ID = row[0].trim();
 			
@@ -227,7 +311,7 @@ public class Voc2Skos {
 			}
 			else {
 				// conceptURI given by namespace and ID
-				conceptURI = namespace + ID;
+				conceptURI = workParams.get("namespace") + ID;
 			}
 			concept = _createConcept(conceptURI);
 			_debug("conceptURI:  " +conceptURI);
@@ -243,11 +327,42 @@ public class Voc2Skos {
 		}
 		
 		_debug("convert: ontology created: " +numConcepts+ " concepts.");
-		
-		return model;
 	}
 
+	private void _putGivenParam(String paramName, String paramValue) throws IOException {
+		paramName = _unquote(paramName);
+		
+		if ( ! RECOGNIZED_PARAMS_IN_PREAMBLE.contains(paramName) ) {
+			parser.error("Unrecognized parameter in preamble: " +paramName+ 
+					"\nValid parameters in preamble are: " +RECOGNIZED_PARAMS_IN_PREAMBLE);
+		}
+		paramValue = _unquote(paramValue);
+		
+		if ( "separator".equals(paramValue) ) {
+			if ( paramValue.length() != 1 ) {
+				throw parser.error("separator string must be a single character");
+			}
+			parser.setSeparator(paramValue.charAt(0));
+		}
+
+		givenParams.put(paramName, paramValue);
+	}
+
+	private String _unquote(String str) {
+		str = str.trim();
+		while ( str.length() > 1 && str.charAt(0) == '"' && str.charAt(str.length() - 1) == '"' ) {
+			str = str.substring(1, str.length() - 1);
+		}
+		return str;
+	}
 	
+	private void _debugParams(String label, Map<String,String> params) {
+		_debug(label);
+		for ( Entry<String, String> entry : params.entrySet() ) {
+			_debug("\t" +entry.getKey()+ " = [" +entry.getValue()+ "]");
+		}
+	}
+
 	private void _debug(String msg) {
 		if ( log.isDebugEnabled() ) {
 			log.debug(msg);
@@ -261,30 +376,11 @@ public class Voc2Skos {
 		return concept;
 	}
 
-	private String _nextLine() {
-		while ( lines.hasNext() ) {
-			String line = lines.nextLine();
-			lineno++;
-			
-			if ( line.matches("\\s*") ) {
-				// ignore empty line:
-				continue;
-			}
-			if ( line.matches("\\s*#.*") ) {
-				// ignore comment line
-				continue;
-			}
-			
-			return line;
-		}
-		return null;
-	}
-	
 	
 	public static void main(String[] args) throws IOException {
-		File file = new File("/Users/carueda/qqq.csv");
+		File file = new File("resource/voc2skos-example.csv");
 		OntModel model = loadModel(file);
-		File fileOut = new File("/Users/carueda/qqq.rdf");
+		File fileOut = new File("resource/voc2skos-example.rdf");
 		String base = model.getNsPrefixURI("");
 		Voc2Skos.saveOntModelXML(model, fileOut, base);
 	}

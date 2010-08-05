@@ -1,0 +1,55 @@
+# Test input for voc2skos
+# Empty lines are ignored.
+# Lines starting with # are ignored.
+
+# Lines of the form: <identifier> = <value>
+# are parsed and interpreted as follows:
+
+# URI for the ontology and namespace for its terms.
+# By default, an ad hoc URI is assigned.
+ontologyURI = "http://example.org/myont"
+
+# Local name for the concept class:
+class = "Foo"
+
+# Properties for the class.
+# Well-known properties can be indicated with their typical 
+# denotation, eg., skos:preLabel:
+skos:prefLabel = "My preferred label for Foo"
+skos:definition = "This is a demo skos:definition for concept Foo"
+
+# String defining the hierarchical structure for the terms according to the
+# indentation level determined by this string in the first column.
+# By default, indentation is ignored.
+indent.string = "  "
+
+# The relation to use between the parent and the child when a non-empty 
+# indent_string is indicated.
+# By default, skos:narrower
+indent.property = skos:narrower
+
+# the separator character for the CSV contents below.
+# By default, ",".
+separator = ","    
+
+# Then, the actual CSV contents defining the terms:
+
+# Header line indicates:
+#  - first column: If the column name is "URI", then the values in this column
+#    are used exactly as given for the URIs for the terms. Otherwise, the value
+#    is used along with the namespase (ontologyURI) to compose the term URI.
+#  - subsequent columns indicate the properties to be associated with each term.  
+#    Well-known properties, eg., skos:preLabel, can be used, but others can be
+#    defined as well.
+
+# Subsequent lines define the terms themselves
+
+ID             ,skos:prefLabel ,skos:definition           ,myProperty 
+conceptA       ,concept A      ,concept A definition      ,my value for concept A
+  conceptA1    ,concept A1     ,"concept, A1, definition" ,my value for concept A1
+    conceptA1a ,concept A1a    ,concept A1a definition    ,my value for concept A1a
+    conceptA1b ,concept A1b    ,concept A1b definition    ,my value for concept A1b
+  conceptA2    ,concept A2     ,concept A2 definition     ,my value for concept A2
+conceptB       ,concept B      ,concept B definition      ,"my value for concept B, with commas."
+  conceptB1    ,concept B1     ,concept B1 definition     ,my value for concept B1
+conceptC       ,concept C      ,concept C definition      ,my value for concept C
