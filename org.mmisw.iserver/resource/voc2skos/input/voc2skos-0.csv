@@ -1,0 +1,4 @@
+ID             ,skos:prefLabel ,skos:definition           ,myProperty 
+conceptA       ,concept A      ,concept A definition      ,my value for concept A
+conceptB       ,concept B      ,concept B definition      ,"my value for concept B, with commas."
+conceptC       ,concept C      ,concept C definition      ,my value for concept C

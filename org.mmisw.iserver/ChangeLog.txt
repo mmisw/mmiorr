@@ -3,6 +3,15 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2010-08-05
+	Issue #133 "allow to do narrower-than hierarquies trees with indentation simple files"
+	
+	- Moved Voc2Skos to org.mmisw.iserver.core.voc2skos/ (previously under org.mmisw.iserver.core.util)
+	- Created unit tests org.mmisw.iserver.core.voc2skos.test.Voc2SkosTest with required resources
+	  under resource/voc2skos/.
+	- Added target voc2skosTests to build.xml
+	
+	 
 2010-08-04
 	Issue #133 "allow to do narrower-than hierarquies trees with indentation simple files"
 	

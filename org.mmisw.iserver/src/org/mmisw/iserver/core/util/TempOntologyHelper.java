@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.MdHelper;
+import org.mmisw.iserver.core.voc2skos.Voc2Skos;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
@@ -93,7 +94,7 @@ public class TempOntologyHelper {
 				model = Util2.loadModelWithCheckingUtf8(file, fileType);
 			}
 			else if ( "voc2skos".equals(fileType) ) {
-				model = Voc2Skos.loadModel(file);
+				model = Voc2Skos.loadOntModel(file);
 				// Note that we save this model in RDF/XML-ABBREV with a special method below.
 			}
 			else {

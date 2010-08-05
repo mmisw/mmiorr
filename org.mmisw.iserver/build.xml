@@ -1,80 +1,89 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project name="iserver" default="jar" basedir=".">
 
-  <property file="version.properties" />
-  <property file="build.properties" />	
-  <property name="build.dir" value="_generated"/>
+	<property file="version.properties" />
+	<property file="build.properties" />
+	<property name="build.dir" value="_generated" />
 
-  <!-- set classpath -->
-  <path id="project.class.path">
-	<fileset dir="${appserver.lib}">
-		<include name="servlet*.jar" />
-	</fileset>
-    <pathelement path="${java.class.path}/"/>
+	<!-- set classpath -->
+	<path id="project.class.path">
+		<fileset dir="${appserver.lib}">
+			<include name="servlet*.jar" />
+		</fileset>
+		<pathelement path="${java.class.path}/" />
 
-	<pathelement path="${GWT_HOME}/gwt-user.jar"/>
-	<!-- you have one of the following three: -->
-	<pathelement path="${GWT_HOME}/gwt-dev-linux.jar"/>
-	<pathelement path="${GWT_HOME}/gwt-dev-mac.jar"/>
-	<pathelement path="${GWT_HOME}/gwt-dev-win.jar"/>
-  	
-	<fileset dir="base_war/WEB-INF/lib">
-		<include name="*.jar" />
-		<include name="jena/*.jar" />
-	</fileset>
-  	
-  </path>
+		<pathelement path="${GWT_HOME}/gwt-user.jar" />
+		<!-- you have one of the following three: -->
+		<pathelement path="${GWT_HOME}/gwt-dev-linux.jar" />
+		<pathelement path="${GWT_HOME}/gwt-dev-mac.jar" />
+		<pathelement path="${GWT_HOME}/gwt-dev-win.jar" />
+
+		<fileset dir="base_war/WEB-INF/lib">
+			<include name="*.jar" />
+			<include name="jena/*.jar" />
+		</fileset>
+
+	</path>
 
 	<target name="init">
 		<tstamp>
-		    <format property="iserver.app.build" pattern="yyyyMMddHHmmss" />
+			<format property="iserver.app.build" pattern="yyyyMMddHHmmss" />
 		</tstamp>
 	</target>
 
 
 
-  <target name="compile" depends="init">
-    <mkdir dir="bin"/>
-    <mkdir dir="${build.dir}/classes"/>
-    <javac srcdir="src" destdir="${build.dir}/classes" 
-    	includes="**" debug="on" debuglevel="lines,vars,source">
-      <classpath refid="project.class.path"/>
-    </javac>
-  	
-	<copy file="src/org/mmisw/iserver/core/version.properties" 
-		tofile="${build.dir}/classes/org/mmisw/iserver/core/version.properties" 
-		overwrite="true">
-		<filterset>
-			<filter token="iserver.app.version"  value="${iserver.app.version}" />
-			<filter token="iserver.app.build"    value="${iserver.app.build}" />
-		</filterset>
-	</copy>
-  	
-  </target>
+	<target name="compile" depends="init">
+		<mkdir dir="bin" />
+		<mkdir dir="${build.dir}/classes" />
+		<javac srcdir="src" destdir="${build.dir}/classes" includes="**" debug="on" debuglevel="lines,vars,source">
+			<classpath refid="project.class.path" />
+		</javac>
 
-  <target name="jar" depends="compile" description="Generates the library for MMISW clients">
-	<jar destfile="${build.dir}/org.mmisw.iserver.gwt.jar">
-  		<fileset dir="${build.dir}/classes">
-    		<include name="**/*.class"/>
-    		<include name="**/*.properties"/>
-  		</fileset>
-  		<fileset dir="src">
-    		<include name="**/*.xml"/>
-    		<include name="**/*.css"/>
-    		<include name="**/*.java"/>
-    		<include name="**/*.png"/>
-    		<include name="**/*.gif"/>
-  		</fileset>
-	</jar>
-  </target>
+		<copy file="src/org/mmisw/iserver/core/version.properties" tofile="${build.dir}/classes/org/mmisw/iserver/core/version.properties" overwrite="true">
+			<filterset>
+				<filter token="iserver.app.version" value="${iserver.app.version}" />
+				<filter token="iserver.app.build" value="${iserver.app.build}" />
+			</filterset>
+		</copy>
+
+	</target>
+
+	<target name="voc2skosTests" depends="compile">
+		<junit printsummary="yes" haltonfailure="yes" fork="yes">
+			<formatter type="plain" usefile="no" />
+			<classpath refid="project.class.path" />
+			<classpath path="${build.dir}/classes" />
+			<test name="org.mmisw.iserver.core.voc2skos.test.Voc2SkosTest" />
+		</junit>
+	</target>
+	
+	<!-- all tests -->
+	<target name="tests" depends="voc2skosTests" />
+	
+	<target name="jar" depends="compile, tests" description="Generates the library for MMISW clients">
+		<jar destfile="${build.dir}/org.mmisw.iserver.gwt.jar">
+			<fileset dir="${build.dir}/classes">
+				<include name="**/*.class" />
+				<include name="**/*.properties" />
+			</fileset>
+			<fileset dir="src">
+				<include name="**/*.xml" />
+				<include name="**/*.css" />
+				<include name="**/*.java" />
+				<include name="**/*.png" />
+				<include name="**/*.gif" />
+			</fileset>
+		</jar>
+	</target>
 
 
-  <target name="clean">
-    <delete file="base_war/WEB-INF/lib/org.mmisw.iserver.gwt.jar"/>
-    <delete>
-      <fileset dir="${build.dir}" includes="**/*.class"/>
-    </delete>
-  </target>
+	<target name="clean">
+		<delete file="base_war/WEB-INF/lib/org.mmisw.iserver.gwt.jar" />
+		<delete>
+			<fileset dir="${build.dir}" includes="**/*.class" />
+		</delete>
+	</target>
 
 
 
