@@ -2,6 +2,31 @@ org.mmisw.ontmd: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-08-05  1.9.92.alpha
+	Completed Issue #133 "allow to do narrower-than hierarquies trees with indentation simple files"
+	
+	- Concept hierarchy already supported (see iserver module).
+	- Updated related description texts in the interface in this module.
+	
+	In summary
+
+	This functionality has been enabled via one more possible format for the
+	registration of an external file. Now, besides the various formats
+	supported by Jena (see issue #271), there is also a special file format
+	accepted, "voc2skos", to do the conversion from a text file (in the
+	format described in the previous comment) into SKOS. Upon registration
+	(regardless of the original format), the ontology is stored in "RDF/XML"
+	in the back-end.
+
+	Note that once registered, the ontology will continue to be handled in
+	the "other" category for purposes of display (ie., not using any
+	specific interface as is done with voc2rdf- or vine-created ontologies.
+
+	Of course, an interesting future feature is to provide an appropriate
+	GUI for the generated SKOS vocabularies (including good visualization of
+	the hierarchy of terms).	
+
+
 2010-08-03  1.9.92.alpha
 
 	Issue #133 "allow to do narrower-than hierarquies trees with indentation simple files"

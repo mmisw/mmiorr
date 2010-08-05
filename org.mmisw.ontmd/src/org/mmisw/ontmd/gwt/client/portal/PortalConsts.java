@@ -20,7 +20,7 @@ public class PortalConsts {
 	
 	public static final String T_REGISTER_EXTERNAL = "rx";
 	
-	
-	public static final String REG_TYPE_HELP_PAGE = "http://marinemetadata.org/mmiorrusrman/mmiorrref/mmiorruploadexisting";
+	// TODO instead of hard-coded, make this a configurable parameter for deployment 
+	public static final String REG_TYPE_HELP_PAGE = "http://marinemetadata.org/mmiorrusrman/registerexisting";
 
 }

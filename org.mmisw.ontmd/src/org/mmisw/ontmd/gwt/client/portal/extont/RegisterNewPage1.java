@@ -105,14 +105,16 @@ class RegisterNewPage1 extends BasePage {
 		
 		String info = 
 			"<br/>" +
-			"First step is to indicate the ontology you want to register. Then, you can indicate the " +
+			"First step is to indicate the ontology you want to register. " +
+			"Several file formats are supported. Select the format that corresponds to your file. " +
+			"Then, you can indicate the " +
 			"desired type of hosting. You may need to provide additional information depending on the " +
 			"type of hosting. " +
 			"See this <a target=\"_blank\" href=\"" +PortalConsts.REG_TYPE_HELP_PAGE+ "\"" +
 			">manual page</a> for details." +
 			"<br/>" +
 			"<br/>" +
-			"Please, select your ontology file"
+			"Please, select your ontology file and format:"
 		;
 		panel.setWidget(row, 0, new HTML(info));
 		panel.getFlexCellFormatter().setAlignment(row, 0, 
