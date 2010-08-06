@@ -1,4 +1,4 @@
-package org.mmisw.watchdog;
+package org.mmisw.watchdog.cf;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -11,12 +11,13 @@ import java.util.Map.Entry;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.IOUtils;
-import org.mmisw.watchdog.cf.ICf2Skos;
-import org.mmisw.watchdog.cf.jena.Cf2SkosJena;
-import org.mmisw.watchdog.cf.skosapi.Cf2SkosSkosApi;
+import org.mmisw.watchdog.cf.jena.CfConverterJena;
+import org.mmisw.watchdog.cf.skosapi.CfConverterSkosApi;
+import org.mmisw.watchdog.conversion.IConverter;
 import org.mmisw.watchdog.orr.RegisterOntology;
 import org.mmisw.watchdog.orr.RegisterOntology.RegistrationResult;
 import org.mmisw.watchdog.util.WUtil;
+import org.mmisw.watchdog.util.WdConstants;
 
 /**
  * Main program for CF conversion.
@@ -24,13 +25,6 @@ import org.mmisw.watchdog.util.WUtil;
  * @author Carlos Rueda
  */
 public class Cf {
-	
-	/** SKOS API implementation code */
-	private static final String SKOSAPI_IMPL = "skosapi";
-
-	/** Jena implementation code */
-	private static final String JENA_IMPL = "jena";
-	
 	
 	/** Default input URI */
 	private static final String DEFAULT_INPUT = 
@@ -43,7 +37,7 @@ public class Cf {
 	private static final String DEFAULT_NAMESPACE = "http://mmisw.org/ont/cf/parameter/";
 	
 	/** Default implementation code */
-	private static final String DEFAULT_IMPL = JENA_IMPL;
+	private static final String DEFAULT_IMPL = WdConstants.JENA_IMPL;
 
 	private static final boolean DEFAULT_FORCE = false;
 
@@ -159,7 +153,7 @@ public class Cf {
 		File workspaceDir = _prepareWorkspace(workspace);
 		
 		namespace = _prepareNamespace(namespace);
-		ICf2Skos creator = _prepareCreator(impl);
+		IConverter creator = _prepareCreator(impl);
 		
 		Map<String, String> props = _convert(creator, workspaceDir, inputUrl, inputContents, namespace, output, force);
 		
@@ -200,12 +194,12 @@ public class Cf {
 		return inputContents;
 	}
 
-	private ICf2Skos _prepareCreator(String impl) {
-		if ( impl.equalsIgnoreCase(JENA_IMPL)) {
-			return new Cf2SkosJena();
+	private IConverter _prepareCreator(String impl) {
+		if ( impl.equalsIgnoreCase(WdConstants.JENA_IMPL)) {
+			return new CfConverterJena();
 		}
-		else if ( impl.equalsIgnoreCase(SKOSAPI_IMPL)) {
-			return new Cf2SkosSkosApi();
+		else if ( impl.equalsIgnoreCase(WdConstants.SKOSAPI_IMPL)) {
+			return new CfConverterSkosApi();
 		}
 		else {
 			_usage("No implementation available for " +impl);
@@ -267,7 +261,7 @@ public class Cf {
 	/**
 	 * Does the conversion using the given creator object.
 	 */
-	private Map<String, String> _convert(ICf2Skos creator, File workspaceDir, 
+	private Map<String, String> _convert(IConverter creator, File workspaceDir, 
 			URL inputUrl, String inputContents, 
 			String namespace, String output, boolean force
 	) throws Exception {
@@ -281,7 +275,7 @@ public class Cf {
 	/**
 	 * Writes the outputs. Returns the output file iff outputs effectively written.
 	 */
-	private File _writeOutputs(ICf2Skos creator, File workspaceDir, 
+	private File _writeOutputs(IConverter creator, File workspaceDir, 
 			URL inputUrl, String inputContents, String version_number, String impl,
 			String output, boolean force
 	) throws Exception {

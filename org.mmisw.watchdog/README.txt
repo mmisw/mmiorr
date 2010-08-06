@@ -1,6 +1,5 @@
 MMISW watchdog
-Luis Bermudez - MMI/SURA
-Carlos Rueda - MMI/MBARI
+Carlos Rueda - Luis Bermudez 
 
 Status: Alpha
 
@@ -8,8 +7,8 @@ The watchdog module provides conversion and registration facilities for certain 
 that are available in non-ontological formats.
 Currently, only the CF Standard Names vocabulary is supported [1].
 
-The programs are to be run from the command line and it is assumed that your system 
-has Subversion and Maven
+The programs are to be run from the command line. For getting the code and building the 
+software you will need Subversion and Maven in your system.
  
 == Getting the code, building, and running ==
 
@@ -21,6 +20,7 @@ has Subversion and Maven
 == CF conversion ==
 
 The ``mvn exec:java'' command above:
+
 - reads in http://cf-pcmdi.llnl.gov/documents/cf-standard-names/standard-name-table/current/cf-standard-name-table.xml
 - extracts the value of version_number 
 - prepares to write the contents out to workspace/cf/cf-standard-name-table-{version_number}.xml
@@ -43,19 +43,12 @@ Run ``mvn exec:java'' (with no args) to get a help message.
 - Only CF conversion is included. Other conversions to be included as we work on them.
 - Generate skos:hiddenLabel properties for CF aliases 
 
-- Code for registration at ORR already included but not functional yet.
+- Code for registration at ORR is already included but not functional yet.
   
-=== Implementation ===
-
-A generic interface ICf2Skos is used to allow different implementations of the CF conversion.
-Currently, there are two implementations: Cf2SkosJena (based on the Jena framework [2])
-and Cf2SkosSkosApi (a new implementation based on the SKOS API [3]). Unfortunately, the latter,
-skosapi, is causing problems at the ORR (which is based on Jena: seems like it exposes limitations
-of Jena to read ontologies created with SKOS API (ie, OWLAPI).
-
 
   
 == Refs ==
+
 [1] http://cf-pcmdi.llnl.gov
 [2] http://jena.sourceforge.net/
 [3] http://skosapi.sourceforge.net/

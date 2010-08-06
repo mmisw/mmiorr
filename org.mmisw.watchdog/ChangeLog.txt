@@ -1,13 +1,16 @@
 watchdog ChangeLog
 Carlos Rueda - MMI/MBARI
 
+2010-08-05
+	- Overall code re-organization and several interface/class renamings as preparation 
+	  to incorporate conversion of other vocabularies.
+	
 2010-07-25
 	- better report about contents of input vocabulary.
 	
-	- Cf2SkosSkosApi: TOP_CONCEPT = "parameter" (previously, "Standard_Name")
+	- CfConverterSkosApi: TOP_CONCEPT = "parameter" (previously, "Standard_Name")
 	  "Standard_Name" is not generated at all.
-	  Note that that C2SkosJena does generate "Standard_Name" as subClassOf skos:Concept,
-	  but this is probably unnecessary.
+	  Note that CfConverterJena does generate "Standard_Name" as subClassOf skos:Concept.
 	  
 	- Tested some queries like the following:
 	
@@ -101,7 +104,7 @@ Carlos Rueda - MMI/MBARI
 	
 	-  Following instructions at 
 	    https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
-	  especially re. snapshot publication (stating and release not a concern for the moment).
+	  especially re. snapshot publication (staging and release not a concern for the moment).
 	  
 	  - created ~/.m2/settings.xml with this contents:
 			<settings>

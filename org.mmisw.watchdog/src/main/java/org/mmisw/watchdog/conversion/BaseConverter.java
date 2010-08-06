@@ -1,4 +1,4 @@
-package org.mmisw.watchdog.cf;
+package org.mmisw.watchdog.conversion;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -9,11 +9,11 @@ import org.jdom.Element;
 
 
 /**
- * ICf2Skos base implementation.
+ * IConversor base implementation.
  * 
  * @author Carlos Rueda
  */
-public abstract class Cf2SkosBase implements ICf2Skos {
+public abstract class BaseConverter implements IConverter {
 	
 	public void setInput(String inputContents) {
 		this.inputContents = inputContents;
@@ -60,12 +60,12 @@ public abstract class Cf2SkosBase implements ICf2Skos {
 	protected abstract void _doSave() throws Exception ;
 	
 	/**
-	 * Gets the value of an entity and put the corresp. entry in the props map.
-	 * @param standard_name_table
+	 * Gets the value of an entity and puts the corresp. entry in the props map.
+	 * @param element
 	 * @param propName
 	 */
-	protected void _getProperty(Element standard_name_table, String propName) {
-		Iterator<?> iterator = standard_name_table.getChildren(propName).iterator();
+	protected void _getProperty(Element element, String propName) {
+		Iterator<?> iterator = element.getChildren(propName).iterator();
 		if ( iterator.hasNext() ) {
 			Element ele = (Element)iterator.next();
 			String propValue = ele.getTextNormalize();

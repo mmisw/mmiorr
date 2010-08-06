@@ -12,7 +12,7 @@ import java.util.Set;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
-import org.mmisw.watchdog.cf.Cf2SkosBase;
+import org.mmisw.watchdog.conversion.BaseConverter;
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLDataProperty;
@@ -36,11 +36,11 @@ import org.semanticweb.skosapibinding.SKOSManager;
 
 
 /**
- * Cf2Skos implementation based on SKOS API.
+ * CF conversion implementation based on SKOS API.
  * 
  * @author Carlos Rueda
  */
-public class Cf2SkosSkosApi extends Cf2SkosBase {
+public class CfConverterSkosApi extends BaseConverter {
 	
 	protected void _doConvert() throws Exception {
 		_createNewOntology();

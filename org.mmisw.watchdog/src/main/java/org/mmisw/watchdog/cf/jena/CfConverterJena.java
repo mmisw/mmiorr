@@ -8,7 +8,7 @@ import java.util.List;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
-import org.mmisw.watchdog.cf.Cf2SkosBase;
+import org.mmisw.watchdog.conversion.BaseConverter;
 import org.mmisw.watchdog.util.jena.SKOS;
 
 import com.hp.hpl.jena.rdf.model.Model;
@@ -23,12 +23,12 @@ import com.hp.hpl.jena.vocabulary.XSD;
 
 
 /**
- * Cf2Skos implementation based on Jena.
+ * CF conversion implementation based on Jena.
  * 
  * @author bermudez
  * @author carueda
  */
-public class Cf2SkosJena extends Cf2SkosBase {
+public class CfConverterJena extends BaseConverter {
 	
 	protected void _doConvert() throws Exception {
 		numConcepts = 0;
