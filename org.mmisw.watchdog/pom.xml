@@ -35,7 +35,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>org.mmisw.ont2dot.Ont2Dot</mainClass>
+							<mainClass>org.mmisw.watchdog.Watchdog</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
@@ -52,7 +52,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<mainClass>org.mmisw.watchdog.Cf</mainClass>
+					<mainClass>org.mmisw.watchdog.Watchdog</mainClass>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -64,7 +64,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>org.mmisw.watchdog.Cf</mainClass>
+							<mainClass>org.mmisw.watchdog.Watchdog</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

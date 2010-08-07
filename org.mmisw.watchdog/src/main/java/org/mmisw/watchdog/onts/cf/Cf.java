@@ -1,4 +1,4 @@
-package org.mmisw.watchdog.cf;
+package org.mmisw.watchdog.onts.cf;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -11,9 +11,10 @@ import java.util.Map.Entry;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.IOUtils;
-import org.mmisw.watchdog.cf.jena.CfConverterJena;
-import org.mmisw.watchdog.cf.skosapi.CfConverterSkosApi;
+import org.mmisw.watchdog.Watchdog.IProgram;
 import org.mmisw.watchdog.conversion.IConverter;
+import org.mmisw.watchdog.onts.cf.jena.CfConverterJena;
+import org.mmisw.watchdog.onts.cf.skosapi.CfConverterSkosApi;
 import org.mmisw.watchdog.orr.RegisterOntology;
 import org.mmisw.watchdog.orr.RegisterOntology.RegistrationResult;
 import org.mmisw.watchdog.util.WUtil;
@@ -24,7 +25,7 @@ import org.mmisw.watchdog.util.WdConstants;
  * 
  * @author Carlos Rueda
  */
-public class Cf {
+public class Cf implements IProgram {
 	
 	/** Default input URI */
 	private static final String DEFAULT_INPUT = 
@@ -65,7 +66,8 @@ public class Cf {
 		if ( msg == null ) {
 			System.out.println(
 					"USAGE: " +getClass().getName()+ " --ws <directory> [options]\n" +
-					"  options:\n" +
+					"  --ws <directory>        workspace directory (required)\n" +
+					"  options: (default value in parenthesis)\n" +
 					"    --input <url>         (" +DEFAULT_INPUT+ ")\n" +
 					"    --ns <uri>            (" +DEFAULT_NAMESPACE+ ")\n" +
 					"    --output <filename>   (" +DEFAULT_OUTPUT+ ")\n" +
@@ -85,7 +87,7 @@ public class Cf {
 		}
 	}
 
-	private void run(String[] args) throws Exception {
+	public void run(String[] args) throws Exception {
 		if ( args.length == 0 || args[0].matches(".*help") ) {
 			_usage(null);
 		}

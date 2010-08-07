@@ -1,6 +1,13 @@
 watchdog ChangeLog
 Carlos Rueda - MMI/MBARI
 
+2010-08-06
+	- Further code re-organization. Preparations for UDUnits and SWEET.
+	
+	- New  main program org.mmisw.watchdog.Watchdog, which dispatches one of the available
+	  programs: Cf, Udunits, Sweet.
+	  
+	
 2010-08-05
 	- Overall code re-organization and several interface/class renamings as preparation 
 	  to incorporate conversion of other vocabularies.

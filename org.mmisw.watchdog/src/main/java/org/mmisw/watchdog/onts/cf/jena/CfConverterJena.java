@@ -1,4 +1,4 @@
-package org.mmisw.watchdog.cf.jena;
+package org.mmisw.watchdog.onts.cf.jena;
 
 import java.io.FileOutputStream;
 import java.io.StringReader;

@@ -3,24 +3,34 @@ Carlos Rueda - Luis Bermudez
 
 Status: Alpha
 
-The watchdog module provides conversion and registration facilities for certain vocabularies
-that are available in non-ontological formats.
-Currently, only the CF Standard Names vocabulary is supported [1].
+The watchdog module is a collections of programs for the conversion and registration of
+key vocabularies/ontologies in the community.
 
-The programs are to be run from the command line. For getting the code and building the 
-software you will need Subversion and Maven in your system.
+Currently, only the CF Standard Names vocabulary is implemented [1].
+We are planning to support other vocabs/ontologies, including UDUnits [2] and SWEET [3].
+
+Watchdog runs on the command line. For getting the code and building the software 
+Subversion and Maven are needed in your system.
  
-== Getting the code, building, and running ==
+== Getting the code, building, and running one of the programs ==
 
 	svn checkout http://mmisw.googlecode.com/svn/trunk/org.mmisw.watchdog
 	cd org.mmisw.watchdog
 	mvn clean install
-	mvn exec:java -Dexec.args="--ws workspace/cf"
+	mvn exec:java -Dexec.args="Cf --ws workspace/cf"
 
+The last command above runs the "Cf" program (as indicated by the first argument). 
+Run ``mvn exec:java'' (with no args) to get the list of available "watchdog" programs.
+Usage details for each program are displayed when called with no arguments or with the "--help"
+argument, eg.:
+    mvn exec:java -Dexec.args="Cf --help"
+    
+    
 == CF conversion ==
 
-The ``mvn exec:java'' command above:
+The Cf program:
 
+- Runs the "Cf" program (as indicated by the first argument), which:
 - reads in http://cf-pcmdi.llnl.gov/documents/cf-standard-names/standard-name-table/current/cf-standard-name-table.xml
 - extracts the value of version_number 
 - prepares to write the contents out to workspace/cf/cf-standard-name-table-{version_number}.xml
@@ -31,16 +41,15 @@ The ``mvn exec:java'' command above:
   - does conversion of this file to OWL
   - writes ontology result out to workspace/cf/cf-standard-name-table-{version_number}.owl
   
-Run ``mvn exec:java'' (with no args) to get a help message.
 
-  Note: you can generate a self-contained jar with:
-  $ mvn assembly:assembly
-  and then ejecute the jar directly, eg.:
-  $ java -jar target/watchdog-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+  Tip: A self-contained jar can be generated with:
+    $ mvn assembly:assembly
+  which can be run as follows:
+    $ java -jar target/watchdog-0.0.1-SNAPSHOT-jar-with-dependencies.jar
 
 == TODO ==
 
-- Only CF conversion is included. Other conversions to be included as we work on them.
+- Only CF conversion is included. Other vocabularies/ontologies to be included as we work on them.
 - Generate skos:hiddenLabel properties for CF aliases 
 
 - Code for registration at ORR is already included but not functional yet.
@@ -50,7 +59,7 @@ Run ``mvn exec:java'' (with no args) to get a help message.
 == Refs ==
 
 [1] http://cf-pcmdi.llnl.gov
-[2] http://jena.sourceforge.net/
-[3] http://skosapi.sourceforge.net/
+[2] http://www.unidata.ucar.edu/software/udunits/udunits-2-units.html
+[3] http://sweet.jpl.nasa.gov/ontology/
 
 

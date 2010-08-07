@@ -1,4 +1,4 @@
-package org.mmisw.watchdog.cf.skosapi;
+package org.mmisw.watchdog.onts.cf.skosapi;
 
 import java.io.File;
 import java.io.StringReader;
