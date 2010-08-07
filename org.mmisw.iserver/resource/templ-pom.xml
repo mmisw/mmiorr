@@ -1,0 +1,21 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.mmisw</groupId>
+	<artifactId>iserver.core</artifactId>
+	<name>iserver.core</name>
+	<version>@iserver.app.version@-SNAPSHOT</version>
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>3</version>
+	</parent>
+	<build>
+		<resources>
+			<resource>
+				<directory>_generated/classes</directory>
+			</resource>
+		</resources>
+	</build>
+	
+</project>

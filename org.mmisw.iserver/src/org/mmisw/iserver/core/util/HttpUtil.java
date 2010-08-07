@@ -11,7 +11,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
  */
 public class HttpUtil {
 	public static String getAsString(String uri, String... acceptEntries) throws Exception {
-		System.out.println("getAsString. uri= " +uri);
+//		System.out.println("getAsString. uri= " +uri);
 		return getAsString(uri, Integer.MAX_VALUE, acceptEntries);
 	}
 	

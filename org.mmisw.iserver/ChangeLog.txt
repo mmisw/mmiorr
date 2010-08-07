@@ -3,6 +3,18 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2010-08-06  1.9.92.alpha
+
+	- Created ad hoc maven POM (resource/templ-pom.xml) to deploy the iserver.core library, which 
+	  I'm starting to use in the (already maven-ized) watchdog module, but later in other modules.
+	  
+	  ``ant deploy-core'' copies resource/templ-pom.xml into _generated/tmp-pom.xml with 
+	  replacement of the iserver version; then calls `mvn --file _generated/tmp-pom.xml deploy''.
+	  
+	  NOTE: I haven't maven-ized the central ORR projects: the plan is to
+	  first upgrade to GWT 2.x version and do some more complete clean-up.
+	
+	
 2010-08-05
 	Completed issue #133 "allow to do narrower-than hierarquies trees with indentation simple files"
 	

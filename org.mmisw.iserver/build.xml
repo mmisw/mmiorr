@@ -50,17 +50,31 @@
 	</target>
 
 	<target name="voc2skosTests" depends="compile">
-		<junit printsummary="yes" haltonfailure="yes" fork="yes">
+		<junit printsummary="yes" haltonfailure="yes" fork="yes" showoutput="yes" outputtoformatters="no">
 			<formatter type="plain" usefile="no" />
 			<classpath refid="project.class.path" />
 			<classpath path="${build.dir}/classes" />
 			<test name="org.mmisw.iserver.core.voc2skos.test.Voc2SkosTest" />
 		</junit>
 	</target>
-	
+
+	<target name="sweetTests" depends="compile">
+		<fail unless="username" message="username argument is missing.  Use -D" />
+		<fail unless="password" message="password argument is missing.  Use -D" />
+		<junit printsummary="yes" haltonfailure="yes" fork="yes" showoutput="yes" outputtoformatters="no">
+			<formatter type="plain" usefile="no" />
+			<classpath refid="project.class.path" />
+			<classpath path="${build.dir}/classes" />
+			<test name="org.mmisw.iserver.test.SweetTest" />
+			<jvmarg value="-Dusername=${username}" />
+			<jvmarg value="-Dpassword=${password}" />
+			<jvmarg value="-DsaveDownload=${saveDownload}" />
+		</junit>
+	</target>
+
 	<!-- all tests -->
 	<target name="tests" depends="voc2skosTests" />
-	
+
 	<target name="jar" depends="compile, tests" description="Generates the library for MMISW clients">
 		<jar destfile="${build.dir}/org.mmisw.iserver.gwt.jar">
 			<fileset dir="${build.dir}/classes">
@@ -75,6 +89,38 @@
 				<include name="**/*.gif" />
 			</fileset>
 		</jar>
+	</target>
+
+	<target name="core-jar" depends="compile, tests" description="Generates the iserver core library">
+		<jar destfile="${build.dir}/org.mmisw.iserver.core.jar">
+			<fileset dir="${build.dir}/classes">
+				<exclude name="**/gwt/**.class" />
+				<include name="**/*.class" />
+				<include name="**/*.properties" />
+			</fileset>
+			<fileset dir="src">
+				<include name="**/*.xml" />
+				<include name="**/*.css" />
+				<include name="**/*.java" />
+				<include name="**/*.png" />
+				<include name="**/*.gif" />
+			</fileset>
+		</jar>
+	</target>
+	
+	<!-- See ChangeLog.txt 2010-08-06 note -->
+	<target name="deploy-core" depends="core-jar" 
+		description="deploys the iserver core library">
+		<copy file="resource/templ-pom.xml" tofile="_generated/tmp-pom.xml" overwrite="true">
+			<filterset>
+				<filter token="iserver.app.version" value="${iserver.app.version}" />
+			</filterset>
+		</copy>
+		<exec executable="mvn">
+			<arg value="--file" />
+			<arg value="_generated/tmp-pom.xml" />
+			<arg value="deploy" />
+		</exec>
 	</target>
 
 
