@@ -14,12 +14,21 @@ import org.mmisw.watchdog.onts.udunits.Udunits;
  * @author Carlos Rueda
  */
 public class Watchdog {
-	
-	public interface IProgram {
-		public void run(String[] args) throws Exception;
+
+	/**
+	 * A base class for the dispatched programs.
+	 */
+	public abstract static class BaseProgram {
+		
+		public abstract void run(String[] args) throws Exception;
+		
+		protected void _log(String msg) {
+			String prefix = "[" +getClass().getSimpleName()+ "] ";
+			System.out.println(prefix +msg.replaceAll("\n", "\n" +prefix));
+		}
 	}
 	
-	private static Map<String,IProgram> programs = new LinkedHashMap<String,IProgram>();
+	private static Map<String,BaseProgram> programs = new LinkedHashMap<String,BaseProgram>();
 	
 	static {
 		programs.put(Cf.class.getSimpleName(), new Cf());
@@ -37,6 +46,7 @@ public class Watchdog {
 		new Watchdog().run(args);
 	}
 	
+	/** Never returns */
 	private void _usage(String msg) {
 		if ( msg == null ) {
 			System.out.println(
@@ -59,7 +69,7 @@ public class Watchdog {
 		}
 		
 		String programName = args[0];
-		IProgram program = programs.get(programName);
+		BaseProgram program = programs.get(programName);
 		if ( program == null ) {
 			_usage("Unrecognized program: " +programName);
 		}

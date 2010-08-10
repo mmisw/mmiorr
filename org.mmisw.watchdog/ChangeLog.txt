@@ -1,11 +1,22 @@
 watchdog ChangeLog
 Carlos Rueda - MMI/MBARI
 
+2010-08-09
+	- More SWEET preparations. See workspace/sweet/README.txt
+	- SweetTest now only about comparing original SWEET and registered ontologies.
+	  Running with a couple of cases (from within eclipse).
+	  TODO: set up ``maven test'' appropriately.
+	  
+	  
 2010-08-06
 	- Further code re-organization. Preparations for UDUnits and SWEET.
 	
 	- New  main program org.mmisw.watchdog.Watchdog, which dispatches one of the available
 	  programs: Cf, Udunits, Sweet.
+	  
+	- Added dependency on iserver-core in the pom.xml.  This jar is created from the 
+	  iserver module.  (Removed WUtil, which replicated utilities already
+	  provided by iserver.)
 	  
 	
 2010-08-05

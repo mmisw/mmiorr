@@ -11,13 +11,13 @@ import java.util.Map.Entry;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.IOUtils;
-import org.mmisw.watchdog.Watchdog.IProgram;
+import org.mmisw.iserver.core.util.HttpUtil;
+import org.mmisw.watchdog.Watchdog.BaseProgram;
 import org.mmisw.watchdog.conversion.IConverter;
 import org.mmisw.watchdog.onts.cf.jena.CfConverterJena;
 import org.mmisw.watchdog.onts.cf.skosapi.CfConverterSkosApi;
 import org.mmisw.watchdog.orr.RegisterOntology;
 import org.mmisw.watchdog.orr.RegisterOntology.RegistrationResult;
-import org.mmisw.watchdog.util.WUtil;
 import org.mmisw.watchdog.util.WdConstants;
 
 /**
@@ -25,7 +25,7 @@ import org.mmisw.watchdog.util.WdConstants;
  * 
  * @author Carlos Rueda
  */
-public class Cf implements IProgram {
+public class Cf extends BaseProgram {
 	
 	/** Default input URI */
 	private static final String DEFAULT_INPUT = 
@@ -46,9 +46,6 @@ public class Cf implements IProgram {
 	/////////////////////////
 	// registration parameters
 	
-	/** Default ORR username */
-	private static final String ORR_DEFAULT_USERNAME = "carueda";
-	
 	private static final String ORR_DEFAULT_FORM_ACTION = "http://mmisw.org/orr/direg";
 	
 
@@ -62,6 +59,7 @@ public class Cf implements IProgram {
 		new Cf().run(args);
 	}
 	
+	/** Never returns */
 	private void _usage(String msg) {
 		if ( msg == null ) {
 			System.out.println(
@@ -74,7 +72,7 @@ public class Cf implements IProgram {
 					"    --force               (" +DEFAULT_FORCE+ ")\n" +
 					"    --impl [jena|skosapi] (" +DEFAULT_IMPL+ ")\n" +
 					"   for registration:\n" +
-					"    --username <username> (" +ORR_DEFAULT_USERNAME+ ")\n" +
+					"    --username <username> (" +WdConstants.ORR_DEFAULT_USERNAME+ ")\n" +
 					"    --password <password> \n" +
 					"    --formAction <action> (" +ORR_DEFAULT_FORM_ACTION+ ")\n" +
 					"");
@@ -100,7 +98,7 @@ public class Cf implements IProgram {
 		String impl = DEFAULT_IMPL;
 		
 		// ORR registration
-		String orrUsername = ORR_DEFAULT_USERNAME;
+		String orrUsername = WdConstants.ORR_DEFAULT_USERNAME;
 		String orrPassword = null;
 		String orrFormAction = ORR_DEFAULT_FORM_ACTION;
 		
@@ -186,13 +184,9 @@ public class Cf implements IProgram {
 		}		
 	}
 
-	private void _log(String msg) {
-		System.out.println(msg);
-	}
-
 	private String _getInputContents(URL inputUrl) throws Exception {
 		_log("Loading " +inputUrl);
-		String inputContents = WUtil.getAsString(inputUrl);
+		String inputContents = HttpUtil.getAsString(inputUrl.toString());
 		return inputContents;
 	}
 

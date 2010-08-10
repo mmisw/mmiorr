@@ -1,6 +1,6 @@
 package org.mmisw.watchdog.onts.udunits;
 
-import org.mmisw.watchdog.Watchdog.IProgram;
+import org.mmisw.watchdog.Watchdog.BaseProgram;
 
 /**
  * Main program for UDUnits conversion.
@@ -10,7 +10,7 @@ import org.mmisw.watchdog.Watchdog.IProgram;
  * 
  * @author Carlos Rueda
  */
-public class Udunits implements IProgram {
+public class Udunits extends BaseProgram {
 
 	public void run(String[] args) throws Exception {
 		// TODO 

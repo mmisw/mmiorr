@@ -8,8 +8,8 @@ import java.util.List;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
+import org.mmisw.iserver.core.util.Skos;
 import org.mmisw.watchdog.conversion.BaseConverter;
-import org.mmisw.watchdog.util.jena.SKOS;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -60,7 +60,7 @@ public class CfConverterJena extends BaseConverter {
 	private void _createNewOntology() {
 
 		// create ontology
-		model = SKOS.getAnSKOSModel();
+		model = Skos.createModel();
 		
 		model.setNsPrefix("", namespace);
 
@@ -82,7 +82,7 @@ public class CfConverterJena extends BaseConverter {
 		stmt = model.createStatement(standardNameClass, RDF.type, OWL.Class);
 		model.add(stmt);
 		
-		stmt = model.createStatement(standardNameClass, RDFS.subClassOf, SKOS.Concept);
+		stmt = model.createStatement(standardNameClass, RDFS.subClassOf, Skos.Concept);
 		model.add(stmt);
 
 		stmt = model.createStatement(standardNameClass, RDFS.label, "Standard Name");
@@ -134,12 +134,12 @@ public class CfConverterJena extends BaseConverter {
 
 			Resource concept = _createConcept(namespace + id);
 
-			concept.addProperty(SKOS.prefLabel, prefLabel);
+			concept.addProperty(Skos.prefLabel, prefLabel);
 			concept.addProperty(RDFS.label, id);
 			concept.addProperty(canonical_units, canonicalUnits);
 			concept.addProperty(RDFS.comment, description);
 
-			currentTopConcept.addProperty(SKOS.narrower, concept);
+			currentTopConcept.addProperty(Skos.narrower, concept);
 		}
 
 		props.put("entries", String.valueOf(numEntries));
