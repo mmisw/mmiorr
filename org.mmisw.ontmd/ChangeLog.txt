@@ -2,6 +2,11 @@ org.mmisw.ontmd: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-08-09  1.9.93.alpha
+	- Did pending addition of the panel to select file type in upload of a 
+	  *new version* of a registered ontology.
+	
+	
 2010-08-05  1.9.92.alpha
 	Completed Issue #133 "allow to do narrower-than hierarquies trees with indentation simple files"
 	

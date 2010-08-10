@@ -7,6 +7,7 @@ import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.portal.PortalConsts;
 import org.mmisw.ontmd.gwt.client.portal.PortalControl;
+import org.mmisw.ontmd.gwt.client.portal.extont.RegisterNewPage1.FileTypePanel;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 
 import com.google.gwt.core.client.GWT;
@@ -64,6 +65,9 @@ class RegisterVersionPage1 extends BasePage {
 	
 	private String registryOntologyUri;
 	private PushButton selectButton;
+	
+
+	private final FileTypePanel fileTypePanel = new FileTypePanel();
 	
 
 	/**
@@ -133,6 +137,14 @@ class RegisterVersionPage1 extends BasePage {
 		);
 		row++;
 		
+		int col = 0;
+		
+		panel.setWidget(row, col, fileTypePanel.getWidget());
+		panel.getFlexCellFormatter().setAlignment(row, col, 
+				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		col++;
+
 		HorizontalPanel buttons = new HorizontalPanel();
 		if ( loadButton != null ) {
 			buttons.add(loadButton);
@@ -147,9 +159,9 @@ class RegisterVersionPage1 extends BasePage {
 			buttons.add(detailsButton);
 		}
 		
-		panel.getFlexCellFormatter().setColSpan(row, 0, 2);
-		panel.setWidget(row, 0, buttons);
-		panel.getFlexCellFormatter().setAlignment(row, 0, 
+		panel.getFlexCellFormatter().setColSpan(row, col, 2);
+		panel.setWidget(row, col, buttons);
+		panel.getFlexCellFormatter().setAlignment(row, col, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		row++;
@@ -286,7 +298,7 @@ class RegisterVersionPage1 extends BasePage {
 
 		nextButton.setEnabled(false);
 		Main.log("calling getTempOntologyInfo ... ");
-		String fileType = null; // TODO handle fileType
+		String fileType = fileTypePanel.getSelectedType();
 		Main.ontmdService.getTempOntologyInfo(fileType, uploadResults, true, INCLUDE_RDF, callback);
 
 	}
