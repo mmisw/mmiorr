@@ -409,13 +409,11 @@ class RegisterNewPage1 extends BasePage {
 		String error = tempOntologyInfo.getError();
 		if ( error != null ) {
 			nextButton.setEnabled(false);
-			statusHtml.setHTML("<font color=\"red\">Error: Make sure it is an RDF file in UTF-8 encoding.</font>"
-//					+"<br/>" +
-//					error.replaceAll("\n|\n\r|\r", "\n<br/>")
-//					+ "</pre>"
-			);
+			final String baseError = "Make sure the contents are in the proper format and encoding";
+			statusHtml.setHTML("<font color=\"red\">Error: " +baseError + ".</font>");
+			Main.log(error);
 			Window.alert("Error reading file.\n" +
-					"Make sure it is an RDF file in UTF-8 encoding.\n" +
+					baseError + ".\n" +
 					"\n" +
 					"Server reports:\n\n" +error);
 			return;

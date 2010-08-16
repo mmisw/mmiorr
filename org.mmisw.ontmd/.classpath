@@ -18,7 +18,7 @@
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/concurrent.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmisw.ont.mmiuri.jar" sourcepath="/org.mmisw.ont"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmisw.ont.vocabulary.jar" sourcepath="/org.mmisw.ont/src"/>
-	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmisw.iserver.gwt.jar"/>
+	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmisw.iserver.gwt.jar" sourcepath="/org.mmisw.iserver/src"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/chardet.jar"/>
 	<classpathentry kind="lib" path="/Users/carueda/Software/gwt-mac-1.5.2/gwt-user.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/arq-2.8.4.jar"/>

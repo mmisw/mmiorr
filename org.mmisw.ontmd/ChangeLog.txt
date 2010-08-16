@@ -2,6 +2,9 @@ org.mmisw.ontmd: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-08-16   1.9.94.alpha
+	Syncing with iserver (re. UTF8 related problems).
+	
 2010-08-09  1.9.93.alpha
 	- Did pending addition of the panel to select file type in upload of a 
 	  *new version* of a registered ontology.
