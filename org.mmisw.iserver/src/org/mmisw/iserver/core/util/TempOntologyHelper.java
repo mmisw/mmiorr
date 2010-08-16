@@ -129,8 +129,8 @@ public class TempOntologyHelper {
 			
 		}
 		catch ( Throwable ex ) {
-			String error = "Unexpected error: " +ex.getClass().getName()+ " : " +ex.getMessage() +
-				"\n(" +getClass().getSimpleName()+ ".getTempOntologyInfo" +")";
+			String error = ex.getClass().getName()+ " : " +ex.getMessage() +
+				"\n\n(" +getClass().getSimpleName()+ ".getTempOntologyInfo" +")";
 			log.info(error);
 			tempOntologyInfo.setError(error);
 			return tempOntologyInfo;

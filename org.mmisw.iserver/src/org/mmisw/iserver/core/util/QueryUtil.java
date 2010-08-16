@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.gwt.client.rpc.BaseOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.ClassInfo;
@@ -48,6 +50,8 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  * @author Carlos Rueda
  */
 public class QueryUtil {
+	
+	private static final Log log = LogFactory.getLog(QueryUtil.class);
 	
 	/** Query to obtain the individuals in a model */
 	private static final String QUERY_PREFIXES =
@@ -758,7 +762,20 @@ public class QueryUtil {
 	 */
 	private static void _addProps(String entityUri, EntityInfo entityInfo, OntModel ontModel) {
 		String queryStr = PROPS_QUERY_TEMPLATE.replaceAll("\\{E\\}", entityUri);
-		Query query = QueryFactory.create(queryStr);
+		
+		// added the try-catch-warn below while further investigating  
+		// http://code.google.com/p/mmisw/issues/detail?id=253
+		// It happened that the CSV has a record spanning two rows; the second row started in the
+		// middle of a comment, which was taken as the URI of the entity.
+		Query query;
+		try {
+			query = QueryFactory.create(queryStr);
+		}
+		catch ( RuntimeException ex ) {
+			log.warn("_addProps: entityUri=[" +entityUri+ "] queryStr=[" +queryStr+ "]", ex);
+			throw ex;
+		}
+		
 		QueryExecution qe = QueryExecutionFactory.create(query, ontModel);
 		
 		ResultSet results = qe.execSelect();

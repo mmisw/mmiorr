@@ -3,6 +3,36 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2010-08-16   1.9.94.alpha
+	Some further attempts to better detect UTF8 potential problems.
+	See http://code.google.com/p/mmisw/issues/detail?id=253
+	    http://code.google.com/p/mmisw/issues/detail?id=274
+	
+	See QueryUtil._addProps:
+		added the try-catch-warn. It happened that the CSV below had a record spanning two rows; 
+		the second row started in the middle of a comment, which was taken as the URI of the entity.
+	
+	Utf8Util: I've refactored this to allow multiple implementations of the basic charset
+	detection. Now, besides the one based on jchardet, there is one based on the ICU project,
+	which is the one enabled from now on.
+	NOTE: the isUtf8(byte[] bytes) is the main method here; it first calls _utf8toString(bytes)
+	to verify the buffer can be decoded as UTF-8 (using java.nio.charset.CharsetDecoder).
+	After this, it does charset detection, but perhaps a successful _utf8toString(bytes) should
+	be enough (and only do the charset detection if there is an exception).
+	TODO: revisit this later on.
+	
+	So, quick observations re. resource/utf8/SEACOOS_Revisions(2).csv:
+	
+	This file is detected as UTF-8 by the ``file'' command:
+	$ file resource/utf8/SEACOOS_Revisions\(2\).csv 
+	resource/utf8/SEACOOS_Revisions(2).csv: UTF-8 Unicode English text, with very long lines, with CRLF line terminators	
+
+	And detected as follows by the two detectors (via the Utf8Util program): 
+	CharsetDetectorIcu: Detected charsets: [UTF-8, ISO-8859-1, ISO-8859-2, ISO-8859-9, Shift_JIS]
+	CharsetDetectorJcd: Detected charsets: [UTF-8, windows-1252]	
+	
+	
+
 2010-08-06  1.9.92.alpha
 
 	- Created ad hoc maven POM (resource/templ-pom.xml) to deploy the iserver.core library, which 

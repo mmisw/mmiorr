@@ -18,6 +18,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.util.Skos;
+import org.mmisw.iserver.core.util.Utf8Util;
 import org.mmisw.iserver.core.util.csv.BaseParser;
 import org.mmisw.ont.JenaUtil2;
 
@@ -44,7 +45,8 @@ public class Voc2Skos {
 	 * @return
 	 * @throws IOException
 	 */
-	public static OntModel loadOntModel(File file) throws IOException {
+	public static OntModel loadOntModel(File file) throws Exception {
+		Utf8Util.verifyUtf8(file);
 		Model model = loadModel(file);
 		OntModel ontModel = ModelFactory.createOntologyModel();
 		ontModel.add(model);
