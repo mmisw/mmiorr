@@ -1,9 +1,8 @@
 package org.mmisw.ont.vocabulary;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
 /**
  * Vine vocabulary definitions, old namespace.
@@ -14,30 +13,30 @@ import com.hp.hpl.jena.rdf.model.Resource;
  * @author Carlos Rueda
  */
 public class Vine20071128 {
-	private Vine20071128() {}
-	
-	
-    /** <p>The RDF model that holds the vocabulary terms</p> */
-    private static Model m_model = ModelFactory.createDefaultModel();
+    /** The URI of the vocabulary: "http://marinemetadata.org/mmiws/20071128/vine" */
+    public static final String URI = "http://marinemetadata.org/mmiws/20071128/vine";
     
-    /** <p>The namespace of the vocabalary as a string ({@value})</p> */
-    public static final String NS = "http://marinemetadata.org/mmiws/20071128/vine#";
+    /** The namespace of the vocabalary: "http://marinemetadata.org/mmiws/20071128/vine#"  */
+    public static final String NS = URI + "#";
     
-    /** <p>The namespace of the vocabalary as a string</p>
-     *  @see #NS */
-    public static String getURI() {return NS;}
-    
-    /** <p>The namespace of the vocabalary as a resource</p> */
-    public static final Resource NAMESPACE = m_model.createResource( NS );
-    
-    
-    public static Resource Statement = m_model.createResource(NS + "Statement");
+    public static final Resource Statement = resource("Statement");
 
-    public static Property subject = m_model.createProperty(NS + "subject");
+    public static final Property subject = property("subject");
 
-    public static Property predicate = m_model.createProperty(NS + "predicate");
+    public static final Property predicate = property("predicate");
 
-    public static Property object = m_model.createProperty(NS + "object");
+    public static final Property object = property("object");
 
-    public static Property confidence = m_model.createProperty(NS + "confidence");
+    public static final Property confidence = property("confidence");
+
+    
+    private static final Resource resource(String local) {
+		return ResourceFactory.createResource(NS + local);
+	}
+
+    private static final Property property(String local) {
+		return ResourceFactory.createProperty(NS, local);
+	}
+
+	private Vine20071128() {}	
 }
