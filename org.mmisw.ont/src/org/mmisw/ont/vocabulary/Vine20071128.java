@@ -6,21 +6,22 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
- * Vine vocabulary definitions.
+ * Vine vocabulary definitions, old namespace.
  * 
- * <p>Namespace: <a href="http://mmisw.org/ont/mmi/vine/"><code> http://mmisw.org/ont/mmi/vine/ </code></a>
+ * <p>Namespace: <code> http://marinemetadata.org/mmiws/20071128/vine# </code>
  * 
+ * @author Luis Bermudez 
  * @author Carlos Rueda
  */
-public class Vine {
-	private Vine() {}
+public class Vine20071128 {
+	private Vine20071128() {}
 	
 	
     /** <p>The RDF model that holds the vocabulary terms</p> */
     private static Model m_model = ModelFactory.createDefaultModel();
     
     /** <p>The namespace of the vocabalary as a string ({@value})</p> */
-    public static final String NS = "http://mmisw.org/ont/mmi/vine/";
+    public static final String NS = "http://marinemetadata.org/mmiws/20071128/vine#";
     
     /** <p>The namespace of the vocabalary as a string</p>
      *  @see #NS */

@@ -4,6 +4,10 @@ $Id$
 
 ChangeLog
 
+2010-08-18   1.9.95.alpha
+	- Added org.mmisw.ont.vocabulary.Vine20071128 vocabulary, old namespace:
+	     http://marinemetadata.org/mmiws/20071128/vine#
+	     
 2010-08-17   1.9.95.alpha
 	- Added org.mmisw.ont.vocabulary.Vine vocabulary.
 	  URI: http://mmisw.org/ont/mmi/vine  
