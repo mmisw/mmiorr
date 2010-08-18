@@ -4,6 +4,12 @@ $Id$
 
 ChangeLog
 
+2010-08-17   1.9.95.alpha
+	- Added org.mmisw.ont.vocabulary.Vine vocabulary.
+	  URI: http://mmisw.org/ont/mmi/vine  
+	  Actual vocab created in onts/vine/vine.owl (with Protege) and registered at ORR.
+	
+	
 2010-07-24
 	- just generated the misc, mmiuri, and vocabulary libraries.
 	    
