@@ -58,20 +58,6 @@
 		</junit>
 	</target>
 
-	<target name="sweetTests" depends="compile">
-		<fail unless="username" message="username argument is missing.  Use -D" />
-		<fail unless="password" message="password argument is missing.  Use -D" />
-		<junit printsummary="yes" haltonfailure="yes" fork="yes" showoutput="yes" outputtoformatters="no">
-			<formatter type="plain" usefile="no" />
-			<classpath refid="project.class.path" />
-			<classpath path="${build.dir}/classes" />
-			<test name="org.mmisw.iserver.test.SweetTest" />
-			<jvmarg value="-Dusername=${username}" />
-			<jvmarg value="-Dpassword=${password}" />
-			<jvmarg value="-DsaveDownload=${saveDownload}" />
-		</junit>
-	</target>
-
 	<!-- all tests -->
 	<target name="tests" depends="voc2skosTests" />
 
