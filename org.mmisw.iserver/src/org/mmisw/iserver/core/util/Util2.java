@@ -248,7 +248,7 @@ public class Util2 {
 	// TODO: Use function from "ont" project (the utility is replicated here for the moment)
 	public static void replaceNameSpace(OntModel model, String oldNameSpace, String newNameSpace) {
 		
-		//log.info(" REPLACING NS " +oldNameSpace+ " WITH " +newNameSpace);
+		//log.debug(" REPLACING NS " +oldNameSpace+ " WITH " +newNameSpace);
 		
 		// old statements to be removed:
 		List<Statement> o_stmts = new ArrayList<Statement>(); 
@@ -291,7 +291,7 @@ public class Util2 {
 				o_stmts.add(o_stmt);
 				Statement n_stmt = model.createStatement(n_sbj, n_prd, n_obj);
 				n_stmts.add(n_stmt);
-				//log.info(" #### " +o_stmt);
+				//log.debug(" #### " +o_stmt);
 			}
 		}
 		
@@ -321,7 +321,9 @@ public class Util2 {
 				
 				if ( value != null && value.trim().length() > 0 ) {
 					// we have a value for DC from the equivalente MMI attr.
-					log.info(" Assigning DC attr " +dcProp+ " with " +mmiProp+ " = " +value);
+					if ( log.isDebugEnabled() ) {
+						log.debug(" Assigning DC attr " +dcProp+ " with " +mmiProp+ " = " +value);
+					}
 					ont_.addProperty(dcProp, value.trim());
 				}
 			}
@@ -497,7 +499,9 @@ public class Util2 {
 		model = _createDefaultOntModel();
 		model.setDynamicImports(false);
 		model.getDocumentManager().setProcessImports(processImports);
-		log.info("loading model " + uriModel + "  LANG=" +lang);
+		if ( log.isDebugEnabled() ) {
+			log.debug("loading model " + uriModel + "  LANG=" +lang);
+		}
 		model.read(uriModel, lang);
 		return model;
 	}
@@ -632,7 +636,7 @@ public class Util2 {
 		}
 		catch (Exception e) {
 			String error = "error while trying to read xml:base attribute: " +e.getMessage();
-			log.info(error, e);
+			log.warn(error, e);
 			baseResult.setError(error);
 		}
 		
@@ -676,7 +680,7 @@ public class Util2 {
 //			}
 //			catch (Exception e) {
 //				String error = "error while trying to read xml:base attribute: " +e.getMessage();
-//				log.info(error, e);
+//				log.warn(error, e);
 //				baseResult.setError(error);
 //				return null;
 //			}
