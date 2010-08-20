@@ -74,8 +74,8 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.mmisw</groupId>
-			<artifactId>iserver.core</artifactId>
-			<version>1.9.92.alpha</version>
+			<artifactId>iserver</artifactId>
+			<version>1.9.95.alpha-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mmisw.tp</groupId>
