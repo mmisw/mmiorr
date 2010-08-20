@@ -21,6 +21,7 @@
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >predicate</rdfs:label>
     <rdfs:domain rdf:resource="http://mmisw.org/ont/mmi/vine/Statement"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate"/>
   </rdf:Property>
   <rdf:Property rdf:about="http://mmisw.org/ont/mmi/vine/object">
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -28,19 +29,21 @@
     <rdfs:domain rdf:resource="http://mmisw.org/ont/mmi/vine/Statement"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >object</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#object"/>
   </rdf:Property>
   <rdf:Property rdf:about="http://mmisw.org/ont/mmi/vine/subject">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >subject</rdfs:label>
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >The subject of the Vine mapping statement.</rdfs:comment>
+    <rdfs:subPropertyOf rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#subject"/>
     <rdfs:domain rdf:resource="http://mmisw.org/ont/mmi/vine/Statement"/>
   </rdf:Property>
   <owl:DatatypeProperty rdf:about="http://mmisw.org/ont/mmi/vine/confidence">
     <rdfs:domain rdf:resource="http://mmisw.org/ont/mmi/vine/Statement"/>
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >The confidence of the Vine mapping statement.</rdfs:comment>
+    >The confidence on the Vine mapping statement.</rdfs:comment>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >confidence</rdfs:label>
   </owl:DatatypeProperty>
