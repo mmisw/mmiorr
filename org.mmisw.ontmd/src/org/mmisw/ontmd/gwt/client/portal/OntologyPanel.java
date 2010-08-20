@@ -61,7 +61,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	private OntologyUriPanel ontologyUriPanel = USE_ONTOLOGY_URI_PANEL? new OntologyUriPanel() : null;
 	
 
-	// re-created depending on type of interface: editing or viewwing
+	// re-created depending on type of interface: editing or viewing
 	private MetadataPanel metadataPanel;
 	
 	// Handles the data either editing or viewing
@@ -416,8 +416,11 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		}
 	}
 
-
+	/**
+	 * Cancels changes done to the metadata and data contents, if any.
+	 */
 	public void cancel() {
+		Main.log("OntologyPanel.cancel");
 		metadataPanel.cancel();
 		dataPanel.cancel();
 	}

@@ -7,6 +7,20 @@ $Id$
 	  However, its code has been disabled while we determine what to do with it.
 	  See iserver's changelog.
 	  
+	- MappingsPanel: metadata section is autmatically open for first mapping.
+	
+	- Done: revert mapping metadata changes if user cancels editing.
+	
+	TODO: check the overall handling of the cancellation as it seems there are unnecesary repeated 
+	calls to VineEditorPanel._setUp. (not critical, I hope).
+	
+	NOTE: In Chrome and Safari, clicking any of the fields in the mapping metadata panel does not 
+	focus the field! (works in firefox). I think this is related with the fact that the container
+	of these fields is also a focusable element (maybe).
+	Fixed: MappingMetadataPanel._createWidgetForValue: added a click listener to the field just 
+	to request focus. It works.  
+	
+	  
 	   
 2010-08-19   1.9.95.alpha
 

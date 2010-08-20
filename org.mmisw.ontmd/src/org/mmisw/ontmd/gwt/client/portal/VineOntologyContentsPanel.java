@@ -76,6 +76,7 @@ public class VineOntologyContentsPanel extends BaseOntologyContentsPanel {
 	@Override
 	public void cancel() {
 		super.cancel();
+		vineEditorPanel.cancel();
 		VineMain.getWorkingUris().clear();
 	}
 

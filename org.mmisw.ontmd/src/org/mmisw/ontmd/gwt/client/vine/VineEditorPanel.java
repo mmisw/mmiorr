@@ -1,7 +1,11 @@
 package org.mmisw.ontmd.gwt.client.vine;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.mmisw.iserver.gwt.client.rpc.MappingOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.OntologyData;
@@ -36,6 +40,8 @@ public class VineEditorPanel extends VerticalPanel {
 	private MapperPage mapperPage;
 	private MappingsPanel mappingsPanel;
 	
+	private List<Mapping> savedMappings;
+	
 	
 	public VineEditorPanel(MappingOntologyData ontologyData, boolean readOnly) {
 		super();
@@ -47,10 +53,12 @@ public class VineEditorPanel extends VerticalPanel {
 	    decPanel.setWidget(layout);
 	    add(decPanel);
 
+	    savedMappings = null;
 	    _setUp();
 	}
 	
 	private void _setUp() {
+		Main.log("VineEditorPanel: _setUp");
 		layout.clear();
 		
 		Set<String> namespaces = ontologyData.getNamespaces();
@@ -63,6 +71,10 @@ public class VineEditorPanel extends VerticalPanel {
 			ontSel = new OntologySelection(this);
 			layout.add(ontSel);
 			layout.setCellHorizontalAlignment(ontSel, ALIGN_CENTER);
+		}
+		
+		if ( ! readOnly ) {
+			_saveMappings(mappings);
 		}
 		
 		mappingsPanel = new MappingsPanel(readOnly);
@@ -86,6 +98,41 @@ public class VineEditorPanel extends VerticalPanel {
 
 	}
 
+	/** saves the given mappings (especially for its metadata) */
+	private void _saveMappings(List<Mapping> mappings) {
+		Main.log("VineEditorPanel._saveMappings: " +mappings.size());
+		savedMappings = new ArrayList<Mapping>();
+		for ( Mapping mm : mappings ) {
+			Mapping savedMapping = new Mapping(mm.getLeft(), mm.getRelation(), mm.getRight());
+			Map<String, String> md = mm.getMetadata();
+			if ( md != null && md.size() > 0 ) {
+				Map<String, String> savedMd = new LinkedHashMap<String, String>();
+				for ( Entry<String, String> e : md.entrySet() ) {
+					savedMd.put(e.getKey(), e.getValue());
+				}
+				savedMapping.setMetadata(savedMd);
+			}
+			savedMappings.add(savedMapping);
+		}
+
+	}
+
+	/** restored the saved mappings to the MappingOntologyData object */
+	private void _restoreMappings() {
+		if ( savedMappings != null ) {
+			Main.log("VineEditorPanel._restoreMappings: restoring saved mappings");
+			ontologyData.setMappings(savedMappings);
+			savedMappings = null;
+			_setUp();
+		}
+		else {
+			Main.log("VineEditorPanel._restoreMappings: NO saved mappings");			
+		}
+	}
+	
+	/**
+	 * Gets the mappings currently inserted in the mapping table.
+	 */
 	public List<Mapping> getMappings() {
 		return mappingsPanel.getMappings();
 	}
@@ -99,6 +146,13 @@ public class VineEditorPanel extends VerticalPanel {
 		_setUp();
 	}
 
+	/** 
+	 * Cancels changes done to the contents, if any.
+	 */
+	public void cancel() {
+		Main.log("VineEditorPanel.cancel");
+		_restoreMappings();
+	}
 
 
 	/**
@@ -240,9 +294,6 @@ public class VineEditorPanel extends VerticalPanel {
 			
 		};
 		Main.ontmdService.getOntologyContents(ontologyInfo, null, callback );
-
-
 	}
-
 
 }

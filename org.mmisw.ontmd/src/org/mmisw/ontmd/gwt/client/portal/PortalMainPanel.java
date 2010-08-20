@@ -690,6 +690,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 			    controlsPanel.showMenuBar(interfaceType);
 			    headerPanel.updateLinks(interfaceType);
 			    if ( ontologyPanel != null ) {
+			    	ontologyPanel.cancel();
 			    	ontologyPanel.updateInterface(interfaceType);
 			    }
 				break;

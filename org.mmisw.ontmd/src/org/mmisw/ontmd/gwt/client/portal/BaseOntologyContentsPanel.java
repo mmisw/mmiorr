@@ -1,6 +1,7 @@
 package org.mmisw.ontmd.gwt.client.portal;
 
 import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
+import org.mmisw.ontmd.gwt.client.Main;
 
 import com.google.gwt.user.client.ui.Widget;
 
@@ -38,11 +39,14 @@ public abstract class BaseOntologyContentsPanel {
 		this.readOnly = readOnly;
 	}
 
-	/** Called to indicate that this panel should stop any command at the next available chance.
-	 * See {@link #cancelRequested()}.
+	/** 
+	 * Called to indicate that this panel should stop any command at the next available chance, 
+	 * see {@link #cancelRequested()}, or when any changes done to the contents should be
+	 * canceled (reverted).
 	 */
 	public void cancel() {
 		active = false;
+		Main.log(this.getClass().getName()+ ".cancel CALLED");
 	}
 
 	/**

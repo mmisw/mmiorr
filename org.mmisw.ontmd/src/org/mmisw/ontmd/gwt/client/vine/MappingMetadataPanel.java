@@ -7,6 +7,7 @@ import java.util.Map;
 import org.mmisw.iserver.gwt.client.rpc.vine.Mapping;
 
 import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
@@ -125,6 +126,15 @@ public class MappingMetadataPanel {
 					md = mapping.getMetadata();
 					md.put(gui.uri, value);
 				}
+			});
+			
+			// workaround
+			tb.addClickListener(new ClickListener() {
+				public void onClick(Widget sender) {
+					// TODO Auto-generated method stub
+					tbb.setFocus(true);
+				}
+				
 			});
 		}
 		return tb;

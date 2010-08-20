@@ -40,7 +40,6 @@ public class MetadataPanel extends FlexTable implements TempOntologyInfoListener
 					"Fields marked " +TLabel.requiredHtml+ " are required. " +
 					"Use commas to separate values in multi-valued fields.";
 
-//	private MainPanel mainPanel;
 	private DockPanel container = new DockPanel();
 	private TabPanel tabPanel = new TabPanel();
 	
@@ -49,56 +48,12 @@ public class MetadataPanel extends FlexTable implements TempOntologyInfoListener
 	
 	private IOntologyPanel ontologyPanel;
 	
-	
-//	private boolean editing;
-	
-	//- remove NewUri related stuff
-//	/** Little helper to show the ontology URI in two formats: the original
-//	 * and the "HTML" one (to be resolved by "Ont").
-//	 */
-//	private static class NewUri extends HorizontalPanel {
-//		private HTML html = new HTML();
-//		NewUri() {
-//			setSpacing(5);
-//			setVerticalAlignment(ALIGN_MIDDLE);
-//			setWidth("600");
-////			setBorderWidth(1);
-//			add(html);
-//		}
-//		
-//		void updateText(String text) {
-//			html.setText(text);
-//		}
-//		
-//		void setUri(String uri, boolean link) {
-//			
-//			// remove any trailing fragments:
-//			uri = uri.replaceAll("(#|/)+$", "");
-//			
-//			String str;
-//			if ( link ) {
-//				str = "<a href=\"" +uri+ "\" target=\"_blank\" >" +uri+ "</a>";
-//				String htmlLink = uri+ "?form=html";
-//				str += " (<a href=\"" +htmlLink+ "\" target=\"_blank\" >Resolve in HTML</a>)";
-//			}
-//			else {
-//				str = "<font color=\"" +"gray"+ "\">" +uri+ "</font>";
-//			}
-//			html.setHTML(str);
-//		}
-//		
-//		void showProgressMessage(String msg) {
-//			html.setHTML("<font color=\"" +"blue"+ "\">" +msg+ "</font>");
-//		}
-//	}
-//
-//	private NewUri newUri = new NewUri();
 
 
 	/**
 	 * Creates the metadata panel
 	 * @param ontologyPanel
-	 * @param editing true for the editing interface; false for the vieweing interface.
+	 * @param editing true for the editing interface; false for the viewing interface.
 	 */
 	public MetadataPanel(IOntologyPanel ontologyPanel, boolean editing) {
 		super();
@@ -108,30 +63,7 @@ public class MetadataPanel extends FlexTable implements TempOntologyInfoListener
 		
 		int row = 0;
 
-//		setBorderWidth(1);
-//		container.setBorderWidth(1);
 		container.setWidth("1000px");
-//		container.setSize("850px", "350px");
-		
-		//- remove NewUri related stuff
-//		HorizontalPanel hp = new HorizontalPanel();
-//		hp.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-//		this.getFlexCellFormatter().setColSpan(row,0, 2);
-//		this.setWidget(row, 0, hp);
-//		this.getFlexCellFormatter().setAlignment(row, 0, 
-//				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP
-//		);
-//		
-//		String tooltip = "The ontology base URI";
-//		if ( editing ) {
-//			tooltip = "Will show the new base URI for the generated ontology";
-//			Label lbl = new Label("New base URI:");
-//			lbl.setTitle(tooltip);
-//			hp.add(lbl);
-//		}
-//		
-//		newUri.setTitle(tooltip);
-//		hp.add(newUri);
 		
 		row++;
 		
@@ -147,10 +79,8 @@ public class MetadataPanel extends FlexTable implements TempOntologyInfoListener
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP
 		);
 
-//	    tabPanel.setAnimationEnabled(true);
 	    
 		DockPanel dockPanel = new DockPanel();
-//		dockPanel.setBorderWidth(1);
 
 		
 		dockPanel.add(tabPanel, DockPanel.NORTH);
@@ -304,18 +234,8 @@ public class MetadataPanel extends FlexTable implements TempOntologyInfoListener
 			}
 		}
 		
-		//- remove NewUri related stuff
-//		newUri.updateText("");
-//		String new_uri = tempOntologyInfo.getUri();
-//		if ( new_uri != null ) {
-//			newUri.setUri(new_uri, false);
-//		}
-
 	}
 
-	
-	
-	
 	
 	public void example(boolean confirm) {
 		for ( int i = 0, c = tabPanel.getWidgetCount(); i < c; i++ ) {
@@ -376,23 +296,15 @@ public class MetadataPanel extends FlexTable implements TempOntologyInfoListener
 			}
 		}
 		
-		//- remove NewUri related stuff
-//		newUri.updateText("");
-//		if ( reviewResult_Old != null ) {
-//			String new_uri = reviewResult_Old.getUri();
-//			if ( new_uri != null ) {
-//				newUri.setUri(new_uri, link);
-//			}
-//		}
-//		else if ( ! editing ) {
-//			newUri.setUri(ontologyUri, link);
-//		}
 	}
 
-
+	/**
+	 * Does nothing in this class.
+	 * Note, an instance of this class is created for only one particular mode, 
+	 * either readOnly or edit.
+	 */
 	public void cancel() {
-		// TODO Auto-generated method stub
-		
+		// nothing done here.
 	}
 	
 }

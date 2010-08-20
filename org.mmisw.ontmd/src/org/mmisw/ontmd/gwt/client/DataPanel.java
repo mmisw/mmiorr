@@ -255,7 +255,11 @@ public class DataPanel extends VerticalPanel {
 		return vineOntologyContentsPanel.getWidget();
 	}
 
+	/**
+	 * Cancels changes done to the data contents, if any.
+	 */
 	public void cancel() {
+		Main.log("DataPanel.cancel");
 		for ( BaseOntologyContentsPanel baseOntologyContentsPanel : baseOntologyContentsPanels ) {
 			baseOntologyContentsPanel.cancel();
 		}

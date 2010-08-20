@@ -41,6 +41,9 @@ public class MappingsPanel extends FocusPanel {
 	private FlexTable flexPanel;
 	
 	
+	/**
+	 * Info about a mapping currently inserted in this panel.
+	 */
 	private static class MappingAssoc {
 		Mapping mapping;
 		CheckBox cb;
@@ -56,10 +59,16 @@ public class MappingsPanel extends FocusPanel {
 		}
 	}
 	
+	/**
+	 * The list of mappings currently inserted in this panel.
+	 */
 	private final List<MappingAssoc> mappingAssocs = new ArrayList<MappingAssoc>();
 	
+	
 	/**
+	 * Creates a mapping panel
 	 * 
+	 * @param readOnly  true to operate in view-only model; false to allow editing of the mappings.
 	 */
 	MappingsPanel(boolean readOnly) {
 		super();
@@ -112,12 +121,17 @@ public class MappingsPanel extends FocusPanel {
 		return newMappings;
 	}
 
+	
+	private boolean _openRow = false;
 
 	public void setMappings(final List<Mapping> newMappings) {
 		this.mappingAssocs.clear();
 		if ( newMappings == null ) {
 			return;
 		}
+		
+		// make the first mapping open its metadata:
+		_openRow = true;
 		
 		AsyncCallback<List<RelationInfo>> callback = new AsyncCallback<List<RelationInfo>>() {
 
@@ -356,7 +370,7 @@ public class MappingsPanel extends FocusPanel {
 	
 	private Widget _prepareMappingMetadata(final int row, final MappingAssoc ma) {
 		Image img = VineMain.images.metadata().createImage(); 
-		DisclosurePanel disclosure = new DisclosurePanel(img);  // DisclosurePanel("");
+		final DisclosurePanel disclosure = new DisclosurePanel(img);  // DisclosurePanel("");
 		disclosure.setTitle("Mapping metadata");
 		disclosure.addEventHandler(new DisclosureHandler() {
 			public void onClose(DisclosureEvent event) {
@@ -375,6 +389,15 @@ public class MappingsPanel extends FocusPanel {
 			}
 		});
 		
+		if ( _openRow ) {
+			_openRow = false;
+			DeferredCommand.addCommand(new Command() {
+				public void execute() {
+					disclosure.setOpen(true);
+				}
+			});
+		}
+		
 		return disclosure;
 	}
 	
@@ -389,8 +412,6 @@ public class MappingsPanel extends FocusPanel {
 		
 		return ma.mdPanel.getWidget();
 	}
-
-	
 
 	private class FocusableRowElement extends FocusPanel {
 		int row;
@@ -422,4 +443,5 @@ public class MappingsPanel extends FocusPanel {
 			}
 		}
 	}
+
 }
