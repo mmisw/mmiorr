@@ -38,6 +38,12 @@ $Id$
 		</dependency>
 	  Just tested this for the watchdog module --> OK
 	- See 2010-08-06 note below. 
+	
+	
+	- Utf8Util.isUtf8(bytes) mainly based on the result of the basic conversion
+	  to string using a java.nio.charset.CharsetDecoder assuming UTF-8.
+	
+	
 
 2010-08-19   1.9.95.alpha
 	- org.mmisw.iserver.core.util.QueryUtil moved/renamed to: 

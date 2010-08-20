@@ -12,6 +12,8 @@ import java.nio.charset.CodingErrorAction;
 import java.util.Collection;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.util.charset.CharsetDetectorIcu;
 import org.mmisw.iserver.core.util.charset.CharsetDetectorJcd;
 
@@ -22,6 +24,8 @@ import org.mmisw.iserver.core.util.charset.CharsetDetectorJcd;
  * @author Carlos Rueda
  */
 public class Utf8Util {
+	
+	private static final Log log = LogFactory.getLog(Utf8Util.class);
 	
 	public interface ICharsetDetector {
 		
@@ -55,36 +59,57 @@ public class Utf8Util {
 	
 	/**
 	 * Is the given buffer in UTF-8 or ASCII?
+	 * This test is mainly based on java.nio.charset.CharsetDecoder to convert
+	 * a byte array to string given a certain charset (UTF-8 used here). 
+	 * If this fails, an exception is immediately thrown. 
+	 * If not, this method does some further check which may be unnecesary.
+	 * TODO Under testing.
 	 * 
 	 * @param bytes            
 	 *           the contents to check
 	 * @return  
-	 *           null iff the given buffer is in UTF-8 or ASCII, that is, the reported
-	 *           list of charsets contains UTF-8 or ASCII as the first element.
-	 *           Otherwise the collection of probable charsets (which may include UTF-8).
+	 *           null to indicate success, ie., the given buffer is in UTF-8 or ASCII.
+	 *           
 	 * @throws Exception  
-	 *           if the charset cannot be determined.
+	 *           if conversion to a string assuming UTF-8 generates an exception.
 	 */
 	public static Collection<String> isUtf8(byte[] bytes) throws Exception {
 		
 		// check it can be decoded assuming UTF-8:
-		_utf8toString(bytes);
+		String str = _utf8toString(bytes);
 		// TODO probably, we should just do the above check, and only do the remaining
 		// stuff in case we get an exception.
+		
+		if ( log.isDebugEnabled() ) {
+			int len = Math.min(50, str.length());
+			log.debug("isUtf8: basic test OK: " +str.subSequence(0, len));
+		}
 		
 		Collection<String> charsets = detector.detectCharset(bytes);
 		
 		if ( charsets == null || charsets.size() == 0 ) {
-			throw new Exception("Cannot determine the charset of the given contents");
+			// just return null, so OK.  The following is to drastic a result given that the
+			// conversion above was succesful
+			return null; // OK
+			// NO: throw new Exception("Cannot determine the charset of the given contents");
 		}
 		
-		String charset = charsets.iterator().next();
-		if ( "UTF-8".equalsIgnoreCase(charset) || "ASCII".equalsIgnoreCase(charset) ) {
+		if ( charsets.contains("UTF-8")  || charsets.contains("ASCII") ) {
 			return null; // OK
 		}
-		else {
-			return charsets;
+		
+		// some previous version had this check instead of the containment ones above:
+//		String charset = charsets.iterator().next();
+//		if ( "UTF-8".equalsIgnoreCase(charset) || "ASCII".equalsIgnoreCase(charset) ) {
+//			return null; // OK
+//		}
+
+		// we give up - return the charsets.
+		if ( log.isDebugEnabled() ) {
+			log.debug("isUtf8: WARN: basic conversion ok but detected charsets did not include " +
+					"UTF-8  or ASCII) !!");
 		}
+		return charsets;
 	}
 
 	
@@ -95,8 +120,11 @@ public class Utf8Util {
 	}
 	
 	/**
+	 * Converts a byte array to a string assuming UTF-8 encoding.
+	 * 
+	 * <p>
 	 * Uses a java.nio.charset.CharsetDecoder to decode the contents assuming UTF-8.
-	 * This is mainly intended to serve as a first test to verify a
+	 * This is mainly intended to serve as a first test to verify that a
 	 * buffer can be read assuming UTF-8.
 	 * 
 	 * @param bytes
@@ -105,11 +133,20 @@ public class Utf8Util {
 	 * @throws UnsupportedEncodingException
 	 */
 	private static String _utf8toString(byte[] bytes) throws CharacterCodingException, UnsupportedEncodingException {
-		return _utf8toString(bytes, "UTF-8");
+		return _byteArrayToString(bytes, "UTF-8");
 	}
-	
-	private static String _utf8toString(byte[] bytes, String charsetName) throws CharacterCodingException, UnsupportedEncodingException {
+
+	/**
+	 * Converts a byte array to a string using the given encoding.
+	 * <p>
+	 * Uses a java.nio.charset.CharsetDecoder.
+	 */
+	private static String _byteArrayToString(byte[] bytes, String charsetName) throws CharacterCodingException, UnsupportedEncodingException {
 //		http://www.exampledepot.com/egs/java.nio.charset/ConvertChar.html
+		
+		// Note that <code>new String(bytes, charsetName)</code> is not useful because: 
+		// "The behavior of this constructor when the given bytes are not valid in the 
+		// given charset is unspecified."
 		
 		Charset charset = Charset.forName(charsetName);
 
@@ -156,7 +193,7 @@ public class Utf8Util {
 				for ( String charset : charsets ) {
 					System.out.println("  checking that it can be decoded as " +charset);
 					try {
-						_utf8toString(bytes, charset);
+						_byteArrayToString(bytes, charset);
 					}
 					catch(Throwable thr) {
 						thr.printStackTrace();
