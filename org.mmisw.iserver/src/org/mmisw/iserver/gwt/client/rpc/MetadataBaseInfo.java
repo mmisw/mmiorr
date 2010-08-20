@@ -1,11 +1,11 @@
 package org.mmisw.iserver.gwt.client.rpc;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * Provides the main elements used to create the attributes to
@@ -13,7 +13,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * 
  * @author Carlos Rueda
  */
-public class MetadataBaseInfo implements IsSerializable {
+@SuppressWarnings("serial")
+public class MetadataBaseInfo implements Serializable {
 	
 	private AttrGroup[] attrGroups = {};
 	

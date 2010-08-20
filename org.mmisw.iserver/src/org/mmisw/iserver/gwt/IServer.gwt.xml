@@ -1,16 +1,10 @@
 <module>
-
-      <!-- Inherit the core Web Toolkit stuff.                        -->
-      <inherits name='com.google.gwt.user.User'/>
-      
-      <!-- Other module inherits                                      -->
-
-      <inherits name="com.google.gwt.json.JSON" />
-      
-      
-      <!-- Specify the app entry point class.                         -->
-      <!-- entry-point class='org.mmisw.iserver.gwt.client.IServer'/ -->
-    
-      <!-- servlet path="/iserverService" class="org.mmisw.iserver.gwt.server.IServerServiceImpl"/ -->
+	<!--  NOTE: no explicit definitions here. 
+	      Defaults are OK with the current directory layout and for GWT 1.5.x -->
 	
+	<!-- Use this mechanism when the layout changes to a non-canonical one.
+	     The whole thing here may be unnecessary upon upgrade to a post-1.5x version of GWT 
+	-->
+	<!--  source path="PATH WITH GWT-TRANSLATABLE CODE" / -->
+	 
 </module>

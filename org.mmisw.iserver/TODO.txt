@@ -1,10 +1,10 @@
 org.mmisw.iserver 
 Carlos Rueda  -  http://marinemetadata.org
 
-Rename this module to org.mmisw.client and make it more generically usable (perhaps not necessarily
-for GWT-enabled applications). 
+- Rename this module to org.mmisw.client. 
 
-Some TODOs as this module does not define any servlet:
-- remove servlet-related stuff: base_war, WEB_INF, web.xml, etc. 
-- Just keep a library directory and update build.xml accordingly. 
+- adjust directory structure to a more standard (non-GWT and non-webapp) layout, eg. 
+  package org.mmisw.iserver.gwt.client.rpc --> org.mmisw.iserver.model 
+  ./base_war/WEB_INF/lib/ --> ./lib/
+  See ChangeLog 2010-08-20
 

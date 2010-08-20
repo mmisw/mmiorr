@@ -12,12 +12,6 @@
 		</fileset>
 		<pathelement path="${java.class.path}/" />
 
-		<pathelement path="${GWT_HOME}/gwt-user.jar" />
-		<!-- you have one of the following three: -->
-		<pathelement path="${GWT_HOME}/gwt-dev-linux.jar" />
-		<pathelement path="${GWT_HOME}/gwt-dev-mac.jar" />
-		<pathelement path="${GWT_HOME}/gwt-dev-win.jar" />
-
 		<fileset dir="base_war/WEB-INF/lib">
 			<include name="*.jar" />
 			<include name="jena/*.jar" />
