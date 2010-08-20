@@ -3,6 +3,40 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2010-08-19   1.9.95.alpha
+	- QueryUtil renamed to OntInfoUtil
+	- Introduced IOntInfo (for refactoring of OntInfoUtil functionality) with implementations:
+		- OntInfoOld: basically with original implementation in QueryUtil
+		- OntInfo: better implementation
+	- OntInfoUtil.impl points to the actual implementation
+	
+	Removed the following unused methods:
+	- IServer/Server: List<EntityInfo> getEntities(String ontologyUri)
+	- OntInfoUtil: List<EntityInfo> getEntities(String ontologyUri, OntModel ontModel)
+	- OntInfoUtil: List<IndividualInfo> _getIndividuals(List<IndividualInfo> entities, OntModel ontModel, String ontologyUri)
+	- IOntQuery:   List<EntityInfo> getEntities(String ontologyUri, OntModel ontModel)
+	
+	Many improvements including better determination of ontology type, in particular
+	mappings (Vine) and other refactorings and clean-up. More unit tests.
+	
+	
+2010-08-18   1.9.95.alpha
+
+	- Skos: added the xxxxMatch properties.
+	
+	- Server.getVineRelationInfos:  Now using the URIs defined by the Skos class.
+	  Note in particular that the SKOS namespace is: http://www.w3.org/2004/02/skos/core#
+	  which follows the August 18 2009 W3C Recommendation, see http://www.w3.org/TR/skos-reference/
+	  
+	  Previously, this method used the http://www.w3.org/2008/05/skos# namespace. This, in
+	  contrast, is a document "still under development and content may be subject to change."
+	  Since some VINE mapping ontologies with this SKOS namespace may still exist out there, 
+	  a detection of VINE mapping ontologies should consider the two namespaces.
+	  
+	- Preparations to determine the OntologyType for a given ontology
+	  
+	  
+
 2010-08-16   1.9.94.alpha
 	Some further attempts to better detect UTF8 potential problems.
 	See http://code.google.com/p/mmisw/issues/detail?id=253

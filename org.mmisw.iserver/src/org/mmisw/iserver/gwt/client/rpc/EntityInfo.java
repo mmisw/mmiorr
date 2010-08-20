@@ -67,5 +67,9 @@ public class EntityInfo implements Serializable {
 		return props;
 		
 	}
+	
+	public String toString() {
+		return getClass().getName()+ ": " +uri;
+	}
 
 }

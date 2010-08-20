@@ -7,11 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.mmisw.iserver.core.util.Skos;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.iserver.gwt.client.vocabulary.Option;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
+import org.mmisw.ont.vocabulary.Vine;
 
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.vocabulary.DC;
@@ -82,6 +84,9 @@ public class MdHelper {
 		preferredPrefix.put(DC.NS, "dc");
 		preferredPrefix.put(Omv.NS, "omv");
 		preferredPrefix.put(OmvMmi.NS, "omvmmi");
+		preferredPrefix.put(Skos.NS, "skos");
+		preferredPrefix.put(Vine.NS, "vine");
+		
 		preferredPrefix = Collections.unmodifiableMap(preferredPrefix);
 	}
 	

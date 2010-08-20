@@ -1,6 +1,8 @@
 package org.mmisw.iserver.gwt.client.rpc.vine;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Info about a relation.
@@ -14,18 +16,32 @@ public class RelationInfo implements Serializable {
 	private String iconUri;
 	private String shortName;
 	private String description;
+	
+	// secondary URIs
+	private List<String> uris2;
 
 	/** no-arg ctor required for the serialization */
 	RelationInfo() {
 	}
 	
 	
-	public RelationInfo(String uri, String iconUri, String shortName, String description) {
+	/**
+	 * @param iconUri
+	 * @param shortName
+	 * @param description
+	 * @param uris First element will be primary URI with the rest being secondary URIs.
+	 */
+	public RelationInfo(String iconUri, String shortName, String description, String... uris) {
 		super();
-		this.uri = uri;
 		this.iconUri = iconUri;
 		this.shortName = shortName;
 		this.description = description;
+		if ( uris.length > 0 ) {
+			this.uri = uris[0];
+			for ( int i = 1; i < uris.length; i++ ) {
+				addSecondaryUri(uris[i]);
+			}
+		}
 	}
 	
 	public String getUri() {
@@ -51,6 +67,17 @@ public class RelationInfo implements Serializable {
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public List<String> getSecondaryUris() {
+		return uris2;
+	}
+	
+	public void addSecondaryUri(String uri2) {
+		if ( uris2 == null ) {
+			uris2 = new ArrayList<String>();
+		}
+		uris2.add(uri2);
 	}
 
 	public String toString() {

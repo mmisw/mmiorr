@@ -1,64 +1,52 @@
-package org.mmisw.iserver.core.util;
+package org.mmisw.iserver.core.util.ontinfo;
 
-import java.io.InputStream;
-import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.iserver.core.util.OntServiceUtil;
 import org.mmisw.iserver.gwt.client.rpc.BaseOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.ClassInfo;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.IndividualInfo;
-import org.mmisw.iserver.gwt.client.rpc.MappingOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.OntologyData;
-import org.mmisw.iserver.gwt.client.rpc.OtherOntologyData;
+import org.mmisw.iserver.gwt.client.rpc.OntologyType;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
 import org.mmisw.iserver.gwt.client.rpc.PropertyInfo;
-import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData;
-import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData.ClassData;
 import org.mmisw.iserver.gwt.client.rpc.vine.Mapping;
-import org.mmisw.ont.JenaUtil2;
 
-import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
- * Some utilities based on SPARQL queries.
+ * Based on SPARQL queries.
  * 
+ * @deprecated refactoring in progress -- should use OntInfo instead
  * @author Carlos Rueda
  */
-public class QueryUtil {
+@Deprecated
+class OntInfoOld extends BaseOntInfo {
 	
-	private static final Log log = LogFactory.getLog(QueryUtil.class);
+	private static final Log log = LogFactory.getLog(OntInfoOld.class);
 	
-	/** Query to obtain the individuals in a model */
 	private static final String QUERY_PREFIXES =
 		"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
 		"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
 		"PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" +
-		"PREFIX skos: <http://www.w3.org/2008/05/skos#>\n"
+		"PREFIX skos: <http://www.w3.org/2004/02/skos/core#>\n" +
+		"PREFIX skos2: <http://www.w3.org/2008/05/skos#>\n"
 	;
 	
 	/** Query to obtain the individuals in a model */
@@ -112,41 +100,14 @@ public class QueryUtil {
 		"            UNION { ?left skos:exactMatch ?right } \n" +
 		"            UNION { ?left skos:narrowMatch ?right } \n" +
 		"            UNION { ?left skos:relatedMatch ?right } \n" +
-		"            UNION { ?left skos:relatedMatch ?right } \n" +
+		"            UNION { ?left skos2:broadMatch ?right } \n" +
+		"            UNION { ?left skos2:closeMatch ?right } \n" +
+		"            UNION { ?left skos2:exactMatch ?right } \n" +
+		"            UNION { ?left skos2:narrowMatch ?right } \n" +
+		"            UNION { ?left skos2:relatedMatch ?right } \n" +
 		"           } .\n" +
 		"}" 
 	;
-	
-	
-	/**
-	 * Gets the list of entities associated with the given ontology. 
-	 * @param ontologyUri URI of the desired ontology.
-	 * @return list of entities
-	 * @throws Exception 
-	 */
-	public static List<EntityInfo> getEntities(String ontologyUri, OntModel ontModel) throws Exception {
-		
-		if ( ontModel == null ) {
-			ontModel = loadModel(ontologyUri);
-		}
-		
-		List<EntityInfo> entities = new ArrayList<EntityInfo>();
-		
-		// individuals:
-		entities.addAll(_getIndividuals(null, ontModel, ontologyUri));
-
-		// datatype properties:
-		entities.addAll(_getProperties(DATATYPE_PROPERTIES_QUERY, null, ontModel, ontologyUri));
-
-		// object properties:
-		entities.addAll(_getProperties(OBJECT_PROPERTIES_QUERY, null, ontModel, ontologyUri));
-
-		// classes:
-		entities.addAll(_getClasses(null, ontModel, ontologyUri));
-		
-		return entities;
-	}
-	
 	
 	
 	/**
@@ -155,14 +116,9 @@ public class QueryUtil {
 	 * @return the given argument
 	 * @throws Exception 
 	 */
-	public static BaseOntologyInfo getEntities(BaseOntologyInfo baseOntologyInfo, OntModel ontModel) throws Exception {
+	public BaseOntologyInfo getEntities(BaseOntologyInfo baseOntologyInfo, OntModel ontModel) throws Exception {
 		String ontologyUri = baseOntologyInfo.getUri();
 
-		
-		if ( ontModel == null ) {
-			ontModel = loadModel(ontologyUri);
-		}
-		
 		// individuals:
 		List<IndividualInfo> individuals = _getIndividuals(null, ontModel, ontologyUri);
 
@@ -191,10 +147,14 @@ public class QueryUtil {
 		OntologyData ontologyData;
 		
 		if ( OntServiceUtil.isOntResolvableUri(ontologyUri) ) {
+			//
 			// apply the ad hoc rules to determine type of ontology only if 
-			// the ontologyUri is resolvable by the Ont service:
+			// the ontologyUri is resolvable by the Ont service.
+			//
+			
+			
 			List<Mapping> mappings = _getSkosRelations(null, ontModel);
-			boolean containSkos = _containsSkos(ontModel, mappings, individuals);
+			boolean containSkos = mappings.size() > 0 || _containsSkos(ontModel, individuals);
 		
 			// determine type of ontologyData to create
 			
@@ -202,21 +162,21 @@ public class QueryUtil {
 			// Pending: use omv:useOntologyEngineeringTool for example.
 			
 			if ( containSkos ) {
-				baseOntologyInfo.setType("mapping");
+				baseOntologyInfo.setType(OntologyType.MAPPING);
 				ontologyData = _createMappingOntologyData(baseOntologyData, mappings, individuals);
 			}
 			else if ( classes.size() == 1 && individuals.size() > 0 && containDatatype ) {
-				baseOntologyInfo.setType("vocabulary");
+				baseOntologyInfo.setType(OntologyType.VOCABULARY);
 				ontologyData = _createVocabularyOntologyData(baseOntologyData);
 			}
 			else {
-				baseOntologyInfo.setType("other");
+				baseOntologyInfo.setType(OntologyType.OTHER);
 				ontologyData = _createOtherOntologyData(baseOntologyData);
 			}
 		}
 		else {
 			// otherwise (the URI is not Ont resolvable), always create the "other" type of ontology data
-			baseOntologyInfo.setType("other");
+			baseOntologyInfo.setType(OntologyType.OTHER);
 			ontologyData = _createOtherOntologyData(baseOntologyData);
 		}
 		
@@ -228,10 +188,7 @@ public class QueryUtil {
 	
 	
 	// TODO: the next search for SKOS relations is not complete; it's just an initial idea.
-	private static boolean _containsSkos(OntModel ontModel, List<Mapping> mappings, List<IndividualInfo> individuals) {
-		if ( mappings.size() > 0 ) {
-			return true;
-		}
+	private static boolean _containsSkos(OntModel ontModel, List<IndividualInfo> individuals) {
 		// try looking into the individuals:
 		for ( IndividualInfo individualInfo : individuals ) {
 			List<PropValue> indivProps = individualInfo.getProps();
@@ -247,273 +204,12 @@ public class QueryUtil {
 
 
 	/**
-	 * It assigns the classInfo corresponding to the domain for each property.
-	 * @param classes      List of known classes
-	 * @param properties   Properties to be updated
-	 */
-	private static void _setDomainClassesForProperties(List<ClassInfo> classes,
-			List<PropertyInfo> properties) {
-
-		for ( PropertyInfo propertyInfo : properties ) {
-			String domainClassUri = propertyInfo.getDomainUri();
-			
-			if ( domainClassUri == null ) {
-				// I'm checking for null here to avoid a NPE with http://mmisw.org/ont/univmemphis/sensor
-				// TODO Check why the domain uri has not been assigned for the propertyInfo
-				continue;
-			}
-			
-			// search corresponding classInfo in classes:
-			ClassInfo domainClassInfo = null;
-			
-			for ( ClassInfo classInfo : classes ) {
-				if ( domainClassUri.equals(classInfo.getUri()) ) {
-					domainClassInfo = classInfo;
-					break;
-				}
-			}
-			
-			if ( domainClassInfo != null ) {
-				propertyInfo.setDomainClassInfo(domainClassInfo);
-			}
-		}
-	}
-
-
-
-	private static OntologyData _createVocabularyOntologyData(BaseOntologyData baseData) {
-		VocabularyOntologyData ontologyData = new VocabularyOntologyData();
-		
-		ontologyData.setBaseOntologyData(baseData);
-		
-		
-		Map<String, ClassData> classMap = new HashMap<String, ClassData>();
-		
-		List<PropertyInfo> properties = baseData.getProperties();		
-		for ( PropertyInfo entity : properties ) {
-			if ( ! entity.isDatatypeProperty() ) {
-				continue;
-			}
-
-			String classUri = entity.getDomainUri();
-			if ( classUri == null ) {
-				continue;
-			}
-			
-			ClassData classData = classMap.get(classUri);
-			if ( classData == null ) {
-				classData = new ClassData();
-				classMap.put(classUri, classData);
-				classData.setClassUri(classUri);
-				classData.setClassInfo(entity.getDomainClassInfo());
-				classData.setDatatypeProperties(new ArrayList<String>());
-			}
-			
-			classData.getDatatypeProperties().add(entity.getLocalName());
-		}
-		
-		// add the found classes and add corresponding individuals:
-
-		List<ClassData> classes = new ArrayList<ClassData>();
-		ontologyData.setClasses(classes);
-		
-		for ( String classUri : classMap.keySet() ) {
-			ClassData classData = classMap.get(classUri);
-			classes.add(classData);
-			
-			// add individuals whose type is classUri
-			
-			List<IndividualInfo> individuals = new ArrayList<IndividualInfo>();
-			classData.setIndividuals(individuals);
-			
-			List<IndividualInfo> individualInfos = baseData.getIndividuals();
-			for ( IndividualInfo individualInfo : individualInfos ) {
-				String individualClass = individualInfo.getClassUri();
-				if ( classUri.equals(individualClass) ) {
-					individuals.add(individualInfo);
-				}
-			}
-			
-			_putKeyColumnAsFirst(classData, individuals);
-		}
-		
-		return ontologyData;
-	}
-
-
-	/**
-	 * the following is an attempt to guess the datatype property that was used 
-	 * as the 'key', so as to put that column as the first. 
-	 * The strategy is to see what datatype property corresponds to rdfs:label.
-	 * 
-	 * <p>
-	 * TODO Remove this mechanims once #240 "preserve column order" is implemented.
-	 * 
-	 * @param classData
-	 * @param individuals
-	 */
-	private static void _putKeyColumnAsFirst(ClassData classData, List<IndividualInfo> individuals) {
-		// diffFlags[col] will be true if the corresponding column does not seem to coincide
-		// with value of rdfs:label
-		boolean[] diffFlags = null;    
-		
-		// but we do the check for a maximum of individuals:
-		final int maxIndivs = 20;
-		int indivNum = 0;
-		for ( IndividualInfo individualInfo : individuals ) {
-
-			// will contain the value of RDFS.label.getURI() if any:
-			String rdfsLabelValue = null;
-			
-			Map<String, String> vals = new HashMap<String, String>();
-			List<PropValue> props = individualInfo.getProps();
-			for ( PropValue pv : props ) {
-				
-				if ( RDFS.label.getURI().equals(pv.getPropUri()) ) {
-					rdfsLabelValue = pv.getValueName();
-				}
-				
-				vals.put(pv.getPropName(), pv.getValueName());
-			}
-			
-			if ( rdfsLabelValue == null ) {
-				// do not continue making the check.
-				break;
-			}
-			
-			// let's ignore case, and replace spaces with underscores for purposes of
-			// the comparison below
-			rdfsLabelValue = rdfsLabelValue.toLowerCase().replace(' ', '_');
-			
-			List<String> datatypeProperties = classData.getDatatypeProperties();
-			int numCols = datatypeProperties.size();
-			if ( diffFlags == null ) {
-				diffFlags = new boolean[numCols];
-			}
-			for ( int i = 0; i < numCols; i++ ) {
-				String colValue = vals.get(datatypeProperties.get(i));
-				if ( colValue != null ) {
-					colValue = colValue.toLowerCase().replace(' ', '_');
-				}
-				diffFlags[i] = diffFlags[i] || !rdfsLabelValue.equals(colValue);
-			}
-			
-			if ( ++indivNum >= maxIndivs ) {
-				break;
-			}
-		}
-		
-		if ( diffFlags != null ) {
-			// now, pick first column whose values coincided with rdfs:label:
-			int foundColumn = -1;
-			for ( int i = 0; i < diffFlags.length; i++ ) {
-				if ( !diffFlags[i] ) {
-					foundColumn = i;
-					break;
-				}
-			}
-
-			if ( foundColumn > 0 ) {
-				// if we found the column, and that is not already the first, then
-				// make it the first:
-				List<String> datatypeProperties = classData.getDatatypeProperties();
-				String keyColumnName = datatypeProperties.remove(foundColumn);
-				datatypeProperties.add(0, keyColumnName);
-			}
-		}
-		
-	}
-
-	private static OntologyData _createMappingOntologyData(
-			BaseOntologyData baseOntologyData, 
-			List<Mapping> mappings,
-			List<IndividualInfo> individuals
-	) {
-		
-		Set<String> namespaces = new HashSet<String>();
-
-		// add the namespaces corresponding to the already provided mappings:
-		for ( Mapping mapping : mappings ) {
-			_addNamespace(namespaces, mapping.getLeft(), null);
-			_addNamespace(namespaces, mapping.getRight(), null);
-		}
-
-		// TODO: need to check also the individuals?  Don't think so -- revise
-		for ( IndividualInfo individualInfo : individuals ) {
-			List<PropValue> indivProps = individualInfo.getProps();
-			for ( PropValue propValue: indivProps ) {
-				if ( propValue.getPropName().matches(".*Match.*") ) {
-					Mapping mapping = new Mapping();
-					
-					mapping.setLeft(individualInfo.getUri());
-					mapping.setRelation(propValue.getPropUri());
-					mapping.setRight(propValue.getValueUri());
-					
-					mappings.add(mapping);
-					
-					_addNamespace(namespaces, individualInfo.getUri(), individualInfo.getLocalName());
-					_addNamespace(namespaces, propValue.getValueUri(), propValue.getValueName());
-				}
-			}
-			
-		}
-		
-		MappingOntologyData ontologyData = new MappingOntologyData();
-		ontologyData.setNamespaces(namespaces);
-		ontologyData.setMappings(mappings);
-		ontologyData.setBaseOntologyData(baseOntologyData);
-
-		return ontologyData;
-	}
-	
-	/** adds the namespace associated with the uri to the given set.
-	 * It uses the given localName if non-null; otherwhise it gets the local name
-	 * from the uri as the last fragment starting with slash or hash 
-	 */
-	private static void _addNamespace(Set<String> namespaces, String uri, String localName) {
-		
-		String ns;
-		
-		if ( localName == null ) {
-			int idx_slash = uri.lastIndexOf('/');
-			int idx_hash = uri.lastIndexOf('#');
-			if ( idx_slash >= 0 || idx_hash >= 0 ) {
-				int idx = Math.max(idx_slash, idx_hash);
-				//localName = uri.substring(idx);
-				ns = uri.substring(0, idx);
-			}
-			else {
-				//localName = "";
-				ns = uri;
-			}
-		}
-		else {
-			int uriLen = uri.length();
-			int locLen = +1 + localName.length();   // +1 to also omit the separator
-			ns = uriLen > locLen ? uri.substring(0, uriLen - locLen) : "";
-		}
-		
-		if ( ns.trim().length() > 0 ) {
-			namespaces.add(ns);
-		}
-	}
-
-	private static OntologyData _createOtherOntologyData(BaseOntologyData baseOntologyData) {
-		OtherOntologyData ontologyData = new OtherOntologyData();
-		ontologyData.setBaseOntologyData(baseOntologyData);
-		// TODO 
-		return ontologyData;
-	}
-
-
-
-	/**
 	 * Adds the individuals defined in the model to the given list.
 	 * @param entities
 	 * @param ontModel
 	 * @param ontologyUri
 	 */
-	public static List<IndividualInfo> _getIndividuals(List<IndividualInfo> entities,
+	private List<IndividualInfo> _getIndividuals(List<IndividualInfo> entities,
 			OntModel ontModel, String ontologyUri) {
 		
 		if ( entities == null ) {
@@ -588,20 +284,6 @@ public class QueryUtil {
 		return entities;
 	}
 	
-	private static String _getLocalName(String uri) {
-		int idx = uri.lastIndexOf('/');
-		if ( idx >= 0 ) {
-			return uri.substring(idx + 1);
-		}
-		else {
-			idx = uri.lastIndexOf('#');
-			if ( idx >= 0 ) {
-				return uri.substring(idx + 1);
-			}
-		}
-		return uri;
-	}
-
 	/**
 	 * Adds the properties defined in the model to the given list.
 	 * @param entities
@@ -894,51 +576,6 @@ public class QueryUtil {
 		return mappings;
 	}
 
-	
-	/**
-	 * Creates a default model, calls model.read(is, base) and returns the resulting model.
-	 */
-	public static OntModel loadModel(InputStream is, String base) {
-		OntModel model = createDefaultOntModel();
-		model.read(is, base);
-		return model;
-	}
-	
 
-	
-	/**
-	 * Loads a model first verifying the source text is in UTF-8.
-	 * @param uriModel
-	 * @return
-	 * @throws Exception
-	 */
-	public static OntModel loadModel(String uriModel) throws Exception {
-		
-		URL url = new URL(uriModel);
-		InputStream is = url.openStream();
-		
-		byte[] bytes = IOUtils.toByteArray(is);
-		Utf8Util.verifyUtf8(bytes);
-		
-		OntModel model = createDefaultOntModel();
-		uriModel = JenaUtil2.removeTrailingFragment(uriModel);
-		
-		StringReader sr = new StringReader(new String(bytes, "UTF-8"));
-		
-//		model.read(uriModel);
-		model.read(sr, uriModel);
-		
-		return model;
-	}
-
-	private static OntModel createDefaultOntModel() {
-		OntModelSpec spec = new OntModelSpec(OntModelSpec.OWL_MEM);
-		OntDocumentManager docMang = new OntDocumentManager();
-		spec.setDocumentManager(docMang);
-		OntModel model = ModelFactory.createOntologyModel(spec, null);
-		// removeNotNeccesaryNamespaces(model);
-
-		return model;
-	}
 }
 

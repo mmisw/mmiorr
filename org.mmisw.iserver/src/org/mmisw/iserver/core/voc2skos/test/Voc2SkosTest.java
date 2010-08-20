@@ -33,6 +33,15 @@ import edu.drexel.util.rdf.JenaUtil;
  */
 public class Voc2SkosTest extends TestCase {
 
+	static {
+		// crude test to see if I'm running from within eclipse to enable all logging
+		boolean ECLIPSE = System.getProperty("java.class.path").contains("/configuration/org.eclipse.osgi");
+		if ( ECLIPSE ) {
+			org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger("org.mmisw");
+			logger.setLevel(org.apache.log4j.Level.ALL);
+		}
+	}
+	
 	/** base dir for the resources needed/generated */
 	private static final String BASE_DIR = "resource/voc2skos/";
 

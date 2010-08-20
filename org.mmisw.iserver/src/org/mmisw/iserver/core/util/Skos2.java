@@ -4,23 +4,18 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.vocabulary.OWL;
-import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
-import com.hp.hpl.jena.vocabulary.XSD;
 
 
 /**
- * SKOS vocabulary elements used by the ORR modules.
+ * SKOS vocabulary elements in the "http://www.w3.org/2008/05/skos#" namespace.
  * 
- * @author  Luis Bermudez, Carlos Rueda
+ * @author Carlos Rueda
 */
-
-public class Skos {
+public class Skos2 {
 	private static Model model = ModelFactory.createDefaultModel();
 
-	public static final String NS = "http://www.w3.org/2004/02/skos/core#";
+	public static final String NS = "http://www.w3.org/2008/05/skos#";
 
 	private static final Property property(String local) {
 		return model.createProperty(NS, local);
@@ -55,58 +50,5 @@ public class Skos {
 	public static final Property broadMatch = property("broadMatch");
 	public static final Property narrowMatch = property("narrowMatch");
 	public static final Property relatedMatch = property("relatedMatch");
-	
-	
-	
-	public static Model createModel(){
-		Model m = ModelFactory.createDefaultModel();
-		m.setNsPrefix("skos", NS);
-		m.add(model);
-		
-//		m.add(Skos.broader, OWL.inverseOf, Skos.narrower);
-//		m.add(Skos.broader, RDF.type,  OWL.TransitiveProperty);
-//		m.add(Skos.broader, RDFS.range,  OWL.TransitiveProperty);
-//		m.add(Skos.narrower, RDF.type,  OWL.TransitiveProperty);
-//		m.add(Skos.related, RDF.type, OWL.SymmetricProperty);
-		
-		return m;
-	}
-	
-	public static Resource addConceptSubClass(Model model, String conceptUri ) {
-		Resource conceptSubClass = model.createResource(conceptUri);
-		
-		Statement stmt;
-		
-		stmt = model.createStatement(conceptSubClass, RDF.type, OWL.Class);
-		model.add(stmt);
-		
-		stmt = model.createStatement(conceptSubClass, RDFS.subClassOf, Skos.Concept);
-		model.add(stmt);
-
-		return conceptSubClass;
-	}
-	
-	public static Property addDatatypeProperty(Model model,
-			Resource conceptSubClass,
-			String propUri, String propLabel 
-	) {
-		Property prop = model.createProperty(propUri);
-		
-		Statement stmt;
-		
-		stmt = model.createStatement(prop, RDF.type, OWL.DatatypeProperty);
-		model.add(stmt);
-		stmt = model.createStatement(prop, RDFS.domain, conceptSubClass);
-		model.add(stmt);
-		stmt = model.createStatement(prop, RDFS.range, XSD.xstring);
-		model.add(stmt);
-
-		if ( propLabel != null ){
-			stmt = model.createStatement(prop, RDFS.label, propLabel);
-			model.add(stmt);
-		}
-
-		return prop;
-	}
 	
 }

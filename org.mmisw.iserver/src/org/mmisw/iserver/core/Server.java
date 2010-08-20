@@ -33,9 +33,13 @@ import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.ontmodel.OntModelUtil;
 import org.mmisw.iserver.core.util.MailSender;
 import org.mmisw.iserver.core.util.OntServiceUtil;
-import org.mmisw.iserver.core.util.QueryUtil;
+import org.mmisw.iserver.core.util.Skos;
+import org.mmisw.iserver.core.util.Skos2;
 import org.mmisw.iserver.core.util.TempOntologyHelper;
 import org.mmisw.iserver.core.util.Util2;
+import org.mmisw.iserver.core.util.ontinfo.OntInfoUtil;
+import org.mmisw.iserver.core.util.ontype.OntTypeUtil;
+import org.mmisw.iserver.core.vine.MappingOntologyCreator;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
@@ -48,6 +52,7 @@ import org.mmisw.iserver.gwt.client.rpc.InternalOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MappingDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
+import org.mmisw.iserver.gwt.client.rpc.OntologyType;
 import org.mmisw.iserver.gwt.client.rpc.OtherDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
@@ -181,25 +186,10 @@ public class Server implements IServer {
 		return metadataBaseInfo;
 	}
 
-	public List<EntityInfo> getEntities(String ontologyUri) {
-		if ( log.isDebugEnabled() ) {
-			log.debug("getEntities(String) starting");
-		}
-		try {
-			return  QueryUtil.getEntities(ontologyUri, null);
-		}
-		catch (Exception e) {
-			String error = "Error getting entities: " +e.getMessage();
-			log.error(error, e);
-			return null;
-		}
-	}
-
-	
 	private static RegisteredOntologyInfo _createOntologyInfo(
 			String ontologyUri,   // = toks[0];
 			String displayLabel,  // = toks[1];
-			String type,          // = toks[2];
+			OntologyType type,          // = toks[2];
 			String userId,        // = toks[3];
 			String contactName,   // = toks[4];
 			String versionNumber, // = toks[5];
@@ -303,7 +293,7 @@ public class Server implements IServer {
 			RegisteredOntologyInfo registeredOntologyInfo = _createOntologyInfo(
 					ontologyUri,
 					displayLabel,
-					type,
+					OntTypeUtil.map(type),
 					userId,
 					contactName,
 					versionNumber,
@@ -691,7 +681,7 @@ public class Server implements IServer {
 
 		
 		try {
-			QueryUtil.getEntities(registeredOntologyInfo, ontModel);
+			OntInfoUtil.getEntities(registeredOntologyInfo, ontModel);
 		}
 		catch (Exception e) {
 			String error = "Error loading model: " +e.getMessage();
@@ -755,7 +745,7 @@ public class Server implements IServer {
 		}
 		
 		try {
-			QueryUtil.getEntities(registeredOntologyInfo, ontModel);
+			OntInfoUtil.getEntities(registeredOntologyInfo, ontModel);
 		}
 		catch (Exception e) {
 			String error = "Error getting entities: " +e.getMessage();
@@ -2521,7 +2511,7 @@ public class Server implements IServer {
 		}
 		
 		try {
-			QueryUtil.getEntities(tempOntologyInfo, ontModel);
+			OntInfoUtil.getEntities(tempOntologyInfo, ontModel);
 		}
 		catch (Exception e) {
 			String error = "Error loading model: " +e.getMessage();
@@ -2551,59 +2541,51 @@ public class Server implements IServer {
 		
 		List<RelationInfo> relInfos = new ArrayList<RelationInfo>();
 		
-//      URI="http://www.w3.org/2008/05/skos#exactMatch"
-//      icon="icons/exactMatch28.png"
 //      name="exactMatch"
-//      tooltip="The property skos:exactMatch is used to link two concepts, indicating a high degree of confidence that the concepts can be used interchangeably across a wide range of information retrieval applications. [SKOS Section 10.1] (transitive, symmetric)"
 		relInfos.add(new RelationInfo(
-				"http://www.w3.org/2008/05/skos#exactMatch", 
 				"exactMatch28.png", 
 				"exactMatch",
-				"The property skos:exactMatch is used to link two concepts, indicating a high degree of confidence that the concepts can be used interchangeably across a wide range of information retrieval applications. [SKOS Section 10.1] (transitive, symmetric)"
+				"The property skos:exactMatch is used to link two concepts, indicating a high degree " +
+				"of confidence that the concepts can be used interchangeably across a wide range of " +
+				"information retrieval applications. [SKOS Section 10.1] (transitive, symmetric)",
+				Skos.exactMatch.getURI(), Skos2.exactMatch.getURI()
 		));
 		
-//      URI="http://www.w3.org/2008/05/skos#closeMatch"
-//      icon="icons/closeMatch28.png"
 //      name="closeMatch"
-//      tooltip="A skos:closeMatch link indicates that two concepts are sufficiently similar that they can be used interchangeably in some information retrieval applications. [SKOS Section 10.1] (symmetric)"
 		relInfos.add(new RelationInfo(
-				"http://www.w3.org/2008/05/skos#closeMatch", 
 				"closeMatch28.png", 
 				"closeMatch",
-				"A skos:closeMatch link indicates that two concepts are sufficiently similar that they can be used interchangeably in some information retrieval applications. [SKOS Section 10.1] (symmetric)"
+				"A skos:closeMatch link indicates that two concepts are sufficiently similar that " +
+				"they can be used interchangeably in some information retrieval applications. " +
+				"[SKOS Section 10.1] (symmetric)",
+				Skos.closeMatch.getURI(), Skos2.closeMatch.getURI()
 		));
 		
-//      URI="http://www.w3.org/2008/05/skos#broadMatch"
-//      icon="icons/broadMatch28.png"
 //      name="broadMatch"
-//      tooltip="'has the broader concept': the second (object) concept is broader than the first (subject) concept [SKOS Section 8.1] (infers broaderTransitive, a transitive relation)"
 		relInfos.add(new RelationInfo(
-				"http://www.w3.org/2008/05/skos#broadMatch", 
 				"broadMatch28.png", 
 				"broadMatch",
-				"'has the broader concept': the second (object) concept is broader than the first (subject) concept [SKOS Section 8.1] (infers broaderTransitive, a transitive relation)"
+				"'has the broader concept': the second (object) concept is broader than the first " +
+				"(subject) concept [SKOS Section 8.1] (infers broaderTransitive, a transitive relation)",
+				Skos.broadMatch.getURI(), Skos2.broadMatch.getURI()
 		));
 
-//      URI="http://www.w3.org/2008/05/skos#narrowMatch"
-//      icon="icons/narrowMatch28.png"
 //      name="narrowMatch"
-//      tooltip="'has the narrower concept': the second (object) concept is narrower than the first (subject) concept [SKOS Section 8.1] (infers narrowTransitive, a transitive relation)"
 		relInfos.add(new RelationInfo(
-				"http://www.w3.org/2008/05/skos#narrowMatch", 
 				"narrowMatch28.png", 
 				"narrowMatch",
-				"'has the narrower concept': the second (object) concept is narrower than the first (subject) concept [SKOS Section 8.1] (infers narrowTransitive, a transitive relation)"
+				"'has the narrower concept': the second (object) concept is narrower than the first " +
+				"(subject) concept [SKOS Section 8.1] (infers narrowTransitive, a transitive relation)",
+				Skos.narrowMatch.getURI(), Skos2.narrowMatch.getURI()
 		));
 
-//      URI="http://www.w3.org/2008/05/skos#relatedMatch"
-//      icon="icons/relatedMatch28.png"
 //      name="relatedMatch"
-//      tooltip="The property skos:relatedMatch is used to state an associative mapping link between two concepts. [SKOS Section 8.1] (symmetric)"
 		relInfos.add(new RelationInfo(
-				"http://www.w3.org/2008/05/skos#relatedMatch", 
 				"relatedMatch28.png", 
 				"relatedMatch",
-				"The property skos:relatedMatch is used to state an associative mapping link between two concepts. [SKOS Section 8.1] (symmetric)"
+				"The property skos:relatedMatch is used to state an associative mapping link between " +
+				"two concepts. [SKOS Section 8.1] (symmetric)",
+				Skos.relatedMatch.getURI(), Skos2.relatedMatch.getURI()
 		));
 
 		if ( log.isDebugEnabled() ) {

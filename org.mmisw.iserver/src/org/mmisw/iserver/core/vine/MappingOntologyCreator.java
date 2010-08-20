@@ -1,4 +1,4 @@
-package org.mmisw.iserver.core;
+package org.mmisw.iserver.core.vine;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -7,6 +7,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.iserver.core.MdHelper;
+import org.mmisw.iserver.core.ServerConfig;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.MappingDataCreationInfo;
@@ -14,11 +16,15 @@ import org.mmisw.iserver.gwt.client.rpc.vine.Mapping;
 import org.mmisw.ont.JenaUtil2;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
+import org.mmisw.ont.vocabulary.Vine;
 
 import com.hp.hpl.jena.ontology.Ontology;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.rdf.model.Statement;
 
 import edu.drexel.util.rdf.JenaUtil;
 import edu.drexel.util.rdf.OwlModel;
@@ -85,7 +91,10 @@ public class MappingOntologyCreator {
 		
 		this.values = values;
 		
-		log.info("!!!!!!!!!!!!!!!! MappingOntologyCreator: values = " +values);
+		if ( log.isDebugEnabled() ) {
+			log.debug("!!!!!!!!!!!!!!!! MappingOntologyCreator: metadata values = " +values+ "\n" +
+					" number of mappings = " +mappings.size());
+		}
 
 		if ( orgAbbreviation == null ) {
 			orgAbbreviation = values.get(OmvMmi.origMaintainerCode.getURI());
@@ -152,10 +161,15 @@ public class MappingOntologyCreator {
 		}
 		
 		Ontology ont = newOntModel.createOntology(base_);
-		log.info("New ontology created with namespace " + ns_ + " base " + base_);
+		if ( log.isDebugEnabled() ) {
+			log.debug("New ontology created with namespace " + ns_ + " base " + base_);
+		}
 
 		// Indicate VINE as the engineering tool:
 		ont.addProperty(Omv.usedOntologyEngineeringTool, OmvMmi.vine);
+		
+		// Import the VINE ontology to provide associated semantics:
+		ont.addImport(ResourceFactory.createResource(JenaUtil2.removeTrailingFragment(Vine.NS)));
 		
 		Map<String, Property> uriPropMap = MdHelper.getUriPropMap();
 		for ( String uri : values.keySet() ) {
@@ -210,9 +224,54 @@ public class MappingOntologyCreator {
 			Resource r = newOntModel.createResource(left);
 			Property p = newOntModel.createProperty(relation);
 			RDFNode o = newOntModel.createResource(right);
-			newOntModel.add(r, p, o);
+			
+			Map<String, String> md = mapping.getMetadata();
+
+			_createMapping(r, p, o, md);
 		}
 		
+	}
+
+	/**
+	 * Creates and adds to the model the mapping statement.
+	 * @param mapping
+	 * @param r
+	 * @param p
+	 * @param o
+	 */
+	private void _createMapping(Resource r, Property p, RDFNode o, Map<String, String> md) {
+		
+		// the resource representing the statement (r,p,o):
+		Resource stmtRsr;
+		
+		if ( false ) { 
+			// use basic reification.
+			Statement stmt = newOntModel.createStatement(r, p, o);
+			newOntModel.add(stmt);
+			stmtRsr = stmt.createReifiedStatement();
+		}
+		else {
+			// use vine:Statement
+			stmtRsr = _createVineMappingStatement(newOntModel, r, p, o);
+		}
+		
+		if ( md != null ) {
+			for ( String uri : md.keySet() ) {
+				String value = md.get(uri);
+				Property prop = newOntModel.createProperty(uri);
+				stmtRsr.addProperty(prop, value);
+			}
+		}
+	}
+
+
+	private static Resource _createVineMappingStatement(Model model, Resource s, Property p, RDFNode o) {
+		Resource res = model.createResource(Vine.Statement);
+		res.addProperty(Vine.subject, s);
+		res.addProperty(Vine.predicate, p);
+		res.addProperty(Vine.object, o);
+//		res.addProperty(DC.date, ISO8601Date.getCurrentDate());
+		return res;
 	}
 
 
@@ -245,7 +304,9 @@ public class MappingOntologyCreator {
 		
 		// see createProperties()
 		
-		log.info("setFinalUri: " +finalUri);
+		if ( log.isDebugEnabled() ) {
+			log.debug("setFinalUri: " +finalUri);
+		}
 	}
 
 

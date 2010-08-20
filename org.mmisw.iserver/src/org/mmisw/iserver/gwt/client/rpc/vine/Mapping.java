@@ -1,6 +1,7 @@
 package org.mmisw.iserver.gwt.client.rpc.vine;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Info about a mapping.
@@ -14,8 +15,10 @@ public class Mapping implements Serializable {
 	private String relation;
 	private String right;
 	
+	private Map<String,String> metadata;
+	
 	/** no-arg ctor required for the serialization */
-	public Mapping() {
+	Mapping() {
 	}
 	
 	
@@ -49,4 +52,16 @@ public class Mapping implements Serializable {
 		this.right = right;
 	}
 
+
+	public Map<String, String> getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(Map<String, String> metadata) {
+		this.metadata = metadata;
+	}
+	
+	public String toString() {
+		return "Mapping<" +left+ ", " +relation+ ", " +right+ ">: " +metadata;
+	}
 }

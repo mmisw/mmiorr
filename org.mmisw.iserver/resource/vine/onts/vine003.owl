@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:vine="http://mmisw.org/ont/mmi/vine/"
+    xmlns="http://localhost:8080/ont/mmitest/VineTest/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:omvmmi="http://mmisw.org/ont/mmi/20081020/ontologyMetadata/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:omv="http://omv.ontoware.org/2005/05/ontology#"
+    xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xml:base="http://localhost:8080/ont/mmitest/VineTest">
+    <owl:Ontology rdf:about="">
+    	<rdfs:comment>
+    	- vine="http://mmisw.org/ont/mmi/vine/"
+    	- NO omv:usedOntologyEngineeringTool 
+    	- skos="http://www.w3.org/2004/02/skos/core#" 
+    	</rdfs:comment>
+        <omv:acronym>VineTest</omv:acronym>
+        <omv:version>20100818T234435</omv:version>
+        <omv:creationDate>2010-08-18T23:45:30+0000</omv:creationDate>
+        <omv:uri>http://localhost:8080/ont/mmitest/VineTest</omv:uri>
+    </owl:Ontology>
+
+    <vine:Statement>
+        <vine:confidence>100</vine:confidence>
+        <rdfs:comment>COMMENT KAKAKAKK</rdfs:comment>
+        <vine:object rdf:resource="http://localhost:8080/ont/mmitest/test/term3"/>
+        <vine:predicate rdf:resource="http://www.w3.org/2004/02/skos/core#exactMatch"/>
+        <vine:subject rdf:resource="http://localhost:8080/ont/mmitest/test/term1"/>
+    </vine:Statement>
+</rdf:RDF>
+

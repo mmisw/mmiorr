@@ -36,14 +36,6 @@ public interface IServer {
 	AppInfo getAppInfo();
 	
 	/**
-	 * Gets the list of entities associated with the given ontology. 
-	 * @param ontologyUri URI of the desired ontology.
-	 * @return list of entities
-	 */
-	public List<EntityInfo> getEntities(String ontologyUri);
-	
-	
-	/**
 	 * Gets all (latest versions of the) ontologies in the registry.
 	 * 
 	 * <p>

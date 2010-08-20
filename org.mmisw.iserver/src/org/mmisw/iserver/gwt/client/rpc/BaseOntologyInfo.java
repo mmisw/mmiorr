@@ -20,7 +20,7 @@ public abstract class BaseOntologyInfo extends Errorable implements Serializable
 	
 	private OntologyData ontologyData;
 
-	private String type;
+	private OntologyType type;
 
 	
 	public BaseOntologyInfo() {
@@ -50,13 +50,13 @@ public abstract class BaseOntologyInfo extends Errorable implements Serializable
 	/**
 	 * @return the type
 	 */
-	public String getType() {
+	public OntologyType getType() {
 		return type;
 	}
 	/**
 	 * @param type the type to set
 	 */
-	public void setType(String type) {
+	public void setType(OntologyType type) {
 		this.type = type;
 	}
 
