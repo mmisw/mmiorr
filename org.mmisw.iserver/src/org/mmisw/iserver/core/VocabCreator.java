@@ -13,7 +13,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.util.StringManipulationUtil;
-import org.mmisw.iserver.core.util.Utf8Util;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyDataCreationInfo;
@@ -39,6 +38,9 @@ import edu.drexel.util.rdf.OwlModel;
 
 /**
  * Dispatchs the conversion.
+ * 
+ * <p>
+ * TODO This could be superseded by the new voc2skos functionality.
  * 
  * <p>
  * Adapted from org.mmi.web.MetadataBean. Note that changes have been kept to a minimum, basically
