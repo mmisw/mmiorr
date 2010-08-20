@@ -50,7 +50,9 @@ public class VineOntologyContentsPanel extends BaseOntologyContentsPanel {
 			String expandedLeft = VineMain.getExpandedTerm(mapping.getLeft());
 			String expandedRight = VineMain.getExpandedTerm(mapping.getRight());
 			
-			expandedMappings.add(new Mapping(expandedLeft, mapping.getRelation(), expandedRight));
+			Mapping mappingToServer = new Mapping(expandedLeft, mapping.getRelation(), expandedRight);
+			mappingToServer.setMetadata(mapping.getMetadata());
+			expandedMappings.add(mappingToServer);
 		}
 		mappingDataCreationInfo.setMappings(expandedMappings);
 

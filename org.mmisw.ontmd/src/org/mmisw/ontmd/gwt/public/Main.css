@@ -263,3 +263,10 @@ SearchResultsTable {
 }
 
 
+.MappingMetadataPanel {
+  border-spacing: 0px;
+  border-collapse: collapse;
+  border: 1px solid #dee7ec;
+  padding: 3px;
+}
+

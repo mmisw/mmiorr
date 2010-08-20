@@ -7,18 +7,17 @@ import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.CreateUpdateUserAccountResult;
-import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
+import org.mmisw.iserver.gwt.client.rpc.InternalOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
-import org.mmisw.iserver.gwt.client.rpc.InternalOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.UnregisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
 import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryResult;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
+import org.mmisw.iserver.gwt.client.rpc.UnregisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.UserInfoResult;
 import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
@@ -91,24 +90,6 @@ public interface OntMdService extends RemoteService {
 	Voc2RdfBaseInfo getVoc2RdfBaseInfo();
 	
 	ConversionResult convert2Rdf(Map<String,String> values);
-	
-	
-	///////////////////////////////////////////////////////////////////////
-	// data
-	
-	/**
-	 * Reviews the pre-loaded model with the associated new values.
-	 */
-	@Deprecated
-	DataResult getData(OntologyInfoPre ontologyInfoPre);
-
-	
-	/**
-	 * Gets the list of entities associated with the given ontology. 
-	 * @param ontologyUri URI of the desired ontology.
-	 * @return list of entities
-	 */
-	public List<EntityInfo> getEntities(String ontologyUri);
 	
 	
 	///////////////////////////////////////////////////////////////////////

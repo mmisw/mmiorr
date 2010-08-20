@@ -190,7 +190,7 @@ public class BrowsePanel extends VerticalPanel {
 			public void execute() {
 				selectedOntologyInfos.clear();
 				for ( RegisteredOntologyInfo oi : ontologyInfos ) {
-					if ( type.equalsIgnoreCase(oi.getType()) ) {
+					if ( type.equalsIgnoreCase(oi.getType().toString()) ) {
 						selectedOntologyInfos.add(oi);
 					}
 				}

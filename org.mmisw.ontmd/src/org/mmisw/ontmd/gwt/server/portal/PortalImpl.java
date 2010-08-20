@@ -12,7 +12,6 @@ import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.CreateUpdateUserAccountResult;
-import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.InternalOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
@@ -32,7 +31,10 @@ import org.mmisw.ontmd.gwt.server.PortalConfig;
 
 
 /**
- * portal operations. 
+ * A proxy object that configures and interacts with the IServer.
+ * 
+ *  <p>
+ *  TODO this class can probably have a better name
  * 
  * @author Carlos Rueda
  * @version $Id$
@@ -121,10 +123,6 @@ public class PortalImpl  {
 		return iserver.getOntologyInfo(ontologyUri);
 	}
 	
-	public List<EntityInfo> getEntities(String ontologyUri) {
-		return iserver.getEntities(ontologyUri);
-	}
-
 	
 	public MetadataBaseInfo getMetadataBaseInfo(boolean includeVersion) {
 		String resourceTypeClassUri = PortalConfig.Prop.RESOURCE_TYPE_CLASS.getValue();

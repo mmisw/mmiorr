@@ -34,7 +34,6 @@ import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.CreateUpdateUserAccountResult;
-import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.InternalOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
@@ -55,7 +54,6 @@ import org.mmisw.ont.MmiUri;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.ontmd.gwt.client.rpc.BaseResult;
-import org.mmisw.ontmd.gwt.client.rpc.DataResult;
 import org.mmisw.ontmd.gwt.client.rpc.OntMdService;
 import org.mmisw.ontmd.gwt.client.rpc.OntologyInfoPre;
 import org.mmisw.ontmd.gwt.client.rpc.PortalBaseInfo;
@@ -1315,42 +1313,6 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	}
 
 	
-	///////////////////////////////////////////////////////////////////////
-	// data
-	
-	public DataResult getData(OntologyInfoPre ontologyInfoPre) {
-		DataResult dataResult = new DataResult();
-		dataResult.setOntologyInfo(ontologyInfoPre);
-		
-		String ontologyUri = ontologyInfoPre.getUri();
-		if ( log.isDebugEnabled() ) {
-			log.debug("getData: ontologyUri=" +ontologyUri);
-		}
-		
-		try {
-			URL url = new URL(ontologyUri  + "?_csv");
-			InputStream is = url.openStream();
-			StringWriter os = new StringWriter();
-			IOUtils.copy(is, os);
-			
-			String result = os.toString();
-			if ( result.startsWith("ERROR") ) {
-				log.info(result);
-				dataResult.setError(result);
-			}
-			else {
-				dataResult.setCsv(result);
-			}
-		}
-		catch (Exception e) {
-			String error = "Cannot read CSV for: " +ontologyUri+ " : " +e.getMessage();
-			log.info(error);
-			dataResult.setError(error);
-		}
-		
-		return dataResult;
-	}
-	
 	
 	///////////////////////////////////////////////////////////////////////
 	// Portal
@@ -1383,10 +1345,6 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 		return portal.getOntologyInfo(ontologyUri);
 	}
 	
-	public List<EntityInfo> getEntities(String ontologyUri) {
-		return portal.getEntities(ontologyUri);
-	}
-
 	
 	public MetadataBaseInfo getMetadataBaseInfo(boolean includeVersion) {
 		return portal.getMetadataBaseInfo(includeVersion);

@@ -15,19 +15,13 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
- * The entry point for the Web VINE applications.
+ * The entry point for the Web VINE application.
  * 
  * @author Carlos Rueda
  */
 public class VineMain {
 	
 	public String footer;
-	
-	public static final String VERSION_COMMENT = 
-		"NOTE: This is a preliminary, not yet operational Web VINE prototype. " +
-		"<a target=_blank href=http://marinemetadata.org/vine>Click here</a> for current " +
-		"information about VINE.";
-	
 	
 	public static VineImageBundle images = (VineImageBundle) GWT.create(VineImageBundle.class);
 
@@ -142,30 +136,41 @@ public class VineMain {
 	 * @param callback
 	 */
 	public static void getRelationInfos(final AsyncCallback<List<RelationInfo>> callback) {
-		if ( relInfos == null ) {
-			AsyncCallback<List<RelationInfo>> myCallback = new AsyncCallback<List<RelationInfo>>() {
-				public void onFailure(Throwable thr) {
-					Main.log("getRelationInfos: ERROR: " +thr.getMessage());
-					callback.onFailure(thr);
-				}
-
-				public void onSuccess(List<RelationInfo> relInfos) {
-					VineMain.relInfos = relInfos;
-					Main.log("getRelationInfos: retrieved " +relInfos.size()+ " relations");
-					relInfoMap.clear();
-					for ( final RelationInfo relInfo : relInfos ) {
-						relInfoMap.put(relInfo.getUri(), relInfo);
-					}
-					callback.onSuccess(VineMain.relInfos);
-				}
-			};
-
-			Main.log("Getting relations ...");
-			Main.ontmdService.getVineRelationInfos(myCallback);
-		}
-		else {
+		if ( VineMain.relInfos != null ) {
 			callback.onSuccess(VineMain.relInfos);
+			return;
 		}
+		
+		AsyncCallback<List<RelationInfo>> myCallback = new AsyncCallback<List<RelationInfo>>() {
+			public void onFailure(Throwable thr) {
+				Main.log("getRelationInfos: ERROR: " +thr.getMessage());
+				callback.onFailure(thr);
+			}
+
+			public void onSuccess(List<RelationInfo> relInfos) {
+				VineMain.relInfos = relInfos;
+				Main.log("getRelationInfos: retrieved " +relInfos.size()+ " relations");
+				relInfoMap.clear();
+				for ( final RelationInfo relInfo : relInfos ) {
+					
+					relInfoMap.put(relInfo.getUri(), relInfo);
+					
+					// also associate any secondary URIs to the relInfo.
+					// This makes possible that mappings from an old version of vine (in particular,
+					// those using the Skos2 namespace), be dispatched in the interface.
+					List<String> uris2 = relInfo.getSecondaryUris();
+					if ( uris2 != null ) {
+						for ( String uri2 : uris2 ) {
+							relInfoMap.put(uri2, relInfo);
+						}
+					}
+				}
+				callback.onSuccess(VineMain.relInfos);
+			}
+		};
+
+		Main.log("Getting relations ...");
+		Main.ontmdService.getVineRelationInfos(myCallback);
 	}
 
 	

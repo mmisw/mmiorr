@@ -98,7 +98,7 @@ public class SelectionTree extends Tree implements TreeListener {
 				authors.put(username, oi.getUserId());
 			}
 
-			String type = oi.getType().toLowerCase();
+			String type = oi.getType().toString().toLowerCase();
 			if ( ! types.contains(type) ) {
 				types.add(type);
 			}

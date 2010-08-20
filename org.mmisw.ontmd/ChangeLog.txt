@@ -2,6 +2,30 @@ org.mmisw.ontmd: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-08-19   1.9.95.alpha
+
+	Removed the following unused methods (reflecting corresp. removals in IServer):
+	- OntMdService/OntMdServiceAsync/OntMdServiceImpl: List<EntityInfo> getEntities(String ontologyUri)
+	- PortalImpl: List<EntityInfo> getEntities(String ontologyUri)
+	
+	Also removed old unused method:
+	- OntMdService/OntMdServiceAsync/OntMdServiceImpl: DataResult getData(OntologyInfoPre ontologyInfoPre)
+	
+	Several changes to enable the new dispatch of ontology types, in particular mappings (Vine).
+	
+	
+	FIXME:  Mapping metadata need to be reverted if user cancels editing !!!
+
+
+
+2010-08-16   1.9.95.alpha
+	Vine: enabling reification of mapping statements to allow metadata association, issues:
+	- 166: reification for mapping
+	- 169: metadata association per mapping
+	
+	
+
+
 2010-08-16   1.9.94.alpha
 	Syncing with iserver (re. UTF8 related problems).
 	

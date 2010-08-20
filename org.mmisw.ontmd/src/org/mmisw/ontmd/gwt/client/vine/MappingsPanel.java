@@ -2,6 +2,7 @@ package org.mmisw.ontmd.gwt.client.vine;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.mmisw.iserver.gwt.client.rpc.vine.Mapping;
@@ -43,6 +44,9 @@ public class MappingsPanel extends FocusPanel {
 	private static class MappingAssoc {
 		Mapping mapping;
 		CheckBox cb;
+		
+		MappingMetadataPanel mdPanel;
+		
 		MappingAssoc(Mapping mapping, boolean readOnly) {
 			super();
 			this.mapping = mapping;
@@ -111,33 +115,35 @@ public class MappingsPanel extends FocusPanel {
 
 	public void setMappings(final List<Mapping> newMappings) {
 		this.mappingAssocs.clear();
-		if ( newMappings != null ) {
-			AsyncCallback<List<RelationInfo>> callback = new AsyncCallback<List<RelationInfo>>() {
-
-				public void onFailure(Throwable caught) {
-					// Ignore here.  Should have been dispatched in VineMain
-				}
-
-				public void onSuccess(List<RelationInfo> result) {
-					for ( Mapping mapping : newMappings ) {
-						RelationInfo relInfo = VineMain.getRelInfoMap().get(mapping.getRelation());
-						
-						String codedLeft = VineMain.getCodedTerm(mapping.getLeft());
-						String codedRight = VineMain.getCodedTerm(mapping.getRight());
-						
-						addMapping(codedLeft, relInfo, codedRight);
-					}
-				}
-
-			};
-			VineMain.getRelationInfos(callback);
+		if ( newMappings == null ) {
+			return;
 		}
+		
+		AsyncCallback<List<RelationInfo>> callback = new AsyncCallback<List<RelationInfo>>() {
+
+			public void onFailure(Throwable caught) {
+				// Ignore here.  Should have been dispatched in VineMain
+			}
+
+			public void onSuccess(List<RelationInfo> result) {
+				for ( Mapping mapping : newMappings ) {
+					RelationInfo relInfo = VineMain.getRelInfoMap().get(mapping.getRelation());
+
+					String codedLeft = VineMain.getCodedTerm(mapping.getLeft());
+					String codedRight = VineMain.getCodedTerm(mapping.getRight());
+
+					_addMapping(codedLeft, relInfo, codedRight, mapping.getMetadata());
+				}
+			}
+
+		};
+		VineMain.getRelationInfos(callback);
 	}
 	
 	/**
 	 * Gets the list of mappings that can be added without duplications.
 	 * NO mappings are added to the panel.
-	 * Call {@link #addMapping(String, RelationInfo, String)} to do the actual addition.
+	 * Call {@link #_addMapping(String, RelationInfo, String)} to do the actual addition.
 	 * 
 	 * @param leftKeys
 	 * @param relInfo
@@ -180,7 +186,7 @@ public class MappingsPanel extends FocusPanel {
 	 */
 	public void addMappings(RelationInfo relInfo, List<Mapping> mappings) {
 		for ( Mapping mapping : mappings ) {
-			addMapping(mapping.getLeft(), relInfo, mapping.getRight());
+			_addMapping(mapping.getLeft(), relInfo, mapping.getRight(), mapping.getMetadata());
 		}
 
 	}
@@ -191,8 +197,9 @@ public class MappingsPanel extends FocusPanel {
 	 * @param leftKey
 	 * @param relInfo
 	 * @param rightKey
+	 * @param metadata 
 	 */
-	public void addMapping(String leftKey, RelationInfo relInfo, String rightKey) {
+	private void _addMapping(String leftKey, RelationInfo relInfo, String rightKey, Map<String, String> metadata) {
 		int row = mappingAssocs.size();
 		if ( row == 0 ) {
 			flexPanel.clear();
@@ -214,13 +221,15 @@ public class MappingsPanel extends FocusPanel {
 			mapping = new Mapping(leftKey, null, rightKey);
 		}
 		
+		mapping.setMetadata(metadata);
+		
 		MappingAssoc ma = new MappingAssoc(mapping, readOnly);
 		mappingAssocs.add(ma);
 		
 		Widget left = new Label(leftKey);
 		Widget right = new Label(rightKey);
 
-		_addRow(ma.cb, left, center, right, "MappingsTable-row");
+		_addRow(ma.cb, left, center, right, "MappingsTable-row", ma);
 	}
 	
 	private void _setHeader(int row) {
@@ -237,6 +246,7 @@ public class MappingsPanel extends FocusPanel {
 				
 				@Override
 				protected void clientButtonClicked(String str) {
+					// "Delete" button clicked.
 					_deleteRows();
 				}
 			};
@@ -271,14 +281,16 @@ public class MappingsPanel extends FocusPanel {
 				HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 //		cf.setWidth(row, 1, "100%");
-		HTML noYet = new HTML("<font color=\"gray\">(<i>No mappings</i>)</font>");
+		HTML noYet = new HTML("<font color=\"gray\">(<i>No&nbsp;mappings</i>)</font>");
 		flexPanel.setWidget(row, 0, noYet);
 //		thisFp.setText(row, 1, ".");
 //		thisFp.setText(row, 2, ".");
 //		thisFp.setText(row, 3, ".");
 	}
 
-	private void _addRow(CheckBox cb, Widget left, Widget center, Widget right, String style) {
+	private void _addRow(CheckBox cb, Widget left, Widget center, Widget right, String style,
+			final MappingAssoc ma
+	) {
 		final int row = flexPanel.getRowCount();
 		FlexCellFormatter cf = flexPanel.getFlexCellFormatter();
 		flexPanel.getRowFormatter().setStyleName(row, style);
@@ -290,50 +302,24 @@ public class MappingsPanel extends FocusPanel {
 			hp.add(cb);
 		}
 		
-//		hp.add(Main.images.metadata().createImage());
 //		hp.add(Main.images.delete().createImage());
 		
-		if ( false ) {
-			// TODO proper dispatch of disclosure for a mapping
-			DisclosurePanel disclosure = new DisclosurePanel("");
-			disclosure.addEventHandler(new DisclosureHandler() {
-				public void onClose(DisclosureEvent event) {
-					flexPanel.setText(row + 1, 0, "");
-				}
-	
-				public void onOpen(DisclosureEvent event) {
-					flexPanel.setWidget(row + 1, 0, disclosureOpen());	
-				}
-			});
-	
-			hp.add(disclosure);
-		}
+		// #169: metadata association per mapping
+		Widget mdWidget = _prepareMappingMetadata(row, ma);
+		hp.add(mdWidget);
 		
-		flexPanel.setWidget(row, 0,
-				new FocusableRowElement(row, hp)
-//				hp
-		);
+		flexPanel.setWidget(row, 0, new FocusableRowElement(row, hp));
 		
-		flexPanel.setWidget(row, 1, 
-				new FocusableRowElement(row, left)
-				//left
-		);
+		flexPanel.setWidget(row, 1, new FocusableRowElement(row, left));
 		
 		flexPanel.getCellFormatter().setStyleName(row, 2, "MappingsTable-row");
-		flexPanel.setWidget(row, 2,
-				new FocusableRowElement(row, center)
-				//center
-		);
+		flexPanel.setWidget(row, 2, new FocusableRowElement(row, center));
 				
-		flexPanel.setWidget(row, 3,
-				new FocusableRowElement(row, right)
-				//right
-		);
+		flexPanel.setWidget(row, 3, new FocusableRowElement(row, right));
 
 		if ( center instanceof Image ) {
-			String width = "30";
 			Image img = (Image) center;
-			width = "" +img.getWidth();
+			String width = String.valueOf(img.getWidth());
 			cf.setWidth(row, 2, width);
 		}		
 		_setAlignments(row);
@@ -367,17 +353,41 @@ public class MappingsPanel extends FocusPanel {
 		);
 	}
 	
+	
+	private Widget _prepareMappingMetadata(final int row, final MappingAssoc ma) {
+		Image img = VineMain.images.metadata().createImage(); 
+		DisclosurePanel disclosure = new DisclosurePanel(img);  // DisclosurePanel("");
+		disclosure.setTitle("Mapping metadata");
+		disclosure.addEventHandler(new DisclosureHandler() {
+			public void onClose(DisclosureEvent event) {
+				flexPanel.setText(row + 1, 0, "");
+				// Note: we can release the metadata panel as any value change there
+				// is captured in the corresponding entry in the mapping's metadata map.
+				ma.mdPanel = null;
+			}
 
-	private Widget disclosureOpen() {
-		// TODO fill in mapping metadata widget
-		String comment = "TODO";
-		String confidence = "TODO";
+			public void onOpen(DisclosureEvent event) {
+				Widget widget = _openMappingMetadata(ma); 
+//				flexPanel.setWidget(row + 1, 0, widget);	
+				flexPanel.setWidget(row + 1, 0, new FocusableRowElement(row, widget));
+				// the FocusableRowElement is such that the positioning of the mouse over the
+				// metadata panel also higlhlights the whole mapping element.
+			}
+		});
 		
-		return new HTML(
-			""
-			+ "<b>Comment</b>: " +comment+ "<br/>"
-			+ "<b>Confidence</b>: " +confidence+ "<br/>"
-		);	
+		return disclosure;
+	}
+	
+	/**
+	 * Returns the mapping metadata panel associated with the given mapping.
+	 * This is created on demand.
+	 */
+	private Widget _openMappingMetadata(MappingAssoc ma) { 
+		if ( ma.mdPanel == null ) {
+			ma.mdPanel = new MappingMetadataPanel(ma.mapping, readOnly);
+		}
+		
+		return ma.mdPanel.getWidget();
 	}
 
 	
