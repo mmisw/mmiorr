@@ -184,7 +184,6 @@ public class VocabCreator {
 		
 		this.primaryClass = vocabularyDataCreationInfo.getClassName();
 		this.ascii = _createAscii(vocabularyDataCreationInfo);
-		Utf8Util.verifyUtf8(this.ascii.getBytes());
 		this.values = values;
 		
 		log.info("!!!!!!!!!!!!!!!! VocabCreator: values = " +values);
