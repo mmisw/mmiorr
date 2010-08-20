@@ -14,7 +14,7 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CodingErrorAction;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.SortedMap;
 
 import org.apache.commons.io.IOUtils;
 import org.mmisw.iserver.core.util.Utf8Util;
@@ -25,6 +25,7 @@ import org.mmisw.iserver.gwt.client.rpc.ReadFileResult;
  * <p>
  * Note: this was testing code previously located in Utf8Util, but now kept here
  * mainly for back-up purposes (it's not used anywhere in the ORR modules at this point).
+ * Code minimally maintained; could be improved.
  * 
  * @author Carlos Rueda
  */
@@ -33,19 +34,21 @@ public class ConverterTest  {
 	
 	/**
 	 * Reads a file.
-	 * If the file can be read using charset UTF-8, no conversion is attempted.
+	 * If the file can be read using charset UTF-8, no conversion is attempted,
+	 * but an error is signaled so the main program does not create the output file.
 	 * Otherwise, conversion to UTF-8 is attempted.
 	 * 
 	 * @param file The file to read
 	 * @return the result of the operation.
 	 * @throws Exception
 	 */
-	public static ReadFileResult readFileWithConversionToUtf8(File file) throws Exception {
+	private static ReadFileResult readFileWithConversionToUtf8(File file) throws Exception {
 		ReadFileResult result = new ReadFileResult();
 		
 		try {
 			String str = IOUtils.toString(new FileInputStream(file), "UTF-8");
 			result.setLogInfo("OK: file can be read as UTF-8 (no conversion necessary)");
+			result.setError("setting error to avoid unnecesary conversion");
 			result.setContents(str);
 			return result;
 
@@ -59,8 +62,10 @@ public class ConverterTest  {
 		Collection<String> charsets = Utf8Util.isUtf8(bytes);
 		
 		if ( charsets == null ) {
-			// should NOT happen; we already attempted reading UTF-8 above.
+			// charsets == null means the bytes are good UTF-8, so this
+			// should NOT happen.
 			result.addLogInfo("OK: already in UTF-8.");
+			result.setError("setting error to avoid unnecesary conversion");
 			result.setContents(new String(bytes, "UTF-8"));
 			return result;
 		}
@@ -70,15 +75,7 @@ public class ConverterTest  {
 		
 		for ( String charsetName : charsets ) {
 			try {
-				String outputStr = convertToUtf8(bytes, charsetName);
-				
-				// conversion apparently ok, but check that the output is UTF-8
-				Collection<String> charsets2 = Utf8Util.isUtf8(outputStr.getBytes());
-				if ( charsets2 != null ) {
-					result.addLogInfo("Conversion from " +charsetName+ ": ERROR. output is: " +charsets2+ "\n");
-					continue;
-				}
-
+				String outputStr = _asString(bytes, charsetName);
 				result.addLogInfo("Conversion from " +charsetName+ ": OK.\n");
 				result.setContents(outputStr);
 				return result;
@@ -122,10 +119,13 @@ public class ConverterTest  {
 		
 		ReadFileResult result = readFileWithConversionToUtf8(file);
 		System.out.println("readFileWithConversionToUtf8:");
-		if ( result.getError() != null ) System.out.println("error: " +result.getError());
+		String error = result.getError();
+		if ( error != null ) {
+			System.out.println("error: " +result.getError());
+		}
 		System.out.println("logInfo:\n\t" +result.getLogInfo().replaceAll("\n", "\n\t"));
 		
-		if ( result.getError() == null ) {
+		if ( error == null ) {
 			_writeStringTo(result.getContents(), outFilename);
 			System.out.println("Output written to " +outFilename);	
 			
@@ -145,7 +145,7 @@ public class ConverterTest  {
 		}
 	}
 
-	private static String convertToUtf8(byte[] bytes,  String charsetName) throws CharacterCodingException, UnsupportedEncodingException {
+	private static String _asString(byte[] bytes,  String charsetName) throws CharacterCodingException, UnsupportedEncodingException {
 //		http://www.exampledepot.com/egs/java.nio.charset/ConvertChar.html
 		
 		Charset charset = Charset.forName(charsetName);
@@ -160,29 +160,16 @@ public class ConverterTest  {
 		CharBuffer cbuf = decoder.decode(bbuf);
 		String str = cbuf.toString();
 		
-//		return str;
-
-		
-		Charset encoder = Charset.forName("UTF-8");
-
-		ByteBuffer bbuf2 = encoder.newEncoder()
-			.onMalformedInput(CodingErrorAction.REPORT)
-			.onUnmappableCharacter(CodingErrorAction.REPORT)
-			.encode(cbuf);
-		
-		str = new String(bbuf2.array(), "UTF-8");
-
 		return str;
 	}
 	
 	
 
-	@SuppressWarnings("unchecked")
 	private static void availableCharsets() {
 		System.out.println("availableCharsets");
 
-		Map map = Charset.availableCharsets();
-		Iterator it = map.keySet().iterator();
+		SortedMap<String, Charset> map = Charset.availableCharsets();
+		Iterator<String> it = map.keySet().iterator();
 		while (it.hasNext()) {
 			String charsetName = (String)it.next();
 			Charset charset = Charset.forName(charsetName);
