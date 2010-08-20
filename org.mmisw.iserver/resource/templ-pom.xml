@@ -2,8 +2,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.mmisw</groupId>
-	<artifactId>iserver.core</artifactId>
-	<name>iserver.core</name>
+	<artifactId>iserver</artifactId>
+	<name>MMI ORR Client Library</name>
 	<version>@iserver.app.version@-SNAPSHOT</version>
 	<parent>
 		<groupId>org.sonatype.oss</groupId>
@@ -13,7 +13,9 @@
 	<build>
 		<resources>
 			<resource>
-				<directory>_generated/classes</directory>
+				<directory>classes</directory>
+				<!-- note that this is relative to this pom file, which should be ../_generated/
+				     after translation. See build.xml -->
 			</resource>
 		</resources>
 	</build>

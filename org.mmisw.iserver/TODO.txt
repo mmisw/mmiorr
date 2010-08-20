@@ -1,4 +1,4 @@
-org.mmisw.iserver 
+org.mmisw.iserver - ORR Client Library ("interface to the server")
 Carlos Rueda  -  http://marinemetadata.org
 
 - Rename this module to org.mmisw.client. 
@@ -7,4 +7,6 @@ Carlos Rueda  -  http://marinemetadata.org
   package org.mmisw.iserver.gwt.client.rpc --> org.mmisw.iserver.model 
   ./base_war/WEB_INF/lib/ --> ./lib/
   See ChangeLog 2010-08-20
+  
+- Mavenize (but look at Buildr as well, perhaps getting the best from both).
 

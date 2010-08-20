@@ -84,7 +84,7 @@
 	<!-- ==================================================================== -->
 	<!-- main jar -->
 	
-	<target name="jar" depends="compile, tests" description="Generates the library for MMISW clients">
+	<target name="jar" depends="compile, tests" description="Generates the MMI ORR Client library">
 		<jar destfile="${build.dir}/org.mmisw.iserver.gwt.jar">
 			<fileset dir="${build.dir}/classes">
 				<include name="**/*.class" />
@@ -100,30 +100,10 @@
 		</jar>
 	</target>
 
-	<!-- ==================================================================== -->
-	<!-- core jar -->
-	
-	<target name="core-jar" depends="compile, tests" description="Generates the iserver core library">
-		<jar destfile="${build.dir}/org.mmisw.iserver.core.jar">
-			<fileset dir="${build.dir}/classes">
-				<exclude name="**/gwt/**.class" />
-				<include name="**/*.class" />
-				<include name="**/*.properties" />
-			</fileset>
-			<fileset dir="src">
-				<include name="**/*.xml" />
-				<include name="**/*.css" />
-				<include name="**/*.java" />
-				<include name="**/*.png" />
-				<include name="**/*.gif" />
-			</fileset>
-		</jar>
-	</target>
-
 	
 	<!-- ==================================================================== -->
-	<!-- See ChangeLog.txt 2010-08-06 note -->
-	<target name="deploy-core" depends="core-jar" description="deploys the iserver core library">
+	<!-- See ChangeLog.txt 2010-08-20 note -->
+	<target name="deploy" depends="jar" description="deploys the MMI ORR Client library">
 		<copy file="resource/templ-pom.xml" tofile="_generated/tmp-pom.xml" overwrite="true">
 			<filterset>
 				<filter token="iserver.app.version" value="${iserver.app.version}" />
