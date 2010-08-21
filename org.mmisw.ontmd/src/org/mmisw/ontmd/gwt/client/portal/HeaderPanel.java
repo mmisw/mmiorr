@@ -8,6 +8,8 @@ import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.portal.PortalMainPanel.InterfaceType;
 import org.mmisw.ontmd.gwt.client.util.Util;
 
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -15,6 +17,7 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -30,16 +33,28 @@ public class HeaderPanel extends FlexTable {
 	private HorizontalPanel linksPanel1 = new HorizontalPanel();
 	private HorizontalPanel linksPanel2 = new HorizontalPanel();
 	
-	private Hyperlink adminLink = new Hyperlink("<b>Admin</b>", true, PortalConsts.T_ADMIN);
+	private Widget adminLink = new Hyperlink("<b>Admin</b>", true, PortalConsts.T_ADMIN);
 	
-	private Hyperlink browseLink = new Hyperlink("Browse", PortalConsts.T_BROWSE);
-	private Hyperlink searchLink = new Hyperlink("Search terms", PortalConsts.T_SEARCH_TERMS);
+	private Widget browseLink = new Hyperlink("Browse", PortalConsts.T_BROWSE);
+	private Widget searchLink = new Hyperlink("Search terms", PortalConsts.T_SEARCH_TERMS);
 	
 	private Hyperlink accountLink = new Hyperlink("Create account", PortalConsts.T_USER_ACCOUNT);
 	
-	private Hyperlink signInLink = new Hyperlink("Sign in", PortalConsts.T_SIGN_IN);
+//	private Widget signInLink = new Hyperlink("Sign in", PortalConsts.T_SIGN_IN);
+	private Widget signInLink = new HButton("Sign in",
+			new ClickListener() {
+				public void onClick(Widget sender) {
+					PortalControl.getInstance().userToSignIn();
+				}
+	});
 	
-	private Hyperlink signOutLink = new Hyperlink("Sign out", PortalConsts.T_SIGN_OUT);
+//	private Widget signOutLink = new Hyperlink("Sign out", PortalConsts.T_SIGN_OUT);
+	private HButton signOutLink = new HButton("Sign out",
+			new ClickListener() {
+				public void onClick(Widget sender) {
+					PortalControl.getInstance().userSignedOut();
+				}
+	});
 	
 	private HTML helpButton = new HTML(
 			"<a target=\"_blank\" href=\"" +HELP_LINK+ "\">Help</a>");
@@ -81,6 +96,10 @@ public class HeaderPanel extends FlexTable {
 		);
 	}
 	
+	/**
+	 * Updates the various links and buttons according to the interface type and
+	 * whether there is a users logged in.
+	 */
 	void updateLinks(InterfaceType type) {
 		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
 	
@@ -88,11 +107,14 @@ public class HeaderPanel extends FlexTable {
 		List<Widget> widgets2 = new ArrayList<Widget>();
 		
 		if ( loginResult != null ) {
-//			widgets.add(new HTML("<b>" +loginResult.getUserName()+ "</b>"));
 			accountLink.setText(loginResult.getUserName());
-			widgets.add(accountLink);
+		}
+		else if ( type != InterfaceType.USER_ACCOUNT ) {
+			accountLink.setText("Create account");
 		}
 
+		boolean editing = false;
+		
 		switch ( type ) {
 		case BROWSE:
 			widgets2.add(searchLink);
@@ -110,23 +132,30 @@ public class HeaderPanel extends FlexTable {
 			break;
 		case ONTOLOGY_EDIT_NEW_VERSION:
 		case ONTOLOGY_EDIT_NEW:
-			// nothing
+			editing = true;
 			break;
-		}
-		
-		if ( loginResult == null ) {
-			widgets.add(signInLink);
-			if ( type != InterfaceType.USER_ACCOUNT ) {
-				accountLink.setText("Create account");
-				widgets.add(accountLink);
-			}
-		}
-		else {
-			widgets.add(signOutLink);
 		}
 		
 		widgets.add(helpButton);
 		widgets.add(touButton);
+		
+		if ( loginResult == null ) {
+			if ( type != InterfaceType.USER_ACCOUNT ) {
+				accountLink.setText("Create account");
+				widgets.add(accountLink);
+				widgets.add(signInLink);
+			}
+		}
+		else {
+			if ( editing ) {
+				// note, just a label, not a clickable thing
+				widgets.add(new Label(loginResult.getUserName()));
+			}
+			else {
+				widgets.add(accountLink);
+				widgets.add(signOutLink);
+			}
+		}
 		
 		
 		if ( type != InterfaceType.ADMIN && Util.isOrrAdmin(loginResult) ) {
@@ -156,4 +185,14 @@ public class HeaderPanel extends FlexTable {
 
 	}
 
+	
+	private static class HButton extends PushButton {
+
+		HButton(String text, ClickListener listener) {
+			super();
+			setHTML(text.replaceAll("\\s", "&nbsp;"));
+			addClickListener(listener);
+			DOM.setElementAttribute(getElement(), "id", "my-button-id");
+		}
+	}
 }

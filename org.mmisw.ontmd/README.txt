@@ -1,7 +1,7 @@
 org.mmisw.ontmd: The MMI Ontology Registry and Repository, ORR
 Carlos Rueda  -  MBARI  -  http://marinemetadata.org
 
-This is the code base for the MMI Ontology Registry and Repository system.
+This is the code base for the Portal to the MMI Ontology Registry and Repository system.
 
 MMISW Project page: http://code.google.com/p/mmisw/
 MMI ORR subproject: http://code.google.com/p/mmisw/source/browse/#svn/trunk/org.mmisw.ontmd
@@ -19,6 +19,9 @@ Prerequisites:
 	 MMI developed:
 	 	- The "ont" service deployed in the target application server context
 	 	  (http://code.google.com/p/mmisw/source/browse/#svn/trunk/org.mmisw.ont)
+	 	- the "iserver" library (http://code.google.com/p/mmisw/source/browse/#svn/trunk/org.mmisw.iserver)
+	 	  copy this library in base_war/WEB-INF/lib/
+	 	
 
 Then:
 	- copy sample.build.properties into build.properties 

@@ -164,11 +164,9 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 
 
 	private void userSignedIn() {
+		Main.log("userSignedIn: interfaceType=" +interfaceType);
 		controlsPanel.showMenuBar(interfaceType);
 		browsePanel.setLoginResult(pctrl.getLoginResult());
-		if ( signInPopup != null ) {
-			signInPopup.hide();
-		}
 	}
 	
 	void userSignedOut() {
@@ -181,7 +179,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		browsePanel.ontologyTable.showProgress();
 	    browsePanel.setLoginResult(pctrl.getLoginResult());
 	    
-	    History.newItem(PortalConsts.T_BROWSE);
+//	    History.newItem(PortalConsts.T_BROWSE);
 	}
 	
 	void userToSignIn() {
@@ -232,12 +230,15 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	}
 	
 	public void loginOk(final LoginResult loginResult) {
-		pctrl.setLoginResult(loginResult);
-		browsePanel.ontologyTable.showProgress();
-		headerPanel.updateLinks(interfaceType);
+		if ( signInPopup != null ) {
+			signInPopup.hide();
+		}
 		
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
+				pctrl.setLoginResult(loginResult);
+				browsePanel.ontologyTable.showProgress();
+				headerPanel.updateLinks(interfaceType);
 				userSignedIn();
 			}
 		});
@@ -264,48 +265,60 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		// TODO trackPageview or trackEvent?
 		GaUtil.trackPageview(historyToken);
 		
+		String lowercase = historyToken.toLowerCase();
+		boolean dispatched = false;
+		
 		historyToken = historyToken.trim();
 		if ( historyToken.length() > 0 ) {
-			if ( historyToken.toLowerCase().equals(PortalConsts.T_BROWSE) ) {
-				dispatchMainPanel(false);		
+			if ( lowercase.equals(PortalConsts.T_BROWSE) ) {
+				dispatchMainPanel(false);
+				dispatched = true;
 			}
-			else if ( historyToken.toLowerCase().equals(PortalConsts.T_SEARCH_TERMS) ) {
+			else if ( lowercase.equals(PortalConsts.T_SEARCH_TERMS) ) {
 				dispatchSearchTerms();		
+				dispatched = true;
 			}
-			else if ( historyToken.toLowerCase().equals(PortalConsts.T_USER_ACCOUNT) ) {
+			else if ( lowercase.equals(PortalConsts.T_USER_ACCOUNT) ) {
 				dispatchUserAccount(false);		
+				dispatched = true;
 			}
-			else if ( historyToken.toLowerCase().equals(PortalConsts.T_SIGN_IN) ) {
-				PortalControl.getInstance().userToSignIn();
+			else if ( lowercase.equals(PortalConsts.T_SIGN_IN)
+			||        lowercase.equals(PortalConsts.T_SIGN_OUT) ) {
+				// #220 "on browse page but tag remains in #login after signing in"
+				// history token mechanism not used anymore.
+				// Note: we could just let these tags be handle as URIs below. 
+				// But better force the default which is open the main browse page
+				dispatched = false;
 			}
-			else if ( historyToken.toLowerCase().equals(PortalConsts.T_SIGN_OUT) ) {
-				PortalControl.getInstance().userSignedOut();
-			}
-			else if ( historyToken.toLowerCase().equals(PortalConsts.T_VOC2RDF) ) {
+			else if ( lowercase.equals(PortalConsts.T_VOC2RDF) ) {
 				dispatchNewVocabulary();
+				dispatched = true;
 			}
-			else if ( historyToken.toLowerCase().equals(PortalConsts.T_VINE) ) {
+			else if ( lowercase.equals(PortalConsts.T_VINE) ) {
 				dispatchNewMappingOntology();
+				dispatched = true;
 			}
-			else if ( historyToken.toLowerCase().equals(PortalConsts.T_REGISTER_EXTERNAL) ) {
+			else if ( lowercase.equals(PortalConsts.T_REGISTER_EXTERNAL) ) {
 				dispatchUploadOntology();
+				dispatched = true;
 			}
-			else if ( historyToken.toLowerCase().equals(PortalConsts.T_ADMIN) ) {
+			else if ( lowercase.equals(PortalConsts.T_ADMIN) ) {
 				dispatchAdmin();		
+				dispatched = true;
 			}
 
 			else {
 				String uri = historyToken.trim();
 				Main.log("onHistoryChanged: URI: " +uri);
-				
+				dispatched = true;				
 				resolveUri(uri);
 			}
 		}
-		else {
-			dispatchMainPanel(false);
+		
+		if ( ! dispatched ) {
+			// just go the "home" page, ie., the main browse page:
 			History.newItem(PortalConsts.T_BROWSE);
 		}
-			
 	}
 
 	
@@ -362,7 +375,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 
 	
 	private void dispatchMainPanel(boolean reloadList) {
-		
+		Main.log("__dispatchMainPanel: reloadList=" +reloadList);
 		OntologyPanel ontologyPanel = pctrl.getOntologyPanel();
 		if ( ontologyPanel != null ) {
 			ontologyPanel.cancel();

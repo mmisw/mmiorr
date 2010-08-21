@@ -131,20 +131,22 @@ public class LoginPanel {
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		
-		HorizontalPanel loginCell = new HorizontalPanel();
-		loginCell.add(loginButton);
-		panel.setWidget(row, 2, loginCell);
-		panel.getFlexCellFormatter().setAlignment(row, 2, 
-				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
-		);
 		row++;
 		
 		
-		panel.getFlexCellFormatter().setColSpan(row, 0, 3);
+		panel.getFlexCellFormatter().setColSpan(row, 0, 2);
 		panel.setWidget(row, 0, rememberMeCheckBox);
 		panel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
+
+		HorizontalPanel loginCell = new HorizontalPanel();
+		loginCell.add(loginButton);
+		panel.setWidget(row, 1, loginCell);
+		panel.getFlexCellFormatter().setAlignment(row, 1, 
+				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
+		);
+		
 		row++;
 		
 		panel.getFlexCellFormatter().setColSpan(row, 0, 3);
@@ -214,6 +216,7 @@ public class LoginPanel {
 	}
 
 	public void getFocus() {
+		_enable(true);
 		userName.setFocus(true);
 		userName.selectAll();
 	}
@@ -248,13 +251,14 @@ public class LoginPanel {
 			public void onFailure(Throwable ex) {
 				String error = ex.getMessage();
 				Main.log("login error: " +error);
-				statusError("Error validating credentials: " +error);
 				_enable(true);
+				statusError("Error validating credentials: " +error);
 			}
 
 			public void onSuccess(LoginResult loginResult) {
 				if ( loginResult.getError() != null ) {
 					Main.log("login error: " +loginResult.getError());
+					_enable(true);
 					statusError(loginResult.getError());
 				}
 				else {
@@ -269,14 +273,15 @@ public class LoginPanel {
 					
 					statusMessage("OK");
 					PortalControl.getInstance().loginOk(loginResult);
+					// note that we do not re-enable the buttons because upon
+					// successful log-in, normally the dialog will be closed.
 				}
-				_enable(true);
 			}
 			
 		};
 		Main.log("Verifying ...");
-		statusMessage("Verifying ...");
 		_enable(false);
+		statusMessage("Verifying ...");
 		Main.ontmdService.authenticateUser(userName, userPassword, callback);
 
 	}
@@ -299,11 +304,12 @@ public class LoginPanel {
 			public void onFailure(Throwable ex) {
 				String error = ex.getMessage();
 				Main.log("Error resetting password: " +error);
-				statusError("Error resetting password: " +error);
 				_enable(true);
+				statusError("Error resetting password: " +error);
 			}
 
 			public void onSuccess(ResetPasswordResult result) {
+				_enable(true);
 				if ( result.getError() != null ) {
 					Main.log("Error resetting password: " +result.getError());
 					statusError(result.getError());
@@ -313,7 +319,6 @@ public class LoginPanel {
 					Main.log("Reset password OK. Email sent to: " +email);
 					statusMessage("New password sent to: " +email);
 				}
-				_enable(true);
 			}
 			
 		};
@@ -336,6 +341,9 @@ public class LoginPanel {
 		loginButton.setEnabled(enable);
 		resetPasswordButton.setEnabled(enable);
 		createAccountButton.setEnabled(enable);
+		
+		userName.setEnabled(enable);
+		userPassword.setEnabled(enable);
 	}
 
 	public void setUserName(String string) {

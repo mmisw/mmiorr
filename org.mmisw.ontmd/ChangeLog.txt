@@ -2,6 +2,15 @@ org.mmisw.ontmd: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-08-21   1.9.95.alpha
+	- .../gwt/client/img/: enabled the "beta" logo: mmior.jpg; 
+	  (previous "alpha" logo file renamed to mmior_alpha.png)
+	
+	- Fixed 220: "on browse page but tag remains in #login after signing in"
+	  History token mechanism (eg., #login, #logout) not used anymore. Instead these actions
+	  are dispatched from buttons (and not gwt hyperlinks).
+	
+	
 2010-08-20   1.9.95.alpha
 	- class org.mmisw.ontmd.gwt.client.util.query.QueryUtil moved to here from the iserver module.
 	  However, its code has been disabled while we determine what to do with it.
