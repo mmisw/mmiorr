@@ -100,6 +100,10 @@ public class VineEditorPanel extends VerticalPanel {
 
 	/** saves the given mappings (especially for its metadata) */
 	private void _saveMappings(List<Mapping> mappings) {
+		if ( mappings == null || mappings.size() == 0 ) {
+			Main.log("VineEditorPanel._saveMappings: unnecessary, no mappings given.");
+			return;
+		}
 		Main.log("VineEditorPanel._saveMappings: " +mappings.size());
 		savedMappings = new ArrayList<Mapping>();
 		for ( Mapping mm : mappings ) {
