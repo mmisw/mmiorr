@@ -98,7 +98,9 @@ public class VineEditorPanel extends VerticalPanel {
 
 	}
 
-	/** saves the given mappings (especially for its metadata) */
+	/** saves in memory the given mappings (especially for its metadata), which are used
+	 *  later by {@link #_restoreMappings()} in case the editing is canceled.
+	 */
 	private void _saveMappings(List<Mapping> mappings) {
 		if ( mappings == null || mappings.size() == 0 ) {
 			Main.log("VineEditorPanel._saveMappings: unnecessary, no mappings given.");

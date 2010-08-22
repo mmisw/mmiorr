@@ -9,6 +9,8 @@ $Id$
 	- Fixed 220: "on browse page but tag remains in #login after signing in"
 	  History token mechanism (eg., #login, #logout) not used anymore. Instead these actions
 	  are dispatched from buttons (and not gwt hyperlinks).
+
+	- Implemented 248: "Include mapped vocabularies in mapping ontology"
 	
 	
 2010-08-20   1.9.95.alpha

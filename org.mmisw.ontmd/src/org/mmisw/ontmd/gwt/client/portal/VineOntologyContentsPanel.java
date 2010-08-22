@@ -1,7 +1,9 @@
 package org.mmisw.ontmd.gwt.client.portal;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.MappingDataCreationInfo;
@@ -55,6 +57,9 @@ public class VineOntologyContentsPanel extends BaseOntologyContentsPanel {
 			expandedMappings.add(mappingToServer);
 		}
 		mappingDataCreationInfo.setMappings(expandedMappings);
+		
+		Set<String> namespaces = new HashSet<String>(VineMain.getWorkingUris());
+		mappingDataCreationInfo.setNamespaces(namespaces);
 
 		return mappingDataCreationInfo;
 	}
