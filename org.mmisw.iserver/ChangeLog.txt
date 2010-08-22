@@ -3,6 +3,16 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2010-08-21   1.9.95.alpha
+
+	- BaseOntInfo._addNamespace: does nothing if the uri starts with "urn:" 
+	
+	- Implemented 248: "Include mapped vocabularies in mapping ontology"
+	- MappingOntologyCreator: now adds the owl:import statements.
+	  Note that this uses the new field namespaces in MappingDataCreationInfo.
+	  Unit test updated: ...vine.test.CreationTest.
+	
+	
 2010-08-20   1.9.95.alpha
 	Removed dependencies on GWT:
 	

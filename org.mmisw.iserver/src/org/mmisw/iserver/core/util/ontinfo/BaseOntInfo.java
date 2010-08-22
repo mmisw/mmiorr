@@ -159,10 +159,16 @@ abstract class BaseOntInfo implements IOntInfo {
 	}
 	
 	/** adds the namespace associated with the uri to the given set.
-	 * It uses the given localName if non-null; otherwhise it gets the local name
-	 * from the uri as the last fragment starting with slash or hash 
+	 * It uses the given localName as a basis if non-null; otherwhise it gets the local name
+	 * from the uri as the last fragment starting with slash or hash.
+	 * 
+	 * It does nothing if uri starts with "urn:" (ignoring case).
 	 */
 	private static void _addNamespace(Set<String> namespaces, String uri, String localName) {
+		
+		if ( uri == null || uri.toLowerCase().startsWith("urn:") ) {
+			return;
+		}
 		
 		String ns;
 		

@@ -4,6 +4,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,21 +56,12 @@ public class MappingOntologyCreator {
 
 	private final Log log = LogFactory.getLog(MappingOntologyCreator.class);
 	
-
-	
-	/**
-	 * TODO createUniqueBaseName(): need a more robust way to get a unique name. 
-	 */
-	private static String _createUniqueBaseName() {
-		return String.valueOf(System.currentTimeMillis());
-
-	}
-	private final String uniqueBaseName = _createUniqueBaseName();
-
-
+	private Set<String> namespaces;
 	private List<Mapping> mappings;
 
 	
+	private final String uniqueBaseName = _createUniqueBaseName();
+
 	
 	/**
 	 * 
@@ -83,6 +75,7 @@ public class MappingOntologyCreator {
 		
 		Map<String, String> values = createOntologyInfo.getMetadataValues();
 		
+		this.namespaces = mappingDataCreationInfo.getNamespaces();
 		this.mappings = mappingDataCreationInfo.getMappings();
 		
 		this.namespaceRoot = ServerConfig.Prop.ONT_SERVICE_URL.getValue();
@@ -106,7 +99,6 @@ public class MappingOntologyCreator {
 
 	}
 	
-
 	public void createOntology(CreateOntologyResult createVocabResult) {
 		if ( log.isDebugEnabled() ) {
 			log.debug("MappingOntologyCreator.createOntology");
@@ -168,8 +160,8 @@ public class MappingOntologyCreator {
 		// Indicate VINE as the engineering tool:
 		ont.addProperty(Omv.usedOntologyEngineeringTool, OmvMmi.vine);
 		
-		// Import the VINE ontology to provide associated semantics:
-		ont.addImport(ResourceFactory.createResource(JenaUtil2.removeTrailingFragment(Vine.NS)));
+		// add any desired owl:imports
+		_addImports(ont);
 		
 		Map<String, Property> uriPropMap = MdHelper.getUriPropMap();
 		for ( String uri : values.keySet() ) {
@@ -211,6 +203,18 @@ public class MappingOntologyCreator {
 		}
 		
 		createContents();
+	}
+
+
+	/** adds an owl:import for each namespace in namespaces, if any */
+	private void _addImports(Ontology ont) {
+		if ( namespaces == null ) {
+			return;
+		}
+		
+		for ( String namespace : namespaces ) {
+			ont.addImport(ResourceFactory.createResource(JenaUtil2.removeTrailingFragment(namespace)));
+		}
 	}
 
 
@@ -318,4 +322,12 @@ public class MappingOntologyCreator {
 		return uniqueBaseName;
 	}
 
+	
+	/**
+	 * TODO createUniqueBaseName(): need a more robust way to get a unique name. 
+	 */
+	private static String _createUniqueBaseName() {
+		return String.valueOf(System.currentTimeMillis());
+
+	}
 }

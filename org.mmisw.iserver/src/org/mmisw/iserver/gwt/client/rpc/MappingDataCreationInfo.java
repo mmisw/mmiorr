@@ -1,6 +1,7 @@
 package org.mmisw.iserver.gwt.client.rpc;
 
 import java.util.List;
+import java.util.Set;
 
 import org.mmisw.iserver.gwt.client.rpc.vine.Mapping;
 
@@ -16,6 +17,9 @@ public class MappingDataCreationInfo extends DataCreationInfo {
 
 	private List<Mapping> mappings;
 	
+	/** and associated namespaces */
+	private Set<String> namespaces;
+	
 	
 	public void setMappings(List<Mapping> mappings) {
 		this.mappings = mappings;
@@ -26,5 +30,12 @@ public class MappingDataCreationInfo extends DataCreationInfo {
 		return mappings;
 	}
 	
+	public void setNamespaces(Set<String> namespaces) {
+		this.namespaces = namespaces;
+	}
+
+	public Set<String> getNamespaces() {
+		return namespaces;
+	}
 	
 }
