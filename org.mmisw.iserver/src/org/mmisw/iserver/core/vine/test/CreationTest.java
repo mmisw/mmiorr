@@ -25,8 +25,10 @@ import org.mmisw.iserver.gwt.client.rpc.OntologyType;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.vine.Mapping;
 import org.mmisw.ont.JenaUtil2;
+import org.mmisw.ont.vocabulary.Vine;
 
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 
 /**
@@ -50,6 +52,18 @@ public class CreationTest extends VineTestCase {
 		{ namespace1 + "termA", Skos.exactMatch.getURI(), namespace2 + "termP" },
 		{ namespace1 + "termB", Skos.closeMatch.getURI(), namespace2 + "termQ" },
 		{ namespace1 + "termC", Skos.relatedMatch.getURI(), namespace2 + "termR" },
+	};
+	
+	private final String[]  comments = {
+		"comment for A-P",	
+		"comment for B-Q",	
+		"comment for C-R",	
+	};
+	
+	private final String[]  confidences = {
+			"100",	
+			"90",	
+			"80",	
 	};
 	
 
@@ -81,23 +95,23 @@ public class CreationTest extends VineTestCase {
 
 	private CreateOntologyResult _createOntology(String ontologyUri) throws Exception {
 		
-//		TempOntologyInfo tempOntologyInfo = new TempOntologyInfo();
-//		MappingOntologyData ontologyData = new MappingOntologyData();
-//		ontologyData.setNamespaces(namespaces);
-//		tempOntologyInfo.setOntologyData(ontologyData);
-		
 		MappingDataCreationInfo mdci = new MappingDataCreationInfo();
 		mdci.setNamespaces(namespaces);
 		List<Mapping> mappings = new ArrayList<Mapping>();
 		mdci.setMappings(mappings);
+		
 		originalTriples.clear();
 		for ( int i = 0; i < mapps.length; i++ ) {
 			String[] mapp = mapps[i];
-			mappings.add(new Mapping(mapp[0], mapp[1], mapp[2]));
+			Mapping mapping = new Mapping(mapp[0], mapp[1], mapp[2]);
+			Map<String,String> mappingMetadata = new HashMap<String,String>();
+			mappingMetadata.put(RDFS.comment.getURI(), comments[i]);
+			mappingMetadata.put(Vine.confidence.getURI(), confidences[i]);
+			mapping.setMetadata(mappingMetadata);
+			mappings.add(mapping);
 			originalTriples.add(new StmtKey(mapp[0], mapp[1], mapp[2]));
 		}		
 		CreateOntologyInfo coi = new CreateOntologyInfo();
-//		coi.setBaseOntologyInfo(tempOntologyInfo);
 		coi.setUri(ontologyUri);
 		coi.setAuthority(authority);
 		coi.setShortName(shortName);
@@ -139,7 +153,6 @@ public class CreationTest extends VineTestCase {
 
 	private void _verifyImports(OntModel ontModel) {
 		Set<String> imported = ontModel.listImportedOntologyURIs();
-		assertEquals(namespaces.size(), imported.size());
 		for ( String namespace : namespaces ) {
 			String uri = JenaUtil2.removeTrailingFragment(namespace);
 			assertTrue("namespace is owl:import'ed", imported.contains(uri));

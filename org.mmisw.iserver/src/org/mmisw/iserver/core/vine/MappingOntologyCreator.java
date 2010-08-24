@@ -37,6 +37,9 @@ import edu.drexel.util.rdf.OwlModel;
  */
 public class MappingOntologyCreator {
 
+	// TODO do we want to include owl:import <vine-uri>?
+	private static final boolean ADD_VINE_IMPORT = false;
+
 	private String namespaceRoot;
 	
 	private String orgAbbreviation;
@@ -208,6 +211,11 @@ public class MappingOntologyCreator {
 
 	/** adds an owl:import for each namespace in namespaces, if any */
 	private void _addImports(Ontology ont) {
+		
+		if ( ADD_VINE_IMPORT ) {
+			ont.addImport(ResourceFactory.createResource(JenaUtil2.removeTrailingFragment(Vine.NS)));
+		}
+		
 		if ( namespaces == null ) {
 			return;
 		}

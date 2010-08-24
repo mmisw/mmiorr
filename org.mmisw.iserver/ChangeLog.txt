@@ -3,6 +3,15 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2010-08-23   1.9.95.alpha
+	- OntInfo._getMetadataForReified: ONLY the following properties are considered for
+	  the extraction of metadata for a mapping:
+	     RDFS.comment, Vine.confidence, and Vine20071128.confidence
+	  NOTE: this of course assumes the following setting: Vine-created ontologies are 
+	  to be handled only by Vine for purposes of creating new versions. 
+	  TODO: Include explanation of this restriction is documentation.	  
+	
+	
 2010-08-21   1.9.95.alpha
 
 	- BaseOntInfo._addNamespace: does nothing if the uri starts with "urn:" 

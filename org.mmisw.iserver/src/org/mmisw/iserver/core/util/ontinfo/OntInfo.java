@@ -40,6 +40,7 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
  * Based on SPARQL queries.
@@ -486,19 +487,38 @@ class OntInfo extends BaseOntInfo {
 			Statement myStmt = myProps.nextStatement();
 			Property myProp = myStmt.getPredicate();
 			
-			if ( Vine.subject.equals(myProp) || Vine20071128.subject.equals(myProp)
-			||   Vine.predicate.equals(myProp) || Vine20071128.predicate.equals(myProp)
-			||   Vine.object.equals(myProp) || Vine20071128.object.equals(myProp) 
+			if ( RDFS.comment.equals(myProp) 
+			||   Vine.confidence.equals(myProp)  ||  Vine20071128.confidence.equals(myProp)  
 			) {
-				// ok, nothing to do here (the corresponding triple element has already 
-				// been obtained for the StmtKey elsewhere).
-			}
-			else {
-				// Here we are only interested in collecting metadata.
+				// OK; these are the ONLY expected metadata properties per mapping (as of 2010-08-23)
 				String propUri = myProp.getURI();
 				String propValue = _getValueAsString(myStmt.getObject());
 				md.put(propUri, propValue);
 			}
+			
+			// Else: just IGNORE.
+			
+			
+/////////////////////////////////////////////////////////////////////////////////////////////////			
+//			// Note that the properties below are possible here, but we can just ignore them
+//			// for purposes of collecting the metadata:
+//			else if ( RDF.type.equals(myProp) ) {
+//				// The value would be vine:Statement, something that we already know.
+//			}
+//			else if ( Vine.subject.equals(myProp) || Vine20071128.subject.equals(myProp)
+//			||   Vine.predicate.equals(myProp) || Vine20071128.predicate.equals(myProp)
+//			||   Vine.object.equals(myProp) || Vine20071128.object.equals(myProp) 
+//			) {
+//				// ok, the corresponding triple element has already 
+//				// been obtained for the StmtKey elsewhere
+//			}
+//			else {
+//				// other properties?? but this case should NOT not happen.
+//				// NOTE: this of course assumes the following setting: Vine-created ontologies are
+//				// to be handled only by Vine for purposes of creating new versions. 
+//			}
+/////////////////////////////////////////////////////////////////////////////////////////////////			
+			
 		}
 	}
 
