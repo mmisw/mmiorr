@@ -2,6 +2,14 @@ org.mmisw.ontmd: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-08-23   1.9.95.alpha
+	- iserver module: ONLY the following properties are considered for
+	  the extraction of metadata for a mapping:
+	     RDFS.comment, Vine.confidence, and Vine20071128.confidence
+	     
+	- MappingMetadataPanel: fix to properly assign TextBox.
+	
+	
 2010-08-21   1.9.95.alpha
 	- .../gwt/client/img/: enabled the "beta" logo: mmior.jpg; 
 	  (previous "alpha" logo file renamed to mmior_alpha.png)

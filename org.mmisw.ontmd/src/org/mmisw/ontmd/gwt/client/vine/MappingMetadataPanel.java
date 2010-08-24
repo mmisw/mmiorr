@@ -140,8 +140,9 @@ public class MappingMetadataPanel {
 		return tb;
 	}
 
+	/** Gets the number of lines in the given string, never less than 1. */
 	private static int _countLines(String str) {
 		String[] lines = str.split("\n|\r\n|\r");
-		return lines.length;
+		return Math.max(lines.length, 1);
 	}
 }
