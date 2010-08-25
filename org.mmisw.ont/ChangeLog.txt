@@ -4,6 +4,14 @@ $Id$
 
 ChangeLog
 
+2010-08-25   1.9.95.alpha
+	- inf_rules.txt (used by OntGraphMem): fixed the symmetric rule:
+		[sym:    (?p rdf:type owl:SymmetricProperty) (?a ?p ?b) -> (?b ?p ?a)]
+	  It was previously indicating owl:Symmetric, which is incorrect.
+	  NOTE: currently OntGraphMem is not used, so this change does not have any effect in the
+	  current implementation; just did the change for consistency and eventual future enabling. 
+	  
+	  
 2010-08-24   1.9.95.alpha
 	- AdminDispatcher: added rules for the SKOS namespace "http://www.w3.org/2004/02/skos/core#"
 	  (ie. along with rules to the previous "http://www.w3.org/2008/05/skos#").
