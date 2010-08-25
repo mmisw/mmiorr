@@ -4,6 +4,11 @@ $Id$
 
 ChangeLog
 
+2010-08-24   1.9.95.alpha
+	- AdminDispatcher: added rules for the SKOS namespace "http://www.w3.org/2004/02/skos/core#"
+	  (ie. along with rules to the previous "http://www.w3.org/2008/05/skos#").
+	
+	
 2010-08-18   1.9.95.alpha
 	- Added org.mmisw.ont.vocabulary.Vine20071128 vocabulary, old namespace:
 	     http://marinemetadata.org/mmiws/20071128/vine#

@@ -51,7 +51,8 @@ public class AdminDispatcher {
 
 	
 	private static final String[][] SUPPORTING_NAMESPACES = new String[][] {
-			{ "skos", "http://www.w3.org/2008/05/skos#" }, 
+			{ "skos", "http://www.w3.org/2004/02/skos/core#" }, 
+			{ "skos2", "http://www.w3.org/2008/05/skos#" }, 
 			{ "rdfg", "http://www.w3.org/2004/03/trix/rdfg-1/" }, 
 		};
 		
@@ -62,15 +63,20 @@ public class AdminDispatcher {
 			//////// SKOS
 			{ "!skos:exactMatch", "!rdf:type", "!owl:TransitiveProperty" },
 			{ "!skos:exactMatch", "!rdf:type", "!owl:Symmetric" },
-			
 			{ "!skos:closeMatch", "!rdf:type", "!owl:Symmetric" },
-
 			{ "!skos:broadMatch", "!rdf:type", "!owl:TransitiveProperty" },
 			{ "!skos:broadMatch", "!owl:inverseOf", "!skos:narrowMatch" },
-
 			{ "!skos:narrowMatch", "!rdf:type", "!owl:TransitiveProperty" },
-			
 			{ "!skos:relatedMatch", "!rdf:type", "!owl:Symmetric" },
+			
+			//////// SKOS2
+			{ "!skos2:exactMatch", "!rdf:type", "!owl:TransitiveProperty" },
+			{ "!skos2:exactMatch", "!rdf:type", "!owl:Symmetric" },
+			{ "!skos2:closeMatch", "!rdf:type", "!owl:Symmetric" },
+			{ "!skos2:broadMatch", "!rdf:type", "!owl:TransitiveProperty" },
+			{ "!skos2:broadMatch", "!owl:inverseOf", "!skos2:narrowMatch" },
+			{ "!skos2:narrowMatch", "!rdf:type", "!owl:TransitiveProperty" },
+			{ "!skos2:relatedMatch", "!rdf:type", "!owl:Symmetric" },
 			
 			//////// RDFG
 			{ "!rdfg:subGraphOf", "!rdf:type", "!owl:TransitiveProperty" },
@@ -179,7 +185,7 @@ public class AdminDispatcher {
 					model.add(userInstance, propUri, propValue,  XSDDatatype.XSDdateTime);
 				}
 				else {
-					model.addLiteral(userInstance, propUri, propValue);
+					model.add(userInstance, propUri, propValue, XSDDatatype.XSDstring);
 				}
 			}
 		}
