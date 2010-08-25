@@ -62,21 +62,21 @@ public class AdminDispatcher {
 		
 			//////// SKOS
 			{ "!skos:exactMatch", "!rdf:type", "!owl:TransitiveProperty" },
-			{ "!skos:exactMatch", "!rdf:type", "!owl:Symmetric" },
-			{ "!skos:closeMatch", "!rdf:type", "!owl:Symmetric" },
+			{ "!skos:exactMatch", "!rdf:type", "!owl:SymmetricProperty" },
+			{ "!skos:closeMatch", "!rdf:type", "!owl:SymmetricProperty" },
 			{ "!skos:broadMatch", "!rdf:type", "!owl:TransitiveProperty" },
 			{ "!skos:broadMatch", "!owl:inverseOf", "!skos:narrowMatch" },
 			{ "!skos:narrowMatch", "!rdf:type", "!owl:TransitiveProperty" },
-			{ "!skos:relatedMatch", "!rdf:type", "!owl:Symmetric" },
+			{ "!skos:relatedMatch", "!rdf:type", "!owl:SymmetricProperty" },
 			
 			//////// SKOS2
 			{ "!skos2:exactMatch", "!rdf:type", "!owl:TransitiveProperty" },
-			{ "!skos2:exactMatch", "!rdf:type", "!owl:Symmetric" },
-			{ "!skos2:closeMatch", "!rdf:type", "!owl:Symmetric" },
+			{ "!skos2:exactMatch", "!rdf:type", "!owl:SymmetricProperty" },
+			{ "!skos2:closeMatch", "!rdf:type", "!owl:SymmetricProperty" },
 			{ "!skos2:broadMatch", "!rdf:type", "!owl:TransitiveProperty" },
 			{ "!skos2:broadMatch", "!owl:inverseOf", "!skos2:narrowMatch" },
 			{ "!skos2:narrowMatch", "!rdf:type", "!owl:TransitiveProperty" },
-			{ "!skos2:relatedMatch", "!rdf:type", "!owl:Symmetric" },
+			{ "!skos2:relatedMatch", "!rdf:type", "!owl:SymmetricProperty" },
 			
 			//////// RDFG
 			{ "!rdfg:subGraphOf", "!rdf:type", "!owl:TransitiveProperty" },
