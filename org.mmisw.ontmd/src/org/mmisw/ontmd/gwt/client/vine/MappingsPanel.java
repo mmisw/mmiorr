@@ -122,16 +122,11 @@ public class MappingsPanel extends FocusPanel {
 	}
 
 	
-	private boolean _openRow = false;
-
 	public void setMappings(final List<Mapping> newMappings) {
 		this.mappingAssocs.clear();
 		if ( newMappings == null ) {
 			return;
 		}
-		
-		// make the first mapping open its metadata:
-		_openRow = true;
 		
 		AsyncCallback<List<RelationInfo>> callback = new AsyncCallback<List<RelationInfo>>() {
 
@@ -388,15 +383,6 @@ public class MappingsPanel extends FocusPanel {
 				// metadata panel also higlhlights the whole mapping element.
 			}
 		});
-		
-		if ( _openRow ) {
-			_openRow = false;
-			DeferredCommand.addCommand(new Command() {
-				public void execute() {
-					disclosure.setOpen(true);
-				}
-			});
-		}
 		
 		return disclosure;
 	}

@@ -8,6 +8,9 @@ $Id$
 	     RDFS.comment, Vine.confidence, and Vine20071128.confidence
 	     
 	- MappingMetadataPanel: fix to properly assign TextBox.
+	- MappingsPanel: metadata section *not* anymore autmatically open for first mapping
+	  (it looks rather confusing; better "force" the user to click the metadata icon ;)
+	
 	
 	
 2010-08-21   1.9.95.alpha
@@ -26,8 +29,6 @@ $Id$
 	  However, its code has been disabled while we determine what to do with it.
 	  See iserver's changelog.
 	  
-	- MappingsPanel: metadata section is autmatically open for first mapping.
-	
 	- Done: revert mapping metadata changes if user cancels editing.
 	
 	TODO: check the overall handling of the cancellation as it seems there are unnecesary repeated 
