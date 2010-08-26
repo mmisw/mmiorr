@@ -97,7 +97,6 @@ public class JenaUtil2 {
 	 * 
 	 * @param model the model to be updated.
 	 */
-	@SuppressWarnings("unchecked")
 	public static void removeUnusedNsPrefixes(Model model) {
 		// will containg the used prefixes:
 		Set<String> usedPrefixes = new HashSet<String>();
@@ -146,7 +145,7 @@ public class JenaUtil2 {
 	 * @return value of the property, or null if missing.
 	 */
 	private static Ontology _getFirstOntology(OntModel ontModel) {
-		ExtendedIterator onts = ontModel.listOntologies();
+		ExtendedIterator<Ontology> onts = ontModel.listOntologies();
 		if ( onts == null || ! onts.hasNext() ) {
 			return null;
 		}
