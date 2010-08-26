@@ -56,33 +56,6 @@ public class AdminDispatcher {
 			{ "rdfg", "http://www.w3.org/2004/03/trix/rdfg-1/" }, 
 		};
 		
-
-	
-	private static final String[][] SUPPORTING_STATEMENTS = {
-		
-			//////// SKOS
-			{ "!skos:exactMatch", "!rdf:type", "!owl:TransitiveProperty" },
-			{ "!skos:exactMatch", "!rdf:type", "!owl:SymmetricProperty" },
-			{ "!skos:closeMatch", "!rdf:type", "!owl:SymmetricProperty" },
-			{ "!skos:broadMatch", "!rdf:type", "!owl:TransitiveProperty" },
-			{ "!skos:broadMatch", "!owl:inverseOf", "!skos:narrowMatch" },
-			{ "!skos:narrowMatch", "!rdf:type", "!owl:TransitiveProperty" },
-			{ "!skos:relatedMatch", "!rdf:type", "!owl:SymmetricProperty" },
-			
-			//////// SKOS2
-			{ "!skos2:exactMatch", "!rdf:type", "!owl:TransitiveProperty" },
-			{ "!skos2:exactMatch", "!rdf:type", "!owl:SymmetricProperty" },
-			{ "!skos2:closeMatch", "!rdf:type", "!owl:SymmetricProperty" },
-			{ "!skos2:broadMatch", "!rdf:type", "!owl:TransitiveProperty" },
-			{ "!skos2:broadMatch", "!owl:inverseOf", "!skos2:narrowMatch" },
-			{ "!skos2:narrowMatch", "!rdf:type", "!owl:TransitiveProperty" },
-			{ "!skos2:relatedMatch", "!rdf:type", "!owl:SymmetricProperty" },
-			
-			//////// RDFG
-			{ "!rdfg:subGraphOf", "!rdf:type", "!owl:TransitiveProperty" },
-
-	};
-
 	
 	private final Log log = LogFactory.getLog(AdminDispatcher.class);
 	
@@ -102,14 +75,6 @@ public class AdminDispatcher {
 		return SUPPORTING_NAMESPACES;
 	}
 
-	/**
-	 * Gets the list of supporting statements
-	 * 
-	 * @return the statements.
-	 */
-	public String[][] getSupportingStatements() {
-		return SUPPORTING_STATEMENTS;
-	}
 
 	/**
 	 * Initializes some internal resources.

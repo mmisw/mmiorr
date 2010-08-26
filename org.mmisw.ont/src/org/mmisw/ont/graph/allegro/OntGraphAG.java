@@ -313,16 +313,17 @@ public class OntGraphAG implements IOntGraph {
 	 * load supporting statements for inference
 	 */
 	private void _loadSupportingStatements(Ag _ag) {
+		log.info("Loading supporting statements to allegrograph triplestore");
 		try {
 			String[][] namespaces = adminDispatcher.getSupportingNamespaces();
 			for ( String[] ns : namespaces ) {
 				_ag.ts.registerNamespace(ns[0], ns[1]);
+				log.info("namespace registered: " +ns[0]+ " : " +ns[1]);
 			}
 			
-			String[][] statements = adminDispatcher.getSupportingStatements();
-			for ( String[] statement : statements ) {
+			for ( String[] statement : AgSupport.SUPPORTING_STATEMENTS ) {
 				_ag.ts.addStatement(statement[0], statement[1], statement[2]);
-				log.info("Added statement: " +statement[0]+ " " +statement[1]+ " " +statement[2]);
+				log.info("statement added: " +statement[0]+ " " +statement[1]+ " " +statement[2]);
 			}
 		}
 		catch (AllegroGraphException e) {

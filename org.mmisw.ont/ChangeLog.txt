@@ -11,6 +11,20 @@ ChangeLog
 	  NOTE: currently OntGraphMem is not used, so this change does not have any effect in the
 	  current implementation; just did the change for consistency and eventual future enabling. 
 	  
+	- New AgSupport class (support for the AllegroGraph-based implementation of IOntGraph), with
+	  the SUPPORTING_STATEMENTS previously located in AdminDispatcher.
+	  
+	  AllegroGraph reasoner does not support owl:SymmetricProperty directly but it does support
+	  owl:inverseOf [1]. So, noting that [2]:
+	    (P owl:inverseOf P) iff (P rdf:type owl:SymmetricProperty),
+	  the statements here related with symmetric properties have been adjusted to use owl:inverseOf. 
+	  
+	  However, (P owl:inverseOf P) is not processed by AG, which seem to be a bug. I've reported
+	  this to the AG people.
+	  
+	  [1] http://www.franz.com/agraph/allegrograph/doc/reasoner-tutorial.html
+	  [2] http://www.slideshare.net/ontotext/two-reasonable-views-to-the-web-of-linked-data (slide 11)
+	  
 	  
 2010-08-24   1.9.95.alpha
 	- AdminDispatcher: added rules for the SKOS namespace "http://www.w3.org/2004/02/skos/core#"
