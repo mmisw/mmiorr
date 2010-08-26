@@ -84,6 +84,20 @@ class AgUtils {
 		}
 	}
 	
+	/** Formats the results in N3
+	 * FIXME:actually returning CSV
+	 */
+	static String getResultInN3(Log log, ValueSetIterator it) {
+		return getResultInCsv(log, it);
+	}
+	
+	/** Formats the results in N-TRIPLE
+	 * FIXME:actually returning CSV
+	 */
+	static String getResultInNTriples(Log log, ValueSetIterator it) {
+		return getResultInCsv(log, it);
+	}
+	
 	
 	/** Formats the results in CSV */
 	static String getResultInCsv(Log log, ValueSetIterator it) {

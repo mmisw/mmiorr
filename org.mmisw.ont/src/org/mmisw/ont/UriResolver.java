@@ -64,7 +64,23 @@ public class UriResolver {
 	private final RegularFileDispatcher regularFileDispatcher = new RegularFileDispatcher();
 
 	
-	private enum OntFormat { RDFXML, N3 };
+	private enum OntFormat { 
+		RDFXML("RDF/XML-ABBREV"), 
+		N3("N3"), 
+		NT("NT", "N-TRIPLE"), 
+		TTL("TTL", "TURTLE"),
+		;
+		
+		String label;
+		String lang;
+		OntFormat(String str) {
+			this(str, str);
+		}
+		OntFormat(String label, String lang) {
+			this.label = label;
+			this.lang = lang;
+		}
+	};
 	
 	
 	private Request req;
@@ -462,9 +478,19 @@ public class UriResolver {
 				case N3 : {
 					String contentType = "text/plain";  // NOTE: "text/rdf+n3" is not registered.
 					response.setContentType(contentType);
-//					StringReader is = OntServlet.serializeModel(termModel, "N3");
-//					IOUtils.copy(is, os);
 					OntServlet.serializeModelToOutputStream(termModel, "N3", os);
+					break;
+				}
+				case NT : {
+					String contentType = "text/plain";
+					response.setContentType(contentType);
+					OntServlet.serializeModelToOutputStream(termModel, "N-TRIPLE", os);
+					break;
+				}
+				case TTL : {
+					String contentType = "text/plain";
+					response.setContentType(contentType);
+					OntServlet.serializeModelToOutputStream(termModel, "TURTLE", os);
 					break;
 				}
 				default:
@@ -505,19 +531,17 @@ public class UriResolver {
 				}
 				break;
 			}
-			case N3 : {
-				String contentType = "text/plain";  // NOTE: "text/rdf+n3" is not registered.
+			case N3 : 
+			case NT : 
+			case TTL : {
+				String contentType = "text/plain";
 				response.setContentType(contentType);
 				
 				if ( unversionedRequest ) {
-//					StringReader is = OntServlet.serializeModel(unversionedModel, "N3");
-//					IOUtils.copy(is, os);
-					OntServlet.serializeModelToOutputStream(unversionedModel, "N3", os);
+					OntServlet.serializeModelToOutputStream(unversionedModel, ontFormat.lang, os);
 				}
 				else {
-//					StringReader is = _getN3(file);
-//					IOUtils.copy(is, os);
-					_getN3(file, os);
+					_serialize(file, ontFormat.lang, os);
 				}
 				break;
 			}
@@ -532,16 +556,15 @@ public class UriResolver {
 	
 	
 	/** 
-	 * Creates the N3 version of the model stored in the given file. 
+	 * Serializes the model stored in the given file. 
 	 */
-	private void _getN3(File file, OutputStream os) {
-		log.debug("_getN3: " +file);
+	private void _serialize(File file, String lang, OutputStream os) {
+		log.debug("_serialize: lang=" +lang+ "  file=" +file);
 		Model model = ModelFactory.createDefaultModel();
 		String absPath = "file:" + file.getAbsolutePath();
 		model.read(absPath, "", null);
 		
-//		return OntServlet.serializeModel(model, "N3");
-		OntServlet.serializeModelToOutputStream(model, "N3", os);
+		OntServlet.serializeModelToOutputStream(model, lang, os);
 	}
 
 

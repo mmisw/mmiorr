@@ -32,6 +32,7 @@ import org.mmisw.ont.util.Util;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
+import com.hp.hpl.jena.shared.UnknownPropertyException;
 
 /**
  * The entry point.
@@ -740,23 +741,32 @@ public class OntServlet extends HttpServlet {
 
 	/** 
 	 * Gets the serialization of a model in the given language.
-	 * <p>
-	 * (Similar to JenaUtil.getOntModelAsString(OntModel model).) 
 	 */
 	static void serializeModelToOutputStream(Model model, String lang, OutputStream os) {
 		String uriForEmptyPrefix = model.getNsPrefixURI("");
 		RDFWriter writer = model.getWriter(lang);
+		
 		String baseUri = null;
 		if ( uriForEmptyPrefix != null ) {
 			baseUri = JenaUtil2.removeTrailingFragment(uriForEmptyPrefix);
-			writer.setProperty("xmlbase", baseUri);
+			_setWriterProperty(writer, "xmlbase", baseUri);
 		}
-		writer.setProperty("showXmlDeclaration", "true");
-		writer.setProperty("relativeURIs", "same-document");
-		writer.setProperty("tab", "4");
+		_setWriterProperty(writer, "showXmlDeclaration", "true");
+		_setWriterProperty(writer, "relativeURIs", "same-document");
+		_setWriterProperty(writer, "tab", "4");
+		
 		writer.write(model, os, baseUri);
 	}
 
+	/** Sets a writer property silently ignoring any UnknownPropertyException */
+	private static final void _setWriterProperty(RDFWriter writer, String propName, Object propValue) {
+		try {
+			writer.setProperty(propName, propValue);
+		}
+		catch (UnknownPropertyException ex) {
+			// ignore.
+		}
+	}
 
 	/**
 	 * Loads the ontology indicated with the "_lo" parameter in the request.

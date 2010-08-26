@@ -77,6 +77,14 @@ public class Sparql {
 					str = JenaUtil2.getOntModelAsString(model_, "N3");
 					queryResult.setContentType("text/plain");
 				}
+				else if ( form.equalsIgnoreCase("nt") ) {
+					str = JenaUtil2.getOntModelAsString(model_, "N-TRIPLE");
+					queryResult.setContentType("text/plain");
+				}
+				else if ( form.equalsIgnoreCase("ttl") ) {
+					str = JenaUtil2.getOntModelAsString(model_, "TURTLE");
+					queryResult.setContentType("text/plain");
+				}
 				else {
 					str = JenaUtil2.getOntModelAsString(model_, "RDF/XML-ABBREV");
 					queryResult.setContentType("Application/rdf+xml");

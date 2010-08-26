@@ -26,6 +26,10 @@ ChangeLog
 	  [2] http://www.slideshare.net/ontotext/two-reasonable-views-to-the-web-of-linked-data (slide 11)
 	  
 	  
+	- Added "nt", and "ttl" to the list of possible output formats (besides "rdf", "owl", "n3", etc).
+	  TODO: however, this is just partially implemented!
+	  
+	  
 2010-08-24   1.9.95.alpha
 	- AdminDispatcher: added rules for the SKOS namespace "http://www.w3.org/2004/02/skos/core#"
 	  (ie. along with rules to the previous "http://www.w3.org/2008/05/skos#").

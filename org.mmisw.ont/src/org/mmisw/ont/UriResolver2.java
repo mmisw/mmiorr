@@ -137,8 +137,21 @@ public class UriResolver2 {
 			// N3
 			else if ( req.outFormat.equalsIgnoreCase("n3") ) {
 				req.response.setContentType("text/plain");
-//				is = OntServlet.serializeModel(model, "N3");
 				OntServlet.serializeModelToOutputStream(model, "N3", os);
+			}
+			
+			///////////////////////////////////////////////////////////////////
+			// NT
+			else if ( req.outFormat.equalsIgnoreCase("nt") ) {
+				req.response.setContentType("text/plain");
+				OntServlet.serializeModelToOutputStream(model, "N-TRIPLE", os);
+			}
+			
+			///////////////////////////////////////////////////////////////////
+			// TTL
+			else if ( req.outFormat.equalsIgnoreCase("ttl") ) {
+				req.response.setContentType("text/plain");
+				OntServlet.serializeModelToOutputStream(model, "TURTLE", os);
 			}
 			
 			///////////////////////////////////////////////////////////////////

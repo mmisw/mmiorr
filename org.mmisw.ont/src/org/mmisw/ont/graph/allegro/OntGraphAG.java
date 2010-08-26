@@ -703,14 +703,12 @@ public class OntGraphAG implements IOntGraph {
 				res = AgUtils.getResultInHtml(log, valSetIter);
 			}
 			else if ( form.equalsIgnoreCase("n3") ) {
-				// TODO N3 (using CSV for now)
 				queryResult.setContentType("text/plain");
-				res = AgUtils.getResultInCsv(log, valSetIter);
+				res = AgUtils.getResultInN3(log, valSetIter);
 			}
 			else if ( form.equalsIgnoreCase("nt") ) {
-				// TODO NTriples (using CSV for now)
 				queryResult.setContentType("text/plain");
-				res = AgUtils.getResultInCsv(log, valSetIter);
+				res = AgUtils.getResultInNTriples(log, valSetIter);
 			}
 			else if ( form.equalsIgnoreCase("csv") ) {
 				queryResult.setContentType("text/plain");
