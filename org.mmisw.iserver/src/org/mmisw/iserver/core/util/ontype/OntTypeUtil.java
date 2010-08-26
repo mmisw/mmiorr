@@ -124,7 +124,8 @@ public class OntTypeUtil {
 			}
 		}
 
-		// try examining the contents:
+		// try examining the contents: check for statements having Vine.subject or 
+		// Vine20071128.subject as predicate:
 		if (ontModel.contains(null, Vine.subject, (RDFNode) null) ) {
 			if ( log.isDebugEnabled() ) {
 				log.debug("_isMapping: " +ontUriMsg+ " --> true (Vine.subject)" );

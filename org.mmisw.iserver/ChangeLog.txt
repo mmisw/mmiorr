@@ -3,6 +3,11 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2010-08-25   1.9.95.alpha
+	- MappingOntologyCreator: along with the reified vine:Statement, it also adds the 
+	  direct statement (s,p,o) to the model.
+	  
+	
 2010-08-23   1.9.95.alpha
 	- OntInfo._getMetadataForReified: ONLY the following properties are considered for
 	  the extraction of metadata for a mapping:

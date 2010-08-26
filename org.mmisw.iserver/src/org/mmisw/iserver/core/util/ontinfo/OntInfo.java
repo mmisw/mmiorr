@@ -40,6 +40,7 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
@@ -349,7 +350,7 @@ class OntInfo extends BaseOntInfo {
 			Property prd = stmt.getPredicate();
 			
 			// Vine "subject" arbitrarily chosen to check whether we're seeing a Vine statement:
-			if ( Vine.subject.equals(prd) || Vine20071128.subject.equals(prd) ) {
+			if ( _isVineSubject(prd) ) {
 				//
 				// Yes, add the reified statement to our map:
 				//
@@ -389,8 +390,8 @@ class OntInfo extends BaseOntInfo {
 				// TODO Note that later elements in this loop will overwrite common metadata properties.
 				// To be more concrete, if the (s,p,o) mapping happens to appear in two or more
 				// reified statements, each with its associated metadata, we are not *aggregating*
-				// such metadata (for example, rdfs:comment properties may be multiple), EVEN in the
-				// same reified statement, actually.
+				// such metadata (for example, rdfs:comment properties may be multiple), but
+				// *overwriting*, EVEN in the same reified statement, actually.
 			}
 			
 			// assign the metadata map only if non-empty:
@@ -454,13 +455,13 @@ class OntInfo extends BaseOntInfo {
 			Statement myStmt = myProps.nextStatement();
 			Property myProp = myStmt.getPredicate();
 			
-			if ( Vine.subject.equals(myProp) || Vine20071128.subject.equals(myProp) ) {
+			if ( _isVineSubject(myProp) ) {
 				left = _getValueAsString(myStmt.getObject());
 			}
-			else if ( Vine.predicate.equals(myProp) || Vine20071128.predicate.equals(myProp) ) {
+			else if ( _isVinePredicate(myProp) ) {
 				rel = _getValueAsString(myStmt.getObject());
 			}
-			else if ( Vine.object.equals(myProp) || Vine20071128.object.equals(myProp) ) {
+			else if ( _isVineObject(myProp) ) {
 				right = _getValueAsString(myStmt.getObject());
 			}
 			
@@ -475,6 +476,25 @@ class OntInfo extends BaseOntInfo {
 	
 	
 	
+	private static boolean _isVineSubject(Property myProp) {
+		return Vine.subject.equals(myProp) 
+		|| Vine20071128.subject.equals(myProp)
+		|| RDF.subject.equals(myProp)
+		;
+	}
+	private static boolean _isVinePredicate(Property myProp) {
+		return Vine.predicate.equals(myProp) 
+		|| Vine20071128.predicate.equals(myProp)
+		|| RDF.predicate.equals(myProp)
+		;
+	}
+	private static boolean _isVineObject(Property myProp) {
+		return Vine.object.equals(myProp) 
+		|| Vine20071128.object.equals(myProp)
+		|| RDF.object.equals(myProp)
+		;
+	}
+
 	/** 
 	 * Creates a mapping from the given (reified) statement.
 	 * Metadata is assigned if any. 

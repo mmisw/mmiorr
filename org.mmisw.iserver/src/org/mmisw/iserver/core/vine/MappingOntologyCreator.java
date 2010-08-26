@@ -26,6 +26,7 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 import edu.drexel.util.rdf.JenaUtil;
 import edu.drexel.util.rdf.OwlModel;
@@ -37,8 +38,12 @@ import edu.drexel.util.rdf.OwlModel;
  */
 public class MappingOntologyCreator {
 
-	// TODO do we want to include owl:import <vine-uri>?
+	// TODO do we want to include owl:import <vine-uri>?  Set to false.
 	private static final boolean ADD_VINE_IMPORT = false;
+
+	// Use Vine.Statement for the reification. Set to true.
+	// (false will use basic rdf:Statement and associated properties)
+	private static final boolean USE_VINE_STATEMENT = true;
 
 	private String namespaceRoot;
 	
@@ -256,15 +261,15 @@ public class MappingOntologyCreator {
 		// the resource representing the statement (r,p,o):
 		Resource stmtRsr;
 		
-		if ( false ) { 
+		if ( USE_VINE_STATEMENT ) { 
+			// use vine:Statement
+			stmtRsr = _createVineMappingStatement(newOntModel, r, p, o);
+		}
+		else {
 			// use basic reification.
 			Statement stmt = newOntModel.createStatement(r, p, o);
 			newOntModel.add(stmt);
 			stmtRsr = stmt.createReifiedStatement();
-		}
-		else {
-			// use vine:Statement
-			stmtRsr = _createVineMappingStatement(newOntModel, r, p, o);
 		}
 		
 		if ( md != null ) {
@@ -278,11 +283,24 @@ public class MappingOntologyCreator {
 
 
 	private static Resource _createVineMappingStatement(Model model, Resource s, Property p, RDFNode o) {
-		Resource res = model.createResource(Vine.Statement);
-		res.addProperty(Vine.subject, s);
-		res.addProperty(Vine.predicate, p);
-		res.addProperty(Vine.object, o);
-//		res.addProperty(DC.date, ISO8601Date.getCurrentDate());
+		Resource res;
+		if ( USE_VINE_STATEMENT ) {
+			res = model.createResource(Vine.Statement);
+			res.addProperty(Vine.subject, s);
+			res.addProperty(Vine.predicate, p);
+			res.addProperty(Vine.object, o);
+			// note, also add the direct mapping statement, which may be redundant if 
+			// appropriate reasoner rules over Vine properties are in place, but this
+			// will be OK in general.
+			model.add(s, p, o);
+		}
+		else {
+			// this part was for some preliminary testing with basic RDF elements.
+			res = model.createResource(RDF.Statement);
+			res.addProperty(RDF.subject, s);
+			res.addProperty(RDF.predicate, p);
+			res.addProperty(RDF.object, o);			
+		}
 		return res;
 	}
 

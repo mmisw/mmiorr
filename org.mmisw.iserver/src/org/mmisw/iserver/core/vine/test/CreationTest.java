@@ -49,15 +49,15 @@ public class CreationTest extends VineTestCase {
 	private final String namespace2 = "http://example.org/ontologyTwo/";
 	private final Set<String> namespaces = new HashSet<String>(Arrays.asList(namespace1, namespace2));
 	private final String[][]  mapps = {
-		{ namespace1 + "termA", Skos.exactMatch.getURI(), namespace2 + "termP" },
-		{ namespace1 + "termB", Skos.closeMatch.getURI(), namespace2 + "termQ" },
-		{ namespace1 + "termC", Skos.relatedMatch.getURI(), namespace2 + "termR" },
+		{ namespace1 + "termAAAAAA", Skos.exactMatch.getURI(), namespace2 + "termPPPPPP" },
+		{ namespace1 + "termBBBBBB", Skos.closeMatch.getURI(), namespace2 + "termQQQQQQ" },
+		{ namespace1 + "termCCCCCC", Skos.relatedMatch.getURI(), namespace2 + "termRRRRRR" },
 	};
 	
 	private final String[]  comments = {
-		"comment for A-P",	
-		"comment for B-Q",	
-		"comment for C-R",	
+		"comment for AAAAAA-PPPPPP",	
+		"comment for BBBBBB-QQQQQQ",	
+		"comment for CCCCCC-RRRRRR",	
 	};
 	
 	private final String[]  confidences = {
