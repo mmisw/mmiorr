@@ -98,7 +98,7 @@ public class RegularFileDispatcher {
 				"<tr valign=\"center\">" + "\n" +
 				"<td align=\"center\">" + "\n" +
 				"<a href=\"http://marinemetadata.org/semanticframework\">" + 
-				"<img src=\"" +contextPath + "/img/" +"semantic_framework.jpg" + "\" border=\"0\"" +
+				"<img src=\"" +contextPath + "/-/img/" +"semantic_framework.jpg" + "\" border=\"0\"" +
 						"alt=\"MMI Semantic Framework\"/>" + "\n" +
 				"</a>" + "\n" +
 				"<br/>" + 

@@ -16,6 +16,7 @@ ChangeLog
 	  WebContent/-/img and updated sparql.html.
 	
 	- sparql.html: enabled the "beta" logo, WebContent/-/img/mmior.jpg (previous alpha logo: mmior.png).
+	- updated other sources to refer to -/img/semantic_framework.jpg 
 	
 	
 2010-08-26   1.9.95.alpha

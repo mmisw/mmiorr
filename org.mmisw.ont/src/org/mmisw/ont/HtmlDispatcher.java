@@ -13,6 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.util.Util;
 
+import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -164,7 +165,7 @@ public class HtmlDispatcher {
 				"<tr valign=\"right\">" +
 				"<td align=\"right\">" +
 					"<a target=\"_blank\" href=\"http://marinemetadata.org/semanticframework\">" +
-					"<img src=\"" +contextPath + "/img/" +"semantic_framework.jpg" + "\" border=\"0\"" +
+					"<img src=\"" +contextPath + "/-/img/" +"semantic_framework.jpg" + "\" border=\"0\"" +
 							"alt=\"MMI Semantic Framework\"/>" +
 					"</a>" +
 				"</td>" +
@@ -416,7 +417,7 @@ public class HtmlDispatcher {
 
 		if ( model instanceof OntModel ) {
 			OntModel ontModel = (OntModel) model;
-			ExtendedIterator iter = ontModel.listIndividuals(termRes);
+			ExtendedIterator<Individual> iter = ontModel.listIndividuals(termRes);
 			if ( iter.hasNext() ) {
 				out.println("<br/>");
 				out.printf("<div align=\"center\">%n");
