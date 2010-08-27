@@ -175,4 +175,14 @@ public class MmiUriTest extends TestCase {
     	assertEquals("some%20Term", mmiUri.getTerm());
     }
 
+    
+    public void testAuthorityStartingWithHyphenIsInvalid() throws URISyntaxException {
+    	try {
+    		new MmiUri("http://mmisw.org/ont/-/img/mmior.gif");
+    		fail(); // test fails!
+    	}
+    	catch (URISyntaxException ok) {
+    	}
+    }
+
 }

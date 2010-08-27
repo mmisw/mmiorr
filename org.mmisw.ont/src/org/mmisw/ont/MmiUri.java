@@ -242,6 +242,9 @@ public final class MmiUri {
 		if ( authority.length() == 0 ) {
 			throw new URISyntaxException(fullRequestedUri, "Missing authority in URI");
 		}
+		if ( authority.startsWith("-") ) {
+			throw new URISyntaxException(fullRequestedUri, "Authority cannot start with hyphen");
+		}
 		if ( Character.isDigit(authority.charAt(0)) ) {
 			throw new URISyntaxException(fullRequestedUri, "Authority cannot start with digit");
 		}

@@ -4,6 +4,20 @@ $Id$
 
 ChangeLog
 
+2010-08-27  2.0.0.beta
+	- MmiUri: now, authority cannot start with a hyphen ``-''.  This seems a resonable restriction,
+	  while it allows to better maintain internal regular resources under the corresponding directory, 
+	  ie., if the service is deployed as "http://.../ont", then regular resources are located under 
+	  "http://.../ont/-/." This speeds up the dispatch of these resources (as they won't be 
+	  first tried as ontologies or terms against the registry).
+	  Note that elements in the root directory (eg., http://.../ont/main.css, http://.../ont/sparql.html)
+	  are quickly dispatched as regular resources because they are not valid MmiUris.
+	  The above change is specifically for the "img" resources, and just moved WebContent/img to 
+	  WebContent/-/img and updated sparql.html.
+	
+	- sparql.html: enabled the "beta" logo, WebContent/-/img/mmior.jpg (previous alpha logo: mmior.png).
+	
+	
 2010-08-26   1.9.95.alpha
 	- AllegroGraph upgraded to 3.3
 	
