@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mmisw.iserver.core.util.Skos;
+import org.mmisw.iserver.core.util.Skos2;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.iserver.gwt.client.vocabulary.Option;
@@ -85,6 +86,7 @@ public class MdHelper {
 		preferredPrefix.put(Omv.NS, "omv");
 		preferredPrefix.put(OmvMmi.NS, "omvmmi");
 		preferredPrefix.put(Skos.NS, "skos");
+		preferredPrefix.put(Skos2.NS, "skos2");
 		preferredPrefix.put(Vine.NS, "vine");
 		
 		preferredPrefix = Collections.unmodifiableMap(preferredPrefix);

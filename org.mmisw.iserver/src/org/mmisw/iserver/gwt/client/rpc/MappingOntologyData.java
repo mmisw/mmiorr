@@ -4,18 +4,29 @@ import java.util.List;
 import java.util.Set;
 
 import org.mmisw.iserver.gwt.client.rpc.vine.Mapping;
+import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
 
 /**
- * TODO
+ * The data associated with a mapping ontology.
+ * 
  * @author Carlos Rueda
  */
 public class MappingOntologyData extends OntologyData {
 	private static final long serialVersionUID = 1L;
 	
-	/** the data is the list of mappings */
+	/**
+	 * The list of relations associated with this mapping ontology.
+	 */
+	private List<RelationInfo> relInfos;
+	
+	/** 
+	 * The list of mappings 
+	 */
 	private List<Mapping> mappings;
 	
-	/** and associated namespaces */
+	/** 
+	 * Associated namespaces, ie., the URIs of the ontologies from which terms are mapped.
+	 */
 	private Set<String> namespaces;
 	
 	public MappingOntologyData() {
@@ -37,7 +48,12 @@ public class MappingOntologyData extends OntologyData {
 		return namespaces;
 	}
 
+	public List<RelationInfo> getRelationInfos() {
+		return relInfos;
+	}
 
-
+	public void setRelationInfos(List<RelationInfo> relInfos) {
+		this.relInfos = relInfos;
+	}
 
 }

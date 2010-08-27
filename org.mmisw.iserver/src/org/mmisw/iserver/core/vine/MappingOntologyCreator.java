@@ -66,7 +66,6 @@ public class MappingOntologyCreator {
 	
 	private Set<String> namespaces;
 	private List<Mapping> mappings;
-
 	
 	private final String uniqueBaseName = _createUniqueBaseName();
 
@@ -125,7 +124,7 @@ public class MappingOntologyCreator {
 			createVocabResult.setError(error);
 			return;
 		}
-		String rdf = getOntologyStringXml();
+		String rdf = _getOntologyStringXml();
 		
 
 		// now save the RDF:
@@ -339,8 +338,11 @@ public class MappingOntologyCreator {
 		}
 	}
 
-
-	public String getOntologyStringXml() {
+	/** Removes unused namespace prefixes and returns the RDF/XML representation of
+	 * the created ontology.
+	 */
+	private String _getOntologyStringXml() {
+		JenaUtil2.removeUnusedNsPrefixes(newOntModel);
 		return JenaUtil2.getOntModelAsString(newOntModel, "RDF/XML-ABBREV");
 	}
 

@@ -33,13 +33,12 @@ import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.ontmodel.OntModelUtil;
 import org.mmisw.iserver.core.util.MailSender;
 import org.mmisw.iserver.core.util.OntServiceUtil;
-import org.mmisw.iserver.core.util.Skos;
-import org.mmisw.iserver.core.util.Skos2;
 import org.mmisw.iserver.core.util.TempOntologyHelper;
 import org.mmisw.iserver.core.util.Util2;
 import org.mmisw.iserver.core.util.ontinfo.OntInfoUtil;
 import org.mmisw.iserver.core.util.ontype.OntTypeUtil;
 import org.mmisw.iserver.core.vine.MappingOntologyCreator;
+import org.mmisw.iserver.core.vine.VineUtil;
 import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
@@ -1148,10 +1147,9 @@ public class Server implements IServer {
 		////////////////////////////////////////////////////////////////////////
 		
 		// Get resulting string:
+		JenaUtil2.removeUnusedNsPrefixes(model);
 		String rdf = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV") ;  // XXX newOntModel);
 		
-		//TODO: pons: print result RDF for testing
-		//System.out.println(rdf);
 		if ( log.isDebugEnabled() ) {
 			if ( createOntologyResult.isPreserveOriginalBaseNamespace() ) {
 				log.debug(rdf);
@@ -1430,10 +1428,9 @@ public class Server implements IServer {
 		////////////////////////////////////////////////////////////////////////
 		
 		// Get resulting string:
+		JenaUtil2.removeUnusedNsPrefixes(model);
 		String rdf = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV") ;  // XXX newOntModel);
 		
-		//TODO remove this print result RDF for testing
-		System.out.println(rdf);
 		if ( log.isDebugEnabled() ) {
 			log.debug(rdf);
 		}
@@ -1934,10 +1931,9 @@ public class Server implements IServer {
 		////////////////////////////////////////////////////////////////////////
 		
 		// Get resulting string:
+		JenaUtil2.removeUnusedNsPrefixes(model);
 		String rdf = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV") ;  // XXX newOntModel);
 		
-		//TODO: pons: print result RDF for testing
-		System.out.println(rdf);
 		if ( log.isDebugEnabled() ) {
 			if ( createOntologyResult.isPreserveOriginalBaseNamespace() ) {
 				log.debug(rdf);
@@ -2063,18 +2059,6 @@ public class Server implements IServer {
 		try {
 //			rdf = Util2.readRdf(file);
 			rdf = Util2.readRdfWithCheckingUtf8(file);
-
-			// conversion to UTF-8: the following code was not finally enabled
-//			ReadFileResult result = Utf8Util.readFileWithConversionToUtf8(file);
-//			if ( result.getError() != null ) {
-//				String error = "Cannot read RDF model: " +full_path+ " : " +result.getError()+ "\n"
-//					+ result.getLogInfo();
-//				log.info(error);
-//				registerOntologyResult.setError(error);
-//				return registerOntologyResult;
-//			}
-//			System.out.println(result.getLogInfo());
-//			rdf = result.getContents();
 		}
 		catch (Throwable e) {
 			String error = "Unexpected: error while reading from: " +full_path+ " : " +e.getMessage();
@@ -2207,18 +2191,6 @@ public class Server implements IServer {
 		String rdf;
 		try {
 			rdf = Util2.readRdfWithCheckingUtf8(file);
-			
-			// conversion to UTF-8: the following code was not finally enabled
-//			ReadFileResult result = Utf8Util.readFileWithConversionToUtf8(file);
-//			if ( result.getError() != null ) {
-//				String error = "Cannot read RDF model: " +full_path+ " : " +result.getError()+ "\n"
-//					+ result.getLogInfo();
-//				log.info(error);
-//				registerOntologyResult.setError(error);
-//				return registerOntologyResult;
-//			}
-//			System.out.println(result.getLogInfo());
-//			rdf = result.getContents();
 		}
 		catch (Throwable e) {
 			String error = "Unexpected: error while reading from: " +full_path+ " : " +e.getMessage();
@@ -2321,18 +2293,6 @@ public class Server implements IServer {
 		try {
 //			rdf = Util2.readRdf(file);
 			rdf = Util2.readRdfWithCheckingUtf8(file);
-			
-			// conversion to UTF-8: the following code was not finally enabled
-//			ReadFileResult result = Utf8Util.readFileWithConversionToUtf8(file);
-//			if ( result.getError() != null ) {
-//				String error = "Cannot read RDF model: " +full_path+ " : " +result.getError()+ "\n"
-//					+ result.getLogInfo();
-//				log.info(error);
-//				registerOntologyResult.setError(error);
-//				return registerOntologyResult;
-//			}
-//			System.out.println(result.getLogInfo());
-//			rdf = result.getContents();
 		}
 		catch (Throwable e) {
 			String error = "Unexpected: error while reading from: " +full_path+ " : " +e.getMessage();
@@ -2529,71 +2489,18 @@ public class Server implements IServer {
 	////////////////////////////////////////////////////////////////////////////////////////////
 	// VINE:
 	
-	public List<RelationInfo> getVineRelationInfos() {
+	public List<RelationInfo> getDefaultVineRelationInfos() {
 		if ( log.isDebugEnabled() ) {
-			log.debug("getRelationInfos starting");
+			log.debug("getDefaultVineRelationInfos starting");
 		}
 	
-		// TODO: determine mechanism to obtain the list of default mapping relations, for example,
-		// from an ontology.
+		List<RelationInfo> relInfos = VineUtil.getDefaultVineRelationInfos();
 		
-		// For now, creating a hard-coded list
-		
-		List<RelationInfo> relInfos = new ArrayList<RelationInfo>();
-		
-//      name="exactMatch"
-		relInfos.add(new RelationInfo(
-				"exactMatch28.png", 
-				"exactMatch",
-				"The property skos:exactMatch is used to link two concepts, indicating a high degree " +
-				"of confidence that the concepts can be used interchangeably across a wide range of " +
-				"information retrieval applications. [SKOS Section 10.1] (transitive, symmetric)",
-				Skos.exactMatch.getURI(), Skos2.exactMatch.getURI()
-		));
-		
-//      name="closeMatch"
-		relInfos.add(new RelationInfo(
-				"closeMatch28.png", 
-				"closeMatch",
-				"A skos:closeMatch link indicates that two concepts are sufficiently similar that " +
-				"they can be used interchangeably in some information retrieval applications. " +
-				"[SKOS Section 10.1] (symmetric)",
-				Skos.closeMatch.getURI(), Skos2.closeMatch.getURI()
-		));
-		
-//      name="broadMatch"
-		relInfos.add(new RelationInfo(
-				"broadMatch28.png", 
-				"broadMatch",
-				"'has the broader concept': the second (object) concept is broader than the first " +
-				"(subject) concept [SKOS Section 8.1] (infers broaderTransitive, a transitive relation)",
-				Skos.broadMatch.getURI(), Skos2.broadMatch.getURI()
-		));
-
-//      name="narrowMatch"
-		relInfos.add(new RelationInfo(
-				"narrowMatch28.png", 
-				"narrowMatch",
-				"'has the narrower concept': the second (object) concept is narrower than the first " +
-				"(subject) concept [SKOS Section 8.1] (infers narrowTransitive, a transitive relation)",
-				Skos.narrowMatch.getURI(), Skos2.narrowMatch.getURI()
-		));
-
-//      name="relatedMatch"
-		relInfos.add(new RelationInfo(
-				"relatedMatch28.png", 
-				"relatedMatch",
-				"The property skos:relatedMatch is used to state an associative mapping link between " +
-				"two concepts. [SKOS Section 8.1] (symmetric)",
-				Skos.relatedMatch.getURI(), Skos2.relatedMatch.getURI()
-		));
-
 		if ( log.isDebugEnabled() ) {
-			log.debug("getRelationInfos returning: " +relInfos);
+			log.debug("getDefaultVineRelationInfos returning: " +relInfos);
 		}
 
 		return relInfos;
-
 	}
 	
 	

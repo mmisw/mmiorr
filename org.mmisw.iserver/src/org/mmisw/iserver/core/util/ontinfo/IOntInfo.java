@@ -5,6 +5,9 @@ import org.mmisw.iserver.gwt.client.rpc.BaseOntologyInfo;
 import com.hp.hpl.jena.ontology.OntModel;
 
 /**
+ * Provides info about an ontology model.
+ * 
+ * Refactoring interface.
  * 
  * @author Carlos Rueda
  */

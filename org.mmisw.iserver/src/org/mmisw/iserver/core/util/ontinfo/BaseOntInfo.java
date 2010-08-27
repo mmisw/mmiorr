@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.mmisw.iserver.core.util.Skos;
+import org.mmisw.iserver.core.vine.VineUtil;
 import org.mmisw.iserver.gwt.client.rpc.BaseOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.ClassInfo;
 import org.mmisw.iserver.gwt.client.rpc.IndividualInfo;
@@ -18,6 +20,7 @@ import org.mmisw.iserver.gwt.client.rpc.PropertyInfo;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData.ClassData;
 import org.mmisw.iserver.gwt.client.rpc.vine.Mapping;
+import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
 
 import com.hp.hpl.jena.vocabulary.RDFS;
 
@@ -130,29 +133,29 @@ abstract class BaseOntInfo implements IOntInfo {
 			_addNamespace(namespaces, mapping.getRight(), null);
 		}
 
-		// TODO: need to check also the individuals?  Don't think so -- revise
-//		for ( IndividualInfo individualInfo : individuals ) {
-//			List<PropValue> indivProps = individualInfo.getProps();
-//			for ( PropValue propValue: indivProps ) {
-//				if ( propValue.getPropName().matches(".*Match.*") ) {
-//					
-//					Mapping mapping = new Mapping(
-//							individualInfo.getUri(),
-//							propValue.getPropUri(),
-//							propValue.getValueUri()
-//					);
-//					
-//					mappings.add(mapping);
-//					
-//					_addNamespace(namespaces, individualInfo.getUri(), individualInfo.getLocalName());
-//					_addNamespace(namespaces, propValue.getValueUri(), propValue.getValueName());
-//				}
-//			}
-//		}
+		// true: assume this ontology uses relation is the Skos namespace (and not Skos2, specifically).
+		// This flag is to determine which list of relationInfos to associate.
+		boolean useSkos = true;
+		for ( Mapping mapping : mappings ) {
+			if ( ! mapping.getRelation().startsWith(Skos.NS) ) {
+				// there is a mapping with a relation not in the Skos.NS namespace
+				useSkos = false;
+				//
+				// NOTE: We don't consider the potential case of a mixture of Skos and
+				// Skos2 namespaces (and any other namespaces for that matter).
+				// This again is because we assume that Vine-created ontologies are normally to
+				// be handled by Vine itself principally.
+				//
+				break;
+			}
+		}
+		// get corresponding RelationInfos
+		List<RelationInfo> relInfos = VineUtil.getVineRelationInfos(useSkos);
 		
 		MappingOntologyData ontologyData = new MappingOntologyData();
 		ontologyData.setNamespaces(namespaces);
 		ontologyData.setMappings(mappings);
+		ontologyData.setRelationInfos(relInfos);
 		ontologyData.setBaseOntologyData(baseOntologyData);
 
 		return ontologyData;

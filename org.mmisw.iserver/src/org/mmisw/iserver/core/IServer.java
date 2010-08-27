@@ -125,9 +125,10 @@ public interface IServer {
 	// VINE:
 	
 	/**
-	 * Gets the default list of RelationInfo's.
+	 * Gets the default list of RelationInfo's. This list is to be used for the creation of
+	 * brand new mapping ontologies
 	 */
-	List<RelationInfo> getVineRelationInfos();
+	List<RelationInfo> getDefaultVineRelationInfos();
 	
 	// :VINE
 	////////////////////////////////////////////////////////////////////////////////////////////

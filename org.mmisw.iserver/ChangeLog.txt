@@ -3,6 +3,31 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2010-08-27   2.0.0.beta
+
+	Fixed 276: "original SKOS namespace not retained in new version"
+	- Vine mappings: allowing to maintain the original SKOS namespace when editing a new version
+	  of a mapping ontology. That is, if a version of a mapping ontology uses the SKOS
+	  namespace "http://www.w3.org/2008/05/skos#", then any modification/addition of mappings
+	  for a new version will continue to use that namespace.
+	
+	- IServer/Server: getVineRelationInfos renamed to getDefaultVineRelationInfos.
+	  getDefaultVineRelationInfos is to be used when creating a brand new mapping ontology.
+	  The SKOS namespace in this case is always "http://www.w3.org/2004/02/skos/core#" (which
+	  is the preferred "official" SKOS (core) namespace).
+	  
+	- MappingOntologyData: now with its own associated list of RelationInfos. This relationInfos
+	  are to be determined depending on the contents of the ontology when it already exists, or
+	  on the default relationInfos provided by IServer.getDefaultVineRelationInfos when creating
+	  a new mapping ontology. 
+
+	Other adjustments:	
+	- MdHelper: added preferredPrefix.put(Skos2.NS, "skos2")
+	- MappingOntologyCreator now calls JenaUtil2.removeUnusedNsPrefixes
+	- Server: now calls JenaUtil2.removeUnusedNsPrefixes(model).
+	
+
+
 2010-08-25   1.9.95.alpha
 	- MappingOntologyCreator: along with the reified vine:Statement, it also adds the 
 	  direct statement (s,p,o) to the model.

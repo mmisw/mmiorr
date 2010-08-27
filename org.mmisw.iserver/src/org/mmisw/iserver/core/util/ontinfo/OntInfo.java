@@ -44,18 +44,14 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
- * Based on SPARQL queries.
+ * The new improved implementation.
  * 
  * @author Carlos Rueda
  */
 class OntInfo extends BaseOntInfo {
 	
-//	private static final Log log = LogFactory.getLog(OntQuery.class);
-
-
 	public BaseOntologyInfo getEntities(BaseOntologyInfo baseOntologyInfo, OntModel ontModel
 	) throws Exception {
-		
 		
 		String ontologyUri = baseOntologyInfo.getUri();
 
