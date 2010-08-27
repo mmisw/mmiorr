@@ -4,6 +4,10 @@ $Id$
 
 ChangeLog
 
+2010-08-26   1.9.95.alpha
+	- AllegroGraph upgraded to 3.3
+	
+	 
 2010-08-25   1.9.95.alpha
 	- inf_rules.txt (used by OntGraphMem): fixed the symmetric rule:
 		[sym:    (?p rdf:type owl:SymmetricProperty) (?a ?p ?b) -> (?b ?p ?a)]
