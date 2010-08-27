@@ -7,12 +7,8 @@ import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.vine.util.TLabel;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratorPanel;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -37,7 +33,7 @@ public class MappingToolbar extends VerticalPanel {
 	 * 
 	 * @param mapRelListener
 	 */
-	MappingToolbar(final IMappingRelationListener mapRelListener) {
+	MappingToolbar(List<RelationInfo> relInfos, final IMappingRelationListener mapRelListener) {
 		super();
 		this.mapRelListener = mapRelListener;
 		
@@ -59,57 +55,14 @@ public class MappingToolbar extends VerticalPanel {
 	    layout.setSpacing(2);
 	    add(decPanel);
 		
-		//setWidth("10%");
-
-	    if ( false ) {
-		final PushButton configButton = new PushButton("Config");
-		configButton.setTitle("Allows to configure the available relations");
-		DOM.setElementAttribute(configButton.getElement(), "id", "my-button-id");
-
-		configButton.addClickListener(new ClickListener() {
-			public void onClick(Widget sender) {
-				// TODO
-				Window.alert("sorry, not implemented yet");
-			}
-		});
-		add(configButton);
-	    }
-	    
-	    update();
-	
+	    _gottenRelationInfos(relInfos);
 	}
-
-	
-	private void update() {
-		layout.clear();
-		layout.add(new HTML(
-				"<img src=\"" +GWT.getModuleBaseURL()+ "images/loading.gif\">"
-		));
-		
-		
-		AsyncCallback<List<RelationInfo>> callback = new AsyncCallback<List<RelationInfo>>() {
-			public void onFailure(Throwable thr) {
-				layout.clear();
-				layout.add(new HTML(thr.toString()));
-			}
-
-			public void onSuccess(List<RelationInfo> relInfos) {
-				layout.clear();
-				Main.log("getRelationInfos: retrieved " +relInfos.size()+ " relations");
-				_gottenRelationInfos(relInfos);
-			}
-		};
-
-		VineMain.getRelationInfos(callback);
-	}
-
 
 	private void _gottenRelationInfos(List<RelationInfo> relInfos) {
-		
 		layout.clear();
 		for ( final RelationInfo relInfo : relInfos ) {
 			String imgUri = GWT.getModuleBaseURL()+ "images/" +relInfo.getIconUri();
-			Main.log("Loading relation image: " +imgUri);
+			Main.log("Loading relation image: " +imgUri+ " for URI=" +relInfo.getUri());
 			Image img = new Image(imgUri);
 			PushButton button = new PushButton(img, 
 					new ClickListener() {
@@ -117,7 +70,9 @@ public class MappingToolbar extends VerticalPanel {
 							mapRelListener.clicked(relInfo);						
 						}
 			});
-			button.setTitle(relInfo.getDescription());
+			// NOTE: firefox does not put the newlines in the tooltip (perhaps firefox takes this as html?),
+			// so, I'm replacing each "\n" with " \n", so at least I see a space:
+			button.setTitle(relInfo.getDescription().replaceAll("\n", " \n"));
 			layout.add(button);
 		}
 	}

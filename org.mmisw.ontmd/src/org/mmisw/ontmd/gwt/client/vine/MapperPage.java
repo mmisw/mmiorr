@@ -25,7 +25,7 @@ public class MapperPage extends DockPanel {
 	private MappingsPanel mappingsPanel;
 	
 	
-	MapperPage(MappingsPanel mappingsPanel) {
+	MapperPage(List<RelationInfo> relInfos, MappingsPanel mappingsPanel) {
 		super();
 		this.mappingsPanel = mappingsPanel;
 		
@@ -36,10 +36,11 @@ public class MapperPage extends DockPanel {
 		vocabularyFormLeft = new VocabularyForm(chooseLeft);
 		vocabularyFormRight = new VocabularyForm(chooseRight);
 
-		mappingToolbar = new MappingToolbar(new MappingToolbar.IMappingRelationListener() {
-			public void clicked(RelationInfo relInfo) {
-				_relButtonClicked(relInfo);
-			}
+		mappingToolbar = new MappingToolbar(relInfos,
+			new MappingToolbar.IMappingRelationListener() {
+				public void clicked(RelationInfo relInfo) {
+					_relButtonClicked(relInfo);
+				}
 		});
 
 		

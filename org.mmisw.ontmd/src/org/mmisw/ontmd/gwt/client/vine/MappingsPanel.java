@@ -1,19 +1,20 @@
 package org.mmisw.ontmd.gwt.client.vine;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.mmisw.iserver.gwt.client.rpc.vine.Mapping;
 import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
+import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.vine.util.SelectAllNonePanel;
 import org.mmisw.ontmd.gwt.client.vine.util.TLabel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DisclosureEvent;
 import com.google.gwt.user.client.ui.DisclosureHandler;
@@ -39,6 +40,10 @@ public class MappingsPanel extends FocusPanel {
 	
 	private boolean readOnly;
 	private FlexTable flexPanel;
+	
+	private List<RelationInfo> relInfos;
+	
+	private final Map<String, RelationInfo> relInfoMap = new LinkedHashMap<String,RelationInfo>();
 	
 	
 	/**
@@ -70,11 +75,13 @@ public class MappingsPanel extends FocusPanel {
 	 * 
 	 * @param readOnly  true to operate in view-only model; false to allow editing of the mappings.
 	 */
-	MappingsPanel(boolean readOnly) {
+	MappingsPanel(List<RelationInfo> relInfos, boolean readOnly) {
 		super();
+		this.relInfos = relInfos;
 		this.readOnly = readOnly;
 		
 		_prepareFlexPanel();
+		_setRelationInfos();
 	}
 	
 	private void _prepareFlexPanel() {
@@ -127,26 +134,15 @@ public class MappingsPanel extends FocusPanel {
 		if ( newMappings == null ) {
 			return;
 		}
-		
-		AsyncCallback<List<RelationInfo>> callback = new AsyncCallback<List<RelationInfo>>() {
 
-			public void onFailure(Throwable caught) {
-				// Ignore here.  Should have been dispatched in VineMain
-			}
+		for ( Mapping mapping : newMappings ) {
+			RelationInfo relInfo = relInfoMap.get(mapping.getRelation());
 
-			public void onSuccess(List<RelationInfo> result) {
-				for ( Mapping mapping : newMappings ) {
-					RelationInfo relInfo = VineMain.getRelInfoMap().get(mapping.getRelation());
+			String codedLeft = VineMain.getCodedTerm(mapping.getLeft());
+			String codedRight = VineMain.getCodedTerm(mapping.getRight());
 
-					String codedLeft = VineMain.getCodedTerm(mapping.getLeft());
-					String codedRight = VineMain.getCodedTerm(mapping.getRight());
-
-					_addMapping(codedLeft, relInfo, codedRight, mapping.getMetadata());
-				}
-			}
-
-		};
-		VineMain.getRelationInfos(callback);
+			_addMapping(codedLeft, relInfo, codedRight, mapping.getMetadata());
+		}
 	}
 	
 	/**
@@ -221,7 +217,9 @@ public class MappingsPanel extends FocusPanel {
 		if ( relInfo != null ) {
 			String imgUri = GWT.getModuleBaseURL()+ "images/" +relInfo.getIconUri();
 			Image img = new Image(imgUri);
-			img.setTitle(relInfo.getDescription());
+			// NOTE: firefox does not put the newlines in the tooltip (perhaps firefox takes this as html?),
+			// so, I'm replacing each "\n" with " \n", so at least I see a space:
+			img.setTitle(relInfo.getDescription().replaceAll("\n", " \n"));
 			center = img;
 			mapping = new Mapping(leftKey, relInfo.getUri(), rightKey);
 		}
@@ -427,6 +425,14 @@ public class MappingsPanel extends FocusPanel {
 //				flexPanel.getRowFormatter().removeStyleName(row + 0, "MappingsTable-focused");
 //				flexPanel.getRowFormatter().removeStyleName(row + 1, "MappingsTable-focused");
 			}
+		}
+	}
+
+	private void _setRelationInfos() {
+		relInfoMap.clear();
+		for ( RelationInfo relInfo : relInfos ) {
+			Main.log("setRelationInfos: URI=" +relInfo.getUri());
+			relInfoMap.put(relInfo.getUri(), relInfo);
 		}
 	}
 

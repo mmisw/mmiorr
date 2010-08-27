@@ -1378,8 +1378,8 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	// VINE:
 	
 
-	public List<RelationInfo> getVineRelationInfos() {
-		return portal.getVineRelationInfos();
+	public List<RelationInfo> getDefaultVineRelationInfos() {
+		return portal.getDefaultVineRelationInfos();
 	}
 	
 	// :VINE

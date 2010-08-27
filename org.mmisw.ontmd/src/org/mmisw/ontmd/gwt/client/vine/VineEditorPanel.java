@@ -11,6 +11,7 @@ import org.mmisw.iserver.gwt.client.rpc.MappingOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.OntologyData;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.vine.Mapping;
+import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
 import org.mmisw.ontmd.gwt.client.Main;
 
 import com.google.gwt.core.client.GWT;
@@ -77,12 +78,14 @@ public class VineEditorPanel extends VerticalPanel {
 			_saveMappings(mappings);
 		}
 		
-		mappingsPanel = new MappingsPanel(readOnly);
+		List<RelationInfo> relInfos = ontologyData.getRelationInfos();
+		
+		mappingsPanel = new MappingsPanel(relInfos, readOnly);
 		mappingsPanel.setMappings(mappings);
 		
 		
 		if ( ! readOnly ) {
-			mapperPage = new MapperPage(mappingsPanel);
+			mapperPage = new MapperPage(relInfos, mappingsPanel);
 			layout.add(mapperPage);
 		}
 

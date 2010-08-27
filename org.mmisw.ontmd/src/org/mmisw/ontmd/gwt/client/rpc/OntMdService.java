@@ -157,7 +157,7 @@ public interface OntMdService extends RemoteService {
 	/**
 	 * Gets the default list of RelationInfo's.
 	 */
-	public List<RelationInfo> getVineRelationInfos();
+	public List<RelationInfo> getDefaultVineRelationInfos();
 	
 	// :VINE
 	////////////////////////////////////////////////////////////////////////////////////////////

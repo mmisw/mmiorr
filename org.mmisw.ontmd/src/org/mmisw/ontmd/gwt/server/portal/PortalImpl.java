@@ -157,8 +157,8 @@ public class PortalImpl  {
 	// VINE:
 	
 
-	public List<RelationInfo> getVineRelationInfos() {
-		return iserver.getVineRelationInfos();
+	public List<RelationInfo> getDefaultVineRelationInfos() {
+		return iserver.getDefaultVineRelationInfos();
 	}
 	
 	// :VINE

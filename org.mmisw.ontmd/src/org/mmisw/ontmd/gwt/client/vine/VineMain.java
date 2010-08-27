@@ -132,10 +132,12 @@ public class VineMain {
 	}
 
 	/**
-	 * Gets the list of relations.
-	 * @param callback
+	 * Gets the list of default Vine relations. This list is retrieved from the back-end on demand
+	 * and only once.
+	 * 
+	 * @param callback Called to provide the retrieved list.
 	 */
-	public static void getRelationInfos(final AsyncCallback<List<RelationInfo>> callback) {
+	public static void getDefaultVineRelationInfos(final AsyncCallback<List<RelationInfo>> callback) {
 		if ( VineMain.relInfos != null ) {
 			callback.onSuccess(VineMain.relInfos);
 			return;
@@ -151,26 +153,15 @@ public class VineMain {
 				VineMain.relInfos = relInfos;
 				Main.log("getRelationInfos: retrieved " +relInfos.size()+ " relations");
 				relInfoMap.clear();
-				for ( final RelationInfo relInfo : relInfos ) {
-					
+				for ( RelationInfo relInfo : relInfos ) {
 					relInfoMap.put(relInfo.getUri(), relInfo);
-					
-					// also associate any secondary URIs to the relInfo.
-					// This makes possible that mappings from an old version of vine (in particular,
-					// those using the Skos2 namespace), be dispatched in the interface.
-					List<String> uris2 = relInfo.getSecondaryUris();
-					if ( uris2 != null ) {
-						for ( String uri2 : uris2 ) {
-							relInfoMap.put(uri2, relInfo);
-						}
-					}
 				}
 				callback.onSuccess(VineMain.relInfos);
 			}
 		};
 
-		Main.log("Getting relations ...");
-		Main.ontmdService.getVineRelationInfos(myCallback);
+		Main.log("Getting default Vine relations ...");
+		Main.ontmdService.getDefaultVineRelationInfos(myCallback);
 	}
 
 	

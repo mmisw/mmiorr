@@ -1,9 +1,9 @@
 package org.mmisw.ontmd.gwt.client.portal;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.mmisw.iserver.gwt.client.rpc.BaseOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
@@ -16,13 +16,17 @@ import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData;
+import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
 import org.mmisw.ontmd.gwt.client.DataPanel;
 import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.metadata.MetadataPanel;
 import org.mmisw.ontmd.gwt.client.portal.PortalMainPanel.InterfaceType;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
+import org.mmisw.ontmd.gwt.client.vine.VineMain;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CellPanel;
@@ -181,8 +185,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		
 		// create (empty) data for the ontologyInfo
 		VocabularyOntologyData vocababularyOntologyData = new VocabularyOntologyData();
-		BaseOntologyData baseOntologyData = null;
-		vocababularyOntologyData.setBaseOntologyData(baseOntologyData);
+		vocababularyOntologyData.setBaseOntologyData(null);
 		vocababularyOntologyData.setClasses(null);
 		ontologyInfo.setOntologyData(vocababularyOntologyData);
 
@@ -195,15 +198,40 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	}
 
 	/**
-	 * Prepares the panel for creation of an ontology using the vine style.
+	 * Prepares the panel for creation of a new ontology using the vine style.
 	 */
 	void createNewMappingOntology() {
+		DeferredCommand.addCommand(new Command() {
+			public void execute() {
+				_getDefaultVineRelationInfosAndCreateNewMappingOntology();
+			}
+		});
+	}
+	
+	private void _getDefaultVineRelationInfosAndCreateNewMappingOntology() {
+		VineMain.getDefaultVineRelationInfos(new AsyncCallback<List<RelationInfo>>() {
+			public void onFailure(Throwable caught) {
+				// ignored here -- should have been dispatched by VineMain.
+			}
+
+			public void onSuccess(List<RelationInfo> relInfos) {
+				// now, do actually launch the creation of the new mapping ontology
+				_doCreateNewMappingOntology(relInfos);
+			}
+		});
+	}
+
+	/**
+	 * Prepares the panel for creation of an ontology using the vine style
+	 * and the given RelationInfos.
+	 */
+	private void _doCreateNewMappingOntology(List<RelationInfo> relInfos) {
 		createNewBase();
 		
-		// create (empty) data for the ontologyInfo
+		// create data with only the given RelationInfos for the ontologyInfo
 		MappingOntologyData mappingOntologyData = new MappingOntologyData();
-		BaseOntologyData baseOntologyData = null;
-		mappingOntologyData.setBaseOntologyData(baseOntologyData);
+		mappingOntologyData.setRelationInfos(relInfos);
+		mappingOntologyData.setBaseOntologyData(null);
 		mappingOntologyData.setMappings(null);
 		ontologyInfo.setOntologyData(mappingOntologyData);
 
@@ -214,7 +242,10 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		
 		enable(true);
 	}
-
+	
+	
+	
+	
 
 	/**
 	 * Prepares the panel for creation of an ontology from a local file to

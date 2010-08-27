@@ -2,6 +2,16 @@ org.mmisw.ontmd: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-08-27   2.0.0.beta
+	Fixed 276: "original SKOS namespace not retained in new version"
+	See iserver module.
+	- Vine mappings: allowing to maintain the original SKOS namespace when editing a new version
+	  of a mapping ontology. That is, if a version of a mapping ontology uses the SKOS
+	  namespace "http://www.w3.org/2008/05/skos#", then any modification/addition of mappings
+	  for a new version will continue to use that namespace. 
+	
+
+
 2010-08-23   1.9.95.alpha
 	- iserver module: ONLY the following properties are considered for
 	  the extraction of metadata for a mapping:
