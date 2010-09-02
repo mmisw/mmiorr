@@ -21,7 +21,7 @@
 
 	<target name="init">
 		<tstamp>
-			<format property="iserver.app.build" pattern="yyyyMMddHHmmss" />
+			<format property="iserver.app.build" pattern="yyyyMMddHHmm" />
 		</tstamp>
 	</target>
 

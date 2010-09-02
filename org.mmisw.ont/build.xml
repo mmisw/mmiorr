@@ -21,7 +21,7 @@
 	<target name="init">
 		<fail unless="aquaportal.jdbc.password" />
 		<tstamp>
-		    <format property="ont.app.build" pattern="yyyyMMddHHmmss" />
+		    <format property="ont.app.build" pattern="yyyyMMddHHmm" />
 		</tstamp>
 	</target>
 

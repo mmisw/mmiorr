@@ -27,7 +27,7 @@
 
 	<target name="init">
 		<tstamp>
-		    <format property="ontmd.app.build" pattern="yyyyMMddHHmmss" />
+		    <format property="ontmd.app.build" pattern="yyyyMMddHHmm" />
 		</tstamp>
 	</target>
 
