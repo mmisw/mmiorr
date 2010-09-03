@@ -3,11 +3,10 @@ package org.mmisw.ontmd.gwt.client.portal.extont;
 import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
-import org.mmisw.ontmd.gwt.client.Main;
-import org.mmisw.ontmd.gwt.client.portal.Portal;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
+import org.mmisw.ontmd.gwt.client.util.OrrUtil;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
-import org.mmisw.ontmd.gwt.client.util.Util;
 
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -49,7 +48,7 @@ public class AuthorityShortNamePanel extends VerticalPanel {
 	
 	AuthorityShortNamePanel(RegisterNewPageFullyHosted page) {
 		this.page = page;
-		authorityAttrDef = Main.getMetadataBaseInfo().getAuthorityAttrDef();
+		authorityAttrDef = Orr.getMetadataBaseInfo().getAuthorityAttrDef();
 		assert authorityAttrDef != null;
 		
 		add(createForm());
@@ -79,7 +78,7 @@ public class AuthorityShortNamePanel extends VerticalPanel {
 		};
 
 		authorityWidget = new FieldWithChoose(authorityAttrDef, cl, "130px");
-		shortNameTextBox = Util.createTextBoxBase(1, "200px", cl);
+		shortNameTextBox = OrrUtil.createTextBoxBase(1, "200px", cl);
 			
 			
 		String label = authorityAttrDef.getLabel();
@@ -156,7 +155,7 @@ public class AuthorityShortNamePanel extends VerticalPanel {
 	}
 	
 	private void updateResultingUri() {
-		String ontServiceUrl = Portal.portalBaseInfo.getOntServiceUrl();
+		String ontServiceUrl = Orr.getPortalBaseInfo().getOntServiceUrl();
 		
 		String authority = "<font color=\"gray\">authority</font>";
 		if ( authorityWidget.getValue().trim().length() > 0 ) {
@@ -197,7 +196,7 @@ public class AuthorityShortNamePanel extends VerticalPanel {
 			return null;
 		}
 		
-		String ontServiceUrl = Portal.portalBaseInfo.getOntServiceUrl();
+		String ontServiceUrl = Orr.getPortalBaseInfo().getOntServiceUrl();
 		String authority = authorityWidget.getValue().trim();
 		String shortName = shortNameTextBox.getText().trim();
 		

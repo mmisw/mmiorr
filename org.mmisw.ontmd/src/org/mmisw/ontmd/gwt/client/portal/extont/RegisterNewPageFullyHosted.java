@@ -2,8 +2,7 @@ package org.mmisw.ontmd.gwt.client.portal.extont;
 
 
 import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
-import org.mmisw.ontmd.gwt.client.Main;
-import org.mmisw.ontmd.gwt.client.portal.Portal;
+import org.mmisw.ontmd.gwt.client.Orr;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -57,7 +56,7 @@ class RegisterNewPageFullyHosted extends BasePage {
 		panel.setWidth("100%");
 		int row = 0;
 		
-		String ontServiceUrl = Portal.portalBaseInfo.getOntServiceUrl();
+		String ontServiceUrl = Orr.getPortalBaseInfo().getOntServiceUrl();
 		
 		panel.setWidget(row, 0, new HTML(INFO_TEMPLATE.replaceFirst(ONT_SERVICE_URL_FRAG, ontServiceUrl)));
 		panel.getFlexCellFormatter().setAlignment(row, 0, 
@@ -93,7 +92,7 @@ class RegisterNewPageFullyHosted extends BasePage {
 		
 		if ( fullCheck ) {
 			// Check resulting URI against the registry
-			String ontServiceUrl = Portal.portalBaseInfo.getOntServiceUrl() + "/";
+			String ontServiceUrl = Orr.getPortalBaseInfo().getOntServiceUrl() + "/";
 			String uri = ontServiceUrl + authority+"/" + shortName;
 			resolveUri(uri);
 		}
@@ -129,7 +128,7 @@ class RegisterNewPageFullyHosted extends BasePage {
 			}
 
 			public void onSuccess(ResolveUriResult resolveUriResult) {
-				Main.log("RegisterExternalOntologyPageFullyHosted <" +uri+ ">: call completed.");
+				Orr.log("RegisterExternalOntologyPageFullyHosted <" +uri+ ">: call completed.");
 				
 				String error = null;
 				if ( resolveUriResult == null ) {
@@ -163,8 +162,8 @@ class RegisterNewPageFullyHosted extends BasePage {
 		};
 
 		statusHtml.setHTML("<font color=\"blue\">Checking ...</font>");
-		Main.log("RegisterExternalOntologyPageFullyHosted: checking URI = " +uri);
-		Main.ontmdService.resolveUri(uri, callback);
+		Orr.log("RegisterExternalOntologyPageFullyHosted: checking URI = " +uri);
+		Orr.service.resolveUri(uri, callback);
 	}
 
 

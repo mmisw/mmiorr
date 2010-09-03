@@ -14,7 +14,7 @@ import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
 import org.mmisw.iserver.gwt.client.rpc.UnregisterOntologyResult;
 import org.mmisw.ontmd.gwt.client.LoginPanel;
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.portal.admin.AdminPanel;
 import org.mmisw.ontmd.gwt.client.portal.extont.RegisterNewWizard;
 import org.mmisw.ontmd.gwt.client.portal.extont.RegisterVersionWizard;
@@ -22,7 +22,6 @@ import org.mmisw.ontmd.gwt.client.util.GaUtil;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 import org.mmisw.ontmd.gwt.client.vine.VineMain;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.History;
@@ -94,7 +93,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	}
 	
 	
-	PortalMainPanel(final Map<String, String> params, List<RegisteredOntologyInfo> ontologyInfos) {
+	public PortalMainPanel(final Map<String, String> params, List<RegisteredOntologyInfo> ontologyInfos) {
 		super();
 	
 		_setupWindowCloseListener();
@@ -104,30 +103,8 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		
 		History.addHistoryListener(this);
 		
-		LoginResult loginResult = null;
+		LoginResult loginResult = pctrl.getLoginResult();
 		
-		///////////////////////////////////////////////////////////////////////////
-		// conveniences for testing in development environment
-		if ( ! GWT.isScript() ) {
-			
-			if ( false ) {    // true for auto-login
-				loginResult = new LoginResult();
-				loginResult.setSessionId("22222222222222222");
-				loginResult.setUserId("1001");
-				loginResult.setUserName("carueda");
-				loginResult.setUserRole("ROLE_ADMINISTRATOR");
-			}
-		}
-		
-		
-	    if ( loginResult == null && params.get("sessionId") != null && params.get("userId") != null ) {
-	    	loginResult = new LoginResult();
-	    	loginResult.setSessionId(params.get("sessionId"));
-	    	loginResult.setUserId(params.get("userId"));
-	    }
-	    
-	    pctrl.setLoginResult(loginResult);
-
 	    browsePanel = new BrowsePanel(ontologyInfos, loginResult);
 	    this.setWidth("100%");
 	    bodyPanel.setWidth("100%");
@@ -144,16 +121,12 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	void dispatch() {
 	    String historyToken = History.getToken();
 	    if ( historyToken != null && historyToken.trim().length() > 0 ) {
-			Main.log("history token = " +historyToken);
+			Orr.log("history token = " +historyToken);
 	    	History.fireCurrentHistoryState();
 	    }
 	    else {
 		    controlsPanel.showMenuBar(interfaceType);
-		    
 		    bodyPanel.add(browsePanel);
-		    
-//			History.newItem("", false);
-
 	    }
 	}
 	
@@ -164,9 +137,9 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 
 
 	private void userSignedIn() {
-		Main.log("userSignedIn: interfaceType=" +interfaceType);
+		Orr.log("userSignedIn: interfaceType=" +interfaceType);
 		controlsPanel.showMenuBar(interfaceType);
-		browsePanel.setLoginResult(pctrl.getLoginResult());
+		browsePanel.setLoginResult(pctrl.getLoginResult(), true);
 	}
 	
 	void userSignedOut() {
@@ -177,7 +150,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		headerPanel.updateLinks(interfaceType);
 		controlsPanel.showMenuBar(interfaceType);
 		browsePanel.ontologyTable.showProgress();
-	    browsePanel.setLoginResult(pctrl.getLoginResult());
+	    browsePanel.setLoginResult(pctrl.getLoginResult(), true);
 	    
 //	    History.newItem(PortalConsts.T_BROWSE);
 	}
@@ -229,6 +202,16 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		});
 	}
 	
+	/**
+	 * Sets the login result associated with this panel. 
+	 * Does not trigger any GUI updates.
+	 * @param loginResult
+	 */
+	public void setLoginResult(LoginResult loginResult) {
+		pctrl.setLoginResult(loginResult);
+		browsePanel.setLoginResult(loginResult, false);
+	}
+	
 	public void loginOk(final LoginResult loginResult) {
 		if ( signInPopup != null ) {
 			signInPopup.hide();
@@ -260,7 +243,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 
 	public void onHistoryChanged(String historyToken) {
 		
-		Main.log("onHistoryChanged: historyToken: " +historyToken);
+		Orr.log("onHistoryChanged: historyToken: " +historyToken);
 		
 		// TODO trackPageview or trackEvent?
 		GaUtil.trackPageview(historyToken);
@@ -271,7 +254,9 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		historyToken = historyToken.trim();
 		if ( historyToken.length() > 0 ) {
 			if ( lowercase.equals(PortalConsts.T_BROWSE) ) {
-				dispatchMainPanel(false);
+				// in general, do not reload the list, except if the current known list is empty:
+				boolean reload = browsePanel.getNumberOfOntologies() == 0;
+				dispatchMainPanel(reload);
 				dispatched = true;
 			}
 			else if ( lowercase.equals(PortalConsts.T_SEARCH_TERMS) ) {
@@ -309,7 +294,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 
 			else {
 				String uri = historyToken.trim();
-				Main.log("onHistoryChanged: URI: " +uri);
+				Orr.log("onHistoryChanged: URI: " +uri);
 				dispatched = true;				
 				resolveUri(uri);
 			}
@@ -373,9 +358,13 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	}
 	
 
+	public void showRefreshingMessage() {
+	    bodyPanel.clear();
+	    bodyPanel.add(new HTML("<i>Refreshing...</i>"));
+	}
 	
 	private void dispatchMainPanel(boolean reloadList) {
-		Main.log("__dispatchMainPanel: reloadList=" +reloadList);
+		Orr.log("__dispatchMainPanel: reloadList=" +reloadList);
 		OntologyPanel ontologyPanel = pctrl.getOntologyPanel();
 		if ( ontologyPanel != null ) {
 			ontologyPanel.cancel();
@@ -391,8 +380,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 
 	    if ( reloadList ) {
 	    	bodyPanel.add(new HTML("<i>Refreshing...</i>"));
-	    	Portal portal = pctrl.getPortal();
-	    	portal.refreshListAllOntologies();
+	    	Orr.refreshListAllOntologies();
 	    }
 	    else {
 	    	bodyPanel.add(browsePanel);
@@ -410,7 +398,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	
 	private void dispatchOntologyPanel(final RegisteredOntologyInfo ontologyInfo, final boolean versionExplicit) {
 		String ontologyUri = ontologyInfo.getUri();
-		Main.log("dispatchOntologyPanel:  ontologyUri=" +ontologyUri);
+		Orr.log("dispatchOntologyPanel:  ontologyUri=" +ontologyUri);
 
 		interfaceType = InterfaceType.ONTOLOGY_VIEW;
 
@@ -433,7 +421,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 
 	private void dispatchEntityPanel(final EntityInfo entityInfo) {
 		String entityUri = entityInfo.getUri();
-		Main.log("dispatchTermPanel:  entityUri=" +entityUri);
+		Orr.log("dispatchTermPanel:  entityUri=" +entityUri);
 
 		interfaceType = InterfaceType.ENTITY_VIEW;
 
@@ -657,7 +645,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 
 		HostingType hostingType = roi.getHostingType();  
 		
-		Main.log("PortalMainPanel.editNewVersion: Dispatching wizard to capture new version. " +
+		Orr.log("PortalMainPanel.editNewVersion: Dispatching wizard to capture new version. " +
 				"hostingType = " +hostingType);
 		
 		RegisterVersionWizard wizard = new RegisterVersionWizard(this, roi, hostingType);
@@ -771,7 +759,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 			}
 
 			public void onSuccess(ResolveUriResult resolveUriResult) {
-				Main.log("resolveUri <" +uri+ ">: call completed.");
+				Orr.log("resolveUri <" +uri+ ">: call completed.");
 				
 				String error = null;
 				if ( resolveUriResult == null ) {
@@ -812,8 +800,8 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	    bodyPanel.clear();
 	    bodyPanel.add(new HTML("<i>Loading ontology...</i>"));
 
-		Main.log("resolveUri: " +uri);
-		Main.ontmdService.resolveUri(uri, callback);
+		Orr.log("resolveUri: " +uri);
+		Orr.service.resolveUri(uri, callback);
 	}
 
 	
@@ -873,14 +861,14 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 			}
 
 			public void onSuccess(UnregisterOntologyResult result) {
-				Main.log("UnregisterOntologyResult obtained: " +result);
+				Orr.log("UnregisterOntologyResult obtained: " +result);
 				PortalControl.getInstance().notifyActivity(false);
 				unregistrationCompleted(popup, result);
 			}
 		};
 
-		Main.log("Calling ontmdService.unregisterOntology ...");
-		Main.ontmdService.unregisterOntology(loginResult, oi, callback);
+		Orr.log("Calling ontmdService.unregisterOntology ...");
+		Orr.service.unregisterOntology(loginResult, oi, callback);
 	}
 
 	private void unregistrationCompleted(MyDialog registrationPopup, final UnregisterOntologyResult unregisterOntologyResult) {
@@ -915,7 +903,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		}
 		
 		String msg = sb.toString();
-		Main.log("Unregistration result: " +msg);
+		Orr.log("Unregistration result: " +msg);
 
 		final MyDialog popup = new MyDialog(null);
 		popup.setCloseButtonText("Return to ontology list");

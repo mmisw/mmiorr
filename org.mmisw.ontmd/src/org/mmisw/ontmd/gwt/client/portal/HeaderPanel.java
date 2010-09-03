@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.portal.PortalMainPanel.InterfaceType;
-import org.mmisw.ontmd.gwt.client.util.Util;
+import org.mmisw.ontmd.gwt.client.util.OrrUtil;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -78,7 +78,7 @@ public class HeaderPanel extends FlexTable {
 		int row = 0;
 		
 		flexPanel.getFlexCellFormatter().setRowSpan(row, 0, 2);
-		flexPanel.setWidget(row, 0, Main.images.mmior().createImage());
+		flexPanel.setWidget(row, 0, Orr.images.mmior().createImage());
 		flexPanel.getFlexCellFormatter().setWidth(row, 0, "10%");
 		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
@@ -158,7 +158,7 @@ public class HeaderPanel extends FlexTable {
 		}
 		
 		
-		if ( type != InterfaceType.ADMIN && Util.isOrrAdmin(loginResult) ) {
+		if ( type != InterfaceType.ADMIN && OrrUtil.isOrrAdmin(loginResult) ) {
 			widgets2.add(adminLink);
 		}
 

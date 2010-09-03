@@ -150,7 +150,7 @@ public class DataPanel extends VerticalPanel {
 
 	private Widget _createVocabularyWidget(VocabularyOntologyData ontologyData) {
 
-		Main.log("Creating VocabularyWidget");
+		Orr.log("Creating VocabularyWidget");
 
 		List<ClassData> classes = ontologyData.getClasses();
 		
@@ -196,7 +196,7 @@ public class DataPanel extends VerticalPanel {
 			
 
 			List<IndividualInfo> individuals = classData.getIndividuals();
-			Main.log("num individuals: " +individuals.size());
+			Orr.log("num individuals: " +individuals.size());
 			
 			List<IRow> rows = new ArrayList<IRow>();
 			
@@ -236,7 +236,7 @@ public class DataPanel extends VerticalPanel {
 	 */
 	private Widget _createOtherWidget(TempOntologyInfo tempOntologyInfo, OtherOntologyData ontologyData) {
 		
-		Main.log("Creating OtherWidget");
+		Orr.log("Creating OtherWidget");
 		
 		OtherOntologyContentsPanel otherOntologyContentsPanel = new OtherOntologyContentsPanel(
 				tempOntologyInfo,
@@ -248,7 +248,7 @@ public class DataPanel extends VerticalPanel {
 	}
 	
 	private Widget _createMappingWidget(MappingOntologyData ontologyData) {
-		Main.log("Creating MappingWidget");
+		Orr.log("Creating MappingWidget");
 
 		VineOntologyContentsPanel vineOntologyContentsPanel = new VineOntologyContentsPanel(ontologyData, readOnly);
 		baseOntologyContentsPanels.add(vineOntologyContentsPanel);
@@ -259,7 +259,7 @@ public class DataPanel extends VerticalPanel {
 	 * Cancels changes done to the data contents, if any.
 	 */
 	public void cancel() {
-		Main.log("DataPanel.cancel");
+		Orr.log("DataPanel.cancel");
 		for ( BaseOntologyContentsPanel baseOntologyContentsPanel : baseOntologyContentsPanels ) {
 			baseOntologyContentsPanel.cancel();
 		}

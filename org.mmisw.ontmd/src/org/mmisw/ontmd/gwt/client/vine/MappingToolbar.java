@@ -3,7 +3,7 @@ package org.mmisw.ontmd.gwt.client.vine;
 import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.vine.util.TLabel;
 
 import com.google.gwt.core.client.GWT;
@@ -62,7 +62,7 @@ public class MappingToolbar extends VerticalPanel {
 		layout.clear();
 		for ( final RelationInfo relInfo : relInfos ) {
 			String imgUri = GWT.getModuleBaseURL()+ "images/" +relInfo.getIconUri();
-			Main.log("Loading relation image: " +imgUri+ " for URI=" +relInfo.getUri());
+			Orr.log("Loading relation image: " +imgUri+ " for URI=" +relInfo.getUri());
 			Image img = new Image(imgUri);
 			PushButton button = new PushButton(img, 
 					new ClickListener() {

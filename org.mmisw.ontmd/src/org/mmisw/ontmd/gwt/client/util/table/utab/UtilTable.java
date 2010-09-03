@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.util.table.IRow;
 import org.mmisw.ontmd.gwt.client.util.table.IUtilTable;
 
@@ -266,7 +266,7 @@ public class UtilTable implements IUtilTable {
 
 					Widget widget = flexPanel.getWidget(row, col);
 					if ( widget instanceof FocusPanel ) {
-						Main.log("focusing row,col= " +row+ "," +col);
+						Orr.log("focusing row,col= " +row+ "," +col);
 						((FocusPanel) widget).setFocus(true);
 					}
 				}

@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 
 /**
  * 
@@ -152,8 +152,8 @@ public class TermTableCreator {
 			
 		}
 		
-		Main.log("termTable created");
-//		Main.log(termTable.toString().replace('<', '{'));
+		Orr.log("termTable created");
+//		Orr.log(termTable.toString().replace('<', '{'));
 		
 		return termTable;
 	}

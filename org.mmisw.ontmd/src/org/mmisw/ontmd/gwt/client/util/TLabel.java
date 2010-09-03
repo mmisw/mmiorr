@@ -1,6 +1,6 @@
 package org.mmisw.ontmd.gwt.client.util;
 
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratedPopupPanel;
@@ -77,7 +77,7 @@ public class TLabel extends HorizontalPanel {
 	 */
 	private TLabel setTooltip(String tooltip) {
 		if ( ttIcon == null ) {
-			ttIcon = Main.images.question12t().createImage();
+			ttIcon = Orr.images.question12t().createImage();
 		}
 		
 		if ( popup == null ) {

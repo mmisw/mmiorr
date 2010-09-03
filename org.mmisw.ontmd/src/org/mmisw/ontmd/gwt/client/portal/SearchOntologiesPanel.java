@@ -1,6 +1,6 @@
 package org.mmisw.ontmd.gwt.client.portal;
 
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
 
 import com.google.gwt.user.client.Command;
@@ -31,7 +31,7 @@ public class SearchOntologiesPanel extends HorizontalPanel {
 	// static to "remember" values
 	private static final TextBox textBox = new TextBox();
 
-	private final PushButton searchButton = new PushButton(Main.images.search().createImage(), new ClickListener() {
+	private final PushButton searchButton = new PushButton(Orr.images.search().createImage(), new ClickListener() {
 		public void onClick(Widget sender) {
 			_doSearch();
 		}

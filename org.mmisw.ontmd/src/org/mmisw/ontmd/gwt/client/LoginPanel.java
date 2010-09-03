@@ -250,19 +250,19 @@ public class LoginPanel {
 
 			public void onFailure(Throwable ex) {
 				String error = ex.getMessage();
-				Main.log("login error: " +error);
+				Orr.log("login error: " +error);
 				_enable(true);
 				statusError("Error validating credentials: " +error);
 			}
 
 			public void onSuccess(LoginResult loginResult) {
 				if ( loginResult.getError() != null ) {
-					Main.log("login error: " +loginResult.getError());
+					Orr.log("login error: " +loginResult.getError());
 					_enable(true);
 					statusError(loginResult.getError());
 				}
 				else {
-					Main.log("login ok: " +userName);
+					Orr.log("login ok: " +userName);
 					
 					if ( rememberMeCheckBox.isChecked() ) {
 						CookieMan.setUserInfo(userName, userPassword);
@@ -279,10 +279,10 @@ public class LoginPanel {
 			}
 			
 		};
-		Main.log("Verifying ...");
+		Orr.log("Verifying ...");
 		_enable(false);
 		statusMessage("Verifying ...");
-		Main.ontmdService.authenticateUser(userName, userPassword, callback);
+		Orr.service.authenticateUser(userName, userPassword, callback);
 
 	}
 
@@ -303,7 +303,7 @@ public class LoginPanel {
 
 			public void onFailure(Throwable ex) {
 				String error = ex.getMessage();
-				Main.log("Error resetting password: " +error);
+				Orr.log("Error resetting password: " +error);
 				_enable(true);
 				statusError("Error resetting password: " +error);
 			}
@@ -311,22 +311,22 @@ public class LoginPanel {
 			public void onSuccess(ResetPasswordResult result) {
 				_enable(true);
 				if ( result.getError() != null ) {
-					Main.log("Error resetting password: " +result.getError());
+					Orr.log("Error resetting password: " +result.getError());
 					statusError(result.getError());
 				}
 				else {
 					String email = result.getEmail();
-					Main.log("Reset password OK. Email sent to: " +email);
+					Orr.log("Reset password OK. Email sent to: " +email);
 					statusMessage("New password sent to: " +email);
 				}
 			}
 			
 		};
-		Main.log("Resetting password for username: " +userName+ " ...");
+		Orr.log("Resetting password for username: " +userName+ " ...");
 		statusMessage("Resetting password. Please wait...");
 		_enable(false);
 
-		Main.ontmdService.resetUserPassword(userName, callback);
+		Orr.service.resetUserPassword(userName, callback);
 	
 	}
 

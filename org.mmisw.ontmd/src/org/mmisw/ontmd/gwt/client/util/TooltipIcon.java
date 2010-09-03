@@ -1,6 +1,6 @@
 package org.mmisw.ontmd.gwt.client.util;
 
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratedPopupPanel;
@@ -33,7 +33,7 @@ public class TooltipIcon  {
 	 * @param tooltip
 	 */
 	public TooltipIcon(String tooltip) {
-		ttIcon = Main.images.question12t().createImage();
+		ttIcon = Orr.images.question12t().createImage();
 		popup = new DecoratedPopupPanel(true) {
 			public boolean onKeyUpPreview(char key, int modifiers) {
 				if ( key == KeyboardListener.KEY_ESCAPE

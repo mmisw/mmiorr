@@ -3,7 +3,7 @@ package org.mmisw.ontmd.gwt.client.portal.extont;
 
 import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.portal.PortalConsts;
 
 import com.google.gwt.core.client.GWT;
@@ -109,14 +109,14 @@ class RegisterNewPageReHosted extends BasePage {
 			}
 
 			public void onSuccess(ResolveUriResult resolveUriResult) {
-				Main.log("resolveUri <" +uri+ ">: call completed. resolveUriResult=" +resolveUriResult);
+				Orr.log("resolveUri <" +uri+ ">: call completed. resolveUriResult=" +resolveUriResult);
 				enable(true);
 				nextButton.setEnabled(false);
 				
 				String error = null;
 				if ( resolveUriResult == null ) {
 					// OK: not found.
-					Main.log("resolveUri: URI not found: " +uri);
+					Orr.log("resolveUri: URI not found: " +uri);
 				}
 				else if ( resolveUriResult.getError() != null ) {
 					error = "<font color=\"red\">" + 
@@ -149,7 +149,7 @@ class RegisterNewPageReHosted extends BasePage {
 				}
 				else {
 					// OK.
-					Main.log("resolveUri: URI not found: " +uri);
+					Orr.log("resolveUri: URI not found: " +uri);
 				}
 				
 				if ( error != null ) {
@@ -165,7 +165,7 @@ class RegisterNewPageReHosted extends BasePage {
 				}
 			}
 		};
-		Main.ontmdService.resolveUri(uri, callback);
+		Orr.service.resolveUri(uri, callback);
 	}
 
 	void updateTempOntologyInfo(TempOntologyInfo tempOntologyInfo) {

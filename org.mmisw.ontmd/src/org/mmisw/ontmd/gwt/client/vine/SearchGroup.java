@@ -6,9 +6,9 @@ import java.util.List;
 import org.mmisw.iserver.gwt.client.rpc.BaseOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.OntologyData;
-import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.vine.util.TLabel;
 
 import com.google.gwt.user.client.DOM;
@@ -98,7 +98,7 @@ public class SearchGroup extends VerticalPanel {
 		
 		final String text = box.getText().trim();
 		
-		Main.log("searching: " +text);
+		Orr.log("searching: " +text);
 		searchResultsForm.searching();
 		
 		new Timer() {
@@ -118,7 +118,7 @@ public class SearchGroup extends VerticalPanel {
 		List<RegisteredOntologyInfo> selectedVocabs = vocabularySelection.getSelectedVocabularies();
 		List<EntityInfo> entities = search(text, selectedVocabs );
 		
-		Main.log("search: retrieved " +entities.size()+ " terms");
+		Orr.log("search: retrieved " +entities.size()+ " terms");
 		if ( text.length() > 0 ) {
 			oracle.add(text);
 		}
@@ -139,13 +139,13 @@ public class SearchGroup extends VerticalPanel {
 		for (RegisteredOntologyInfo ont : uris ) {
 			
 			if ( ont.getError() != null ) {
-				Main.log("Error: " +ont.getError());
+				Orr.log("Error: " +ont.getError());
 				continue;
 			}
 			
 			OntologyData ontologyData = ont.getOntologyData();
 			if ( ontologyData == null ) {
-				Main.log("search: data not yet retrieved for " +ont.getUri());
+				Orr.log("search: data not yet retrieved for " +ont.getUri());
 				continue;
 			}
 			

@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.iserver.gwt.client.vocabulary.Option;
+import org.mmisw.ontmd.gwt.client.Orr;
 
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
@@ -61,7 +61,7 @@ public class FieldWithChoose  extends HorizontalPanel implements SourcesChangeEv
 		addChangeListener(cl);
 		
 		int nl = 1;    /// attr.getNumberOfLines() is ignored
-		textBox = Util.createTextBoxBase(nl, textWidth, cl);
+		textBox = OrrUtil.createTextBoxBase(nl, textWidth, cl);
 		textBox.addChangeListener(new ChangeListener() {
 			public void onChange(Widget sender) {
 				_onChange();
@@ -96,7 +96,7 @@ public class FieldWithChoose  extends HorizontalPanel implements SourcesChangeEv
 	 */
 	private void choose() {
 		
-		final MyDialog waitPopup = new MyDialog(Util.createHtml("Getting options ...", 12),
+		final MyDialog waitPopup = new MyDialog(OrrUtil.createHtml("Getting options ...", 12),
 				false);   // No "Close" button
 		waitPopup.setText("Please wait");
 		waitPopup.center();
@@ -104,7 +104,7 @@ public class FieldWithChoose  extends HorizontalPanel implements SourcesChangeEv
 
 		String optionsVocab = attr.getOptionsVocabulary();
 		if ( optionsVocab != null ) {
-			Main.refreshOptions(attr, new AsyncCallback<AttrDef>() {
+			Orr.refreshOptions(attr, new AsyncCallback<AttrDef>() {
 				public void onFailure(Throwable thr) {
 					String error = thr.toString();
 					while ( ( thr = thr.getCause()) != null ) {
@@ -125,11 +125,11 @@ public class FieldWithChoose  extends HorizontalPanel implements SourcesChangeEv
 	}
 	
 	private void dispatchOptions(final List<Option> options, final MyDialog waitPopup) {
-		Main.log("Dispatching options");
+		Orr.log("Dispatching options");
 		
 		final String width = "500px";
 		
-		final ListBox listBox = Util.createListBox(options, cl);
+		final ListBox listBox = OrrUtil.createListBox(options, cl);
 		listBox.setWidth(width);
 		
 		VerticalPanel vp = new VerticalPanel();

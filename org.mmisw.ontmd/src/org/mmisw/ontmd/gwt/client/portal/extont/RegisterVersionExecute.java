@@ -8,7 +8,7 @@ import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.portal.PortalControl;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 
@@ -54,7 +54,7 @@ class RegisterVersionExecute {
 		
 		createOntologyInfo.setUri(ontologyInfo.getUri());
 
-		Main.log(CLASS_NAME+": reviewAndRegisterVersionOntology starting.  HostingType: " +createOntologyInfo.getHostingType());
+		Orr.log(CLASS_NAME+": reviewAndRegisterVersionOntology starting.  HostingType: " +createOntologyInfo.getHostingType());
 		
 		final MyDialog popup = new MyDialog(null);
 		popup.addTextArea(null).setSize("600", "150");
@@ -71,14 +71,14 @@ class RegisterVersionExecute {
 			}
 
 			public void onSuccess(CreateOntologyResult result) {
-				Main.log(CLASS_NAME+": CreateOntologyResult obtained.");
+				Orr.log(CLASS_NAME+": CreateOntologyResult obtained.");
 				PortalControl.getInstance().notifyActivity(false);
 				reviewCompleted(popup, result);
 			}
 		};
 
-		Main.log(CLASS_NAME+": Calling ontmdService.createOntology ...");
-		Main.ontmdService.createOntology(createOntologyInfo, callback);
+		Orr.log(CLASS_NAME+": Calling ontmdService.createOntology ...");
+		Orr.service.createOntology(createOntologyInfo, callback);
 	}
 
 	
@@ -106,7 +106,7 @@ class RegisterVersionExecute {
 				: "Error");
 		popup.center();
 
-		Main.log(CLASS_NAME+": Review result: " +msg);
+		Orr.log(CLASS_NAME+": Review result: " +msg);
 	}
 
 	private void doRegister(MyDialog createPopup, CreateOntologyResult createOntologyResult) {
@@ -117,7 +117,7 @@ class RegisterVersionExecute {
 		popup.addTextArea(null).setText("please wait ...");
 		popup.getTextArea().setSize("600", "150");
 		
-		Main.log(CLASS_NAME+": Registering new version of ontology ...");
+		Orr.log(CLASS_NAME+": Registering new version of ontology ...");
 		popup.setText("Registering new version of ontology ...");
 		popup.center();
 		popup.show();
@@ -134,7 +134,7 @@ class RegisterVersionExecute {
 		};
 
 		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
-		Main.ontmdService.registerOntology(createOntologyResult, loginResult , callback);
+		Orr.service.registerOntology(createOntologyResult, loginResult , callback);
 	}
 
 	private void registrationCompleted(MyDialog registrationPopup, final RegisterOntologyResult uploadOntologyResult) {
@@ -177,7 +177,7 @@ class RegisterVersionExecute {
 		}
 		
 		String msg = sb.toString();
-		Main.log(CLASS_NAME+": Registration result: " +msg);
+		Orr.log(CLASS_NAME+": Registration result: " +msg);
 
 		final MyDialog popup = new MyDialog(null);
 		popup.setCloseButtonText("Return to ontology list");

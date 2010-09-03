@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.portal.PortalConsts;
 import org.mmisw.ontmd.gwt.client.portal.extont.RegisterVersionWizard.Detail;
 import org.mmisw.ontmd.gwt.client.portal.extont.RegisterVersionWizard.MdDetails;
@@ -127,7 +127,7 @@ class RegisterVersionPage2 extends BasePage {
 		
 		row++;
 		
-		Map<String, AttrDef> uriAttrDefMap = Main.getMetadataBaseInfo().getUriAttrDefMap();
+		Map<String, AttrDef> uriAttrDefMap = Orr.getMetadataBaseInfo().getUriAttrDefMap();
 		
 		for ( Detail detail : details ) {
 			HTML propLabel = new HTML();

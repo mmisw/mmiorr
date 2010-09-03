@@ -4,13 +4,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.vocabulary.Option;
+import org.mmisw.ontmd.gwt.client.Orr;
 
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.ButtonBase;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -19,6 +20,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PushButton;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
@@ -27,11 +29,11 @@ import com.google.gwt.user.client.ui.UIObject;
 
 
 /**
- * Misc utilities.
+ * Misc ORR Portal utilities.
  * 
  * @author Carlos Rueda
  */
-public class Util {
+public class OrrUtil {
 	private static String[] TESTING_AUTHORITIES = { "mmitest", "testing", "test", };
 	private static String[] INTERNAL_AUTHORITIES = { "mmiorr-internal", };
 	
@@ -89,15 +91,15 @@ public class Util {
 	/** @return the map of given parameter. Never null */
 	public static Map<String,String> getParams() {
 	    Map<String,String> params = new HashMap<String,String>();
-	    String locSearch = URL.decode(Util.getLocationSearch());
-	    Main.log("getParams: locSearch=" +locSearch);
+	    String locSearch = URL.decode(OrrUtil.getLocationSearch());
+	    Orr.log("getParams: locSearch=" +locSearch);
 	    if ( locSearch != null && locSearch.trim().length() > 0 ) {
 	        // skip ? and get &-separated chunks:
 	        locSearch = locSearch.substring(1);
 	        String[] chunks = locSearch.split("&");
 	        for (int i = 0; i < chunks.length; i++) {
 	            String chunk = chunks[i];
-	            Main.log("getParams: " +i+ ": chunk=" +chunk);
+	            Orr.log("getParams: " +i+ ": chunk=" +chunk);
 	            String[] toks = chunk.split("=");
 	            if ( toks.length == 2 ) {
 	                params.put(toks[0], toks[1]);
@@ -142,7 +144,7 @@ public class Util {
     
     
     public static Panel createHtmlPre(String w, String h, String str, int fontSize) {
-		final HTML contents = Util.createHtml("<pre>" + str + "</pre>", 10);
+		final HTML contents = OrrUtil.createHtml("<pre>" + str + "</pre>", 10);
 		ScrollPanel scroller = new ScrollPanel(contents);
 	    scroller.setSize(w, h);
 
@@ -230,5 +232,15 @@ public class Util {
 		    && ( loginResult.getUserName().equals("carueda") || loginResult.getUserName().equals("orr") )
 		;
 	}
+
+    /**
+     * Removes the element with id="loading" in the main document.
+     */
+    public static void removeLoadingMessage() {
+    	Element loadingElement = DOM.getElementById("loading");
+		if ( loadingElement != null ) {
+			DOM.removeChild(RootPanel.getBodyElement(), loadingElement);
+		}
+    }
 
 }

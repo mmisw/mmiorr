@@ -15,7 +15,7 @@ import org.mmisw.iserver.gwt.client.rpc.OtherDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.OtherOntologyData;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.util.table.IRow;
 import org.mmisw.ontmd.gwt.client.util.table.IUtilTable;
 import org.mmisw.ontmd.gwt.client.util.table.RowAdapter;
@@ -82,7 +82,7 @@ public class OtherOntologyContentsPanel extends BaseOntologyContentsPanel {
 	
 	private void _tempOntologyInfoObtained(TempOntologyInfo tempOntologyInfo) {
 		
-		Main.log("OtherOntologyContentsPanel: _tempOntologyInfoObtained: " +tempOntologyInfo);
+		Orr.log("OtherOntologyContentsPanel: _tempOntologyInfoObtained: " +tempOntologyInfo);
 		
 		this.tempOntologyInfo = tempOntologyInfo;
 		
@@ -125,7 +125,7 @@ public class OtherOntologyContentsPanel extends BaseOntologyContentsPanel {
 	
 	
 	public void setReadOnly(boolean readOnly) {
-		Main.log("OtherOntologyContentsPanel setReadOnly");
+		Orr.log("OtherOntologyContentsPanel setReadOnly");
 		super.setReadOnly(readOnly);
 		
 		_updateInterface();
@@ -139,7 +139,7 @@ public class OtherOntologyContentsPanel extends BaseOntologyContentsPanel {
 		OtherDataCreationInfo odci = new OtherDataCreationInfo();
 
 		// TODO
-		Main.log("TODO OtherOntologyContentsPanel create OtherDataCreationInfo");
+		Orr.log("TODO OtherOntologyContentsPanel create OtherDataCreationInfo");
 		odci.setTempOntologyInfo(tempOntologyInfo);
 		
 		return odci;

@@ -1,6 +1,6 @@
 package org.mmisw.ontmd.gwt.client.metadata;
 
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.rpc.OntologyInfoPre;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 
@@ -274,14 +274,14 @@ class UploadOntologyPanel extends VerticalPanel {
 			public void onSubmit(FormSubmitEvent event) {
 				statusLoad.setHTML("<font color=\"blue\">Loading ...</font>");
 				statusField2.setText("");
-				Main.log("onSubmit.");
+				Orr.log("onSubmit.");
 			}
 
 			public void onSubmitComplete(FormSubmitCompleteEvent event) {
 				statusLoad.setHTML("<img src=\"" +GWT.getModuleBaseURL()+ "images/loading.gif\"> " +
 					"<i><font color=\"blue\">Please wait, examining ontology ...</font></i>");
 				String results = event.getResults();
-				Main.log("onSubmitComplete: " +results);
+				Orr.log("onSubmitComplete: " +results);
 				if ( results != null ) {
 					textArea.setText(results);
 					getOntologyInfoFromPreLoaded(results);
@@ -305,8 +305,8 @@ class UploadOntologyPanel extends VerticalPanel {
 			}
 		};
 
-		Main.log("calling getOntologyInfoFromPreLoaded ... ");
-		Main.ontmdService.getOntologyInfoFromPreLoaded(uploadResults, callback);
+		Orr.log("calling getOntologyInfoFromPreLoaded ... ");
+		Orr.service.getOntologyInfoFromPreLoaded(uploadResults, callback);
 
 	}
 	

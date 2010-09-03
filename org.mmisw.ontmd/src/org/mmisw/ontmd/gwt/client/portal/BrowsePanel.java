@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
-import org.mmisw.ontmd.gwt.client.Main;
-import org.mmisw.ontmd.gwt.client.util.Util;
+import org.mmisw.ontmd.gwt.client.Orr;
+import org.mmisw.ontmd.gwt.client.util.OrrUtil;
 import org.mmisw.ontmd.gwt.client.util.table.IOntologyTable;
 import org.mmisw.ontmd.gwt.client.util.table.OntologyTableCreator;
 
@@ -91,10 +91,18 @@ public class BrowsePanel extends VerticalPanel {
 	}
 	
 	/**
+	 * Gets the number of all the ontologies reported 
+	 */
+	int getNumberOfOntologies() {
+		return allOntologyInfos == null ? 0 : allOntologyInfos.size();
+	}
+	
+	/**
 	 * Does updates according to current allOntologyInfos and loginResult
 	 */
 	private void updatedAllOntologyInfosAndLogin() {
-		Main.log("updatedOntologyInfosAndLogin: loginResult=" +loginResult);
+		Orr.log("BrowsePanel.updatedOntologyInfosAndLogin: allOntologies=" +getNumberOfOntologies()
+				+ " loginResult=" +loginResult);
 		
 		
 		if ( loginResult != null && loginResult.isAdministrator() ) {
@@ -109,7 +117,7 @@ public class BrowsePanel extends VerticalPanel {
 			ontologyInfos = new ArrayList<RegisteredOntologyInfo>();
 			
 			for ( RegisteredOntologyInfo oi : allOntologyInfos ) {
-				if ( Util.isTestingOntology(oi) || Util.isInternalOntology(oi) ) {
+				if ( OrrUtil.isTestingOntology(oi) || OrrUtil.isInternalOntology(oi) ) {
 					if ( userId != null && userId.equals(oi.getOntologyUserId()) ) {
 						ontologyInfos.add(oi);	
 					}
@@ -200,9 +208,16 @@ public class BrowsePanel extends VerticalPanel {
 		
 	}
 
-	void setLoginResult(LoginResult loginResult) {
+	/**
+	 * Sets the login result associated with this panel. 
+	 * @param loginResult
+	 * @param update true to trigger GUI updates.
+	 */
+	void setLoginResult(LoginResult loginResult, boolean update) {
 		this.loginResult = loginResult;
-		updatedAllOntologyInfosAndLogin();
+		if ( update ) {
+			updatedAllOntologyInfosAndLogin();
+		}
 	}
 
 

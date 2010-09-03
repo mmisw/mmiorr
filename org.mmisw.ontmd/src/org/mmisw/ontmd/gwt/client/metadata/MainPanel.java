@@ -5,8 +5,8 @@ import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
-import org.mmisw.ontmd.gwt.client.Main;
 import org.mmisw.ontmd.gwt.client.LoginPanel;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.portal.IOntologyPanel;
 import org.mmisw.ontmd.gwt.client.portal.PortalControl;
 import org.mmisw.ontmd.gwt.client.rpc.OntologyInfoPre;
@@ -198,16 +198,16 @@ public class MainPanel extends VerticalPanel implements IOntologyPanel {
 	    	loginFromParams = true;
 	    	
 	    	PortalControl.getInstance().setLoginResult(loginResult);
-	    	Main.log("login info obtained from parmeters");
+	    	Orr.log("login info obtained from parmeters");
 	    }
 	    else {
-	    	Main.log("login info = " +loginResult+ " params=" +params);
+	    	Orr.log("login info = " +loginResult+ " params=" +params);
 	    }
 	    
 	    
 	    
 	    if ( ! "n".equalsIgnoreCase(params.get("_logo")) ) {
-	    	add(Main.images.mmior().createImage());
+	    	add(Orr.images.mmior().createImage());
 	    }
 	    
 	    
@@ -332,8 +332,8 @@ public class MainPanel extends VerticalPanel implements IOntologyPanel {
 		if ( ! editRequestedOntology ) {
 			metadataPanel.showProgressMessage("Loading metadata. Please wait...");
 		}
-		Main.log("getOntologyInfoFromRegistry: ontologyUri = " +ontologyUri);
-		Main.ontmdService.getOntologyInfoFromRegistry(ontologyUri, callback);
+		Orr.log("getOntologyInfoFromRegistry: ontologyUri = " +ontologyUri);
+		Orr.service.getOntologyInfoFromRegistry(ontologyUri, callback);
 	}
 
 
@@ -369,8 +369,8 @@ public class MainPanel extends VerticalPanel implements IOntologyPanel {
 		if ( ! editRequestedOntology ) {
 			metadataPanel.showProgressMessage("Loading metadata. Please wait...");
 		}
-		Main.log("getOntologyInfoFromFileOnServer: ontologyUri = " +full_path);
-		Main.ontmdService.getOntologyInfoFromFileOnServer(full_path, callback);
+		Orr.log("getOntologyInfoFromFileOnServer: ontologyUri = " +full_path);
+		Orr.service.getOntologyInfoFromFileOnServer(full_path, callback);
 	}
 
 
@@ -442,7 +442,7 @@ public class MainPanel extends VerticalPanel implements IOntologyPanel {
 		panel.add(resetAllButton);
 		
 //		// TODO gif is not animated, why?
-//		Image progImage = Main.images.mozilla_blu().createImage();
+//		Image progImage = Orr.images.mozilla_blu().createImage();
 //		panel.add(progImage);
 		
 		return panel;
@@ -508,7 +508,7 @@ public class MainPanel extends VerticalPanel implements IOntologyPanel {
 		final MyDialog popup = new MyDialog(null);
 		popup.addTextArea(null).setSize("720", "300");
 		popup.getTextArea().setText("please wait ...");
-		Main.log("Reviewing ...");
+		Orr.log("Reviewing ...");
 		reenableButton(reviewButton, null, false);
 		popup.setText("Reviewing...");
 		popup.center();
@@ -527,7 +527,7 @@ public class MainPanel extends VerticalPanel implements IOntologyPanel {
 			}
 		};
 
-		Main.ontmdService.review(ontologyInfoPre, loginResult, callback);
+		Orr.service.review(ontologyInfoPre, loginResult, callback);
 	}
 
 	private void reviewCompleted(MyDialog popup , ReviewResult_Old reviewResult_Old) {
@@ -568,7 +568,7 @@ public class MainPanel extends VerticalPanel implements IOntologyPanel {
 				: "Error");
 		popup.center();
 
-		Main.log("Review result: " +msg);
+		Orr.log("Review result: " +msg);
 
 	}
 	
@@ -628,7 +628,7 @@ public class MainPanel extends VerticalPanel implements IOntologyPanel {
 		
 		final MyDialog popup = new MyDialog(null);
 		popup.addTextArea(null).setText("please wait ...");
-		Main.log("Uploading ...");
+		Orr.log("Uploading ...");
 		reenableButton(uploadButton, null, false);
 		popup.setText("Uploading...");
 		popup.center();
@@ -649,7 +649,7 @@ public class MainPanel extends VerticalPanel implements IOntologyPanel {
 			}
 		};
 
-		Main.ontmdService.upload(reviewResult_Old, loginResult, callback);
+		Orr.service.upload(reviewResult_Old, loginResult, callback);
 	}
 
 	
@@ -705,7 +705,7 @@ public class MainPanel extends VerticalPanel implements IOntologyPanel {
 		popup.setText(error == null ? "Upload completed sucessfully" : "Error");
 		popup.center();
 
-		Main.log("Uploading result: " +msg);
+		Orr.log("Uploading result: " +msg);
 	}
 	
 	private void enable(boolean enabled) {

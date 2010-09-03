@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.portal.PortalControl.ExternalViewersInfo;
 import org.mmisw.ontmd.gwt.client.portal.PortalMainPanel.InterfaceType;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
@@ -117,7 +118,7 @@ public class ControlsPanel extends HorizontalPanel {
 	
 	private void _prepareSearchTermsButtons() {
 		controls.setBorderWidth(0);
-		String ontServiceUrl = Portal.portalBaseInfo.getOntServiceUrl();
+		String ontServiceUrl = Orr.getPortalBaseInfo().getOntServiceUrl();
 		String sparqlPage = ontServiceUrl+ "/sparql.html";
 		HTML sparqlButton = new HTML("<blockquote><a target=\"_blank\" href=\"" +sparqlPage+ 
 				"\">Advanced search with SPARQL</a></blockquote>");

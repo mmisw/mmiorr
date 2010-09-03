@@ -5,9 +5,9 @@ import java.util.Map;
 
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.iserver.gwt.client.vocabulary.Option;
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
-import org.mmisw.ontmd.gwt.client.util.Util;
+import org.mmisw.ontmd.gwt.client.util.OrrUtil;
 
 /**
  * 
@@ -15,7 +15,7 @@ import org.mmisw.ontmd.gwt.client.util.Util;
  */
 public class MetadataSection2 extends MetadataSection {
 
-	private static Map<String, AttrDef> uriAttrDefMap = Main.getMetadataBaseInfo().getUriAttrDefMap();
+	private static Map<String, AttrDef> uriAttrDefMap = Orr.getMetadataBaseInfo().getUriAttrDefMap();
 	
 	private static AttrDef _getAttrDef(String uri) {
 		AttrDef attrDef = uriAttrDefMap.get(uri);
@@ -68,11 +68,11 @@ public class MetadataSection2 extends MetadataSection {
 					elem = new Elem(attrDef, new FieldWithChoose(attrDef, cl, "250px"));
 				}
 				else {
-					elem = new Elem(attrDef, Util.createListBox(options, cl));
+					elem = new Elem(attrDef, OrrUtil.createListBox(options, cl));
 				}
 			}
 			else {
-				elem = new Elem(attrDef, Util.createTextBoxBase(attrDef.getNumberOfLines(), "450px", cl));
+				elem = new Elem(attrDef, OrrUtil.createTextBoxBase(attrDef.getNumberOfLines(), "450px", cl));
 			}
 			addElem(elem);
 		}

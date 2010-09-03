@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
 import org.mmisw.iserver.gwt.client.rpc.PropValue;
-import org.mmisw.ontmd.gwt.client.portal.Portal;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.vine.util.SelectAllNonePanel;
 
 import com.google.gwt.core.client.GWT;
@@ -358,7 +358,7 @@ public class SearchResultsForm extends VerticalPanel {
 		}
 		
 		private String getUriResolutionLink(String uri) {
-			final String URN_RESOLVER = Portal.portalBaseInfo.getOntServiceUrl();
+			final String URN_RESOLVER = Orr.getPortalBaseInfo().getOntServiceUrl();
 			
 			String link;
 			if ( uri.startsWith("urn:") ) {

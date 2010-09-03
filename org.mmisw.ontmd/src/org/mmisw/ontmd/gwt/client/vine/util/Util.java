@@ -3,7 +3,7 @@ package org.mmisw.ontmd.gwt.client.vine.util;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.DOM;
@@ -31,7 +31,7 @@ public class Util {
 	public static Map<String,String> getParams() {
 	    Map<String,String> params = null;
 	    String locSearch = URL.decode(Util.getLocationSearch());
-	    Main.log("getParams: locSearch=" +locSearch);
+	    Orr.log("getParams: locSearch=" +locSearch);
 	    if ( locSearch != null && locSearch.trim().length() > 0 ) {
 	        // skip ? and get &-separated chunks:
 	        locSearch = locSearch.substring(1);
@@ -41,7 +41,7 @@ public class Util {
 	        }
 	        for (int i = 0; i < chunks.length; i++) {
 	            String chunk = chunks[i];
-	            Main.log("getParams: " +i+ ": chunk=" +chunk);
+	            Orr.log("getParams: " +i+ ": chunk=" +chunk);
 	            String[] toks = chunk.split("=");
 	            if ( toks.length == 2 ) {
 	                params.put(toks[0], toks[1]);

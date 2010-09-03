@@ -12,7 +12,7 @@ import org.mmisw.ontmd.gwt.client.portal.IVocabPanel;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 import org.mmisw.ontmd.gwt.client.util.StatusPopup;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
-import org.mmisw.ontmd.gwt.client.util.Util;
+import org.mmisw.ontmd.gwt.client.util.OrrUtil;
 import org.mmisw.ontmd.gwt.client.util.table.IRow;
 
 import com.google.gwt.user.client.Command;
@@ -170,7 +170,7 @@ public class VocabClassPanel extends BaseOntologyContentsPanel implements TermTa
 			classNamePanel.add(lbl);
 		}
 		else {
-			classNameTextBox = Util.createTextBoxBase(1, "300", null);
+			classNameTextBox = OrrUtil.createTextBoxBase(1, "300", null);
 			classNameTextBox.setText(className);
 			classNamePanel.add(classNameTextBox);
 		}

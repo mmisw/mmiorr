@@ -1,7 +1,6 @@
 package org.mmisw.ontmd.gwt.client.util;
 
-import org.mmisw.ontmd.gwt.client.Main;
-import org.mmisw.ontmd.gwt.client.portal.Portal;
+import org.mmisw.ontmd.gwt.client.Orr;
 
 /**
  * Google analytics utilities.
@@ -15,9 +14,9 @@ public class GaUtil {
 	
 	private static boolean enabled() {
 		if ( enabled == null ) {
-			String gaUaNumber = Portal.portalBaseInfo.getGaUaNumber();
+			String gaUaNumber = Orr.getPortalBaseInfo().getGaUaNumber();
 			enabled = Boolean.valueOf(gaUaNumber != null && gaUaNumber.trim().length() > 0);
-			Main.log("GA enabled=" +enabled+ " (gaUaNumber = " +gaUaNumber+ ")");
+			Orr.log("GA enabled=" +enabled+ " (gaUaNumber = " +gaUaNumber+ ")");
 		}
 		return enabled;
 	}

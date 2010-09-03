@@ -8,10 +8,10 @@ import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.iserver.gwt.client.vocabulary.Option;
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
+import org.mmisw.ontmd.gwt.client.util.OrrUtil;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
-import org.mmisw.ontmd.gwt.client.util.Util;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CellPanel;
@@ -68,7 +68,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 
 		public void setText(String text) {
 			this.text = text;
-			if ( Util.isUrl(text) ) {
+			if ( OrrUtil.isUrl(text) ) {
 				String link = "<a target=\"_blank\" href=\"" +text+ "\">" +text+ "</a>";
 				html.setHTML(link);
 			}
@@ -181,7 +181,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 			if ( editing &&  // not listBoxes if we are just viewing 
 					options.size() > 0 ) {
 				
-				if ( Main.getMetadataBaseInfo().getResourceTypeUri().equals(attr.getUri()) ) {
+				if ( Orr.getMetadataBaseInfo().getResourceTypeUri().equals(attr.getUri()) ) {
 					// the special case for the "resourceType"
 					
 					// #183: Don't ask user whether the submitted ontology is a mapping
@@ -201,7 +201,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 						widget = new FieldWithChoose(attr, cl);
 					}
 					else {
-						ListBox listBox = Util.createListBox(options, cl);
+						ListBox listBox = OrrUtil.createListBox(options, cl);
 						widget = listBox;
 					}
 				}
@@ -213,7 +213,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 			}
 			else {
 				int nl = attr.getNumberOfLines();
-				TextBoxBase tb = Util.createTextBoxBase(nl, "600", cl);
+				TextBoxBase tb = OrrUtil.createTextBoxBase(nl, "600", cl);
 				widget = tb;
 			}
 			
@@ -487,7 +487,7 @@ public class MetadataGroupPanel extends VerticalPanel {
 //			Main.log("resetToOriginalOrNewValues: uri: " +uri+ " = " +value);
 
 			// Special case: Omv.acronym/OmvMmi.shortNameUri
-			if ( Main.getMetadataBaseInfo().getResourceTypeUri().equals(uri) ) {
+			if ( Orr.getMetadataBaseInfo().getResourceTypeUri().equals(uri) ) {
 				List<AttrDef> relatedAttrs = elem.attr.getRelatedAttrs();
 				assert relatedAttrs != null && relatedAttrs.size() > 0 ;
 				String relatedUri = relatedAttrs.get(0).getUri();

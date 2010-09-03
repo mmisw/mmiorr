@@ -1,5 +1,6 @@
 package org.mmisw.ontmd.gwt.client.portal;
 
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
 
@@ -49,7 +50,7 @@ class OntologyUriPanel extends HorizontalPanel {
 		DOM.setElementAttribute(userUriButton.getElement(), "id", "my-button-id");
 		
 		if ( defaultNameSpace == null ) {
-			defaultNameSpace = Portal.portalBaseInfo.getOntServiceUrl();
+			defaultNameSpace = Orr.getPortalBaseInfo().getOntServiceUrl();
 		}
 
 		tlabel = new TLabel("", 

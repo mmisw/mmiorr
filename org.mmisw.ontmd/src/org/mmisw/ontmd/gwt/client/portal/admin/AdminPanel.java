@@ -1,8 +1,8 @@
 package org.mmisw.ontmd.gwt.client.portal.admin;
 
-import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.InternalOntologyResult;
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.iserver.gwt.client.rpc.LoginResult;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.portal.PortalControl;
 
 import com.google.gwt.core.client.GWT;
@@ -81,22 +81,22 @@ public class AdminPanel extends VerticalPanel {
 			statusHtml.setHTML("<font color=\"red\">Only an admin can run this.</font>");
 			return;
 		}
-		Main.log("_prepareUsers called.");
+		Orr.log("_prepareUsers called.");
 		
 		AsyncCallback<InternalOntologyResult> callback = new AsyncCallback<InternalOntologyResult>() {
 
 			public void onFailure(Throwable caught) {
 				String error = caught.getMessage();
 				statusHtml.setHTML("<font color=\"red\">" +error+ "</font>");
-				Main.log("Error preparing users: " +error);
+				Orr.log("Error preparing users: " +error);
 			}
 
 			public void onSuccess(InternalOntologyResult result) {
-				Main.log("onSuccess: " +result);
+				Orr.log("onSuccess: " +result);
 				String error = result.getError();
 				if ( error != null ) {
 					statusHtml.setHTML("<font color=\"red\">" +error+ "</font>");
-					Main.log("Error preparing users: " +error);
+					Orr.log("Error preparing users: " +error);
 					return;
 				}
 				
@@ -110,7 +110,7 @@ public class AdminPanel extends VerticalPanel {
 		statusHtml.setHTML("<img src=\"" +GWT.getModuleBaseURL()+ "images/loading.gif\"> " +
 			"<i><font color=\"blue\">Preparing users ontology ...</font></i>");
 		
-		Main.ontmdService.prepareUsersOntology(loginResult, callback);
+		Orr.service.prepareUsersOntology(loginResult, callback);
 	}
 
 	private void _createGroups() {
@@ -119,22 +119,22 @@ public class AdminPanel extends VerticalPanel {
 			statusHtml.setHTML("<font color=\"red\">Only an admin can run this.</font>");
 			return;
 		}
-		Main.log("_createGroups called.");
+		Orr.log("_createGroups called.");
 		
 		AsyncCallback<InternalOntologyResult> callback = new AsyncCallback<InternalOntologyResult>() {
 
 			public void onFailure(Throwable caught) {
 				String error = caught.getMessage();
 				statusHtml.setHTML("<font color=\"red\">" +error+ "</font>");
-				Main.log("Error creating groups ontology: " +error);
+				Orr.log("Error creating groups ontology: " +error);
 			}
 
 			public void onSuccess(InternalOntologyResult result) {
-				Main.log("onSuccess: " +result);
+				Orr.log("onSuccess: " +result);
 				String error = result.getError();
 				if ( error != null ) {
 					statusHtml.setHTML("<font color=\"red\">" +error+ "</font>");
-					Main.log("Error creating groups ontology: " +error);
+					Orr.log("Error creating groups ontology: " +error);
 					return;
 				}
 				
@@ -148,7 +148,7 @@ public class AdminPanel extends VerticalPanel {
 		statusHtml.setHTML("<img src=\"" +GWT.getModuleBaseURL()+ "images/loading.gif\"> " +
 			"<i><font color=\"blue\">Creating groups ontology ...</font></i>");
 		
-		Main.ontmdService.createGroupsOntology(loginResult, callback);
+		Orr.service.createGroupsOntology(loginResult, callback);
 	}
 	
 }

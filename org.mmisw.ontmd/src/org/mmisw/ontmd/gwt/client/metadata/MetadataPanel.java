@@ -10,7 +10,7 @@ import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.portal.IOntologyPanel;
 import org.mmisw.ontmd.gwt.client.portal.PortalControl;
 import org.mmisw.ontmd.gwt.client.portal.TempOntologyInfoListener;
@@ -86,7 +86,7 @@ public class MetadataPanel extends FlexTable implements TempOntologyInfoListener
 		dockPanel.add(tabPanel, DockPanel.NORTH);
 	    container.add(dockPanel, DockPanel.CENTER);
 	    
-		for ( AttrGroup attrGroup: Main.getMetadataBaseInfo().getAttrGroups() ) {
+		for ( AttrGroup attrGroup: Orr.getMetadataBaseInfo().getAttrGroups() ) {
 			CellPanel groupPanel = new MetadataGroupPanel(this, attrGroup, editing);
 			tabPanel.add(groupPanel, attrGroup.getName());
 		}

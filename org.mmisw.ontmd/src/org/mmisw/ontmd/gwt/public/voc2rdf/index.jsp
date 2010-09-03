@@ -1,0 +1,1 @@
+<% response.sendRedirect("../#voc2rdf"); %> 

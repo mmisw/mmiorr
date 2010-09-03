@@ -7,7 +7,7 @@ import java.util.Map;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
-import org.mmisw.ontmd.gwt.client.util.Util;
+import org.mmisw.ontmd.gwt.client.util.OrrUtil;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -71,7 +71,7 @@ public abstract class MetadataSection {
 	protected void createElements() {
 		for (int i = 0; i < attrDefs.length; i++) {
 			AttrDef attrDef = attrDefs[i];
-			Elem elem = new Elem(attrDef, Util.createTextBoxBase(1, "200px", cl));
+			Elem elem = new Elem(attrDef, OrrUtil.createTextBoxBase(1, "200px", cl));
 			addElem(elem);
 		}
 	}

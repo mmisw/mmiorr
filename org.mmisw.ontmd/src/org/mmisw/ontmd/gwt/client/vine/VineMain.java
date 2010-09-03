@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.vine.img.VineImageBundle;
 
 import com.google.gwt.core.client.GWT;
@@ -145,13 +145,13 @@ public class VineMain {
 		
 		AsyncCallback<List<RelationInfo>> myCallback = new AsyncCallback<List<RelationInfo>>() {
 			public void onFailure(Throwable thr) {
-				Main.log("getRelationInfos: ERROR: " +thr.getMessage());
+				Orr.log("getRelationInfos: ERROR: " +thr.getMessage());
 				callback.onFailure(thr);
 			}
 
 			public void onSuccess(List<RelationInfo> relInfos) {
 				VineMain.relInfos = relInfos;
-				Main.log("getRelationInfos: retrieved " +relInfos.size()+ " relations");
+				Orr.log("getRelationInfos: retrieved " +relInfos.size()+ " relations");
 				relInfoMap.clear();
 				for ( RelationInfo relInfo : relInfos ) {
 					relInfoMap.put(relInfo.getUri(), relInfo);
@@ -160,15 +160,15 @@ public class VineMain {
 			}
 		};
 
-		Main.log("Getting default Vine relations ...");
-		Main.ontmdService.getDefaultVineRelationInfos(myCallback);
+		Orr.log("Getting default Vine relations ...");
+		Orr.service.getDefaultVineRelationInfos(myCallback);
 	}
 
 	
 	public static void setWorkingUrisWithGivenNamespaces(Set<String> namespaces) {
 		
 		workingUris.clear();
-		Main.log("setWorkingUrisWithGivenNamespaces: " +namespaces);
+		Orr.log("setWorkingUrisWithGivenNamespaces: " +namespaces);
 		if ( namespaces != null ) {
 			for ( String namespace : namespaces ) {
 				addWorkingUri(namespace);

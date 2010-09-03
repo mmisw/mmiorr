@@ -2,7 +2,7 @@ package org.mmisw.ontmd.gwt.client.portal;
 
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
 import org.mmisw.iserver.gwt.client.rpc.SparqlQueryResult;
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
@@ -100,7 +100,7 @@ public class SearchTermsPanel extends VerticalPanel {
 		hp.add(new Label("Search terms containing:"));
 		hp.add(suggestBox);
 		
-		searchButton = new PushButton(Main.images.search().createImage(), new ClickListener() {
+		searchButton = new PushButton(Orr.images.search().createImage(), new ClickListener() {
 			public void onClick(Widget sender) {
 				_doSearch();
 			}
@@ -146,7 +146,7 @@ public class SearchTermsPanel extends VerticalPanel {
 			public void onFailure(Throwable exception) {
 				enable(true);
 				String error = exception.getMessage();
-				Main.log("Search failure: " + error);
+				Orr.log("Search failure: " + error);
 				resultsPanel.error(error);
 			}
 
@@ -154,7 +154,7 @@ public class SearchTermsPanel extends VerticalPanel {
 				enable(true);
 				if ( result.getError() != null ) {
 					String error = result.getError();
-					Main.log("Search error: " + error);
+					Orr.log("Search error: " + error);
 					resultsPanel.error(error);	
 				}
 				else {
@@ -170,8 +170,8 @@ public class SearchTermsPanel extends VerticalPanel {
 				}
 			}
 		};
-		Main.log("Searching. query: " +query.getQuery());
-		Main.ontmdService.runSparqlQuery(query, callback);
+		Orr.log("Searching. query: " +query.getQuery());
+		Orr.service.runSparqlQuery(query, callback);
 	}
 	
 	private void enable(boolean enabled) {

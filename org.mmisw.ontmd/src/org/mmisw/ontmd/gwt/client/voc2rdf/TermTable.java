@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
 
 import com.google.gwt.user.client.Command;
@@ -200,7 +200,7 @@ public class TermTable extends VerticalPanel {
 	
 	
 	Image _createMenu(final int row, final int col) {
-		Image img = Main.images.tridown().createImage();
+		Image img = Orr.images.tridown().createImage();
 		img.addClickListener(new ClickListener() {
 			public void onClick(Widget sender) {
 				_cellClicked(row, col);
@@ -801,7 +801,7 @@ public class TermTable extends VerticalPanel {
 
 					Widget widget = flexTable.getWidget(row, col);
 					if ( widget instanceof FocusPanel ) {
-						Main.log("focusing row,col= " +row+ "," +col);
+						Orr.log("focusing row,col= " +row+ "," +col);
 						((FocusPanel) widget).setFocus(true);
 					}
 				}

@@ -1,7 +1,7 @@
 package org.mmisw.ontmd.gwt.client.portal;
 
 import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 
 import com.google.gwt.user.client.ui.Widget;
 
@@ -46,7 +46,7 @@ public abstract class BaseOntologyContentsPanel {
 	 */
 	public void cancel() {
 		active = false;
-		Main.log(this.getClass().getName()+ ".cancel CALLED");
+		Orr.log(this.getClass().getName()+ ".cancel CALLED");
 	}
 
 	/**

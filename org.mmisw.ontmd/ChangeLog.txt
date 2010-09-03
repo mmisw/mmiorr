@@ -2,6 +2,75 @@ org.mmisw.ontmd: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-09-02   2.0.1.beta
+
+	 - Completed refactoring changes for the new dispatch:
+	 	- the new class gwt.client.Orr takes main responsibility for the initialization sequence
+	 	- gwt.client.Main to renamed to gwt.client.OrrEntryPoint and only in charge of
+	 	  calling Orr.launch(params).
+	 	- class gwt.client.portal.Portal removed.
+	 	- "auto-login" dispatch re-enabled after the recent several changes.
+
+	 - As part of the new overall dispatch, the following issues fixed:
+	 	277: "ontology table loaded twice when logged in"
+		278: "more efficient ontology dispatch"
+		
+	 - New public/portal/index.jsp and public/voc2rdf/index.jsp with redirects to the
+	   main page, which corresponds to public/index.html (with index.html being implicit).
+	 - Removed corresponding public/portal/index.html and public/voc2rdf/index.html.
+	   
+	    
+2010-09-02
+
+	NOTE: Current version of all modules in the SVN repository, ie., with the first deployment
+	having the 2.0.0.beta version, was just tagged 'beta1-2010-08-27':
+	    http://code.google.com/p/mmisw/source/browse/#svn/tags/beta1-2010-08-27
+	    
+
+2010-08-29   2.0.0.beta
+	Lots of code clean-up. Besides the obvious objectives (simplify, facilitate maintenance), a
+	central goal at this point is to prepare for a more efficient dispatch when the ORR 
+	application is open. For example, when open with a certain ontology, avoid loading the
+	list of registered ontologies (only load this list when necessary: for the main page or
+	for the Vine interface).
+	So the immediate target issues are:
+		277: "ontology table loaded twice when logged in"
+		278: "more efficient ontology dispatch"
+	
+	Many obsolete classes removed and some refactorings:
+	 
+	- ...gwt.client.Main: startGui(params, mainPanel) renamed to addMainPanel(params, mainPanel)
+	- ...gwt.client.util.Util renamed to ...gwt.client.util.OrrUtil
+	- Some elements moved from Main to new class Orr:
+		service  (formerly ontmdService)
+		images
+		log(String msg)
+		refreshOptions(attr, callback)
+	  Many sources updated with the corresponding new references.
+	  
+	- Removed unused class ...gwt.client.TestUploadPanel.
+		
+	- In package ...gwt.client.voc2rdf: Removed the following obsolete unused classes (which were
+	  developed for an old version of the voc2rdf tool):
+		ClassPanel
+		ConversionPanel
+		Voc2Rdf
+		Voc2RdfMainPanel
+		VocPanel
+	
+	- New class Orr will provide the new dispatch mechanism eventually replacing Main and Portal
+	  .. UNDER DEVELOPMENT ...
+	  
+	  
+	TODO: by looking at referrals in the google analytics I see this page:
+	   http://www.w3.org/2006/07/SWD/SKOS/reference/20090315/implementation.html
+	which has links to:
+          o http://mmisw.org/or
+          o http://mmisw.org/ontmd/voc2rdf ==> this in particular would need a redirect.
+          o http://mmisw.org/vine
+
+
+
 2010-08-27   2.0.0.beta
 	Fixed 276: "original SKOS namespace not retained in new version"
 	See iserver module.

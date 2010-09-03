@@ -8,7 +8,7 @@ import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.ontmd.gwt.client.CookieMan;
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.util.table.IQuickInfo;
 
 import com.google.gwt.http.client.URL;
@@ -34,7 +34,6 @@ public class PortalControl {
 		return instance;
 	}
 	
-	private Portal portal;
 	private PortalMainPanel portalMainPanel;
 	
 	private LoginResult loginResult;
@@ -131,7 +130,7 @@ public class PortalControl {
 			hp.setSpacing(3);
 			
 			// URI of the ontology to be retrieved from the "ont" service:
-			String uri = Portal.portalBaseInfo.getOntServiceUrl() + "?form=owl&uri=" +oi.getUri();
+			String uri = Orr.getPortalBaseInfo().getOntServiceUrl() + "?form=owl&uri=" +oi.getUri();
 			if ( includeVersion ) {
 				uri += "&version=" +oi.getVersionNumber();
 			}
@@ -154,7 +153,7 @@ public class PortalControl {
 	}
 	
 	public ExternalViewersInfo getExternalViewersInfo(BaseOntologyInfo oi, boolean includeVersion) {
-		String ontbrowserUrl = Portal.portalBaseInfo.getOntbrowserServiceUrl();
+		String ontbrowserUrl = Orr.getPortalBaseInfo().getOntbrowserServiceUrl();
 		if ( ontbrowserUrl == null || ontbrowserUrl.trim().length() == 0 ) {
 			return null;
 		}
@@ -178,7 +177,7 @@ public class PortalControl {
 		
 		if ( oi instanceof RegisteredOntologyInfo ) {
 			RegisteredOntologyInfo roi = (RegisteredOntologyInfo) oi;
-			final String ontService = Portal.portalBaseInfo.getOntServiceUrl();
+			final String ontService = Orr.getPortalBaseInfo().getOntServiceUrl();
 			String ontUri = URL.encode(roi.getUri()).replaceAll("#", "%23");
 			String url = ontService+ "?form=" +dopc.getFormat()+ "&uri=" +ontUri;
 			if ( includeVersion ) {
@@ -262,20 +261,6 @@ public class PortalControl {
 		portalMainPanel.refreshedListAllOntologies(ontologyInfos);
 	}
 
-	/**
-	 * @return the portal
-	 */
-	public Portal getPortal() {
-		return portal;
-	}
-
-	/**
-	 * @param portal the portal to set
-	 */
-	public void setPortal(Portal portal) {
-		this.portal = portal;
-	}
-
 	public void userToSignIn() {
 		portalMainPanel.userToSignIn();
 	}
@@ -349,7 +334,7 @@ public class PortalControl {
 			else {
 				// This fragment uses an icon and a click listener to open a popup with the options.
 				
-				Image img = Main.images.triright().createImage();
+				Image img = Orr.images.triright().createImage();
 				img.addClickListener(new ClickListener() {
 					public void onClick(Widget sender) {
 						

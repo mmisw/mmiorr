@@ -3,12 +3,12 @@ package org.mmisw.ontmd.gwt.client.metadata;
 import java.util.List;
 import java.util.Map;
 
-import org.mmisw.ontmd.gwt.client.Main;
-import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
-import org.mmisw.ontmd.gwt.client.util.TLabel;
-import org.mmisw.ontmd.gwt.client.util.Util;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
 import org.mmisw.iserver.gwt.client.vocabulary.Option;
+import org.mmisw.ontmd.gwt.client.Orr;
+import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
+import org.mmisw.ontmd.gwt.client.util.OrrUtil;
+import org.mmisw.ontmd.gwt.client.util.TLabel;
 
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -43,7 +43,7 @@ public class ResourceTypeWidget extends VerticalPanel {
 	 */
 	public ResourceTypeWidget(AttrDef attr, boolean editing, ChangeListener cl) {
 		super();
-		Main.log("Creating ResourceTypeWidget: " +attr+ ", isRequired=" +attr.isRequired()+ " , editing=" +editing);
+		Orr.log("Creating ResourceTypeWidget: " +attr+ ", isRequired=" +attr.isRequired()+ " , editing=" +editing);
 		resourceTypeAttrDef = attr;
 
 		// see MdHelper:
@@ -70,7 +70,7 @@ public class ResourceTypeWidget extends VerticalPanel {
 		AttrDef attr2 = relatedAttrs.get(0);
 		String label = attr2.getLabel();
 		int nl = attr2.getNumberOfLines();
-		resourceTypeRelatedField = Util.createTextBoxBase(nl, "400", cl);
+		resourceTypeRelatedField = OrrUtil.createTextBoxBase(nl, "400", cl);
 		String tooltip = "<b>" +label+ "</b>:<br/>" + 
 							attr2.getTooltip() +
 							"<br/><br/><div align=\"right\">(" +attr2.getUri()+ ")</div>";
@@ -112,7 +112,7 @@ public class ResourceTypeWidget extends VerticalPanel {
 	 */
 	public ResourceTypeWidget(AttrDef attr, boolean editing, boolean includeIsMapCheck, ChangeListener cl) {
 		super();
-		Main.log("Creating ResourceTypeWidget: " +attr+ ", " +editing);
+		Orr.log("Creating ResourceTypeWidget: " +attr+ ", " +editing);
 		resourceTypeAttrDef = attr;
 
 		// see MdHelper:
@@ -172,7 +172,7 @@ public class ResourceTypeWidget extends VerticalPanel {
 		FlexTable panel = new FlexTable();
 		int row = 0;
 		int nl = attr2.getNumberOfLines();
-		resourceTypeRelatedField = Util.createTextBoxBase(nl, "330", cl);
+		resourceTypeRelatedField = OrrUtil.createTextBoxBase(nl, "330", cl);
 		String tooltip = "<b>" +label+ "</b>:<br/>" + 
 							attr2.getTooltip() +
 							"<br/><br/><div align=\"right\">(" +attr2.getUri()+ ")</div>";

@@ -111,7 +111,7 @@ public class EditDataPanel extends VerticalPanel {
 
 	private Widget _createVocabularyWidget(VocabularyOntologyData ontologyData) {
 
-		Main.log("Creating VocabularyWidget");
+		Orr.log("Creating VocabularyWidget");
 
 		List<ClassData> classes = ontologyData.getClasses();
 		
@@ -146,7 +146,7 @@ public class EditDataPanel extends VerticalPanel {
 			
 
 			List<IndividualInfo> individuals = classData.getIndividuals();
-			Main.log("num individuals: " +individuals.size());
+			Orr.log("num individuals: " +individuals.size());
 			
 			for ( IndividualInfo entity : individuals ) {
 				
@@ -185,7 +185,7 @@ public class EditDataPanel extends VerticalPanel {
 	@SuppressWarnings("unchecked")
 	private Widget _createOtherWidget(OtherOntologyData ontologyData) {
 		
-		Main.log("Creating OtherWidget");
+		Orr.log("Creating OtherWidget");
 
 		BaseOntologyData baseData = ontologyData.getBaseOntologyData();
 		
@@ -265,7 +265,7 @@ public class EditDataPanel extends VerticalPanel {
 	
 	
 	private Widget _createMappingWidget(MappingOntologyData ontologyData) {
-		Main.log("Creating MappingWidget");
+		Orr.log("Creating MappingWidget");
 
 		return new HTML("<i>not implemented yet</i>");
 	}

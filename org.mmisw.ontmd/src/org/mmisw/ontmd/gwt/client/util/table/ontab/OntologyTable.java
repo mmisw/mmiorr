@@ -6,9 +6,9 @@ import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
+import org.mmisw.ontmd.gwt.client.util.OrrUtil;
 import org.mmisw.ontmd.gwt.client.util.TooltipIcon;
-import org.mmisw.ontmd.gwt.client.util.Util;
 import org.mmisw.ontmd.gwt.client.util.table.IQuickInfo;
 
 import com.google.gwt.user.client.Command;
@@ -73,7 +73,7 @@ public class OntologyTable extends BaseOntologyTable {
 						_dispatchColumnHeader(colLabel);
 					}
 				});
-				hp2.add(Main.images.tridown().createImage());
+				hp2.add(Orr.images.tridown().createImage());
 			}
 			else {
 				hp2.add(new Label(""));
@@ -343,8 +343,8 @@ public class OntologyTable extends BaseOntologyTable {
 			Hyperlink nameLink = new Hyperlink(name, historyToken);
 			Hyperlink uriLink = new Hyperlink(uri, historyToken);
 			
-			boolean isTesting = Util.isTestingOntology(oi);
-			boolean isInternal = isTesting ? false : Util.isInternalOntology(oi);
+			boolean isTesting = OrrUtil.isTestingOntology(oi);
+			boolean isInternal = isTesting ? false : OrrUtil.isInternalOntology(oi);
 			if ( isTesting || isInternal ) {
 				// add a mark
 				HorizontalPanel hp = new HorizontalPanel();

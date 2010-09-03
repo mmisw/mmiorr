@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.mmisw.iserver.gwt.client.rpc.vine.Mapping;
 import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.vine.util.SelectAllNonePanel;
 import org.mmisw.ontmd.gwt.client.vine.util.TLabel;
 
@@ -431,7 +431,7 @@ public class MappingsPanel extends FocusPanel {
 	private void _setRelationInfos() {
 		relInfoMap.clear();
 		for ( RelationInfo relInfo : relInfos ) {
-			Main.log("setRelationInfos: URI=" +relInfo.getUri());
+			Orr.log("setRelationInfos: URI=" +relInfo.getUri());
 			relInfoMap.put(relInfo.getUri(), relInfo);
 		}
 	}

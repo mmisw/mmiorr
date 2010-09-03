@@ -2,7 +2,7 @@ package org.mmisw.ontmd.gwt.client.portal.extont;
 
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.portal.PortalConsts;
 import org.mmisw.ontmd.gwt.client.portal.PortalControl;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
@@ -258,14 +258,14 @@ class RegisterNewPage1 extends BasePage {
 			public void onSubmit(FormSubmitEvent event) {
 				statusHtml.setHTML("<img src=\"" +GWT.getModuleBaseURL()+ "images/loading.gif\"> " +
 					"<i><font color=\"blue\">Please wait, loading ontology ...</font></i>");
-				Main.log("onSubmit.");
+				Orr.log("onSubmit.");
 			}
 
 			public void onSubmitComplete(FormSubmitCompleteEvent event) {
 				statusHtml.setHTML("<img src=\"" +GWT.getModuleBaseURL()+ "images/loading.gif\"> " +
 					"<i><font color=\"blue\">Please wait, examining ontology ...</font></i>");
 				String results = event.getResults();
-				Main.log("onSubmitComplete: " +results);
+				Orr.log("onSubmitComplete: " +results);
 				if ( results != null ) {
 					getTempOntologyInfo(results);
 				}
@@ -286,7 +286,7 @@ class RegisterNewPage1 extends BasePage {
 		AsyncCallback<TempOntologyInfo> callback = new AsyncCallback<TempOntologyInfo>() {
 			public void onFailure(Throwable thr) {
 				enable(true);
-				Main.log("calling getTempOntologyInfo ... failure! ");
+				Orr.log("calling getTempOntologyInfo ... failure! ");
 				String error = thr.getClass().getName()+ ": " +thr.getMessage();
 				while ( (thr = thr.getCause()) != null ) {
 					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
@@ -299,15 +299,15 @@ class RegisterNewPage1 extends BasePage {
 
 			public void onSuccess(TempOntologyInfo tempOntologyInfo) {
 				enable(true);
-				Main.log("calling getTempOntologyInfo ... success");
+				Orr.log("calling getTempOntologyInfo ... success");
 				ontologyInfoObtained(tempOntologyInfo);
 			}
 		};
 
 		nextButton.setEnabled(false);
-		Main.log("calling getTempOntologyInfo ... ");
+		Orr.log("calling getTempOntologyInfo ... ");
 		String fileType = fileTypePanel.getSelectedType();
-		Main.ontmdService.getTempOntologyInfo(fileType, uploadResults, true, INCLUDE_RDF, callback);
+		Orr.service.getTempOntologyInfo(fileType, uploadResults, true, INCLUDE_RDF, callback);
 
 	}
 	
@@ -411,7 +411,7 @@ class RegisterNewPage1 extends BasePage {
 			nextButton.setEnabled(false);
 			final String baseError = "Make sure the contents are in the proper format and encoding";
 			statusHtml.setHTML("<font color=\"red\">Error: " +baseError + ".</font>");
-			Main.log(error);
+			Orr.log(error);
 			Window.alert("Error reading file.\n" +
 					baseError + ".\n" +
 					"\n" +

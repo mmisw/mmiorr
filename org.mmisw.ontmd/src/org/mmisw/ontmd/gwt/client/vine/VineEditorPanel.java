@@ -12,7 +12,7 @@ import org.mmisw.iserver.gwt.client.rpc.OntologyData;
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.vine.Mapping;
 import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
@@ -59,7 +59,7 @@ public class VineEditorPanel extends VerticalPanel {
 	}
 	
 	private void _setUp() {
-		Main.log("VineEditorPanel: _setUp");
+		Orr.log("VineEditorPanel: _setUp");
 		layout.clear();
 		
 		Set<String> namespaces = ontologyData.getNamespaces();
@@ -106,10 +106,10 @@ public class VineEditorPanel extends VerticalPanel {
 	 */
 	private void _saveMappings(List<Mapping> mappings) {
 		if ( mappings == null || mappings.size() == 0 ) {
-			Main.log("VineEditorPanel._saveMappings: unnecessary, no mappings given.");
+			Orr.log("VineEditorPanel._saveMappings: unnecessary, no mappings given.");
 			return;
 		}
-		Main.log("VineEditorPanel._saveMappings: " +mappings.size());
+		Orr.log("VineEditorPanel._saveMappings: " +mappings.size());
 		savedMappings = new ArrayList<Mapping>();
 		for ( Mapping mm : mappings ) {
 			Mapping savedMapping = new Mapping(mm.getLeft(), mm.getRelation(), mm.getRight());
@@ -129,13 +129,13 @@ public class VineEditorPanel extends VerticalPanel {
 	/** restored the saved mappings to the MappingOntologyData object */
 	private void _restoreMappings() {
 		if ( savedMappings != null ) {
-			Main.log("VineEditorPanel._restoreMappings: restoring saved mappings");
+			Orr.log("VineEditorPanel._restoreMappings: restoring saved mappings");
 			ontologyData.setMappings(savedMappings);
 			savedMappings = null;
 			_setUp();
 		}
 		else {
-			Main.log("VineEditorPanel._restoreMappings: NO saved mappings");			
+			Orr.log("VineEditorPanel._restoreMappings: NO saved mappings");			
 		}
 	}
 	
@@ -159,7 +159,7 @@ public class VineEditorPanel extends VerticalPanel {
 	 * Cancels changes done to the contents, if any.
 	 */
 	public void cancel() {
-		Main.log("VineEditorPanel.cancel");
+		Orr.log("VineEditorPanel.cancel");
 		_restoreMappings();
 	}
 
@@ -196,10 +196,10 @@ public class VineEditorPanel extends VerticalPanel {
 			public void onSuccess(RegisteredOntologyInfo ontologyInfo) {
 				popup.setWidget(new HTML("Load complete"));
 				
-				Main.log("getOntologyContents: " +ontologyInfo.getUri()+ " completed.");
+				Orr.log("getOntologyContents: " +ontologyInfo.getUri()+ " completed.");
 				
 				if ( ontologyInfo.getOntologyData() == null ) {
-					Main.log("getOntologyContents: unexpected: data not retrieved");
+					Orr.log("getOntologyContents: unexpected: data not retrieved");
 				}
 				
 				VineMain.ontologySucessfullyLoaded(ontologyInfo);
@@ -215,8 +215,8 @@ public class VineEditorPanel extends VerticalPanel {
 			}
 		};
 		
-		Main.log("getOntologyContents: " +ontologyInfo.getUri()+ " starting");
-		Main.ontmdService.getOntologyContents(ontologyInfo, null, callback);
+		Orr.log("getOntologyContents: " +ontologyInfo.getUri()+ " starting");
+		Orr.service.getOntologyContents(ontologyInfo, null, callback);
 	}
 
 	
@@ -266,7 +266,7 @@ public class VineEditorPanel extends VerticalPanel {
 		
 		// this entry needs data.
 		
-		Main.log(log_prefix +ontologyInfo.getUri()+ " starting");
+		Orr.log(log_prefix +ontologyInfo.getUri()+ " starting");
 		AsyncCallback<RegisteredOntologyInfo> callback = new AsyncCallback<RegisteredOntologyInfo>() {
 
 			public void onFailure(Throwable thr) {
@@ -274,15 +274,15 @@ public class VineEditorPanel extends VerticalPanel {
 				while ( (thr = thr.getCause()) != null ) {
 					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
 				}
-				Main.log(log_prefix + " ERROR: " +error);
+				Orr.log(log_prefix + " ERROR: " +error);
 				Window.alert(error);
 			}
 
 			public void onSuccess(RegisteredOntologyInfo ontologyInfo) {
-				Main.log(log_prefix +ontologyInfo.getUri()+ " completed.");
+				Orr.log(log_prefix +ontologyInfo.getUri()+ " completed.");
 				
 				if ( ontologyInfo.getOntologyData() == null ) {
-					Main.log("  UNEXPECTED: data not retrieved");
+					Orr.log("  UNEXPECTED: data not retrieved");
 				}
 				
 				VineMain.ontologySucessfullyLoaded(ontologyInfo);
@@ -302,7 +302,7 @@ public class VineEditorPanel extends VerticalPanel {
 			}
 			
 		};
-		Main.ontmdService.getOntologyContents(ontologyInfo, null, callback );
+		Orr.service.getOntologyContents(ontologyInfo, null, callback );
 	}
 
 }

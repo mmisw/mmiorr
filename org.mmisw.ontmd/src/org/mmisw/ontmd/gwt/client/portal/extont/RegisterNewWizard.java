@@ -7,7 +7,7 @@ import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.HostingType;
 import org.mmisw.iserver.gwt.client.rpc.OtherDataCreationInfo;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.portal.PortalControl;
 import org.mmisw.ontmd.gwt.client.portal.PortalMainPanel;
 import org.mmisw.ontmd.gwt.client.portal.md.MetadataSection1;
@@ -294,7 +294,7 @@ public class RegisterNewWizard extends BaseWizard {
 
 	void hostingTypeSelected(HostingType hostingType) {
 		this.hostingType = hostingType;
-		Main.log("hostingTypeSelected: " +hostingType);
+		Orr.log("hostingTypeSelected: " +hostingType);
 	}
 
 

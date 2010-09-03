@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.util.TLabel;
 
 import com.google.gwt.user.client.Command;
@@ -190,7 +190,7 @@ public class TermTable2 extends VerticalPanel {
 	
 	
 	Image _createMenu(final int row, final int col) {
-		Image img = Main.images.tridown().createImage();
+		Image img = Orr.images.tridown().createImage();
 		img.addClickListener(new ClickListener() {
 			public void onClick(Widget sender) {
 				_cellClicked(row, col);
@@ -751,7 +751,7 @@ public class TermTable2 extends VerticalPanel {
 						return;
 					}
 					
-					Main.log("onKeyUp: keyCode=" +keyCode+ ", modifiers=" +modifiers+ " sender=" +sender.getClass().getName());
+					Orr.log("onKeyUp: keyCode=" +keyCode+ ", modifiers=" +modifiers+ " sender=" +sender.getClass().getName());
 					
 					int row = actualRow;
 					int col = actualCol;
@@ -809,7 +809,7 @@ public class TermTable2 extends VerticalPanel {
 
 					Widget widget = flexTable.getWidget(row, col);
 					if ( widget instanceof TableCell ) {
-//						Main.log("focusing TableCell row,col= " +row+ "," +col);
+//						Orr.log("focusing TableCell row,col= " +row+ "," +col);
 						((TableCell) widget).setFocus(true);
 					}
 					
@@ -824,7 +824,7 @@ public class TermTable2 extends VerticalPanel {
 					}
 
 					
-//					Main.log("onKeyPress: keyCode=" +keyCode+ ", modifiers=" +modifiers);
+//					Orr.log("onKeyPress: keyCode=" +keyCode+ ", modifiers=" +modifiers);
 
 
 					if ( keyCode == KEY_TAB ) {
@@ -889,7 +889,7 @@ public class TermTable2 extends VerticalPanel {
 					ta.addKeyboardListener(new KeyboardListenerAdapter() {
 						public void onKeyPress(Widget sender, char keyCode, int modifiers) {
 							String text = ta.getText();
-							Main.log("onKeyPress: keyCode=" +keyCode+ ", modifiers=" +modifiers+ " text=[" +text+ "]");
+							Orr.log("onKeyPress: keyCode=" +keyCode+ ", modifiers=" +modifiers+ " text=[" +text+ "]");
 							
 							if ( keyCode == KEY_ENTER || keyCode == KEY_TAB ) {
 								if ( keyCode == KEY_ENTER ) {
@@ -907,7 +907,7 @@ public class TermTable2 extends VerticalPanel {
 								) {
 									addRow(flexTable.getCellCount(actualRow) - 1);
 									Widget widget = flexTable.getWidget(actualRow +1, FIRST_REGULAR_COL);
-//									Main.log("widget= " +widget.getClass().getName());
+//									Orr.log("widget= " +widget.getClass().getName());
 									if ( widget instanceof TableCell ) {
 										((TableCell) widget).setFocus(true);
 									}

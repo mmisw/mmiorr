@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.vine.util.TLabel;
 
 import com.google.gwt.user.client.DOM;
@@ -65,7 +65,7 @@ public class SearchVocabularySelection extends VerticalPanel {
 				}
 				else {
 					char code = (char) ('A' + i);
-					Main.log("Button " +code+ " selected but not registed uri: " +uri);
+					Orr.log("Button " +code+ " selected but not registed uri: " +uri);
 				}
 			}
 		}

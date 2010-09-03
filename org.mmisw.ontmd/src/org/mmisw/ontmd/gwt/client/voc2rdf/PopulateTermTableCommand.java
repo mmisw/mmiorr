@@ -2,7 +2,7 @@ package org.mmisw.ontmd.gwt.client.voc2rdf;
 
 import java.util.List;
 
-import org.mmisw.ontmd.gwt.client.portal.Portal;
+import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.util.table.IRow;
 
 import com.google.gwt.user.client.IncrementalCommand;
@@ -121,7 +121,7 @@ abstract class PopulateTermTableCommand implements IncrementalCommand {
 				colVal = colVal != null ? colVal.trim() : "";
 				
 				if ( c == 0 && firstColIsUri && colVal.length() > 0 ) {
-					String link = Portal.portalBaseInfo.getOntServiceUrl()+ "?form=html&uri=" +colVal;
+					String link = Orr.getPortalBaseInfo().getOntServiceUrl()+ "?form=html&uri=" +colVal;
 					String str = "<a target=\"_blank\" href=\"" +link+ "\">" +colVal+ "</a>";
 					termTable.setCell(rowInTermTable, c, str, true);
 				}

@@ -7,7 +7,7 @@ import java.util.Map;
 import org.mmisw.iserver.gwt.client.rpc.CreateUpdateUserAccountResult;
 import org.mmisw.iserver.gwt.client.rpc.LoginResult;
 import org.mmisw.iserver.gwt.client.rpc.UserInfoResult;
-import org.mmisw.ontmd.gwt.client.Main;
+import org.mmisw.ontmd.gwt.client.Orr;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
@@ -157,18 +157,18 @@ public class UserAccountPanel extends VerticalPanel {
 
 			public void onFailure(Throwable ex) {
 				String error = ex.getMessage();
-				Main.log("Error getting user info: " +error);
+				Orr.log("Error getting user info: " +error);
 				statusError("Error getting user info: " +error);
 				_enable(true);
 			}
 
 			public void onSuccess(UserInfoResult result) {
 				if ( result.getError() != null ) {
-					Main.log("Error getting user info: " +result.getError());
+					Orr.log("Error getting user info: " +result.getError());
 					statusError(result.getError());
 				}
 				else {
-					Main.log("user info ok" );
+					Orr.log("user info ok" );
 
 					Map<String, String> props = result.getProps();
 					for ( String name : props.keySet() ) {
@@ -191,7 +191,7 @@ public class UserAccountPanel extends VerticalPanel {
 		};
 		
 	    _enable(false);
-		Main.ontmdService.getUserInfo(username, callback );	
+	    Orr.service.getUserInfo(username, callback );	
 	}
 	
 	
@@ -389,20 +389,20 @@ public class UserAccountPanel extends VerticalPanel {
 
 			public void onFailure(Throwable ex) {
 				String error = ex.getMessage();
-				Main.log("login error: " +error);
+				Orr.log("login error: " +error);
 				statusError("Error creating/updating account: " +error);
 				_enable(true);
 			}
 
 			public void onSuccess(CreateUpdateUserAccountResult result) {
 				if ( result.getError() != null ) {
-					Main.log("login error: " +result.getError());
+					Orr.log("login error: " +result.getError());
 					statusError(result.getError());
 				}
 				else {
 					boolean created = userId == null;
 					String msg = "Account " + (created ? "created" : "updated");
-					Main.log(msg);
+					Orr.log(msg);
 					statusMessage(msg);
 					LoginResult loginResult = result.getLoginResult();
 					PortalControl.getInstance().userAccountCreatedOrUpdated(created, loginResult);
@@ -414,7 +414,7 @@ public class UserAccountPanel extends VerticalPanel {
 		if (userId != null ) {
 			values.put("id", userId);
 			values.put("sessionid", sessionId);
-			Main.log("Updating user account. UserId: " +userId+ "  values=" +values);
+			Orr.log("Updating user account. UserId: " +userId+ "  values=" +values);
 			statusMessage("Updating user account ...");
 		}
 		else {
@@ -422,12 +422,12 @@ public class UserAccountPanel extends VerticalPanel {
 				sessionId = "33333333333333";
 			}
 			values.put("sessionid", sessionId);
-			Main.log("Creating user account. values=" +values);
+			Orr.log("Creating user account. values=" +values);
 			statusMessage("Creating user account ...");
 		}
 		_enable(false);
 
-		Main.ontmdService.createUpdateUserAccount(values, callback);
+		Orr.service.createUpdateUserAccount(values, callback);
 	}
 
 	
