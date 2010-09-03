@@ -19,17 +19,15 @@
 	  -->
 
       <!-- Specify the app entry point class.                         -->
-      <entry-point class='org.mmisw.ontmd.gwt.client.Main'/>
+      <entry-point class='org.mmisw.ontmd.gwt.client.OrrEntryPoint'/>
     
       <!-- Specify the application specific style sheet.              -->
-      <stylesheet src='Main.css' />
+      <stylesheet src='Orr.css' />
 	
 	<servlet path="/ontmdService" class="org.mmisw.ontmd.gwt.server.OntMdServiceImpl"/>
 	
 	<servlet path="/upload" class="org.mmisw.ontmd.gwt.server.UploadServlet"/>
 	
 	<servlet path="/direg" class="org.mmisw.ontmd.gwt.server.DirectRegistrationServlet"/>
-	
-	<!-- servlet path="/voc2rdfService" class="org.mmisw.ontmd.gwt.server.voc2rdf.Voc2RdfServiceImpl"/ -->
 	
 </module>

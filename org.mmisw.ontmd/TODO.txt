@@ -1,14 +1,4 @@
 org.mmisw.ontmd Ontology Metadata Manager
 Carlos Rueda - MMI / MBARI
 
-(p: Paul;  j: John;  c: carlos)
-
-
-j: The ontology in Ontology tab should be clearly identified as the original
-ontology. Then there should be a window (maybe under that one?) that shows the
-uploaded ontology. So the two can be inspected together.
-
-
-j: We'll need an undo for that (Example, Reset)  someday. Not now.
-
- 
+See http://code.google.com/p/mmisw/issues/list

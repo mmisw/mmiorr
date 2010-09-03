@@ -6,10 +6,13 @@ $Id$
 
 	 - Completed refactoring changes for the new dispatch:
 	 	- the new class gwt.client.Orr takes main responsibility for the initialization sequence
-	 	- gwt.client.Main to renamed to gwt.client.OrrEntryPoint and only in charge of
-	 	  calling Orr.launch(params).
 	 	- class gwt.client.portal.Portal removed.
 	 	- "auto-login" dispatch re-enabled after the recent several changes.
+	 	- gwt.client.Main renamed to gwt.client.OrrEntryPoint and only in charge of
+	 	  calling Orr.launch(params).
+	 	- Main.gwt.xml renamed to Orr.gwt.xml
+	 	- Main.css renamed to Orr.css
+	 	- updated: direg.launch, orr.launch, build.xml
 
 	 - As part of the new overall dispatch, the following issues fixed:
 	 	277: "ontology table loaded twice when logged in"
@@ -18,6 +21,11 @@ $Id$
 	 - New public/portal/index.jsp and public/voc2rdf/index.jsp with redirects to the
 	   main page, which corresponds to public/index.html (with index.html being implicit).
 	 - Removed corresponding public/portal/index.html and public/voc2rdf/index.html.
+	 
+	 - Obsolete files removed:
+	 	- removed voc2rdf.launch
+	 	- removed portal.launch
+	 	- setenv.sh
 	   
 	    
 2010-09-02

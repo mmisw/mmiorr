@@ -68,7 +68,7 @@
 		<arg value="${gwt.style}"/>
 		<arg value="-out"/>
 		<arg value="www"/>
-		<arg value="org.mmisw.ontmd.gwt.Main"/>
+		<arg value="org.mmisw.ontmd.gwt.Orr"/>
     </java>
   </target>
 
@@ -156,7 +156,7 @@
 		</copy>
 
         <war warfile="${build.dir}/orr.war" webxml="${build.dir}/tmp.WebContent/WEB-INF/web.xml">
-                <fileset dir="www/org.mmisw.ontmd.gwt.Main" />
+                <fileset dir="www/org.mmisw.ontmd.gwt.Orr" />
         	    <fileset dir="${build.dir}/tmp.WebContent" />
                 <lib dir="base_war/WEB-INF/lib" >
                 	<exclude name="jena/**" />
@@ -198,7 +198,7 @@
 			<arg value="9999"/>
 			<arg value="-out"/>
 			<arg value="www"/>
-			<arg value="org.mmisw.ontmd.gwt.Main/index.html"/>
+			<arg value="org.mmisw.ontmd.gwt.Orr/index.html"/>
 		</java>
 	</target>
 

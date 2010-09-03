@@ -23,7 +23,7 @@
 	<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE"
 		value="com.google.gwt.dev.GWTShell" />
 	<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS"
-		value="-out www org.mmisw.ontmd.gwt.Main/index.html" />
+		value="-out www org.mmisw.ontmd.gwt.Orr/index.html" />
 	<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR"
 		value="org.mmisw.ontmd2" />
 	<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS"
