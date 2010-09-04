@@ -4,8 +4,8 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 	<display-name>org.mmisw.ontmd</display-name>
 	<servlet>
-		<servlet-name>ontmdService</servlet-name>
-		<servlet-class>org.mmisw.ontmd.gwt.server.OntMdServiceImpl</servlet-class>
+		<servlet-name>orrService</servlet-name>
+		<servlet-class>org.mmisw.ontmd.gwt.server.OrrServiceImpl</servlet-class>
 		<init-param>
 			<param-name>ontmd.app.version</param-name>
 			<param-value>@ontmd.app.version@</param-value>
@@ -84,8 +84,8 @@
 	</servlet>
 	
 	<servlet-mapping>
-		<servlet-name>ontmdService</servlet-name>
-		<url-pattern>/ontmdService</url-pattern>
+		<servlet-name>orrService</servlet-name>
+		<url-pattern>/orrService</url-pattern>
 	</servlet-mapping>
 
 

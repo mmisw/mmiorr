@@ -1,4 +1,4 @@
-package org.mmisw.ontmd.gwt.server.portal;
+package org.mmisw.ontmd.gwt.server;
 
 import java.util.List;
 import java.util.Map;
@@ -8,7 +8,6 @@ import org.apache.commons.logging.LogFactory;
 import org.mmisw.iserver.core.IServer;
 import org.mmisw.iserver.core.Server;
 import org.mmisw.iserver.core.ServerConfig;
-import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.CreateUpdateUserAccountResult;
@@ -26,67 +25,60 @@ import org.mmisw.iserver.gwt.client.rpc.UnregisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.UserInfoResult;
 import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
 import org.mmisw.ontmd.gwt.client.rpc.PortalBaseInfo;
-import org.mmisw.ontmd.gwt.server.PortalConfig;
-
 
 
 /**
- * A proxy object that configures and interacts with the IServer.
- * 
- *  <p>
- *  TODO this class can probably have a better name
+ * A proxy object that creates, configures and interacts with the OrrClient object.
  * 
  * @author Carlos Rueda
  * @version $Id$
  */
-public class PortalImpl  {
+public class OrrClientProxy  {
 
-	private final Log log = LogFactory.getLog(PortalImpl.class);
+	private static OrrClientProxy instance = null;
 	
-	private final AppInfo appInfo = new AppInfo("MMI Portal");
+	/**
+	 * Returns the instance of this class, note the it will be null 
+	 * if {@link #createInstance(String, String)} has not been called.
+	 * @return
+	 */
+	public static OrrClientProxy getInstance() {
+		return instance;
+	}
+	
+	/**
+	 * Crates the instance of this class, if not already created.
+	 * @param ontServiceUrl
+	 * @param bioportalRestUrl
+	 * @return the instance
+	 */
+	public static OrrClientProxy createInstance(String ontServiceUrl, String bioportalRestUrl) {
+		if ( instance != null ) {
+			throw new IllegalStateException(OrrClientProxy.class.getName()+ " instance already created");
+		}
+		instance = new OrrClientProxy(ontServiceUrl, bioportalRestUrl);
+		return instance;
+	}
+
+	
+	private final Log log = LogFactory.getLog(OrrClientProxy.class);
 	
 	private PortalBaseInfo portalBaseInfo = null;
 	
 	
 	private IServer iserver;
 	
-	
-	private static PortalImpl instance = null;
-	
-	
-	public static PortalImpl getInstance() {
-		return instance;
-	}
-	
-	public static PortalImpl createInstance(String ontServiceUrl, String bioportalRestUrl) {
-		if ( instance != null ) {
-			throw new IllegalStateException(PortalImpl.class.getName()+ " instance already created");
-		}
-		instance = new PortalImpl(ontServiceUrl, bioportalRestUrl);
-		return instance;
-	}
 
 	
-	private PortalImpl(String ontServiceUrl, String bioportalRestUrl) {
-		log.info("initializing " +appInfo.getAppName()+ "...");
-		
-		appInfo.setVersion(PortalConfig.Prop.VERSION.getValue());
-		appInfo.setBuild(PortalConfig.Prop.BUILD.getValue());
-		
-		log.info(appInfo.toString());
+	private OrrClientProxy(String ontServiceUrl, String bioportalRestUrl) {
+		log.info("initializing " +getClass().getSimpleName()+ "...");
 		
 		iserver = Server.getInstance(ontServiceUrl, bioportalRestUrl);
-		
 		log.info("Using: " +iserver.getAppInfo());
 		
 		ServerConfig.Prop.MAIL_USER.setValue(PortalConfig.Prop.MAIL_USER.getValue());
 		ServerConfig.Prop.MAIL_PASSWORD.setValue(PortalConfig.Prop.MAIL_PASSWORD.getValue());
 	}
-
-	public AppInfo getAppInfo() {
-		return appInfo;
-	}
-	
 
 	public PortalBaseInfo getBaseInfo() {
 		if ( portalBaseInfo == null ) {
@@ -119,6 +111,9 @@ public class PortalImpl  {
 		return iserver.resolveUri(uri);
 	}
 
+	/**
+	 * Gets an ontology from the registry.
+	 */
 	public RegisteredOntologyInfo getOntologyInfo(String ontologyUri) {
 		return iserver.getOntologyInfo(ontologyUri);
 	}

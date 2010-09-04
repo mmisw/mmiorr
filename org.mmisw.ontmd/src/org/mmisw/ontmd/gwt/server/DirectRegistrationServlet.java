@@ -29,7 +29,6 @@ import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.iserver.gwt.client.rpc.UserInfoResult;
 import org.mmisw.ont.vocabulary.Omv;
-import org.mmisw.ontmd.gwt.server.portal.PortalImpl;
 
 /**
  * This servlet handles the direct registration of an ontology.
@@ -39,7 +38,7 @@ import org.mmisw.ontmd.gwt.server.portal.PortalImpl;
 public class DirectRegistrationServlet extends UploadServlet {
 	private static final long serialVersionUID = 1L;
 
-	private PortalImpl portal;
+	private OrrClientProxy orrClient;
 	
 	
 	public void init() throws ServletException {
@@ -47,10 +46,10 @@ public class DirectRegistrationServlet extends UploadServlet {
 		log.info("initializing " +getClass().getSimpleName()+ "...");
 		ServletConfig servletConfig = getServletConfig();
 		try {
-			portal = PortalImpl.getInstance();
+			orrClient = OrrClientProxy.getInstance();
 			
-			if ( portal == null ) {
-				String logMsg = getClass().getSimpleName()+ ": PortalImpl instance not yet created. Creating...";
+			if ( orrClient == null ) {
+				String logMsg = getClass().getSimpleName()+ ": " +OrrClientProxy.class.getSimpleName()+ " instance not yet created. Creating...";
 				System.out.println(logMsg);
 				log.info(logMsg);
 				
@@ -59,10 +58,10 @@ public class DirectRegistrationServlet extends UploadServlet {
 				// portal initialization
 				String ontServiceUrl = PortalConfig.Prop.ONT_SERVICE_URL.getValue();
 				String bioportalRestUrl = PortalConfig.Prop.BIOPORTAL_REST_URL.getValue();
-				portal = PortalImpl.createInstance(ontServiceUrl, bioportalRestUrl);
+				orrClient = OrrClientProxy.createInstance(ontServiceUrl, bioportalRestUrl);
 			}
 			else {
-				String logMsg = getClass().getSimpleName()+ ": PortalImpl instance already created";
+				String logMsg = getClass().getSimpleName()+ ": " +OrrClientProxy.class.getSimpleName()+ " instance already created";
 				System.out.println(logMsg);
 				log.info(logMsg);
 			}
@@ -160,7 +159,7 @@ public class DirectRegistrationServlet extends UploadServlet {
 		String ontologyUri = fields.get("ontologyUri").trim();
 		tempOntologyInfo.setIsOntResolvable(OntServiceUtil.isOntResolvableUri(ontologyUri));
 		
-		RegisteredOntologyInfo registeredOntologyInfo = portal.getOntologyInfo(ontologyUri);
+		RegisteredOntologyInfo registeredOntologyInfo = orrClient.getOntologyInfo(ontologyUri);
 		
 		if ( registeredOntologyInfo == null ) {
 			//
@@ -214,7 +213,7 @@ public class DirectRegistrationServlet extends UploadServlet {
 	private LoginResult validateUser(Map<String, String> fields, PrintWriter out) throws Exception {
 		String username = fields.get("username");
 		String password = fields.get("password");
-		LoginResult logingResult = portal.authenticateUser(username, password);
+		LoginResult logingResult = orrClient.authenticateUser(username, password);
 		if ( logingResult == null ) {
 			throw new Exception("Error authenticating user: " +username);
 		}
@@ -287,7 +286,7 @@ public class DirectRegistrationServlet extends UploadServlet {
 		// set info of original ontology:
 		createOntologyInfo.setBaseOntologyInfo(tempOntologyInfo);
 		
-		RegisterOntologyResult registerOntologyResult = portal.registerOntologyDirectly(loginResult, null, createOntologyInfo, graphId);
+		RegisterOntologyResult registerOntologyResult = orrClient.registerOntologyDirectly(loginResult, null, createOntologyInfo, graphId);
 		if ( registerOntologyResult.getError() != null ) {
 			throw new Exception("Error registering ontology: " +registerOntologyResult.getError());
 		}
@@ -355,7 +354,7 @@ public class DirectRegistrationServlet extends UploadServlet {
 		// set info of original ontology:
 		createOntologyInfo.setBaseOntologyInfo(tempOntologyInfo);
 		
-		RegisterOntologyResult registerOntologyResult = portal.registerOntologyDirectly(loginResult, registeredOntologyInfo, createOntologyInfo, graphId);
+		RegisterOntologyResult registerOntologyResult = orrClient.registerOntologyDirectly(loginResult, registeredOntologyInfo, createOntologyInfo, graphId);
 		if ( registerOntologyResult.getError() != null ) {
 			throw new Exception("Error registering ontology: " +registerOntologyResult.getError());
 		}
@@ -375,7 +374,7 @@ public class DirectRegistrationServlet extends UploadServlet {
 		// contactName: first, try firstname/lastname from userInfo:
 		String contactName= "";
 		
-		UserInfoResult userInfoResult = portal.getUserInfo(loginResult.getUserName());
+		UserInfoResult userInfoResult = orrClient.getUserInfo(loginResult.getUserName());
 		if ( userInfoResult != null && userInfoResult.getError() == null ) {
 			Map<String, String> userProps = userInfoResult.getProps();
 			contactName = "";

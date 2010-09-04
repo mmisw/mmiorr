@@ -2,13 +2,44 @@ org.mmisw.ontmd: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-09-03   2.0.1.beta
+	More clean-up
+		- REMOVED the following related with old (unused) code for voc2rdf
+		  (voc2rdf core funcionality provided by the iserver module):
+			- In OntMdService{Async}: AppInfo getVoc2RdfAppInfo();
+			- In OntMdService{Async}: Voc2RdfBaseInfo getVoc2RdfBaseInfo();
+			- In OntMdService{Async}: ConversionResult convert2Rdf(Map<String,String> values);
+			- class ..gwt.server.voc2rdf.Converter
+			- class ..gwt.server.voc2rdf.Voc2RdfImpl
+			- full obsolete package org.mmisw.voc2rdf.transf:
+					OwlCreatorComplex.java
+					StringManipulationInterface.java
+					StringManipulationUtil.java
+					TransProperties.java
+					Transformation.java	
+					Transformer.java	
+					package-info.java	
+					
+		- class ..gwt.client.UploadPanel REMOVED (unused)		
+		- class ..gwt.server.portal.PortalImpl renamed/moved to ..gwt.server.OrrClientProxy
+		- packages	..gwt.server.portal and ..gwt.server.voc2rdf REMOVED (empty now)
+		- class ..gwt.server.MdHelper_OLD REMOVED (unused, obsolete)
+		
+		Several renamings to reflect new core name "orrService" (previously "ontmdService"): 
+			- ..gwt.client.rpc.OntMdService{Async} --> ..gwt.client.rpc.OrrService{Async};
+			- ..gwt.server.OntMdServiceImpl --> ..gwt.server.OrrServiceImpl
+			- Orr.gwt.xml updated
+		
+		
+	
+	
 2010-09-02   2.0.1.beta
 
 	 - Completed refactoring changes for the new dispatch:
 	 	- the new class gwt.client.Orr takes main responsibility for the initialization sequence
 	 	- class gwt.client.portal.Portal removed.
 	 	- "auto-login" dispatch re-enabled after the recent several changes.
-	 	- gwt.client.Main renamed to gwt.client.OrrEntryPoint and only in charge of
+	 	- ..gwt.client.Main renamed to ..gwt.client.OrrEntryPoint and only in charge of
 	 	  calling Orr.launch(params).
 	 	- Main.gwt.xml renamed to Orr.gwt.xml
 	 	- Main.css renamed to Orr.css

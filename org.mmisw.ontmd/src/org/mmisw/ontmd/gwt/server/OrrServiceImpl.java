@@ -54,15 +54,11 @@ import org.mmisw.ont.MmiUri;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.ontmd.gwt.client.rpc.BaseResult;
-import org.mmisw.ontmd.gwt.client.rpc.OntMdService;
+import org.mmisw.ontmd.gwt.client.rpc.OrrService;
 import org.mmisw.ontmd.gwt.client.rpc.OntologyInfoPre;
 import org.mmisw.ontmd.gwt.client.rpc.PortalBaseInfo;
 import org.mmisw.ontmd.gwt.client.rpc.ReviewResult_Old;
 import org.mmisw.ontmd.gwt.client.rpc.UploadResult;
-import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
-import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
-import org.mmisw.ontmd.gwt.server.portal.PortalImpl;
-import org.mmisw.ontmd.gwt.server.voc2rdf.Voc2RdfImpl;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -82,19 +78,21 @@ import edu.drexel.util.rdf.OwlModel;
 
 
 /**
- * Implementation of OntMdService. 
+ * Implementation of the OrrService interaface. 
  * 
  * @author Carlos Rueda
  * @version $Id$
  */
-public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdService {
+public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 	private static final long serialVersionUID = 1L;
 
 	/** Ontology URI prefix including root: */
 	private static String namespaceRoot;
 	
 	
-	private final AppInfo appInfo = new AppInfo("MMI OntMd");
+	private final AppInfo appInfo = new AppInfo("ORR Portal");
+	
+	private OrrClientProxy orrClient;
 	
 	
 	private File previewDir;
@@ -107,7 +105,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	private static final List<RegisteredOntologyInfo> EMPTY_ONTOLOGY_INFO_LIST = new ArrayList<RegisteredOntologyInfo>();
 
 	
-	private final Log log = LogFactory.getLog(OntMdServiceImpl.class);
+	private final Log log = LogFactory.getLog(OrrServiceImpl.class);
 	
 	private MetadataBaseInfo metadataBaseInfo = null;
 	
@@ -121,19 +119,16 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			
 			appInfo.setVersion(PortalConfig.Prop.VERSION.getValue());
 			appInfo.setBuild(PortalConfig.Prop.BUILD.getValue());
+			
 					
 			log.info(appInfo.toString());
 			
 			previewDir = new File(PortalConfig.Prop.ONTMD_PREVIEW_DIR.getValue());
 			
-			
-			// voc2rdf initialization
-			voc2rdf = new Voc2RdfImpl();
-			
 			// portal initialization
 			String ontServiceUrl = PortalConfig.Prop.ONT_SERVICE_URL.getValue();
 			String bioportalRestUrl = PortalConfig.Prop.BIOPORTAL_REST_URL.getValue();
-			portal = PortalImpl.createInstance(ontServiceUrl, bioportalRestUrl);
+			orrClient = OrrClientProxy.createInstance(ontServiceUrl, bioportalRestUrl);
 			
 			namespaceRoot = ontServiceUrl;
 		}
@@ -1295,41 +1290,15 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	}
 
 	///////////////////////////////////////////////////////////////////////
-	// Voc2RDF
-	
-	
-	private Voc2RdfImpl voc2rdf;
-	
-	public AppInfo getVoc2RdfAppInfo() {
-		return voc2rdf.getAppInfo();
-	}
-	
-	public Voc2RdfBaseInfo getVoc2RdfBaseInfo() {
-		return voc2rdf.getBaseInfo();
-	}
-	
-	public ConversionResult convert2Rdf(Map<String,String> values) {
-		return voc2rdf.convert(values);
-	}
-
-	
-	
-	///////////////////////////////////////////////////////////////////////
 	// Portal
 	
-	private PortalImpl portal;
-	
-	public AppInfo getPortalAppInfo() {
-		return portal.getAppInfo();	
-	}
-	
 	public PortalBaseInfo getPortalBaseInfo() {
-		return portal.getBaseInfo();
+		return orrClient.getBaseInfo();
 	}
 	
 	public List<RegisteredOntologyInfo> getAllOntologies(boolean includePriorVersions) {
 		try {
-			return portal.getAllOntologies(includePriorVersions);
+			return orrClient.getAllOntologies(includePriorVersions);
 		}
 		catch (Exception e) {
 			log.error("error getting list of ontologies", e);
@@ -1338,30 +1307,26 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	}
 	
 	public ResolveUriResult resolveUri(String uri) {
-		return portal.resolveUri(uri);
+		return orrClient.resolveUri(uri);
 	}
 
-	public RegisteredOntologyInfo getOntologyInfo(String ontologyUri) {
-		return portal.getOntologyInfo(ontologyUri);
-	}
-	
 	
 	public MetadataBaseInfo getMetadataBaseInfo(boolean includeVersion) {
-		return portal.getMetadataBaseInfo(includeVersion);
+		return orrClient.getMetadataBaseInfo(includeVersion);
 	}
 
 	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo ontologyInfo, String version) {
-		return portal.getOntologyContents(ontologyInfo, version);
+		return orrClient.getOntologyContents(ontologyInfo, version);
 	}
 
 	
 	public CreateOntologyResult createOntology(CreateOntologyInfo createOntologyInfo) {
-		return portal.createOntology(createOntologyInfo);
+		return orrClient.createOntology(createOntologyInfo);
 	}
 	
 	
 	public RegisterOntologyResult registerOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult) {
-		return portal.registerOntology(createOntologyResult, loginResult);
+		return orrClient.registerOntology(createOntologyResult, loginResult);
 	}
 	
 	
@@ -1369,7 +1334,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 			String fileType, String uploadResults, boolean includeContents,
 			boolean includeRdf
 	) {
-		return portal.getTempOntologyInfo(fileType, uploadResults, includeContents, includeRdf);
+		return orrClient.getTempOntologyInfo(fileType, uploadResults, includeContents, includeRdf);
 	}
 
 	
@@ -1379,7 +1344,7 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	
 
 	public List<RelationInfo> getDefaultVineRelationInfos() {
-		return portal.getDefaultVineRelationInfos();
+		return orrClient.getDefaultVineRelationInfos();
 	}
 	
 	// :VINE
@@ -1389,39 +1354,39 @@ public class OntMdServiceImpl extends RemoteServiceServlet implements OntMdServi
 	// Search:
 	
 	public SparqlQueryResult runSparqlQuery(SparqlQueryInfo query) {
-		return portal.runSparqlQuery(query);
+		return orrClient.runSparqlQuery(query);
 	}
 
 	
 	// login
 	
 	public LoginResult authenticateUser(String userName, String userPassword) {
-		return portal.authenticateUser(userName, userPassword);
+		return orrClient.authenticateUser(userName, userPassword);
 	}
 	
 
 	public ResetPasswordResult resetUserPassword(String username) {
-		return portal.resetUserPassword(username);
+		return orrClient.resetUserPassword(username);
 	}
 	
 	public UserInfoResult getUserInfo(String username) {
-		return portal.getUserInfo(username);
+		return orrClient.getUserInfo(username);
 	}
 	
 	public CreateUpdateUserAccountResult createUpdateUserAccount(Map<String,String> values) {
-		return portal.createUpdateUserAccount(values);
+		return orrClient.createUpdateUserAccount(values);
 	}
 	
 	public InternalOntologyResult prepareUsersOntology(LoginResult loginResult) {
-		return portal.prepareUsersOntology(loginResult);
+		return orrClient.prepareUsersOntology(loginResult);
 	}
 
 	public InternalOntologyResult createGroupsOntology(LoginResult loginResult) {
-		return portal.createGroupsOntology(loginResult);
+		return orrClient.createGroupsOntology(loginResult);
 	}
 
 	public UnregisterOntologyResult unregisterOntology(LoginResult loginResult, RegisteredOntologyInfo oi) {
-		return portal.unregisterOntology(loginResult, oi);
+		return orrClient.unregisterOntology(loginResult, oi);
 	}
 	
 }

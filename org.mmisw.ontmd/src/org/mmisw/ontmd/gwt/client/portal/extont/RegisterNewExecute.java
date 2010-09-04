@@ -76,7 +76,7 @@ class RegisterNewExecute {
 			}
 		};
 
-		Orr.log(CLASS_NAME+": Calling ontmdService.createOntology ...");
+		Orr.log(CLASS_NAME+": Calling service createOntology ...");
 		Orr.service.createOntology(createOntologyInfo, callback);
 	}
 

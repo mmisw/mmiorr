@@ -21,50 +21,20 @@ import org.mmisw.iserver.gwt.client.rpc.UnregisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.UserInfoResult;
 import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
-import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
-import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
- * Async interface for Voc2RdfService
+ * Async interface.
+ * 
+ * See javadoc in {@link OrrService}.
  * 
  * @author Carlos Rueda
  * @version $Id$
  */
-public interface OntMdServiceAsync {
+public interface OrrServiceAsync {
 
 	void getAppInfo(AsyncCallback<AppInfo> callback);
-	
-	void refreshOptions(AttrDef attrDef, AsyncCallback<AttrDef> callback);
-	
-	void getBaseInfo(Map<String, String> params, AsyncCallback<MetadataBaseInfo> callback);
-	
-	void getOntologyInfoFromRegistry(String ontologyUri, AsyncCallback<OntologyInfoPre> callback);
-	
-	void getOntologyInfoFromPreLoaded(String uploadResults, AsyncCallback<OntologyInfoPre> callback);
-	
-	void getOntologyInfoFromFileOnServer(String fullPath, AsyncCallback<OntologyInfoPre> callback);
-	
-	void review(OntologyInfoPre ontologyInfoPre, LoginResult loginResult_Old, AsyncCallback<ReviewResult_Old> callback);
-	
-	void upload(ReviewResult_Old reviewResult_Old, LoginResult loginResult_Old, AsyncCallback<UploadResult> callback);
-	
-	
-	///////////////////////////////////////////////////////////////////////
-	// Voc2RDF
-	
-	void getVoc2RdfAppInfo(AsyncCallback<AppInfo> callback);
-	
-	void getVoc2RdfBaseInfo(AsyncCallback<Voc2RdfBaseInfo> callback);
-	
-	void convert2Rdf(Map<String,String> values, AsyncCallback<ConversionResult> callback);
-
-	
-	///////////////////////////////////////////////////////////////////////
-	// Portal
-	
-	void getPortalAppInfo(AsyncCallback<AppInfo> callback);
 	
 	void getPortalBaseInfo(AsyncCallback<PortalBaseInfo> callback);
 	
@@ -72,9 +42,10 @@ public interface OntMdServiceAsync {
 
 	void getAllOntologies(boolean includePriorVersions, AsyncCallback <List<RegisteredOntologyInfo>> callback);
 
+	void refreshOptions(AttrDef attrDef, AsyncCallback<AttrDef> callback);
+
 	void resolveUri(String uri, AsyncCallback<ResolveUriResult> callback);
 	
-	void getOntologyInfo(String ontologyUri, AsyncCallback<RegisteredOntologyInfo> callback);
 	
 	void getOntologyContents(RegisteredOntologyInfo ontologyInfo, String version, AsyncCallback<RegisteredOntologyInfo> callback);
 	
@@ -96,9 +67,6 @@ public interface OntMdServiceAsync {
 	
 	void getDefaultVineRelationInfos(AsyncCallback<List<RelationInfo>> callback);
 	
-	// :VINE
-	////////////////////////////////////////////////////////////////////////////////////////////
-
 	
 	// Search:
 	
@@ -112,8 +80,35 @@ public interface OntMdServiceAsync {
 	void getUserInfo(String username, AsyncCallback<UserInfoResult> callback);
 	void createUpdateUserAccount(Map<String,String> values, AsyncCallback<CreateUpdateUserAccountResult> callback);
 	
+	
+	// Admin:
 	void prepareUsersOntology(LoginResult loginResult, AsyncCallback<InternalOntologyResult> callback);
 	void createGroupsOntology(LoginResult loginResult, AsyncCallback<InternalOntologyResult> callback);
 	
 	void unregisterOntology(LoginResult loginResult, RegisteredOntologyInfo oi, AsyncCallback<UnregisterOntologyResult> callback);
+	
+
+	
+	//////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
+
+	//
+	// TODO REMOVE THESE OLD OPERATIONS
+	//
+	
+	void getOntologyInfoFromRegistry(String ontologyUri, AsyncCallback<OntologyInfoPre> callback);
+	
+	void getOntologyInfoFromPreLoaded(String uploadResults, AsyncCallback<OntologyInfoPre> callback);
+	
+	void getOntologyInfoFromFileOnServer(String fullPath, AsyncCallback<OntologyInfoPre> callback);
+	
+	void review(OntologyInfoPre ontologyInfoPre, LoginResult loginResult_Old, AsyncCallback<ReviewResult_Old> callback);
+	
+	void upload(ReviewResult_Old reviewResult_Old, LoginResult loginResult_Old, AsyncCallback<UploadResult> callback);
+	
+	
+	// TODO remove
+	void getBaseInfo(Map<String, String> params, AsyncCallback<MetadataBaseInfo> callback);
+	
 }

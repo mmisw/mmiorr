@@ -21,8 +21,6 @@ import org.mmisw.iserver.gwt.client.rpc.UnregisterOntologyResult;
 import org.mmisw.iserver.gwt.client.rpc.UserInfoResult;
 import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
 import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
-import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.ConversionResult;
-import org.mmisw.ontmd.gwt.client.voc2rdf.rpc.Voc2RdfBaseInfo;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 
@@ -32,89 +30,48 @@ import com.google.gwt.user.client.rpc.RemoteService;
  * @author Carlos Rueda
  * @version $Id$
  */
-public interface OntMdService extends RemoteService {
-
+public interface OrrService extends RemoteService {
+	
 	/**
 	 * Gets basic application info.
 	 */
 	AppInfo getAppInfo();
+
+	/**
+	 * Gets some general properties
+	 */
+	public PortalBaseInfo getPortalBaseInfo();
+
 	
 	/**
-	 * Gets the base information (metadata attribute definitions).
+	 * Gets general information about the metadata for ontologies. 
+	 * @param includeVersion
+	 * @return
 	 */
-	MetadataBaseInfo getBaseInfo(Map<String, String> params);
+	public MetadataBaseInfo getMetadataBaseInfo(boolean includeVersion);
+
+
+	/**
+	 * Gets all (latest versions of the) ontologies in the registry.
+	 * @param includePriorVersions
+	 * @return
+	 */
+	public List<RegisteredOntologyInfo> getAllOntologies(boolean includePriorVersions);
 	
+
 	/**
 	 * Refreshes the options of the given attribute.
 	 * @return the given argument.
 	 */
 	AttrDef refreshOptions(AttrDef attrDef);
 	
-	
-	/**
-	 * Gets ontology info from an ontology that can be resolved by the Ont service
-	 * (ie., from the MMI registry).
-	 */
-	OntologyInfoPre getOntologyInfoFromRegistry(String ontologyUri);
 
-	/**
-	 * Gets ontology info from a pre-loaded file.
-	 */
-	OntologyInfoPre getOntologyInfoFromPreLoaded(String uploadResults);
-
-	/**
-	 * Gets ontology info from a file located in the server.
-	 * The main "client" for this service is Voc2Rdf
-	 */
-	OntologyInfoPre getOntologyInfoFromFileOnServer(String fullPath);
-
-	/**
-	 * Reviews the pre-loaded model with the associated new values.
-	 */
-	ReviewResult_Old review(OntologyInfoPre ontologyInfoPre, LoginResult loginResult_Old);
-
-	/**
-	 * Uploads a reviewed model to the MMI Registry.
-	 */
-	UploadResult upload(ReviewResult_Old reviewResult_Old, LoginResult loginResult_Old);
-	
-	
-	///////////////////////////////////////////////////////////////////////
-	// Voc2RDF
-	
-	/**
-	 * Gets basic application info.
-	 */
-	AppInfo getVoc2RdfAppInfo();
-	
-	Voc2RdfBaseInfo getVoc2RdfBaseInfo();
-	
-	ConversionResult convert2Rdf(Map<String,String> values);
-	
-	
-	///////////////////////////////////////////////////////////////////////
-	// Portal
-	
-	public AppInfo getPortalAppInfo();
-	
-	public PortalBaseInfo getPortalBaseInfo();
-	
-	public MetadataBaseInfo getMetadataBaseInfo(boolean includeVersion);
-
-	public List<RegisteredOntologyInfo> getAllOntologies(boolean includePriorVersions);
-	
-	
 	/**
 	 * Both members of the result will be null if the URI could not be resolved (not found). 
 	 */
 	public ResolveUriResult resolveUri(String uri);
 	
-	/**
-	 * Gets ontology info from an ontology that can be resolved by the Ont service
-	 * (ie., from the MMI registry).
-	 */
-	public RegisteredOntologyInfo getOntologyInfo(String ontologyUri);
-
+	
 	
 	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo ontologyInfo, String version);
 	
@@ -149,8 +106,7 @@ public interface OntMdService extends RemoteService {
 			boolean includeRdf);
 
 
-	
-	
+
 	////////////////////////////////////////////////////////////////////////////////////////////
 	// VINE:
 	
@@ -168,9 +124,17 @@ public interface OntMdService extends RemoteService {
 	public SparqlQueryResult runSparqlQuery(SparqlQueryInfo query);
 
 	
-	// login
+	// login/user info
 	
+	/**
+	 * Authenticates a user.
+	 * 
+	 * @param userName
+	 * @param userPassword
+	 * @return
+	 */
 	public LoginResult authenticateUser(String userName, String userPassword);
+
 	public ResetPasswordResult resetUserPassword(String username);
 	public UserInfoResult getUserInfo(String username);
 	public CreateUpdateUserAccountResult createUpdateUserAccount(Map<String,String> values);
@@ -179,4 +143,49 @@ public interface OntMdService extends RemoteService {
 	public InternalOntologyResult createGroupsOntology(LoginResult loginResult);
 	
 	public UnregisterOntologyResult unregisterOntology(LoginResult loginResult, RegisteredOntologyInfo oi);
+	
+	
+	//////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
+
+	//
+	// TODO REMOVE THESE OLD OPERATIONS
+	//
+	
+	/**
+	 * Gets ontology info from an ontology that can be resolved by the Ont service
+	 * (ie., from the MMI registry).
+	 */
+	OntologyInfoPre getOntologyInfoFromRegistry(String ontologyUri);
+
+	/**
+	 * Gets ontology info from a pre-loaded file.
+	 */
+	OntologyInfoPre getOntologyInfoFromPreLoaded(String uploadResults);
+
+	/**
+	 * Gets ontology info from a file located in the server.
+	 * The main "client" for this service is Voc2Rdf
+	 */
+	OntologyInfoPre getOntologyInfoFromFileOnServer(String fullPath);
+
+	/**
+	 * Reviews the pre-loaded model with the associated new values.
+	 */
+	ReviewResult_Old review(OntologyInfoPre ontologyInfoPre, LoginResult loginResult_Old);
+
+	/**
+	 * Uploads a reviewed model to the MMI Registry.
+	 */
+	UploadResult upload(ReviewResult_Old reviewResult_Old, LoginResult loginResult_Old);
+	
+
+	/**
+	 * Gets the base information (metadata attribute definitions).
+	 */
+	// TODO REMOVE -- UNUSED
+	MetadataBaseInfo getBaseInfo(Map<String, String> params);
+	
+	
 }

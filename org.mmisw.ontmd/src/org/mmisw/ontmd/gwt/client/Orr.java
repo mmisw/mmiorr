@@ -13,8 +13,8 @@ import org.mmisw.ontmd.gwt.client.CookieMan.UserInfo;
 import org.mmisw.ontmd.gwt.client.img.OntMdImageBundle;
 import org.mmisw.ontmd.gwt.client.portal.PortalControl;
 import org.mmisw.ontmd.gwt.client.portal.PortalMainPanel;
-import org.mmisw.ontmd.gwt.client.rpc.OntMdService;
-import org.mmisw.ontmd.gwt.client.rpc.OntMdServiceAsync;
+import org.mmisw.ontmd.gwt.client.rpc.OrrService;
+import org.mmisw.ontmd.gwt.client.rpc.OrrServiceAsync;
 import org.mmisw.ontmd.gwt.client.rpc.PortalBaseInfo;
 import org.mmisw.ontmd.gwt.client.util.OrrUtil;
 
@@ -37,7 +37,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class Orr {
 	
 	/** Interface for asynchronous calls to the ORR back-end. */
-	public static OntMdServiceAsync service;
+	public static OrrServiceAsync service;
 
 	public static OntMdImageBundle images = (OntMdImageBundle) GWT
 				.create(OntMdImageBundle.class);
@@ -64,7 +64,7 @@ public class Orr {
 //		baseUrl = baseUrl.replace("/+$", ""); // remove trailing slashes
 //		Orr.log("baseUrl = " + baseUrl);
 
-		_getOntMdService();
+		_getService();
 	}
 
 	
@@ -95,7 +95,7 @@ public class Orr {
 		};
 
 		Orr.log("ORR: Getting application info ...");
-		Orr.service.getPortalAppInfo(callback);
+		Orr.service.getAppInfo(callback);
 	}
 
 	
@@ -304,13 +304,13 @@ public class Orr {
 	}
 	
 
-	private static void _getOntMdService() {
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "ontmdService";
+	private static void _getService() {
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "orrService";
 		Orr.log("ORR: Getting " + moduleRelativeURL + " ...");
-		service = (OntMdServiceAsync) GWT.create(OntMdService.class);
+		service = (OrrServiceAsync) GWT.create(OrrService.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) service;
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		Orr.log("ORR:    ontmdService " + service);
+		Orr.log("ORR:    orrService " + service);
 	}
 
 	
@@ -326,8 +326,7 @@ public class Orr {
 
 	private static String footer; 
 	
-	// TODO set to private when Portal class removed
-	public static MetadataBaseInfo metadataBaseInfo;
+	private static MetadataBaseInfo metadataBaseInfo;
 	
 	private static PortalMainPanel portalMainPanel;
 	

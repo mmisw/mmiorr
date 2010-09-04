@@ -867,7 +867,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 			}
 		};
 
-		Orr.log("Calling ontmdService.unregisterOntology ...");
+		Orr.log("Calling service unregisterOntology ...");
 		Orr.service.unregisterOntology(loginResult, oi, callback);
 	}
 

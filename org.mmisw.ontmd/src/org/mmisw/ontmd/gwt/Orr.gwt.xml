@@ -24,7 +24,7 @@
       <!-- Specify the application specific style sheet.              -->
       <stylesheet src='Orr.css' />
 	
-	<servlet path="/ontmdService" class="org.mmisw.ontmd.gwt.server.OntMdServiceImpl"/>
+	<servlet path="/OrrService" class="org.mmisw.ontmd.gwt.server.OrrServiceImpl"/>
 	
 	<servlet path="/upload" class="org.mmisw.ontmd.gwt.server.UploadServlet"/>
 	
