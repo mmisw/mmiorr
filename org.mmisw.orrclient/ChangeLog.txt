@@ -3,6 +3,10 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2010-09-06    2.0.2.beta
+	- some doc
+	- removed deprecated/unused class OrrClientConfig.
+
 2010-09-04    2.0.2.beta
 	- Renamings:
 		- Module at svn renamed to org.mmisw.orrclient (formerly org.mmisw.iserver).
