@@ -4,6 +4,8 @@
   <property file="version.properties" />
   <property file="build.properties" />	
   <property name="build.dir" value="_generated"/>
+	
+  <property name="gwt.style" value="OBFUSCATED"/>
 
   <!-- set classpath -->
   <path id="project.class.path">
