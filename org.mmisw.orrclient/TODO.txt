@@ -1,7 +1,5 @@
-org.mmisw.iserver - ORR Client Library ("interface to the server")
+org.mmisw.orrclient - ORR Client Library
 Carlos Rueda  -  http://marinemetadata.org
-
-- Rename this module to org.mmisw.orrclient. 
 
 - adjust directory structure to a more standard (non-GWT and non-webapp) layout, eg. 
   package ...gwt.client.rpc --> ...model 

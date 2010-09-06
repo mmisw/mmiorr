@@ -1,8 +1,29 @@
-org.mmisw.iserver - ORR Client Library ("interface to the server")
+org.mmisw.orrclient - ORR Client Library
 Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2010-09-04    2.0.2.beta
+	- Renamings:
+		- Module at svn renamed to org.mmisw.orrclient (formerly org.mmisw.iserver).
+		- Packages org.mmisw.iserver{.**} --> org.mmisw.orrclient{.**}
+		- org.mmisw.iserver.gwt.IServer.gwt.xml --> org.mmisw.orrclient.gwt.OrrClient.gwt.xml
+		- org.mmisw.orrclient.core.IServer --> org.mmisw.orrclient.IOrrClient
+		- org.mmisw.orrclient.core.ServerConfig --> org.mmisw.orrclient.OrrClientConfig
+		- org.mmisw.orrclient.core.Server --> org.mmisw.orrclient.core.OrrClientImpl
+		
+	- Updated
+		- templ-pom.xml artifactId: orrclient
+		- version.properties: version property is now orrclient.version
+		- build.xml
+	
+	The "exported" types, ie., public for clients of the library, are:
+	- org.mmisw.orrclient.OrrClientConfiguration -- allows to configure the library
+	- org.mmisw.orrclient.IOrrClient.Manager -- initializes the library
+	- org.mmisw.orrclient.IOrrClient -- main interface to the library
+	- and all types in packages org.mmisw.orrclient.gwt.**  -- types handled by the library
+	
+		
 2010-08-27   2.0.0.beta
 
 	Fixed 276: "original SKOS namespace not retained in new version"

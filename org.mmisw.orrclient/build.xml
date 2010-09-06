@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<project name="iserver" default="jar" basedir=".">
+<project name="orrclient" default="jar" basedir=".">
 
 	<property file="version.properties" />
 	<property file="build.properties" />
@@ -7,21 +7,17 @@
 
 	<!-- set classpath -->
 	<path id="project.class.path">
-		<fileset dir="${appserver.lib}">
-			<include name="servlet*.jar" />
-		</fileset>
 		<pathelement path="${java.class.path}/" />
 
 		<fileset dir="base_war/WEB-INF/lib">
 			<include name="*.jar" />
 			<include name="jena/*.jar" />
 		</fileset>
-
 	</path>
 
 	<target name="init">
 		<tstamp>
-			<format property="iserver.app.build" pattern="yyyyMMddHHmm" />
+			<format property="orrclient.build" pattern="yyyyMMddHHmm" />
 		</tstamp>
 	</target>
 
@@ -36,10 +32,10 @@
 			<classpath refid="project.class.path" />
 		</javac>
 
-		<copy file="src/org/mmisw/iserver/core/version.properties" tofile="${build.dir}/classes/org/mmisw/iserver/core/version.properties" overwrite="true">
+		<copy file="src/org/mmisw/orrclient/core/version.properties" tofile="${build.dir}/classes/org/mmisw/orrclient/core/version.properties" overwrite="true">
 			<filterset>
-				<filter token="iserver.app.version" value="${iserver.app.version}" />
-				<filter token="iserver.app.build" value="${iserver.app.build}" />
+				<filter token="orrclient.version" value="${orrclient.version}" />
+				<filter token="orrclient.build" value="${orrclient.build}" />
 			</filterset>
 		</copy>
 
@@ -85,7 +81,7 @@
 	<!-- main jar -->
 	
 	<target name="jar" depends="compile, tests" description="Generates the MMI ORR Client library">
-		<jar destfile="${build.dir}/org.mmisw.iserver.gwt.jar">
+		<jar destfile="${build.dir}/org.mmisw.orrclient.jar">
 			<fileset dir="${build.dir}/classes">
 				<include name="**/*.class" />
 				<include name="**/*.properties" />
@@ -106,7 +102,7 @@
 	<target name="deploy" depends="jar" description="deploys the MMI ORR Client library">
 		<copy file="resource/templ-pom.xml" tofile="_generated/tmp-pom.xml" overwrite="true">
 			<filterset>
-				<filter token="iserver.app.version" value="${iserver.app.version}" />
+				<filter token="orrclient.version" value="${orrclient.version}" />
 			</filterset>
 		</copy>
 		<exec executable="mvn">
@@ -118,10 +114,9 @@
 
 
 	<target name="clean">
-		<delete file="base_war/WEB-INF/lib/org.mmisw.iserver.gwt.jar" />
-		<delete>
-			<fileset dir="${build.dir}" includes="**/*.class" />
-		</delete>
+		<delete file="base_war/WEB-INF/lib/org.mmisw.orrclient.jar" />
+		<delete dir="${build.dir}/classes" />
+		<delete dir="${build.dir}/target" />
 	</target>
 
 </project>

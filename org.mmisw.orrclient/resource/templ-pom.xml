@@ -2,9 +2,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.mmisw</groupId>
-	<artifactId>iserver</artifactId>
+	<artifactId>orrclient</artifactId>
 	<name>MMI ORR Client Library</name>
-	<version>@iserver.app.version@-SNAPSHOT</version>
+	<version>@orrclient.version@-SNAPSHOT</version>
 	<parent>
 		<groupId>org.sonatype.oss</groupId>
 		<artifactId>oss-parent</artifactId>
