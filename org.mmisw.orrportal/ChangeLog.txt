@@ -5,6 +5,10 @@ $Id$
 2010-09-04   2.0.2.beta
 	- Changes because of changes in orrclient library (formerly iserver)
 	
+	- Renamings:
+		- Module at svn renamed to org.mmisw.orrportal (formerly org.mmisw.ontmd).
+		- Packages org.mmisw.ontmd{.**} --> org.mmisw.orrportal{.**}
+		
 
 2010-09-03   2.0.1.beta
 	More clean-up

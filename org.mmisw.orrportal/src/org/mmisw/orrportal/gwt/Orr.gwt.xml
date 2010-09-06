@@ -1,0 +1,33 @@
+<module>
+
+      <!-- Inherit the core Web Toolkit stuff.                        -->
+      <inherits name='com.google.gwt.user.User'/>
+      
+      <!-- Inherit the default GWT style sheet.  You can change       -->
+      <!-- the theme of your GWT application by uncommenting          -->
+      <!-- any one of the following lines.                            -->
+      <inherits name='com.google.gwt.user.theme.standard.Standard'/>
+      <!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
+      <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
+
+      <!-- orrclient module                                           -->
+      <inherits name='org.mmisw.orrclient.gwt.OrrClient'/>
+      
+      <!--  smartgwt not enabled - doesn't work well with gwt 1.5.2 
+      <inherits name="com.smartgwt.SmartGwt"/> 
+      <inherits name="com.smartclient.theme.enterprise.EnterpriseResources"/>
+	  -->
+
+      <!-- Specify the app entry point class.                         -->
+      <entry-point class='org.mmisw.orrportal.gwt.client.OrrEntryPoint'/>
+    
+      <!-- Specify the application specific style sheet.              -->
+      <stylesheet src='Orr.css' />
+	
+	<servlet path="/orrService" class="org.mmisw.orrportal.gwt.server.OrrServiceImpl"/>
+	
+	<servlet path="/upload" class="org.mmisw.orrportal.gwt.server.UploadServlet"/>
+	
+	<servlet path="/direg" class="org.mmisw.orrportal.gwt.server.DirectRegistrationServlet"/>
+	
+</module>

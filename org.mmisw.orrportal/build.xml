@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<project name="ontmd" default="war" basedir=".">
+<project name="orrportal" default="war" basedir=".">
 
   <property file="version.properties" />
   <property file="build.properties" />	
@@ -27,7 +27,7 @@
 
 	<target name="init">
 		<tstamp>
-		    <format property="ontmd.app.build" pattern="yyyyMMddHHmm" />
+		    <format property="orrportal.app.build" pattern="yyyyMMddHHmm" />
 		</tstamp>
 	</target>
 
@@ -47,7 +47,7 @@
   	<java classname="com.google.gwt.dev.GWTCompiler" fork="true">
 		<classpath>
 			<pathelement path="src"/>
-			<pathelement path="base_war/WEB-INF/lib/org.mmisw.ontmd.gwt.jar"/>
+			<pathelement path="base_war/WEB-INF/lib/org.mmisw.orrportal.gwt.jar"/>
 			<pathelement path="base_war/WEB-INF/lib/org.restlet.gwt.jar"/>
 			<pathelement path="base_war/WEB-INF/lib/commons-httpclient-3.1.jar"/>
 			<pathelement path="base_war/WEB-INF/lib/commons-codec-1.3.jar"/>
@@ -68,7 +68,7 @@
 		<arg value="${gwt.style}"/>
 		<arg value="-out"/>
 		<arg value="www"/>
-		<arg value="org.mmisw.ontmd.gwt.Orr"/>
+		<arg value="org.mmisw.orrportal.gwt.Orr"/>
     </java>
   </target>
 
@@ -82,7 +82,7 @@
   </target>
 
   <target name="jar" depends="compile" description="Package up the project as a jar">
-	<jar destfile="base_war/WEB-INF/lib/org.mmisw.ontmd.gwt.jar">
+	<jar destfile="base_war/WEB-INF/lib/org.mmisw.orrportal.gwt.jar">
   		<fileset dir="${build.dir}/classes">
     		<include name="**/*.class"/>
   		</fileset>
@@ -119,18 +119,18 @@
 		<copy file="base_war/WEB-INF/web.xml" 
 			tofile="${build.dir}/tmp.WebContent/WEB-INF/web.xml" overwrite="true">
 			<filterset>
-				<filter token="ontmd.app.version"        value="${ontmd.app.version}" />
-				<filter token="ontmd.app.build"          value="${ontmd.app.build}" />
+				<filter token="orrportal.app.version"        value="${orrportal.app.version}" />
+				<filter token="orrportal.app.build"          value="${orrportal.app.build}" />
 				<filter token="appserver.host"           value="${appserver.host}" />
 				<filter token="ont.service.url"          value="${ont.service.url}" />
 				<filter token="ontbrowser.service.url"   value="${ontbrowser.service.url}" />
 				<filter token="bioportal.rest.url"       value="${bioportal.rest.url}" />
-				<filter token="ontmd.pre.uploads.dir"    value="${ontmd.pre.uploads.dir}" />
-				<filter token="ontmd.voc2rdf.dir"        value="${ontmd.voc2rdf.dir}" />
-				<filter token="ontmd.preview.dir"        value="${ontmd.preview.dir}" />
-				<filter token="ontmd.resource.dir"       value="${ontmd.resource.dir}" />
-				<filter token="ontmd.resourcetype.class" value="${ontmd.resourcetype.class}" />
-				<filter token="ontmd.authority.class"    value="${ontmd.authority.class}" />
+				<filter token="orrportal.pre.uploads.dir"    value="${orrportal.pre.uploads.dir}" />
+				<filter token="orrportal.voc2rdf.dir"        value="${orrportal.voc2rdf.dir}" />
+				<filter token="orrportal.preview.dir"        value="${orrportal.preview.dir}" />
+				<filter token="orrportal.resource.dir"       value="${orrportal.resource.dir}" />
+				<filter token="orrportal.resourcetype.class" value="${orrportal.resourcetype.class}" />
+				<filter token="orrportal.authority.class"    value="${orrportal.authority.class}" />
 				<filter token="mail.usr"                 value="${mail.usr}" />
 				<filter token="mail.pw"                  value="${mail.pw}" />
 				<filter token="ga.uanumber"              value="${ga.uanumber}" />
@@ -140,15 +140,15 @@
 		<copy file="base_war/WEB-INF/classes/log4j.xml" 
 			tofile="${build.dir}/tmp.WebContent/WEB-INF/classes/log4j.xml" overwrite="true">
 			<filterset>
-				<filter token="ontmd.app.logfilepath"       value="${ontmd.app.logfilepath}" />
-				<filter token="ontmd.app.maxlogfilesize"    value="${ontmd.app.maxlogfilesize}" />
-				<filter token="ontmd.app.maxlogbackupindex" value="${ontmd.app.maxlogbackupindex}" />
-				<filter token="ontmd.app.log.deflevel"      value="${ontmd.app.log.deflevel}" />
-				<filter token="ontmd.app.log.ontmdlevel"    value="${ontmd.app.log.ontmdlevel}" />
+				<filter token="orrportal.app.logfilepath"       value="${orrportal.app.logfilepath}" />
+				<filter token="orrportal.app.maxlogfilesize"    value="${orrportal.app.maxlogfilesize}" />
+				<filter token="orrportal.app.maxlogbackupindex" value="${orrportal.app.maxlogbackupindex}" />
+				<filter token="orrportal.app.log.deflevel"      value="${orrportal.app.log.deflevel}" />
+				<filter token="orrportal.app.log.orrportallevel"    value="${orrportal.app.log.orrportallevel}" />
 			</filterset>
 		</copy>
 
-		<copy file="src/org/mmisw/ontmd/gwt/public/index.html" 
+		<copy file="src/org/mmisw/orrportal/gwt/public/index.html" 
 			tofile="${build.dir}/tmp.WebContent/index.html" overwrite="true">
 			<filterset>
 				<filter token="ga_snippet"  value="${ga_snippet}" />
@@ -156,7 +156,7 @@
 		</copy>
 
         <war warfile="${build.dir}/orr.war" webxml="${build.dir}/tmp.WebContent/WEB-INF/web.xml">
-                <fileset dir="www/org.mmisw.ontmd.gwt.Orr" />
+                <fileset dir="www/org.mmisw.orrportal.gwt.Orr" />
         	    <fileset dir="${build.dir}/tmp.WebContent" />
                 <lib dir="base_war/WEB-INF/lib" >
                 	<exclude name="jena/**" />
@@ -171,7 +171,7 @@
     </target>     	
 
   <target name="clean">
-    <delete file="base_war/WEB-INF/lib/org.mmisw.ontmd.gwt.jar"/>
+    <delete file="base_war/WEB-INF/lib/org.mmisw.orrportal.gwt.jar"/>
     <delete>
       <fileset dir="${build.dir}" includes="**/*.class"/>
     </delete>
@@ -182,7 +182,7 @@
 		<java classname="com.google.gwt.dev.GWTShell" fork="true">
 			<classpath>
 				<pathelement path="src"/>
-				<pathelement path="base_war/WEB-INF/lib/org.mmisw.ontmd.gwt.jar"/>
+				<pathelement path="base_war/WEB-INF/lib/org.mmisw.orrportal.gwt.jar"/>
 				<pathelement path="base_war/WEB-INF/lib/commons-httpclient-3.1.jar"/>
 				<pathelement path="base_war/WEB-INF/lib/commons-codec-1.3.jar"/>
 				<pathelement path="${GWT_HOME}/gwt-user.jar"/>
@@ -198,7 +198,7 @@
 			<arg value="9999"/>
 			<arg value="-out"/>
 			<arg value="www"/>
-			<arg value="org.mmisw.ontmd.gwt.Orr/index.html"/>
+			<arg value="org.mmisw.orrportal.gwt.Orr/index.html"/>
 		</java>
 	</target>
 

@@ -2,17 +2,17 @@
 <web-app id="WebApp_ID" version="2.4"
 	xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
-	<display-name>org.mmisw.ontmd</display-name>
+	<display-name>org.mmisw.orrportal</display-name>
 	<servlet>
 		<servlet-name>orrService</servlet-name>
-		<servlet-class>org.mmisw.ontmd.gwt.server.OrrServiceImpl</servlet-class>
+		<servlet-class>org.mmisw.orrportal.gwt.server.OrrServiceImpl</servlet-class>
 		<init-param>
-			<param-name>ontmd.app.version</param-name>
-			<param-value>@ontmd.app.version@</param-value>
+			<param-name>orrportal.app.version</param-name>
+			<param-value>@orrportal.app.version@</param-value>
 		</init-param>
 		<init-param>
-			<param-name>ontmd.app.build</param-name>
-			<param-value>@ontmd.app.build@</param-value>
+			<param-name>orrportal.app.build</param-name>
+			<param-value>@orrportal.app.build@</param-value>
 		</init-param>
 		
 		<init-param>
@@ -36,33 +36,33 @@
 		</init-param>
 		
 		<init-param>
-			<param-name>ontmd.pre.uploads.dir</param-name>
-			<param-value>@ontmd.pre.uploads.dir@</param-value>
+			<param-name>orrportal.pre.uploads.dir</param-name>
+			<param-value>@orrportal.pre.uploads.dir@</param-value>
 		</init-param>
 		
 		<init-param>
-			<param-name>ontmd.voc2rdf.dir</param-name>
-			<param-value>@ontmd.voc2rdf.dir@</param-value>
+			<param-name>orrportal.voc2rdf.dir</param-name>
+			<param-value>@orrportal.voc2rdf.dir@</param-value>
 		</init-param>
 		
 		<init-param>
-			<param-name>ontmd.preview.dir</param-name>
-			<param-value>@ontmd.preview.dir@</param-value>
+			<param-name>orrportal.preview.dir</param-name>
+			<param-value>@orrportal.preview.dir@</param-value>
 		</init-param>
 		
 		<init-param>
-			<param-name>ontmd.resource.dir</param-name>
-			<param-value>@ontmd.resource.dir@</param-value>
+			<param-name>orrportal.resource.dir</param-name>
+			<param-value>@orrportal.resource.dir@</param-value>
 		</init-param>
 		
 		<init-param>
-			<param-name>ontmd.resourcetype.class</param-name>
-			<param-value>@ontmd.resourcetype.class@</param-value>
+			<param-name>orrportal.resourcetype.class</param-name>
+			<param-value>@orrportal.resourcetype.class@</param-value>
 		</init-param>
 		
 		<init-param>
-			<param-name>ontmd.authority.class</param-name>
-			<param-value>@ontmd.authority.class@</param-value>
+			<param-name>orrportal.authority.class</param-name>
+			<param-value>@orrportal.authority.class@</param-value>
 		</init-param>
 
 		<init-param>
@@ -91,7 +91,7 @@
 
 	<servlet>
 		<servlet-name>upload</servlet-name>
-		<servlet-class>org.mmisw.ontmd.gwt.server.UploadServlet</servlet-class>
+		<servlet-class>org.mmisw.orrportal.gwt.server.UploadServlet</servlet-class>
 		<load-on-startup>3</load-on-startup>
 	</servlet>
 	
@@ -102,7 +102,7 @@
 
 	<servlet>
 		<servlet-name>download</servlet-name>
-		<servlet-class>org.mmisw.ontmd.gwt.server.DownloadServlet</servlet-class>
+		<servlet-class>org.mmisw.orrportal.gwt.server.DownloadServlet</servlet-class>
 		<load-on-startup>4</load-on-startup>
 	</servlet>
 	
@@ -113,7 +113,7 @@
 
 	<servlet>
 		<servlet-name>direg</servlet-name>
-		<servlet-class>org.mmisw.ontmd.gwt.server.DirectRegistrationServlet</servlet-class>
+		<servlet-class>org.mmisw.orrportal.gwt.server.DirectRegistrationServlet</servlet-class>
 		<load-on-startup>5</load-on-startup>
 	</servlet>
 	
