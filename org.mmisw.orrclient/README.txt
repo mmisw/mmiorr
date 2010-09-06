@@ -19,7 +19,9 @@ Typical usage starts with:
 	occ.setPreviewDirectory(previewDirectory)
 	// ... other config parameters
 	IOrrClient orrClient = IOrrClient.Manager.init(occ);
-	// use the library	
+	// use the library, eg.,
+	RegisteredOntologyInfo roi = orrClient.getOntologyInfo(ontologyUri);
+	// ...
 	
 
 NOTES:
@@ -31,9 +33,9 @@ NOTES:
    guarantee of backward compatibility.
 
 2- Though this library does not have any dependencies on GWT, it can act as a GWT module.
+   This is suitable for GWT 1.5.x. A future orrclient version will support a more recent GWT version.
    Add the orrclient library to your classpath and include in your GWT module:
-       <inherits name='org.mmisw.orrclient.gwt.OrrClient15x'/>
-   This is suitable for GWT 1.5.x. A future version of orrclient will a more recent GWT version.
+       <inherits name='org.mmisw.orrclient.gwt.OrrClient'/>
  
   
 See also ChangeLog.txt
