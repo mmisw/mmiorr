@@ -3,7 +3,7 @@ package org.mmisw.ontmd.gwt.client.portal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mmisw.iserver.gwt.client.rpc.LoginResult;
+import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
 import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.portal.PortalMainPanel.InterfaceType;
 import org.mmisw.ontmd.gwt.client.util.OrrUtil;

@@ -2,7 +2,7 @@ package org.mmisw.ontmd.gwt.client.portal;
 
 import java.util.Map;
 
-import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
+import org.mmisw.orrclient.gwt.client.rpc.OntologyMetadata;
 
 /** created for refactoring purposes.  may be removed later */
 public interface IOntologyPanel {

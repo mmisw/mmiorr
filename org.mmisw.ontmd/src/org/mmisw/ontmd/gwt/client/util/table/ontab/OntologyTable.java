@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.mmisw.iserver.gwt.client.rpc.LoginResult;
-import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
+import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.util.OrrUtil;
 import org.mmisw.ontmd.gwt.client.util.TooltipIcon;

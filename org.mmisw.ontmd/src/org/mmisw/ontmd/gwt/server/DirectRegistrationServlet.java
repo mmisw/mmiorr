@@ -17,17 +17,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
-import org.mmisw.iserver.core.util.OntServiceUtil;
-import org.mmisw.iserver.core.util.Utf8Util;
-import org.mmisw.iserver.core.util.Util2;
-import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.HostingType;
-import org.mmisw.iserver.gwt.client.rpc.LoginResult;
-import org.mmisw.iserver.gwt.client.rpc.OtherDataCreationInfo;
-import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
-import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.UserInfoResult;
+import org.mmisw.orrclient.core.util.OntServiceUtil;
+import org.mmisw.orrclient.core.util.Utf8Util;
+import org.mmisw.orrclient.core.util.Util2;
+import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.HostingType;
+import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
+import org.mmisw.orrclient.gwt.client.rpc.OtherDataCreationInfo;
+import org.mmisw.orrclient.gwt.client.rpc.RegisterOntologyResult;
+import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.TempOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.UserInfoResult;
 import org.mmisw.ont.vocabulary.Omv;
 
 /**
@@ -366,7 +366,7 @@ public class DirectRegistrationServlet extends UploadServlet {
 
 	
 	/**
-	 * Sets some of the metadata values that are used by iserver to register the ontology.
+	 * Sets some of the metadata values that are used by orrclient to register the ontology.
 	 */
 	private void setSomeValues(LoginResult loginResult, CreateOntologyInfo createOntologyInfo) {
 		

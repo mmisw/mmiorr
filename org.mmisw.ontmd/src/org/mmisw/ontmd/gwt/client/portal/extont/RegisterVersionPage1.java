@@ -1,9 +1,9 @@
 package org.mmisw.ontmd.gwt.client.portal.extont;
 
-import org.mmisw.iserver.gwt.client.rpc.HostingType;
-import org.mmisw.iserver.gwt.client.rpc.LoginResult;
-import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.HostingType;
+import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
+import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.portal.PortalConsts;
 import org.mmisw.ontmd.gwt.client.portal.PortalControl;

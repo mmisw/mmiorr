@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mmisw.iserver.gwt.client.rpc.LoginResult;
-import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
-import org.mmisw.iserver.gwt.client.vocabulary.Option;
+import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
+import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.orrclient.gwt.client.vocabulary.Option;
 import org.mmisw.ontmd.gwt.client.Orr;
 
 import com.google.gwt.http.client.URL;

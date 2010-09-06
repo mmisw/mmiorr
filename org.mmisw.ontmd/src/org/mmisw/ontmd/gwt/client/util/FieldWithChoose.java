@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
-import org.mmisw.iserver.gwt.client.vocabulary.Option;
+import org.mmisw.orrclient.gwt.client.vocabulary.AttrDef;
+import org.mmisw.orrclient.gwt.client.vocabulary.Option;
 import org.mmisw.ontmd.gwt.client.Orr;
 
 import com.google.gwt.user.client.Event;

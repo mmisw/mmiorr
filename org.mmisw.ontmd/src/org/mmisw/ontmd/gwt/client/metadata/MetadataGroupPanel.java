@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
-import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
-import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
-import org.mmisw.iserver.gwt.client.vocabulary.Option;
+import org.mmisw.orrclient.gwt.client.rpc.OntologyMetadata;
+import org.mmisw.orrclient.gwt.client.vocabulary.AttrDef;
+import org.mmisw.orrclient.gwt.client.vocabulary.AttrGroup;
+import org.mmisw.orrclient.gwt.client.vocabulary.Option;
 import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
 import org.mmisw.ontmd.gwt.client.util.OrrUtil;

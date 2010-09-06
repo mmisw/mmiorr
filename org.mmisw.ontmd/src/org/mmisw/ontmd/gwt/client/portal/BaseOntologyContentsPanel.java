@@ -1,6 +1,6 @@
 package org.mmisw.ontmd.gwt.client.portal;
 
-import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
+import org.mmisw.orrclient.gwt.client.rpc.DataCreationInfo;
 import org.mmisw.ontmd.gwt.client.Orr;
 
 import com.google.gwt.user.client.ui.Widget;

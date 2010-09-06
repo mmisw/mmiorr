@@ -3,10 +3,10 @@ package org.mmisw.ontmd.gwt.client.portal.extont;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.HostingType;
-import org.mmisw.iserver.gwt.client.rpc.OtherDataCreationInfo;
-import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.HostingType;
+import org.mmisw.orrclient.gwt.client.rpc.OtherDataCreationInfo;
+import org.mmisw.orrclient.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.portal.PortalControl;
 import org.mmisw.ontmd.gwt.client.portal.PortalMainPanel;

@@ -29,26 +29,26 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mmisw.iserver.core.MdHelper;
-import org.mmisw.iserver.gwt.client.rpc.AppInfo;
-import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
-import org.mmisw.iserver.gwt.client.rpc.CreateUpdateUserAccountResult;
-import org.mmisw.iserver.gwt.client.rpc.InternalOntologyResult;
-import org.mmisw.iserver.gwt.client.rpc.LoginResult;
-import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
-import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
-import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
-import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
-import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
-import org.mmisw.iserver.gwt.client.rpc.SparqlQueryResult;
-import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.UnregisterOntologyResult;
-import org.mmisw.iserver.gwt.client.rpc.UserInfoResult;
-import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
-import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
-import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
+import org.mmisw.orrclient.core.MdHelper;
+import org.mmisw.orrclient.gwt.client.rpc.AppInfo;
+import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
+import org.mmisw.orrclient.gwt.client.rpc.CreateUpdateUserAccountResult;
+import org.mmisw.orrclient.gwt.client.rpc.InternalOntologyResult;
+import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
+import org.mmisw.orrclient.gwt.client.rpc.MetadataBaseInfo;
+import org.mmisw.orrclient.gwt.client.rpc.RegisterOntologyResult;
+import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.ResetPasswordResult;
+import org.mmisw.orrclient.gwt.client.rpc.ResolveUriResult;
+import org.mmisw.orrclient.gwt.client.rpc.SparqlQueryInfo;
+import org.mmisw.orrclient.gwt.client.rpc.SparqlQueryResult;
+import org.mmisw.orrclient.gwt.client.rpc.TempOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.UnregisterOntologyResult;
+import org.mmisw.orrclient.gwt.client.rpc.UserInfoResult;
+import org.mmisw.orrclient.gwt.client.rpc.vine.RelationInfo;
+import org.mmisw.orrclient.gwt.client.vocabulary.AttrDef;
+import org.mmisw.orrclient.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.ont.JenaUtil2;
 import org.mmisw.ont.MmiUri;
 import org.mmisw.ont.vocabulary.Omv;
@@ -78,7 +78,7 @@ import edu.drexel.util.rdf.OwlModel;
 
 
 /**
- * Implementation of the OrrService interaface. 
+ * Implementation of the OrrService interface. 
  * 
  * @author Carlos Rueda
  * @version $Id$

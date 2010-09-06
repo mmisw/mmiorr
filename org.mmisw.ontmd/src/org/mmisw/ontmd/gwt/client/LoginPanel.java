@@ -2,8 +2,8 @@ package org.mmisw.ontmd.gwt.client;
 
 import java.util.Map;
 
-import org.mmisw.iserver.gwt.client.rpc.LoginResult;
-import org.mmisw.iserver.gwt.client.rpc.ResetPasswordResult;
+import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
+import org.mmisw.orrclient.gwt.client.rpc.ResetPasswordResult;
 import org.mmisw.ontmd.gwt.client.CookieMan.UserInfo;
 import org.mmisw.ontmd.gwt.client.portal.PortalControl;
 

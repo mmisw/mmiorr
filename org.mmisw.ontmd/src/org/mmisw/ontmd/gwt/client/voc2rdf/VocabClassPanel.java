@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mmisw.iserver.gwt.client.rpc.ClassInfo;
-import org.mmisw.iserver.gwt.client.rpc.VocabularyDataCreationInfo;
-import org.mmisw.iserver.gwt.client.rpc.VocabularyOntologyData.ClassData;
+import org.mmisw.orrclient.gwt.client.rpc.ClassInfo;
+import org.mmisw.orrclient.gwt.client.rpc.VocabularyDataCreationInfo;
+import org.mmisw.orrclient.gwt.client.rpc.VocabularyOntologyData.ClassData;
 import org.mmisw.ontmd.gwt.client.portal.BaseOntologyContentsPanel;
 import org.mmisw.ontmd.gwt.client.portal.IVocabPanel;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;

@@ -2,7 +2,7 @@ package org.mmisw.ontmd.gwt.client.vine;
 
 import java.util.List;
 
-import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
+import org.mmisw.orrclient.gwt.client.rpc.vine.RelationInfo;
 import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.vine.util.TLabel;
 

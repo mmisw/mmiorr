@@ -5,11 +5,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.mmisw.iserver.gwt.client.rpc.BaseOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.LoginResult;
-import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
-import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
-import org.mmisw.iserver.gwt.client.vocabulary.AttrGroup;
+import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
+import org.mmisw.orrclient.gwt.client.rpc.OntologyMetadata;
+import org.mmisw.orrclient.gwt.client.rpc.TempOntologyInfo;
+import org.mmisw.orrclient.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.portal.IOntologyPanel;
 import org.mmisw.ontmd.gwt.client.portal.PortalControl;

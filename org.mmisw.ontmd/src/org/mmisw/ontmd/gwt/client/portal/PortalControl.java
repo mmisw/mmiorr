@@ -2,11 +2,11 @@ package org.mmisw.ontmd.gwt.client.portal;
 
 import java.util.List;
 
-import org.mmisw.iserver.gwt.client.rpc.BaseOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
-import org.mmisw.iserver.gwt.client.rpc.LoginResult;
-import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
-import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.EntityInfo;
+import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
+import org.mmisw.orrclient.gwt.client.rpc.RegisterOntologyResult;
+import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.ontmd.gwt.client.CookieMan;
 import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.util.table.IQuickInfo;

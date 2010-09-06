@@ -9,8 +9,8 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.MmiUri;
-import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
-import org.mmisw.iserver.gwt.client.vocabulary.Option;
+import org.mmisw.orrclient.gwt.client.vocabulary.AttrDef;
+import org.mmisw.orrclient.gwt.client.vocabulary.Option;
 
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;

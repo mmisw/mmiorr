@@ -6,6 +6,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * Info about the result of a conversion.
  * @author Carlos Rueda
  */
+@Deprecated
 public class ConversionResult implements IsSerializable {
 
 	private String error = null;

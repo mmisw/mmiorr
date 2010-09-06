@@ -29,8 +29,8 @@
 		<priority value="@ontmd.app.log.ontmdlevel@" />
 	</category>
 
-	<!-- Use same level for iserver module -->
-	<category name="org.mmisw.iserver">
+	<!-- Use same level for orrclient module -->
+	<category name="org.mmisw.orrclient">
 		<priority value="@ontmd.app.log.ontmdlevel@" />
 	</category>
 

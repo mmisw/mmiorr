@@ -7,11 +7,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import org.mmisw.iserver.gwt.client.rpc.MappingOntologyData;
-import org.mmisw.iserver.gwt.client.rpc.OntologyData;
-import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.vine.Mapping;
-import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
+import org.mmisw.orrclient.gwt.client.rpc.MappingOntologyData;
+import org.mmisw.orrclient.gwt.client.rpc.OntologyData;
+import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.vine.Mapping;
+import org.mmisw.orrclient.gwt.client.rpc.vine.RelationInfo;
 import org.mmisw.ontmd.gwt.client.Orr;
 
 import com.google.gwt.core.client.GWT;

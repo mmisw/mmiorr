@@ -2,7 +2,7 @@ package org.mmisw.ontmd.gwt.client.portal.extont;
 
 import java.util.Map;
 
-import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
+import org.mmisw.orrclient.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.util.FieldWithChoose;
 import org.mmisw.ontmd.gwt.client.util.OrrUtil;

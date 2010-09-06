@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
-import org.mmisw.iserver.gwt.client.rpc.PropValue;
+import org.mmisw.orrclient.gwt.client.rpc.EntityInfo;
+import org.mmisw.orrclient.gwt.client.rpc.PropValue;
 import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.vine.util.SelectAllNonePanel;
 

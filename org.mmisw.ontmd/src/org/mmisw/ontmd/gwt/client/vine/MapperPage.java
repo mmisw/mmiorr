@@ -3,9 +3,9 @@ package org.mmisw.ontmd.gwt.client.vine;
 import java.util.List;
 import java.util.Set;
 
-import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.vine.Mapping;
-import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
+import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.vine.Mapping;
+import org.mmisw.orrclient.gwt.client.rpc.vine.RelationInfo;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DockPanel;

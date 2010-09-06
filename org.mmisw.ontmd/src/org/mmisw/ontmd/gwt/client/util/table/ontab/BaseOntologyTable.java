@@ -2,8 +2,8 @@ package org.mmisw.ontmd.gwt.client.util.table.ontab;
 
 import java.util.List;
 
-import org.mmisw.iserver.gwt.client.rpc.LoginResult;
-import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
+import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.ontmd.gwt.client.util.table.IOntologyTable;
 import org.mmisw.ontmd.gwt.client.util.table.IQuickInfo;
 

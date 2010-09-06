@@ -1,6 +1,10 @@
-org.mmisw.ontmd: MMI ORR Portal
+org.mmisw.orrportal: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
+
+2010-09-04   2.0.2.beta
+	- Changes because of changes in orrclient library (formerly iserver)
+	
 
 2010-09-03   2.0.1.beta
 	More clean-up

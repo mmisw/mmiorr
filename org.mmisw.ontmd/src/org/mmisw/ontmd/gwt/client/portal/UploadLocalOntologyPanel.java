@@ -1,6 +1,6 @@
 package org.mmisw.ontmd.gwt.client.portal;
 
-import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;
 

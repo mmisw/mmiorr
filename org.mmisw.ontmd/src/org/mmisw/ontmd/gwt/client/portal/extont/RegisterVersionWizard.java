@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.HostingType;
-import org.mmisw.iserver.gwt.client.rpc.OtherDataCreationInfo;
-import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.HostingType;
+import org.mmisw.orrclient.gwt.client.rpc.OtherDataCreationInfo;
+import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.ontmd.gwt.client.portal.PortalControl;
 import org.mmisw.ontmd.gwt.client.portal.PortalMainPanel;
 import org.mmisw.ontmd.gwt.client.portal.extont.RegisterVersionPage2.MdInitMode;

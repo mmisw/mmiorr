@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.mmisw.iserver.gwt.client.rpc.AppInfo;
-import org.mmisw.iserver.gwt.client.rpc.LoginResult;
-import org.mmisw.iserver.gwt.client.rpc.MetadataBaseInfo;
-import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
-import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
+import org.mmisw.orrclient.gwt.client.rpc.AppInfo;
+import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
+import org.mmisw.orrclient.gwt.client.rpc.MetadataBaseInfo;
+import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.orrclient.gwt.client.vocabulary.AttrDef;
 import org.mmisw.ontmd.gwt.client.CookieMan.UserInfo;
 import org.mmisw.ontmd.gwt.client.img.OntMdImageBundle;
+import org.mmisw.ontmd.gwt.client.portal.PortalConsts;
 import org.mmisw.ontmd.gwt.client.portal.PortalControl;
 import org.mmisw.ontmd.gwt.client.portal.PortalMainPanel;
 import org.mmisw.ontmd.gwt.client.rpc.OrrService;
@@ -217,7 +218,7 @@ public class Orr {
 	    	History.fireCurrentHistoryState();
 	    }
 	    else {
-	    	refreshListAllOntologies();
+	    	History.newItem(PortalConsts.T_BROWSE);
 	    }
 	}
 

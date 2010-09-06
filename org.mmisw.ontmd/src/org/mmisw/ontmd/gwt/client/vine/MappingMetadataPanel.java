@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.mmisw.iserver.gwt.client.rpc.vine.Mapping;
+import org.mmisw.orrclient.gwt.client.rpc.vine.Mapping;
 
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;

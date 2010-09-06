@@ -1,7 +1,7 @@
 package org.mmisw.ontmd.gwt.client.portal.extont;
 
 
-import org.mmisw.iserver.gwt.client.rpc.ResolveUriResult;
+import org.mmisw.orrclient.gwt.client.rpc.ResolveUriResult;
 import org.mmisw.ontmd.gwt.client.Orr;
 
 import com.google.gwt.user.client.Window;

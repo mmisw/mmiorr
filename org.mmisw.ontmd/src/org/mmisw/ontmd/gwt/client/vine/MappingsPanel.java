@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.mmisw.iserver.gwt.client.rpc.vine.Mapping;
-import org.mmisw.iserver.gwt.client.rpc.vine.RelationInfo;
+import org.mmisw.orrclient.gwt.client.rpc.vine.Mapping;
+import org.mmisw.orrclient.gwt.client.rpc.vine.RelationInfo;
 import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.vine.util.SelectAllNonePanel;
 import org.mmisw.ontmd.gwt.client.vine.util.TLabel;

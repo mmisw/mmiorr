@@ -5,10 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.mmisw.iserver.gwt.client.rpc.DataCreationInfo;
-import org.mmisw.iserver.gwt.client.rpc.MappingDataCreationInfo;
-import org.mmisw.iserver.gwt.client.rpc.MappingOntologyData;
-import org.mmisw.iserver.gwt.client.rpc.vine.Mapping;
+import org.mmisw.orrclient.gwt.client.rpc.DataCreationInfo;
+import org.mmisw.orrclient.gwt.client.rpc.MappingDataCreationInfo;
+import org.mmisw.orrclient.gwt.client.rpc.MappingOntologyData;
+import org.mmisw.orrclient.gwt.client.rpc.vine.Mapping;
 import org.mmisw.ontmd.gwt.client.vine.VineEditorPanel;
 import org.mmisw.ontmd.gwt.client.vine.VineMain;
 

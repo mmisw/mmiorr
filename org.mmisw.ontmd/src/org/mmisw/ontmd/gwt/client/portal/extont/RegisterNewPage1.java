@@ -1,7 +1,7 @@
 package org.mmisw.ontmd.gwt.client.portal.extont;
 
-import org.mmisw.iserver.gwt.client.rpc.LoginResult;
-import org.mmisw.iserver.gwt.client.rpc.TempOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
+import org.mmisw.orrclient.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.portal.PortalConsts;
 import org.mmisw.ontmd.gwt.client.portal.PortalControl;
@@ -454,8 +454,8 @@ class RegisterNewPage1 extends BasePage {
 	static class FileTypePanel  {
 		
 		/** these are the serialization languages that Jena supports for reading, plus
-		    the types supported by the iserver module.
-		    TODO: obtain this from iserver itself when we have time. 
+		    the types supported by the orrclient module.
+		    TODO: obtain this from orrclient itself when we have time. 
 		*/
 		private static String[] FILE_TYPES = {
 			"RDF/XML",

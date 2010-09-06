@@ -3,8 +3,8 @@ package org.mmisw.ontmd.gwt.client.metadata;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.mmisw.iserver.gwt.client.rpc.LoginResult;
-import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
+import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
+import org.mmisw.orrclient.gwt.client.rpc.OntologyMetadata;
 import org.mmisw.ontmd.gwt.client.LoginPanel;
 import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.portal.IOntologyPanel;

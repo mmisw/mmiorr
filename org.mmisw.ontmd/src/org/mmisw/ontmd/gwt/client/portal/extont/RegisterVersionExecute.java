@@ -2,12 +2,12 @@ package org.mmisw.ontmd.gwt.client.portal.extont;
 
 import java.util.Map;
 
-import org.mmisw.iserver.gwt.client.rpc.BaseOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.CreateOntologyInfo;
-import org.mmisw.iserver.gwt.client.rpc.CreateOntologyResult;
-import org.mmisw.iserver.gwt.client.rpc.LoginResult;
-import org.mmisw.iserver.gwt.client.rpc.RegisterOntologyResult;
-import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
+import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
+import org.mmisw.orrclient.gwt.client.rpc.RegisterOntologyResult;
+import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.portal.PortalControl;
 import org.mmisw.ontmd.gwt.client.util.MyDialog;

@@ -3,7 +3,7 @@ package org.mmisw.ontmd.gwt.client.vine;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.vine.util.TLabel;
 

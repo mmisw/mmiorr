@@ -1,7 +1,7 @@
 package org.mmisw.ontmd.gwt.client.portal.admin;
 
-import org.mmisw.iserver.gwt.client.rpc.InternalOntologyResult;
-import org.mmisw.iserver.gwt.client.rpc.LoginResult;
+import org.mmisw.orrclient.gwt.client.rpc.InternalOntologyResult;
+import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
 import org.mmisw.ontmd.gwt.client.Orr;
 import org.mmisw.ontmd.gwt.client.portal.PortalControl;
 

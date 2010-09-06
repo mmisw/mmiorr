@@ -9,9 +9,9 @@ package org.mmisw.ontmd.gwt.client.util.query;
 //import java.util.HashMap;
 //import java.util.Map;
 //
-//import org.mmisw.iserver.gwt.client.rpc.SparqlQueryInfo;
-//import org.mmisw.iserver.gwt.client.rpc.SparqlQueryResult;
-//import org.mmisw.iserver.gwt.client.rpc.SparqlQueryResult.ParsedResult;
+//import org.mmisw.orrclient.gwt.client.rpc.SparqlQueryInfo;
+//import org.mmisw.orrclient.gwt.client.rpc.SparqlQueryResult;
+//import org.mmisw.orrclient.gwt.client.rpc.SparqlQueryResult.ParsedResult;
 //
 //import com.google.gwt.json.client.JSONArray;
 //import com.google.gwt.json.client.JSONObject;

@@ -3,7 +3,7 @@ package org.mmisw.ontmd.gwt.client.voc2rdf.rpc;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.mmisw.iserver.gwt.client.vocabulary.AttrDef;
+import org.mmisw.orrclient.gwt.client.vocabulary.AttrDef;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -12,6 +12,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * 
  * @author Carlos Rueda
  */
+@Deprecated
 public class Voc2RdfBaseInfo implements IsSerializable {
 	
 	private AttrDef resourceTypeAttrDef;

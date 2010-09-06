@@ -1,6 +1,6 @@
 package org.mmisw.ontmd.gwt.client.portal.extont;
 
-import org.mmisw.iserver.gwt.client.rpc.HostingType;
+import org.mmisw.orrclient.gwt.client.rpc.HostingType;
 import org.mmisw.ontmd.gwt.client.portal.PortalConsts;
 
 import com.google.gwt.user.client.ui.ClickListener;

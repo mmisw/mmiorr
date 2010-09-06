@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.mmisw.iserver.gwt.client.rpc.CreateUpdateUserAccountResult;
-import org.mmisw.iserver.gwt.client.rpc.LoginResult;
-import org.mmisw.iserver.gwt.client.rpc.UserInfoResult;
+import org.mmisw.orrclient.gwt.client.rpc.CreateUpdateUserAccountResult;
+import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
+import org.mmisw.orrclient.gwt.client.rpc.UserInfoResult;
 import org.mmisw.ontmd.gwt.client.Orr;
 
 import com.google.gwt.core.client.GWT;

@@ -1,6 +1,6 @@
 package org.mmisw.ontmd.gwt.client.rpc;
 
-import org.mmisw.iserver.gwt.client.rpc.OntologyMetadata;
+import org.mmisw.orrclient.gwt.client.rpc.OntologyMetadata;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -18,7 +18,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 //
 // NOTE: This used to be called OntologyInfo, but was renamed to OntologyInfoPre to avoid conflicts
-// with different class OntologyInfo in iserver module
+// with different class OntologyInfo in orrclient module
 //
 public class OntologyInfoPre implements IsSerializable {
 

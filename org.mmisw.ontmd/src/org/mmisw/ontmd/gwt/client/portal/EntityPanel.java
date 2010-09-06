@@ -2,8 +2,8 @@ package org.mmisw.ontmd.gwt.client.portal;
 
 import java.util.List;
 
-import org.mmisw.iserver.gwt.client.rpc.EntityInfo;
-import org.mmisw.iserver.gwt.client.rpc.PropValue;
+import org.mmisw.orrclient.gwt.client.rpc.EntityInfo;
+import org.mmisw.orrclient.gwt.client.rpc.PropValue;
 
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
