@@ -1,4 +1,0 @@
-org.mmisw.vine Vocabulary INtegration Environment II
-Carlos Rueda - MMI / MBARI
-
-First TODO: design core package: org.mmisw.vine.core
