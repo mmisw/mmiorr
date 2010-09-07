@@ -78,6 +78,7 @@ public class OntServiceUtil {
 			String ontServiceUrl = _config().getOntServiceUrl();
 			String ontServiceRequest = ontServiceUrl + "?_aqrest";
 			String test = HttpUtil.getAsString(ontServiceRequest);
+			test = test.trim();
 			new URL(test); // in case of MalformedURLException
 			aquaportalRestUrl = test;
 		}
