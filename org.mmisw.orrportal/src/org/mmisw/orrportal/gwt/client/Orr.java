@@ -84,7 +84,7 @@ public class Orr {
 		AsyncCallback<AppInfo> callback = new AsyncCallback<AppInfo>() {
 			public void onFailure(Throwable thr) {
 				OrrUtil.removeLoadingMessage();
-				RootPanel.get().add(new HTML(thr.toString()));
+				_addToMainPanel(new HTML(thr.toString()));
 			}
 
 			public void onSuccess(AppInfo aInfo) {
@@ -107,7 +107,7 @@ public class Orr {
 		AsyncCallback<PortalBaseInfo> callback = new AsyncCallback<PortalBaseInfo>() {
 			public void onFailure(Throwable thr) {
 				OrrUtil.removeLoadingMessage();
-				RootPanel.get().add(new HTML(thr.toString()));
+				_addToMainPanel(new HTML(thr.toString()));
 			}
 
 			public void onSuccess(PortalBaseInfo bInfo) {
@@ -131,7 +131,7 @@ public class Orr {
 
 			public void onFailure(Throwable thr) {
 				OrrUtil.removeLoadingMessage();
-				RootPanel.get().add(new HTML(thr.toString()));
+				_addToMainPanel(new HTML(thr.toString()));
 			}
 
 			public void onSuccess(MetadataBaseInfo result) {
@@ -209,7 +209,7 @@ public class Orr {
 		
 		Widget fullPanel = _createFullPanel(portalMainPanel);
 		OrrUtil.removeLoadingMessage();
-		RootPanel.get().add(fullPanel);
+		_addToMainPanel(fullPanel);
 		
 		
 	    String historyToken = History.getToken();
@@ -228,7 +228,7 @@ public class Orr {
 		AsyncCallback<List<RegisteredOntologyInfo>> callback = new AsyncCallback<List<RegisteredOntologyInfo>>() {
 
 			public void onFailure(Throwable thr) {
-				RootPanel.get().add(new HTML(thr.toString()));
+				_addToMainPanel(new HTML(thr.toString()));
 			}
 
 			public void onSuccess(List<RegisteredOntologyInfo> result) {
@@ -251,7 +251,7 @@ public class Orr {
 		VerticalPanel panel = new VerticalPanel();
 //		panel.setBorderWidth(1);
 		panel.setWidth("100%");
-		RootPanel.get().add(panel);
+		_addToMainPanel(panel);
 
 		HorizontalPanel hpanel = new HorizontalPanel();
 		panel.add(hpanel);
@@ -314,6 +314,14 @@ public class Orr {
 		Orr.log("ORR:    orrService " + service);
 	}
 
+	/**
+	 * Adds a widget to the "main" element in the document.
+	 */
+	private static void _addToMainPanel(Widget w) {
+		RootPanel.get("main").add(w);
+		// OLD RootPanel.get().add(w);
+	}
+	
 	
 	///////////////////////////////////////////////////////////////////////////////
 	// private variables

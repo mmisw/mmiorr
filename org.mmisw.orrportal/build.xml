@@ -150,8 +150,8 @@
 			</filterset>
 		</copy>
 
-		<copy file="src/org/mmisw/orrportal/gwt/public/index.html" 
-			tofile="${build.dir}/tmp.WebContent/index.html" overwrite="true">
+		<copy file="src/org/mmisw/orrportal/gwt/public/index.jsp" 
+			tofile="${build.dir}/tmp.WebContent/index.jsp" overwrite="true">
 			<filterset>
 				<filter token="ga_snippet"  value="${ga_snippet}" />
 			</filterset>
@@ -200,7 +200,7 @@
 			<arg value="9999"/>
 			<arg value="-out"/>
 			<arg value="www"/>
-			<arg value="org.mmisw.orrportal.gwt.Orr/index.html"/>
+			<arg value="org.mmisw.orrportal.gwt.Orr/index.jsp"/>
 		</java>
 	</target>
 

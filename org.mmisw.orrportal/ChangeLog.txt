@@ -3,6 +3,15 @@ Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
 2010-09-07   2.0.2.beta
+	- index.html renamed to index.jsp for more flexibility and a bit of easier customization
+	  after deployment.
+	  It now has two "includes," one right after <body> and one right before </body>
+	  with the new files _btop.html and _bbot.html. 
+	  All lines starting with # are omitted for purposes of the included contents. 
+	  The contents are always included unless there is a line starting with ``# ignore: yes''.
+	  Note: This mechanism can be improved but it already helps customize the main page via the
+	  included fragments without the main page having to be modified.
+	  
 	- PortalConfig.BIOPORTAL_REST_URL deprecated (this info now provided by orrclient
 	  based on the Ont service)
 	- TODO: This deprecated property is only used by org.mmisw.orrportal.gwt.server.OntologyUploader,

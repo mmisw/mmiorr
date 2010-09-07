@@ -1,5 +1,11 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
+<%@page import="org.mmisw.orrportal.gwt.server.PageUtil"%>
+<%
+String btop = getServletContext().getRealPath("/_btop.html");
+String bbot = getServletContext().getRealPath("/_bbot.html");
+%>
+
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -9,6 +15,7 @@
   </head>
 
   <body>
+<%=PageUtil.include(btop)%>
   
   <div id="loading" align="center"><br/>
   	<script>
@@ -22,5 +29,9 @@
   
   <iframe src="javascript:''"  id="__gwt_historyFrame"  style="width:0;height:0;border:0"></iframe>
 
+  <div id="main">
+  </div>
+   
+<%=PageUtil.include(bbot)%>
   </body>
 </html>
