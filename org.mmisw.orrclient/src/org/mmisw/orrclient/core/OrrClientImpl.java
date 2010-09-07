@@ -152,7 +152,6 @@ public class OrrClientImpl implements IOrrClient {
 		appInfo.setBuild(OrrClientVersion.getBuild());
 		log.info(appInfo.toString());
 		log.info("ontServiceUrl = " +config.getOntServiceUrl());
-		log.info("bioportalRestUrl = " +config.getBioportalRestUrl());
 
 		try {
 			previewDir = new File(config.getPreviewDirectory());

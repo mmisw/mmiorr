@@ -254,7 +254,7 @@ public class InternalManager {
 //			return;
 //		}
 //		
-//		final String unversGroupsUri = ServerConfig.Prop.ONT_SERVICE_URL.getValue()+ "/mmiorr-internal/groups";
+//		final String unversGroupsUri = _config().getOntServiceUrl()+ "/mmiorr-internal/groups";
 //		
 //		RegisteredOntologyInfo groupsOntology = server.getOntologyInfo(unversGroupsUri);
 //		if ( groupsOntology == null ) {

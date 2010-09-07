@@ -1,20 +1,17 @@
 package org.mmisw.orrclient.core;
 
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mmisw.orrclient.IOrrClient;
-import org.mmisw.orrclient.OrrClientConfiguration;
+import org.mmisw.orrclient.core.util.OntServiceUtil;
 import org.mmisw.orrclient.core.util.XmlAccessor;
 import org.mmisw.orrclient.gwt.client.rpc.CreateUpdateUserAccountResult;
 import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
@@ -46,18 +43,13 @@ class UserAccountCreatorUpdater {
 	}
 	
 	
-	private static OrrClientConfiguration _config() {
-		OrrClientConfiguration config = IOrrClient.Manager.getOrrClient().getConfiguration();
-		return config;
-	}
-
-	
-	/** makes the request and return the response from the server */
-	private String doPost() throws HttpException, IOException {
+	/** makes the request and return the response from the server 
+	 * @throws Exception */
+	private String doPost() throws Exception {
 		String applicationid = "4ea81d74-8960-4525-810b-fa1baab576ff";
 		log.info("applicationid=" +applicationid);
 
-		String bioPortalRestUrl = _config().getBioportalRestUrl();
+		String bioPortalRestUrl = OntServiceUtil.getAquaportalRestUrl();
 		String restUrl = bioPortalRestUrl + USERS;
 		
 		values.put("applicationid", applicationid);

@@ -1,6 +1,7 @@
 package org.mmisw.orrclient.core.util;
 
 import java.io.StringReader;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -28,6 +29,8 @@ public class OntServiceUtil {
 	private OntServiceUtil() {}
 	
 	private static final Log log = LogFactory.getLog(OntServiceUtil.class);
+	
+	private static String aquaportalRestUrl = null;
 	
 	
 	private static OrrClientConfiguration _config() {
@@ -60,9 +63,30 @@ public class OntServiceUtil {
 		return str;
 	}
 
+	
+	/**
+	 * Gets the aquaportal rest url.
+	 * Upon a successful retrieval, the value is cached for subsequent calls of this method. 
+	 * In case of exception, a subsequent call will attempt the retrieval again.
+	 * 
+	 * @return the aquaportal rest url.
+	 * @throws Exception If any error happens during the request or if a MalformedURLException
+	 *         happens while trying to parse the retrieved value.
+	 */
+	public static String getAquaportalRestUrl() throws Exception {
+		if ( aquaportalRestUrl == null ) {
+			String ontServiceUrl = _config().getOntServiceUrl();
+			String ontServiceRequest = ontServiceUrl + "?_aqrest";
+			String test = HttpUtil.getAsString(ontServiceRequest);
+			new URL(test); // in case of MalformedURLException
+			aquaportalRestUrl = test;
+		}
+		return aquaportalRestUrl;
+	}
+	
+	
 	/**
 	 * Determines if the URI corresponds to a registered ontology.
-	 * It uses similar approach {@link  }
 	 * 
 	 * @param uriModel  The URI of the desired ontlogy.
 	 * @param acceptEntries list of accept header entries
@@ -73,6 +97,7 @@ public class OntServiceUtil {
 		
 		String ontServiceUrl = _config().getOntServiceUrl();
 		uriModel = URLEncoder.encode(uriModel, "UTF-8");
+		// TODO (perf) Use a request that *only* checks the URI is registered
 		String ontServiceRequest = ontServiceUrl + "?uri=" +uriModel;
 		int statusCode = HttpUtil.httpGetStatusCode(ontServiceRequest, acceptEntries);
 		
@@ -141,7 +166,7 @@ public class OntServiceUtil {
 	public static boolean isOntResolvableUri(String uri) {
 		String ontServiceUrl = _config().getOntServiceUrl();
 		 if ( ontServiceUrl == null ) {
-			 throw new IllegalStateException("Config.Prop.ONT_SERVICE_URL.getValue() returned null");
+			 throw new IllegalStateException("_config().getOntServiceUrl() returned null");
 		 }
 		 return uri.toLowerCase().startsWith(ontServiceUrl.toLowerCase());
 	}

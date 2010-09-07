@@ -22,6 +22,7 @@ import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.orrclient.IOrrClient;
 import org.mmisw.orrclient.OrrClientConfiguration;
+import org.mmisw.orrclient.core.util.OntServiceUtil;
 import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
 
 import com.hp.hpl.jena.vocabulary.DC;
@@ -80,12 +81,6 @@ class OntologyUploader {
 	}
 	
 	
-	private static OrrClientConfiguration _config() {
-		OrrClientConfiguration config = IOrrClient.Manager.getOrrClient().getConfiguration();
-		return config;
-	}
-
-
 	/**
 	 * Executes the POST operation to upload the ontology.
 	 * 
@@ -99,7 +94,7 @@ class OntologyUploader {
 		
 		String sessionId = loginResult.getSessionId();
 		
-		String bioPortalRestUrl = _config().getBioportalRestUrl();
+		String bioPortalRestUrl = OntServiceUtil.getAquaportalRestUrl();
 		String ontologiesRestUrl = bioPortalRestUrl + ONTOLOGIES;
 		if ( log.isDebugEnabled() ) {
 			log.debug("ontologiesRestUrl = " +ontologiesRestUrl);

@@ -6,6 +6,10 @@ $Id$
 2010-09-06    2.0.2.beta
 	- some doc
 	- removed deprecated/unused class OrrClientConfig.
+	
+	- The aquaportal rest URL is now obtained from the Ont service:
+		- new OntServiceUtil.getAquaportalRestUrl().
+	    - Removed corresp. attribute in OrrClientConfiguration
 
 2010-09-04    2.0.2.beta
 	- Renamings:

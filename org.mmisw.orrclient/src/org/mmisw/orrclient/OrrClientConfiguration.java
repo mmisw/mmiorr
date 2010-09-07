@@ -11,9 +11,6 @@ public class OrrClientConfiguration {
 	private String previewDirectory =  "/Users/Shared/mmiregistry/ontmd/previews/";
 	private String voc2rdfDirectory = "/Users/Shared/mmiregistry/ontmd/preuploads/voc2rdf/";
 
-	// TODO this should be obtained from the Ont service
-	private String bioportalRestUrl = "http://localhost:8080/bioportal/rest";
-		
 	private String mailUser = null;
 	private String mailPassword = null;
 	
@@ -30,7 +27,6 @@ public class OrrClientConfiguration {
 	public OrrClientConfiguration(OrrClientConfiguration config) {
 		this.previewDirectory = config.getPreviewDirectory();
 		this.voc2rdfDirectory = config.getVoc2rdfDirectory();
-		this.bioportalRestUrl = config.getBioportalRestUrl();
 		this.ontServiceUrl = config.getOntServiceUrl();
 		this.mailUser = config.getMailUser();
 		this.mailPassword = config.getMailPassword();
@@ -42,10 +38,6 @@ public class OrrClientConfiguration {
 	
 	public String getVoc2rdfDirectory() {
 		return voc2rdfDirectory;
-	}
-	
-	public String getBioportalRestUrl() {
-		return bioportalRestUrl;
 	}
 	
 	public String getOntServiceUrl() {
@@ -66,10 +58,6 @@ public class OrrClientConfiguration {
 	
 	public void setVoc2rdfDirectory(String voc2rdfDirectory) {
 		this.voc2rdfDirectory = voc2rdfDirectory;
-	}
-	
-	public void setBioportalRestUrl(String bioportalRestUrl) {
-		this.bioportalRestUrl = bioportalRestUrl;
 	}
 	
 	public void setOntServiceUrl(String ontServiceUrl) {
