@@ -127,8 +127,7 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 			
 			// portal initialization
 			String ontServiceUrl = PortalConfig.Prop.ONT_SERVICE_URL.getValue();
-			String bioportalRestUrl = PortalConfig.Prop.BIOPORTAL_REST_URL.getValue();
-			orrClient = OrrClientProxy.createInstance(ontServiceUrl, bioportalRestUrl);
+			orrClient = OrrClientProxy.createInstance(ontServiceUrl);
 			
 			namespaceRoot = ontServiceUrl;
 		}

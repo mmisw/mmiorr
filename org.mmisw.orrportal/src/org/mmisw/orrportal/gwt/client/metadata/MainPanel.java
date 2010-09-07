@@ -587,7 +587,7 @@ public class MainPanel extends VerticalPanel implements IOntologyPanel {
 		doUpload();
 	}
 
-	void doUpload() {
+	private void doUpload() {
 		if ( ontologyInfoPre == null ) {
 			Window.alert("Please, load an ontology first");
 			return;

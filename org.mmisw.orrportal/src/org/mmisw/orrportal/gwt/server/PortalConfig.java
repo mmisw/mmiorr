@@ -41,6 +41,7 @@ public class PortalConfig {
 		APPSERVER_HOST                ("appserver.host", "http://localhost:8080"),
 		
 		/** Base URL of bioportal REST service */
+		@Deprecated
 		BIOPORTAL_REST_URL            ("bioportal.rest.url", "http://localhost:8080/bioportal/rest"),
 		
 		/** URL of "Ont" URI resolution service */

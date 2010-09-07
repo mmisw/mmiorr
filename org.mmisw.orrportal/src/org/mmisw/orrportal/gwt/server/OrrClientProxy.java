@@ -51,11 +51,11 @@ public class OrrClientProxy  {
 	 * @param bioportalRestUrl
 	 * @return the instance
 	 */
-	public static OrrClientProxy createInstance(String ontServiceUrl, String bioportalRestUrl) {
+	public static OrrClientProxy createInstance(String ontServiceUrl) {
 		if ( instance != null ) {
 			throw new IllegalStateException(OrrClientProxy.class.getName()+ " instance already created");
 		}
-		instance = new OrrClientProxy(ontServiceUrl, bioportalRestUrl);
+		instance = new OrrClientProxy(ontServiceUrl);
 		return instance;
 	}
 
@@ -69,7 +69,7 @@ public class OrrClientProxy  {
 	
 
 	
-	private OrrClientProxy(String ontServiceUrl, String bioportalRestUrl) {
+	private OrrClientProxy(String ontServiceUrl) {
 		log.info("initializing " +getClass().getSimpleName()+ "...");
 		
 		String mailUser = PortalConfig.Prop.MAIL_USER.getValue();
@@ -77,7 +77,6 @@ public class OrrClientProxy  {
 		
 		OrrClientConfiguration occ = new OrrClientConfiguration();
 		occ.setOntServiceUrl(ontServiceUrl);
-		occ.setBioportalRestUrl(bioportalRestUrl);
 		occ.setMailUser(mailUser);
 		occ.setMailPassword(mailPassword);
 		//

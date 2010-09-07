@@ -2,6 +2,17 @@ org.mmisw.orrportal: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-09-07   2.0.2.beta
+	- PortalConfig.BIOPORTAL_REST_URL deprecated (this info now provided by orrclient
+	  based on the Ont service)
+	- TODO: This deprecated property is only used by org.mmisw.orrportal.gwt.server.OntologyUploader,
+	  which itself is also deprecated and only used by
+	  OrrServiceImpl.upload(ReviewResult_Old reviewResult_Old, LoginResult loginResult_Old),
+	  which is called (via the async interface) by 
+	  org.mmisw.orrportal.gwt.client.metadata.MainPanel.doUpload(),;
+	  this MainPanel is only used by ..metadata.UploadOntologyPanel,
+	  which is not used either --> in summary, remove all the unused stuff.
+	
 2010-09-04   2.0.2.beta
 	- Changes because of changes in orrclient library (formerly iserver)
 	
