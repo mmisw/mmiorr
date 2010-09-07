@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.util.Unfinished;
 
+import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -79,7 +80,7 @@ class TermExtractor {
 
 		if ( model instanceof OntModel ) {
 			OntModel ontModel = (OntModel) model;
-			ExtendedIterator iter = ontModel.listIndividuals(termRes);
+			ExtendedIterator<Individual> iter = ontModel.listIndividuals(termRes);
 			if ( iter.hasNext() ) {
 				while ( iter.hasNext() ) {
 					Resource idv = (Resource) iter.next();

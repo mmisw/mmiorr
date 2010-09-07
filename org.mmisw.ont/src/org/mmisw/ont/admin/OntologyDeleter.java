@@ -52,7 +52,7 @@ public class OntologyDeleter {
 	 */
 	public String execute() throws Exception  {
 		
-		String action = OntConfig.Prop.BIOPORTAL_REST_URL.getValue() + ONTOLOGIES + id;
+		String action = OntConfig.Prop.AQUAPORTAL_REST_URL.getValue() + ONTOLOGIES + id;
 		
 		PostMethod post = new PostMethod(action);
 		try {

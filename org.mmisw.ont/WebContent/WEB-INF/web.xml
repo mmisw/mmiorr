@@ -44,6 +44,11 @@
 			<param-value>@aquaportal.datasource@</param-value>
 		</init-param>
 		<init-param>
+			<param-name>aquaportal.rest.url</param-name>
+			<param-value>@aquaportal.rest.url@</param-value>
+		</init-param>
+
+		<init-param>
 			<param-name>agraph.ts.dir</param-name>
 			<param-value>@agraph.ts.dir@</param-value>
 		</init-param>
@@ -58,11 +63,6 @@
 		<init-param>
 			<param-name>agraph.ts.name</param-name>
 			<param-value>@agraph.ts.name@</param-value>
-		</init-param>
-
-		<init-param>
-			<param-name>bioportal.rest.url</param-name>
-			<param-value>@bioportal.rest.url@</param-value>
 		</init-param>
 
 		<init-param>

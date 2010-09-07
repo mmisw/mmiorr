@@ -21,9 +21,7 @@ public class OntConfig {
 		VERSION                       ("ont.app.version"),
 		BUILD                         ("ont.app.build"),
 		
-		// Issue #242.
-		// note: not using "aquaportal" prefix here to align with the name used in ontmd2 module
-		BIOPORTAL_REST_URL            ("bioportal.rest.url"),
+		AQUAPORTAL_REST_URL            ("aquaportal.rest.url"),
 		
 		AQUAPORTAL_UPLOADS_DIRECTORY  ("aquaportal.uploads.directory"),
 		AQUAPORTAL_DATASOURCE         ("aquaportal.datasource"),

@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.util.Util;
 
+import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -286,7 +287,7 @@ public class MiscDispatcher {
 	
 	
 	/**
-	 * List all ontologies (versioned form) for use by the iserver module.
+	 * List all ontologies (versioned form) for use by the orrclient module.
 	 */
 	void listAll(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -427,6 +428,42 @@ public class MiscDispatcher {
 	}
 	
 
+	/**
+	 * Helper method to report the version of this service
+	 * The dispatch is always completed here.
+	 */
+	void reportOntVersion(HttpServletRequest request, HttpServletResponse response) 
+	throws ServletException, IOException {
+		
+		final String ontVersion = OntConfig.Prop.VERSION.getValue();
+		if ( log.isDebugEnabled() ) {
+			log.debug("reportOntVersion: reporting: " +ontVersion);
+		}
+		
+		response.setContentType("text/plain");
+		PrintWriter out = response.getWriter();
+    	out.println(ontVersion);
+	}
+	
+	
+	/**
+	 * Helper method to report the aquaportal rest url
+	 * The dispatch is always completed here.
+	 */
+	void reportAquaportalRestUrl(HttpServletRequest request, HttpServletResponse response) 
+	throws ServletException, IOException {
+		
+		final String aquaportalRestUrl = OntConfig.Prop.AQUAPORTAL_REST_URL.getValue();
+		if ( log.isDebugEnabled() ) {
+			log.debug("reportAquaportalRestUrl: reporting: " +aquaportalRestUrl);
+		}
+		
+		response.setContentType("text/plain");
+		PrintWriter out = response.getWriter();
+		out.println(aquaportalRestUrl);
+	}
+	
+	
 	/**
 	 * Helper method to dispatch a "_csv" request.
 	 * The dispatch is always completed here.
@@ -844,7 +881,7 @@ public class MiscDispatcher {
 
 		if ( model instanceof OntModel ) {
 			OntModel ontModel = (OntModel) model;
-			ExtendedIterator iter = ontModel.listIndividuals(termRes);
+			ExtendedIterator<Individual> iter = ontModel.listIndividuals(termRes);
 			if ( iter.hasNext() ) {
 				out.println("<br/>");
 				out.println("<table class=\"inline\" width=\"100%\">");

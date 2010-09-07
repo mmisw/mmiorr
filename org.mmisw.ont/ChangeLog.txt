@@ -4,6 +4,14 @@ $Id$
 
 ChangeLog
 
+2010-09-05  2.0.2.beta
+	- cleared up some warnings upon upgrade to Jena 2.6.3
+	- updated references to orrclient and orrportal modules (previously named iserver and ontmd, respectively).
+	- OntServlet: new operations:
+		- "_version": reports the Ont service version
+		- "_aqrest": reports the aquaportal REST URL
+	
+	
 2010-08-27  2.0.0.beta
 	- MmiUri: now, authority cannot start with a hyphen ``-''.  This seems a resonable restriction,
 	  while it allows to better maintain internal regular resources under the corresponding directory, 

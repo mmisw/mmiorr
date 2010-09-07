@@ -22,12 +22,12 @@ public class ImageDispatcher {
 	
 	private final Log log = LogFactory.getLog(ImageDispatcher.class);
 	
-	private OntConfig ontConfig;
-	private Db db;
+//	private OntConfig ontConfig;
+//	private Db db;
 	
 	ImageDispatcher(OntConfig ontConfig, Db db) {
-		this.ontConfig = ontConfig;
-		this.db = db;
+//		this.ontConfig = ontConfig;
+//		this.db = db;
 	}
 
 
@@ -49,7 +49,7 @@ public class ImageDispatcher {
 		if ( outFormat.equalsIgnoreCase("dot") ) {
 //			DotGenerator dot = new  DotGenerator(ontology.ge)
 			
-			
+			// TODO Implement!
 			
 			return true;
 		}

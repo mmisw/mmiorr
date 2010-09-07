@@ -16,7 +16,7 @@ public class OntUtil {
 	 * by the configuration object.
 	 * 
 	 * <p>
-	 * A similar method exists in the "iserver" module.
+	 * A similar method exists in the "orrclient" module.
 	 * 
 	 * @param uri The URI to check.
 	 * @return if the given URI has the Ont service URL as a prefix (ignoring case).

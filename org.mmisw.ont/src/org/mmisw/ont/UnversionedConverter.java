@@ -51,7 +51,7 @@ public class UnversionedConverter {
 	public static OntModel getUnversionedModel(OntModel model, MmiUri mmiUri) {
 		
 		//
-		// NOTE: I'm copying/adapting code from OntMdServiceImpl.review(..):
+		// NOTE: I'm copying/adapting code from OrrServiceImpl.review(..):
 		//
 		
 		

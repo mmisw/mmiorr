@@ -294,9 +294,21 @@ public class OntServlet extends HttpServlet {
 			return;
 		} 
 		
-		// dispatch list of ontologies for iserver?
+		// dispatch list of ontologies for orrclient?
 		if ( Util.yes(req.request, "listall")  ) {
 			miscDispatcher.listAll(req.request, req.response);
+			return;
+		}
+		
+		// report Ont service version?
+		if ( Util.yes(req.request, "_version")  ) {
+			miscDispatcher.reportOntVersion(req.request, req.response);
+			return;
+		}
+		
+		// report aquaportal rest url for orrclient?
+		if ( Util.yes(req.request, "_aqrest")  ) {
+			miscDispatcher.reportAquaportalRestUrl(req.request, req.response);
 			return;
 		}
 		
@@ -319,14 +331,14 @@ public class OntServlet extends HttpServlet {
 		}
 		
 		// if the "_lpath" parameter is included, reply with full local path of ontology file
-		// (this is just a quick way to help ontmd to so some of its stuff ;)
+		// (this is just a quick way to help orrportal to so some of its stuff ;)
 		if ( Util.yes(req.request, "_lpath") ) {
 			miscDispatcher.resolveGetLocalPath(req.request, req.response);
 			return;
 		}
 		
 		// if the "_csv" parameter is included, reply with contents of associated CSV file
-		// (this is just a quick way to help ontmd to so some of its stuff ;)
+		// (this is just a quick way to help orrportal to so some of its stuff ;)
 		if ( Util.yes(req.request, "_csv") ) {
 			miscDispatcher.resolveGetCsv(req.request, req.response);
 			return;
@@ -700,7 +712,7 @@ public class OntServlet extends HttpServlet {
 			else {
 				// Note: the following is a quick workaround for submissions whose URI don't have
 				// the .owl extension (the general rule, btw), but whose uploaded files do. 
-				// I had to add the .owl extension in ontmd for the aquaportal parsing jobs to work.
+				// I had to add the .owl extension in orrportal for the aquaportal parsing jobs to work.
 				// try with ".owl":
 				full_path += ".owl";
 			}

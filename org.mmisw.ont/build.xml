@@ -110,12 +110,12 @@
 				<filter token="aquaportal.uploads.directory" value="${aquaportal.uploads.directory}" />
 				<filter token="aquaportal.voc2rdf.dir" value="${aquaportal.voc2rdf.dir}" />
 				<filter token="aquaportal.datasource" value="${aquaportal.datasource}" />
+				<filter token="aquaportal.rest.url" value="${aquaportal.rest.url}" />
 				<filter token="agraph.host" value="${agraph.host}" />
 				<filter token="agraph.port" value="${agraph.port}" />
 				<filter token="agraph.ts.dir" value="${agraph.ts.dir}" />
 				<filter token="agraph.ts.name" value="${agraph.ts.name}" />
 				<filter token="ont.internal.dir"   value="${ont.internal.dir}" />
-				<filter token="bioportal.rest.url" value="${bioportal.rest.url}" />
 				<filter token="ga.uanumber"   value="${ga.uanumber}" />
 				<filter token="ga.domainName" value="${ga.domainName}" />
 				<filter token="ga.dir"        value="${ga.dir}" />

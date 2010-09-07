@@ -166,7 +166,7 @@ public class UriResolver2 {
 					ontologyUri = req.ontology.getUri();
 				}
 				else if ( req.mmiUri != null ) {
-					// Note: drop any extension here (the OntMd service will do the appropriate request
+					// Note: drop any extension here (the Orr service will do the appropriate request
 					// back to this Ont service): 
 					ontologyUri = req.mmiUri.getOntologyUriWithExtension("");
 				}
