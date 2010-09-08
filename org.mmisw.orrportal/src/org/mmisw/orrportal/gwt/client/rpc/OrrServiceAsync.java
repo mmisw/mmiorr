@@ -25,7 +25,7 @@ import org.mmisw.orrclient.gwt.client.vocabulary.AttrDef;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
- * Async interface.
+ * Async interface for OrrService.
  * 
  * See javadoc in {@link OrrService}.
  * 
@@ -86,29 +86,5 @@ public interface OrrServiceAsync {
 	void createGroupsOntology(LoginResult loginResult, AsyncCallback<InternalOntologyResult> callback);
 	
 	void unregisterOntology(LoginResult loginResult, RegisteredOntologyInfo oi, AsyncCallback<UnregisterOntologyResult> callback);
-	
-
-	
-	//////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////
-
-	//
-	// TODO REMOVE THESE OLD OPERATIONS
-	//
-	
-	void getOntologyInfoFromRegistry(String ontologyUri, AsyncCallback<OntologyInfoPre> callback);
-	
-	void getOntologyInfoFromPreLoaded(String uploadResults, AsyncCallback<OntologyInfoPre> callback);
-	
-	void getOntologyInfoFromFileOnServer(String fullPath, AsyncCallback<OntologyInfoPre> callback);
-	
-	void review(OntologyInfoPre ontologyInfoPre, LoginResult loginResult_Old, AsyncCallback<ReviewResult_Old> callback);
-	
-	void upload(ReviewResult_Old reviewResult_Old, LoginResult loginResult_Old, AsyncCallback<UploadResult> callback);
-	
-	
-	// TODO remove
-	void getBaseInfo(Map<String, String> params, AsyncCallback<MetadataBaseInfo> callback);
 	
 }

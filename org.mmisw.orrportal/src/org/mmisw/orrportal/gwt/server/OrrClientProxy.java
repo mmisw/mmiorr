@@ -46,16 +46,17 @@ public class OrrClientProxy  {
 	}
 	
 	/**
-	 * Crates the instance of this class, if not already created.
-	 * @param ontServiceUrl
-	 * @param bioportalRestUrl
+	 * Creates the instance of this class, if not already created.
+	 * It uses PortalConfig.
+	 * 
 	 * @return the instance
+	 * @throws IllegalStateException if instance already created.
 	 */
-	public static OrrClientProxy createInstance(String ontServiceUrl) {
+	public static OrrClientProxy createInstance() {
 		if ( instance != null ) {
 			throw new IllegalStateException(OrrClientProxy.class.getName()+ " instance already created");
 		}
-		instance = new OrrClientProxy(ontServiceUrl);
+		instance = new OrrClientProxy();
 		return instance;
 	}
 
@@ -68,21 +69,26 @@ public class OrrClientProxy  {
 	private IOrrClient orrClient;
 	
 
-	
-	private OrrClientProxy(String ontServiceUrl) {
+	/** 
+	 * Creates this object 
+	 */
+	private OrrClientProxy() {
 		log.info("initializing " +getClass().getSimpleName()+ "...");
 		
+		// parameters from our config object for the OrrClientConfiguration:
+		String ontServiceUrl = PortalConfig.Prop.ONT_SERVICE_URL.getValue();
+		String previewDirectory = PortalConfig.Prop.PREVIEW_DIR.getValue();
+		String voc2rdfDirectory = PortalConfig.Prop.VOC2RDF_DIR.getValue();
 		String mailUser = PortalConfig.Prop.MAIL_USER.getValue();
 		String mailPassword = PortalConfig.Prop.MAIL_PASSWORD.getValue();
 		
+		// create OrrClientConfiguration and initialize orrclient library:
 		OrrClientConfiguration occ = new OrrClientConfiguration();
 		occ.setOntServiceUrl(ontServiceUrl);
+		occ.setPreviewDirectory(previewDirectory);
+		occ.setVoc2rdfDirectory(voc2rdfDirectory);
 		occ.setMailUser(mailUser);
 		occ.setMailPassword(mailPassword);
-		//
-		// TODO Other configuration parameters should be explicitly passed
-		// ...
-		
 		orrClient = IOrrClient.Manager.init(occ);
 		
 		log.info("Using: " +orrClient.getAppInfo());
@@ -96,7 +102,7 @@ public class OrrClientProxy  {
 	}
 	
 	private void prepareBaseInfo() {
-		log.info("preparing base info ...");
+		log.info("base info: preparing...");
 		
 		portalBaseInfo = new PortalBaseInfo();
 		
@@ -106,7 +112,7 @@ public class OrrClientProxy  {
 
 		portalBaseInfo.setGaUaNumber(PortalConfig.Prop.GA_UA_NUMBER.getValue());
 
-		log.info("preparing base info ... Done.");
+		log.info("base info: done.");
 	}
 	
 	

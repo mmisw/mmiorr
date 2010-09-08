@@ -31,11 +31,6 @@
 		</init-param>
 		
 		<init-param>
-			<param-name>bioportal.rest.url</param-name>
-			<param-value>@bioportal.rest.url@</param-value>
-		</init-param>
-		
-		<init-param>
 			<param-name>orrportal.pre.uploads.dir</param-name>
 			<param-value>@orrportal.pre.uploads.dir@</param-value>
 		</init-param>

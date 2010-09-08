@@ -55,9 +55,8 @@ public class DirectRegistrationServlet extends UploadServlet {
 				
 				PortalConfig.getInstance().init(servletConfig, log, true);
 
-				// portal initialization
-				String ontServiceUrl = PortalConfig.Prop.ONT_SERVICE_URL.getValue();
-				orrClient = OrrClientProxy.createInstance(ontServiceUrl);
+				// orrclient initialization
+				orrClient = OrrClientProxy.createInstance();
 			}
 			else {
 				String logMsg = getClass().getSimpleName()+ ": " +OrrClientProxy.class.getSimpleName()+ " instance already created";

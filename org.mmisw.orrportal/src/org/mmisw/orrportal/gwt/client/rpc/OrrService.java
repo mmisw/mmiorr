@@ -96,8 +96,6 @@ public interface OrrService extends RemoteService {
 	public RegisterOntologyResult registerOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult);
 	
 
-	
-	
 	/**
 	 * Gets ontology info from a pre-loaded file.
 	 */
@@ -115,9 +113,6 @@ public interface OrrService extends RemoteService {
 	 */
 	public List<RelationInfo> getDefaultVineRelationInfos();
 	
-	// :VINE
-	////////////////////////////////////////////////////////////////////////////////////////////
-
 	
 	// Search:
 	
@@ -143,49 +138,5 @@ public interface OrrService extends RemoteService {
 	public InternalOntologyResult createGroupsOntology(LoginResult loginResult);
 	
 	public UnregisterOntologyResult unregisterOntology(LoginResult loginResult, RegisteredOntologyInfo oi);
-	
-	
-	//////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////
-
-	//
-	// TODO REMOVE THESE OLD OPERATIONS
-	//
-	
-	/**
-	 * Gets ontology info from an ontology that can be resolved by the Ont service
-	 * (ie., from the MMI registry).
-	 */
-	OntologyInfoPre getOntologyInfoFromRegistry(String ontologyUri);
-
-	/**
-	 * Gets ontology info from a pre-loaded file.
-	 */
-	OntologyInfoPre getOntologyInfoFromPreLoaded(String uploadResults);
-
-	/**
-	 * Gets ontology info from a file located in the server.
-	 * The main "client" for this service is Voc2Rdf
-	 */
-	OntologyInfoPre getOntologyInfoFromFileOnServer(String fullPath);
-
-	/**
-	 * Reviews the pre-loaded model with the associated new values.
-	 */
-	ReviewResult_Old review(OntologyInfoPre ontologyInfoPre, LoginResult loginResult_Old);
-
-	/**
-	 * Uploads a reviewed model to the MMI Registry.
-	 */
-	UploadResult upload(ReviewResult_Old reviewResult_Old, LoginResult loginResult_Old);
-	
-
-	/**
-	 * Gets the base information (metadata attribute definitions).
-	 */
-	// TODO REMOVE -- UNUSED
-	MetadataBaseInfo getBaseInfo(Map<String, String> params);
-	
 	
 }
