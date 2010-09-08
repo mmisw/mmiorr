@@ -55,8 +55,9 @@ class OntInfo extends BaseOntInfo {
 		
 		String ontologyUri = baseOntologyInfo.getUri();
 
+		Set<Property> dtProps = new HashSet<Property>();
 		// individuals:
-		List<IndividualInfo> individuals = _getIndividuals(null, ontModel, ontologyUri);
+		List<IndividualInfo> individuals = _getIndividuals(null, ontModel, ontologyUri, dtProps);
 
 		
 		// datatype properties:
@@ -81,8 +82,7 @@ class OntInfo extends BaseOntInfo {
 		
 		// now, determine the type of ontology data to be created:
 
-		OntologyType ontype = OntTypeUtil.determineType(ontModel, ontologyUri);
-		
+		OntologyType ontype = OntTypeUtil.determineType(ontModel, ontologyUri, dtProps);
 		baseOntologyInfo.setType(ontype);
 
 		OntologyData ontologyData;
@@ -116,9 +116,13 @@ class OntInfo extends BaseOntInfo {
 	 * @param entities
 	 * @param ontModel
 	 * @param ontologyUri
+	 * @param dtProps 
+	 *         if not null, the found properties whose objects are not resources 
+	 *         are added to this set
 	 */
 	private List<IndividualInfo> _getIndividuals(List<IndividualInfo> entities,
-			OntModel ontModel, String ontologyUri) {
+			OntModel ontModel, String ontologyUri, Set<Property> dtProps
+	) {
 		
 		if ( entities == null ) {
 			entities = new ArrayList<IndividualInfo>();
@@ -148,7 +152,7 @@ class OntInfo extends BaseOntInfo {
 			String localName = _getLocalName(entityUri, ontologyUri);
 			entityInfo.setLocalName(localName);
 
-			_addProps(entityUri, entityInfo, ontModel);
+			_addProps(entityUri, entityInfo, ontModel, dtProps);
 			entities.add(entityInfo);
 		}
 		
@@ -161,8 +165,13 @@ class OntInfo extends BaseOntInfo {
 	 * @param entityUri
 	 * @param entityInfo
 	 * @param ontModel
+	 * @param dtProps 
+	 *         if not null, the found properties whose objects are not resources 
+	 *         are added to this set
 	 */
-	private static void _addProps(String entityUri, EntityInfo entityInfo, OntModel ontModel) {
+	private static void _addProps(String entityUri, EntityInfo entityInfo, OntModel ontModel, 
+			Set<Property> dtProps
+	) {
 		
 		Resource s = ResourceFactory.createResource(entityUri);
 		StmtIterator stmts = ontModel.listStatements(s, null, (RDFNode) null);
@@ -195,11 +204,15 @@ class OntInfo extends BaseOntInfo {
 				}
 				catch (MalformedURLException ignore) {
 				}
+				
+				if ( dtProps != null ) {
+					dtProps.add(prop);
+				}
+
 			}
 
 			PropValue pv = new PropValue(propName, propUri, valueName, valueUri);
 			entityInfo.getProps().add(pv);
-
 		}
 		
 	}
@@ -259,30 +272,28 @@ class OntInfo extends BaseOntInfo {
 		return entities;
 	}
 	
-	private static PropertyInfo _createPropertyInfo(OntProperty prop, String ontologyUri, OntModel ontModel) {
+	private static PropertyInfo _createPropertyInfo(Property prop, String ontologyUri, OntModel ontModel) {
 		if ( prop.isAnon() ) {
 			return null;
 		}
 		String entityUri = prop.getURI();
-		
-		OntResource domain = prop.getDomain();
-		if ( domain == null ) {
-			// TODO some appropriate inferred domain class could be assigned.
-			return null;
-		}
-		if ( ! domain.isURIResource() ) {
-			return null;
-		}
-		String domainUri = domain.getURI();
+		String localName = _getLocalName(entityUri, ontologyUri);
 		
 		PropertyInfo entityInfo = new PropertyInfo();
 		entityInfo.setUri(entityUri);
-		entityInfo.setDomainUri(domainUri);
-
-		String localName = _getLocalName(entityUri, ontologyUri);
 		entityInfo.setLocalName(localName);
 
-		_addProps(entityUri, entityInfo, ontModel);
+		OntResource domain = null;
+		if ( prop instanceof OntProperty ) {
+			OntProperty ontProp = (OntProperty) prop;
+			domain = ontProp.getDomain();
+		}
+		if ( domain != null &&  domain.isURIResource() ) {
+			String domainUri = domain.getURI();
+			entityInfo.setDomainUri(domainUri);
+		}
+
+		_addProps(entityUri, entityInfo, ontModel, null);
 		return entityInfo;
 	}
 
@@ -316,7 +327,7 @@ class OntInfo extends BaseOntInfo {
 			String localName = _getLocalName(classUri, ontologyUri);
 			entityInfo.setLocalName(localName);
 
-			_addProps(classUri, entityInfo, ontModel);
+			_addProps(classUri, entityInfo, ontModel, null);
 			entities.add(entityInfo);
 		}
 		

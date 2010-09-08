@@ -49,8 +49,8 @@ class UserAccountCreatorUpdater {
 		String applicationid = "4ea81d74-8960-4525-810b-fa1baab576ff";
 		log.info("applicationid=" +applicationid);
 
-		String bioPortalRestUrl = OntServiceUtil.getAquaportalRestUrl();
-		String restUrl = bioPortalRestUrl + USERS;
+		String aquaportalRestUrl = OntServiceUtil.getAquaportalRestUrl();
+		String restUrl = aquaportalRestUrl + USERS;
 		
 		values.put("applicationid", applicationid);
 

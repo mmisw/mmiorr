@@ -41,20 +41,15 @@ abstract class BaseOntInfo implements IOntInfo {
 	 * @return
 	 */
 	protected static String _getLocalName(String entityUri, String ontologyUri) {
-		//
-		// FIXME proper handling of possible hash fragment separator.
-		// Now this gives preference to slash
-		//
 		String localName;
 		// is ontologyUri a prefix of entityUri?
 		if ( entityUri.indexOf(ontologyUri) == 0 ) {
 			localName = entityUri.substring(ontologyUri.length());
-			localName = localName.replaceAll("^/+", "");
+			// remove any leading separator:
+			localName = localName.replaceAll("^(/|#)+", "");
 		}
 		else {
-			// use the given entityUri as the local name.
-			// Note that the query is made against the ontology, so every entity
-			// found there should be included.
+			// use the given entityUri to extract the local name.
 			localName = _getLocalName(entityUri);
 		}
 		return localName;
@@ -62,27 +57,28 @@ abstract class BaseOntInfo implements IOntInfo {
 
 	/**
 	 * Helper to obtain the localname from a URI.
+	 * This is the last suffix after the rightmost slash (/) or hash (#).
+	 * 
+	 * <p>
+ 	 * Examples:<br/>
+ 	 * uri="http://example.org/onts/myont#someterm" result="someterm" <br/> 
+ 	 * uri="http://example.org/otherterm" result="otherterm" <br/> 
 	 * 
 	 * @param uri
-	 * @return
+	 * @return  the last suffix after the rightmost slash (/) or hash (#),
+	 *         or the same given uri if none of these characters is present. 
 	 */
 	protected static String _getLocalName(String uri) {
-		// FIXME should use the rightmost separator, either slash os hash.
-		// Now it gives preference to slash!
-		// so it the URI is "http://example.org/onts/myont#someterm",
-		// this this will return "myont#someterm".  Should be "someterm". 
-		
-		int idx = uri.lastIndexOf('/');
-		if ( idx >= 0 ) {
-			return uri.substring(idx + 1);
+		int idx_slash = uri.lastIndexOf('/');
+		int idx_hash = uri.lastIndexOf('#');
+		if ( idx_slash >= 0 || idx_hash >= 0 ) {
+			int idx = Math.max(idx_slash, idx_hash);
+			String localName = uri.substring(idx + 1);
+			return localName;
 		}
 		else {
-			idx = uri.lastIndexOf('#');
-			if ( idx >= 0 ) {
-				return uri.substring(idx + 1);
-			}
+			return uri;
 		}
-		return uri;
 	}
 
 	/**
@@ -97,8 +93,6 @@ abstract class BaseOntInfo implements IOntInfo {
 			String domainClassUri = propertyInfo.getDomainUri();
 			
 			if ( domainClassUri == null ) {
-				// I'm checking for null here to avoid a NPE with http://mmisw.org/ont/univmemphis/sensor
-				// TODO Check why the domain uri has not been assigned for the propertyInfo
 				continue;
 			}
 			

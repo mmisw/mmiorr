@@ -37,7 +37,7 @@ public class OntInfoTest extends OntInfoTestCase {
 		OntModel ontModel = _load(new File(filename));
 		
 		String ontologyUri = "http://sweet.jpl.nasa.gov/2.0/top.owl";
-		OntologyType ontype = OntTypeUtil.determineType(ontModel, ontologyUri);
+		OntologyType ontype = OntTypeUtil.determineType(ontModel, ontologyUri, null);
 		assertEquals("ontology type should be Other", OntologyType.OTHER, ontype);
 
 		TempOntologyInfo baseOntologyInfo = new TempOntologyInfo();
@@ -90,7 +90,7 @@ public class OntInfoTest extends OntInfoTestCase {
 		String filename = BASE_DIR_VINE+ simplename;
 		OntModel ontModel = _load(new File(filename));
 		
-		OntologyType ontype = OntTypeUtil.determineType(ontModel, ontologyUri);
+		OntologyType ontype = OntTypeUtil.determineType(ontModel, ontologyUri, null);
 		assertEquals("ontology type should be MAPPING", OntologyType.MAPPING, ontype);
 
 		TempOntologyInfo baseOntologyInfo = new TempOntologyInfo();

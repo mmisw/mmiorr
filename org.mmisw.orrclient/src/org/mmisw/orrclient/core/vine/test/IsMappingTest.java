@@ -49,7 +49,7 @@ public class IsMappingTest extends VineTestCase {
 		}
 		String filename = BASE_DIR+ simplename;
 		OntModel ontModel = _load(new File(filename));
-		OntologyType ontype = OntTypeUtil.determineType(ontModel, ontologyUri);
+		OntologyType ontype = OntTypeUtil.determineType(ontModel, ontologyUri, null);
 		assertEquals("ontology type should be MAPPING", OntologyType.MAPPING, ontype);
 	}
 	

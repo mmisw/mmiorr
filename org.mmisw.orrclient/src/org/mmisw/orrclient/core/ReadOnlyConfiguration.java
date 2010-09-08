@@ -24,10 +24,6 @@ class ReadOnlyConfiguration extends OrrClientConfiguration {
 		throw new UnsupportedOperationException();
 	}
 	
-	public void setBioportalRestUrl(String bioportalRestUrl) {
-		throw new UnsupportedOperationException();
-	}
-	
 	public void setOntServiceUrl(String ontServiceUrl) {
 		throw new UnsupportedOperationException();
 	}

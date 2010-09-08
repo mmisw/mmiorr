@@ -1,6 +1,7 @@
 package org.mmisw.orrclient.core.util.ontype;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,6 +19,7 @@ import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
@@ -49,8 +51,20 @@ public class OntTypeUtil {
 	
 	/**
 	 * Determines the type of the given model.
+	 * 
+	 * @param ontModel
+	 * @param ontologyUri
+	 * @param dtProps
+	 *         If not null, used when determining if the model is a vocabulary:
+	 *         check that all provided dtProps are contained in the defined 
+	 *         datatype properties in the model.
+	 * @return
+	 * @throws Exception
 	 */
-	public static OntologyType determineType(OntModel ontModel, String ontologyUri) throws Exception {
+	public static OntologyType determineType(OntModel ontModel, String ontologyUri,
+			Set<Property> dtProps
+	) throws Exception {
+		
 		Ontology ont = _getOntology(ontModel, ontologyUri);
 		
 		// mapping?
@@ -59,7 +73,7 @@ public class OntTypeUtil {
 		}
 		
 		// vocabulary?
-		if ( _isVocabulary(ontModel, ont) ) {
+		if ( _isVocabulary(ontModel, ont, dtProps) ) {
 			return OntologyType.VOCABULARY;
 		}
 		
@@ -143,8 +157,19 @@ public class OntTypeUtil {
 	}
 
 	
-	/** Is the model a voc2rdf-created mapping? */
-	private static boolean _isVocabulary(OntModel ontModel, Ontology ont) {
+	/** 
+	 * Is the model a voc2rdf-created mapping? 
+	 * 
+	 * @param ontModel
+	 * @param ont
+	 * @param dtProps
+	 *         If not null, check that all provided dtProps are contained in the defined 
+	 *         datatype properties in the model.
+	 * @return
+	 */
+	private static boolean _isVocabulary(OntModel ontModel, Ontology ont,
+			Set<Property> dtProps
+	) {
 		String ontUriMsg = "ontUri=?";
 		if ( ont != null ) {
 			ontUriMsg = "ontUri=" +ont.getURI();
@@ -175,13 +200,40 @@ public class OntTypeUtil {
 			return false;
 		}
 		
-		ExtendedIterator<DatatypeProperty> props = ontModel.listDatatypeProperties();
-		boolean containDatatype = props.hasNext();
-		if ( containDatatype  ) {
+		if ( dtProps != null ) {
+			// check that all provided dtProps are contained in the defined datatype properties
+			// in the model:
+			List<DatatypeProperty> props = ontModel.listDatatypeProperties().toList();
+			
+			for ( Property dtProp : dtProps ) {
+				String dtPropUri = dtProp.getURI();
+				boolean contained = false;
+				for ( DatatypeProperty datatypeProp : props ) {
+					if ( datatypeProp.getURI().equals(dtPropUri) ) {
+						contained = true;
+						break;
+					}
+				}
+				if ( ! contained ) {
+					return false;
+				}
+			}
+			
 			if ( log.isDebugEnabled() ) {
-				log.debug("_isVocabulary: " +ontUriMsg+ " --> true (examining contents)" );
+				log.debug("_isVocabulary: " +ontUriMsg+ " --> true (all datatype properties defined in the ontology)" );
 			}
 			return true;
+			
+		}
+		else {
+			ExtendedIterator<DatatypeProperty> props = ontModel.listDatatypeProperties();
+			boolean containDatatype = props.hasNext();
+			if ( containDatatype  ) {
+				if ( log.isDebugEnabled() ) {
+					log.debug("_isVocabulary: " +ontUriMsg+ " --> true (defines datatype)" );
+				}
+				return true;
+			}
 		}
 		
 		return false;	

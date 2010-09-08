@@ -87,7 +87,7 @@ public class CreationTest extends VineTestCase {
 		
 		OntModel ontModel = _load(file);
 		
-		OntologyType ontype = OntTypeUtil.determineType(ontModel, ontologyUri);
+		OntologyType ontype = OntTypeUtil.determineType(ontModel, ontologyUri, null);
 		assertEquals("ontology type should be MAPPING", OntologyType.MAPPING, ontype);
 		
 		_verifyMappings(ontModel);

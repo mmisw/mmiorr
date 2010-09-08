@@ -44,8 +44,8 @@ class UserAuthenticator {
 		log.info("authenticating username=" +userName+ " password=" +userPassword.replaceAll(".", "*"));
 		log.info("applicationid=" +applicationid);
 		
-		String bioPortalRestUrl = OntServiceUtil.getAquaportalRestUrl();
-		String authRestUrl = bioPortalRestUrl + AUTH;
+		String aquaportalRestUrl = OntServiceUtil.getAquaportalRestUrl();
+		String authRestUrl = aquaportalRestUrl + AUTH;
 		log.info("authentication REST URL =" +authRestUrl);
 		
 		PostMethod post = new PostMethod(authRestUrl);

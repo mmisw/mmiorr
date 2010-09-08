@@ -20,8 +20,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
-import org.mmisw.orrclient.IOrrClient;
-import org.mmisw.orrclient.OrrClientConfiguration;
 import org.mmisw.orrclient.core.util.OntServiceUtil;
 import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
 
@@ -94,8 +92,8 @@ class OntologyUploader {
 		
 		String sessionId = loginResult.getSessionId();
 		
-		String bioPortalRestUrl = OntServiceUtil.getAquaportalRestUrl();
-		String ontologiesRestUrl = bioPortalRestUrl + ONTOLOGIES;
+		String aquaportalRestUrl = OntServiceUtil.getAquaportalRestUrl();
+		String ontologiesRestUrl = aquaportalRestUrl + ONTOLOGIES;
 		if ( log.isDebugEnabled() ) {
 			log.debug("ontologiesRestUrl = " +ontologiesRestUrl);
 		}
@@ -146,7 +144,7 @@ class OntologyUploader {
 			partList.add(new StringPart("isFoundry", "0"));
 
 			// TODO: handle "categories" ?  For now, putting an arbitrary value
-			// from the existing values in the default bioportal database
+			// from the existing values in the default aquaportal database
 			partList.add(new StringPart("categoryId", "2809"));
 
 			

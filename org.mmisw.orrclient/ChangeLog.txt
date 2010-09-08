@@ -3,6 +3,25 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2010-09-07    2.0.3.beta
+	- some clean-up and fixes.
+	
+	- Issue: the CF ontology is displayed as 'vocabulary' but not all properties
+	  are shown in the table.
+	  Diagnostics:  Actually, the CF ontology should NOT be displayed as a "voc2rdf"
+	  vocabulary. Note that the individuals have assoaciated a number of properties
+	  that are NOT defined in the ontology itself (eg. rdfs:comment, skos:prefLabel).
+	  
+	  The following changes made to improve a little bit the detection of a "voc2rdf"
+	  ontology:
+	  - OntInfo and OntTypeUtil: To determine if a given model corresponds to a
+	    "vocabulary", now all datatype property instantiations associated to the individuals
+	    in the model are checked to verify that they ALL are defined in the model.
+	  NOTE: However, a future version should display an ontology like the CF in a
+	  tabular way, and this is related with the pending SKOS support in the UI in general.
+	   
+
+
 2010-09-06    2.0.2.beta
 	- some doc
 	- removed deprecated/unused class OrrClientConfig.
