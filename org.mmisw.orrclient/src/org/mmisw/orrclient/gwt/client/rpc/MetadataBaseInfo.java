@@ -1,6 +1,5 @@
 package org.mmisw.orrclient.gwt.client.rpc;
 
-import java.io.Serializable;
 import java.util.Map;
 
 import org.mmisw.orrclient.gwt.client.vocabulary.AttrDef;
@@ -14,7 +13,7 @@ import org.mmisw.orrclient.gwt.client.vocabulary.AttrGroup;
  * @author Carlos Rueda
  */
 @SuppressWarnings("serial")
-public class MetadataBaseInfo implements Serializable {
+public class MetadataBaseInfo extends Errorable {
 	
 	private AttrGroup[] attrGroups = {};
 	
@@ -25,8 +24,6 @@ public class MetadataBaseInfo implements Serializable {
 	private AttrDef resourceTypeAttrDef;
 	
 	private Map<String,AttrDef> uriAttrDefMap;
-	
-	private String error;
 	
 	
 	public MetadataBaseInfo() {
@@ -64,14 +61,6 @@ public class MetadataBaseInfo implements Serializable {
 	}
 	public void setAuthorityAbbreviationUri(String authorityAbbreviationUri) {
 		this.authorityAbbreviationUri = authorityAbbreviationUri;
-	}
-
-	public void setError(String error) {
-		this.error = error;
-	}
-
-	public String getError() {
-		return error;
 	}
 
 	public void setAuthorityAttrDef(AttrDef authorityAttrDef) {

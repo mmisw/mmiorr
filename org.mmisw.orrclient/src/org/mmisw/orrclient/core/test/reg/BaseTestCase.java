@@ -1,22 +1,20 @@
-package org.mmisw.orrclient.core.util.ontinfo.test;
-
-import java.io.File;
+package org.mmisw.orrclient.core.test.reg;
 
 import junit.framework.TestCase;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mmisw.orrclient.core.util.Util2;
-
-import com.hp.hpl.jena.ontology.OntModel;
 
 
 /**
- * Base class.
+ * Base class for Vine tests.
  * 
  * @author Carlos Rueda
  */
-public abstract class OntInfoTestCase extends TestCase {
+public abstract class BaseTestCase extends TestCase {
+	
+	// by default unregister the registrations
+	protected static boolean UNREGISTER = true;
 	
 	static {
 		// crude test to see if I'm running from within eclipse to enable all logging
@@ -24,13 +22,14 @@ public abstract class OntInfoTestCase extends TestCase {
 		if ( ECLIPSE ) {
 			org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger("org.mmisw");
 			logger.setLevel(org.apache.log4j.Level.ALL);
+			
+			// but keep the registrations when testing under my IDE
+			UNREGISTER = false;
 		}
-		OntInfoTestCase.class.getClassLoader().setDefaultAssertionStatus(true);
+		
+		BaseTestCase.class.getClassLoader().setDefaultAssertionStatus(true);
 	}
 	
-	protected static final Log log = LogFactory.getLog(OntInfoTestCase.class);
+	protected static final Log log = LogFactory.getLog(BaseTestCase.class);
 
-	protected OntModel _load(File file) throws Exception {
-		return Util2.loadModelWithCheckingUtf8(file, Util2.JENA_DEFAULT_LANG);
-	}
 }

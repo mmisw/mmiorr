@@ -189,9 +189,8 @@ public class MdHelper {
 				)
 			;
 			
-			MdUtil.readResourceTypes(resourceTypeAttrDef, resourceTypeClassUri);
-			
-			
+			// Do not do this at this time -- let the refreshOptions do that
+			//MdUtil.readResourceTypes(resourceTypeAttrDef, resourceTypeClassUri);
 		}
 		
 		return resourceTypeAttrDef;
@@ -227,7 +226,8 @@ public class MdHelper {
 				.setOptionsVocabulary(authorityClassUri)
 			;
 			
-			MdUtil.readAuthorities(authorityAttrDef, authorityClassUri);
+			// Do not do this at this time -- let the refreshOptions do that
+			//MdUtil.readAuthorities(authorityAttrDef, authorityClassUri);
 		}
 		
 		return authorityAttrDef;

@@ -3,8 +3,6 @@ package org.mmisw.orrclient.core.util;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,48 +43,11 @@ public class TempOntologyHelper {
 
 
 	public TempOntologyInfo getTempOntologyInfo(
-			String fileType, String uploadResults, 
+			String fileType, String filename, 
 			TempOntologyInfo tempOntologyInfo,
 			boolean includeRdf
 	) {
-		
-		if ( log.isDebugEnabled() ) {
-			log.debug("getTempOntologyInfo: fileType=" +fileType);
-		}
-		
-		uploadResults = uploadResults.replaceAll("&lt;", "<").replaceAll("&gt;", ">");
-		log.info("getOntologyInfo: " +uploadResults);
-		
-		
-		if ( uploadResults.matches(".*<error>.*") ) {
-			log.info("<error>");
-			tempOntologyInfo.setError(uploadResults);
-			return tempOntologyInfo;
-		}
-		
-		if ( false && !uploadResults.matches(".*success.*") ) {
-			log.info("Not <success> !");
-			// unexpected response.
-			tempOntologyInfo.setError("Error while loading ontology. Please try again later.");
-			return tempOntologyInfo;
-		}
-		
-
-		String full_path;
-		
-		Pattern pat = Pattern.compile(".*<filename>([^<]+)</filename>");
-		Matcher matcher = pat.matcher(uploadResults);
-		if ( matcher.find() ) {
-			full_path = matcher.group(1);
-		}
-		else {
-			log.info("Could not parse uploadResults.");
-			tempOntologyInfo.setError("Could not parse uploadResults.");
-			return tempOntologyInfo;
-		}
-
-		
-		File file = new File(full_path);
+		File file = new File(filename);
 		
 		OntModel model;
 		try {
@@ -131,7 +92,7 @@ public class TempOntologyHelper {
 		catch ( Throwable ex ) {
 			String error = ex.getClass().getName()+ " : " +ex.getMessage() +
 				"\n\n(" +getClass().getSimpleName()+ ".getTempOntologyInfo" +")";
-			log.info(error);
+			log.warn(error, ex);
 			tempOntologyInfo.setError(error);
 			return tempOntologyInfo;
 		}
@@ -162,8 +123,8 @@ public class TempOntologyHelper {
 				tempOntologyInfo.setRdf(rdf);
 			}
 			catch (Throwable e) {
-				String error = "Cannot read RDF model: " +full_path+ " : " +e.getMessage();
-				log.info(error, e);
+				String error = "Cannot read RDF model: " +filename+ " : " +e.getMessage();
+				log.warn(error, e);
 				tempOntologyInfo.setError(error);
 				return tempOntologyInfo;
 			}
@@ -191,7 +152,9 @@ public class TempOntologyHelper {
 		tempOntologyInfo.setFullPath(full_path);
 		
 		String uriFile = file.toURI().toString();
-		log.info("Loading model: " +uriFile);
+		if ( log.isDebugEnabled() ) {
+			log.debug("Loading model: " +uriFile);
+		}
 
 		return prepareOntologyInfoFromUri(uriFile, tempOntologyInfo);
 	}
@@ -215,7 +178,7 @@ public class TempOntologyHelper {
 		}
 		catch (Throwable ex) {
 			String error = "Unexpected error: " +ex.getClass().getName()+ " : " +ex.getMessage();
-			log.info(error);
+			log.warn(error, ex);
 			return error;
 		}
 		
@@ -336,8 +299,10 @@ public class TempOntologyHelper {
 	}
 
 	private void _addDetail(StringBuilder details, String a1, String a2, String a3) {
-		String str = a1 + "|" + a2 + "|" + a3; 
-		log.info(str);
+		String str = a1 + "|" + a2 + "|" + a3;
+		if ( log.isDebugEnabled() ) {
+			log.debug("_addDetail: " +str);
+		}
 		details.append(str + "\n");
 	}
 

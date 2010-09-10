@@ -25,6 +25,8 @@ public abstract class VineTestCase extends TestCase {
 			org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger("org.mmisw");
 			logger.setLevel(org.apache.log4j.Level.ALL);
 		}
+		
+		VineTestCase.class.getClassLoader().setDefaultAssertionStatus(true);
 	}
 	
 	protected static final Log log = LogFactory.getLog(VineTestCase.class);

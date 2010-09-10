@@ -3,6 +3,27 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2010-09-09   2.0.4.beta
+	- MdHelper: note that MdUtil.readResourceTypes and MdUtil.readAuthorities are now ONLY
+	  called in refreshOptions(AttrDef attrDef);  These calls were removed during the
+	  initialization sequence started by prepareGroups(..).
+	  So, clients should call IOrrClient.refreshOptions(AttrDef attrDef) to get the
+	  corresponding options filled in when the attribute has an associated vocabulary,
+	  ie., when attrDef.getOptionsVocabulary() != null.
+	  
+	- OrrClientImpl: create config.getPreviewDirectory() if not already existing.
+	
+	- IOrrClient.getTempOntologyInfo and TempOntologyHelper.getTempOntologyInfo: now work on 
+	  given filename (previously the parameter was named 'uploadResults' since it contained
+	  the xml output from the UploadServlet in the orrportal module was done.). 
+	
+	- Misc: calling xx.class.getClassLoader().setDefaultAssertionStatus(true) for
+	  the various unit tests.	  
+
+	- New test org.mmisw.orrclient.core.test.reg.ReHostedRegTest 
+	
+	
+	
 2010-09-07    2.0.3.beta
 	- some clean-up and fixes.
 	

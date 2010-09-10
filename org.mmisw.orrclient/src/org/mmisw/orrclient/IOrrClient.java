@@ -22,6 +22,7 @@ import org.mmisw.orrclient.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.UnregisterOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.UserInfoResult;
 import org.mmisw.orrclient.gwt.client.rpc.vine.RelationInfo;
+import org.mmisw.orrclient.gwt.client.vocabulary.AttrDef;
 
 /**
  * Interface to the OrrClient library.
@@ -47,8 +48,9 @@ public interface IOrrClient {
 		 *         Pass a null reference to use a default configuration.
 		 *          
 		 * @return A library interface object.
+		 * @throws Exception  if an error occurs
 		 */
-		public static IOrrClient init(OrrClientConfiguration config) {
+		public static IOrrClient init(OrrClientConfiguration config) throws Exception {
 			return OrrClientImpl.init(config);
 		}
 		
@@ -124,6 +126,11 @@ public interface IOrrClient {
 			String resourceTypeClassUri, String authorityClassUri);
 	
 	
+	/**
+	 * Refreshes the options of the given attribute.
+	 * @return the given argument.
+	 */
+	AttrDef refreshOptions(AttrDef attrDef);
 	
 	/**
 	 * Gets both the metadata and the entities.
@@ -150,15 +157,16 @@ public interface IOrrClient {
 	
 	
 	/**
+	 * Gets ontology info for a file in the local filesystem.
 	 * 
-	 * @param fileType         Type of the file associated with uploadResults
-	 * @param uploadResults    Result from the UploadServlet
+	 * @param fileType         Type of the file associated with filename
+	 * @param filename         Path of the file to load
 	 * @param includeContents  get also metadata and data?
-	 * @param includeRdf       include the text of the RDF
+	 * @param includeRdf       include the text of the RDF?
 	 * @return
 	 */
 	public TempOntologyInfo getTempOntologyInfo(
-			String fileType, String uploadResults, 
+			String fileType, String filename, 
 			boolean includeContents, boolean includeRdf
 	);
 	

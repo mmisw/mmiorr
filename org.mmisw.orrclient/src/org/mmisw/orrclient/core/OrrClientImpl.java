@@ -72,6 +72,7 @@ import org.mmisw.orrclient.gwt.client.rpc.UserInfoResult;
 import org.mmisw.orrclient.gwt.client.rpc.VocabularyDataCreationInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo.PriorOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.vine.RelationInfo;
+import org.mmisw.orrclient.gwt.client.vocabulary.AttrDef;
 import org.mmisw.orrclient.gwt.client.vocabulary.AttrGroup;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -106,8 +107,8 @@ public class OrrClientImpl implements IOrrClient {
 	private final AppInfo appInfo = new AppInfo("OrrClient Library");
 	private final Log log = LogFactory.getLog(OrrClientImpl.class);
 
-	private ReadOnlyConfiguration config;
-	private File previewDir;
+	private final ReadOnlyConfiguration config;
+	private final File previewDir;
 	
 	
 	private static IOrrClient _instance;
@@ -125,8 +126,9 @@ public class OrrClientImpl implements IOrrClient {
 	 *         Pass a null reference to use a default configuration.
 	 *          
 	 * @return A library interface object.
+	 * @throws Exception if an error occurs
 	 */
-	public static IOrrClient init(OrrClientConfiguration config) {
+	public static IOrrClient init(OrrClientConfiguration config) throws Exception {
 		if ( config == null ) {
 			config = new OrrClientConfiguration();
 		}
@@ -142,7 +144,7 @@ public class OrrClientImpl implements IOrrClient {
 		return _instance;
 	}
 
-	private OrrClientImpl(OrrClientConfiguration config) {
+	private OrrClientImpl(OrrClientConfiguration config) throws Exception {
 		// copy the given configuration:
 		this.config = new ReadOnlyConfiguration(config);
 		
@@ -153,12 +155,26 @@ public class OrrClientImpl implements IOrrClient {
 		log.info(appInfo.toString());
 		log.info("ontServiceUrl = " +config.getOntServiceUrl());
 
-		try {
-			previewDir = new File(config.getPreviewDirectory());
+		if ( config.getPreviewDirectory() == null ) {
+			throw new Exception("OrrClientConfiguration does not indicate the preview directory");
 		}
-		catch (Throwable ex) {
-			log.error("Cannot initialize: " +ex.getMessage(), ex);
+		
+		previewDir = _createDirectory(config.getPreviewDirectory());
+	}
+	
+	private static File _createDirectory(String dirname) throws Exception {
+		File file = new File(dirname);
+		if ( file.isDirectory() ) {
+			// OK, the directory already exists
+			return file;
 		}
+		if ( file.exists() ) {
+			throw new Exception("Indicated path already exists but it's not a directory: " +dirname);
+		}
+		if ( ! file.mkdirs() ) {
+			throw new Exception("Cannot create directory: " +dirname);
+		}
+		return file;
 	}
 
 	
@@ -188,9 +204,12 @@ public class OrrClientImpl implements IOrrClient {
 			boolean includeVersion, String resourceTypeClassUri,
 			String authorityClassUri) {
 		
-		log.info("preparing base info ...");
 		
 		if ( metadataBaseInfo == null ) {
+			if ( log.isDebugEnabled() ) {
+				log.debug("preparing base info ...");
+			}
+			
 			metadataBaseInfo = new MetadataBaseInfo();
 			
 //			metadataBaseInfo.setResourceTypeUri(Omv.acronym.getURI());
@@ -208,14 +227,18 @@ public class OrrClientImpl implements IOrrClient {
 			
 			metadataBaseInfo.setUriAttrDefMap(MdHelper.getUriAttrDefMap());
 			
-			
-			log.info("preparing base info ... DONE");
-
+			if ( log.isDebugEnabled() ) {
+				log.debug("preparing base info ... DONE");
+			}
 		}
 		
 		return metadataBaseInfo;
 	}
 
+	public AttrDef refreshOptions(AttrDef attrDef) {
+		return MdHelper.refreshOptions(attrDef);
+	}
+	
 	private static RegisteredOntologyInfo _createOntologyInfo(
 			String ontologyUri,   // = toks[0];
 			String displayLabel,  // = toks[1];
@@ -633,7 +656,9 @@ public class OrrClientImpl implements IOrrClient {
 		RegisteredOntologyInfo foundRoi = null;
 		
 		if ( version != null ) {
-			log.debug("Server.getOntologyInfoWithVersionParams case a) version = " +version);
+			if ( log.isDebugEnabled() ) {
+				log.debug(getClass().getSimpleName()+ "getOntologyInfoWithVersionParams case a) version = " +version);
+			}
 			//  a) explicit version given: search for exact match using the 'version' field:
 			for ( RegisteredOntologyInfo oi : list ) {
 				if ( version.equals(oi.getVersionNumber()) ) {
@@ -643,7 +668,9 @@ public class OrrClientImpl implements IOrrClient {
 			}
 		}
 		else if ( ontologyUri.equals(unversOntologyUri) ) {
-			log.debug("Server.getOntologyInfoWithVersionParams case b) unversioned request = " +unversOntologyUri);
+			if ( log.isDebugEnabled() ) {
+				log.debug(getClass().getSimpleName()+ "getOntologyInfoWithVersionParams case b) unversioned request = " +unversOntologyUri);
+			}
 			// b) unversioned URI request, eg., http://mmisw.org/ont/seadatanet/qualityFlag
 			// just return first entry in list
 			
@@ -672,7 +699,9 @@ public class OrrClientImpl implements IOrrClient {
 			
 		}
 		else {
-			log.debug("Server.getOntologyInfoWithVersionParams case c) versioned request = " +ontologyUri);
+			if ( log.isDebugEnabled() ) {
+				log.debug(getClass().getSimpleName()+ ".getOntologyInfoWithVersionParams case c) versioned request = " +ontologyUri);
+			}
 			// c) versioned URI request, eg., http://mmisw.org/ont/seadatanet/20081113T205440/qualityFlag
 			// Search list for exact match of 'uri' field:
 			for ( RegisteredOntologyInfo oi : list ) {
@@ -1489,17 +1518,19 @@ public class OrrClientImpl implements IOrrClient {
 		PrintWriter os;
 		try {
 			// #43: Handle non-UTF8 inputs
-			// Previously new PrintWriter(reviewedFile) ie., default charset; now "UTF-8":
+			// keep "UTF-8" character for consistency:
 			os = new PrintWriter(reviewedFile, "UTF-8");
 		}
 		catch (FileNotFoundException e) {
-			log.info("Unexpected: file not found: " +reviewedFile);
-			createOntologyResult.setError("Unexpected: file not found: " +reviewedFile);
+			String error = "Unexpected: cannot open file for writing: " +reviewedFile;
+			log.info(error);
+			createOntologyResult.setError(error);
 			return;
 		}
 		catch (UnsupportedEncodingException e) {
-			log.info("Unexpected: cannot create file in UTF-8 encoding: " +reviewedFile);
-			createOntologyResult.setError("cannot create file in UTF-8 encoding: " +reviewedFile);
+			String error = "Unexpected: cannot create file in UTF-8 encoding: " +reviewedFile; 
+			log.info(error);
+			createOntologyResult.setError(error);
 			return;
 		}
 		StringReader is = new StringReader(rdf);
@@ -1508,8 +1539,9 @@ public class OrrClientImpl implements IOrrClient {
 			os.flush();
 		}
 		catch (IOException e) {
-			log.info("Unexpected: IO error while writing to: " +reviewedFile);
-			createOntologyResult.setError("Unexpected: IO error while writing to: " +reviewedFile);
+			String error = "Unexpected: IO error while writing to: " +reviewedFile;
+			log.info(error);
+			createOntologyResult.setError(error);
 			return;
 		}
 	}
@@ -2296,8 +2328,9 @@ public class OrrClientImpl implements IOrrClient {
 			registerOntologyResult.setError(ex.getClass().getName()+ ": " +ex.getMessage());
 		}
 		
-		log.info("registerOntologyResult = " +registerOntologyResult);
-
+		if ( log.isDebugEnabled() ) {
+			log.debug("registerOntologyResult = " +registerOntologyResult);
+		}
 		
 		return registerOntologyResult;
 	}
@@ -2439,18 +2472,18 @@ public class OrrClientImpl implements IOrrClient {
 	
 	
 	public TempOntologyInfo getTempOntologyInfo(
-			String fileType, String uploadResults, 
+			String fileType, String filename, 
 			boolean includeContents, boolean includeRdf
 	) {
 		TempOntologyInfo tempOntologyInfo = new TempOntologyInfo();
 		
 		if ( metadataBaseInfo == null ) {
-			tempOntologyInfo.setError(OrrClientImpl.class.getSimpleName()+ " not properly initialized!");
+			tempOntologyInfo.setError(OrrClientImpl.class.getSimpleName()+ " not properly initialized. Please report this bug. (metadataBaseInfo not initialized)");
 			return tempOntologyInfo;
 		}
 		
 		TempOntologyHelper tempOntologyHelper = new TempOntologyHelper(metadataBaseInfo);
-		tempOntologyHelper.getTempOntologyInfo(fileType, uploadResults, tempOntologyInfo, includeRdf);
+		tempOntologyHelper.getTempOntologyInfo(fileType, filename, tempOntologyInfo, includeRdf);
 		
 		if ( tempOntologyInfo.getError() != null ) {
 			return tempOntologyInfo;

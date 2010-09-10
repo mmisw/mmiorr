@@ -79,7 +79,9 @@ class MdUtil {
 		String ontologUri = classMmiUri.getOntologyUri();
 		String className = classMmiUri.getTerm();
 		
-		log.debug("reading: " +classMmiUri.getTermUri()+ " individuals to populate " +className+ " list");
+		if ( log.isDebugEnabled() ) {
+			log.debug("reading: " +classMmiUri.getTermUri()+ " individuals to populate " +className+ " list");
+		}
 
 		// read the ontology:
 		OntModel ontModel = ModelFactory.createOntologyModel();
@@ -108,7 +110,9 @@ class MdUtil {
 		attrDef.getOptions().clear();
 		attrDef.getOptions().addAll(list);
 		
-		log.debug("read: " +attrDef.getOptions().size()+ " individuals");
+		if ( log.isDebugEnabled() ) {
+			log.debug("read: " +attrDef.getOptions().size()+ " individuals");
+		}
 	}
 	
 

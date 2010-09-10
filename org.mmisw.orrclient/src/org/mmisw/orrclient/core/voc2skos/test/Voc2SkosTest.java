@@ -40,6 +40,7 @@ public class Voc2SkosTest extends TestCase {
 			org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger("org.mmisw");
 			logger.setLevel(org.apache.log4j.Level.ALL);
 		}
+		Voc2SkosTest.class.getClassLoader().setDefaultAssertionStatus(true);
 	}
 	
 	/** base dir for the resources needed/generated */
