@@ -4,6 +4,11 @@ $Id$
 
 ChangeLog
 
+2010-09-09  2.0.4.beta
+	- OntServlet.Request: now initializes mmiUri when not only is syntactically a
+	  valid MmiUri, but also that is "ont"-resolvable.
+	  
+
 2010-09-05  2.0.2.beta
 	- cleared up some warnings upon upgrade to Jena 2.6.3
 	- updated references to orrclient and orrportal modules (previously named iserver and ontmd, respectively).

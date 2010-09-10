@@ -122,30 +122,37 @@ public class OntServlet extends HttpServlet {
 			//////////////////////////////////////
 			// get the requested MmiUri:
 			
+			// after the following block mmiUriTest will be NON-null only if the requested
+			// URI (either from the "uri" parameter if given, or from the fullRequestedUri)
+			// is "ont"-resolvable (OntUtil.isOntResolvableUri) and a syntactically valid MmiUri:
 			MmiUri mmiUriTest = null;
-			String outFormatTest;
-			String versionTest = null;
-			
 			try {
 				if ( Util.yes(request, "uri") ) {
 					// when the "uri" parameter is passed, its value is used.
-					
 					String entityUri = Util.getParam(request, "uri", "");
-					mmiUriTest = new MmiUri(entityUri);
+					if ( OntUtil.isOntResolvableUri(entityUri) ) {
+						mmiUriTest = new MmiUri(entityUri);
+					}
 				}
 				else {
 					mmiUriTest = new MmiUri(fullRequestedUri);
 				}
-				// We have an MmiUri request.
-				
+			}
+			catch (URISyntaxException e) {
+				// Ok, not a regular MmiUri request.
+			}
+			
+			String outFormatTest;
+			String versionTest = null;
+			
+			if ( mmiUriTest != null ) {
 				// get output format to be used:
 				outFormatTest = OntServlet.getOutFormatForMmiUri(formParam, accept, mmiUriTest, log);
 			}
-			catch (URISyntaxException e) {
+			else {
 				// NOT a regular MmiUri request.
 				outFormatTest = OntServlet.getOutFormatForNonMmiUri(formParam, log); 
 			}
-			
 			
 			if ( outFormatTest.length() == 0 ) {     
 				// No explicit outFormat.
@@ -525,6 +532,7 @@ public class OntServlet extends HttpServlet {
 		}
 		else {
 			// No explicit version.
+			log.debug("No explicit version requested.");
 			ontology = getRegisteredOntology(ontOrEntUri);
 		}
 		
