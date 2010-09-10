@@ -2,6 +2,12 @@ org.mmisw.orrportal: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-09-09   2.0.4.beta
+	- Removed unused org.mmisw.orrportal.gwt.server.MdUtil
+	
+	- Adjustments to retrieve AttrDef's options only on demand when getOptionsVocabulary() != null.
+	
+
 2010-09-07   2.0.3.beta
 	- index.html renamed to index.jsp for more flexibility and a bit of easier customization
 	  after deployment.

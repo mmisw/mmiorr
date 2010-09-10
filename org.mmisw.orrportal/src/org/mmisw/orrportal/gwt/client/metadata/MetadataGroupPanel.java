@@ -178,8 +178,14 @@ public class MetadataGroupPanel extends VerticalPanel {
 			// TODO: need to handle dynamic refresh of options? (Main.refreshOptions)
 			final List<Option> options = attr.getOptions();
 			
-			if ( editing &&  // not listBoxes if we are just viewing 
-					options.size() > 0 ) {
+			final String optionsVocabulary = attr.getOptionsVocabulary();
+			
+			// not listBoxes if we are just viewing
+			
+			// Bofore, the following section was conditioned by: 
+//			if ( editing && options.size() > 0 ) {
+			// and now by:
+			if ( editing && (optionsVocabulary != null || options.size() > 0) ) {
 				
 				if ( Orr.getMetadataBaseInfo().getResourceTypeUri().equals(attr.getUri()) ) {
 					// the special case for the "resourceType"

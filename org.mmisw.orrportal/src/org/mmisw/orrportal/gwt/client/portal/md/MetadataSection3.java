@@ -59,7 +59,12 @@ public class MetadataSection3 extends MetadataSection {
 			
 			final List<Option> options = attrDef.getOptions();
 			
-			if ( options.size() > 0 ) {
+			final String optionsVocabulary = attrDef.getOptionsVocabulary();
+			
+			// Bofore, the following section was conditioned by: 
+//			if ( options.size() > 0 ) {
+			// and now by:
+			if ( optionsVocabulary != null || options.size() > 0 ) {
 				
 				boolean allowUserOption = attrDef.isAllowUserDefinedOption();
 				if ( allowUserOption ) {

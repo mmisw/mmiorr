@@ -3,13 +3,14 @@ package org.mmisw.orrportal.gwt.server;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mmisw.orrclient.core.MdHelper;
 import org.mmisw.orrclient.gwt.client.rpc.AppInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
@@ -94,7 +95,7 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 
 	
 	public AttrDef refreshOptions(AttrDef attrDef) {
-		return MdHelper.refreshOptions(attrDef);
+		return orrClient.refreshOptions(attrDef);
 	}
 
 
@@ -141,10 +142,59 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 			String fileType, String uploadResults, boolean includeContents,
 			boolean includeRdf
 	) {
-		return orrClient.getTempOntologyInfo(fileType, uploadResults, includeContents, includeRdf);
+		// extract the filename from the upload result string:
+		String filename;
+		try {
+			filename = _getFilePathFromUploadResults(uploadResults);
+		}
+		catch (Exception e) {
+			TempOntologyInfo tempOntologyInfo = new TempOntologyInfo();
+			tempOntologyInfo.setError(e.getMessage());
+			return tempOntologyInfo;
+		}
+		
+		return orrClient.getTempOntologyInfo(fileType, filename, includeContents, includeRdf);
 	}
 
-	
+	/**
+	 * Extracts the filename from the given upload results string.
+	 * @param uploadResults
+	 * @return the filename
+	 * @throws Exception if the upload results indicate error, or if there is any other error.
+	 */
+	private String _getFilePathFromUploadResults(String uploadResults) throws Exception {
+		
+		uploadResults = uploadResults.replaceAll("&lt;", "<").replaceAll("&gt;", ">");
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug("_getFilePathFromUploadResults: " +uploadResults);
+		}
+		
+		if ( uploadResults.matches(".*<error>.*") ) {
+			throw new Exception(uploadResults);
+		}
+		
+		if ( false && !uploadResults.matches(".*success.*") ) {
+			if ( log.isDebugEnabled() ) {
+				log.debug("Not <success> !");
+			}
+			// unexpected response.
+			throw new Exception("Error while loading ontology. Please try again later.");
+		}
+		
+		Pattern pat = Pattern.compile(".*<filename>([^<]+)</filename>");
+		Matcher matcher = pat.matcher(uploadResults);
+		if ( matcher.find() ) {
+			String filename = matcher.group(1);
+			return filename;
+		}
+		else {
+			if ( log.isDebugEnabled() ) {
+				log.debug("Could not parse uploadResults.");
+			}
+			throw new Exception("Could not parse uploadResults.");
+		}
+	}	
 	
 	////////////////////////////////////////////////////////////////////////////////////////////
 	// VINE:

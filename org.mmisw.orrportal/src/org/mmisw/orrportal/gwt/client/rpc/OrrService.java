@@ -21,6 +21,7 @@ import org.mmisw.orrclient.gwt.client.rpc.UnregisterOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.UserInfoResult;
 import org.mmisw.orrclient.gwt.client.rpc.vine.RelationInfo;
 import org.mmisw.orrclient.gwt.client.vocabulary.AttrDef;
+import org.mmisw.orrportal.gwt.server.UploadServlet;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 
@@ -97,7 +98,13 @@ public interface OrrService extends RemoteService {
 	
 
 	/**
-	 * Gets ontology info from a pre-loaded file.
+	 * Gets ontology info from a file uploaded by the {@link UploadServlet}.
+	 * 
+	 * @param fileType
+	 * @param uploadResults  Result from the UploadServlet
+	 * @param includeContents
+	 * @param includeRdf
+	 * @return
 	 */
 	public TempOntologyInfo getTempOntologyInfo(
 			String fileType, String uploadResults, boolean includeContents,

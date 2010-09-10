@@ -23,6 +23,7 @@ import org.mmisw.orrclient.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.UnregisterOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.UserInfoResult;
 import org.mmisw.orrclient.gwt.client.rpc.vine.RelationInfo;
+import org.mmisw.orrclient.gwt.client.vocabulary.AttrDef;
 import org.mmisw.orrportal.gwt.client.rpc.PortalBaseInfo;
 
 
@@ -50,9 +51,10 @@ public class OrrClientProxy  {
 	 * It uses PortalConfig.
 	 * 
 	 * @return the instance
+	 * @throws Exception 
 	 * @throws IllegalStateException if instance already created.
 	 */
-	public static OrrClientProxy createInstance() {
+	public static OrrClientProxy createInstance() throws Exception {
 		if ( instance != null ) {
 			throw new IllegalStateException(OrrClientProxy.class.getName()+ " instance already created");
 		}
@@ -71,8 +73,9 @@ public class OrrClientProxy  {
 
 	/** 
 	 * Creates this object 
+	 * @throws Exception 
 	 */
-	private OrrClientProxy() {
+	private OrrClientProxy() throws Exception {
 		log.info("initializing " +getClass().getSimpleName()+ "...");
 		
 		// parameters from our config object for the OrrClientConfiguration:
@@ -140,6 +143,9 @@ public class OrrClientProxy  {
 		return orrClient.getMetadataBaseInfo(includeVersion, resourceTypeClassUri, authorityClassUri);
 	}
 	
+	public AttrDef refreshOptions(AttrDef attrDef) {
+		return orrClient.refreshOptions(attrDef);
+	}
 	
 	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo ontologyInfo, String version) {
 		return orrClient.getOntologyContents(ontologyInfo, version);
@@ -156,9 +162,9 @@ public class OrrClientProxy  {
 	
 	
 	public TempOntologyInfo getTempOntologyInfo(
-			String fileType, String uploadResults, boolean includeContents,
+			String fileType, String filename, boolean includeContents,
 			boolean includeRdf) {
-		return orrClient.getTempOntologyInfo(fileType, uploadResults, includeContents, includeRdf);
+		return orrClient.getTempOntologyInfo(fileType, filename, includeContents, includeRdf);
 	}
 	
 	

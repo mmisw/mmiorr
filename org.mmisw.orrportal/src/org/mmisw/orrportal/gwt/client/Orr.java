@@ -291,7 +291,7 @@ public class Orr {
 	public static void refreshOptions(AttrDef attr, AsyncCallback<AttrDef> callback) {
 		assert attr.getOptionsVocabulary() != null ;
 		// refresh options
-		Orr.log("ORR: Getting base info ...");
+		Orr.log("ORR: refreshing options of " +attr.getUri());
 		Orr.service.refreshOptions(attr, callback);
 	}
     
