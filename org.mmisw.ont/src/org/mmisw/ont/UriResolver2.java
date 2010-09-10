@@ -437,11 +437,12 @@ public class UriResolver2 {
 		
 		if ( !file.canRead() ) {
 			// This should not happen.
-			resp = new InternalErrorResponse(
-					file.getAbsolutePath()+ ": internal error: uploaded file "
-					+ (file.exists() ? "exists but cannot be read." : "not found.")
-					+ "Please, report this bug."
-			);
+			String error = file.getAbsolutePath()+ ": internal error: uploaded file "
+				+ (file.exists() ? "exists but cannot be read." : "not found.")
+				+ "Please, report this bug."
+			;
+			log.warn(error);
+			resp = new InternalErrorResponse(error);
 		}
 		else {
 			// original model:
@@ -450,29 +451,31 @@ public class UriResolver2 {
 
 			if ( originalModel == null ) {
 				// This should not happen.
-				resp = new InternalErrorResponse(
-						file.getAbsolutePath()+ ": internal error: uploaded file "
-						+ "cannot be read as an ontology model. "
-						+ "Please, report this bug."
-				);
+				String error = file.getAbsolutePath()+ ": internal error: uploaded file "
+					+ "cannot be read as an ontology model. "
+					+ "Please, report this bug."
+				;
+				log.warn(error);
+				resp = new InternalErrorResponse(error);
 			}
-
-			OntModel model = originalModel;
-			
-			// no explicit version requested and it's an unversioned MmiUri?
-			if ( req.version == null && req.mmiUri != null && req.mmiUri.getVersion() == null ) {
-				model = UnversionedConverter.getUnversionedModel(originalModel, req.mmiUri);
-			}
-			// issue #252: "omv:version gone?"
 			else {
-				String assignedVersion = JenaUtil2.setVersionFromCreationDateIfNecessary(model);
-				if ( assignedVersion != null ) {
-					// there actually was a synthetic assignment to omv.version
-					log.info("synthetic assignment to omv.version: " +assignedVersion);
-				}
-			}
+				OntModel model = originalModel;
 
-			resp = new OntologyResponse(model);
+				// no explicit version requested and it's an unversioned MmiUri?
+				if ( req.version == null && req.mmiUri != null && req.mmiUri.getVersion() == null ) {
+					model = UnversionedConverter.getUnversionedModel(originalModel, req.mmiUri);
+				}
+				// issue #252: "omv:version gone?"
+				else {
+					String assignedVersion = JenaUtil2.setVersionFromCreationDateIfNecessary(model);
+					if ( assignedVersion != null ) {
+						// there actually was a synthetic assignment to omv.version
+						log.info("synthetic assignment to omv.version: " +assignedVersion);
+					}
+				}
+
+				resp = new OntologyResponse(model);
+			}
 		}
 		
 		if ( resp != null ) {
