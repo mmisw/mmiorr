@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.vocabulary.Vine;
 import org.mmisw.ont.vocabulary.Vine20071128;
 import org.mmisw.orrclient.core.util.Skos;
@@ -49,6 +51,8 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  * @author Carlos Rueda
  */
 class OntInfo extends BaseOntInfo {
+	
+	private final Log log = LogFactory.getLog(OntInfo.class);
 	
 	public BaseOntologyInfo getEntities(BaseOntologyInfo baseOntologyInfo, OntModel ontModel
 	) throws Exception {
@@ -138,10 +142,32 @@ class OntInfo extends BaseOntInfo {
 				continue;
 			}
 			
-			OntClass ontClass = ind.getOntClass(true);
-			if ( ontClass == null || ! ontClass.isURIResource() ) {
-				continue;
+			OntClass ontClass;
+			
+			// 280: "Error getting entities" (reported by Roy L.)
+			// The stack trace in the orr.log was:
+//			com.hp.hpl.jena.ontology.ConversionException: Cannot convert node http://www.w3.org/2002/07/owl#Class to OntClass: it does not have rdf:type owl:Class or equivalent
+//				at com.hp.hpl.jena.ontology.impl.OntClassImpl$1.wrap(OntClassImpl.java:82)
+//				at com.hp.hpl.jena.enhanced.EnhNode.convertTo(EnhNode.java:142)
+//				at com.hp.hpl.jena.enhanced.EnhNode.convertTo(EnhNode.java:22)
+//				at com.hp.hpl.jena.enhanced.Polymorphic.asInternal(Polymorphic.java:54)
+//				at com.hp.hpl.jena.enhanced.EnhNode.as(EnhNode.java:97)
+//				at com.hp.hpl.jena.ontology.impl.IndividualImpl.getOntClass(IndividualImpl.java:175)
+//			Note that ConversionException extends RuntimeException
+			try {
+				ontClass = ind.getOntClass(true);
+				if ( ontClass == null || ! ontClass.isURIResource() ) {
+					continue;
+				}
 			}
+			catch ( RuntimeException ex ) {
+				// 280: log the exception and continue.
+				if ( log.isWarnEnabled() ) {
+					log.warn("Ignoring runtime exception while getting individual's OntClass: " +entityUri, ex);
+				}
+				continue;				
+			}
+			
 			String classUri = ontClass.getURI();
 
 				

@@ -3,6 +3,12 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2010-09-10   2.0.4.beta
+	- Fixed 280: "Error getting entities" (reported by Roy L.)
+	  OntInfo._getIndividuals.
+	  
+	  
+	  
 2010-09-09   2.0.4.beta
 	- MdHelper: note that MdUtil.readResourceTypes and MdUtil.readAuthorities are now ONLY
 	  called in refreshOptions(AttrDef attrDef);  These calls were removed during the
