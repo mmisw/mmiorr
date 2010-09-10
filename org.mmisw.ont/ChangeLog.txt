@@ -8,6 +8,24 @@ ChangeLog
 	- OntServlet.Request: now initializes mmiUri when not only is syntactically a
 	  valid MmiUri, but also that is "ont"-resolvable.
 	  
+	- NOTE: while examining why http://inspire-registry.jrc.ec.europa.eu/registers/GLOSSARY
+	  didn't show any metadata in the portal, I noticed that it actually had 2 ontology resources:
+	    ...
+	    xml:base="http://inspire-registry.jrc.ec.europa.eu/registers/GLOSSARY">
+	    <owl:Ontology rdf:about="">
+		    .. typical metadata here for example...  
+	        <omvmmi:origMaintainerCode>JRC-IES</omvmmi:origMaintainerCode>
+	    </owl:Ontology>
+	    <owl:Ontology rdf:about="http://inspire-registry.jrc.ec.europa.eu/registers/GLOSSARY/">
+	        <owl:imports rdf:resource="http://inspire-registry.jrc.ec.europa.eu/rdfschema/inspire-schema.rdf"/>
+	    </owl:Ontology>
+	  Since only the first Jena-reported ontology resource is used, apparently the second one
+	  above was the one being reported in this case.
+	  I manually fixed this case by merging the two ontology resources above.
+	  TODO: Review the methods in the various ORR modules that call Jena's OntModel.listOntologies();
+	  a possible strategy is to automatically do the merge when 2 or more ontology resources have
+	  the same URI (ie. the one corresponding to the registered entry).
+	  
 
 2010-09-05  2.0.2.beta
 	- cleared up some warnings upon upgrade to Jena 2.6.3
