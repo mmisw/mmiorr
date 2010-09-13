@@ -11,6 +11,9 @@ $Id$
 	
 	- Removed OntModelUtil.loadModel(String uriModel, boolean processImports): not used anywhere.
 	
+	- Also removed dependency on org.mmi.util.jar library (call ISO8601Date.getCurrentDateBasicFormat). 
+	  Replaced with MDHelper._getCurrentDateBasicFormat().
+	
 2010-09-10   2.0.4.beta
 	- Fixed 280: "Error getting entities" (reported by Roy L.)
 	  OntInfo._getIndividuals.

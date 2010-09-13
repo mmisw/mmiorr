@@ -6,6 +6,8 @@ $Id$
 	- removed org.mmi.ont.util.jar: no longer needed; related operations now provided by Ont's
 	  org.mmisw.ont.misc.jar library (ie., by the JenaUtil2 class).
 	  
+	- removed dependency on org.mmi.util.jar library.
+	  
 2010-09-09   2.0.4.beta
 	- Removed unused org.mmisw.orrportal.gwt.server.MdUtil
 	

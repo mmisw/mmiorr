@@ -1,11 +1,14 @@
 package org.mmisw.orrclient.core;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
@@ -332,7 +335,7 @@ public class MdHelper {
 				createAttrDef(Omv.creationDate)
 				.setLabel("Creation date")
 				.setInternal(true)
-				.setExample(org.mmi.util.ISO8601Date.getCurrentDateBasicFormat())
+				.setExample(_getCurrentDateBasicFormat())
 		);
 		
 //		general_attr_list.add(
@@ -506,6 +509,21 @@ public class MdHelper {
 	}
 
 	
+	/**
+	 * Gets the current time in the format "yyyyMMdd'T'HHmmss'Z'".
+	 */
+	private static String _getCurrentDateBasicFormat() {
+		// originally:
+//		return org.mmi.util.ISO8601Date.getCurrentDateBasicFormat();
+		// which depended on the org.mmi.util.jar library, now removed from the build (2010-09-12).
+		
+		// the code is:
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
+		dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+		String date = dateFormat.format(new Date(System.currentTimeMillis()));
+		return date;
+	}
+
 	public static AttrGroup[] getAttrGroups() {
 		return attrGroups;
 	}
