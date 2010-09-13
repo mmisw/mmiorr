@@ -36,8 +36,6 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
-import edu.drexel.util.rdf.JenaUtil;
-
 
 /**
  * Helper class to dispatch some miscelaneous, ad hoc requests.
@@ -711,7 +709,7 @@ public class MiscDispatcher {
 			out.println("<br/>");
 
 			String uriFile = file.toURI().toString();
-			Model model = JenaUtil.loadModel(uriFile, false);
+			Model model = JenaUtil2.loadModel(uriFile, false);
 
 			if ( mmiUri.getTerm().length() > 0 ) {
 				_showTermInfo(mmiUri, model, out);

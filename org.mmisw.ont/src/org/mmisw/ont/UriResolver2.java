@@ -21,8 +21,6 @@ import org.mmisw.ont.util.Util;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
-import edu.drexel.util.rdf.JenaUtil;
-
 /**
  * This is main dispatcher used by the entry point OntServlet.
  * 
@@ -367,7 +365,7 @@ public class UriResolver2 {
 
 		// original model:
 		final String uriFile = file.toURI().toString();
-		final OntModel originalModel = JenaUtil.loadModel(uriFile, false);
+		final OntModel originalModel = JenaUtil2.loadModel(uriFile, false);
 
 		if ( originalModel == null ) {
 			// This should not happen.
@@ -447,7 +445,7 @@ public class UriResolver2 {
 		else {
 			// original model:
 			final String uriFile = file.toURI().toString();
-			final OntModel originalModel = JenaUtil.loadModel(uriFile, false);
+			final OntModel originalModel = JenaUtil2.loadModel(uriFile, false);
 
 			if ( originalModel == null ) {
 				// This should not happen.

@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.Db;
+import org.mmisw.ont.JenaUtil2;
 import org.mmisw.ont.MmiUri;
 import org.mmisw.ont.OntConfig;
 import org.mmisw.ont.OntUtil;
@@ -29,8 +30,6 @@ import com.hp.hpl.jena.reasoner.Reasoner;
 import com.hp.hpl.jena.reasoner.rulesys.GenericRuleReasoner;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
 import com.hp.hpl.jena.util.PrintUtil;
-
-import edu.drexel.util.rdf.JenaUtil;
 
 //
 // Copy of org.mmisw.ont.OntGraph.java 894 11/25/09 7:43 PM
@@ -274,7 +273,7 @@ public class OntGraphMem implements IOntGraph {
 	private void _loadOntology(Ontology ontology, String full_path) {
 		final Model model2update = _infModel != null ? _infModel : _model;
 		if ( USE_UNVERSIONED ) {
-			OntModel model = JenaUtil.loadModel(full_path, false);
+			OntModel model = JenaUtil2.loadModel(full_path, false);
 
 			if ( OntUtil.isOntResolvableUri(ontology.getUri()) ) {
 				MmiUri mmiUri;

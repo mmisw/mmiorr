@@ -15,6 +15,7 @@ import org.mmisw.ont.vocabulary.Omv;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.Ontology;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -22,9 +23,6 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
-
-import edu.drexel.util.rdf.JenaUtil;
-import edu.drexel.util.rdf.OwlModel;
 
 /**
  * Gets the "unversioned" version of an ontology.
@@ -45,7 +43,7 @@ public class UnversionedConverter {
 	 * See issue #24.
 	 * 
 	 * @param model original model.
-	 * @param mmiUri The URI of the correspoding latest version.
+	 * @param mmiUri The URI of the corresponding latest version.
 	 * @return the unversioned version. null if an error occurs, which will be logged.
 	 */
 	public static OntModel getUnversionedModel(OntModel model, MmiUri mmiUri) {
@@ -130,7 +128,7 @@ public class UnversionedConverter {
 		/////////////////////////////////////////////////////////////////
 		// Is there an existing OWL.Ontology individual?
 		// TODO Note that ONLY the first OWL.Ontology individual is considered.
-		Resource ontRes = JenaUtil.getFirstIndividual(model, OWL.Ontology);
+		Resource ontRes = JenaUtil2.getFirstIndividual(model, OWL.Ontology);
 		List<Statement> prexistStatements = null; 
 		if ( ontRes != null ) {
 			prexistStatements = new ArrayList<Statement>();
@@ -145,7 +143,9 @@ public class UnversionedConverter {
 		
 		// The new OntModel that will contain the pre-existing attributes (if any),
 		// plus the new and updated attributes:
-		final OwlModel newOntModel = new OwlModel(model);
+		final OntModel newOntModel = ModelFactory.createOntologyModel(model.getSpecification(), model);
+		// Note: previously, newOntModel = new OwlModel(model); but the OwlModel extension was not used
+		// in any particular way, so the new call should be equivalent.
 		final Ontology ont_ = newOntModel.createOntology(base_);
 		if ( log.isDebugEnabled() ) {
 			log.debug("New ontology created with namespace " + ns_ + " base " + base_);

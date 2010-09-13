@@ -4,6 +4,27 @@ $Id$
 
 ChangeLog
 
+2010-09-12  2.0.5.beta
+	Removed dependency on org.mmi.ont.util.jar, that is, on the classes:
+		edu.drexel.util.rdf.JenaUtil
+		edu.drexel.util.rdf.OwlModel
+	  The methods in JenaUtil not yet provided by JenaUtil2 were added to the latter (at this
+	  point without much further revision):
+	  - String getValue(Resource sub, Property pro)
+	  - String getValueAsString(RDFNode node)
+	  - Resource getFirstIndividual(Model model, Resource resType)
+	  OwlModel was only used in UnversionedConverter but the call "new OwlModel(model)" was directly
+	  changed to a call to "ModelFactory.createOntologyModel(model.getSpecification(), model)".
+	  
+	- One other addition to JenaUtil2: 
+		- Ontology getOntology(OntModel ontModel): gets the first Ontology associated 
+		  with the base model of the given model.  This was moved from OntModelUtil in orrclient.
+		  
+	TODO: Review and replace calls to JenaUtil2.getFirstIndividual(model, OWL.Ontology) by
+	      JenaUtil2.getOntology(OntModel ontModel).
+	
+	
+	
 2010-09-09  2.0.4.beta
 	- OntServlet.Request: now initializes mmiUri when not only is syntactically a
 	  valid MmiUri, but also that is "ont"-resolvable.

@@ -34,8 +34,6 @@ import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 
-import edu.drexel.util.rdf.JenaUtil;
-
 
 /**
  * Handles the ontology graphs using AllegroGraph.
@@ -393,7 +391,7 @@ public class OntGraphAG implements IOntGraph {
 		String serialization;
 		
 		if ( USE_UNVERSIONED ) {
-			OntModel model = JenaUtil.loadModel(full_path, false);
+			OntModel model = JenaUtil2.loadModel(full_path, false);
 
 			if ( OntUtil.isOntResolvableUri(ontologyUri) ) {
 				MmiUri mmiUri;
@@ -418,7 +416,7 @@ public class OntGraphAG implements IOntGraph {
 		}
 		else {
 			String absPath = "file:" + full_path;
-			OntModel model = JenaUtil.loadModel(full_path, false);
+			OntModel model = JenaUtil2.loadModel(full_path, false);
 			serialization = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV");
 		}
 		

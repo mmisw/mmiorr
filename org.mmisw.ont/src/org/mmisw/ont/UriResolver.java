@@ -23,8 +23,6 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
-import edu.drexel.util.rdf.JenaUtil;
-
 
 /**
  * @deprecated  NOT USED anymore, to be removed.
@@ -430,7 +428,7 @@ public class UriResolver {
 		if ( unversionedRequest ) {
 			String uriFile = file.toURI().toString();
 			
-			model = JenaUtil.loadModel(uriFile, false);
+			model = JenaUtil2.loadModel(uriFile, false);
 
 			unversionedModel = UnversionedConverter.getUnversionedModel(model, mmiUri);
 			
@@ -461,7 +459,7 @@ public class UriResolver {
 
 			String uriFile = file.toURI().toString();
 			if ( model == null ) {
-				model = JenaUtil.loadModel(uriFile, false);
+				model = JenaUtil2.loadModel(uriFile, false);
 			}
 			
 			Model termModel = TermExtractor.getTermModel(model, mmiUri);

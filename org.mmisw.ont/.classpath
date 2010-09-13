@@ -9,7 +9,6 @@
 	<classpathentry kind="lib" path="/Users/carueda/Software/apache-tomcat-6.0.18/lib/servlet-api.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/concurrent.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/antlr-2.7.5.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/org.mmi.ont.util.jar" sourcepath="/org.mmi.ont.util/src"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/agraph.jar" sourcepath="/Applications/AllegroGraph/agsrc-3-2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-codec-1.3.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-httpclient-3.1.jar"/>

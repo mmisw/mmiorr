@@ -26,8 +26,6 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
-import edu.drexel.util.rdf.JenaUtil;
-
 
 /**
  * Dispatches the HTML output.
@@ -111,7 +109,7 @@ public class HtmlDispatcher {
 
 		if ( unversionedRequest ) {
 			
-			model = JenaUtil.loadModel(uriFile, false);
+			model = JenaUtil2.loadModel(uriFile, false);
 
 			unversionedModel = UnversionedConverter.getUnversionedModel(model, mmiUri);
 			
@@ -130,7 +128,7 @@ public class HtmlDispatcher {
 			}
 		}
 		else {
-			model = JenaUtil.loadModel(uriFile, false);
+			model = JenaUtil2.loadModel(uriFile, false);
 		}
 		
 

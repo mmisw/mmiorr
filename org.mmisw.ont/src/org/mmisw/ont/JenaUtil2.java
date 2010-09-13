@@ -1,6 +1,11 @@
 package org.mmisw.ont;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -9,26 +14,40 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.vocabulary.Omv;
 
+import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.NsIterator;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 /**
- * Some of the methods in JenaUtil but with some adjustments.
+ * Various supporting Jena-based operations.
+ * <p> 
+ * Some of these methods adapted from edu.drexel.util.rdf.JenaUtil.
+ * 
  * @author Carlos Rueda
  */
 public class JenaUtil2 {
 	private JenaUtil2() {}
 
+	
+	private static final Log log = LogFactory.getLog(JenaUtil2.class);
 
 	/** Fragment separator.
 	 * 
@@ -127,7 +146,7 @@ public class JenaUtil2 {
 	 * @return value of the property, or null if missing.
 	 */
 	public static String getOntologyPropertyValue(OntModel ontModel, Property prop) {
-		Ontology ontology = _getFirstOntology(ontModel);
+		Ontology ontology = getOntology(ontModel);
 		if ( ontology == null ) {
 			return null;
 		}
@@ -138,21 +157,45 @@ public class JenaUtil2 {
 		return node.toString();
 	}
 
+	
 	/**
-	 * Retrieves the value of a given property in the firt ontology resource in the model.
+	 * Gets the first Ontology associated with the base model of the given model.
+	 * <p>
+	 * 
+	 * See <a href="http://jena.sourceforge.net/ontology/#metadata">this jena doc</a>
+	 * 
 	 * @param ontModel
-	 * @param prop Property
-	 * @return value of the property, or null if missing.
+	 * @return the found Ontology or null.
 	 */
-	private static Ontology _getFirstOntology(OntModel ontModel) {
-		ExtendedIterator<Ontology> onts = ontModel.listOntologies();
-		if ( onts == null || ! onts.hasNext() ) {
-			return null;
-		}
-		Ontology ontology = (Ontology) onts.next();
-		return ontology;
-	}
+	public static Ontology getOntology(OntModel ontModel) {
+		
+		OntModel mBase = ModelFactory.createOntologyModel(
+                OntModelSpec.OWL_MEM, ontModel.getBaseModel() );
 
+		Ontology ont = null;
+		
+		ExtendedIterator<Ontology> iter = mBase.listOntologies();
+		if ( iter.hasNext() ) {
+			ont = (Ontology) iter.next();
+		}
+		
+		if ( log.isDebugEnabled() ) { 
+			if ( ont != null ) {
+				if ( iter.hasNext() ) {
+					Ontology ont2 = (Ontology) iter.next();
+					log.debug("WARNING: more than one Ontology resource in OntModel. " +
+							"Second one found (but ignored): " +ont2.getURI()
+					);
+				}
+				log.debug("Returning Ontology with URI: " +ont.getURI());
+			}
+			else {
+				log.debug("No Ontology found in OntModel");
+			}
+		}
+
+		return ont;
+	}
 	
 	
 	/**
@@ -213,7 +256,7 @@ public class JenaUtil2 {
 	 */
 	// Method created as part of the fix to issue #252: "omv:version gone?".
 	public static String setVersionFromCreationDateIfNecessary(OntModel ontModel) {
-		Ontology ontology = _getFirstOntology(ontModel);
+		Ontology ontology = getOntology(ontModel);
 		if ( ontology == null ) {
 			return null;
 		}
@@ -238,5 +281,93 @@ public class JenaUtil2 {
 		}
 		return null;
 	}
+
+	// verbatim copy from JenaUtil
+	public static OntModel createDefaultOntModel() {
+		OntModelSpec spec = new OntModelSpec(OntModelSpec.OWL_MEM);
+		OntDocumentManager docMang = new OntDocumentManager();
+		spec.setDocumentManager(docMang);
+		OntModel model = ModelFactory.createOntologyModel(spec, null);
+		// removeNotNeccesaryNamespaces(model);
+
+		return model;
+	}
+
+	// adapted from JenaUtil
+	public static OntModel loadModel(String uriModel, boolean processImports) {
+		uriModel = removeTrailingFragment(uriModel);
+		OntModel model = createDefaultOntModel();
+		model.setDynamicImports(false);
+		model.getDocumentManager().setProcessImports(processImports);
+		model.read(uriModel);
+		return model;
+	}
+
+	// verbatim copy from JenaUtil
+	public static String getValue(Resource sub, Property pro) {
+		Statement sta = sub.getProperty(pro);
+		if (sta != null) {
+			RDFNode node = sta.getObject();
+			return getValueAsString(node);
+		} else {
+			return null;
+		}
+	}
+
+	// verbatim copy from JenaUtil
+	public static String getValueAsString(RDFNode node) {
+		if (node instanceof Literal) {
+			Literal lit = (Literal) node;
+			return lit.getLexicalForm();
+
+		} else {
+			return ((Resource) node).getURI();
+		}
+	}
+
+	// verbatim copy from JenaUtil except for the generics supportee by the recent jena version
+	public static Resource getFirstIndividual(Model model, Resource resType) {
+		StmtIterator iter = model.listStatements(null, RDF.type, resType);
+		if (iter.hasNext()) {
+			Statement sta = (Statement) iter.next();
+			return (Resource) sta.getSubject();
+		} else
+			return null;
+	}
+
+	// verbatim copy from JenaUtil
+	public static Model loalRDFModel(String uriModel) {
+		try {
+			Model model = createDefaultRDFModel();
+
+			URI uri = new URI(uriModel);
+			InputStream inputStream = uri.toURL().openStream();
+			model.read(inputStream, "");
+			return model;
+		} catch (MalformedURLException e) {
+			System.err.println(e);
+			return null;
+
+		} catch (URISyntaxException e) {
+			System.err.println(e);
+			return null;
+
+		} catch (IOException e) {
+			System.err.println(e);
+			return null;
+		}
+	}
+
+	// verbatim copy from JenaUtil except for the unused code and the call
+	// to removeNotNeccesaryNamespaces(model)
+	public static Model createDefaultRDFModel() {
+//		OntModelSpec spec = new OntModelSpec(OntModelSpec.RDFS_MEM);
+
+		Model model = ModelFactory.createDefaultModel();
+//		removeNotNeccesaryNamespaces(model);
+		return model;
+
+	}
+
 
 }

@@ -29,8 +29,6 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 
-import edu.drexel.util.rdf.JenaUtil;
-
 /**
  * Some AllegroGraph utilities, some of them copied from the AllegroGraph demonstration
  * examples.
@@ -274,7 +272,7 @@ class AgUtils {
 	 */
 	static Model getModel(Log log, TriplesIterator it) throws AllegroGraphException {
 		
-		Model model = JenaUtil.createDefaultRDFModel();
+		Model model = JenaUtil2.createDefaultRDFModel();
 		
 	    while ( it.hasNext() ) {
 	    	Triple triple = it.next();

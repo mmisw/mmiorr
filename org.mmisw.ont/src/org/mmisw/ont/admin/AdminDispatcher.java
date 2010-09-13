@@ -35,8 +35,6 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
 
-import edu.drexel.util.rdf.JenaUtil;
-
 
 
 /**
@@ -304,7 +302,7 @@ public class AdminDispatcher {
 	 */
 	private Model getGraphsModel() {
 		
-		Model model = JenaUtil.createDefaultRDFModel();
+		Model model = JenaUtil2.createDefaultRDFModel();
 		boolean createFile = false;
 		
 		if ( ! graphsFile.isFile() ) {
