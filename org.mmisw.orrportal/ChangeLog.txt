@@ -2,6 +2,10 @@ org.mmisw.orrportal: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-09-12  2.0.5.beta
+	- removed org.mmi.ont.util.jar: no longer needed; related operations now provided by Ont's
+	  org.mmisw.ont.misc.jar library (ie., by the JenaUtil2 class).
+	  
 2010-09-09   2.0.4.beta
 	- Removed unused org.mmisw.orrportal.gwt.server.MdUtil
 	
