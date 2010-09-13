@@ -20,17 +20,16 @@ import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.MappingDataCreationInfo;
 import org.mmisw.orrclient.gwt.client.rpc.vine.Mapping;
 
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDF;
-
-import edu.drexel.util.rdf.JenaUtil;
-import edu.drexel.util.rdf.OwlModel;
 
 /**
  * Creates a mapping ontology.
@@ -59,7 +58,7 @@ public class MappingOntologyCreator {
 	private Map<String, String> values;
 	
 	
-	private OwlModel newOntModel;
+	private OntModel newOntModel;
 	private String ns_;
 	private String base_;
 
@@ -154,9 +153,22 @@ public class MappingOntologyCreator {
 		createVocabResult.setFullPath(full_path);
 	}
 	
+	private OntModel _createOntModel() {
+		OntModel ontModel = JenaUtil2.createDefaultOntModel();
+		
+		// TODO: from the previous code based on OwlModel, ie.,
+//		ontModel = new OwlModel(ontModel);
+		// it seems the following "layer" is unnecesary. So, returning JenaUtil2.createDefaultOntModel()
+		// directly should be fine.
+		
+		ontModel = ModelFactory.createOntologyModel(ontModel.getSpecification(), ontModel);
+		
+		return ontModel;
+	}
+	
 	private void processCreateOntology() throws Exception {
 
-		newOntModel = new OwlModel(JenaUtil.createDefaultOntModel());
+		newOntModel = _createOntModel();
 		ns_ = JenaUtil2.appendFragment(finalUri);
 		base_ = JenaUtil2.removeTrailingFragment(finalUri);
 		

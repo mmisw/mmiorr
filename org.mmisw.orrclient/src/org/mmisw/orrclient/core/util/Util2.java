@@ -24,7 +24,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.JenaUtil2;
 import org.mmisw.orrclient.core.MdHelper;
-import org.mmisw.orrclient.core.ontmodel.OntModelUtil;
 import org.mmisw.orrclient.gwt.client.rpc.BaseResult;
 import org.mmisw.orrclient.gwt.client.rpc.Errorable;
 import org.xml.sax.InputSource;
@@ -42,8 +41,6 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.shared.JenaException;
-
-import edu.drexel.util.rdf.JenaUtil;
 
 /**
  * Misc utilities.
@@ -311,13 +308,13 @@ public class Util2 {
 		for ( Property dcProp : MdHelper.getDcPropertiesWithMmiEquivalences() ) {
 			
 			// does dcProp already have an associated value?
-			String value = JenaUtil.getValue(ont_, dcProp); 
+			String value = JenaUtil2.getValue(ont_, dcProp); 
 			
 			if ( value == null || value.trim().length() == 0 ) {
 				// No.  
 				// Then, take the value from the equivalent MMI attribute if defined:
 				Property mmiProp = MdHelper.getEquivalentMmiProperty(dcProp);
-				value = JenaUtil.getValue(ont_, mmiProp);
+				value = JenaUtil2.getValue(ont_, mmiProp);
 				
 				if ( value != null && value.trim().length() > 0 ) {
 					// we have a value for DC from the equivalente MMI attr.
@@ -342,7 +339,7 @@ public class Util2 {
 		// make sure the file can be loaded as a model:
 		String uriFile = file.toURI().toString();
 		try {
-			JenaUtil.loadModel(uriFile, false);
+			JenaUtil2.loadModel(uriFile, false);
 		}
 		catch (Throwable ex) {
 			String error = ex.getClass().getName()+ " : " +ex.getMessage();
@@ -382,7 +379,7 @@ public class Util2 {
 		// make sure the file can be loaded as a model:
 		String uriFile = file.toURI().toString();
 		try {
-			JenaUtil.loadModel(uriFile, false);
+			JenaUtil2.loadModel(uriFile, false);
 		}
 		catch (Throwable jenaExc) {
 			// XML parse exception?
@@ -611,7 +608,7 @@ public class Util2 {
 		// See issues #213, #174
 		
 		// try the first ontology resource, if any:
-		Ontology ont = OntModelUtil.getOntology(model);
+		Ontology ont = JenaUtil2.getOntology(model);
 		if ( ont != null ) {
 			String namespace = ont.getURI();	
 			return namespace;

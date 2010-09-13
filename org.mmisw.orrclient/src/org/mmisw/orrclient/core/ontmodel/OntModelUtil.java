@@ -61,48 +61,6 @@ public class OntModelUtil {
 	}
 	
 	/**
-	 * Gets the first Ontology associated with the base model of the given model.
-	 * <p>
-	 * 
-	 * See <a href="http://jena.sourceforge.net/ontology/#metadata">this jena doc</a>
-	 * 
-	 * @param ontModel
-	 * @return the found Ontology or null.
-	 */
-	public static Ontology getOntology(OntModel ontModel) {
-		
-		OntModel mBase = ModelFactory.createOntologyModel(
-                OntModelSpec.OWL_MEM, ontModel.getBaseModel() );
-
-		Ontology ont = null;
-		
-		ExtendedIterator<Ontology> iter = mBase.listOntologies();
-		if ( iter.hasNext() ) {
-			ont = (Ontology) iter.next();
-		}
-		
-		if ( log.isDebugEnabled()  &&  iter.hasNext() ) {
-			Ontology ont2 = (Ontology) iter.next();
-			log.debug("WARNING: more than one Ontology resource in OntModel. " +
-					"Second found: " +ont2.getURI()
-			);
-		}
-
-		if ( log.isDebugEnabled() ) {
-			if ( ont != null ) {
-				log.debug("Returning Ontology with URI: " +ont.getURI());
-			}
-			else {
-				log.debug("No Ontology found in OntModel");
-			}
-		}
-
-		return ont;
-	}
-	
-	
-	
-	/**
 	 * Adds properties to the (first) ontology resource in the given ontModel.
 	 * @param ontModel
 	 * @param propValues (propUri, PropValue) pairs
@@ -151,17 +109,6 @@ public class OntModelUtil {
 
 		return model;
 	}
-
-	public static OntModel loadModel(String uriModel, boolean processImports) {
-		OntModel model = null;
-		uriModel = JenaUtil2.removeTrailingFragment(uriModel);
-		model = createDefaultOntModel();
-		model.setDynamicImports(false);
-		model.getDocumentManager().setProcessImports(processImports);
-		model.read(uriModel);
-		return model;
-	}
-
 
 	private OntModelUtil() {}
 }

@@ -77,6 +77,7 @@ import org.mmisw.orrclient.gwt.client.vocabulary.AttrGroup;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.Ontology;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
@@ -84,10 +85,6 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
-
-import edu.drexel.util.rdf.JenaUtil;
-import edu.drexel.util.rdf.OwlModel;
-
 
 
 /**
@@ -1101,7 +1098,7 @@ public class OrrClientImpl implements IOrrClient {
 		/////////////////////////////////////////////////////////////////
 		// Is there an existing OWL.Ontology individual?
 		// TODO Note that ONLY the first OWL.Ontology individual is considered.
-		Resource ontRes = JenaUtil.getFirstIndividual(model, OWL.Ontology);
+		Resource ontRes = JenaUtil2.getFirstIndividual(model, OWL.Ontology);
 		List<Statement> prexistStatements = null; 
 		if ( ontRes != null ) {
 			prexistStatements = new ArrayList<Statement>();
@@ -1116,7 +1113,7 @@ public class OrrClientImpl implements IOrrClient {
 		
 		// The new OntModel that will contain the pre-existing attributes (if any),
 		// plus the new and updated attributes:
-		final OwlModel newOntModel = new OwlModel(model);
+		final OntModel newOntModel = _createOntModel(model);
 		final Ontology ont_ = newOntModel.createOntology(base_);
 		log.info("New ontology created with namespace " + ns_ + " base " + base_);
 		newOntModel.setNsPrefix("", ns_);
@@ -1232,6 +1229,11 @@ public class OrrClientImpl implements IOrrClient {
 		return createOntologyResult;
 	}
 
+	private OntModel _createOntModel(OntModel ontModel) {
+		ontModel = ModelFactory.createOntologyModel(ontModel.getSpecification(), ontModel);
+		return ontModel;
+	}
+	
 
 	
 	private CreateOntologyResult createOntologyReHosted(CreateOntologyInfo createOntologyInfo, CreateOntologyResult createOntologyResult) {
@@ -1342,7 +1344,7 @@ public class OrrClientImpl implements IOrrClient {
 				return createOntologyResult;
 			}
 			
-			ont = OntModelUtil.getOntology(model);
+			ont = JenaUtil2.getOntology(model);
 			
 			// get original namespace associated with the ontology, if any:
 			uriForEmpty = Util2.getDefaultNamespace(model, file, createOntologyResult);
@@ -1365,7 +1367,7 @@ public class OrrClientImpl implements IOrrClient {
 				return createOntologyResult;
 			}
 			
-			ont = OntModelUtil.getOntology(model);
+			ont = JenaUtil2.getOntology(model);
 			if ( ont == null ) {
 				// Shouldn't happen -- we're reading in an already registered version.
 				String error = "error while getting Ontology resource a registered version. " +
@@ -1420,7 +1422,7 @@ public class OrrClientImpl implements IOrrClient {
 		// The new OntModel that will contain the pre-existing attributes (if any),
 		// plus the new and updated attributes:
 		final OntModel newOntModel = OntModelUtil.createOntModel(base_, model);
-		final Ontology ont_ = OntModelUtil.getOntology(newOntModel);
+		final Ontology ont_ = JenaUtil2.getOntology(newOntModel);
 		if ( log.isDebugEnabled() ) {
 			log.debug("New ontology created with namespace " + ns_ + " base " + base_);
 		}
@@ -1891,7 +1893,7 @@ public class OrrClientImpl implements IOrrClient {
 		/////////////////////////////////////////////////////////////////
 		// Is there an existing OWL.Ontology individual?
 		// TODO Note that ONLY the first OWL.Ontology individual is considered.
-		Resource ontRes = JenaUtil.getFirstIndividual(model, OWL.Ontology);
+		Resource ontRes = JenaUtil2.getFirstIndividual(model, OWL.Ontology);
 		List<Statement> prexistStatements = null; 
 		if ( ontRes != null ) {
 			prexistStatements = new ArrayList<Statement>();
@@ -1906,7 +1908,7 @@ public class OrrClientImpl implements IOrrClient {
 		
 		// The new OntModel that will contain the pre-existing attributes (if any),
 		// plus the new and updated attributes:
-		final OwlModel newOntModel = new OwlModel(model);
+		final OntModel newOntModel = _createOntModel(model);
 		final Ontology ont_ = newOntModel.createOntology(base_);
 		log.info("New ontology created with namespace " + ns_ + " base " + base_);
 		newOntModel.setNsPrefix("", ns_);
@@ -2512,7 +2514,7 @@ public class OrrClientImpl implements IOrrClient {
 
 		OntModel ontModel;
 		try {
-			ontModel = JenaUtil.loadModel(uriFile, false);
+			ontModel = JenaUtil2.loadModel(uriFile, false);
 		}
 		catch (Throwable ex) {
 			String error = "Unexpected error: " +ex.getClass().getName()+ " : " +ex.getMessage();

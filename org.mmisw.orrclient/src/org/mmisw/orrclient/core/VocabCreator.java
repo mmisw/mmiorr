@@ -26,7 +26,9 @@ import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.Ontology;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -34,9 +36,6 @@ import com.infomata.data.CSVFormat;
 import com.infomata.data.DataFile;
 import com.infomata.data.DataRow;
 import com.infomata.data.TabFormat;
-
-import edu.drexel.util.rdf.JenaUtil;
-import edu.drexel.util.rdf.OwlModel;
 
 /**
  * Dispatchs the conversion.
@@ -96,7 +95,7 @@ public class VocabCreator {
 	
 	
 	private Resource[] res;
-	private OwlModel newOntModel;
+	private OntModel newOntModel;
 	private String ns_;
 	private String base_;
 
@@ -264,13 +263,26 @@ public class VocabCreator {
 		createVocabResult.setFullPath(full_path);
 	}
 	
+	private OntModel _createOntModel() {
+		OntModel ontModel = JenaUtil2.createDefaultOntModel();
+		
+		// TODO: from the previous code based on OwlModel, ie.,
+//		ontModel = new OwlModel(ontModel);
+		// it seems the following "layer" is unnecesary. So, returning JenaUtil2.createDefaultOntModel()
+		// directly should be fine.
+		
+		ontModel = ModelFactory.createOntologyModel(ontModel.getSpecification(), ontModel);
+		
+		return ontModel;
+	}
 	
+
 	private void processCreateOntology() throws Exception {
 
 		String fileInText = tmp + uniqueBaseName + ".txt";
 		saveInFile(fileInText);
 		
-		newOntModel = new OwlModel(JenaUtil.createDefaultOntModel());
+		newOntModel = _createOntModel();
 		ns_ = JenaUtil2.appendFragment(finalUri);
 		base_ = JenaUtil2.removeTrailingFragment(finalUri);
 		

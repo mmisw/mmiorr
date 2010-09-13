@@ -5,11 +5,10 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
+import org.mmisw.ont.JenaUtil2;
 import org.mmisw.orrclient.core.voc2skos.Voc2Skos;
 
 import com.hp.hpl.jena.rdf.model.Model;
-
-import edu.drexel.util.rdf.JenaUtil;
 
 /**
  * Tests for the Voc2Rdf functionality.
@@ -75,7 +74,7 @@ public class Voc2SkosTest extends TestCase {
 
 		// now compare output with expected result
 		File fileExpected = new File(BASE_DIR + "/expected/" +baseFilename+ ".rdf");
-		Model modelExpected = JenaUtil.loalRDFModel(fileExpected.toURI()
+		Model modelExpected = JenaUtil2.loalRDFModel(fileExpected.toURI()
 				.toString());
 
 		assertTrue(modelExpected.isIsomorphicWith(model));

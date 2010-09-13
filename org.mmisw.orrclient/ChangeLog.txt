@@ -3,6 +3,14 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2010-09-12  2.0.5.beta
+	- removed org.mmi.ont.util.jar: no longer needed; related operations now provided by Ont's
+	  org.mmisw.ont.misc.jar library (ie., by the JenaUtil2 class).
+	
+	- OntModelUtil.getOntology(OntModel ontModel) also moved to JenaUtil2.
+	
+	- Removed OntModelUtil.loadModel(String uriModel, boolean processImports): not used anywhere.
+	
 2010-09-10   2.0.4.beta
 	- Fixed 280: "Error getting entities" (reported by Roy L.)
 	  OntInfo._getIndividuals.

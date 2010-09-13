@@ -23,8 +23,6 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
 
-import edu.drexel.util.rdf.JenaUtil;
-
 /**
  * Helper to read a temporary (uploaded into working space) ontology.
  * 
@@ -174,7 +172,7 @@ public class TempOntologyHelper {
 		OntModel model;
 		
 		try {
-			model = JenaUtil.loadModel(uriModel, false);
+			model = JenaUtil2.loadModel(uriModel, false);
 		}
 		catch (Throwable ex) {
 			String error = "Unexpected error: " +ex.getClass().getName()+ " : " +ex.getMessage();
@@ -186,7 +184,7 @@ public class TempOntologyHelper {
 			debugOntModel(model);
 		}
 		
-		Resource ontRes = JenaUtil.getFirstIndividual(model, OWL.Ontology);
+		Resource ontRes = JenaUtil2.getFirstIndividual(model, OWL.Ontology);
 		
 		StringBuilder moreDetails = new StringBuilder();
 		
@@ -203,7 +201,7 @@ public class TempOntologyHelper {
 					// get value of MMI property:
 					Property mmiProp = uriPropMap.get(attrDef.getUri());
 					String prefixedMmi = MdHelper.prefixedName(mmiProp);
-					String value = JenaUtil.getValue(ontRes, mmiProp);
+					String value = JenaUtil2.getValue(ontRes, mmiProp);
 					
 					// DC equivalent, which is obtained if necessary
 					Property dcProp = null;
@@ -212,7 +210,7 @@ public class TempOntologyHelper {
 						// try a DC equivalent to use:
 						dcProp = MdHelper.getEquivalentDcProperty(mmiProp);
 						if ( dcProp != null ) {
-							value = JenaUtil.getValue(ontRes, dcProp);
+							value = JenaUtil2.getValue(ontRes, dcProp);
 						}
 					}
 					
@@ -227,7 +225,7 @@ public class TempOntologyHelper {
 						// Special case: Omv.acronym/OmvMmi.shortNameUri  
 						if ( Omv.acronym.getURI().equals(attrDef.getUri()) ) {
 							// add also the value of OmvMmi.shortNameUri:
-							String shortNameValue = JenaUtil.getValue(ontRes, OmvMmi.shortNameUri);
+							String shortNameValue = JenaUtil2.getValue(ontRes, OmvMmi.shortNameUri);
 							if ( log.isDebugEnabled() ) {
 								log.debug("Also assigning " +OmvMmi.shortNameUri.getURI()+ " = " +shortNameValue);
 							}
