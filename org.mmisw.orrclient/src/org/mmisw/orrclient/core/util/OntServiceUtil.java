@@ -58,6 +58,9 @@ public class OntServiceUtil {
 		if ( version != null ) {
 			ontServiceRequest += "&version=" +version;
 		}
+		if ( log.isDebugEnabled() ) {
+			log.debug("resolveOntologyUri: ontServiceRequest=" +ontServiceRequest);
+		}
 		String str = HttpUtil.getAsString(ontServiceRequest, acceptEntries);
 		
 		return str;
@@ -130,8 +133,7 @@ public class OntServiceUtil {
 			model.read(sr, uriModel);
 		}
 		catch (Exception e) {
-			log.error("Error reading model.", e);
-			log.error("The retrieved contents:\n" +str);
+			log.warn("Error reading model from retrieved contents: [" +str+ "]", e);
 			throw e;
 		}
 		

@@ -175,23 +175,28 @@ public class JenaUtil2 {
 		Ontology ont = null;
 		
 		ExtendedIterator<Ontology> iter = mBase.listOntologies();
-		if ( iter.hasNext() ) {
-			ont = (Ontology) iter.next();
-		}
-		
-		if ( log.isDebugEnabled() ) { 
-			if ( ont != null ) {
-				if ( iter.hasNext() ) {
-					Ontology ont2 = (Ontology) iter.next();
-					log.debug("WARNING: more than one Ontology resource in OntModel. " +
-							"Second one found (but ignored): " +ont2.getURI()
-					);
+		try {
+			if ( iter.hasNext() ) {
+				ont = iter.next();
+			}
+
+			if ( log.isDebugEnabled() ) { 
+				if ( ont != null ) {
+					if ( iter.hasNext() ) {
+						Ontology ont2 = iter.next();
+						log.debug("WARNING: more than one Ontology resource in OntModel. " +
+								"Second one found (but ignored): " +ont2.getURI()
+						);
+					}
+					log.debug("Returning Ontology with URI: " +ont.getURI());
 				}
-				log.debug("Returning Ontology with URI: " +ont.getURI());
+				else {
+					log.debug("No Ontology found in OntModel");
+				}
 			}
-			else {
-				log.debug("No Ontology found in OntModel");
-			}
+		}
+		finally {
+			iter.close();
 		}
 
 		return ont;
