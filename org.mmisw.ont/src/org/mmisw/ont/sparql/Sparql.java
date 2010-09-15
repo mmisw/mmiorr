@@ -105,31 +105,36 @@ public class Sparql {
 			// SELECT
 			else if ( query.isSelectType() ) {
 				if ( log.isDebugEnabled() ) {
-					log.debug("Executing select: [" +sparqlQuery+ "]");
+					log.debug("Executing select: [" +sparqlQuery+ "] form=" +form);
 				}
 				ResultSet results = qe.execSelect();
 				if ( log.isDebugEnabled() ) {
 					log.debug("execSelect returned.");
 				}
-				queryResult.setIsEmpty(! results.hasNext());
-				
-				if ( form == null || form.startsWith("html") ) {
-					queryResult.setContentType("text/html");
-					queryResult.setResult(_htmlSelectResults(results));
+				boolean hasNext = results.hasNext();
+				if ( log.isDebugEnabled() ) {
+					log.debug("hasNext = " +hasNext);
 				}
-				else if ( form.equalsIgnoreCase("csv") ) {
-					queryResult.setContentType("text/plain");
-					queryResult.setResult(_csvSelectResults(results));
-				}
-				else if ( form.equalsIgnoreCase("json") ) {
-					queryResult.setContentType("application/json");
-					queryResult.setResult(_jsonSelectResults(results));
-				}
-				else {
-					queryResult.setContentType("text/plain");
-					ByteArrayOutputStream os = new ByteArrayOutputStream();
-					ResultSetFormatter.out(os, results, query);
-					queryResult.setResult(os.toString());
+				queryResult.setIsEmpty(! hasNext);
+				if ( hasNext ) {
+					if ( form == null || form.startsWith("html") ) {
+						queryResult.setContentType("text/html");
+						queryResult.setResult(_htmlSelectResults(results));
+					}
+					else if ( form.equalsIgnoreCase("csv") ) {
+						queryResult.setContentType("text/plain");
+						queryResult.setResult(_csvSelectResults(results));
+					}
+					else if ( form.equalsIgnoreCase("json") ) {
+						queryResult.setContentType("application/json");
+						queryResult.setResult(_jsonSelectResults(results));
+					}
+					else {
+						queryResult.setContentType("text/plain");
+						ByteArrayOutputStream os = new ByteArrayOutputStream();
+						ResultSetFormatter.out(os, results, query);
+						queryResult.setResult(os.toString());
+					}
 				}
 			}
 			
@@ -145,10 +150,10 @@ public class Sparql {
 			}
 		}
 		finally {
-			qe.close();
 			if ( log.isDebugEnabled() ) {
-				log.debug("QueryExecution closed. Returning.");
+				log.debug("Closing QueryExecution");
 			}
+			qe.close();
 		}
 		
 		return queryResult;
