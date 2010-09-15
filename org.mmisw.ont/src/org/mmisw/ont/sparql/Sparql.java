@@ -105,9 +105,12 @@ public class Sparql {
 			// SELECT
 			else if ( query.isSelectType() ) {
 				if ( log.isDebugEnabled() ) {
-					log.debug("Executing select");
+					log.debug("Executing select: [" +sparqlQuery+ "]");
 				}
 				ResultSet results = qe.execSelect();
+				if ( log.isDebugEnabled() ) {
+					log.debug("execSelect returned.");
+				}
 				queryResult.setIsEmpty(! results.hasNext());
 				
 				if ( form == null || form.startsWith("html") ) {
