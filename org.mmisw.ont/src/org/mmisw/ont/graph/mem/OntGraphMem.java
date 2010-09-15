@@ -88,9 +88,6 @@ public class OntGraphMem implements IOntGraph {
 		return _infModel != null ? _infModel : _model;
 	}
 	
-	/**
-	 * Returns null in this implementation.
-	 */
 	public QueryResult executeQuery(String sparqlQuery, String form) throws Exception {
 		QueryResult queryResult = Sparql.executeQuery(_getModel(), sparqlQuery, form);
 		return queryResult;
@@ -130,7 +127,7 @@ public class OntGraphMem implements IOntGraph {
 	}
 
 	/**
-	 *  Nohing done in this implementation.
+	 *  Nothing done in this implementation.
 	 */
 	public void reindex(boolean wait) throws ServletException {
 		
@@ -148,12 +145,76 @@ public class OntGraphMem implements IOntGraph {
 		log.info("reinit complete.");
 	}
 	
+	private void _doInitModel(boolean withInference) throws ServletException {
+		if ( true ) {
+			_doInitModel2(withInference);
+		}
+		else {
+			_doInitModel1(withInference);
+		}
+	}
+
+	/**
+	 * Version 2: creates first the InfModel and then add all the ontologies to
+	 * this InfMode.
+	 * Inits the _model and, if withInference is true, also the _infModel.
+	 * @param withInference true to create the inference model
+	 * @throws ServletException
+	 */
+	private void _doInitModel2(boolean withInference) throws ServletException {
+		
+		_model = ModelFactory.createDefaultModel();
+		if ( withInference ) {
+			log.info("_doInitModel2: starting creation of inference model...");
+			long startTime = System.currentTimeMillis();
+			_infModel = _createInfModel();
+			if ( _infModel != null ) {
+				long endTime = System.currentTimeMillis();
+				log.info("_doInitModel2: creation of inference model completed successfully. (" +(endTime-startTime)+ " ms)");
+			}
+			else {
+				// Log.error messages have been already generated.
+			}
+		}
+		else {
+			_infModel = null;
+		}		
+		
+		// get the list of (latest-version) ontologies:
+		// fixed Issue 223: ontology graph with all versions
+		// now using new correct method to obtain the latest versions:
+		final boolean allVersions = false;
+		List<Ontology> onts = db.getAllOntologies(allVersions);
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug("Using unversioned ontologies: " +USE_UNVERSIONED);
+			
+			log.debug("About to load the following ontologies: ");
+			for ( Ontology ontology : onts ) {
+				log.debug(ontology.getOntologyId()+ " :: " +ontology.getUri());
+			}
+		}
+		
+		for ( Ontology ontology : onts ) {
+			String full_path = aquaUploadsDir+ "/" +ontology.getFilePath() + "/" + ontology.getFilename();
+			log.info("Loading: " +full_path+ " in graph");
+			try {
+				_loadOntology(ontology, full_path);
+			}
+			catch (Throwable ex) {
+				log.error("Error loading ontology: " +full_path+ " (continuing..)", ex);
+			}
+		}
+		
+		log.info("size of base model: " +_model.size());
+	}
+	
 	/**
 	 * Inits the _model and, if withInference is true, also the _infModel.
 	 * @param withInference true to create the inference model
 	 * @throws ServletException
 	 */
-	private void _doInitModel(boolean withInference) throws ServletException {
+	private void _doInitModel1(boolean withInference) throws ServletException {
 		_infModel = null;  // make sure loadOntology(ontology) below does not use _infModel
 		
 		_model = ModelFactory.createDefaultModel();
