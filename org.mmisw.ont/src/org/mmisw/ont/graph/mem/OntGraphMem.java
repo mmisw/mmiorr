@@ -273,7 +273,7 @@ public class OntGraphMem implements IOntGraph {
 	private void _loadOntology(Ontology ontology, String full_path) {
 		final Model model2update = _infModel != null ? _infModel : _model;
 		if ( USE_UNVERSIONED ) {
-			OntModel model = JenaUtil2.loadModel(full_path, false);
+			OntModel model = JenaUtil2.loadModel("file:" +full_path, false);
 
 			if ( OntUtil.isOntResolvableUri(ontology.getUri()) ) {
 				MmiUri mmiUri;
