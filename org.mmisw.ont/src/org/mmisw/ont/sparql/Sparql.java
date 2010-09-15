@@ -6,6 +6,8 @@ import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.JenaUtil2;
 import org.mmisw.ont.util.Unfinished;
 import org.mmisw.ont.util.Util;
@@ -26,6 +28,8 @@ import com.hp.hpl.jena.rdf.model.Model;
  */
 @Unfinished(priority=Unfinished.Priority.MEDIUM)
 public class Sparql {
+
+	private static final Log log = LogFactory.getLog(Sparql.class);
 	
 	/**
 	 * Executes a SPARQL query against the given model.
@@ -57,10 +61,16 @@ public class Sparql {
 				Model model_;
 				
 				if ( query.isConstructType() ) {
+					if ( log.isDebugEnabled() ) {
+						log.debug("Executing construct");
+					}
 					model_ = qe.execConstruct();
 				}
 				else {
 					// DESCRIBE
+					if ( log.isDebugEnabled() ) {
+						log.debug("Executing describe");
+					}
 					model_ = qe.execDescribe();
 				}
 				queryResult.setIsEmpty(model_.isEmpty());
@@ -94,6 +104,9 @@ public class Sparql {
 			
 			// SELECT
 			else if ( query.isSelectType() ) {
+				if ( log.isDebugEnabled() ) {
+					log.debug("Executing select");
+				}
 				ResultSet results = qe.execSelect();
 				queryResult.setIsEmpty(! results.hasNext());
 				
@@ -120,12 +133,19 @@ public class Sparql {
 			
 			// TODO handle other types of queries.
 			else {
-				queryResult.setResult("Sorry, query type " +query.getQueryType()+ " not handled yet");
+				String error = "Sorry, query type " +query.getQueryType()+ " not handled yet";
+				if ( log.isWarnEnabled() ) {
+					log.warn("error: " +error);
+				}
+				queryResult.setResult(error);
 				queryResult.setContentType("text/plain");
 			}
 		}
 		finally {
 			qe.close();
+			if ( log.isDebugEnabled() ) {
+				log.debug("QueryExecution closed. Returning.");
+			}
 		}
 		
 		return queryResult;
