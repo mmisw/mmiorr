@@ -34,7 +34,7 @@ public class OntConfig {
 		
 		PORTAL_SERVICE_URL            ("portal.service.url"),
 		
-		AGRAPH_HOST                   ("agraph.host"),
+		AGRAPH_HOST                   ("agraph.host", false),
 		AGRAPH_PORT                   ("agraph.port"),
 		AGRAPH_TS_DIR                 ("agraph.ts.dir"),
 		AGRAPH_TS_NAME                ("agraph.ts.name"),

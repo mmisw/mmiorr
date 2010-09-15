@@ -4,6 +4,9 @@ $Id$
 
 ChangeLog
 
+2010-09-14  2.0.5.beta
+	- OntConfig.AGRAPH_HOST: agraph.host is not a required parameter
+	
 2010-09-12  2.0.5.beta
 	Removed dependency on org.mmi.ont.util.jar, that is, on the classes:
 		edu.drexel.util.rdf.JenaUtil
