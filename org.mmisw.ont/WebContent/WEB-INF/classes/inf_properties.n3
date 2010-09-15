@@ -1,5 +1,6 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#>.
-@prefix skos: <http://www.w3.org/2008/05/skos#>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+@prefix skos2: <http://www.w3.org/2008/05/skos#>.
 
 skos:exactMatch 
 	a owl:TransitiveProperty;
@@ -17,5 +18,24 @@ skos:narrowMatch
 	owl:inverseOf skos:broadMatch .
 
 skos:relatedMatch 
+	a owl:Symmetric . 
+	
+
+skos2:exactMatch 
+	a owl:TransitiveProperty;
+	a owl:Symmetric .
+	
+skos2:closeMatch 
+	a owl:Symmetric . 
+	
+skos2:broadMatch 
+	a owl:TransitiveProperty;
+	owl:inverseOf skos2:narrowMatch .
+
+skos2:narrowMatch 
+	a owl:TransitiveProperty;
+	owl:inverseOf skos2:broadMatch .
+
+skos2:relatedMatch 
 	a owl:Symmetric . 
 	
