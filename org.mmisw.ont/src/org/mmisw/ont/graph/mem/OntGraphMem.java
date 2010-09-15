@@ -197,7 +197,7 @@ public class OntGraphMem implements IOntGraph {
 		
 		for ( Ontology ontology : onts ) {
 			String full_path = aquaUploadsDir+ "/" +ontology.getFilePath() + "/" + ontology.getFilename();
-			log.info("Loading: " +full_path+ " in graph");
+			log.info("Loading: " +full_path+ " in graph;  uri=" +ontology.getUri());
 			try {
 				_loadOntology(ontology, full_path);
 			}
@@ -236,7 +236,7 @@ public class OntGraphMem implements IOntGraph {
 		
 		for ( Ontology ontology : onts ) {
 			String full_path = aquaUploadsDir+ "/" +ontology.getFilePath() + "/" + ontology.getFilename();
-			log.info("Loading: " +full_path+ " in graph");
+			log.info("Loading: " +full_path+ " in graph;  uri=" +ontology.getUri());
 			try {
 				_loadOntology(ontology, full_path);
 			}
@@ -327,7 +327,7 @@ public class OntGraphMem implements IOntGraph {
 	 */
 	public void loadOntology(Ontology ontology, String graphId) throws Exception {
 		String full_path = aquaUploadsDir+ "/" +ontology.getFilePath() + "/" + ontology.getFilename();
-		log.info("Loading: " +full_path+ " in graph");
+		log.info("Loading: " +full_path+ " in graph;  uri=" +ontology.getUri());
 		_loadOntology(ontology, full_path);
 	}
 
