@@ -1,7 +1,7 @@
 package org.mmisw.orrclient.core;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
@@ -51,9 +51,6 @@ import com.infomata.data.TabFormat;
  * @author Carlos Rueda
  */
 public class VocabCreator {
-
-	// TODO take this from a config parameter:
-	private static final String tmp = "/Users/Shared/registry/tmp/";
 
 	private String orgAbbreviation;
 	private String shortName;
@@ -234,8 +231,8 @@ public class VocabCreator {
 		final String voc2rdfDirectory = _config().getVoc2rdfDirectory();
 		String full_path_csv = voc2rdfDirectory + getPathOnServer() + ".csv";
 		try {
-			FileWriter os = new FileWriter(full_path_csv);
-			IOUtils.copy(new StringReader(ascii), os);
+			FileOutputStream os = new FileOutputStream(full_path_csv);
+			IOUtils.copy(new StringReader(ascii), os, "UTF-8");
 			os.close();
 		}
 		catch (IOException ex) {
@@ -248,8 +245,8 @@ public class VocabCreator {
 		// now save the RDF:
 		String full_path = voc2rdfDirectory + getPathOnServer();
 		try {
-			FileWriter os = new FileWriter(full_path);
-			os.write(rdf);
+			FileOutputStream os = new FileOutputStream(full_path);
+			IOUtils.copy(new StringReader(rdf), os, "UTF-8");
 			os.close();
 		}
 		catch (IOException ex) {
@@ -279,7 +276,8 @@ public class VocabCreator {
 
 	private void processCreateOntology() throws Exception {
 
-		String fileInText = tmp + uniqueBaseName + ".txt";
+		// TODO instead of getPreviewDirectory, use a "tmp" directory explicitly
+		String fileInText = _config().getPreviewDirectory() + uniqueBaseName + ".txt";
 		saveInFile(fileInText);
 		
 		newOntModel = _createOntModel();
@@ -640,15 +638,11 @@ public class VocabCreator {
 	}
 
 
-	private void saveInFile(String fileLocation) {
-		try {
-			FileWriter fileWriter = new FileWriter(fileLocation);
-			fileWriter.write(getAscii());
-			fileWriter.close();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+	private void saveInFile(String fileLocation) throws Exception {
+		String str = getAscii();
+		FileOutputStream os = new FileOutputStream(fileLocation);
+		IOUtils.copy(new StringReader(str), os, "UTF-8");
+		os.close();
 	}
 
 
