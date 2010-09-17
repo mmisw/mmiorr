@@ -89,6 +89,23 @@
 	<!-- ==================================================================== -->
 	<!-- main jar -->
 
+	<target name="jar-no-tests" depends="compile" description="Generates the MMI ORR Client library">
+		<jar destfile="${build.dir}/org.mmisw.orrclient.jar">
+			<fileset dir="${build.dir}/classes">
+				<include name="**/*.class" />
+				<include name="**/*.properties" />
+			</fileset>
+			<fileset dir="src">
+				<include name="**/*.xml" />
+				<include name="**/*.css" />
+				<include name="**/*.java" />
+				<include name="**/*.png" />
+				<include name="**/*.gif" />
+			</fileset>
+		</jar>
+	</target>
+
+	
 	<target name="jar" depends="compile, tests" description="Generates the MMI ORR Client library">
 		<jar destfile="${build.dir}/org.mmisw.orrclient.jar">
 			<fileset dir="${build.dir}/classes">
