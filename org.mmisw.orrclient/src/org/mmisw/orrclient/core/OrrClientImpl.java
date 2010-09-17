@@ -297,6 +297,11 @@ public class OrrClientImpl implements IOrrClient {
 		for ( String line : lines ) {
 			// remove leading and trailing quote:
 			line = line.replaceAll("^'|'$", "");
+			
+			if ( line.trim().length() == 0 ) {
+				continue;
+			}
+			
 			String[] toks = line.trim().split("'\\|'");
 			
 			String ontologyUri =  toks[0];
