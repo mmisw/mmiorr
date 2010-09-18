@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -685,29 +684,6 @@ public class Util2 {
 //		
 //		return namespace;
 //	}
-	
-	/**
-	 * FIXME implementation is incorrect.
-	 * TODO if possible, determine the actual original charset and
-	 * then do the conversion to UTF-8.
-	 */
-	@Deprecated
-	public static String convertToUtf8(String str, Log log) {
-		try {
-			byte[] bytes = str.getBytes();
-			String utf8_str = new String(bytes, "UTF-8");
-			return utf8_str;
-		}
-		catch (UnsupportedEncodingException e) {
-			if ( log != null ) {
-				log.warn("Cannot convert to UTF-8. " +e.toString(),  e);
-			}
-			else {
-				e.printStackTrace();
-			}
-		}
-		return str;
-	}
 
 
 	private static Random random = new Random();

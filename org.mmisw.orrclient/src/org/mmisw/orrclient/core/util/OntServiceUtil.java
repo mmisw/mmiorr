@@ -72,6 +72,10 @@ public class OntServiceUtil {
 	 * Upon a successful retrieval, the value is cached for subsequent calls of this method. 
 	 * In case of exception, a subsequent call will attempt the retrieval again.
 	 * 
+	 * <p>
+	 * TODO NOTE: replace direct access to the aquaportal REST service with corresponding
+	 * (to-be-developed) operations against the Ont service.
+	 * 
 	 * @return the aquaportal rest url.
 	 * @throws Exception If any error happens during the request or if a MalformedURLException
 	 *         happens while trying to parse the retrieved value.
