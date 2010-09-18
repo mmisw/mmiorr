@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.Db;
 import org.mmisw.ont.MmiUri;
 
@@ -33,6 +34,8 @@ import org.mmisw.ont.MmiUri;
  * @author Carlos Rueda
  */
 public class Util {
+	
+	private static final Log log = LogFactory.getLog(Util.class);
 
 	/** @returns true iff the given param is defined in the request
 	 * AND either no value is associated OR none of the values is equal to "n".
@@ -214,7 +217,8 @@ public class Util {
 					_con.close();
 				}
 				catch (SQLException e) {
-					throw new ServletException(e);
+					// just log the exception
+					log.warn("Error closing SQL connection (ignored)", e);
 				}
 			}
 		}
@@ -249,7 +253,7 @@ public class Util {
 	/**
 	 * helper method to retrieve the contents of a resource in the classpath .
 	 */
-	public static String getResource(Log log, String resourceName) {
+	public static String getResource(String resourceName) {
 		InputStream infRulesStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName);
 		if ( infRulesStream == null ) {
 			log.error(resourceName+ ": resource not found -- check classpath");

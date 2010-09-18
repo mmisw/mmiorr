@@ -293,7 +293,7 @@ public class OntGraphMem implements IOntGraph {
 		//
 		// 1) load the skos properties model into the base model _model:
 		//
-		String propsSrc = Util.getResource(log, INF_PROPERTIES_MODEL_NAME_N3);
+		String propsSrc = Util.getResource(INF_PROPERTIES_MODEL_NAME_N3);
 		if ( propsSrc == null ) {
 			return null;
 		}
@@ -308,7 +308,7 @@ public class OntGraphMem implements IOntGraph {
 		//
 		// 2) create reasoner and InfModel:
 		//
-		String rulesSrc = Util.getResource(log, INF_RULES_NAME);
+		String rulesSrc = Util.getResource(INF_RULES_NAME);
 		if ( rulesSrc == null ) {
 			return null;
 		}
