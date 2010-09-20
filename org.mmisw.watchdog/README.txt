@@ -53,6 +53,9 @@ The Cf program:
 - Generate skos:hiddenLabel properties for CF aliases 
 
 - Code for registration at ORR is already included but not functional yet.
+
+
+- development: upgrade orrclient library dependency (formerly "iserver").
   
 
   
