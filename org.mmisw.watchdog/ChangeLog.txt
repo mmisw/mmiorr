@@ -1,6 +1,19 @@
 watchdog ChangeLog
 Carlos Rueda - MMI/MBARI
 
+2010-09-20
+	CF generation changes (upon email exchange with Nan G. today)
+	- skos:definition now used (instead of rdfs:comment)
+	- rdfs:comment not generated anymore
+	- rdfs:label not generated anymore 
+	- skos:prefLabel not generated for the moment (may be again later)
+	So, each standard name gets generated as follows:
+      <Standard_Name rdf:about="__the_std_name_here__">
+        <skos:definition>__the_description_here__</skos:definition>
+        <canonical_units>__the_units_here__</canonical_units>
+      </Standard_Name>	
+
+
 2010-08-20
 	- just updated dependency on iserver module:
 		<dependency>

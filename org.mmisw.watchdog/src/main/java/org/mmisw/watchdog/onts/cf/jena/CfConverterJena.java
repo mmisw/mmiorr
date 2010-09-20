@@ -87,9 +87,6 @@ public class CfConverterJena extends BaseConverter {
 
 		stmt = model.createStatement(standardNameClass, RDFS.label, "Standard Name");
 		model.add(stmt);
-		
-		stmt = model.createStatement(standardNameClass, RDFS.label, "Standard Name");
-		model.add(stmt);
 
 		
 		canonical_units = model.createProperty(namespace + "canonical_units");
@@ -130,14 +127,15 @@ public class CfConverterJena extends BaseConverter {
 
 			String description = ele.getChildTextNormalize("description");
 
-			String prefLabel = id.replace('_', ' ');
-
 			Resource concept = _createConcept(namespace + id);
 
-			concept.addProperty(Skos.prefLabel, prefLabel);
-			concept.addProperty(RDFS.label, id);
+//			concept.addProperty(Skos.prefLabel, id.replace('_', ' '));
+//			concept.addProperty(RDFS.label, id);
+			
 			concept.addProperty(canonical_units, canonicalUnits);
-			concept.addProperty(RDFS.comment, description);
+			
+			concept.addProperty(Skos.definition, description);
+//			concept.addProperty(RDFS.comment, description);
 
 			currentTopConcept.addProperty(Skos.narrower, concept);
 		}
