@@ -17,6 +17,7 @@ import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.OntServlet.Request;
 import org.mmisw.ont.graph.IOntGraph;
 import org.mmisw.ont.util.Accept;
+import org.mmisw.ont.util.ServletUtil;
 import org.mmisw.ont.util.Util;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -467,27 +468,24 @@ public class UriResolver {
 				ServletOutputStream os = response.getOutputStream();
 				switch ( ontFormat ) {
 				case RDFXML: {
-					response.setContentType("Application/rdf+xml");
+					ServletUtil.setContentTypeRdfXml(response);
 //					StringReader is = OntServlet.serializeModel(termModel, "RDF/XML-ABBREV");
 //					IOUtils.copy(is, os);
 					OntServlet.serializeModelToOutputStream(termModel, "RDF/XML-ABBREV", os);
 					break;
 				}
 				case N3 : {
-					String contentType = "text/plain";  // NOTE: "text/rdf+n3" is not registered.
-					response.setContentType(contentType);
+					ServletUtil.setContentTypeTextPlain(response); // NOTE: "text/rdf+n3" is not registered.
 					OntServlet.serializeModelToOutputStream(termModel, "N3", os);
 					break;
 				}
 				case NT : {
-					String contentType = "text/plain";
-					response.setContentType(contentType);
+					ServletUtil.setContentTypeTextPlain(response);
 					OntServlet.serializeModelToOutputStream(termModel, "N-TRIPLE", os);
 					break;
 				}
 				case TTL : {
-					String contentType = "text/plain";
-					response.setContentType(contentType);
+					ServletUtil.setContentTypeTextPlain(response);
 					OntServlet.serializeModelToOutputStream(termModel, "TURTLE", os);
 					break;
 				}
@@ -516,7 +514,7 @@ public class UriResolver {
 			switch ( ontFormat ) {
 			case RDFXML: {
 
-				response.setContentType("Application/rdf+xml");
+				ServletUtil.setContentTypeRdfXml(response);
 				
 				if ( unversionedRequest ) {
 //					StringReader is = OntServlet.serializeModel(unversionedModel, "RDF/XML-ABBREV");
@@ -532,8 +530,7 @@ public class UriResolver {
 			case N3 : 
 			case NT : 
 			case TTL : {
-				String contentType = "text/plain";
-				response.setContentType(contentType);
+				ServletUtil.setContentTypeTextPlain(response);
 				
 				if ( unversionedRequest ) {
 					OntServlet.serializeModelToOutputStream(unversionedModel, ontFormat.lang, os);

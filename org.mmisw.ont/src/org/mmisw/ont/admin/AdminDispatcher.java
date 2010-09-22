@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -23,6 +22,7 @@ import org.mmisw.ont.Db;
 import org.mmisw.ont.JenaUtil2;
 import org.mmisw.ont.OntConfig;
 import org.mmisw.ont.OntServlet.Request;
+import org.mmisw.ont.util.ServletUtil;
 import org.mmisw.ont.vocabulary.Rdfg;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
@@ -155,10 +155,7 @@ public class AdminDispatcher {
 		
 		String result = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV");
 		
-		req.response.setContentType("application/rdf+xml");
-		ServletOutputStream os = req.response.getOutputStream();
-		IOUtils.write(result, os);
-		os.close();
+		ServletUtil.writeResponseRdfXml(req.response, result);
 	}
 
 	

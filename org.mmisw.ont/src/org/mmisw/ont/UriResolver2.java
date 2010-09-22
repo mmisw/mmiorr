@@ -16,6 +16,7 @@ import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.OntServlet.Request;
 import org.mmisw.ont.graph.IOntGraph;
 import org.mmisw.ont.util.DotGenerator;
+import org.mmisw.ont.util.ServletUtil;
 import org.mmisw.ont.util.Util;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -126,7 +127,7 @@ public class UriResolver2 {
 				if ( log.isDebugEnabled() ) {
 					log.debug(this.getClass().getName()+ ": Serializing to RDF/XML-ABBREV");
 				}
-				req.response.setContentType("Application/rdf+xml");
+				ServletUtil.setContentTypeRdfXml(req.response);
 //				is = OntServlet.serializeModel(model, "RDF/XML-ABBREV");
 				OntServlet.serializeModelToOutputStream(model, "RDF/XML-ABBREV", os);
 			}
@@ -134,21 +135,21 @@ public class UriResolver2 {
 			///////////////////////////////////////////////////////////////////
 			// N3
 			else if ( req.outFormat.equalsIgnoreCase("n3") ) {
-				req.response.setContentType("text/plain");
+				ServletUtil.setContentTypeTextPlain(req.response);
 				OntServlet.serializeModelToOutputStream(model, "N3", os);
 			}
 			
 			///////////////////////////////////////////////////////////////////
 			// NT
 			else if ( req.outFormat.equalsIgnoreCase("nt") ) {
-				req.response.setContentType("text/plain");
+				ServletUtil.setContentTypeTextPlain(req.response);
 				OntServlet.serializeModelToOutputStream(model, "N-TRIPLE", os);
 			}
 			
 			///////////////////////////////////////////////////////////////////
 			// TTL
 			else if ( req.outFormat.equalsIgnoreCase("ttl") ) {
-				req.response.setContentType("text/plain");
+				ServletUtil.setContentTypeTextPlain(req.response);
 				OntServlet.serializeModelToOutputStream(model, "TURTLE", os);
 			}
 			

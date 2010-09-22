@@ -4,6 +4,23 @@ $Id$
 
 ChangeLog
 
+2010-09-22  2.0.6.beta
+ 	- Just a note Re. Issue 281: "Allegrograph memory problem"
+ 	  (note: *no* changes in the Ont module related with this AllegroGraph issue.)
+ 	  I just re-created the triple store at the MMI ORR deployment according to suggestion
+ 	  by the AG person, see http://code.google.com/p/mmisw/issues/detail?id=281#c5
+ 	  What I did:
+ 	   - renamed the triple store directory: (mv mmiorr mmiorr.OLD); and immediately
+ 	   - ran the _reload operation in the Ont service.
+ 	  In fact, the new store is a fraction the size of the old one:
+		$ du -s *
+		116984	mmiorr
+		1669968	mmiorr.OLD
+ 	  
+	- New ServletUtil with operations to set the content type and encoding for the responses.
+ 	  Created for better modularization and while testing adjustments related wth UTF-8 are done.
+ 	  
+	
 2010-09-14  2.0.5.beta
 	- OntConfig.AGRAPH_HOST: agraph.host is not a required parameter
 	
