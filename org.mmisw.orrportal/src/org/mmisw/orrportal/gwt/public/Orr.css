@@ -107,6 +107,13 @@ table.inline td {
   background-color: #dee7ec;
 }
 
+
+.cellTextBreakWord {
+  max-width: 300px;
+  word-wrap: break-word;
+  text-wrap: unrestricted
+}
+
 .OntologyTable {
   font-size: small;
   background-color: #ffffff;

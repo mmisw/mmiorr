@@ -200,9 +200,13 @@ public class UtilTable implements IUtilTable {
 			this.actualCol = col;
 			this.valHtml = valHtml;
 			focusPanel = new FocusPanel(valHtml);
+
+			// this was added as a quick "fix" to limit the width of columns
+			// specially useful in the case of the CF vocabulary:
+			valHtml.setStylePrimaryName("cellTextBreakWord");
 			
 			focusPanel.setStylePrimaryName("TermTable-termField");
-			focusPanel.setSize("100%", "100%");
+//			focusPanel.setSize("100%", "100%"); <- unnecessary
 			
 			
 			focusPanel.addFocusListener(new FocusListener() {
