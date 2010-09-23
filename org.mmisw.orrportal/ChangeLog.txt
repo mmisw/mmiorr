@@ -5,7 +5,10 @@ $Id$
 2010-09-22  2.0.6.beta
 	- Orr.css/UtilTable: using style cellTextBreakWord as a quick "fix" to limit the width of 
 	  columns, specially useful in the case of the CF vocabulary. Under testing.
-	
+	  
+	- 268: "Upgrade GWT to most recent version"
+	  Started some preparations. See gwt2.txt
+
 	
 2010-09-12  2.0.5.beta
 	- removed org.mmi.ont.util.jar: no longer needed; related operations now provided by Ont's

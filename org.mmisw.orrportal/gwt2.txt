@@ -1,0 +1,50 @@
+org.mmisw.orrportal: MMI ORR Portal
+Upgrading GWT to a recent version
+Carlos Rueda
+
+2010-09-22
+	
+orrportal currently uses GWT 1.5.2. Note that from GWT 1.6, there is a new (more WAR-friendly)
+directory structure, and other significant changes. I will try to do the necessary preparations
+for using a recent GWT version with no impact on the current 1.5.2-based structure until all
+the upgrade is complete.
+
+I'm basically following http://code.google.com/webtoolkit/doc/1.6/ReleaseNotes_1_6.html and
+http://code.google.com/webtoolkit/doc/latest/DevGuideOrganizingProjects.html.
+
+- Using GWT 2.0.4 on my development computer.
+
+- copy orr.launch to orr2.launch and did some of the changes in orr2.launch:
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-startupUrl index.jsp org.mmisw.orrportal.gwt.Orr"/>
+
+- copy Orr.gwt.xml to Orr.gwt.xml and put <module rename-to="orr2">
+
+- Create directory war with structure:
+war/
+   Orr.css               -- copied from public/
+   index.jsp             -- copied from public/
+   *.html                -- copied from public/
+   images/*              -- copied from public/
+   WEB-INF/
+      web.xml               -- copied from base_war/WEB-INF
+      lib/
+	     gwt-servlet.jar    -- from the GWT 2.0.4 distro
+    
+- adjusted index.jsp:
+   <script type="text/javascript" language="javascript" src="orr2/orr2.nocache.js"></script>
+   
+	
+- Now, changes in my IDE for preliminary tests:
+- In project > properties > google > web toolkit:
+   use gwt was unchecked; I checked it and chose GWT 2.0.4.
+- noticed the various new warnings because of the deprecated "listeners" types.
+- however, orr2.launch does not run yet.
+- at this point, I reverted to the 1.6 settings to avoid complications later on; 
+  after unchecking gwt in the project properties, I had to reassign the 1.6 gwt-user.jar to the
+  classpath.
+  orr.launch did no start because port 8888 was still retained by the failed orr2.launch start.
+  Just re-started the IDE and now orr.launch runs as usual.
+
+To be continued. 
+  
+	
