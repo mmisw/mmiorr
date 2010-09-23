@@ -24,6 +24,7 @@ import org.mmisw.orrclient.gwt.client.vocabulary.AttrDef;
 import org.mmisw.orrportal.gwt.server.UploadServlet;
 
 import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 /**
  * Interface to interact with the server.
@@ -31,6 +32,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
  * @author Carlos Rueda
  * @version $Id$
  */
+@RemoteServiceRelativePath("orrService")
 public interface OrrService extends RemoteService {
 	
 	/**
