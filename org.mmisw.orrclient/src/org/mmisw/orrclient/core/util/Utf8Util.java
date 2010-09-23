@@ -10,6 +10,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CodingErrorAction;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -177,12 +179,15 @@ public class Utf8Util {
 		else {
 //			filename = "resource/utf8/SEACOOS_Revisions(2).csv";
 //			filename = "resource/utf8/utf8-theme-windows-1250.owl";
-			filename = "resource/utf8/theme.owl";
+//			filename = "resource/utf8/theme.owl";
+			filename = "resource/utf8/with-non-utf8.csv";
 			System.out.println("No arg given. Using a hard-coded filename: " +filename);
 		}
 		
 		
 		byte[] bytes = IOUtils.toByteArray(new FileInputStream(filename));
+		
+		Set<String> triedCharsets = new HashSet<String>();
 		
 		ICharsetDetector[] detectors = new ICharsetDetector[] { new CharsetDetectorIcu(), new CharsetDetectorJcd(), };
 		for ( ICharsetDetector detector : detectors ) {
@@ -191,16 +196,32 @@ public class Utf8Util {
 			
 			if ( true ) {
 				for ( String charset : charsets ) {
-					System.out.println("  checking that it can be decoded as " +charset);
-					try {
-						_byteArrayToString(bytes, charset);
-					}
-					catch(Throwable thr) {
-						thr.printStackTrace();
+					if ( ! triedCharsets.contains(charset) ) {
+						triedCharsets.add(charset);
+						System.out.println("  checking that it can be decoded as " +charset);
+						try {
+							String result = _byteArrayToString(bytes, charset);
+							if ( true )
+								System.out.println("    Result: [ " +result+ "]");
+						}
+						catch(Throwable thr) {
+							thr.printStackTrace();
+						}
 					}
 				}
 			}
 		}
+		if ( ! triedCharsets.contains("UTF-8") ) {
+			String charset = "UTF-8";
+			System.out.println("  checking that it can be decoded as " +charset);
+			try {
+				_byteArrayToString(bytes, charset);
+			}
+			catch(Throwable thr) {
+				thr.printStackTrace();
+			}
+		}
+
 	}
 }
 

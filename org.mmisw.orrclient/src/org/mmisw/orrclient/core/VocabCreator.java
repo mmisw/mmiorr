@@ -3,7 +3,6 @@ package org.mmisw.orrclient.core;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -232,7 +231,7 @@ public class VocabCreator {
 		String full_path_csv = voc2rdfDirectory + getPathOnServer() + ".csv";
 		try {
 			FileOutputStream os = new FileOutputStream(full_path_csv);
-			IOUtils.copy(new StringReader(ascii), os, "UTF-8");
+			IOUtils.write(ascii, os, "UTF-8");
 			os.close();
 		}
 		catch (IOException ex) {
@@ -246,7 +245,7 @@ public class VocabCreator {
 		String full_path = voc2rdfDirectory + getPathOnServer();
 		try {
 			FileOutputStream os = new FileOutputStream(full_path);
-			IOUtils.copy(new StringReader(rdf), os, "UTF-8");
+			IOUtils.write(rdf, os, "UTF-8");
 			os.close();
 		}
 		catch (IOException ex) {
@@ -641,7 +640,7 @@ public class VocabCreator {
 	private void saveInFile(String fileLocation) throws Exception {
 		String str = getAscii();
 		FileOutputStream os = new FileOutputStream(fileLocation);
-		IOUtils.copy(new StringReader(str), os, "UTF-8");
+		IOUtils.write(str, os, "UTF-8");
 		os.close();
 	}
 
