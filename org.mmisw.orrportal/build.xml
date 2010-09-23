@@ -78,7 +78,9 @@
     <mkdir dir="bin"/>
     <mkdir dir="${build.dir}/classes"/>
     <javac srcdir="src" destdir="${build.dir}/classes" 
-    	includes="**" debug="on" debuglevel="lines,vars,source">
+    	includes="**" 
+    	excludes="**/JDTCompiler15.java" 
+    	debug="on" debuglevel="lines,vars,source">
       <classpath refid="project.class.path"/>
     </javac>
   </target>
