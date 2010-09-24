@@ -212,15 +212,7 @@ public class Util {
 			throw new ServletException(e);
 		}
 		finally {
-			if ( _con != null ) {
-				try {
-					_con.close();
-				}
-				catch (SQLException e) {
-					// just log the exception
-					log.warn("Error closing SQL connection (ignored)", e);
-				}
-			}
+			db.closeConnection(_con);
 		}
 	}
 	

@@ -36,7 +36,7 @@ public class Db {
 	// obtained from the config in the init() method
 	private String aquaportalDatasource; 
 	
-	// obtained in the init() methos
+	// obtained in the init() method
 	private DataSource dataSource;
 	
 
@@ -73,6 +73,26 @@ public class Db {
 		return result;
     }
 	
+	/**
+	 * Calls connection.close() if the connection is not already closed. Any
+	 * {@link SQLException} is catched and logged as a warning.
+	 *  
+	 * @param connection
+	 *          The connection to close. If null, this methods does nothing.
+	 */
+	public void closeConnection(Connection connection) {
+		if ( connection == null ) {
+			return;
+		}
+		try {
+			if ( ! connection.isClosed() ) {
+				connection.close();
+			}
+		}
+		catch (SQLException e) {
+			log.warn("error closing connection", e);
+		}
+	}
 	
 	/**
 	 * Obtains basic ontology info by the given URI and version.
@@ -124,7 +144,7 @@ public class Db {
 			throw new ServletException(e);
 		}
 		finally {
-			_closeConnectionQuietly(_con);
+			closeConnection(_con);
 		}
 		
 		return null;
@@ -186,7 +206,7 @@ public class Db {
 			throw new ServletException(e);
 		}
 		finally {
-			_closeConnectionQuietly(_con);
+			closeConnection(_con);
 		}
 		
 		return null;
@@ -344,7 +364,7 @@ public class Db {
 			throw new ServletException(e);
 		}
 		finally {
-			_closeConnectionQuietly(_con);
+			closeConnection(_con);
 		}
 		
 		return onts;
@@ -434,7 +454,7 @@ public class Db {
 			throw new ServletException(e);
 		}
 		finally {
-			_closeConnectionQuietly(_con);
+			closeConnection(_con);
 		}
 	
 		return onts;
@@ -508,21 +528,10 @@ public class Db {
 			throw new ServletException(e);
 		}
 		finally {
-			_closeConnectionQuietly(_con);
+			closeConnection(_con);
 		}
 	}
 	
-	private void _closeConnectionQuietly(Connection _con) {
-		if ( _con != null ) {
-			try {
-				_con.close();
-			}
-			catch (SQLException e) {
-				log.error("error closing connection", e);
-			}
-		}		
-	}
-
 	/**
 	 * Gets info about a user.
 	 * @param username
@@ -562,7 +571,7 @@ public class Db {
 			throw new ServletException(e);
 		}
 		finally {
-			_closeConnectionQuietly(_con);
+			closeConnection(_con);
 		}
 	}
 	
@@ -614,7 +623,7 @@ public class Db {
 			throw new ServletException(e);
 		}
 		finally {
-			_closeConnectionQuietly(_con);
+			closeConnection(_con);
 		}
 	}
 

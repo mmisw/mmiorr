@@ -124,14 +124,7 @@ public class MiscDispatcher {
 			throw new ServletException(e);
 		}
 		finally {
-			if ( _con != null ) {
-				try {
-					_con.close();
-				}
-				catch (SQLException e) {
-					log.error("error closing connection", e);
-				}
-			}
+			db.closeConnection(_con);
 		}
 	}
 
@@ -197,14 +190,7 @@ public class MiscDispatcher {
 			throw new ServletException(e);
 		}
 		finally {
-			if ( _con != null ) {
-				try {
-					_con.close();
-				}
-				catch (SQLException e) {
-					log.error("error closing connection", e);
-				}
-			}
+			db.closeConnection(_con);
 		}
 	}
 
@@ -270,14 +256,7 @@ public class MiscDispatcher {
 			throw new ServletException(e);
 		}
 		finally {
-			if ( _con != null ) {
-				try {
-					_con.close();
-				}
-				catch (SQLException e) {
-					log.error("error closing connection", e);
-				}
-			}
+			db.closeConnection(_con);
 		}
 	}
 	
@@ -363,14 +342,7 @@ public class MiscDispatcher {
 			throw new ServletException(e);
 		}
 		finally {
-			if ( _con != null ) {
-				try {
-					_con.close();
-				}
-				catch (SQLException e) {
-					log.error("error closing connection", e);
-				}
-			}
+			db.closeConnection(_con);
 		}
 	}
 

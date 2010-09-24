@@ -4,6 +4,42 @@ $Id$
 
 ChangeLog
 
+2010-09-26  2.0.7.beta
+
+	282: "mysql connection error" - http://code.google.com/p/mmisw/issues/detail?id=282
+	- From time to time i've seen the error mentioned in 
+	      http://forums.mysql.com/read.php?39,180347,195402#msg-195402
+	  basically: mysql server is running with all queries successfully processed, 
+	  but once in a while (looks like after a period of inactivity) the following
+	  kind of exception is thrown:
+		SEVERE: Servlet.service() for servlet ontServlet threw exception
+		java.io.EOFException: Can not read response from server. Expected to read 4 bytes, read 0 bytes before connection was unexpectedly lost.
+		        at com.mysql.jdbc.MysqlIO.readFully(MysqlIO.java:2431)
+		        at com.mysql.jdbc.MysqlIO.reuseAndReadPacket(MysqlIO.java:2882)
+		        at com.mysql.jdbc.MysqlIO.reuseAndReadPacket(MysqlIO.java:2871)
+		        at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3414)
+		        at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1936)
+		        at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2060)
+		        at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2536)
+		        at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2465)
+		        at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1383)
+		        at org.apache.tomcat.dbcp.dbcp.DelegatingStatement.executeQuery(DelegatingStatement.java:208)
+		        at org.mmisw.ont.MiscDispatcher.listAll(MiscDispatcher.java:306)
+		        
+	- I'm explicitly adding the recent mysql driver 5.1.13 in WEB-INF/lib/. This driver was
+	  previously copied manually at deployment time from the bioportal deployment (which is 5.1.6).	
+	  The library is actually copied into <tomcat>/lib/ since, for some reason, it is not taken 
+	  by tomcap from Ont's WEB-INF/lib/.
+	- TODO: investigate use of c3p0 library. 
+	  
+	- While revising the above, I noted that MiscDispatcher was throwing an "already closed connection
+	  SQLException," which happened after the MySQL exception above (while processing a statement).
+	  Now, this closeConnection operation is handled by Db.closeConnection(Connection), so any
+	  SQLException is just logged but the exception is absorbed.
+	
+	  TODO: check behavior with new mysql driver.
+	  
+
 2010-09-22  2.0.6.beta
  	- Just a note Re. Issue 281: "Allegrograph memory problem"
  	  (note: *no* changes in the Ont module related with this AllegroGraph issue.)
