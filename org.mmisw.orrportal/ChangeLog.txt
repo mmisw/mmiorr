@@ -2,12 +2,18 @@ org.mmisw.orrportal: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-09-23  2.0.6.beta
+	- GWT 2.0.x can now be used to create the application. However, performance has 
+	  in general degraded	(and significatly in development mode!). 
+	  Details ingwt2/gwt2.txt
+	
+	
 2010-09-22  2.0.6.beta
 	- Orr.css/UtilTable: using style cellTextBreakWord as a quick "fix" to limit the width of 
 	  columns, specially useful in the case of the CF vocabulary. Under testing.
 	  
 	- 268: "Upgrade GWT to most recent version"
-	  Started some preparations. See gwt2.txt
+	  Started some preparations. 
 
 	
 2010-09-12  2.0.5.beta

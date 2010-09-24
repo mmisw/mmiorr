@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="orrportal" default="war" basedir=".">
+
+	<property name="BASE" value=".." />
+	<property file="${BASE}/version.properties" />
+	<property file="${BASE}/build.properties" />
+
+	<property name="build.dir" value="_generated" />
+	<property name="classes" value="${BASE}/war/WEB-INF/classes" />
+
+	<property name="gwt.args" value="" />
+
+	<!-- set classpath -->
+	<path id="project.class.path">
+		<fileset dir="${appserver.lib}">
+			<include name="servlet*.jar" />
+		</fileset>
+		<pathelement path="${java.class.path}/" />
+
+		<pathelement location="${gwt.sdk}/gwt-user.jar" />
+		<fileset dir="${gwt.sdk}" includes="gwt-dev*.jar" />
+
+		<fileset dir="${BASE}/base_war/WEB-INF/lib">
+			<include name="*.jar" />
+			<include name="jena/*.jar" />
+		</fileset>
+
+	</path>
+
+	<target name="init">
+		<tstamp>
+			<format property="orrportal.app.build" pattern="yyyyMMddHHmm" />
+		</tstamp>
+	</target>
+
+	<target name="compile" depends="init">
+		<mkdir dir="${build.dir}/classes" />
+		<javac srcdir="${BASE}/src" destdir="${build.dir}/classes" includes="**" debug="on" debuglevel="lines,vars,source">
+			<classpath refid="project.class.path" />
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile" description="Package up the project as a jar">
+		<mkdir dir="${BASE}/war/WEB-INF/lib"/>
+		<jar destfile="${BASE}/war/WEB-INF/lib/org.mmisw.orrportal.gwt.jar">
+			<fileset dir="${build.dir}/classes">
+				<include name="**/*.class" />
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="gaDef" if="ga.uanumber" description="sets ga_snippet when ga.aunumber is defined">
+		<loadfile property="ga_snippet" srcFile="${BASE}/base_war/WEB-INF/classes/ga_snippet.js">
+			<filterchain>
+				<expandproperties />
+			</filterchain>
+		</loadfile>
+	</target>
+	<target name="gaUndef" unless="ga.uanumber" description="sets ga_snippet to empty when ga.aunumber is not defined">
+		<property name="ga_snippet" value="" />
+		<property name="ga.uanumber" value="" />
+		<!-- make sure is empty for token replacement below -->
+	</target>
+	<target name="ga" depends="gaDef, gaUndef" description="note: gaDef dependency must run before gaUndef">
+		<echo message="ga_snippet = '${ga_snippet}'" />
+	</target>
+
+		
+	<target name="createwar" depends="jar, ga">
+
+		<copy todir="${BASE}/war">
+			<fileset dir="${BASE}/base_war">
+				<exclude name="*.jsp" />
+				<exclude name="WEB-INF/web*.xml" />
+				<exclude name="WEB-INF/lib**" />
+				<exclude name="WEB-INF/classes/log4j.xml" />
+				<exclude name="WEB-INF/classes/ga_snippet.js" />
+			</fileset>
+		</copy>
+
+		<copy todir="${BASE}/war">
+			<fileset dir="${BASE}/src/org/mmisw/orrportal/gwt/public">
+				<exclude name="*.jsp" />
+				<exclude name="portal/**" />
+				<exclude name="voc2rdf**" />
+			</fileset>
+		</copy>
+
+		<copy todir="${BASE}/war/WEB-INF/lib">
+			<fileset dir="${BASE}/base_war/WEB-INF/lib">
+				<exclude name="WEB-INF/lib/jena/**" />
+				<exclude name="WEB-INF/lib/gwt-servlet.jar" />
+			</fileset>
+			<fileset dir="${BASE}/base_war/WEB-INF/lib/jena">
+			</fileset>
+		</copy>
+
+		<copy file="${BASE}/gwt2/web2.xml" tofile="${BASE}/war/WEB-INF/web.xml" overwrite="true">
+			<filterset>
+				<filter token="orrportal.app.version" value="${orrportal.app.version}" />
+				<filter token="orrportal.app.build" value="${orrportal.app.build}" />
+				<filter token="appserver.host" value="${appserver.host}" />
+				<filter token="ont.service.url" value="${ont.service.url}" />
+				<filter token="ontbrowser.service.url" value="${ontbrowser.service.url}" />
+				<filter token="orrportal.pre.uploads.dir" value="${orrportal.pre.uploads.dir}" />
+				<filter token="orrportal.voc2rdf.dir" value="${orrportal.voc2rdf.dir}" />
+				<filter token="orrportal.preview.dir" value="${orrportal.preview.dir}" />
+				<filter token="orrportal.resource.dir" value="${orrportal.resource.dir}" />
+				<filter token="orrportal.resourcetype.class" value="${orrportal.resourcetype.class}" />
+				<filter token="orrportal.authority.class" value="${orrportal.authority.class}" />
+				<filter token="mail.usr" value="${mail.usr}" />
+				<filter token="mail.pw" value="${mail.pw}" />
+				<filter token="ga.uanumber" value="${ga.uanumber}" />
+			</filterset>
+		</copy>
+
+		<copy file="${BASE}/base_war/WEB-INF/classes/log4j.xml" tofile="${BASE}/war/WEB-INF/classes/log4j.xml" overwrite="true">
+			<filterset>
+				<filter token="orrportal.app.logfilepath" value="${orrportal.app.logfilepath}" />
+				<filter token="orrportal.app.maxlogfilesize" value="${orrportal.app.maxlogfilesize}" />
+				<filter token="orrportal.app.maxlogbackupindex" value="${orrportal.app.maxlogbackupindex}" />
+				<filter token="orrportal.app.log.deflevel" value="${orrportal.app.log.deflevel}" />
+				<filter token="orrportal.app.log.orrportallevel" value="${orrportal.app.log.orrportallevel}" />
+			</filterset>
+		</copy>
+
+		<copy file="${BASE}/gwt2/index2.jsp" tofile="${BASE}/war/index.jsp" overwrite="true">
+			<filterset>
+				<filter token="ga_snippet" value="${ga_snippet}" />
+			</filterset>
+		</copy>
+
+		<copy file="${gwt.sdk}/gwt-servlet.jar" todir="${BASE}/war/WEB-INF/lib" overwrite="true" />
+
+	</target>
+
+	<target name="gwtc" depends="compile" description="GWT compile to JavaScript">
+		<java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler" dir="${BASE}">
+			<classpath>
+				<pathelement location="${BASE}/src" />
+				<path refid="project.class.path" />
+			</classpath>
+			<!-- add jvmarg -Xss16M or similar if you see a StackOverflowError -->
+			<jvmarg value="-Xmx256M" />
+			<!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
+			<arg line="${gwt.args}" />
+			<arg value="org.mmisw.orrportal.gwt.Orr2" />
+		</java>
+	</target>
+
+	<target name="devmode" depends="createwar" description="Run development mode">
+		<java failonerror="true" fork="true" classname="com.google.gwt.dev.DevMode" dir="${BASE}">
+			<classpath>
+				<pathelement location="${BASE}/src" />
+				<pathelement location="${classes}" />
+				<path refid="project.class.path" />
+			</classpath>
+			<jvmarg value="-Dbuild.compiler=org.mmisw.orrportal.gwt.server.gwtbug.JDTCompiler15" />
+			<jvmarg value="-Xmx1024M" />
+			<arg value="-startupUrl" />
+			<arg value="index.jsp" />
+			<!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
+			<arg line="${gwt.args}" />
+			<arg value="org.mmisw.orrportal.gwt.Orr2" />
+		</java>
+	</target>
+
+	<target name="war" depends="createwar, gwtc" description="Create the war file">
+		<zip destfile="${BASE}/_generated/orr2.war" basedir="${BASE}/war" />
+	</target>
+
+</project>

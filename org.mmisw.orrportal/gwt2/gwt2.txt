@@ -1,0 +1,93 @@
+org.mmisw.orrportal: MMI ORR Portal
+Upgrading GWT to a recent version
+Carlos Rueda
+
+2010-09-23
+	
+= intro =
+
+orrportal currently uses GWT 1.5.2. From GWT 1.6, there is a new directory structure, and other
+significant changes. I am starting preparations for using a recent GWT version. While the
+upgrade is completed, no impact should happen to the current 1.5.2-based structure.
+
+The new resources are under this directory (gwt2/) and some other in the main code base, as
+indicated below.
+
+NOTE: the standard creation of the 1.5.2-based war continues to work as usual, ie., using
+the build.xml in the root directory of this project, ``ant'' creates _generated/orr.war.
+Also, orr.launch launches the 1.5.2-based application.
+
+
+= The additions/changes =
+
+I'm basically following http://code.google.com/webtoolkit/doc/1.6/ReleaseNotes_1_6.html and
+http://code.google.com/webtoolkit/doc/latest/DevGuideOrganizingProjects.html.
+
+- I downloaded and installed GWT 2.0.4 on my development computer.
+
+- copied Orr.gwt.xml to Orr2.gwt.xml and put <module rename-to="orr2">
+
+- copied orr.launch to gtw2/orr2.launch and did the following changes:
+   <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-startupUrl index.jsp org.mmisw.orrportal.gwt.Orr2"/>
+   <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx1024M -Dbuild.compiler=org.mmisw.orrportal.gwt.server.gwtbug.JDTCompiler15"/>
+  for this last line, see below.
+  
+- copied build.xml to gtw2/build2.xml and use the latter for these preparations.
+
+- New war/ directory: note that this is not going to be a regular war/ directory in the sense of
+  containing base resources, and this is basically because web.xml and other resources are
+  generated from corresponding templates located elsewhere.
+  Full contents of war/ is created by the "createwar" target in build2.xml based on contents in
+  gwt2/, src/org/mmisw/orrportal/gwt/public and existing base_war/.
+  
+- New template gwt2/index2.jsp adapted from src/org/mmisw/orrportal/gwt/public/index.jsp
+  with the adjustment:
+   <script type="text/javascript" language="javascript" src="orr2/orr2.nocache.js"></script>
+
+- Created class org.mmisw.orrportal.gwt.server.gwtbug.JDTCompiler15 as the workaround described
+  in http://code.google.com/p/google-web-toolkit/issues/detail?id=3557 for the bug that
+  prevents the index.jsp to be compiled with 1.5 source level.  (how come this is a bug in GWT 2.0.4!)
+
+
+= Eclipse =
+
+- The org.mmisw.orrportal.gwt.server.gwtbug.JDTCompiler15 class is only needed when compiling against
+  GWT 2.0.4.  So, right-click it -> Build path -> Exclude when compiling/running against 1.5.2.
+
+Switching between 1.5.2 and 2.0.4
+
+  - If using GWT 1.5.2:
+     - Open the Java Build Path libraries setting and indicate:
+          gwt-user.jar and gwt-dev-mac.jar in gwt-mac-1.5.2/
+     - Exclude org.mmisw.orrportal.gwt.server.gwtbug.JDTCompiler15
+     
+  - If using GWT 2.0.4:
+     - Open the Java Build Path libraries setting and indicate:
+          gwt-user.jar and gwt-dev-jar in gwt-2.0.4/
+     - Include org.mmisw.orrportal.gwt.server.gwtbug.JDTCompiler15
+     This is the setting required to run orr2.launch
+  
+	
+= Preliminary 2.0.4 performance evaluation  =
+
+Development mode:
+
+The new development mode (either via ``ant -f gtw2/build2.xml devmode'' or orr2.launch) is 
+NOTICEABLY SLOWER than the 1.5.2 hosted mode !!  In fact, I easily get the slow script warnings (SSW) just
+loading the first page (with the ontology listing) !  I've searched for possible solutions but
+it seems there is no straighforward way. http://code.google.com/p/google-web-toolkit/issues/detail?id=860
+seems related but it says "Found in GWT Release: 1.3.3", so it got worse in 2.x.x !
+
+Production mode:
+
+2.0.4 production mode runs certainly faster, but slower than the 1.5.2 production mode, although
+perhaps acceptable when do dealing with big ontologies (like CF).  
+
+Presumably 2.0.4 must be better in several aspects, but definitely NOT in performance (at least 
+with the default settings)!!  This is frustrating; I was expecting only improvements by just
+upgrading (or at least not degradations on any sort)  :-(
+
+A conclusion at this moment: first address the core performance issues we have in general
+(http://code.google.com/p/mmisw/issues/list?can=2&q=label=Performance), and then move to GWT 2.x.x 
+
+

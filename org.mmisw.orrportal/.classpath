@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry excluding="org/mmisw/orrportal/gwt/server/gwtbug/JDTCompiler15.java" kind="src" path="src"/>
 	<classpathentry kind="lib" path="/Users/carueda/Software/apache-tomcat-6.0.18/lib/servlet-api.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/activation.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/mail.jar"/>
@@ -17,7 +17,6 @@
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmisw.ont.mmiuri.jar" sourcepath="/org.mmisw.ont"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmisw.ont.vocabulary.jar" sourcepath="/org.mmisw.ont/src"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/chardet.jar"/>
-	<classpathentry kind="lib" path="/Users/carueda/Software/gwt-mac-1.5.2/gwt-user.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/arq-2.8.4.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/icu4j-3.4.4.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/iri-0.8-sources.jar"/>
@@ -33,5 +32,7 @@
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/wstx-asl-3.2.9.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/xercesImpl-2.7.1.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmisw.orrclient.jar"/>
+	<classpathentry kind="lib" path="/Users/carueda/Software/gwt-mac-1.5.2/gwt-dev-mac.jar"/>
+	<classpathentry kind="lib" path="/Users/carueda/Software/gwt-mac-1.5.2/gwt-user.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
