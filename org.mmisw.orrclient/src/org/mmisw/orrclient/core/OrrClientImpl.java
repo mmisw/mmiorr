@@ -721,39 +721,6 @@ public class OrrClientImpl implements IOrrClient {
 		return foundRoi;
 	}
 
-	public RegisteredOntologyInfo getEntities(RegisteredOntologyInfo registeredOntologyInfo) {
-		if ( log.isDebugEnabled() ) {
-			log.debug("getEntities(RegisteredOntologyInfo) starting");
-		}
-		
-		
-		OntModel ontModel;
-		try {
-			// note, version==null -> not specific version, so get the latest version
-			final String version = null;
-			ontModel = OntServiceUtil.retrieveModel(registeredOntologyInfo.getUri(), version);
-		}
-		catch (Exception e) {
-			String error = "Error loading model: " +e.getMessage();
-			log.error(error, e);
-			registeredOntologyInfo.setError(error);
-			return registeredOntologyInfo;
-		}
-
-		
-		try {
-			OntInfoUtil.getEntities(registeredOntologyInfo, ontModel);
-		}
-		catch (Exception e) {
-			String error = "Error loading model: " +e.getMessage();
-			log.error(error, e);
-			registeredOntologyInfo.setError(error);
-			return registeredOntologyInfo;
-		}
-		
-		return registeredOntologyInfo;
-	}
-
 
 	private static String getAsString(String uri, int maxlen) throws Exception {
 		HttpClient client = new HttpClient();

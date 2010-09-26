@@ -100,16 +100,6 @@ public interface IOrrClient {
 	 */
 	RegisteredOntologyInfo getOntologyInfo(String ontologyUri);
 
-	/**
-	 * Obtains the entities of an ontology.
-	 * Note: No specific version is requested, but the latest version should be obtained.
-	 * 
-	 * @param registeredOntologyInfo
-	 * @return ontologyInfo
-	 */
-	RegisteredOntologyInfo getEntities(RegisteredOntologyInfo registeredOntologyInfo);
-	
-	
 	
 	/**
 	 * Resolves a URI against the registry
