@@ -4,7 +4,14 @@ Created: 2009-05-13
 $Id$
 
 2010-09-25  2.0.7.beta
-	- IOrrClient: removed unused method getEntities(RegisteredOntologyInfo) -> RegisteredOntologyInfo
+	Implemented the following to support 267: Lazy loading of ontology contents
+	- New service IOrrClient.getOntologyMetadata that only retrieves the metadata.
+	- The existing getOntologyContents retrives both the metadata and the data. The client
+	  can now first retrieve the metadata and later the data.
+	  
+	- As part of the review, removed unused operation getEntities(RegisteredOntologyInfo).
+	
+	
 		
 2010-09-22  2.0.6.beta
 	- some minor adjustments related with UTF-8 

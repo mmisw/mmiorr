@@ -267,7 +267,7 @@ public class OrrClientImpl implements IOrrClient {
 		registeredOntologyInfo.setAuthority(authority);
 		registeredOntologyInfo.setShortName(shortName);
 
-		setHostingType(registeredOntologyInfo);
+		_setHostingType(registeredOntologyInfo);
 		
 		return registeredOntologyInfo;
 	}
@@ -280,7 +280,7 @@ public class OrrClientImpl implements IOrrClient {
 	 *  @param onlyThisUnversionedUri If this is not null, only this URI (assumed to be unversioned) will be considered,
 	 *         so the returned map will at most contain just that single key,
 	 */
-	private Map<String, List<RegisteredOntologyInfo>> getUnversionedToOntologyInfoListMap(String onlyThisUnversionedUri) throws Exception {
+	private Map<String, List<RegisteredOntologyInfo>> _getUnversionedToOntologyInfoListMap(String onlyThisUnversionedUri) throws Exception {
 		
 		// unversionedUri -> list of corresponding OntologyInfos
 		Map<String, List<RegisteredOntologyInfo>> unversionedToVersioned = new LinkedHashMap<String, List<RegisteredOntologyInfo>>();
@@ -291,7 +291,7 @@ public class OrrClientImpl implements IOrrClient {
 			log.debug("getUnversionedToVersioned. uri= " +uri);
 		}
 
-		String response = getAsString(uri, Integer.MAX_VALUE);
+		String response = _getAsString(uri, Integer.MAX_VALUE);
 		
 		String[] lines = response.split("\n|\r\n|\r");
 		for ( String line : lines ) {
@@ -393,7 +393,7 @@ public class OrrClientImpl implements IOrrClient {
 	}
 
 	
-	private static void setHostingType(RegisteredOntologyInfo registeredOntologyInfo) {
+	private static void _setHostingType(RegisteredOntologyInfo registeredOntologyInfo) {
 		if ( OntServiceUtil.isOntResolvableUri(registeredOntologyInfo.getUri()) ) {
 			registeredOntologyInfo.setHostingType(HostingType.FULLY_HOSTED);
 		}
@@ -407,7 +407,7 @@ public class OrrClientImpl implements IOrrClient {
 	public List<RegisteredOntologyInfo> getAllOntologies(boolean includeAllVersions) throws Exception {
 		
 		// {unversionedUri -> list of versioned URIs }  for all unversioned URIs ontologies
-		Map<String, List<RegisteredOntologyInfo>> unversionedToVersioned = getUnversionedToOntologyInfoListMap(null);
+		Map<String, List<RegisteredOntologyInfo>> unversionedToVersioned = _getUnversionedToOntologyInfoListMap(null);
 		
 		// the list to be returned
 		List<RegisteredOntologyInfo> onts = new ArrayList<RegisteredOntologyInfo>();
@@ -576,7 +576,7 @@ public class OrrClientImpl implements IOrrClient {
 		if ( OntServiceUtil.isOntResolvableUri(ontologyUri) ) {
 			try {
 				MmiUri mmiUri = new MmiUri(ontologyUri);
-				return getOntologyInfoFromMmiUri(ontologyUri, mmiUri, version);
+				return _getOntologyInfoFromMmiUri(ontologyUri, mmiUri, version);
 			}
 			catch (URISyntaxException e) {
 				String error = e.getMessage();
@@ -591,7 +591,7 @@ public class OrrClientImpl implements IOrrClient {
 			String unversOntologyUri = ontologyUri;
 			try {
 				boolean includeAllVersions = true;
-				return getOntologyInfoWithVersionParams(ontologyUri, unversOntologyUri, version, includeAllVersions);
+				return _getOntologyInfoWithVersionParams(ontologyUri, unversOntologyUri, version, includeAllVersions);
 			}
 			catch (Exception e) {
 				String error = e.getMessage();
@@ -603,12 +603,12 @@ public class OrrClientImpl implements IOrrClient {
 		}
 	}
 
-	private RegisteredOntologyInfo getOntologyInfoFromMmiUri(String ontologyUri, MmiUri mmiUri, String version) {
+	private RegisteredOntologyInfo _getOntologyInfoFromMmiUri(String ontologyUri, MmiUri mmiUri, String version) {
 		try {	
 			// get elements associated with the unversioned form of the requested URI:
 			String unversOntologyUri = mmiUri.copyWithVersion(null).getOntologyUri();
 			boolean includeAllVersions = true;
-			return getOntologyInfoWithVersionParams(ontologyUri, unversOntologyUri, version, includeAllVersions);
+			return _getOntologyInfoWithVersionParams(ontologyUri, unversOntologyUri, version, includeAllVersions);
 		}
 		catch (Exception e) {
 			String error = e.getMessage();
@@ -628,11 +628,11 @@ public class OrrClientImpl implements IOrrClient {
 	 * @return
 	 * @throws Exception
 	 */
-	private RegisteredOntologyInfo getOntologyInfoWithVersionParams(String ontologyUri, String unversOntologyUri,
+	private RegisteredOntologyInfo _getOntologyInfoWithVersionParams(String ontologyUri, String unversOntologyUri,
 			String version, boolean includeAllVersions) throws Exception {
 
 		// first, get list of entries for the requested ontology using the unversioned form as key:
-		Map<String, List<RegisteredOntologyInfo>> unversionedToVersioned = getUnversionedToOntologyInfoListMap(unversOntologyUri);
+		Map<String, List<RegisteredOntologyInfo>> unversionedToVersioned = _getUnversionedToOntologyInfoListMap(unversOntologyUri);
 
 		log.debug("getOntologyInfoWithVersionParams: getUnversionedToOntologyInfoListMap => " +unversionedToVersioned);
 		
@@ -721,28 +721,34 @@ public class OrrClientImpl implements IOrrClient {
 		return foundRoi;
 	}
 
+	
+	public RegisteredOntologyInfo getOntologyMetadata(RegisteredOntologyInfo registeredOntologyInfo, String version) {
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug("getOntologyMetadata(RegisteredOntologyInfo): loading model");
+		}
+		
+		OntModel ontModel;
+		try {
+			ontModel = OntServiceUtil.retrieveModel(registeredOntologyInfo.getUri(), version);
+		}
+		catch (Exception e) {
+			String error = "Error loading model: " +e.getMessage();
+			log.error(error, e);
+			registeredOntologyInfo.setError(error);
+			return registeredOntologyInfo;
+		}
 
-	private static String getAsString(String uri, int maxlen) throws Exception {
-		HttpClient client = new HttpClient();
-	    GetMethod meth = new GetMethod(uri);
-	    try {
-	        client.executeMethod(meth);
+		// Metadata:
+		if ( log.isDebugEnabled() ) {
+			log.debug("getOntologyMetadata(RegisteredOntologyInfo): getting metadata");
+		}
+		MetadataExtractor.prepareOntologyMetadata(metadataBaseInfo, ontModel, registeredOntologyInfo);
 
-	        if (meth.getStatusCode() == HttpStatus.SC_OK) {
-	            return meth.getResponseBodyAsString(maxlen);
-	        }
-	        else {
-	          throw new Exception("Unexpected failure: " + meth.getStatusLine().toString());
-	        }
-	    }
-	    finally {
-	        meth.releaseConnection();
-	    }
+		return registeredOntologyInfo;
 	}
-	
-	
-	
-	
+
+
 	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo registeredOntologyInfo, String version) {
 		
 		if ( log.isDebugEnabled() ) {
@@ -761,6 +767,7 @@ public class OrrClientImpl implements IOrrClient {
 		}
 
 		// Metadata:
+		// NOTE: the metadata are retrieved here regardless of whether have been already retrieved.
 		if ( log.isDebugEnabled() ) {
 			log.debug("getOntologyContents(RegisteredOntologyInfo): getting metadata");
 		}
@@ -786,6 +793,25 @@ public class OrrClientImpl implements IOrrClient {
 	
 	}
 
+
+	private static String _getAsString(String uri, int maxlen) throws Exception {
+		HttpClient client = new HttpClient();
+	    GetMethod meth = new GetMethod(uri);
+	    try {
+	        client.executeMethod(meth);
+
+	        if (meth.getStatusCode() == HttpStatus.SC_OK) {
+	            return meth.getResponseBodyAsString(maxlen);
+	        }
+	        else {
+	          throw new Exception("Unexpected failure: " + meth.getStatusLine().toString());
+	        }
+	    }
+	    finally {
+	        meth.releaseConnection();
+	    }
+	}
+	
 	
 	// TODO this mechanism copied from MmiUri (in ont project).
 	private static final Pattern VERSION_PATTERN = 
@@ -801,17 +827,17 @@ public class OrrClientImpl implements IOrrClient {
 		
 		if ( createOntologyInfo.getHostingType() != null ) {
 			// use of this attribute indicates to use the new method
-			createOntologyResult = createOntology_newMethod(createOntologyInfo);
+			createOntologyResult = _createOntology_newMethod(createOntologyInfo);
 		}
 		else {
-			createOntologyResult = createOntology_oldMethod(createOntologyInfo);
+			createOntologyResult = _createOntology_oldMethod(createOntologyInfo);
 		}
 		
 		return createOntologyResult;
 	}
 
 	
-	private CreateOntologyResult createOntology_newMethod(CreateOntologyInfo createOntologyInfo) {
+	private CreateOntologyResult _createOntology_newMethod(CreateOntologyInfo createOntologyInfo) {
 		
 		final HostingType hostingType = createOntologyInfo.getHostingType();
 		
@@ -829,9 +855,9 @@ public class OrrClientImpl implements IOrrClient {
 		
 		switch ( hostingType ) {
 			case FULLY_HOSTED:
-				return createOntologyFullyHosted(createOntologyInfo, createOntologyResult);
+				return _createOntologyFullyHosted(createOntologyInfo, createOntologyResult);
 			case RE_HOSTED:
-				return createOntologyReHosted(createOntologyInfo, createOntologyResult);
+				return _createOntologyReHosted(createOntologyInfo, createOntologyResult);
 			default: {
 				String error = "Hosting type "+hostingType+ " NOT yet implemented.";
 				createOntologyResult.setError(error);
@@ -842,7 +868,7 @@ public class OrrClientImpl implements IOrrClient {
 	}
 	
 	
-	private CreateOntologyResult createOntologyFullyHosted(CreateOntologyInfo createOntologyInfo, CreateOntologyResult createOntologyResult) {
+	private CreateOntologyResult _createOntologyFullyHosted(CreateOntologyInfo createOntologyInfo, CreateOntologyResult createOntologyResult) {
 		
 		Map<String, String> newValues = createOntologyInfo.getMetadataValues();
 		assert ( newValues != null ) ;
@@ -1208,7 +1234,7 @@ public class OrrClientImpl implements IOrrClient {
 	
 
 	
-	private CreateOntologyResult createOntologyReHosted(CreateOntologyInfo createOntologyInfo, CreateOntologyResult createOntologyResult) {
+	private CreateOntologyResult _createOntologyReHosted(CreateOntologyInfo createOntologyInfo, CreateOntologyResult createOntologyResult) {
 		
 		Map<String, String> newValues = createOntologyInfo.getMetadataValues();
 		assert ( newValues != null ) ;
@@ -1523,7 +1549,7 @@ public class OrrClientImpl implements IOrrClient {
 	
 	// TODO remove when new mechanism is in place.
 	@SuppressWarnings("deprecation")
-	private CreateOntologyResult createOntology_oldMethod(CreateOntologyInfo createOntologyInfo) {
+	private CreateOntologyResult _createOntology_oldMethod(CreateOntologyInfo createOntologyInfo) {
 			
 		log.info("createOntology: called.");
 		

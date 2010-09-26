@@ -95,11 +95,6 @@ public interface IOrrClient {
 	 */
 	List<RegisteredOntologyInfo> getAllOntologies(boolean includeAllVersions) throws Exception;
 	
-	/**
-	 * Gets an ontology from the registry.
-	 */
-	RegisteredOntologyInfo getOntologyInfo(String ontologyUri);
-
 	
 	/**
 	 * Resolves a URI against the registry
@@ -109,6 +104,33 @@ public interface IOrrClient {
 	 * Both members will be null if the URI could not be resolved (not found).
 	 */
 	public ResolveUriResult resolveUri(String uri);
+	
+	
+	/**
+	 * Gets basic information about a registered.
+	 * So, getOntologyMetadata() and getOntologyData on the returned object will return null.
+	 */
+	RegisteredOntologyInfo getOntologyInfo(String ontologyUri);
+
+	
+	/**
+	 * Gets the metadata of the ontology.
+	 * 
+	 * @param registeredOntologyInfo
+	 * @param version   Desired version; can be null
+	 * @return
+	 */
+	public RegisteredOntologyInfo getOntologyMetadata(RegisteredOntologyInfo registeredOntologyInfo, String version);
+	
+	
+	/**
+	 * Gets both the metadata and the entities.
+	 * 
+	 * @param registeredOntologyInfo
+	 * @param version   Desired version; can be null
+	 * @return
+	 */
+	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo registeredOntologyInfo, String version);
 	
 	
 	
@@ -121,16 +143,6 @@ public interface IOrrClient {
 	 * @return the given argument.
 	 */
 	AttrDef refreshOptions(AttrDef attrDef);
-	
-	/**
-	 * Gets both the metadata and the entities.
-	 * 
-	 * @param registeredOntologyInfo
-	 * @param version   Desired version; can be null
-	 * @return
-	 */
-	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo registeredOntologyInfo, String version);
-	
 	
 	/**
 	 * Prepares a new ontology with the given information. The resulting ontology will be stored
