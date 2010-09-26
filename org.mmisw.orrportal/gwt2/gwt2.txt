@@ -80,14 +80,15 @@ seems related but it says "Found in GWT Release: 1.3.3", so it got worse in 2.x.
 
 Production mode:
 
-2.0.4 production mode runs certainly faster, but slower than the 1.5.2 production mode, although
-perhaps acceptable when do dealing with big ontologies (like CF).  
+2.0.4 production mode runs certainly much faster than development mode, but SLOWER than the 1.5.2 
+production mode, although perhaps acceptable when not dealing with big ontologies (like CF).  
 
 Presumably 2.0.4 must be better in several aspects, but definitely NOT in performance (at least 
-with the default settings)!!  This is frustrating; I was expecting only improvements by just
-upgrading (or at least not degradations on any sort)  :-(
+with the default settings)!!  This is frustrating; I was expecting only improvements (or at least 
+not degradations on any sort) by just upgrading  :-(
 
-A conclusion at this moment: first address the core performance issues we have in general
-(http://code.google.com/p/mmisw/issues/list?can=2&q=label=Performance), and then move to GWT 2.x.x 
-
+A conclusion at this moment: decide on the upgrade as we address the core performance issues we
+have in general (http://code.google.com/p/mmisw/issues/list?can=2&q=label=Performance).
+Interestingly, some of these issues may be easier to solve with the added functionality in terms 
+of GUI widget that can be enabled by upgrading!
 
