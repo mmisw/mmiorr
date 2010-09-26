@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+xmlns:skos="http://www.w3.org/2004/02/skos/core#" 
+xmlns:dc="http://purl.org/dc/elements/1.1/"
+xml:base="http://example.org/orr-test/bodc/P021_current"> 
+<skos:Concept rdf:about='http://vocab.ndg.nerc.ac.uk/term/P021/54/SICO'>
+<skos:externalID>SDN:P021:54:SICO</skos:externalID>
+<skos:prefLabel>&apos;Other&apos; fluxes between the bed and the water column</skos:prefLabel>
+<skos:altLabel>OthFlux_WCBed</skos:altLabel>
+<skos:definition>Fluxes of species other than metals and nutrients between the bed (ie the sediment) and the water column sometimes termed benthic fluxes or sediment demand</skos:definition>
+<dc:date>2010-09-09T21:04:16.407+0000</dc:date><skos:minorMatch rdf:resource="http://vocab.ndg.nerc.ac.uk/term/P041/4/H389" /> 
+<skos:minorMatch rdf:resource="http://vocab.ndg.nerc.ac.uk/term/P051/0/008" /> 
+<skos:minorMatch rdf:resource="http://vocab.ndg.nerc.ac.uk/term/P041/4/G856" /> 
+<skos:broadMatch rdf:resource="http://vocab.ndg.nerc.ac.uk/term/P051/0/014" /> 
+<skos:broadMatch rdf:resource="http://vocab.ndg.nerc.ac.uk/term/P220/1/13" /> 
+<skos:broadMatch rdf:resource="http://vocab.ndg.nerc.ac.uk/term/P220/1/163" /> 
+<skos:broadMatch rdf:resource="http://vocab.ndg.nerc.ac.uk/term/P031/17/O005" /> 
+<skos:broadMatch rdf:resource="http://vocab.ndg.nerc.ac.uk/term/P041/4/H370" /> 
+<skos:narrowMatch rdf:resource="http://vocab.ndg.nerc.ac.uk/term/P011/224/DICOODSS" /> 
+<skos:narrowMatch rdf:resource="http://vocab.ndg.nerc.ac.uk/term/P011/224/DSODODXX" /> 
+<skos:narrowMatch rdf:resource="http://vocab.ndg.nerc.ac.uk/term/P011/224/SICOODSS" /> 
+<skos:narrowMatch rdf:resource="http://vocab.ndg.nerc.ac.uk/term/P011/224/SODMISXX" /> 
+<skos:narrowMatch rdf:resource="http://vocab.ndg.nerc.ac.uk/term/P011/224/SODMODXX" /> 
+</skos:Concept>
+<skos:Concept rdf:about='http://vocab.ndg.nerc.ac.uk/term/P021/54/DCMX'>
+<skos:externalID>SDN:P021:54:DCMX</skos:externalID>
+<skos:prefLabel>&apos;Other&apos; halocarbon concentrations in water bodies</skos:prefLabel>
+<skos:altLabel>Haloc_WC</skos:altLabel>
+<skos:definition>Concentrations of volatile halocarbons (compounds comprising carbon atoms covalently bonded to fluorine, chlorine, bromine or iodine atoms) other than tracers (i.e. freons/chlorofluorocarbons) and contaminants in any body of fresh or salt water.</skos:definition>
+<dc:date>2010-09-09T21:04:16.407+0000</dc:date><skos:minorMatch rdf:resource="http://vocab.ndg.nerc.ac.uk/term/P041/4/H389" /> 
+<skos:broadMatch rdf:resource="http://vocab.ndg.nerc.ac.uk/term/P031/17/C020" /> 
+<skos:broadMatch rdf:resource="http://vocab.ndg.nerc.ac.uk/term/P051/0/014" /> 
+<skos:broadMatch rdf:resource="http://vocab.ndg.nerc.ac.uk/term/P220/1/28" /> 
+<skos:narrowMatch rdf:resource="http://vocab.ndg.nerc.ac.uk/term/P011/224/DBCMGCTX" /> 
+<skos:narrowMatch rdf:resource="http://vocab.ndg.nerc.ac.uk/term/P011/224/QCEEGCD3" /> 
+</skos:Concept>
+</rdf:RDF> 
