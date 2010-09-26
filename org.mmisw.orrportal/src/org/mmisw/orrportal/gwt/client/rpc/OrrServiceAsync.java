@@ -46,6 +46,7 @@ public interface OrrServiceAsync {
 
 	void resolveUri(String uri, AsyncCallback<ResolveUriResult> callback);
 	
+	void getOntologyMetadata(RegisteredOntologyInfo ontologyInfo, String version, AsyncCallback<RegisteredOntologyInfo> callback);
 	
 	void getOntologyContents(RegisteredOntologyInfo ontologyInfo, String version, AsyncCallback<RegisteredOntologyInfo> callback);
 	

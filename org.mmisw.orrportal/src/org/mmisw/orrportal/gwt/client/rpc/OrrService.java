@@ -74,8 +74,8 @@ public interface OrrService extends RemoteService {
 	 */
 	public ResolveUriResult resolveUri(String uri);
 	
-	
-	
+	public RegisteredOntologyInfo getOntologyMetadata(RegisteredOntologyInfo ontologyInfo, String version);
+
 	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo ontologyInfo, String version);
 	
 	

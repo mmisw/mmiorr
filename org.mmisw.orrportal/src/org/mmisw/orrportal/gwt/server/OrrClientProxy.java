@@ -147,6 +147,10 @@ public class OrrClientProxy  {
 		return orrClient.refreshOptions(attrDef);
 	}
 	
+	public RegisteredOntologyInfo getOntologyMetadata(RegisteredOntologyInfo ontologyInfo, String version) {
+		return orrClient.getOntologyMetadata(ontologyInfo, version);
+	}
+
 	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo ontologyInfo, String version) {
 		return orrClient.getOntologyContents(ontologyInfo, version);
 	}

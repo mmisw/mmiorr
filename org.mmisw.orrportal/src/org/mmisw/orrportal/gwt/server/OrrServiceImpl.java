@@ -114,19 +114,22 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 		}
 	}
 	
+	public MetadataBaseInfo getMetadataBaseInfo(boolean includeVersion) {
+		return orrClient.getMetadataBaseInfo(includeVersion);
+	}
+
 	public ResolveUriResult resolveUri(String uri) {
 		return orrClient.resolveUri(uri);
 	}
 
-	
-	public MetadataBaseInfo getMetadataBaseInfo(boolean includeVersion) {
-		return orrClient.getMetadataBaseInfo(includeVersion);
+	public RegisteredOntologyInfo getOntologyMetadata(RegisteredOntologyInfo ontologyInfo, String version) {
+		return orrClient.getOntologyMetadata(ontologyInfo, version);
 	}
 
 	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo ontologyInfo, String version) {
 		return orrClient.getOntologyContents(ontologyInfo, version);
 	}
-
+	
 	
 	public CreateOntologyResult createOntology(CreateOntologyInfo createOntologyInfo) {
 		return orrClient.createOntology(createOntologyInfo);

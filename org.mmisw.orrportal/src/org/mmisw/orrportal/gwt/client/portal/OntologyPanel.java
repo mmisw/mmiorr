@@ -31,6 +31,8 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.DisclosureEvent;
+import com.google.gwt.user.client.ui.DisclosureHandler;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -51,6 +53,10 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	
 	private final String CLASS_NAME = getClass().getName();
 
+	private static final String DATA_PROGRESS_MSG = "<img src=\"" +GWT.getModuleBaseURL()+ "images/loading.gif\"> " +
+			"<i>Retrieving ontology data. Please wait...</i>";
+	private final HTML DATA_PROGRESS_HTML = new HTML(DATA_PROGRESS_MSG); 
+	
 	private CellPanel container = new VerticalPanel();
 
 	
@@ -119,15 +125,13 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		add(container);
 		
 		mdDisclosure.setAnimationEnabled(true);
-		dataDisclosure.setAnimationEnabled(true);
 		
+		_prepareDataDisclosure(readOnly);
 		
 		metadataPanel = new MetadataPanel(this, !readOnly);
 		mdDisclosure.setContent(metadataPanel);
 
 		dataPanel = new DataPanel(readOnly);
-		dataDisclosure.setContent(dataPanel);
-		
 		
 		CellPanel panel = new VerticalPanel();
 		panel.setSpacing(5);
@@ -138,19 +142,33 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		panel.add(mdDisclosure);
 		panel.add(dataDisclosure);
 		
-		dataDisclosure.setOpen(true);
-		
 		enable(!readOnly);
 		
 	    container.add(panel);
 	    
 	    if ( this.ontologyInfo instanceof RegisteredOntologyInfo && this.ontologyInfo.getUri() != null ) {
-	    	getOntologyContents(readOnly);
+	    	_getOntologyMetadata(readOnly);
 	    }
 	    // if Uri is null, then this is a new ontology being created in the interface.
 	}
 	
 	
+	private void _prepareDataDisclosure(final boolean readOnly) {
+		dataDisclosure.setContent(DATA_PROGRESS_HTML);
+		dataDisclosure.addEventHandler(new DisclosureHandler() {
+			public void onOpen(DisclosureEvent event) {
+				if ( dataDisclosure.getContent() == DATA_PROGRESS_HTML ) {
+					_getOntologyContents(readOnly);
+				}
+			}
+			
+			public void onClose(DisclosureEvent event) {
+				// ok; nothing to do.
+			}
+		});
+		
+	}
+
 	/**
 	 * @return the versionExplicit
 	 */
@@ -319,8 +337,67 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		enable(!readOnly);
 	}
 
+	/**
+	 * 267: Lazy loading of ontology contents.
+	 * First retrieve only the metadata.
+	 */
+	private void _getOntologyMetadata(final boolean readOnly) {
+		
+		assert ontologyInfo instanceof RegisteredOntologyInfo ;
+		RegisteredOntologyInfo roi = (RegisteredOntologyInfo) ontologyInfo;
+		
+		AsyncCallback<RegisteredOntologyInfo> callback = new AsyncCallback<RegisteredOntologyInfo>() {
+			public void onFailure(Throwable thr) {
+				String error = thr.getClass().getName()+ ": " +thr.getMessage();
+				while ( (thr = thr.getCause()) != null ) {
+					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
+				}
+				Window.alert(error);
+			}
 
-	private void getOntologyContents(final boolean readOnly) {
+			public void onSuccess(RegisteredOntologyInfo ontologyInfo) {
+				Orr.log(CLASS_NAME+": RET getOntologyMetadata: ontologyUri = " +ontologyInfo.getUri());
+				String error = ontologyInfo.getError();
+				if ( error != null ) {
+					Orr.log(CLASS_NAME+": RET getOntologyMetadata: error = " +error);
+				}
+				
+				_ontologyMetadataRetrieved(ontologyInfo, readOnly);
+			}
+		};
+
+		String title = "<b>" +roi.getDisplayLabel()+ "</b> - " +roi.getUri()
+					+ "  (version "+roi.getVersionNumber()+ ")" + "<br/>";
+		;
+		headerPanel.updateTitle(title);
+		String progressMsg = "Retrieving ontology metadata. Please wait...";
+		headerPanel.showProgressMessage(progressMsg);
+
+		metadataPanel.showProgressMessage(progressMsg);
+		Orr.log(CLASS_NAME+": getOntologyMetadata: ontologyUri = " +ontologyInfo.getUri());
+		Orr.service.getOntologyMetadata(roi, null, callback);
+	}
+
+	private void _ontologyMetadataRetrieved(BaseOntologyInfo ontologyInfo, boolean readOnly) {
+		this.ontologyInfo = ontologyInfo;
+		String error = ontologyInfo.getError();
+		if ( error != null ) {
+			headerPanel.updateDescription("<font color=\"red\">" +error+ "</font>");
+		}
+		else {
+			// TODO put more info in the description
+			headerPanel.updateDescription("");
+			
+			boolean link = true;
+			metadataPanel.resetToOriginalValues(ontologyInfo, null, false, link);
+			mdDisclosure.setOpen(true);
+		}
+	}
+	
+	
+	
+	
+	private void _getOntologyContents(final boolean readOnly) {
 		
 		assert ontologyInfo instanceof RegisteredOntologyInfo ;
 		RegisteredOntologyInfo roi = (RegisteredOntologyInfo) ontologyInfo;
@@ -349,9 +426,6 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 					+ "  (version "+roi.getVersionNumber()+ ")" + "<br/>";
 		;
 		headerPanel.updateTitle(title);
-		headerPanel.showProgressMessage("Loading contents. Please wait...");
-
-		metadataPanel.showProgressMessage("Loading contents. Please wait...");
 		Orr.log(CLASS_NAME+": getOntologyContents: ontologyUri = " +ontologyInfo.getUri());
 		Orr.service.getOntologyContents(roi, null, callback);
 	}
@@ -361,7 +435,11 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		this.ontologyInfo = ontologyInfo;
 		String error = ontologyInfo.getError();
 		if ( error != null ) {
-			headerPanel.updateDescription("<font color=\"red\">" +error+ "</font>");
+			String errorMsg = "<font color=\"red\">" +error+ "</font>";
+			headerPanel.updateDescription(errorMsg);
+			HTML errorHtml = new HTML(errorMsg);
+			dataDisclosure.clear();
+			dataDisclosure.setContent(errorHtml);
 		}
 		else {
 			// TODO put more info in the description
@@ -370,8 +448,12 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			boolean link = true;
 			metadataPanel.resetToOriginalValues(ontologyInfo, null, false, link);
 			
+			dataDisclosure.clear();
+			
 			if ( dataPanel != null ) {
 				dataPanel.updateWith(null, ontologyInfo, readOnly);
+				dataDisclosure.setContent(dataPanel);
+
 			}
 //			else if ( editDataPanel != null ) {
 //				editDataPanel.updateWith(ontologyInfo);
