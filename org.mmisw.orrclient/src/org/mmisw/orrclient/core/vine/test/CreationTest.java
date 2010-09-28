@@ -12,9 +12,9 @@ import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.mmisw.ont.JenaUtil2;
+import org.mmisw.ont.vocabulary.Skos;
 import org.mmisw.ont.vocabulary.Vine;
 import org.mmisw.orrclient.IOrrClient;
-import org.mmisw.orrclient.core.util.Skos;
 import org.mmisw.orrclient.core.util.ontinfo.OntInfoUtil;
 import org.mmisw.orrclient.core.util.ontinfo.StmtKey;
 import org.mmisw.orrclient.core.util.ontype.OntTypeUtil;

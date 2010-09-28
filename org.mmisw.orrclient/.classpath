@@ -5,14 +5,11 @@
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/commons-httpclient-3.1.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/commons-codec-1.3.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/commons-logging.jar"/>
-	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmisw.ont.mmiuri.jar" sourcepath="/org.mmisw.ont"/>
-	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmisw.ont.vocabulary.jar" sourcepath="/org.mmisw.ont"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/commons-io-1.4.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/datafile.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/chardet.jar" sourcepath="/Users/carueda/Software/jchardet-1.1/src"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/activation.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/mail.jar"/>
-	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmisw.ont.misc.jar" sourcepath="/org.mmisw.ont"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/arq-2.8.4.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/icu4j-3.4.4.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/iri-0.8-sources.jar"/>
@@ -27,5 +24,6 @@
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/stax-api-1.0.1.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/wstx-asl-3.2.9.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/xercesImpl-2.7.1.jar"/>
+	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmisw.ont.client.jar" sourcepath="/org.mmisw.ont/src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

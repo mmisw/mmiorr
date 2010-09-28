@@ -12,9 +12,9 @@ import java.util.TimeZone;
 
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
+import org.mmisw.ont.vocabulary.Skos;
+import org.mmisw.ont.vocabulary.Skos2;
 import org.mmisw.ont.vocabulary.Vine;
-import org.mmisw.orrclient.core.util.Skos;
-import org.mmisw.orrclient.core.util.Skos2;
 import org.mmisw.orrclient.gwt.client.vocabulary.AttrDef;
 import org.mmisw.orrclient.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.orrclient.gwt.client.vocabulary.Option;

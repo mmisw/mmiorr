@@ -3,6 +3,22 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2010-09-27  2.0.8.beta
+	General refactoring with the (new) Ont client library: 
+	- Using new Ont client library: org.mmisw.ont.client.jar, which replaces
+	  org.mmisw.ont.vocabulary.jar, org.mmisw.ont.misc.jar, org.mmisw.ont.mmiuri.jar
+	- vocabularies Skos and Skos2 moved to Ont module (now included in the Ont client library)
+	- OrrClientImpl constructor now logs out the Ont library version.
+	- OntServiceUtil now based on implementation provided by Ont client library
+	- HttpUtil moved to Ont client library (and not used directly here).
+	- UserAuthenticator removed; now provided by Ont client library.
+	- XmlAccessor moved to Ont client library.
+	- XmlBaseExtractor moved to Ont client library.
+	- AquaUtil moved to Ont client library.
+	- OntologyUploader implementation moved to Ont library with name OntUploader, and
+	  new implementation here based on that.
+
+
 2010-09-25  2.0.7.beta
 	Implemented the following to support 267: Lazy loading of ontology contents
 	- New service IOrrClient.getOntologyMetadata that only retrieves the metadata.

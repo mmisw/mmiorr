@@ -11,10 +11,10 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.ont.vocabulary.Skos;
+import org.mmisw.ont.vocabulary.Skos2;
 import org.mmisw.ont.vocabulary.Vine;
 import org.mmisw.ont.vocabulary.Vine20071128;
-import org.mmisw.orrclient.core.util.Skos;
-import org.mmisw.orrclient.core.util.Skos2;
 import org.mmisw.orrclient.core.util.ontype.OntTypeUtil;
 import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyData;
 import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyInfo;

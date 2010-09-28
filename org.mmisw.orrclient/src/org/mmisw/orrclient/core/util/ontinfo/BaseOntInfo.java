@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.mmisw.orrclient.core.util.Skos;
+import org.mmisw.ont.vocabulary.Skos;
 import org.mmisw.orrclient.core.vine.VineUtil;
 import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyData;
 import org.mmisw.orrclient.gwt.client.rpc.ClassInfo;

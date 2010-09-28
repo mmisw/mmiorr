@@ -18,7 +18,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.JenaUtil2;
-import org.mmisw.orrclient.core.util.Skos;
+import org.mmisw.ont.vocabulary.Skos;
 import org.mmisw.orrclient.core.util.Utf8Util;
 import org.mmisw.orrclient.core.util.csv.BaseParser;
 

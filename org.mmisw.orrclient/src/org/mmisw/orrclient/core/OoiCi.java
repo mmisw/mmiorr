@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mmisw.orrclient.core.util.AquaUtil;
+import org.mmisw.ont.client.util.AquaUtil;
 import org.mmisw.orrclient.core.util.OntServiceUtil;
 import org.mmisw.orrclient.core.util.Util2;
 import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyInfo;

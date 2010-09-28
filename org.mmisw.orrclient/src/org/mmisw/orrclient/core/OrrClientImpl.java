@@ -31,7 +31,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.JenaUtil2;
-import org.mmisw.ont.MmiUri;
+import org.mmisw.ont.OntVersion;
+import org.mmisw.ont.client.IOntClient;
+import org.mmisw.ont.client.OntClientConfiguration;
+import org.mmisw.ont.client.SignInResult;
+import org.mmisw.ont.mmiuri.MmiUri;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.orrclient.IOrrClient;
@@ -104,11 +108,12 @@ public class OrrClientImpl implements IOrrClient {
 	private final AppInfo appInfo = new AppInfo("OrrClient Library");
 	private final Log log = LogFactory.getLog(OrrClientImpl.class);
 
-	private final ReadOnlyConfiguration config;
+	private final OrrReadOnlyConfiguration config;
 	private final File previewDir;
 	
-	
 	private static IOrrClient _instance;
+	
+	private IOntClient ontClient;
 	
 	
 	/**
@@ -143,7 +148,7 @@ public class OrrClientImpl implements IOrrClient {
 
 	private OrrClientImpl(OrrClientConfiguration config) throws Exception {
 		// copy the given configuration:
-		this.config = new ReadOnlyConfiguration(config);
+		this.config = new OrrReadOnlyConfiguration(config);
 		
 		defaultNamespaceRoot = config.getOntServiceUrl();
 		log.info("basic init " +appInfo.getAppName()+ "...");
@@ -151,9 +156,16 @@ public class OrrClientImpl implements IOrrClient {
 		appInfo.setBuild(OrrClientVersion.getBuild());
 		log.info(appInfo.toString());
 		log.info("ontServiceUrl = " +config.getOntServiceUrl());
+		
+		OntClientConfiguration ontClientConfig = new OntClientConfiguration();
+		ontClientConfig.setOntServiceUrl(config.getOntServiceUrl());
+		
+		ontClient = IOntClient.Manager.init(ontClientConfig);
+		OntServiceUtil.setOntClient(ontClient);
+		log.info("Ont library version = " +OntVersion.getVersion()+ " (" +OntVersion.getBuild()+ ")");
 
 		if ( config.getPreviewDirectory() == null ) {
-			throw new Exception("OrrClientConfiguration does not indicate the preview directory");
+			throw new Exception(OrrClientConfiguration.class.getSimpleName()+ " does not indicate the preview directory");
 		}
 		
 		previewDir = _createDirectory(config.getPreviewDirectory());
@@ -2602,8 +2614,11 @@ public class OrrClientImpl implements IOrrClient {
 		
 		log.info(": authenticating user " +userName+ " ...");
 		try {
-			UserAuthenticator login = new UserAuthenticator(userName, userPassword);
-			login.getSession(loginResult);
+			SignInResult signInResult = ontClient.getSession(userName, userPassword);
+			loginResult.setSessionId(signInResult.getSessionId());
+			loginResult.setUserId(signInResult.getUserId());
+			loginResult.setUserName(signInResult.getUserName());
+			loginResult.setUserRole(signInResult.getUserRole());
 		}
 		catch (Exception ex) {
 			loginResult.setError(ex.getMessage());

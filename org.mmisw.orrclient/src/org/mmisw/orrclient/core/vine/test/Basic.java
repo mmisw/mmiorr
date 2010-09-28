@@ -4,8 +4,8 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 
 import org.mmisw.ont.JenaUtil2;
+import org.mmisw.ont.vocabulary.Skos;
 import org.mmisw.ont.vocabulary.Vine;
-import org.mmisw.orrclient.core.util.Skos;
 
 import com.hp.hpl.jena.rdf.model.InfModel;
 import com.hp.hpl.jena.rdf.model.Model;

@@ -7,12 +7,12 @@ import org.mmisw.orrclient.OrrClientConfiguration;
  * The setXXX methods will throw UnsupportedOperationException
  * @author Carlos Rueda
  */
-class ReadOnlyConfiguration extends OrrClientConfiguration {
+class OrrReadOnlyConfiguration extends OrrClientConfiguration {
 
 	/**
 	 * Makes a read-only copy of the given configuration.
 	 */
-	ReadOnlyConfiguration(OrrClientConfiguration config) {
+	OrrReadOnlyConfiguration(OrrClientConfiguration config) {
 		super(config);
 	}
 	

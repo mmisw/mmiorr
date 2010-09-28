@@ -48,6 +48,9 @@ public class LoginResult extends BaseResult {
 		this.userRole = userRole;
 	}
 	
+	public String getUserRole() {
+		return userRole;
+	}
 	
 	public String toString() {
 		return "LoginResult{userId=" +userId+", userName=" +userName+", sessionId=" +sessionId+", role=" +userRole+ ", error=" +error+ "}";

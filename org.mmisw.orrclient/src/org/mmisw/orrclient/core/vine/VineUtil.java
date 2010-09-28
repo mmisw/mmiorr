@@ -3,8 +3,8 @@ package org.mmisw.orrclient.core.vine;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mmisw.orrclient.core.util.Skos;
-import org.mmisw.orrclient.core.util.Skos2;
+import org.mmisw.ont.vocabulary.Skos;
+import org.mmisw.ont.vocabulary.Skos2;
 import org.mmisw.orrclient.gwt.client.rpc.vine.RelationInfo;
 
 /**

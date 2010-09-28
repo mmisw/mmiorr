@@ -22,6 +22,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.JenaUtil2;
+import org.mmisw.ont.client.util.XmlBaseExtractor;
 import org.mmisw.orrclient.core.MdHelper;
 import org.mmisw.orrclient.gwt.client.rpc.BaseResult;
 import org.mmisw.orrclient.gwt.client.rpc.Errorable;
