@@ -1,6 +1,16 @@
 watchdog ChangeLog
 Carlos Rueda - MMI/MBARI
 
+2010-09-28
+	- Updates according to new orrclient and ontclient libraries:
+		<dependency>
+			<groupId>org.mmisw</groupId>
+			<artifactId>orrclient</artifactId>
+			<version>2.0.8.beta-SNAPSHOT</version>
+		</dependency>
+	 mvn clean install
+	 mvn exec:java -Dexec.args="Cf --ws workspace/cf"   --> OK. 
+	
 2010-09-20
 	CF generation changes (upon email exchange with Nan G. today)
 	- skos:definition now used (instead of rdfs:comment)

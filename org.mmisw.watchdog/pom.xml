@@ -74,8 +74,8 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.mmisw</groupId>
-			<artifactId>iserver</artifactId>
-			<version>1.9.95.alpha-SNAPSHOT</version>
+			<artifactId>orrclient</artifactId>
+			<version>2.0.8.beta-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mmisw.tp</groupId>

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
-import org.mmisw.iserver.core.util.HttpUtil;
+import org.mmisw.ont.client.util.HttpUtil;
 import org.mmisw.watchdog.Watchdog.BaseProgram;
 import org.mmisw.watchdog.orr.RegisterOntology;
 import org.mmisw.watchdog.orr.RegisterOntology.RegistrationResult;
@@ -77,7 +77,8 @@ public class Sweet extends BaseProgram {
 	private String sweetAllUri = DEFAULT_SWEET_ALL_URI;
 	private String listImported = null;
 	private String downloadSpec = null;
-	private String registerSpec = null;
+	private String registerOrUnregisterSpec = null;
+	private boolean doRegister = true;
 
 	private OntModel sweetAllModel;
 	private List<String> sweetUris;
@@ -113,7 +114,12 @@ public class Sweet extends BaseProgram {
 				downloadSpec = args[++arg]; 
 			}
 			else if ( args[arg].equals("--register") ) {
-				registerSpec = args[++arg]; 
+				registerOrUnregisterSpec = args[++arg];
+				doRegister = true;
+			}
+			else if ( args[arg].equals("--unregister") ) {
+				registerOrUnregisterSpec = args[++arg];
+				doRegister = false;
 			}
 			
 			// ORR
@@ -153,15 +159,12 @@ public class Sweet extends BaseProgram {
 			_download();
 		}
 				
-		if ( registerSpec != null ) {
+		if ( registerOrUnregisterSpec != null ) {
 			if ( orrPassword == null ) {
 				_usage("--register requires unsername and password of user registering the ontology");
 			}
-			_register();
+			_registerOrUnregister();
 		}
-		
-		
-		
 	}
 
 	private void _listImported() throws IOException {
@@ -178,9 +181,9 @@ public class Sweet extends BaseProgram {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void _register() throws Exception {
-		if ( registerSpec.charAt(0) == '@' ) {
-			String listFilename = registerSpec.replaceAll("^@+", "");
+	private void _registerOrUnregister() throws Exception {
+		if ( registerOrUnregisterSpec.charAt(0) == '@' ) {
+			String listFilename = registerOrUnregisterSpec.replaceAll("^@+", "");
 			File listFile = new File(workspaceDir, listFilename);
 			FileReader reader = new FileReader(listFile);
 			List<String> list = IOUtils.readLines(reader);
@@ -189,12 +192,22 @@ public class Sweet extends BaseProgram {
 				line = line.trim();
 				if ( ! line.startsWith("#") && line.trim().length() > 0 ) { 
 					String ontologyUri = line.trim();
-					_registerOntology(ontologyUri);
+					if ( doRegister ) {
+						_registerOntology(ontologyUri);
+					}
+					else {
+						_unregisterOntology(ontologyUri);
+					}
 				}
 			}
 		}
 		else {
-			_registerOntology(registerSpec);
+			if ( doRegister ) {
+				_registerOntology(registerOrUnregisterSpec);
+			}
+			else {
+				_unregisterOntology(registerOrUnregisterSpec);
+			}
 		}
 	}
 
@@ -208,6 +221,16 @@ public class Sweet extends BaseProgram {
 		_log("RegistrationResult: status=" +result.status+ " message: " +result.message);
 	}
 
+	private void _unregisterOntology(String ontologyUri) throws Exception {
+		URL url = new URL(ontologyUri);
+		String ontName = new File(url.getPath()).getName();
+		String contents = HttpUtil.getAsString(ontologyUri, "application/rdf+xml");
+		_log("Unregistering " +ontologyUri);
+		
+		RegistrationResult result = RegisterOntology.register(orrUsername, orrPassword, ontologyUri, ontName, contents, "", orrFormAction);
+		_log("UnregistrationResult: status=" +result.status+ " message: " +result.message);
+	}
+	
 	@SuppressWarnings("unchecked")
 	private void _download() throws Exception {
 		if ( downloadSpec.charAt(0) == '@' ) {

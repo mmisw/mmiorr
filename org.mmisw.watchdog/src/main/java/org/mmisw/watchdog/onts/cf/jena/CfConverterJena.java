@@ -8,7 +8,7 @@ import java.util.List;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
-import org.mmisw.iserver.core.util.Skos;
+import org.mmisw.ont.vocabulary.Skos;
 import org.mmisw.watchdog.conversion.BaseConverter;
 
 import com.hp.hpl.jena.rdf.model.Model;

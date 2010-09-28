@@ -11,7 +11,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.IOUtils;
-import org.mmisw.iserver.core.util.HttpUtil;
+import org.mmisw.ont.client.util.HttpUtil;
 import org.mmisw.watchdog.Watchdog.BaseProgram;
 import org.mmisw.watchdog.conversion.IConverter;
 import org.mmisw.watchdog.onts.cf.jena.CfConverterJena;
