@@ -745,7 +745,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	
 	/**
 	 * Requests an ontology or term to the back-end and dispatches a corresponding
-	 * panel, ontology or term (TODO: term)
+	 * panel, ontology or term.
 	 * @param uri
 	 */
 	private void resolveUri(final String uri) {
@@ -798,7 +798,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		};
 
 	    bodyPanel.clear();
-	    bodyPanel.add(new HTML("<i>Loading ontology...</i>"));
+	    bodyPanel.add(new HTML("<i>Resolving " +uri+ " ...</i>"));
 
 		Orr.log("resolveUri: " +uri);
 		Orr.service.resolveUri(uri, callback);

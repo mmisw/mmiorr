@@ -1,28 +1,38 @@
 package org.mmisw.orrportal.gwt.client.util.table.ontab;
 
 import java.util.List;
+//import com.smartgwt.client.data.Record;
+//import com.smartgwt.client.data.RecordList;
+//import com.smartgwt.client.widgets.Canvas;
+//import com.smartgwt.client.widgets.grid.ListGrid;
+//import com.smartgwt.client.widgets.grid.ListGridField;
 
 import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
 import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.orrportal.gwt.client.util.table.IQuickInfo;
 
 import com.google.gwt.user.client.ui.Widget;
-//import com.smartgwt.client.data.Record;
-//import com.smartgwt.client.data.RecordList;
-//import com.smartgwt.client.types.Alignment;
-//import com.smartgwt.client.types.ListGridFieldType;
-//import com.smartgwt.client.widgets.Canvas;
-//import com.smartgwt.client.widgets.grid.ListGrid;
-//import com.smartgwt.client.widgets.grid.ListGridField;
 
 /**
- * Implementation (TO BE) based on smartgwt.
- * All methods here throw UnsupportedOperationException
+ * Possible implementation based on SmartGWT.
+ * This has been tested with GWT 2.0.4, but currently all code is commented
+ * out and operations throw UnsupportedOperationException, while we get to
+ * decide when to upgrade and eventually use SmartGWT.
+ * (Preliminary testing hasn't been as straightforward as expected, especially
+ * regarding performance. Seems like the mix of standardt GWT widgets and
+ * SmartGWT creates some bottleneck ...).
  * 
  * @author Carlos Rueda
  */
 public class OntologyTableSc extends BaseOntologyTable {
 
+//	static {
+//	GWT.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+//		public void onUncaughtException(Throwable e) {
+//			GWT.log("something happened", e);
+//		}
+//	});
+//}
 	/**
 	 * 
 	 * @param quickInfo
@@ -33,13 +43,11 @@ public class OntologyTableSc extends BaseOntologyTable {
 		throw new UnsupportedOperationException();
 
 //		countryGrid.setWidth(1000);
-//		countryGrid.setHeight(224);
+//		countryGrid.setHeight(600);
 //		countryGrid.setShowAllRecords(true);
-//
-//		ListGridField countryCodeField = new ListGridField("countryCode",
-//				"Flag", 50);
-//		countryCodeField.setAlign(Alignment.CENTER);
-//		countryCodeField.setType(ListGridFieldType.IMAGE);
+//		countryGrid.setShowRowNumbers(true);
+//		countryGrid.setAlternateRecordStyles(true);
+
 //		countryGrid.setFields(new ListGridField[] {
 //				new ListGridField("uri", "URI"),
 //				new ListGridField("name", "Name"),
@@ -65,10 +73,10 @@ public class OntologyTableSc extends BaseOntologyTable {
 			LoginResult loginResult
 	) {
 		throw new UnsupportedOperationException();
-		// TODO 
+//		// TODO 
 
 //		RecordList recordList = new RecordList();
-//
+//		
 //		for (RegisteredOntologyInfo oi : ontologyInfos) {
 //			Record record = new Record();
 //

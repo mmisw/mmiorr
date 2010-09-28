@@ -2,6 +2,20 @@ org.mmisw.orrportal: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-09-27  2.0.8.beta
+	- Using new Ont client library: org.mmisw.ont.client.jar, which replaces
+	  org.mmisw.ont.vocabulary.jar, org.mmisw.ont.misc.jar, org.mmisw.ont.mmiuri.jar
+	  
+	- Some testing for table widgets using the preliminary classes OntologyTableGwtIncubator
+	  and OntologyTableSc (in package org.mmisw.orrportal.gwt.client.util.table.ontab).
+	  After not very successful tests, these implementations are "disabled" and
+	  we continue with our basic OntologyTable implementation. However, I'm keeping 
+	  the <inherits name='com.google.gwt.gen2.Gen2' /> in Orr.gwt.xml and the
+	  corresponding library (gwt-incubator_1-5_Dec_28.jar) to facilitate further
+	  attempts later on.
+	  
+	
+	
 2010-09-25  2.0.7.beta
 	Implemented 267: Lazy loading of ontology contents
 	- Using new service IOrrClient.getOntologyMetadata: the opening of a registered

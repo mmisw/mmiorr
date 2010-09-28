@@ -1,21 +1,29 @@
 package org.mmisw.orrportal.gwt.client.util.table;
 
 import org.mmisw.orrportal.gwt.client.util.table.ontab.OntologyTable;
+import org.mmisw.orrportal.gwt.client.util.table.ontab.OntologyTableGwtIncubator;
 import org.mmisw.orrportal.gwt.client.util.table.ontab.OntologyTableSc;
 
 
 public class OntologyTableCreator {
 	
-	private static final boolean USE_SMARTGWT = false;
+	private enum Impl { ORIG, GWT_INCUBATOR, SMARTGWT, };
+	
+	private static final Impl impl = Impl.ORIG;
 
 
 	public static IOntologyTable create(IQuickInfo quickInfo, boolean isVersionsTable) {
 		
-		if ( USE_SMARTGWT ) {
-			return new OntologyTableSc(quickInfo, isVersionsTable);
-		}
-		else {
-			return new OntologyTable(quickInfo, isVersionsTable);
+		switch ( impl ) {
+			case GWT_INCUBATOR:
+				return new OntologyTableGwtIncubator(quickInfo, isVersionsTable);
+				
+			case SMARTGWT:
+				return new OntologyTableSc(quickInfo, isVersionsTable);
+				
+			case ORIG:
+			default:
+				return new OntologyTable(quickInfo, isVersionsTable);
 		}
 	}
 	

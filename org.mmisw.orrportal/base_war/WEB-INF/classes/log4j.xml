@@ -34,6 +34,11 @@
 		<priority value="@orrportal.app.log.orrportallevel@" />
 	</category>
 
+	<!-- Use same level for Ont library module -->
+	<category name="org.mmisw.ont">
+		<priority value="@orrportal.app.log.orrportallevel@" />
+	</category>
+
 	<root>
 		<priority value="@orrportal.app.log.deflevel@" />
 		<appender-ref ref="file" />

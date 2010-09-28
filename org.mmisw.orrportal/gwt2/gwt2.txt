@@ -60,11 +60,13 @@ Switching between 1.5.2 and 2.0.4
      - Open the Java Build Path libraries setting and indicate:
           gwt-user.jar and gwt-dev-mac.jar in gwt-mac-1.5.2/
      - Exclude org.mmisw.orrportal.gwt.server.gwtbug.JDTCompiler15
+     - set output directory to: org.mmisw.orrportal/bin
      
   - If using GWT 2.0.4:
      - Open the Java Build Path libraries setting and indicate:
           gwt-user.jar and gwt-dev-jar in gwt-2.0.4/
      - Include org.mmisw.orrportal.gwt.server.gwtbug.JDTCompiler15
+     - set output directory to: org.mmisw.orrportal/war/WEB-INF/classes
      This is the setting required to run orr2.launch
   
 	
