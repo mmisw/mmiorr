@@ -4,6 +4,22 @@ $Id$
 
 ChangeLog
 
+2010-09-28  2.0.8.beta
+	Deployment of Ont client library to maven repository
+	- Created ad hoc maven POM (resource/templ-pom.xml) to deploy the Ont client library.
+	  ``ant deploy'' copies resource/templ-pom.xml into _generated/tmp-pom.xml with 
+	  replacement of the Ont version; then calls `mvn --file _generated/tmp-pom.xml deploy''.
+	- With the current version, the dependency for clients will be:
+		<dependency>
+			<groupId>org.mmisw</groupId>
+			<artifactId>ontclient</artifactId>
+			<version>2.0.8.beta-SNAPSHOT</version>
+		</dependency>
+	- just deployed: 
+	  https://oss.sonatype.org/content/repositories/snapshots/org/mmisw/ontclient/2.0.8.beta-SNAPSHOT/
+
+
+
 2010-09-27  2.0.8.beta
 	- some clean-up and refactoring:
 	  renamings:

@@ -173,6 +173,21 @@
 		</delete>
 	</target>
 	
+	<!-- ==================================================================== -->
+	<!-- See ChangeLog.txt 2010-08-20 note -->
+	<target name="deploy" depends="jar" description="deploys the MMI Ont Client library">
+		<copy file="resource/templ-pom.xml" tofile="_generated/tmp-pom.xml" overwrite="true">
+			<filterset>
+				<filter token="ont.version" value="${ont.version}" />
+			</filterset>
+		</copy>
+		<exec executable="mvn">
+			<arg value="--file" />
+			<arg value="_generated/tmp-pom.xml" />
+			<arg value="deploy" />
+		</exec>
+	</target>
+
 	<target name="clean">
 		<delete file="WebContent/WEB-INF/lib/org.mmisw.ont.jar" />
 		<delete>
