@@ -8,16 +8,16 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mmisw.ont.Db;
 import org.mmisw.ont.JenaUtil2;
-import org.mmisw.ont.MmiUri;
 import org.mmisw.ont.OntConfig;
-import org.mmisw.ont.OntUtil;
-import org.mmisw.ont.Ontology;
+import org.mmisw.ont.OntologyInfo;
 import org.mmisw.ont.UnversionedConverter;
+import org.mmisw.ont.db.Db;
 import org.mmisw.ont.graph.IOntGraph;
+import org.mmisw.ont.mmiuri.MmiUri;
 import org.mmisw.ont.sparql.QueryResult;
 import org.mmisw.ont.sparql.Sparql;
+import org.mmisw.ont.util.OntUtil;
 import org.mmisw.ont.util.Util;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -97,7 +97,7 @@ public class OntGraphMem implements IOntGraph {
 
 	/**
 	 * Initializes the graph with all latest version of the ontologies 
-	 * as returned by {@link org.mmisw.ont.Db#getAllOntologies(boolean) with false argument}.
+	 * as returned by {@link org.mmisw.ont.db.Db#getAllOntologies(boolean) with false argument}.
 	 * 
 	 * <p>
 	 * Inference is enabled by default. If inference should be disabled,
@@ -184,18 +184,18 @@ public class OntGraphMem implements IOntGraph {
 		// fixed Issue 223: ontology graph with all versions
 		// now using new correct method to obtain the latest versions:
 		final boolean allVersions = false;
-		List<Ontology> onts = db.getAllOntologies(allVersions);
+		List<OntologyInfo> onts = db.getAllOntologies(allVersions);
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("Using unversioned ontologies: " +USE_UNVERSIONED);
 			
 			log.debug("About to load the following ontologies: ");
-			for ( Ontology ontology : onts ) {
+			for ( OntologyInfo ontology : onts ) {
 				log.debug(ontology.getOntologyId()+ " :: " +ontology.getUri());
 			}
 		}
 		
-		for ( Ontology ontology : onts ) {
+		for ( OntologyInfo ontology : onts ) {
 			String full_path = aquaUploadsDir+ "/" +ontology.getFilePath() + "/" + ontology.getFilename();
 			log.info("Loading: " +full_path+ " in graph;  uri=" +ontology.getUri());
 			try {
@@ -223,18 +223,18 @@ public class OntGraphMem implements IOntGraph {
 		// fixed Issue 223: ontology graph with all versions
 		// now using new correct method to obtain the latest versions:
 		final boolean allVersions = false;
-		List<Ontology> onts = db.getAllOntologies(allVersions);
+		List<OntologyInfo> onts = db.getAllOntologies(allVersions);
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("Using unversioned ontologies: " +USE_UNVERSIONED);
 			
 			log.debug("About to load the following ontologies: ");
-			for ( Ontology ontology : onts ) {
+			for ( OntologyInfo ontology : onts ) {
 				log.debug(ontology.getOntologyId()+ " :: " +ontology.getUri());
 			}
 		}
 		
-		for ( Ontology ontology : onts ) {
+		for ( OntologyInfo ontology : onts ) {
 			String full_path = aquaUploadsDir+ "/" +ontology.getFilePath() + "/" + ontology.getFilename();
 			log.info("Loading: " +full_path+ " in graph;  uri=" +ontology.getUri());
 			try {
@@ -325,13 +325,13 @@ public class OntGraphMem implements IOntGraph {
 	 * @param ontology
 	 * @param graphId IGNORED
 	 */
-	public void loadOntology(Ontology ontology, String graphId) throws Exception {
+	public void loadOntology(OntologyInfo ontology, String graphId) throws Exception {
 		String full_path = aquaUploadsDir+ "/" +ontology.getFilePath() + "/" + ontology.getFilename();
 		log.info("Loading: " +full_path+ " in graph;  uri=" +ontology.getUri());
 		_loadOntology(ontology, full_path);
 	}
 
-	private void _loadOntology(Ontology ontology, String full_path) {
+	private void _loadOntology(OntologyInfo ontology, String full_path) {
 		final Model model2update = _infModel != null ? _infModel : _model;
 		if ( USE_UNVERSIONED ) {
 			OntModel model = JenaUtil2.loadModel("file:" +full_path, false);
@@ -369,7 +369,7 @@ public class OntGraphMem implements IOntGraph {
 	/**
 	 * NOT IMPLEMENTED (focus is on OntGrapghAG implementation)
 	 */
-	public void removeOntology(Ontology ontology) throws Exception {
+	public void removeOntology(OntologyInfo ontology) throws Exception {
 		// TODO Auto-generated method stub
 		
 	}

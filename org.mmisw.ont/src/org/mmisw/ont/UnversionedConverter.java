@@ -11,6 +11,7 @@ import java.util.TimeZone;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.ont.mmiuri.MmiUri;
 import org.mmisw.ont.vocabulary.Omv;
 
 import com.hp.hpl.jena.ontology.OntModel;

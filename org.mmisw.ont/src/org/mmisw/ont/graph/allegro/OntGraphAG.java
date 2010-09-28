@@ -8,16 +8,16 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mmisw.ont.Db;
 import org.mmisw.ont.JenaUtil2;
-import org.mmisw.ont.MmiUri;
 import org.mmisw.ont.OntConfig;
-import org.mmisw.ont.OntUtil;
-import org.mmisw.ont.Ontology;
+import org.mmisw.ont.OntologyInfo;
 import org.mmisw.ont.UnversionedConverter;
 import org.mmisw.ont.admin.AdminDispatcher;
+import org.mmisw.ont.db.Db;
 import org.mmisw.ont.graph.IOntGraph;
+import org.mmisw.ont.mmiuri.MmiUri;
 import org.mmisw.ont.sparql.QueryResult;
+import org.mmisw.ont.util.OntUtil;
 
 import com.franz.agbase.AllegroGraph;
 import com.franz.agbase.AllegroGraphConnection;
@@ -257,18 +257,18 @@ public class OntGraphAG implements IOntGraph {
 		
 		// get the list of (latest-version) ontologies:
 		final boolean allVersions = false;
-		List<Ontology> onts = db.getAllOntologies(allVersions);
+		List<OntologyInfo> onts = db.getAllOntologies(allVersions);
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("Using unversioned ontologies: " +USE_UNVERSIONED);
 			
 			log.debug("About to load the following " +onts.size()+ " ontologies: ");
-			for ( Ontology ontology : onts ) {
+			for ( OntologyInfo ontology : onts ) {
 				log.debug(ontology.getOntologyId()+ " :: " +ontology.getUri());
 			}
 		}
 		
-		for ( Ontology ontology : onts ) {
+		for ( OntologyInfo ontology : onts ) {
 			String full_path = aquaUploadsDir+ "/" +ontology.getFilePath() + "/" + ontology.getFilename();
 			log.info("Loading: " +full_path+ " in graph");
 			try {
@@ -355,7 +355,7 @@ public class OntGraphAG implements IOntGraph {
 		}		
 	}
 
-	public void loadOntology(Ontology ontology, String graphId) throws Exception {
+	public void loadOntology(OntologyInfo ontology, String graphId) throws Exception {
 		Ag _ag = new Ag();
 		try {
 			String full_path = aquaUploadsDir+ "/" +ontology.getFilePath() + "/" + ontology.getFilename();
@@ -383,7 +383,7 @@ public class OntGraphAG implements IOntGraph {
 	 * @param clearGraphFirst true to remove all statements associated with the graph directly associated with the
 	 *        ontology.
 	 */
-	private void _loadOntology(Ag _ag, Ontology ontology, String graphId, String full_path, boolean clearGraphFirst) {
+	private void _loadOntology(Ag _ag, OntologyInfo ontology, String graphId, String full_path, boolean clearGraphFirst) {
 		
 		String graphUri;
 		
@@ -487,7 +487,7 @@ public class OntGraphAG implements IOntGraph {
 		}		
 	}
 
-	public void removeOntology(Ontology ontology) throws Exception {
+	public void removeOntology(OntologyInfo ontology) throws Exception {
 		Ag _ag = new Ag();
 		try {
 			log.info("Removing: id=" +ontology.getId()+ " of ontologyId=" +ontology.getOntologyId()+ " ...");
@@ -513,7 +513,7 @@ public class OntGraphAG implements IOntGraph {
 	 * @throws Exception 
 	 *        
 	 */
-	private void _removeOntology(Ag _ag, Ontology ontology) throws Exception {
+	private void _removeOntology(Ag _ag, OntologyInfo ontology) throws Exception {
 		
 		String ontologyUri = ontology.getUri();
 		
@@ -558,7 +558,7 @@ public class OntGraphAG implements IOntGraph {
 		}
 		
 		// if any, get latest version that may remain:
-		Ontology latestOntology = null;
+		OntologyInfo latestOntology = null;
 		try {
 			latestOntology = db.getRegisteredOntologyLatestVersion(ontologyUri);
 		}
@@ -768,7 +768,11 @@ public class OntGraphAG implements IOntGraph {
 				res = AgUtils.getResultInCsv(log, tripleIter);
 			}
 			else if ( form.equalsIgnoreCase("json") ) {
+				// FIXME 261: JSON output format not honored  
+				// Returning CSV for the moment.
+				res = AgUtils.getResultInCsv(log, tripleIter);
 				queryResult.setContentType("text/plain");
+				
 //				queryResult.setContentType("application/json");
 //				res = AgUtils.getResultInJson(log, tripleIter);
 			}

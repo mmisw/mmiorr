@@ -4,7 +4,7 @@ package org.mmisw.ont;
  * Some general info about an ontology.
  * @author Carlos Rueda
  */
-public class Ontology {
+public class OntologyInfo {
 	
 	private String id;
 	private String ontologyId;

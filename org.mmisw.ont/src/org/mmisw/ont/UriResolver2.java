@@ -2,22 +2,19 @@ package org.mmisw.ont;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.net.URISyntaxException;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.OntServlet.Request;
+import org.mmisw.ont.db.Db;
 import org.mmisw.ont.graph.IOntGraph;
-import org.mmisw.ont.util.DotGenerator;
+import org.mmisw.ont.mmiuri.MmiUri;
 import org.mmisw.ont.util.ServletUtil;
-import org.mmisw.ont.util.Util;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -185,19 +182,6 @@ public class UriResolver2 {
 			}
 			
 			///////////////////////////////////////////////////////////////////
-			// DOT
-			else if ( req.outFormat.equalsIgnoreCase("dot") ) {
-				req.response.setContentType("text/plain");
-				String ontologyUri = req.fullRequestedUri;
-				boolean includeLegend = Util.getParam(req.request, "il", null) != null; 
-				DotGenerator dot = new DotGenerator(model, includeLegend);
-				StringWriter sw = new StringWriter();
-				dot.generateDot(sw, "Input: " +ontologyUri);
-				StringReader is = new StringReader(sw.toString());
-				IOUtils.copy(is, os);
-			}
-			
-			///////////////////////////////////////////////////////////////////
 			// BAD REQUEST
 			else {
 				req.response.sendError(HttpServletResponse.SC_BAD_REQUEST,
@@ -270,7 +254,7 @@ public class UriResolver2 {
 	private Response _getResponseForMmiUri() throws ServletException, IOException {
 		
 		// the ontology we need to access:
-		Ontology ontology = null;
+		OntologyInfo ontology = null;
 		
 		
 		// this flag will be true if we have an unversioned request, see Issue 24.
@@ -285,7 +269,7 @@ public class UriResolver2 {
 			//
 			
 			// Get latest version trying all possible topic extensions:
-			Ontology mostRecentOntology = db.getMostRecentOntologyVersion(req.mmiUri);
+			OntologyInfo mostRecentOntology = db.getMostRecentOntologyVersion(req.mmiUri);
 
 			if ( mostRecentOntology != null ) {
 				

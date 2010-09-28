@@ -27,5 +27,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jena/stax-api-1.0.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jena/wstx-asl-3.2.9.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jena/xercesImpl-2.7.1.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/mysql-connector-java-5.1.13-bin.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

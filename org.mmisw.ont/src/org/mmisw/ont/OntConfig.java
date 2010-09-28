@@ -18,9 +18,6 @@ public class OntConfig {
 	 */
 	public enum Prop {
 		
-		VERSION                       ("ont.app.version"),
-		BUILD                         ("ont.app.build"),
-		
 		AQUAPORTAL_REST_URL            ("aquaportal.rest.url"),
 		
 		AQUAPORTAL_UPLOADS_DIRECTORY  ("aquaportal.uploads.directory"),

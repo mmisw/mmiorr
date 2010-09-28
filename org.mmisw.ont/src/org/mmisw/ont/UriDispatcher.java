@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.sparql.SparqlDispatcher;
-import org.mmisw.ont.util.Util;
 
 
 /**
@@ -58,7 +57,9 @@ public class UriDispatcher {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	boolean dispatchEntityUri(HttpServletRequest request, HttpServletResponse response, String entityUri) 
+	boolean dispatchEntityUri(HttpServletRequest request, HttpServletResponse response, 
+			String entityUri, String outFormat
+	) 
 	throws ServletException, IOException {
 		
 //		String entityUri = Util.getParam(request, "uri", "");
@@ -67,14 +68,14 @@ public class UriDispatcher {
 //			return;
 //		}
 		
-		String outFormat = Util.getParam(request, "form", "owl");
+		outFormat = outFormat == null ? "owl" : outFormat;
 		
 		if ( log.isDebugEnabled() ) {
-			log.debug("dispatchUri: [" +entityUri+ "] format=" +outFormat);
+			log.debug("dispatchEntityUri: [" +entityUri+ "] format=" +outFormat);
 		}
 		
 		if ( outFormat.equalsIgnoreCase("html") || outFormat.equalsIgnoreCase("csv") ) {
-			return _dispatchUriHtml(request, response, entityUri);
+			return _dispatchUriHtml(request, response, entityUri, outFormat);
 		}
 		else if ( outFormat.equalsIgnoreCase("owl")
 			 ||   outFormat.equalsIgnoreCase("rdf")	 
@@ -103,7 +104,7 @@ public class UriDispatcher {
 		
 		// note, pass null so the called can continue the dispatch if the query get empty result
 		String requestedEntity = null;
-		return sparqlDispatcher.execute(request, response, query, requestedEntity);
+		return sparqlDispatcher.execute(request, response, query, requestedEntity, outFormat);
 	}
 
 
@@ -112,13 +113,15 @@ public class UriDispatcher {
 	 * @return true iff dispatch completed here.
 	 */
 	private boolean _dispatchUriHtml(HttpServletRequest request, HttpServletResponse response, 
-		String entityUri) 
+		String entityUri,
+		String outFormat
+	) 
 	throws ServletException, IOException {
 		
 		String query = PROPS_SELECT_QUERY_TEMPLATE.replaceAll("\\{E\\}", entityUri);
 		
 		// note, pass null so the called can continue the dispatch if the query get empty result
 		String requestedEntity = null;
-		return sparqlDispatcher.execute(request, response, query, requestedEntity);
+		return sparqlDispatcher.execute(request, response, query, requestedEntity, outFormat);
 	}
 }

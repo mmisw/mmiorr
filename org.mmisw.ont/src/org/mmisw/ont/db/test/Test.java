@@ -1,4 +1,4 @@
-package org.mmisw.ont;
+package org.mmisw.ont.db.test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -19,7 +19,11 @@ public class Test {
 
 		String DRIVER = "com.mysql.jdbc.Driver";
 		String user = "root";
-		String password = "msql1973";
+		String password = System.getProperty("bioportalUserPassword");
+		if ( password == null ) {
+			System.out.println("Undefined bioportalUserPassword system property");
+			return;
+		}
 
 		String table = "v_ncbo_ontology";
 		int limit = 500;

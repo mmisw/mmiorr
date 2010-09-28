@@ -48,7 +48,8 @@ public class SparqlDispatcher {
 			return;
 		}
 
-		execute(request, response, query, null);
+		String form = Util.getParam(request, "form", null);
+		execute(request, response, query, null, form);
 	}
 	
 	/** 
@@ -57,14 +58,15 @@ public class SparqlDispatcher {
 	 * @param requestedEntity If non-null and the result of the query is empty, then 404 is returned to the client.
 	 * @return true iff dispatch completed here.
 	 */
-	public boolean execute(HttpServletRequest request, HttpServletResponse response, String query, String requestedEntity)
+	public boolean execute(HttpServletRequest request, HttpServletResponse response, 
+			String query, String requestedEntity,
+			String outFormat
+	)
 	throws ServletException, IOException {
-		
-		String form = Util.getParam(request, "form", null);
 		
 		QueryResult queryResult;
 		try {
-			queryResult = _execute(query, form);
+			queryResult = _execute(query, outFormat);
 		}
 		catch (Exception e) {
 			String error = "ERROR: " +e.getMessage();
@@ -132,7 +134,7 @@ public class SparqlDispatcher {
 			String queryComm = "\n<!-- Query:\n\n" +Util.toHtmlComment(query)+ "\n-->\n\n";
 			String pre, pos;
 			
-			if ( "html-frag".equals(form) ) {
+			if ( "html-frag".equals(outFormat) ) {
 				pre = queryComm;
 				pos = "";
 			}

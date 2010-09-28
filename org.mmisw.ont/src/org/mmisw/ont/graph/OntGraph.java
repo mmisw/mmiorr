@@ -4,10 +4,10 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mmisw.ont.Db;
 import org.mmisw.ont.OntConfig;
-import org.mmisw.ont.Ontology;
+import org.mmisw.ont.OntologyInfo;
 import org.mmisw.ont.admin.AdminDispatcher;
+import org.mmisw.ont.db.Db;
 import org.mmisw.ont.graph.allegro.OntGraphAG;
 import org.mmisw.ont.graph.mem.OntGraphMem;
 import org.mmisw.ont.sparql.QueryResult;
@@ -76,7 +76,7 @@ public class OntGraph implements IOntGraph {
 		return _impl.executeQuery(sparqlQuery, form);
 	}
 
-	public void loadOntology(Ontology ontology, String graphId) throws Exception {
+	public void loadOntology(OntologyInfo ontology, String graphId) throws Exception {
 		_impl.loadOntology(ontology, graphId);
 	}
 
@@ -88,7 +88,7 @@ public class OntGraph implements IOntGraph {
 		_impl.reinit(withInference);
 	}
 
-	public void removeOntology(Ontology ontology) throws Exception {
+	public void removeOntology(OntologyInfo ontology) throws Exception {
 		_impl.removeOntology(ontology);
 	}
 

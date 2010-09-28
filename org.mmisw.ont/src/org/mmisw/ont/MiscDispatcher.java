@@ -23,6 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.ont.db.Db;
+import org.mmisw.ont.mmiuri.MmiUri;
 import org.mmisw.ont.util.Util;
 
 import com.hp.hpl.jena.ontology.Individual;
@@ -383,7 +385,7 @@ public class MiscDispatcher {
 	
 		// obtain info about the ontology:
 		String[] foundUri = { null };
-    	Ontology ontology = db.getOntologyWithExts(mmiUri, foundUri);
+    	OntologyInfo ontology = db.getOntologyWithExts(mmiUri, foundUri);
 		
     	if ( ontology == null ) {
     		out.println("ERROR: " +ontologyUri+ ": Not found.");
@@ -405,7 +407,7 @@ public class MiscDispatcher {
 	void reportOntVersion(HttpServletRequest request, HttpServletResponse response) 
 	throws ServletException, IOException {
 		
-		final String ontVersion = OntConfig.Prop.VERSION.getValue();
+		final String ontVersion = OntVersion.getVersion();
 		if ( log.isDebugEnabled() ) {
 			log.debug("reportOntVersion: reporting: " +ontVersion);
 		}
@@ -466,7 +468,7 @@ public class MiscDispatcher {
 		
 		
 		// the ontology that is found and corresponding URI
-		Ontology ontology = null;
+		OntologyInfo ontology = null;
 		String ontologyUri = null;
 		
 		String version = mmiUri.getVersion();
@@ -568,9 +570,9 @@ public class MiscDispatcher {
 			return;
 		}
 		
-		List<Ontology> onts = db.getOntologyVersions(mmiUri);
+		List<OntologyInfo> onts = db.getOntologyVersions(mmiUri);
 		
-		for ( Ontology ontology : onts ) {
+		for ( OntologyInfo ontology : onts ) {
 			
 			// report the URI:
 			out.println(ontology.getUri());
@@ -639,7 +641,7 @@ public class MiscDispatcher {
 		// report something about the available versions:
 		out.println("Available versions:");
 		out.println("<pre>");
-		for ( Ontology ont : db.getOntologyVersions(mmiUri) ) {
+		for ( OntologyInfo ont : db.getOntologyVersions(mmiUri) ) {
 			out.println("   " +ont.getUri());
 		}
 		out.println("</pre>");
@@ -648,7 +650,7 @@ public class MiscDispatcher {
 		
 		// obtain info about the ontology:
 		String[] foundUri = { null };
-    	Ontology ontology = db.getOntologyWithExts(mmiUri, foundUri);
+    	OntologyInfo ontology = db.getOntologyWithExts(mmiUri, foundUri);
 		
     	out.println("<br/>Database result:<br/> ");
 		

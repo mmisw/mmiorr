@@ -1,4 +1,4 @@
-package org.mmisw.ont;
+package org.mmisw.ont.mmiuri;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -70,7 +70,7 @@ public final class MmiUri {
 	 * 
 	 * @throws URISyntaxException if the string is invalid as version 
 	 */
-	static void checkVersion(String version) throws URISyntaxException {
+	public static void checkVersion(String version) throws URISyntaxException {
 		boolean ok = version.equals(LATEST_VERSION_INDICATOR) ||
 			VERSION_PATTERN.matcher(version).find();
 		

@@ -1,6 +1,8 @@
-package org.mmisw.ont;
+package org.mmisw.ont.mmiuri.test;
 
 import java.net.URISyntaxException;
+
+import org.mmisw.ont.mmiuri.MmiUri;
 
 import junit.framework.TestCase;
 

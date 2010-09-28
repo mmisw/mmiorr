@@ -7,14 +7,6 @@
 		<description>MMI Ontology and Term URI resolver</description>
 		<servlet-name>ontServlet</servlet-name>
 		<servlet-class>org.mmisw.ont.OntServlet</servlet-class>
-		<init-param>
-			<param-name>ont.app.version</param-name>
-			<param-value>@ont.app.version@</param-value>
-		</init-param>
-		<init-param>
-			<param-name>ont.app.build</param-name>
-			<param-value>@ont.app.build@</param-value>
-		</init-param>
 		
 		<init-param>
 			<param-name>ont.internal.dir</param-name>

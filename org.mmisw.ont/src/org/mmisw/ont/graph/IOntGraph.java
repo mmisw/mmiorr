@@ -2,7 +2,7 @@ package org.mmisw.ont.graph;
 
 import javax.servlet.ServletException;
 
-import org.mmisw.ont.Ontology;
+import org.mmisw.ont.OntologyInfo;
 import org.mmisw.ont.sparql.QueryResult;
 
 
@@ -22,7 +22,7 @@ public interface IOntGraph {
 
 	/**
 	 * Initializes the graph with all latest version of the ontologies 
-	 * as returned by {@link org.mmisw.ont.Db#getAllOntologies(boolean) with false argument}.
+	 * as returned by {@link org.mmisw.ont.db.Db#getAllOntologies(boolean) with false argument}.
 	 * 
 	 * <p>
 	 * Inference is enabled by default. If inference should be disabled,
@@ -87,7 +87,7 @@ public interface IOntGraph {
 	 * @throws Exception if there is some error  (for example, triple store
 	 * 				server is down or timed out).
 	 */
-	public void loadOntology(Ontology ontology, String graphId) throws Exception;
+	public void loadOntology(OntologyInfo ontology, String graphId) throws Exception;
 
 	
 	/**
@@ -99,5 +99,5 @@ public interface IOntGraph {
 	 * 
 	 * @param ontology
 	 */
-	public void removeOntology(Ontology ontology) throws Exception ;
+	public void removeOntology(OntologyInfo ontology) throws Exception ;
 }

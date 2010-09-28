@@ -2,6 +2,7 @@ package org.mmisw.ont;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.ont.mmiuri.MmiUri;
 import org.mmisw.ont.util.Unfinished;
 
 import com.hp.hpl.jena.ontology.Individual;

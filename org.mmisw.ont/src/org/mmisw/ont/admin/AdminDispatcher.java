@@ -18,10 +18,10 @@ import javax.servlet.ServletException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mmisw.ont.Db;
 import org.mmisw.ont.JenaUtil2;
 import org.mmisw.ont.OntConfig;
 import org.mmisw.ont.OntServlet.Request;
+import org.mmisw.ont.db.Db;
 import org.mmisw.ont.util.ServletUtil;
 import org.mmisw.ont.vocabulary.Rdfg;
 

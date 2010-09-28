@@ -23,11 +23,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.admin.AdminDispatcher;
 import org.mmisw.ont.admin.OntologyDeleter;
+import org.mmisw.ont.db.Db;
 import org.mmisw.ont.graph.IOntGraph;
 import org.mmisw.ont.graph.OntGraph;
+import org.mmisw.ont.mmiuri.MmiUri;
 import org.mmisw.ont.sparql.SparqlDispatcher;
 import org.mmisw.ont.util.Accept;
 import org.mmisw.ont.util.Analytics;
+import org.mmisw.ont.util.OntUtil;
 import org.mmisw.ont.util.Util;
 
 import com.hp.hpl.jena.rdf.model.Model;
@@ -67,17 +70,10 @@ public class OntServlet extends HttpServlet {
 
 	private final UriDispatcher uriDispatcher = new UriDispatcher(sparqlDispatcher);
 
-	
-	// TODO remove UriResolver.
-//	private final UriResolver uriResolver = new UriResolver(ontConfig, db, ontGraph);
-	
-	//
 	// NOTE: Refactoring underway
-	// I keep both instances of UriResolver and the new UriResolver2.
 	private final UriResolver2 uriResolver2 = new UriResolver2(ontConfig, db, ontGraph);
 	
 	
-	// previously in UriResolver
 	private final RegularFileDispatcher regularFileDispatcher = new RegularFileDispatcher();
 	
 	// Analytics
@@ -101,7 +97,7 @@ public class OntServlet extends HttpServlet {
 		final String outFormat;
 		
 		// in case the ontology info is obtained somehow, use it:
-		Ontology ontology;
+		OntologyInfo ontology;
 		
 		// in case an explicit version is requested
 		final String version;
@@ -225,18 +221,15 @@ public class OntServlet extends HttpServlet {
 	 * and retrieval of version information.
 	 */
 	public void init() throws ServletException {
-		log.info(TITLE+ ": initializing");
+		VERSION = OntVersion.getVersion()+ " (" +OntVersion.getBuild()+ ")";
+		FULL_TITLE = TITLE + ". Version " +VERSION;
+		
+		log.info(FULL_TITLE+ ": initializing");
 		
 		try {
 			ServletConfig servletConfig = getServletConfig();
 			ontConfig.init(servletConfig);
 			
-			VERSION = OntConfig.Prop.VERSION.getValue()+ " (" +
-			          OntConfig.Prop.BUILD.getValue()  + ")";
-			FULL_TITLE = TITLE + ". Version " +VERSION;
-			
-			log.info(FULL_TITLE);
-
 			db.init();
 			ontGraph.init();
 			
@@ -432,8 +425,9 @@ public class OntServlet extends HttpServlet {
 		boolean resolved = false;
 
 		if ( req.mmiUri != null ) {
-			log.debug("To dispatch MmiUri: " +req.mmiUri);
-			resolved = _dispatchUri(req, req.mmiUri.getTermUri());
+			String ontOrEntUri = req.mmiUri.getTermUri();
+			log.debug("To dispatch MmiUri: " +ontOrEntUri);
+			resolved = _dispatchUri(req, ontOrEntUri);
 		}
 		else {
 			log.debug("To dispatch non-MmiUri: " +req.fullRequestedUri);
@@ -475,7 +469,6 @@ public class OntServlet extends HttpServlet {
 		}
 	}
 	
-	
 	/**
 	 * Dispatches the given uri.
 	 * If the uri corresponds to a stored ontology, then the ontology is resolved
@@ -495,7 +488,94 @@ public class OntServlet extends HttpServlet {
 		// TODO (#158: analytics) under preliminary testing
 		analytics.trackPageview(ontOrEntUri);
 		
-		Ontology ontology = null;
+		String finalVersion = null;
+		
+		// explicit version and MmiUri with version given?
+		if ( req.version != null ) {
+			if ( req.mmiUri != null && req.mmiUri.getVersion() != null ) {		
+				//
+				// Both, versioned URI and "version" parameter given.
+				// Check that the two components are equal.
+				//
+				if ( ! req.version.equals(req.mmiUri.getVersion()) ) {
+					// versioned request AND explicit version parameter -> BAD REQUEST:
+					req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, 
+					"Versioned URI and \"version\" parameter requested simultaneously; both values must be equal.");
+					return true;
+				}
+				finalVersion = req.version;
+			}
+		}
+		else if ( req.mmiUri != null  ) {
+			finalVersion = req.mmiUri.getVersion();
+		}
+		
+		
+		// will be non-null if request corresponds to an ontology (not term)
+		OntologyInfo ontology = null;
+		
+		if ( finalVersion != null ) {
+			//
+			// explicit version requested (either from version parameter or from MmiUri).
+			//
+			if ( log.isDebugEnabled() ) {
+				log.debug("Explicit version requested: " +finalVersion);
+			}
+			
+			ontology = db.getOntologyVersion(ontOrEntUri, finalVersion);
+		}
+		else {
+			//
+			// No explicit version requested.
+			//
+			log.debug("No explicit version requested.");
+			ontology = _getRegisteredOntology(ontOrEntUri);
+		}
+		
+		if ( ontology != null ) {
+			//
+			// The requested URI corresponds to  a stored ontology.
+			//
+			if ( log.isDebugEnabled() ) {
+				log.debug("dispatching "+ ontOrEntUri+ " as whole ontology (not entity)");
+			}
+			
+			// use ontology member in req and make sure the Uri attribute is set
+			req.ontology = ontology;
+			req.ontology.setUri(ontOrEntUri);
+			uriResolver2.serviceForOntology(req);
+			return true;
+		}
+		else {
+			// try to dispatch entity URI (not complete ontology).
+			return uriDispatcher.dispatchEntityUri(req.request, req.response, ontOrEntUri,
+					req.outFormat
+			);
+		}
+	}
+	
+	/**
+	 * Dispatches the given uri.
+	 * If the uri corresponds to a stored ontology, then the ontology is resolved
+	 * as it were a regular self-served ontology.
+	 * If the uri corresponds to an entity (ie, that can be resolved to a non-empty result using SPARQL),
+	 * then it is dispatched here.
+	 * Otherwise, return false--not dispatched here.
+	 * 
+	 * @return true iff dispatch completed here.
+	 */
+	@SuppressWarnings("unused")
+	// TODO remove this old method.  Actual method is _dispatchUri
+	private boolean _dispatchUri_Old(Request req, String ontOrEntUri) throws ServletException, IOException {
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug("_dispatchUri: ontOrEntUri=" +ontOrEntUri);
+		}
+		
+		// TODO (#158: analytics) under preliminary testing
+		analytics.trackPageview(ontOrEntUri);
+		
+		OntologyInfo ontology = null;
 		
 		// explicit version?
 		if ( req.version != null ) {
@@ -507,7 +587,7 @@ public class OntServlet extends HttpServlet {
 			if ( req.mmiUri != null ) {
 				if ( req.mmiUri.getVersion() != null ) {		
 					//
-					// Both, veriones URI and "version" parameter given.
+					// Both, versioned URI and "version" parameter given.
 					// Check that the two components are equal.
 					//
 					if ( req.version.equals(req.mmiUri.getVersion()) ) {
@@ -533,7 +613,7 @@ public class OntServlet extends HttpServlet {
 		else {
 			// No explicit version.
 			log.debug("No explicit version requested.");
-			ontology = getRegisteredOntology(ontOrEntUri);
+			ontology = _getRegisteredOntology(ontOrEntUri);
 		}
 		
 		// see if the given URI corresponds to a registered ontology
@@ -553,10 +633,13 @@ public class OntServlet extends HttpServlet {
 		}
 		else {
 			// try to dispatch entity URI (not complete ontology).
-			return uriDispatcher.dispatchEntityUri(req.request, req.response, ontOrEntUri);
+			return uriDispatcher.dispatchEntityUri(req.request, req.response, ontOrEntUri,
+					req.outFormat
+			);
 		}
 	}
 
+	
 	/**
 	 * Gets a registered ontology
 	 * 
@@ -565,12 +648,85 @@ public class OntServlet extends HttpServlet {
 	 * @return the ontology if found; null if not found.
 	 * @throws ServletException
 	 */
-	private Ontology getRegisteredOntology(String potentialOntUri) throws ServletException {
+	private OntologyInfo _getRegisteredOntology(String potentialOntUri) throws ServletException {
+		if ( log.isDebugEnabled() ) {
+			log.debug("_getRegisteredOntology: potentialOntUri=" +potentialOntUri);
+		}
+
+		OntologyInfo ontology = null;
+		if ( OntUtil.isOntResolvableUri(potentialOntUri) ) {
+			
+			if ( log.isDebugEnabled() ) {
+				log.debug("_getRegisteredOntology: isOntResolvableUri: yes");
+			}
+
+			try {
+				MmiUri mmiUri = new MmiUri(potentialOntUri);
+				
+				if ( mmiUri.getTerm().length() > 0 ) {
+					// potentialOntUri corresponds to a term, not an ontology:
+					if ( log.isDebugEnabled() ) {
+						log.debug("_getRegisteredOntology: is a term, returning null.");
+					}
+					return null;
+				}
+				
+				if ( mmiUri.getVersion() == null ) {
+					// unversioned request.  Get most recent
+					if ( log.isDebugEnabled() ) {
+						log.debug("_getRegisteredOntology: unversioned request.");
+					}
+					
+					ontology = db.getMostRecentOntologyVersion(mmiUri);
+				}
+				else {
+					// versioned request. Just try to use the argument as given:
+					if ( log.isDebugEnabled() ) {
+						log.debug("_getRegisteredOntology: versioned request.");
+					}
+
+					ontology = db.getOntology(potentialOntUri);
+				}
+			}
+			catch (URISyntaxException e) {
+				// Not an MmiUri. Just try to use the argument as given:
+				if ( log.isDebugEnabled() ) {
+					log.debug("_getRegisteredOntology: not an MmiUri.");
+				}
+
+				ontology = db.getOntology(potentialOntUri);
+			}
+		}
+		else {
+			if ( log.isDebugEnabled() ) {
+				log.debug("_getRegisteredOntology: is OntResolvableUri: no");
+			}
+
+			ontology = db.getOntology(potentialOntUri);
+		}
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug("_getRegisteredOntology: " +(ontology == null ? "not resolved. returning null." : "resolved."));
+		}
+		return ontology;
+	}
+	
+	/**
+	 * Gets a registered ontology
+	 * 
+	 * @param potentialOntUri. The URI that will be used to try to find a corresponding registered
+	 *                     ontology.
+	 * @return the ontology if found; null if not found.
+	 * @throws ServletException
+	 */
+	@SuppressWarnings("unused")
+	// TODO remove this old method.  Actual method is _getRegisteredOntology
+	private OntologyInfo _getRegisteredOntology_Old(String potentialOntUri) throws ServletException {
 		if ( log.isDebugEnabled() ) {
 			log.debug("getRegisteredOntology: potentialOntUri=" +potentialOntUri);
 		}
 
-		Ontology ontology = null;
+		OntologyInfo ontology = null;
 		if ( OntUtil.isOntResolvableUri(potentialOntUri) ) {
 			
 			if ( log.isDebugEnabled() ) {
@@ -706,7 +862,7 @@ public class OntServlet extends HttpServlet {
 	 * @param ontology
 	 * @return
 	 */
-	static File getFullPath(Ontology ontology, OntConfig ontConfig, Log log) {
+	static File getFullPath(OntologyInfo ontology, OntConfig ontConfig, Log log) {
 		String full_path = OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY.getValue() 
 			+ "/" +ontology.getFilePath() + "/" + ontology.getFilename();
 		
@@ -807,7 +963,7 @@ public class OntServlet extends HttpServlet {
 			return;
 		}
 
-		Ontology ontology = db.getRegisteredOntologyLatestVersion(ontUri);
+		OntologyInfo ontology = db.getRegisteredOntologyLatestVersion(ontUri);
 		
 		if ( ontology == null ) {
 			if ( log.isDebugEnabled() ) {
@@ -959,7 +1115,7 @@ public class OntServlet extends HttpServlet {
 		}
 		
 		// get ontology ID (version specific) from the database
-		Ontology ontology = db.getOntologyVersion(ontUri, version);
+		OntologyInfo ontology = db.getOntologyVersion(ontUri, version);
 		if ( ontology == null ) {
 			if ( log.isDebugEnabled() ) {
 				log.debug("_unregisterOntology: NOT FOUND " +uriAndVerion);

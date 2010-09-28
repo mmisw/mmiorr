@@ -11,6 +11,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.ont.db.Db;
+import org.mmisw.ont.mmiuri.MmiUri;
+import org.mmisw.ont.util.OntUtil;
 import org.mmisw.ont.util.Util;
 
 import com.hp.hpl.jena.ontology.Individual;
@@ -59,7 +62,7 @@ public class HtmlDispatcher {
 	 * @throws IOException
 	 */
 	boolean dispatch(HttpServletRequest request, HttpServletResponse response, 
-			MmiUri mmiUri, boolean unversionedRequest, Ontology ontology) 
+			MmiUri mmiUri, boolean unversionedRequest, OntologyInfo ontology) 
 	throws ServletException, IOException {
 		
 		if ( log.isDebugEnabled() ) {

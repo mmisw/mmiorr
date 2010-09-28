@@ -26,8 +26,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mmisw.ont.Db;
-import org.mmisw.ont.MmiUri;
+import org.mmisw.ont.db.Db;
+import org.mmisw.ont.mmiuri.MmiUri;
 
 /**
  * Misc utilities.

@@ -21,7 +21,7 @@
 	<target name="init">
 		<fail unless="aquaportal.jdbc.password" />
 		<tstamp>
-		    <format property="ont.app.build" pattern="yyyyMMddHHmm" />
+		    <format property="ont.build" pattern="yyyyMMddHHmm" />
 		</tstamp>
 	</target>
 
@@ -30,6 +30,13 @@
 		<javac srcdir="src" destdir="${build.dir}/classes" includes="**" debug="on" debuglevel="lines,vars,source">
 			<classpath refid="project.class.path" />
 		</javac>
+		
+		<copy file="src/org/mmisw/ont/version.properties" tofile="${build.dir}/classes/org/mmisw/ont/version.properties" overwrite="true">
+			<filterset>
+				<filter token="ont.version" value="${ont.version}" />
+				<filter token="ont.build" value="${ont.build}" />
+			</filterset>
+		</copy>
 	</target>
 
 	<target name="jar" depends="compile">
@@ -37,44 +44,57 @@
 		<jar destfile="WebContent/WEB-INF/lib/org.mmisw.ont.jar">
 			<fileset dir="${build.dir}/classes">
 				<include name="**/*.class" />
+				<include name="**/*.properties" />
 			</fileset>
 		</jar>
 	</target>
 
-	<!-- creates the mmiuri jar -->
-	<target name="mmiuri" depends="compile">
-		<mkdir dir="${build.dir}/lib" />
-		<jar destfile="org.mmisw.ont.mmiuri.jar">
-			<fileset dir="${build.dir}/classes">
-				<include name="org/mmisw/ont/MmiUri.class" />
-			</fileset>
-		</jar>
-	</target>
+	<!-- ==================================================================== -->
+	<!-- client library -->
 
-	
-	<!-- creates the vocabulary jar -->
-	<target name="voc-jar" depends="compile">
+	<target name="client-lib" depends="compile">
 		<mkdir dir="${build.dir}/lib" />
-		<jar destfile="org.mmisw.ont.vocabulary.jar">
+		<jar destfile="org.mmisw.ont.client.jar">
 			<fileset dir="${build.dir}/classes">
+				<include name="org/mmisw/ont/OntVersion.class" />
+				<include name="org/mmisw/ont/version.properties" />
+				<include name="org/mmisw/ont/mmiuri/MmiUri.class" />
 				<include name="org/mmisw/ont/vocabulary/**/*.class" />
-			</fileset>
-		</jar>
-	</target>
-
-	
-	<!-- creates the misc jar -->
-	<target name="misc" depends="compile">
-		<mkdir dir="${build.dir}/lib" />
-		<jar destfile="org.mmisw.ont.misc.jar">
-			<fileset dir="${build.dir}/classes">
 				<include name="org/mmisw/ont/JenaUtil2.class" />
+				<include name="org/mmisw/ont/client/**/*.class" />
 			</fileset>
 		</jar>
 	</target>
 
 	
-	<target name="prepare2war" depends="jar">
+	<!-- ==================================================================== -->
+	<!-- tests -->
+
+	<macrodef name="testing">
+		<attribute name="sources" />
+		<sequential>
+			<junit printsummary="yes" haltonfailure="yes" fork="yes" showoutput="yes" outputtoformatters="no">
+				<formatter type="plain" usefile="no" />
+				<classpath refid="project.class.path" />
+				<classpath path="${build.dir}/classes" />
+				<batchtest>
+					<fileset dir="src">
+						<include name="@{sources}" />
+					</fileset>
+				</batchtest>
+			</junit>
+		</sequential>
+	</macrodef>
+
+	<target name="mmiuriTests" depends="jar">
+		<testing sources="**/mmiuri/test/*Test.java" />
+	</target>
+	
+	<!-- all tests -->
+	<target name="tests" depends="mmiuriTests" />
+	
+	
+	<target name="prepare2war" depends="tests">
 		<!-- prepare tmp.WebContent -->
 		<copy todir="${build.dir}/tmp.WebContent">
 			<fileset dir="WebContent">
@@ -102,8 +122,6 @@
 		<copy file="WebContent/WEB-INF/web.xml" 
 			tofile="${build.dir}/tmp.WebContent/WEB-INF/web.xml" overwrite="true">
 			<filterset>
-				<filter token="ont.app.version" value="${ont.app.version}" />
-				<filter token="ont.app.build"   value="${ont.app.build}" />
 				<filter token="appserver.host"   value="${appserver.host}" />
 				<filter token="portal.service.url"  value="${portal.service.url}" />
 				<filter token="aquaportal.datasource.name" value="${aquaportal.datasource.name}" />

@@ -1,4 +1,4 @@
-package org.mmisw.ont;
+package org.mmisw.ont.db;
 
 import java.net.URISyntaxException;
 import java.sql.Connection;
@@ -21,10 +21,14 @@ import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.ont.OntConfig;
+import org.mmisw.ont.OntologyInfo;
+import org.mmisw.ont.mmiuri.MmiUri;
+import org.mmisw.ont.util.OntUtil;
 
 
 /**
- * A helper to work with the database.
+ * A helper to work with the aquaportal database.
  * 
  * @author Carlos Rueda
  */
@@ -45,13 +49,13 @@ public class Db {
 	 * Call {@link #init()} to initialize it.
 	 * @param ontConfig Used at initialization.
 	 */
-	Db(OntConfig ontConfig) {
+	public Db(OntConfig ontConfig) {
 	}
 	
 	/** 
 	 * Required initialization.
 	 */
-	void init() throws Exception {
+	public void init() throws Exception {
 		log.debug("init called.");
 		aquaportalDatasource = OntConfig.Prop.AQUAPORTAL_DATASOURCE.getValue(); 
 		
@@ -68,14 +72,21 @@ public class Db {
 
 	}
 	
-	public Connection getConnection() throws SQLException, ServletException {
+	/**
+	 * Establishes a connection to the aquaportal datasource.
+	 * 
+	 * @return
+	 * @throws SQLException
+	 * @throws ServletException
+	 */
+	public Connection getConnection() throws SQLException {
 		Connection result = dataSource.getConnection();
 		return result;
     }
 	
 	/**
 	 * Calls connection.close() if the connection is not already closed. Any
-	 * {@link SQLException} is catched and logged as a warning.
+	 * {@link SQLException} is logged as a warning and absorbed.
 	 *  
 	 * @param connection
 	 *          The connection to close. If null, this methods does nothing.
@@ -103,7 +114,7 @@ public class Db {
 	 * @throws ServletException
 	 * @throws SQLException 
 	 */
-	Ontology getOntologyVersion(final String ontologyUri, final String version) throws ServletException {
+	public OntologyInfo getOntologyVersion(final String ontologyUri, final String version) throws ServletException {
 		Connection _con = null;
 		try {
 			_con = getConnection();
@@ -119,7 +130,7 @@ public class Db {
 			ResultSet rs = _stmt.executeQuery(query);
 
 			if ( rs.next() ) {
-				Ontology ontology = new Ontology();
+				OntologyInfo ontology = new OntologyInfo();
 				ontology.setUri(ontologyUri);
 				ontology.setId(rs.getString(1));
 				ontology.setOntologyId(rs.getString(2));
@@ -170,7 +181,7 @@ public class Db {
 	 * @throws ServletException
 	 * @throws SQLException 
 	 */
-	Ontology getOntology(String ontologyUri) throws ServletException {
+	public OntologyInfo getOntology(String ontologyUri) throws ServletException {
 		Connection _con = null;
 		try {
 			_con = getConnection();
@@ -190,7 +201,7 @@ public class Db {
 			ResultSet rs = _stmt.executeQuery(query);
 
 			if ( rs.next() ) {
-				Ontology ontology = new Ontology();
+				OntologyInfo ontology = new OntologyInfo();
 				ontology.setId(rs.getString(1));
 				ontology.setOntologyId(rs.getString(2));
 				ontology.setFilePath(rs.getString(3));
@@ -223,13 +234,13 @@ public class Db {
 	 * 
 	 * @throws ServletException 
 	 */
-	Ontology getOntologyWithExts(MmiUri mmiUri, String[] foundUri) throws ServletException {
+	public OntologyInfo getOntologyWithExts(MmiUri mmiUri, String[] foundUri) throws ServletException {
 		// try with given URI:
 		String ontologyUri = mmiUri.getOntologyUri();
 		if ( log.isDebugEnabled() ) {
 			log.debug("getOntologyWithExts: given URI=" +ontologyUri);
 		}
-		Ontology ontology = this.getOntology(ontologyUri);
+		OntologyInfo ontology = this.getOntology(ontologyUri);
 		if ( ontology != null ) {
 			if ( foundUri != null ) {
 				foundUri[0] = ontologyUri;
@@ -289,9 +300,9 @@ public class Db {
 	 *          
 	 * @throws ServletException
 	 */
-	List<Ontology> getOntologyVersions(MmiUri mmiUri) throws ServletException {
+	public List<OntologyInfo> getOntologyVersions(MmiUri mmiUri) throws ServletException {
 		
-		List<Ontology> onts = new ArrayList<Ontology>();
+		List<OntologyInfo> onts = new ArrayList<OntologyInfo>();
 		
 		if ( mmiUri.getVersion() != null && log.isDebugEnabled() ) {
 			log.debug("getOntologyVersions: " +mmiUri.getVersion()+ ": version component will be ignored.");
@@ -337,7 +348,7 @@ public class Db {
 			ResultSet rs = _stmt.executeQuery(query);
 
 			while ( rs.next() ) {
-				Ontology ontology = new Ontology();
+				OntologyInfo ontology = new OntologyInfo();
 				ontology.setId(rs.getString(1));
 				ontology.setOntologyId(rs.getString(2));
 				ontology.setFilePath(rs.getString(3));
@@ -372,12 +383,12 @@ public class Db {
 	
 	
 	
-	Ontology getMostRecentOntologyVersion(MmiUri mmiUri) throws ServletException {
-		List<Ontology> onts = getOntologyVersions(mmiUri);
+	public OntologyInfo getMostRecentOntologyVersion(MmiUri mmiUri) throws ServletException {
+		List<OntologyInfo> onts = getOntologyVersions(mmiUri);
 		if ( onts.size() == 0 ) {
 			return null;
 		}
-		Ontology ont = onts.get(0);
+		OntologyInfo ont = onts.get(0);
 		return ont;
 	}
 	
@@ -391,9 +402,9 @@ public class Db {
 	 * @return the ontology if found; null if not found.
 	 * @throws ServletException
 	 */
-	public Ontology getRegisteredOntologyLatestVersion(String potentialOntUri) throws ServletException  {
+	public OntologyInfo getRegisteredOntologyLatestVersion(String potentialOntUri) throws ServletException  {
 		log.debug("getRegisteredOntologyLatestVersion: " +potentialOntUri);
-		Ontology ontology = null;
+		OntologyInfo ontology = null;
 		if ( OntUtil.isOntResolvableUri(potentialOntUri) ) {
 			try {
 				MmiUri mmiUri = new MmiUri(potentialOntUri);
@@ -423,8 +434,8 @@ public class Db {
 	 */
 	// TODO Remove this deprecated method
 	@Deprecated
-	List<Ontology> getOntologies() throws ServletException {
-		List<Ontology> onts = new ArrayList<Ontology>();
+	List<OntologyInfo> getOntologies() throws ServletException {
+		List<OntologyInfo> onts = new ArrayList<OntologyInfo>();
 		Connection _con = null;
 		try {
 			_con = getConnection();
@@ -441,7 +452,7 @@ public class Db {
 			ResultSet rs = _stmt.executeQuery(query);
 			
 	        while ( rs.next() ) {
-	        	Ontology ontology = new Ontology();
+	        	OntologyInfo ontology = new OntologyInfo();
 	        	ontology.setId(rs.getString(1));
 	        	ontology.setOntologyId(rs.getString(2));
 	        	ontology.setFilePath(rs.getString(3));
@@ -470,10 +481,10 @@ public class Db {
 	 * @return
 	 * @throws ServletException
 	 */
-	public List<Ontology> getAllOntologies(boolean allVersions) throws ServletException {
+	public List<OntologyInfo> getAllOntologies(boolean allVersions) throws ServletException {
 		
-		List<Ontology> onts = new ArrayList<Ontology>();
-		Map<String,Ontology> mostRecent = new LinkedHashMap<String,Ontology>();
+		List<OntologyInfo> onts = new ArrayList<OntologyInfo>();
+		Map<String,OntologyInfo> mostRecent = new LinkedHashMap<String,OntologyInfo>();
 		
 		// If allVersions==true, we add to onts immediately; otherwise
 		// we keep track of the most recent ontology for each ontology_id in mostRecent.
@@ -495,7 +506,7 @@ public class Db {
 			
 	        while ( rs.next() ) {
 
-	        	Ontology ontology = new Ontology();
+	        	OntologyInfo ontology = new OntologyInfo();
 	        	ontology.setId(rs.getString(1));
 	        	ontology.setOntologyId(rs.getString(2));
 	        	ontology.setFilePath(rs.getString(3));
@@ -518,7 +529,7 @@ public class Db {
 	        }
 	        else {
 	        	// add all the most recent items:
-	        	for ( Ontology ontology : mostRecent.values() ) {
+	        	for ( OntologyInfo ontology : mostRecent.values() ) {
 	        		onts.add(ontology);
 	        	}
 	        	return onts;
