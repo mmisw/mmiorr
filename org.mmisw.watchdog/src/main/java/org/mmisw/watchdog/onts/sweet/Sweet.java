@@ -46,7 +46,7 @@ public class Sweet extends BaseProgram {
 	}
 	
 	/** Never returns */
-	private void _usage(String msg) {
+	protected void _usage(String msg) {
 		if ( msg == null ) {
 			System.out.println(
 					"USAGE:\n" +

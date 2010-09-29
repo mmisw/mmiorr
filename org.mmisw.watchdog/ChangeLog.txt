@@ -10,6 +10,77 @@ Carlos Rueda - MMI/MBARI
 		</dependency>
 	 mvn clean install
 	 mvn exec:java -Dexec.args="Cf --ws workspace/cf"   --> OK. 
+	 
+	 
+	 
+	Initial version of UDUnits conversion
+	 
+	$ mvn exec:java -Dexec.args="Udunits --ws workspace/udunits --force"
+	[INFO] [exec:java]
+	Running with these inputs:
+	    -what-  -namespace-                                         -url-
+	    prefix  http://mmisw.org/ont/mmitest/udunits2-prefix/       http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2-prefixes.xml
+	      base  http://mmisw.org/ont/mmitest/udunits2-base/         http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2-base.xml
+	   derived  http://mmisw.org/ont/mmitest/udunits2-derived/      http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2-derived.xml
+	  accepted  http://mmisw.org/ont/mmitest/udunits2-accepted/     http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2-accepted.xml
+	    common  http://mmisw.org/ont/mmitest/udunits2-common/       http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2-common.xml
+	[Udunits] Loading http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2-prefixes.xml
+	[Udunits] 	             entries : 20
+	[Udunits] 	            concepts : 20
+	[Udunits] Overwriting workspace/udunits/udunits2-prefixes.xml
+	[Udunits] workspace/udunits/udunits2-prefixes.xml: input saved
+	New SKOS Ontology saved in: workspace/udunits/udunits2-prefixes.owl
+	Size of the new Ontology: 95
+	[Udunits] workspace/udunits/udunits2-prefixes.owl: resulting ontology saved
+	[Udunits] Loading http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2-base.xml
+	[Udunits] 	             entries : 7
+	[Udunits] 	            concepts : 7
+	[Udunits] Overwriting workspace/udunits/udunits2-base.xml
+	[Udunits] workspace/udunits/udunits2-base.xml: input saved
+	New SKOS Ontology saved in: workspace/udunits/udunits2-base.owl
+	Size of the new Ontology: 51
+	[Udunits] workspace/udunits/udunits2-base.owl: resulting ontology saved
+	[Udunits] Loading http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2-derived.xml
+	[Udunits] 	             entries : 23
+	[Udunits] 	            concepts : 21
+	[Udunits] Overwriting workspace/udunits/udunits2-derived.xml
+	[Udunits] workspace/udunits/udunits2-derived.xml: input saved
+	New SKOS Ontology saved in: workspace/udunits/udunits2-derived.owl
+	Size of the new Ontology: 106
+	[Udunits] workspace/udunits/udunits2-derived.owl: resulting ontology saved
+	[Udunits] Loading http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2-accepted.xml
+	[Udunits] 	             entries : 23
+	[Udunits] 	            concepts : 10
+	[Udunits] Overwriting workspace/udunits/udunits2-accepted.xml
+	[Udunits] workspace/udunits/udunits2-accepted.xml: input saved
+	New SKOS Ontology saved in: workspace/udunits/udunits2-accepted.owl
+	Size of the new Ontology: 70
+	[Udunits] workspace/udunits/udunits2-accepted.owl: resulting ontology saved
+	[Udunits] Loading http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2-common.xml
+	[Udunits] 	             entries : 214
+	[Udunits] 	            concepts : 0
+	[Udunits] Overwriting workspace/udunits/udunits2-common.xml
+	[Udunits] workspace/udunits/udunits2-common.xml: input saved
+	New SKOS Ontology saved in: workspace/udunits/udunits2-common.owl
+	Size of the new Ontology: 22
+	[Udunits] workspace/udunits/udunits2-common.owl: resulting ontology saved
+	[INFO] ------------------------------------------------------------------------
+	[INFO] BUILD SUCCESSFUL
+	[INFO] ------------------------------------------------------------------------
+	[INFO] Total time: 3 seconds
+	[INFO] Finished at: Tue Sep 28 23:04:48 MST 2010
+	[INFO] Final Memory: 7M/13M
+	[INFO] ------------------------------------------------------------------------
+	
+	NOTE that in some cases, the number of concepts is less than the number of entries.
+	This is because I'm using the <name> element (actually the <singular> element
+	within the <name>) as a basis for the instance URI. In some cases, there is no
+	such name, so no concept is generated for that entry.
+	Note in particular acomment in udunits2-common.xml:
+	  "NB: <name> and <symbol> elements appear only within <aliases>."
+	
+	So, general question is: what element or value should be used as ID for unit instances? 
+	 
 	
 2010-09-20
 	CF generation changes (upon email exchange with Nan G. today)

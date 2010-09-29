@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns="http://mmisw.org/ont/mmitest/udunits2-prefix/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+  xml:base="http://mmisw.org/ont/mmitest/udunits2-prefix/">
+  <rdfs:Class rdf:about="http://www.w3.org/2004/02/skos/core#Concept"/>
+  <owl:Class rdf:about="Prefix">
+    <rdfs:label>Prefix</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+  </owl:Class>
+  <owl:DatatypeProperty rdf:about="value">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="Prefix"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="name">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="Prefix"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="symbol">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="Prefix"/>
+  </owl:DatatypeProperty>
+  <Prefix rdf:about="micro">
+    <symbol>u</symbol>
+    <symbol>μ</symbol>
+    <symbol>µ</symbol>
+    <value>1e-6</value>
+    <name>micro</name>
+  </Prefix>
+  <Prefix rdf:about="pico">
+    <symbol>p</symbol>
+    <value>1e-12</value>
+    <name>pico</name>
+  </Prefix>
+  <Prefix rdf:about="deka">
+    <symbol>da</symbol>
+    <value>10</value>
+    <name>deka</name>
+  </Prefix>
+  <Prefix rdf:about="nano">
+    <symbol>n</symbol>
+    <value>1e-9</value>
+    <name>nano</name>
+  </Prefix>
+  <Prefix rdf:about="giga">
+    <symbol>G</symbol>
+    <value>1e9</value>
+    <name>giga</name>
+  </Prefix>
+  <Prefix rdf:about="exa">
+    <symbol>E</symbol>
+    <value>1e18</value>
+    <name>exa</name>
+  </Prefix>
+  <Prefix rdf:about="deci">
+    <symbol>d</symbol>
+    <value>.1</value>
+    <name>deci</name>
+  </Prefix>
+  <Prefix rdf:about="yotta">
+    <symbol>Y</symbol>
+    <value>1e24</value>
+    <name>yotta</name>
+  </Prefix>
+  <Prefix rdf:about="yocto">
+    <symbol>y</symbol>
+    <value>1e-24</value>
+    <name>yocto</name>
+  </Prefix>
+  <Prefix rdf:about="milli">
+    <symbol>m</symbol>
+    <value>1e-3</value>
+    <name>milli</name>
+  </Prefix>
+  <Prefix rdf:about="kilo">
+    <symbol>k</symbol>
+    <value>1e3</value>
+    <name>kilo</name>
+  </Prefix>
+  <Prefix rdf:about="centi">
+    <symbol>c</symbol>
+    <value>.01</value>
+    <name>centi</name>
+  </Prefix>
+  <Prefix rdf:about="zepto">
+    <symbol>z</symbol>
+    <value>1e-21</value>
+    <name>zepto</name>
+  </Prefix>
+  <Prefix rdf:about="femto">
+    <symbol>f</symbol>
+    <value>1e-15</value>
+    <name>femto</name>
+  </Prefix>
+  <Prefix rdf:about="hecto">
+    <symbol>h</symbol>
+    <value>100</value>
+    <name>hecto</name>
+  </Prefix>
+  <Prefix rdf:about="atto">
+    <symbol>a</symbol>
+    <value>1e-18</value>
+    <name>atto</name>
+  </Prefix>
+  <Prefix rdf:about="zetta">
+    <symbol>Z</symbol>
+    <value>1e21</value>
+    <name>zetta</name>
+  </Prefix>
+  <Prefix rdf:about="mega">
+    <symbol>M</symbol>
+    <value>1e6</value>
+    <name>mega</name>
+  </Prefix>
+  <Prefix rdf:about="peta">
+    <symbol>P</symbol>
+    <value>1e15</value>
+    <name>peta</name>
+  </Prefix>
+  <Prefix rdf:about="tera">
+    <symbol>T</symbol>
+    <value>1e12</value>
+    <name>tera</name>
+  </Prefix>
+</rdf:RDF>

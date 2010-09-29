@@ -57,7 +57,7 @@ public class RegisterOntology {
 			String formAction
 	) throws HttpException, IOException {
 		
-		PartSource partSource = new ByteArrayPartSource(fileName, fileContents.getBytes());
+		PartSource partSource = new ByteArrayPartSource(fileName, fileContents.getBytes("UTF-8"));
 		
 		System.out.println("Executing POST request to " +formAction);
 		PostMethod post = new PostMethod(formAction);

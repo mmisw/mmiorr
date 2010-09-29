@@ -1,17 +1,14 @@
 package org.mmisw.watchdog.onts.cf;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.StringReader;
 import java.net.URL;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.IOUtils;
-import org.mmisw.ont.client.util.HttpUtil;
 import org.mmisw.watchdog.Watchdog.BaseProgram;
 import org.mmisw.watchdog.conversion.IConverter;
 import org.mmisw.watchdog.onts.cf.jena.CfConverterJena;
@@ -31,8 +28,8 @@ public class Cf extends BaseProgram {
 	private static final String DEFAULT_INPUT = 
 		"http://cf-pcmdi.llnl.gov/documents/cf-standard-names/standard-name-table/current/cf-standard-name-table.xml";
 	
-	/** Template of default output filename  */
-	private static final String DEFAULT_OUTPUT = "${workspace}/${basename}-${version_number}-${impl}.owl";
+	/** Message indicating default output filename  */
+	private static final String DEFAULT_OUTPUT_MSG = "${basename}-${version_number}-${impl}.owl (under ${workspace})";
 	
 	/** Default namespace for resulting ontology */
 	private static final String DEFAULT_NAMESPACE = "http://mmisw.org/ont/cf/parameter/";
@@ -60,7 +57,7 @@ public class Cf extends BaseProgram {
 	}
 	
 	/** Never returns */
-	private void _usage(String msg) {
+	protected void _usage(String msg) {
 		if ( msg == null ) {
 			System.out.println(
 					"USAGE: " +getClass().getName()+ " --ws <directory> [options]\n" +
@@ -68,7 +65,7 @@ public class Cf extends BaseProgram {
 					"  options: (default value in parenthesis)\n" +
 					"    --input <url>         (" +DEFAULT_INPUT+ ")\n" +
 					"    --ns <uri>            (" +DEFAULT_NAMESPACE+ ")\n" +
-					"    --output <filename>   (" +DEFAULT_OUTPUT+ ")\n" +
+					"    --output <filename>   (" +DEFAULT_OUTPUT_MSG+ ")\n" +
 					"    --force               (" +DEFAULT_FORCE+ ")\n" +
 					"    --impl [jena|skosapi] (" +DEFAULT_IMPL+ ")\n" +
 					"   for registration:\n" +
@@ -155,7 +152,7 @@ public class Cf extends BaseProgram {
 		namespace = _prepareNamespace(namespace);
 		IConverter creator = _prepareCreator(impl);
 		
-		Map<String, String> props = _convert(creator, workspaceDir, inputUrl, inputContents, namespace, output, force);
+		Map<String, String> props = _convert(creator, inputContents, namespace);
 		
 		_reportProps(props);
 		
@@ -178,18 +175,6 @@ public class Cf extends BaseProgram {
 		}
 	}
 
-	private void _reportProps(Map<String, String> props) {
-		for ( Entry<String, String> entry : props.entrySet() ) {
-			_log(String.format("\t%20s : %s", entry.getKey(), entry.getValue()));
-		}		
-	}
-
-	private String _getInputContents(URL inputUrl) throws Exception {
-		_log("Loading " +inputUrl);
-		String inputContents = HttpUtil.getAsString(inputUrl.toString());
-		return inputContents;
-	}
-
 	private IConverter _prepareCreator(String impl) {
 		if ( impl.equalsIgnoreCase(WdConstants.JENA_IMPL)) {
 			return new CfConverterJena();
@@ -203,63 +188,13 @@ public class Cf extends BaseProgram {
 		return null;
 	}
 
-	private String _prepareNamespace(String namespace) {
-		char separator;
-		if ( namespace.matches(".*(/|#)") ) {
-			separator = namespace.charAt(namespace.length() - 1); 
-		}
-		else {
-			separator = '/';
-		}
-		// make sure, namespace ends with the obtained separator:
-		namespace = namespace.replaceAll("(/|#)+$", "") + separator;
-		return namespace;
-	}
-
-	private File _prepareWorkspace(String workspace) {
-		File workspaceDir = new File(workspace);
-		if ( workspaceDir.exists() ) {
-			if (  ! workspaceDir.isDirectory() ) {
-				_usage("workspace exists but it's not a directory");
-			}
-		}
-		else {
-			if ( ! workspaceDir.mkdirs() ) {
-				_usage("Cannot create workspace directory: " +workspaceDir);
-			}
-			_log(workspaceDir+ ": directory created.");
-		}
-		return workspaceDir;
-	}
-
-
-	/** Used to create download filename and conversion output filename
-	 * @return nx[0] = n ame w/o extension
-	 *         nx[1] = extension including dot, if extension appears
-	 */
-	private String[] _getFilenameAndExtension(URL inputUrl) {
-		String[] nx = { "", "" };
-		String filePortion = inputUrl.getFile();
-		File file = new File(filePortion);
-		String name = file.getName();
-		int idx = name.lastIndexOf('.');
-		if ( idx < 0 ) {
-			nx[0] = name;
-		}
-		else {
-			nx[0] = name.substring(0, idx);
-			nx[1] = name.substring(idx);
-		}
-		return nx;
-	}
-
-	
 	/**
 	 * Does the conversion using the given creator object.
 	 */
-	private Map<String, String> _convert(IConverter creator, File workspaceDir, 
-			URL inputUrl, String inputContents, 
-			String namespace, String output, boolean force
+	private Map<String, String> _convert(
+			IConverter creator, 
+			String inputContents, 
+			String namespace
 	) throws Exception {
 		
 		creator.setInput(inputContents);
@@ -292,7 +227,7 @@ public class Cf extends BaseProgram {
 		}
 		
 		// save downloaded file:
-		IOUtils.copy(new StringReader(inputContents), new FileOutputStream(downloadFile));
+		IOUtils.write(inputContents, new FileOutputStream(downloadFile), "UTF-8");
 		_log(downloadFile+ ": input saved");
 		
 		// save result of conversion:
@@ -318,7 +253,7 @@ public class Cf extends BaseProgram {
 		
 		_log("Preparing registration of " +outputFile+ " ...");
 		
-		String fileContents = IOUtils.toString(new FileReader(outputFile));
+		String fileContents = IOUtils.toString(new FileInputStream(outputFile), "UTF-8");
 
 		// remove trailing separator:
 		String ontologyUri = namespace.replaceAll("(/|#)+$", "");

@@ -1,10 +1,11 @@
-package org.mmisw.watchdog.onts.cf.jena;
+package org.mmisw.watchdog.onts.udunits.jena;
 
 import java.io.FileOutputStream;
 import java.io.StringReader;
 import java.util.Iterator;
 import java.util.List;
 
+import org.jdom.Content;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -23,13 +24,12 @@ import com.hp.hpl.jena.vocabulary.XSD;
 
 
 /**
- * CF conversion implementation based on Jena.
+ * UDUnits prefix conversion.
  * 
- * @author bermudez
- * @author carueda
+ * @author Carlos Rueda
  */
-public class CfConverterJena extends BaseConverter {
-	
+public class UdunitsPrefixConverterJena extends BaseConverter {
+
 	protected void _doConvert() throws Exception {
 		numConcepts = 0;
 		_createNewOntology();
@@ -47,11 +47,12 @@ public class CfConverterJena extends BaseConverter {
 	
 	private Model model;
 
-	private Resource standardNameClass;
+	private Resource siPrefixClass;
 	
-	private Resource currentTopConcept;
 
-	private Property canonical_units;
+	private Property nameProperty;
+	private Property valueProperty;
+	private Property symbolProperty;
 	
 	/** created concepts in SKOS ontology */
 	private int numConcepts;
@@ -64,40 +65,34 @@ public class CfConverterJena extends BaseConverter {
 		
 		model.setNsPrefix("", namespace);
 
-		// creates top concept scheme
-//		conceptScheme = model.createResource(NS + "cf", SKOS.ConceptScheme);
-//		conceptScheme.addProperty(DC.creator, "Luis Bermudez MMI");
-//		conceptScheme.addProperty(DC.date, (new java.text.SimpleDateFormat(
-//				"yyyy-MM-dd'T'hh:mm:ss")).format(new Date(System
-//				.currentTimeMillis())));
-//		conceptScheme.addProperty(DC.description, "CF Terms");
-
 		
-		standardNameClass = model.createResource(namespace + "Standard_Name");
+		siPrefixClass = model.createResource(namespace + "Prefix");
 		
-		currentTopConcept = _createConcept(namespace + "parameter");
-
 		Statement stmt;
 		
-		stmt = model.createStatement(standardNameClass, RDF.type, OWL.Class);
+		stmt = model.createStatement(siPrefixClass, RDF.type, OWL.Class);
 		model.add(stmt);
 		
-		stmt = model.createStatement(standardNameClass, RDFS.subClassOf, Skos.Concept);
+		stmt = model.createStatement(siPrefixClass, RDFS.subClassOf, Skos.Concept);
 		model.add(stmt);
 
-		stmt = model.createStatement(standardNameClass, RDFS.label, "Standard Name");
+		stmt = model.createStatement(siPrefixClass, RDFS.label, "Prefix");
 		model.add(stmt);
 
 		
-		canonical_units = model.createProperty(namespace + "canonical_units");
-		
-		stmt = model.createStatement(canonical_units, RDF.type, OWL.DatatypeProperty);
-		model.add(stmt);
-		stmt = model.createStatement(canonical_units, RDFS.domain, standardNameClass);
-		model.add(stmt);
-		stmt = model.createStatement(canonical_units, RDFS.range, XSD.xstring);
-		model.add(stmt);
-
+		Property[] props = { 
+				nameProperty = model.createProperty(namespace + "name"),
+				valueProperty = model.createProperty(namespace + "value"),
+				symbolProperty = model.createProperty(namespace + "symbol"),
+		};
+		for ( Property prop : props ) {
+			stmt = model.createStatement(prop, RDF.type, OWL.DatatypeProperty);
+			model.add(stmt);
+			stmt = model.createStatement(prop, RDFS.domain, siPrefixClass);
+			model.add(stmt);
+			stmt = model.createStatement(prop, RDFS.range, XSD.xstring);
+			model.add(stmt);
+		}
 
 	}
 
@@ -108,36 +103,33 @@ public class CfConverterJena extends BaseConverter {
 
 		Element root = document.getRootElement();
 
-		_getProperty(root, "version_number");
-		_getProperty(root, "last_modified");
-		_getProperty(root, "institution");
-		_getProperty(root, "contact");
+		// note: there are not properities for the rot element in the prefixes XML
+		//_getProperty(root, "version_number");
 		
-		List<?> list = root.getChildren("entry");
+		List<?> list = root.getChildren("prefix");
 		for (Iterator<?> iterator = list.iterator(); iterator.hasNext();) {
 			Element ele = (Element)iterator.next();
-			
 			numEntries++;
 			
-			String id = (ele.getAttribute("id").getValue()).trim();
-
-			String canonicalUnits = ele.getChildTextNormalize("canonical_units");
-			//				String grib = ele.getChildTextNormalize("grib");
-			//				String amip = ele.getChildTextNormalize("amip");
-
-			String description = ele.getChildTextNormalize("description");
-
-			Resource concept = _createConcept(namespace + id);
-
-//			concept.addProperty(Skos.prefLabel, id.replace('_', ' '));
-//			concept.addProperty(RDFS.label, id);
+			String name = ele.getChildTextNormalize("name");
+			if ( name.trim().length() == 0 ) {
+				continue;
+			}
 			
-			concept.addProperty(canonical_units, canonicalUnits);
+			Resource concept = _createConcept(namespace + name);
 			
-			concept.addProperty(Skos.definition, description);
-//			concept.addProperty(RDFS.comment, description);
-
-			currentTopConcept.addProperty(Skos.narrower, concept);
+			concept.addProperty(nameProperty, name);
+			
+			String value = ele.getChildTextNormalize("value");
+			concept.addProperty(valueProperty, value);
+			
+			List<?> symbols = ele.getChildren("symbol");
+			for (Iterator<?> iterator2 = symbols.iterator(); iterator2.hasNext();) {
+				Element ele2 = (Element)iterator2.next();
+				Content content = ele2.getContent(0);
+				String symbol = content.getValue();
+				concept.addProperty(symbolProperty, symbol);
+			}
 		}
 
 		props.put("entries", String.valueOf(numEntries));
@@ -146,7 +138,7 @@ public class CfConverterJena extends BaseConverter {
 
 	
 	private Resource _createConcept(String uri) {
-		Resource concept = model.createResource(uri, standardNameClass);
+		Resource concept = model.createResource(uri, siPrefixClass);
 		numConcepts++;
 		return concept;
 	}
