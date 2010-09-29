@@ -2,6 +2,10 @@ org.mmisw.orrportal: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-09-29  2.0.9.beta
+	- Updates in the OrrClient library.
+	
+
 2010-09-27  2.0.8.beta
 	- Using new Ont client library: org.mmisw.ont.client.jar, which replaces
 	  org.mmisw.ont.vocabulary.jar, org.mmisw.ont.misc.jar, org.mmisw.ont.mmiuri.jar
