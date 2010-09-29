@@ -3,6 +3,16 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2010-09-29  2.0.9.beta
+	- UserAccountCreatorUpdater implementation moved to Ont library with name UserAccountManager, 
+	  and new implementation here based on that (which is via the corresponding 
+	  IOntClient.createUpdateUserAccount operation). See OrrClientImpl.createUpdateUserAccount.
+	  
+	- The above was the remaining (direct) dependency on the aquaportal rest endpoint in this module.
+	  So, OntServiceUtil.getAquaportalRestUrl() removed.
+	
+
+
 2010-09-28  2.0.8.beta
 	Deployment of OrrClient library to maven repository
 	- With the current version, the dependency for clients will be:

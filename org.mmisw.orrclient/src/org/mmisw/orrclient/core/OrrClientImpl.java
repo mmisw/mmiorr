@@ -2740,8 +2740,13 @@ public class OrrClientImpl implements IOrrClient {
 		}
 		
 		try {
-			UserAccountCreatorUpdater uacu = new UserAccountCreatorUpdater(values);
-			uacu.doIt(result);
+			SignInResult signInResult = ontClient.createUpdateUserAccount(values);
+			LoginResult loginResult = new LoginResult();
+			loginResult.setSessionId(signInResult.getSessionId());
+			loginResult.setUserId(signInResult.getUserId());
+			loginResult.setUserName(signInResult.getUserName());
+			loginResult.setUserRole(signInResult.getUserRole());
+			result.setLoginResult(loginResult);
 		}
 		catch (Exception e) {
 			String error = "error updating user information: " +

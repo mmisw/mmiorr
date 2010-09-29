@@ -33,10 +33,6 @@ public class OntServiceUtil {
 		return _ontClient.resolveOntologyUri(uriModel, version, acceptEntries);
 	}
 
-	public static String getAquaportalRestUrl() throws Exception {
-		return _ontClient.getAquaportalRestUrl();
-	}
-	
 	public static boolean isRegisteredOntologyUri(String uriModel, String... acceptEntries) throws Exception {
 		return _ontClient.isRegisteredOntologyUri(uriModel, acceptEntries);
 	}
