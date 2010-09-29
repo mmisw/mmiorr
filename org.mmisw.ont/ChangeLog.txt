@@ -4,7 +4,7 @@ $Id$
 
 ChangeLog
 
-2010-09-29  2.0.8.beta
+2010-09-29  2.0.9.beta
 	OntClient library:
 	- New UserAccountManager (basically a copy of OrrClient's UserAccountCreatorUpdater) and
 	  functionality exposed via new operation IOntClient.createUpdateUserAccount.
