@@ -4,6 +4,14 @@ $Id$
 
 ChangeLog
 
+2010-09-29  2.0.8.beta
+	OntClient library:
+	- New UserAccountManager (basically a copy of OrrClient's UserAccountCreatorUpdater) and
+	  functionality exposed via new operation IOntClient.createUpdateUserAccount.
+	- IOntClient.getAquaportalRestUrl() removed; not anymore a concern for clients
+	  of this library.
+
+
 2010-09-28  2.0.8.beta
 	Deployment of Ont client library to maven repository
 	- Created ad hoc maven POM (resource/templ-pom.xml) to deploy the Ont client library.

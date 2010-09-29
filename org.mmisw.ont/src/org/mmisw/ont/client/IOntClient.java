@@ -5,11 +5,11 @@ import java.util.Map;
 import com.hp.hpl.jena.ontology.OntModel;
 
 
-
-
-
 /**
  * Interface to the OntClient library.
+ * 
+ * This library offers operations to interact with a deployment of the "Ont" service.
+ * Initialization requires the URL of the Ont service to interact with.
  * 
  * @author Carlos Rueda
  */
@@ -72,22 +72,6 @@ public interface IOntClient {
 	 */
 	public String resolveOntologyUri(String uriModel, String version, String... acceptEntries) throws Exception;
 
-	
-	/**
-	 * Gets the aquaportal rest url.
-	 * Upon a successful retrieval, the value is cached for subsequent calls of this method. 
-	 * In case of exception, a subsequent call will attempt the retrieval again.
-	 * 
-	 * <p>
-	 * TODO NOTE: replace direct access to the aquaportal REST service with corresponding
-	 * (to-be-developed) operations against the Ont service.
-	 * 
-	 * @return the aquaportal rest url.
-	 * @throws Exception If any error happens during the request or if a MalformedURLException
-	 *         happens while trying to parse the retrieved value.
-	 */
-	public String getAquaportalRestUrl() throws Exception;
-	
 	/**
 	 * Determines if the URI corresponds to a registered ontology.
 	 * 
@@ -116,9 +100,6 @@ public interface IOntClient {
 	 * It uses the "ontServiceUrl" property value provided
 	 * by the configuration object.
 	 * 
-	 * <p>
-	 * A similar method exists in the "ont" module.
-	 * 
 	 * @param uri The URI to check.
 	 * @return if the given URI has the Ont service URL as a prefix (ignoring case).
 	 * @throws IllegalStateException if the configuration object's getOntServiceUrl() method
@@ -131,7 +112,7 @@ public interface IOntClient {
 	 * Runs a SPARQL query using the the "Ont" service.
 	 * 
 	 * <p>
-	 * TODO this is a very basic dispatch-- pending a better mechanism, includig paging
+	 * TODO better dispatch mechanism, includig paging
 	 * 
 	 * @param query  The query
 	 * @param format Desired format ("form" parameter). Can be null.
@@ -146,7 +127,7 @@ public interface IOntClient {
 	 * Runs a SPARQL query using the the "Ont" service.
 	 * 
 	 * <p>
-	 * TODO this is a very basic dispatch-- pending a better mechanism, includig paging
+	 * TODO better dispatch mechanism, includig paging
 	 * 
 	 * @param endPoint
 	 * @param query
@@ -214,4 +195,19 @@ public interface IOntClient {
 	 * @throws Exception 
 	 */
 	public SignInResult getSession(String userName, String userPassword) throws Exception;
+	
+	
+	/**
+	 * Creates a new user account or updates an existing one.
+	 * 
+	 * <p>
+	 * TODO document me!
+	 * 
+	 * @param values
+	 * @return
+	 * @throws Exception
+	 */
+	public SignInResult createUpdateUserAccount(Map<String,String> values)
+	throws Exception;
+	
 }
