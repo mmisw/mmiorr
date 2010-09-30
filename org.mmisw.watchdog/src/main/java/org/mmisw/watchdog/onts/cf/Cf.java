@@ -131,6 +131,9 @@ public class Cf extends BaseProgram {
 			else if ( args[arg].equals("--formAction") ) {
 				orrFormAction = args[++arg]; 
 			}
+			else {
+				_usage("unrecognized parameter: " +args[arg]);
+			}
 		}
 		if ( arg < args.length ) {
 			String uargs = "";
@@ -244,7 +247,7 @@ public class Cf extends BaseProgram {
 
 	
 	/**
-	 * Prepares and requestes the registration of the ontology.
+	 * Prepares and requests the registration of the ontology.
 	 */
 	private void _registerOntology(
 			String username, String password,

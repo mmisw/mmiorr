@@ -23,8 +23,8 @@ public class Udunits extends BaseProgram {
 	private static final String AUTHORITY = "mmitest";
 	
 
-	/** the various involved input files */
-	enum Input {
+	/** the various involved input files and associated converters */
+	private enum Input {
 		PREFIX("http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2-prefixes.xml",
 				"http://mmisw.org/ont/" +AUTHORITY+ "/udunits2-prefix/",
 				new UdunitsPrefixConverterJena()),
@@ -49,8 +49,8 @@ public class Udunits extends BaseProgram {
 		
 		final String defaultUrl;
 		final String defaultNamespace;
-		
 		final IConverter creator;
+
 		String url;
 		String namespace;
 		
@@ -60,15 +60,6 @@ public class Udunits extends BaseProgram {
 			this.creator = creator;
 		}
 		
-		static Input getInputByName(String name) {
-			for ( Input input : Input.values() ) {
-				if ( input.name().equalsIgnoreCase(name) ) {
-					return input;
-				}
-			}
-			throw new AssertionError();
-		}
-
 		public static void show(boolean defaults) {
 			final String format = "%10s  %-50s  %s%n";
 			System.out.printf(format,  "-what-",  "-namespace-",  "-url-");	
@@ -81,7 +72,6 @@ public class Udunits extends BaseProgram {
 					System.out.printf(format, what, input.namespace, input.url);
 				}
 			}
-			
 		}
 	}
 
@@ -132,17 +122,23 @@ public class Udunits extends BaseProgram {
 				workspace = args[++arg]; 
 			}
 			else if ( args[arg].equals("--input") ) {
+				String what = args[++arg]; 
+				String url = args[++arg]; 
+				Input.valueOf(what.toUpperCase()).url = url;
 			}
 			else if ( args[arg].equals("--ns") ) {
 				String what = args[++arg]; 
 				String namespace = args[++arg]; 
-				Input.getInputByName(what).namespace = namespace;
+				Input.valueOf(what.toUpperCase()).namespace = namespace;
 			}
 			else if ( args[arg].equals("--output") ) {
 				output = args[++arg]; 
 			}
 			else if ( args[arg].equals("--force") ) {
 				force = true;
+			}
+			else {
+				_usage("unrecognized parameter: " +args[arg]);
 			}
 		}
 		if ( arg < args.length ) {
