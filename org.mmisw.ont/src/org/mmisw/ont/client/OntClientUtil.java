@@ -48,7 +48,7 @@ class OntClientUtil {
 	 * @return The response of the "ont" service.
 	 * @throws Exception
 	 */
-	public static String resolveOntologyUri(String uriModel, String version, String... acceptEntries) throws Exception {
+	static String resolveOntologyUri(String uriModel, String version, String... acceptEntries) throws Exception {
 		
 		String ontServiceUrl = _config().getOntServiceUrl();
 		uriModel = URLEncoder.encode(uriModel, "UTF-8");
@@ -70,15 +70,11 @@ class OntClientUtil {
 	 * Upon a successful retrieval, the value is cached for subsequent calls of this method. 
 	 * In case of exception, a subsequent call will attempt the retrieval again.
 	 * 
-	 * <p>
-	 * TODO NOTE: replace direct access to the aquaportal REST service with corresponding
-	 * (to-be-developed) operations against the Ont service.
-	 * 
 	 * @return the aquaportal rest url.
 	 * @throws Exception If any error happens during the request or if a MalformedURLException
 	 *         happens while trying to parse the retrieved value.
 	 */
-	public static String getAquaportalRestUrl() throws Exception {
+	static String getAquaportalRestUrl() throws Exception {
 		if ( aquaportalRestUrl == null ) {
 			String ontServiceUrl = _config().getOntServiceUrl();
 			String ontServiceRequest = ontServiceUrl + "?_aqrest";
@@ -99,7 +95,7 @@ class OntClientUtil {
 	 * @return true iff the ontology is registered.
 	 * @throws Exception
 	 */
-	public static boolean isRegisteredOntologyUri(String uriModel, String... acceptEntries) throws Exception {
+	static boolean isRegisteredOntologyUri(String uriModel, String... acceptEntries) throws Exception {
 		
 		String ontServiceUrl = _config().getOntServiceUrl();
 		uriModel = URLEncoder.encode(uriModel, "UTF-8");
@@ -119,7 +115,7 @@ class OntClientUtil {
 	 * @return
 	 * @throws Exception
 	 */
-	public static OntModel retrieveModel(String uriModel, String version) throws Exception {
+	static OntModel retrieveModel(String uriModel, String version) throws Exception {
 		if ( log.isDebugEnabled() ) {
 			log.debug("retrieveModel: uri: " +uriModel+ "  version: " +version);
 		}
@@ -168,7 +164,7 @@ class OntClientUtil {
 	 * @throws IllegalStateException if the configuration object's getOntServiceUrl() method
 	 *         returns null
 	 */
-	public static boolean isOntResolvableUri(String uri) {
+	static boolean isOntResolvableUri(String uri) {
 		String ontServiceUrl = _config().getOntServiceUrl();
 		 if ( ontServiceUrl == null ) {
 			 throw new IllegalStateException("_config().getOntServiceUrl() returned null");
@@ -189,7 +185,7 @@ class OntClientUtil {
 	 * @return The response of the "ont" service.
 	 * @throws Exception
 	 */
-	public static String runSparqlQuery(String query, String format, String... acceptEntries) throws Exception {
+	static String runSparqlQuery(String query, String format, String... acceptEntries) throws Exception {
 		
 		String ontServiceUrl = _config().getOntServiceUrl();
 		query = URLEncoder.encode(query, "UTF-8");
@@ -217,7 +213,7 @@ class OntClientUtil {
 	 * @return The response of the "ont" service.
 	 * @throws Exception
 	 */
-	public static String runSparqlQuery(
+	static String runSparqlQuery(
 			String endPoint,
 			String query,
 			String format,
@@ -248,7 +244,7 @@ class OntClientUtil {
 	 * @return true iff "ont" responds with an OK return code.
 	 * @throws Exception
 	 */
-	public static boolean loadOntologyInGraph(String uriModel, String graphId) throws Exception {
+	static boolean loadOntologyInGraph(String uriModel, String graphId) throws Exception {
 		
 		String ontServiceUrl = _config().getOntServiceUrl();
 		uriModel = URLEncoder.encode(uriModel, "UTF-8");
@@ -273,7 +269,7 @@ class OntClientUtil {
 	 * @return info properties
 	 * @throws Exception
 	 */
-	public static Map<String,String> getUserInfo(String username) throws Exception {
+	static Map<String,String> getUserInfo(String username) throws Exception {
 		
 		String ontServiceUrl = _config().getOntServiceUrl();
 		username = URLEncoder.encode(username, "UTF-8");
@@ -298,7 +294,7 @@ class OntClientUtil {
 	 * Gets the (synthetic) users RDF from the "Ont" service.
 	 * @throws Exception
 	 */
-	public static String getUsersRdf() throws Exception {
+	static String getUsersRdf() throws Exception {
 		
 		String ontServiceUrl = _config().getOntServiceUrl();
 		String ontServiceRequest = ontServiceUrl + "?_usrsrdf";
@@ -316,7 +312,7 @@ class OntClientUtil {
 	 * @return true iff "ont" responds with an OK return code.
 	 * @throws Exception
 	 */
-	public static boolean unregisterOntology(String ontUri, String version) throws Exception {
+	static boolean unregisterOntology(String ontUri, String version) throws Exception {
 		
 		String ontServiceUrl = _config().getOntServiceUrl();
 		ontUri = URLEncoder.encode(ontUri, "UTF-8");
