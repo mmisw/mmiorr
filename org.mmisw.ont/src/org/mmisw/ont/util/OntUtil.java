@@ -1,7 +1,6 @@
 package org.mmisw.ont.util;
 
 import org.mmisw.ont.OntConfig;
-import org.mmisw.ont.OntConfig.Prop;
 
 
 /**
