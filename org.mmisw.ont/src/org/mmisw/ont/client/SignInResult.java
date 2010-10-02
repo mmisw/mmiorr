@@ -51,7 +51,7 @@ public class SignInResult  {
 		return userRole;
 	}
 	public String toString() {
-		return "LoginResult{userId=" +userId+", userName=" +userName+", sessionId=" +sessionId+", role=" +userRole+ "}";
+		return "SignInResult{userId=" +userId+", userName=" +userName+", sessionId=" +sessionId+", role=" +userRole+ "}";
 	}
 
 }
