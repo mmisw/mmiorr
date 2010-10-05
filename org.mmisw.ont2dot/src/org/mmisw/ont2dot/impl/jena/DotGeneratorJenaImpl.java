@@ -145,6 +145,8 @@ public class DotGeneratorJenaImpl extends BaseDotGenerator {
 
 		_outNodeDataRangeStyle(includeName);
 		
+		pw.println("  { rank=source");
+		
 		
 		for ( String id : dataRanges.keySet() ) {
 			DataRange dataRange = dataRanges.get(id);
@@ -167,6 +169,9 @@ public class DotGeneratorJenaImpl extends BaseDotGenerator {
 				
 			pw.println("  \"" +id+ "\"  [ label=\"" +label+ "\" ]");
 		}
+		
+		pw.println("  }");  // end rank=source
+		
 	}
 	
 	private void _outNodeDataRangeStyle(boolean includingName) {

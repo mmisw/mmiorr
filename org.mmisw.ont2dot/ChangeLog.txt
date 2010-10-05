@@ -13,6 +13,8 @@ MMI Ont2Dot ChangeLog
 	  This can be specified to the main program with the --sourceRank parameter and "globbing"
 	  is supported.
 	  
+	- Added rank=source also to the header and the data range boxes
+	  
 	  
 2010-06-22
 	- rdfs:Resource range shown as is -- ie., not using "Any" anymore.

@@ -178,8 +178,10 @@ public abstract class BaseDotGenerator implements IDotGenerator {
 		pw.println("digraph {");
 		
 		pw.println(
+				"{ rank=source\n" +
 				"\"__generated_by__\"  [ fontname=\"helvetica\", fontsize=8, shape=box, label=\"\\\n" +     
-				generatedByLabel+ "\" ]\n"
+				generatedByLabel+ "\" ]\n" +
+				"}\n"
 		);
 
 	}
