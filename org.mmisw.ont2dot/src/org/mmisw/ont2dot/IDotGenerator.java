@@ -55,6 +55,13 @@ public interface IDotGenerator {
 	 */
 	public void separateClassHierarchy(String classUri);
 	
+	
+	/**
+	 * Put the given class (or classes if using a glob) marked with rank=source.
+	 */
+	public void putInSourceRank(String classUri);
+	
+	
 	/**
 	 * Generates the output format.
 	 * @param writer

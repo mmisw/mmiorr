@@ -30,7 +30,8 @@ public class Ont2Dot {
 		"  --noRdfsLabel\n" +
 		"  --includeRdfsComment\n" +
 		"  --includeLegend\n" +
-		"  --separate <class-uri>\n" 
+		"  --separate <class-uri>\n" + 
+		"  --sourceRank <class-uri>\n" 
 	;
 
 	private static void help(String error) {
@@ -95,6 +96,11 @@ public class Ont2Dot {
 			else if ( args[arg].equals("--includeLegend") ) {
 				dotGenerator.setIncludeLegend(true);
 				header += "--includeLegend " + "\n";
+			}
+			else if ( args[arg].equals("--sourceRank") ) {
+				String clazz = args[++arg];
+				dotGenerator.putInSourceRank(clazz);
+				header += "--sourceRank " +clazz + "\n";
 			}
 			else if ( args[arg].equals("--help") ) {
 				help(null);

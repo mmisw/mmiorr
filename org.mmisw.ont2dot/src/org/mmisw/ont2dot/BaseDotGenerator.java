@@ -62,6 +62,11 @@ public abstract class BaseDotGenerator implements IDotGenerator {
 	 */
 	protected Set<String> _separatedRootClassesUris = new HashSet<String>();
 	
+	/**
+	 * The set of URIs added via {@link #sourceRank(String)}.
+	 */
+	protected Set<String> _sourceRankUris = new HashSet<String>();
+	
 
 
 	/** 
@@ -84,6 +89,12 @@ public abstract class BaseDotGenerator implements IDotGenerator {
 		}
 	}
 
+	public void putInSourceRank(String classUri) {
+		for ( String uri : O2dUtil.expandGlob(classUri) ) {
+			_sourceRankUris.add(uri);
+		}
+	}
+	
 	
 	public void setIncludeUrls(boolean include) {
 		this.includeUrls = include;

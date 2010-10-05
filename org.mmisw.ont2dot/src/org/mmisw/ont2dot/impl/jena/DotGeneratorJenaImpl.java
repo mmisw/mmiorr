@@ -199,8 +199,14 @@ public class DotGeneratorJenaImpl extends BaseDotGenerator {
 			
 			String urlStr = includeUrls ? " URL=\"" +clazz.getURI()+ "\"" : "";
 		
-			pw.println("  \"" +name+ "\"   [ " +shapeRecord+ " label=\"" +label+ "\" " +
-					urlStr+ " ]");
+			String output = "\"" +name+ "\"   [ " +shapeRecord+ " label=\"" +label+ "\" " +
+			               urlStr+ " ]";
+			
+			if ( _sourceRankUris.contains(name) ) {
+				output = "{ rank=source " +output+ " }";
+			}
+			
+			pw.println("  " +output);
 			
 			_generatedClasses.add(clazz);
 		}

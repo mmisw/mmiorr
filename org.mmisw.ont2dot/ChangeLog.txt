@@ -1,5 +1,19 @@
 MMI Ont2Dot ChangeLog
 
+2010-10-04
+	- putInSourceRank(String classUri) added: Puts the given class (or classes if using a 
+	  glob) marked with rank=source. For example, the default output for a class with URI
+	  http://mmisw.org/ont/mmi/device/Component is:
+	      "http://mmisw.org/ont/mmi/device/Component"   [  label="Component"  ]
+	  but will be:
+	      { rank=source "http://mmisw.org/ont/mmi/device/Component"   [  label="Component"  ] }
+	  if dotGenerator.putInSourceRank("http://mmisw.org/ont/mmi/device/Component") is called
+	  before the generation.
+		
+	  This can be specified to the main program with the --sourceRank parameter and "globbing"
+	  is supported.
+	  
+	  
 2010-06-22
 	- rdfs:Resource range shown as is -- ie., not using "Any" anymore.
 	- fixed bug which would prevent the version info from being properly formed when coming
