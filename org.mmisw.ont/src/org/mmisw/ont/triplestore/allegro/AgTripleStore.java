@@ -1,4 +1,4 @@
-package org.mmisw.ont.graph.allegro;
+package org.mmisw.ont.triplestore.allegro;
 
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -14,9 +14,9 @@ import org.mmisw.ont.OntologyInfo;
 import org.mmisw.ont.UnversionedConverter;
 import org.mmisw.ont.admin.AdminDispatcher;
 import org.mmisw.ont.db.Db;
-import org.mmisw.ont.graph.IOntGraph;
 import org.mmisw.ont.mmiuri.MmiUri;
 import org.mmisw.ont.sparql.QueryResult;
+import org.mmisw.ont.triplestore.ITripleStore;
 import org.mmisw.ont.util.OntUtil;
 
 import com.franz.agbase.AllegroGraph;
@@ -36,18 +36,18 @@ import com.hp.hpl.jena.rdf.model.Statement;
 
 
 /**
- * Handles the ontology graphs using AllegroGraph.
+ * Triple store implementation using AllegroGraph.
  * 
  * @author Carlos Rueda
  */
-public class OntGraphAG implements IOntGraph {
+public class AgTripleStore implements ITripleStore {
 
 	/** Servlet resource containing the model with properties for inference purposes, N-triples format */
 	@SuppressWarnings("unused")
 	private static final String INF_PROPERTIES_MODEL_NAME_NT = "inf_properties.nt";
 	
 
-	private final Log log = LogFactory.getLog(OntGraphAG.class);
+	private final Log log = LogFactory.getLog(AgTripleStore.class);
 	
 	private String serverHost;
 	private int serverPort;
@@ -141,9 +141,10 @@ public class OntGraphAG implements IOntGraph {
 	 *        
 	 * @param db The database helper.
 	 */
-	public OntGraphAG(OntConfig ontConfig, Db db, AdminDispatcher adminDispatcher) {
+	public AgTripleStore(Db db, AdminDispatcher adminDispatcher) {
 		this.db = db;
 		this.adminDispatcher = adminDispatcher;
+		log.debug(getClass().getSimpleName()+ " instance created.");
 	}
 
 

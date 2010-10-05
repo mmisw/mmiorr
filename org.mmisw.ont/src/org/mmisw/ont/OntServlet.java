@@ -24,10 +24,10 @@ import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.admin.AdminDispatcher;
 import org.mmisw.ont.admin.OntologyDeleter;
 import org.mmisw.ont.db.Db;
-import org.mmisw.ont.graph.IOntGraph;
-import org.mmisw.ont.graph.OntGraph;
 import org.mmisw.ont.mmiuri.MmiUri;
 import org.mmisw.ont.sparql.SparqlDispatcher;
+import org.mmisw.ont.triplestore.ITripleStore;
+import org.mmisw.ont.triplestore.TripleStore;
 import org.mmisw.ont.util.Accept;
 import org.mmisw.ont.util.Analytics;
 import org.mmisw.ont.util.OntUtil;
@@ -60,18 +60,18 @@ public class OntServlet extends HttpServlet {
 	
 	private final AdminDispatcher adminDispatcher = new AdminDispatcher(db);
 	
-	private final IOntGraph ontGraph = new OntGraph(ontConfig, db, adminDispatcher);
+	private final ITripleStore tripleStore = new TripleStore(db, adminDispatcher);
 	
 	
 	private final MiscDispatcher miscDispatcher = new MiscDispatcher(ontConfig, db);
 
 
-	private final SparqlDispatcher sparqlDispatcher = new SparqlDispatcher(ontGraph);
+	private final SparqlDispatcher sparqlDispatcher = new SparqlDispatcher(tripleStore);
 
 	private final UriDispatcher uriDispatcher = new UriDispatcher(sparqlDispatcher);
 
 	// NOTE: Refactoring underway
-	private final UriResolver2 uriResolver2 = new UriResolver2(ontConfig, db, ontGraph);
+	private final UriResolver2 uriResolver2 = new UriResolver2(ontConfig, db, tripleStore);
 	
 	
 	private final RegularFileDispatcher regularFileDispatcher = new RegularFileDispatcher();
@@ -231,7 +231,7 @@ public class OntServlet extends HttpServlet {
 			ontConfig.init(servletConfig);
 			
 			db.init();
-			ontGraph.init();
+			tripleStore.init();
 			
 			adminDispatcher.init();
 			
@@ -249,7 +249,7 @@ public class OntServlet extends HttpServlet {
 	public void destroy() {
 		log.info(FULL_TITLE+ ": destroy called.\n\n");
 		try {
-			ontGraph.destroy();
+			tripleStore.destroy();
 		}
 		catch (ServletException e) {
 			log.error("error while destroyng graph object", e);
@@ -978,7 +978,7 @@ public class OntServlet extends HttpServlet {
 			log.debug("_loadOntologyIntoGraph: loading " +ontUri);
 		}
 		try {
-			ontGraph.loadOntology(ontology, graphId);
+			tripleStore.loadOntology(ontology, graphId);
 		}
 		catch (Exception e) {
 			log.error("Error loading ontology.", e);
@@ -1023,7 +1023,7 @@ public class OntServlet extends HttpServlet {
 	private void _reload(Request req) throws ServletException, IOException {
 		String _reload = Util.getParam(req.request, "_reload", "");
 		boolean withInference = _reload.length() == 0 || _reload.equals("inf");
-		ontGraph.reinit(withInference);
+		tripleStore.reinit(withInference);
 	}
 	
 	/**
@@ -1032,7 +1032,7 @@ public class OntServlet extends HttpServlet {
 	private void _reindex(Request req) throws ServletException, IOException {
 		String _reidx = Util.getParam(req.request, "_reidx", "");
 		boolean wait = _reidx.length() == 0 || _reidx.equals("wait");
-		ontGraph.reindex(wait);
+		tripleStore.reindex(wait);
 	}
 
 	
@@ -1144,7 +1144,7 @@ public class OntServlet extends HttpServlet {
 			// successful deletion from bioportal back-end.  
 			// Remove ontology from graph:
 			try {
-				ontGraph.removeOntology(ontology);
+				tripleStore.removeOntology(ontology);
 			}
 			catch (Exception e) {
 				log.error("Error removing ontology from graph", e);

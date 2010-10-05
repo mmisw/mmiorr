@@ -12,8 +12,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.OntServlet.Request;
 import org.mmisw.ont.db.Db;
-import org.mmisw.ont.graph.IOntGraph;
 import org.mmisw.ont.mmiuri.MmiUri;
+import org.mmisw.ont.triplestore.ITripleStore;
 import org.mmisw.ont.util.ServletUtil;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -42,7 +42,7 @@ public class UriResolver2 {
 	private Request req;
 	
 	
-	public UriResolver2(OntConfig ontConfig, Db db, IOntGraph ontGraph) {
+	public UriResolver2(OntConfig ontConfig, Db db, ITripleStore tripleStore) {
 		this.ontConfig = ontConfig;
 		this.db = db;
 	}

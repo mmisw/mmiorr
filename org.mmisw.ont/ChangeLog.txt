@@ -4,6 +4,37 @@ $Id$
 
 ChangeLog
 
+2010-10-01/05  2.0.10.beta
+	
+	Testing Jena TDB as a possible alternative for the triple store.
+	
+	NOTE: 
+	 - Preliminary tests on my local machine OK, including inferencing.
+	 - BUT DO NOT ENABLE in production--the implementation is NOT complete yet.
+	
+	  New build property 'jena.tdb.dir'. If this is defined, then the Jena TDB is
+	  used on the given directory.
+	  
+	  I'm using TDB 0.8.7. Note: from this distribution I only copied:
+	  	arq-2.8.5-tests.jar
+	  	arq-2.8.5.jar
+	  	tdb-0.8.7-tests.jar
+	  	tdb-0.8.7.jar\
+	  to WebContent/WEB-INF/lib/.  But note that WebContent/WEB-INF/lib/jena/ already
+	  has arq-2.8.4.jar, TODO keep only the latest version.
+	  
+	"Ont graph" renamings:
+		"ont graph" is not a term that properly captures the actual functionality intended in
+		the IOntGraph interface. The term is now in general "triple store" (even if
+		some implementation uses a memory based "store").
+		So:
+			package org.mmisw.ont.graph --> org.mmisw.ont.triplestore
+			IOntGraph --> ITripleSore
+			OntGraph -->  TripleSore
+			and similar renamings for the implementation classes under this package.
+			
+			
+
 2010-09-29  2.0.9.beta
 	OntClient library:
 	- New UserAccountManager (basically a copy of OrrClient's UserAccountCreatorUpdater) and

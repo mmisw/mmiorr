@@ -1,4 +1,4 @@
-package org.mmisw.ont.graph.allegro;
+package org.mmisw.ont.triplestore.allegro;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

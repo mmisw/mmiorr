@@ -31,6 +31,8 @@ public class OntConfig {
 		
 		PORTAL_SERVICE_URL            ("portal.service.url"),
 		
+		JENA_TDB_DIR                  ("jena.tdb.dir", false),
+		
 		AGRAPH_HOST                   ("agraph.host", false),
 		AGRAPH_PORT                   ("agraph.port"),
 		AGRAPH_TS_DIR                 ("agraph.ts.dir"),

@@ -1,4 +1,4 @@
-package org.mmisw.ont.graph.allegro;
+package org.mmisw.ont.triplestore.allegro;
 
 /**
  * Some supporting definitions.

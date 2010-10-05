@@ -1,4 +1,4 @@
-package org.mmisw.ont.graph;
+package org.mmisw.ont.triplestore;
 
 import javax.servlet.ServletException;
 
@@ -11,7 +11,7 @@ import org.mmisw.ont.sparql.QueryResult;
  * 
  * @author Carlos Rueda
  */
-public interface IOntGraph {
+public interface ITripleStore {
 
 	/** 
 	 * Load the unversioned form of the last version of the ontologies?

@@ -1,4 +1,4 @@
-package org.mmisw.ont.graph.mem;
+package org.mmisw.ont.triplestore.mem;
 
 import java.io.StringReader;
 import java.net.URISyntaxException;
@@ -13,10 +13,10 @@ import org.mmisw.ont.OntConfig;
 import org.mmisw.ont.OntologyInfo;
 import org.mmisw.ont.UnversionedConverter;
 import org.mmisw.ont.db.Db;
-import org.mmisw.ont.graph.IOntGraph;
 import org.mmisw.ont.mmiuri.MmiUri;
 import org.mmisw.ont.sparql.QueryResult;
 import org.mmisw.ont.sparql.Sparql;
+import org.mmisw.ont.triplestore.ITripleStore;
 import org.mmisw.ont.util.OntUtil;
 import org.mmisw.ont.util.Util;
 
@@ -42,7 +42,7 @@ import com.hp.hpl.jena.util.PrintUtil;
  * 
  * @author Carlos Rueda
  */
-public class OntGraphMem implements IOntGraph {
+public class OntGraphMem implements ITripleStore {
 	
 	private final Log log = LogFactory.getLog(OntGraphMem.class);
 	
@@ -69,13 +69,11 @@ public class OntGraphMem implements IOntGraph {
 	/**
 	 * Creates an instance of this helper.
 	 * 
-	 * @param ontConfig Used at initialization to obtain the "uploads" directory, where the
-	 *        actual ontology files are located.
-	 *        
 	 * @param db The database helper.
 	 */
-	public OntGraphMem(OntConfig ontConfig, Db db) {
+	public OntGraphMem(Db db) {
 		this.db = db;
+		log.debug(getClass().getSimpleName()+ " instance created.");
 	}
 
 	/**

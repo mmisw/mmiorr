@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mmisw.ont.graph.IOntGraph;
+import org.mmisw.ont.triplestore.ITripleStore;
 import org.mmisw.ont.util.Unfinished;
 import org.mmisw.ont.util.Util;
 
@@ -28,11 +28,10 @@ public class SparqlDispatcher {
 	
 	private final Log log = LogFactory.getLog(SparqlDispatcher.class);
 	
-	// ontGraph.getModel() is used as the model to process queries
-	private final IOntGraph ontGraph;
+	private final ITripleStore tripleStore;
 	
-	public SparqlDispatcher(IOntGraph ontGraph) {
-		this.ontGraph = ontGraph;
+	public SparqlDispatcher(ITripleStore tripleStore) {
+		this.tripleStore = tripleStore;
 	}
 
 	
@@ -168,18 +167,26 @@ public class SparqlDispatcher {
 			log.debug("_execute: query string = [" +sparqlQuery+ "]");
 		}
 		long start = System.currentTimeMillis();
-		QueryResult queryResult = ontGraph.executeQuery(sparqlQuery, form);
+		QueryResult queryResult = tripleStore.executeQuery(sparqlQuery, form);
 
 		if ( log.isDebugEnabled() ) {
-			String result = queryResult.getResult();
-			int len = result.length();
-			if ( len > 555 ) {
-				result = result.substring(0, 200) + "\n...\n" + result.substring(len - 200);
+			if ( ! queryResult.isEmpty() ) {
+				String result = queryResult.getResult();
+				int len = result.length();
+				if ( len > 555 ) {
+					result = result.substring(0, 200) + "\n...\n" + result.substring(len - 200);
+				}
+				log.debug(
+						"result = [\n" +result+ "\n]\n" +
+						"_execute: query processed in " +Util.elapsedTime(start)
+				);
 			}
-			log.debug(
-					"result = [\n" +result+ "\n]\n" +
-					"_execute: query processed in " +Util.elapsedTime(start)
-			);
+			else {
+				log.debug(
+						"result = EMPTY\n" +
+						"_execute: query processed in " +Util.elapsedTime(start)
+				);
+			}
 		}
 		
 		return queryResult;
