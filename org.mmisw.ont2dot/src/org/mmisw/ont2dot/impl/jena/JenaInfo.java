@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.hp.hpl.jena.ontology.DataRange;
+import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.ontology.Restriction;
@@ -103,6 +104,15 @@ class JenaInfo {
 			String id = uclass.isAnon() ? uclass.getId().getLabelString() : uclass.getURI();
 			_unionClasses.put(id , uclass);
 //			System.err.println("XXXXXX UnionClass " +id+ " -> " +uclass);
+		}
+		
+		// add the named classes:
+		{
+			ExtendedIterator<OntClass> namedClasses = ontModel.listNamedClasses();
+			while ( namedClasses.hasNext() ) {
+				OntClass clazz = namedClasses.next();
+				_putClazz(clazz);
+			}
 		}
 		
 		StmtIterator iter = ontModel.listStatements();

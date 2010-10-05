@@ -1,5 +1,9 @@
 MMI Ont2Dot ChangeLog
 
+2010-10-05
+	- JenaInfo:  explicitly add the named classes.
+	
+	
 2010-10-04
 	- putInSourceRank(String classUri) added: Puts the given class (or classes if using a 
 	  glob) marked with rank=source. For example, the default output for a class with URI
