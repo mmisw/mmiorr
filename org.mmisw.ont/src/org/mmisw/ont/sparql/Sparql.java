@@ -116,21 +116,28 @@ public class Sparql {
 					log.debug("hasNext = " +hasNext);
 				}
 				queryResult.setIsEmpty(! hasNext);
-				if ( hasNext ) {
-					if ( form == null || form.startsWith("html") ) {
-						queryResult.setContentType("text/html");
+
+				if ( form == null || form.startsWith("html") ) {
+					queryResult.setContentType("text/html");
+					if ( hasNext ) {
 						queryResult.setResult(_htmlSelectResults(results));
 					}
-					else if ( form.equalsIgnoreCase("csv") ) {
-						queryResult.setContentType("text/plain");
+				}
+				else if ( form.equalsIgnoreCase("csv") ) {
+					queryResult.setContentType("text/plain");
+					if ( hasNext ) {
 						queryResult.setResult(_csvSelectResults(results));
 					}
-					else if ( form.equalsIgnoreCase("json") ) {
-						queryResult.setContentType("application/json");
+				}
+				else if ( form.equalsIgnoreCase("json") ) {
+					queryResult.setContentType("application/json");
+					if ( hasNext ) {
 						queryResult.setResult(_jsonSelectResults(results));
 					}
-					else {
-						queryResult.setContentType("text/plain");
+				}
+				else {
+					queryResult.setContentType("text/plain");
+					if ( hasNext ) {
 						ByteArrayOutputStream os = new ByteArrayOutputStream();
 						ResultSetFormatter.out(os, results, query);
 						queryResult.setResult(os.toString());
