@@ -77,6 +77,11 @@ public class OntTypeUtil {
 			return OntologyType.VOCABULARY;
 		}
 		
+		if ( log.isDebugEnabled() ) {
+			String ontUriMsg = "ontUri=" +ont.getURI();
+			log.debug("determineType: " +ontUriMsg + " --> other" );
+		}
+		
 		return OntologyType.OTHER;
 	}
 	
