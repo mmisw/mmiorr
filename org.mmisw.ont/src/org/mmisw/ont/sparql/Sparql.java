@@ -65,6 +65,9 @@ public class Sparql {
 						log.debug("Executing construct");
 					}
 					model_ = qe.execConstruct();
+					if ( log.isDebugEnabled() ) {
+						log.debug("execConstruct returned.");
+					}
 				}
 				else {
 					// DESCRIBE
@@ -72,7 +75,11 @@ public class Sparql {
 						log.debug("Executing describe");
 					}
 					model_ = qe.execDescribe();
+					if ( log.isDebugEnabled() ) {
+						log.debug("execDescribe returned.");
+					}
 				}
+				
 				queryResult.setIsEmpty(model_.isEmpty());
 				
 				JenaUtil2.removeUnusedNsPrefixes(model_);
@@ -168,6 +175,9 @@ public class Sparql {
 
 	/** Formats the results in HTML */
 	private static String _htmlSelectResults(ResultSet results) {
+		if ( log.isDebugEnabled() ) {
+			log.debug("_htmlSelectResults");
+		}		
 		
 		StringWriter sw = new StringWriter();
 		PrintWriter out = new PrintWriter(sw);
@@ -207,50 +217,22 @@ public class Sparql {
 	
 	/** Formats the results in JSON */
 	private static String _jsonSelectResults(ResultSet results) {
-		
+		if ( log.isDebugEnabled() ) {
+			log.debug("_jsonSelectResults");
+		}		
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		ResultSetFormatter.outputAsJSON(bos, results);
-		
 		return bos.toString();
 	}	
 	
 	/** Formats the results in CSV */
 	private static String _csvSelectResults(ResultSet results) {
-		
-		StringWriter sw = new StringWriter();
-		PrintWriter out = new PrintWriter(sw);
-		
-		// header line:
-		String comma = "";
-		List<?> vars = results.getResultVars();
-		for ( Object var: vars ) {
-			String value = var.toString();
-			if ( value.indexOf(',') >= 0 ) {
-				value = "\"" +value+ "\"";
-			}
-			out.printf("%s%s", comma, value);
-			comma = ",";
+		if ( log.isDebugEnabled() ) {
+			log.debug("_csvSelectResults");
 		}
-		out.printf("%n");
-
-		// contents:
-		while ( results.hasNext() ) {
-			QuerySolution sol = results.nextSolution();
-			comma = "";
-			Iterator<?> varNames = sol.varNames();
-			while ( varNames.hasNext() ) {
-				String varName = String.valueOf(varNames.next());
-				String value = String.valueOf(sol.get(varName));
-				if ( value.indexOf(',') >= 0 ) {
-					value = "\"" +value+ "\"";
-				}
-				out.printf("%s%s", comma, value);
-				comma = ",";
-			}
-			out.printf("%n");
-		}
-		
-		return sw.toString();
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		ResultSetFormatter.outputAsCSV(bos, results);
+		return bos.toString();
 	}
 
 	private Sparql() {}
