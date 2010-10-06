@@ -90,7 +90,7 @@ public class AgTripleStore implements ITripleStore {
 
 			try {
 				ts = ags.access(tripleStoreName, tripleStoreDir);
-				log.info("CONNECTED");
+				log.info("CONNECTION OPEN");
 			}
 			catch (AllegroGraphException e) {
 				throw new ServletException("Error accessing triple store.", e);
@@ -627,6 +627,9 @@ public class AgTripleStore implements ITripleStore {
 	
 	
 	private QueryResult _executeQuery(Ag _ag, String sparqlQuery, String form) throws Exception {
+		if ( log.isDebugEnabled() ) {
+			log.debug("_executeQuery called.  form=" +form);
+		}
 		
 		if ( form == null ) {
 			form = "html";
@@ -789,7 +792,7 @@ public class AgTripleStore implements ITripleStore {
 			queryResult.setResult(askResult.toString());
 		}
 		else {
-			log.debug("SHOULD NOT HAPPEN: unexpected type of query");
+			log.warn("SHOULD NOT HAPPEN: unexpected type of query");
 			queryResult.setIsEmpty(false);
 			queryResult.setResult("Internal error: unexpected type of query. Please report this bug.");
 		}
