@@ -102,7 +102,7 @@ public class UriDispatcher {
 		
 		String query = PROPS_CONSTRUCT_QUERY_TEMPLATE.replaceAll("\\{E\\}", entityUri);
 		
-		// note, pass null so the called can continue the dispatch if the query get empty result
+		// note, pass null so the caller can continue the dispatch if the query gets empty result
 		String requestedEntity = null;
 		return sparqlDispatcher.execute(request, response, query, requestedEntity, outFormat);
 	}
@@ -120,7 +120,7 @@ public class UriDispatcher {
 		
 		String query = PROPS_SELECT_QUERY_TEMPLATE.replaceAll("\\{E\\}", entityUri);
 		
-		// note, pass null so the called can continue the dispatch if the query get empty result
+		// note, pass null so the caller can continue the dispatch if the query gets empty result
 		String requestedEntity = null;
 		return sparqlDispatcher.execute(request, response, query, requestedEntity, outFormat);
 	}
