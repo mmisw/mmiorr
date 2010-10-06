@@ -4,6 +4,11 @@ $Id$
 
 ChangeLog
 
+2010-10-06  2.0.10.beta
+	- Fix 284: "empty reponse with incorrect content type"
+	  see SparqlDispatcher.
+
+
 2010-10-01/05  2.0.10.beta
 	
 	Testing Jena TDB as a possible alternative for the triple store.

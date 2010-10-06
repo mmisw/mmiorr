@@ -48,18 +48,51 @@ public class SparqlDispatcher {
 		}
 
 		String form = Util.getParam(request, "form", null);
-		execute(request, response, query, null, form);
+		_executeWithCompletion(request, response, query, null, form, true);
 	}
 	
 	/** 
 	 * Executes the given query.
 	 * 
 	 * @param requestedEntity If non-null and the result of the query is empty, then 404 is returned to the client.
-	 * @return true iff dispatch completed here.
+	 * 
+	 * @return 
+	 *          true iff dispatch completed here. 
+	 *          false iff requestedEntity is null AND query result is empty.
 	 */
 	public boolean execute(HttpServletRequest request, HttpServletResponse response, 
 			String query, String requestedEntity,
 			String outFormat
+	)
+	throws ServletException, IOException {
+		
+		return _executeWithCompletion(request, response, query, requestedEntity, outFormat, false);
+	}
+	
+	
+	/** 
+	 * Executes the given query.
+	 * 
+	 * 
+	 * @param request
+	 * @param response
+	 * @param query
+	 * @param requestedEntity If non-null and the result of the query is empty, then 404 is returned to the client.
+	 * @param outFormat
+	 * @param forceCompletion  
+	 *                true to force completion here (so the return will always be true); 
+	 *                false to return false iff: requestedEntity is null AND query result is empty.
+	 *                     
+	 * @return 
+	 *          true iff dispatch completed here. 
+	 *          false iff !forceCompletion AND requestedEntity is null AND query result is empty.
+	 *          
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	private boolean _executeWithCompletion(HttpServletRequest request, HttpServletResponse response, 
+			String query, String requestedEntity,
+			String outFormat, boolean forceCompletion
 	)
 	throws ServletException, IOException {
 		
@@ -84,15 +117,23 @@ public class SparqlDispatcher {
 			return true;
 		}
 		
+		// set the content type now (although this might be changed below)
+		// (this should fix 284: "empty reponse with incorrect content type")
+		response.setContentType(queryResult.getContentType());
+		String result = queryResult.getResult();
+		
+
 		if ( queryResult.isEmpty() ) {
 			if ( requestedEntity != null  ) {
 				response.sendError(HttpServletResponse.SC_NOT_FOUND, requestedEntity);
 				return true;
 			}
-			return false;  // dispatch NO completed here.
+			
+			if ( ! forceCompletion ) {
+				// we have the condition: !forceCompletion AND requestedEntity is null AND query result is empty.
+				return false;  // dispatch NO completed here.
+			}
 		}
-		
-		String result = queryResult.getResult();
 		
 		if ( "Application/rdf+xml".equalsIgnoreCase(queryResult.getContentType()) ) {
 			// convert to HTML?
@@ -170,7 +211,13 @@ public class SparqlDispatcher {
 		QueryResult queryResult = tripleStore.executeQuery(sparqlQuery, form);
 
 		if ( log.isDebugEnabled() ) {
-			if ( ! queryResult.isEmpty() ) {
+			if ( queryResult.isEmpty() ) {
+				log.debug(
+						"result = EMPTY\n" +
+						"_execute: query processed in " +Util.elapsedTime(start)
+				);
+			}
+			else {
 				String result = queryResult.getResult();
 				int len = result.length();
 				if ( len > 555 ) {
@@ -178,12 +225,6 @@ public class SparqlDispatcher {
 				}
 				log.debug(
 						"result = [\n" +result+ "\n]\n" +
-						"_execute: query processed in " +Util.elapsedTime(start)
-				);
-			}
-			else {
-				log.debug(
-						"result = EMPTY\n" +
 						"_execute: query processed in " +Util.elapsedTime(start)
 				);
 			}
