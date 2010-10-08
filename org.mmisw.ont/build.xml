@@ -46,6 +46,9 @@
 				<include name="**/*.class" />
 				<include name="**/*.properties" />
 			</fileset>
+			<fileset dir="src">
+				<include name="**/*.ttl" />
+			</fileset>
 		</jar>
 	</target>
 
@@ -130,7 +133,12 @@
 				<filter token="aquaportal.datasource" value="${aquaportal.datasource}" />
 				<filter token="aquaportal.rest.url" value="${aquaportal.rest.url}" />
 				
+				<filter token="virtuoso.host" value="${virtuoso.host}" />
+				<filter token="virtuoso.username" value="${virtuoso.username}" />
+				<filter token="virtuoso.password" value="${virtuoso.password}" />
+				
 				<filter token="jena.tdb.dir" value="${jena.tdb.dir}" />
+				<filter token="jena.tdb.assembler" value="${jena.tdb.assembler}" />
 				
 				<filter token="agraph.host" value="${agraph.host}" />
 				<filter token="agraph.port" value="${agraph.port}" />

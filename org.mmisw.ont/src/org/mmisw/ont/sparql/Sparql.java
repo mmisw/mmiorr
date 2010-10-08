@@ -31,6 +31,7 @@ public class Sparql {
 
 	private static final Log log = LogFactory.getLog(Sparql.class);
 	
+	
 	/**
 	 * Executes a SPARQL query against the given model.
 	 * 
@@ -41,19 +42,39 @@ public class Sparql {
 	 * @throws Exception 
 	 */
 	public static QueryResult executeQuery(Model model, String sparqlQuery, String form) throws Exception {
-		QueryResult queryResult = new QueryResult();
-
-		Query query;
-		QueryExecution qe;
-		
+		QueryExecution qe = null;
 		try {
-			query = QueryFactory.create(sparqlQuery);
+			Query query = QueryFactory.create(sparqlQuery);
 			qe = QueryExecutionFactory.create(query, model);
+			if ( log.isDebugEnabled() ) {
+				log.debug("QueryExecution class: " +qe.getClass().getName());
+			}
+			return executeQuery(query, qe, sparqlQuery, form);
 		}
 		catch ( Throwable thr ) {
 			String error = "Error preparing query.";
 			throw new Exception(error, thr);
 		}
+		finally {
+			if ( qe != null ) {
+				qe.close();
+			}
+		}
+	}
+	
+	
+	/**
+	 * Executes a SPARQL query given a QueryExecution.
+	 * 
+	 * @param query
+	 * @param qe
+	 * @param sparqlQuery The string used to create the query
+	 * @param form Only used for a "select" query.
+	 * @return
+	 * @throws Exception 
+	 */
+	public static QueryResult executeQuery(Query query, QueryExecution qe, String sparqlQuery, String form) throws Exception {
+		QueryResult queryResult = new QueryResult();
 		
 		try {
 			// CONSTRUCT or DESCRIBE
@@ -62,7 +83,7 @@ public class Sparql {
 				
 				if ( query.isConstructType() ) {
 					if ( log.isDebugEnabled() ) {
-						log.debug("Executing construct");
+						log.debug("Executing construct: [" +sparqlQuery+ "] form=" +form);
 					}
 					model_ = qe.execConstruct();
 					if ( log.isDebugEnabled() ) {
@@ -72,7 +93,7 @@ public class Sparql {
 				else {
 					// DESCRIBE
 					if ( log.isDebugEnabled() ) {
-						log.debug("Executing describe");
+						log.debug("Executing describe: [" +sparqlQuery+ "] form=" +form);
 					}
 					model_ = qe.execDescribe();
 					if ( log.isDebugEnabled() ) {
@@ -126,21 +147,15 @@ public class Sparql {
 
 				if ( form == null || form.startsWith("html") ) {
 					queryResult.setContentType("text/html");
-					if ( hasNext ) {
-						queryResult.setResult(_htmlSelectResults(results));
-					}
+					queryResult.setResult(_htmlSelectResults(results));
 				}
 				else if ( form.equalsIgnoreCase("csv") ) {
 					queryResult.setContentType("text/plain");
-					if ( hasNext ) {
-						queryResult.setResult(_csvSelectResults(results));
-					}
+					queryResult.setResult(_csvSelectResults(results));
 				}
 				else if ( form.equalsIgnoreCase("json") ) {
 					queryResult.setContentType("application/json");
-					if ( hasNext ) {
-						queryResult.setResult(_jsonSelectResults(results));
-					}
+					queryResult.setResult(_jsonSelectResults(results));
 				}
 				else {
 					queryResult.setContentType("text/plain");
@@ -148,6 +163,9 @@ public class Sparql {
 						ByteArrayOutputStream os = new ByteArrayOutputStream();
 						ResultSetFormatter.out(os, results, query);
 						queryResult.setResult(os.toString());
+					}
+					else {
+						queryResult.setResult("");
 					}
 				}
 			}

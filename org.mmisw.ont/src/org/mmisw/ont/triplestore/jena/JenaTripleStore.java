@@ -21,9 +21,6 @@ import org.mmisw.ont.util.OntUtil;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.InfModel;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.util.PrintUtil;
 
 /**
  * Base class for triple store implementations based on Jena Models.
@@ -120,15 +117,14 @@ public abstract class JenaTripleStore implements ITripleStore {
 
 	/**
 	 * Called by {@link #init()} as a second step during init of this object.
-	 * In this class, this method calls {@link #_doReInit(boolean)}.
+	 * In this class, this method calls {@link #_doReInit()}.
 	 * 
 	 * <p>
 	 * A subclass may completely override this method to perform a different init sequence.
 	 */
 	protected void _mainInit() throws ServletException {
-		final boolean withInference = true;
-		log.info("_mainInit called. withInference=" +withInference);
-		_doReInit(withInference);
+		log.info("_mainInit called.");
+		_doReInit();
 		log.info("_mainInit: complete.");
 	}
 	
@@ -145,7 +141,7 @@ public abstract class JenaTripleStore implements ITripleStore {
 			log.info("init complete.");
 		}
 		else {
-			log.debug("init: already initialized (withInference = " +(_getInfModel() != null)+ ")");
+			log.info("init: already initialized.");
 		}
 	}
 	
@@ -163,13 +159,33 @@ public abstract class JenaTripleStore implements ITripleStore {
 	
 
 	/**
-	 * Reinitializes the triple store.
-	 * @param withInference true to enable inference.
+	 * Clears the triple store.
 	 * @throws ServletException
 	 */
-	public void reinit(boolean withInference) throws ServletException {
-		log.info("reinit called. withInference=" +withInference);
-		_doReInit(withInference);
+	public void clear() throws ServletException {
+		log.info("clear called.");
+		_doClear();
+		log.info("clear complete.");
+	}
+	
+	/**
+	 * In this class, this method resets the models (by calling {@link #_createModel()}
+	 * and {@link #_createInfModel()}).
+	 * 
+	 * @throws ServletException
+	 */
+	protected void _doClear() throws ServletException {
+		_createModel();
+		_createInfModel();
+	}
+	
+	/**
+	 * Reinitializes the triple store.
+	 * @throws ServletException
+	 */
+	public void reinit() throws ServletException {
+		log.info("reinit called.");
+		_doReInit();
 		log.info("reinit complete.");
 	}
 	
@@ -179,123 +195,74 @@ public abstract class JenaTripleStore implements ITripleStore {
 	 * as returned by {@link org.mmisw.ont.db.Db#getAllOntologies(boolean) with false argument}.
 	 * 
 	 * <p>
-	 * A subclass may do some preliminary preparation and then call super._doReInit(withInference).
+	 * A subclass may do some preliminary preparation and then call super._doReInit().
 	 * 
-	 * @param withInference
 	 * @throws ServletException
 	 */
-	protected void _doReInit(boolean withInference) throws ServletException {
+	protected void _doReInit() throws ServletException {
 		if ( true ) {
-			_doReInit2(withInference); // new impl
+			_doReInit2(); // new impl
 		}
 		else {
-			_doReInit1(withInference);
+			_doReInit1();
 		}
 	}
 	
 	/**
-	 * Inits the _model and, if withInference is true, also the _infModel.
-	 * @param withInference true to create the inference model
+	 * Inits the _model and the _infModel.
 	 * @throws ServletException
 	 */
-	private void _doReInit1(boolean withInference) throws ServletException {
+	private void _doReInit1() throws ServletException {
 		_setInfModelNull();  // make sure loadOntology(ontology) below does not use _infModel
 		
 		_createModel();
 		
-		// get the list of (latest-version) ontologies:
-		// fixed Issue 223: ontology graph with all versions
-		// now using new correct method to obtain the latest versions:
-		final boolean allVersions = false;
-		List<OntologyInfo> onts = db.getAllOntologies(allVersions);
+		_loadOntologies();
 		
-		if ( log.isDebugEnabled() ) {
-			log.debug("Using unversioned ontologies: " +USE_UNVERSIONED);
-			
-			log.debug("About to load the following ontologies: ");
-			for ( OntologyInfo ontology : onts ) {
-				log.debug(ontology.getOntologyId()+ " :: " +ontology.getUri());
-			}
-		}
-		
-		for ( OntologyInfo ontology : onts ) {
-			String full_path = aquaUploadsDir+ "/" +ontology.getFilePath() + "/" + ontology.getFilename();
-			log.info("Loading: " +full_path+ " in triple store;  uri=" +ontology.getUri());
-			try {
-				_loadOntology(ontology, full_path);
-			}
-			catch (Throwable ex) {
-				log.error("Error loading ontology: " +full_path+ " (continuing..)", ex);
-			}
-		}
-		
-		log.info("size of base model: " +_getModelSize());
-		
-		if ( withInference ) {
-			log.info("starting creation of inference model...");
-			long startTime = System.currentTimeMillis();
-			_createInfModel();
-			if ( _getInfModel() != null ) {
-				long endTime = System.currentTimeMillis();
-				log.info("creation of inference model completed successfully. (" +(endTime-startTime)+ " ms)");
-				
-				// this takes time -- do not do it for now
-				//log.info("estimated size of inference model: " +_infModel.size());
-			}
-			else {
-				// Log.error messages have been already generated.
-			}
+		log.info("starting creation of inference model...");
+		long startTime = System.currentTimeMillis();
+		_createInfModel();
+		if ( _getInfModel() != null ) {
+			long endTime = System.currentTimeMillis();
+			log.info("creation of inference model completed successfully. (" +(endTime-startTime)+ " ms)");
+
+			// this takes time -- do not do it for now
+			//log.info("estimated size of inference model: " +_infModel.size());
 		}
 		else {
-			_setInfModelNull();
-		}
-
-		if ( false && log.isDebugEnabled() ) {
-			log.debug("_listStatements:");
-			StmtIterator iter = _getModel().listStatements();
-			while (iter.hasNext()) {
-				com.hp.hpl.jena.rdf.model.Statement sta = iter.nextStatement();
-				Resource sjt = sta.getSubject();
-				log.debug("      " + 
-						PrintUtil.print(sjt)
-						+ "   " +
-						PrintUtil.print(sta.getPredicate().getURI())
-						+ "   " +
-						PrintUtil.print(sta.getObject().toString())
-				);
-			}
+			// Log.error messages have been already generated.
 		}
 	}
 	
 	/**
 	 * Version 2: creates first the InfModel and then add all the ontologies to
 	 * this InfMode.
-	 * Inits the _model and, if withInference is true, also the _infModel.
-	 * @param withInference true to create the inference model
+	 * Inits the _model and the _infModel.
 	 * @throws ServletException
 	 */
-	private void _doReInit2(boolean withInference) throws ServletException {
+	private void _doReInit2() throws ServletException {
 		
 		_createModel();
-		if ( withInference ) {
-			log.info("_doInitModel2: starting creation of inference model...");
-			long startTime = System.currentTimeMillis();
-			_createInfModel();
-			if ( _getInfModel() != null ) {
-				long endTime = System.currentTimeMillis();
-				log.info("_doInitModel2: creation of inference model completed successfully. (" +(endTime-startTime)+ " ms)");
-			}
-			else {
-				// Log.error messages have been already generated.
-			}
+		log.info("_doInitModel2: starting creation of inference model...");
+		long startTime = System.currentTimeMillis();
+		_createInfModel();
+		if ( _getInfModel() != null ) {
+			long endTime = System.currentTimeMillis();
+			log.info("_doInitModel2: creation of inference model completed successfully. (" +(endTime-startTime)+ " ms)");
 		}
 		else {
-			_setInfModelNull();
-		}		
+			// Log.error messages have been already generated.
+		}
+
+		_loadOntologies();
+	}
+	
+
+	
+	/**
+	 */
+	protected void _loadOntologies() throws ServletException {
 		
-		// get the list of (latest-version) ontologies:
-		// fixed Issue 223: ontology graph with all versions
-		// now using new correct method to obtain the latest versions:
 		final boolean allVersions = false;
 		List<OntologyInfo> onts = db.getAllOntologies(allVersions);
 		
@@ -321,6 +288,7 @@ public abstract class JenaTripleStore implements ITripleStore {
 		
 		log.info("size of base model: " +_getModelSize());
 	}
+	
 	
 	/**
 	 * Loads the given model into the triple store.

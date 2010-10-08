@@ -6,6 +6,7 @@ import java.io.StringWriter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.JenaUtil2;
+import org.mmisw.ont.triplestore.TsUtil;
 import org.mmisw.ont.util.Util;
 
 import com.franz.agbase.AllegroGraph;
@@ -397,15 +398,6 @@ class AgUtils {
 		System.out.println("  UPI: " + ((ValueNode)lit).queryAGId());
 	}
 	
-	public static void printObjectArray(String msg, Object[] objArr) {
-		System.out.println(msg);
-		if (objArr != null) {
-			for (int i=0; i<objArr.length;i++) {
-				System.out.println("  "+i+": "+objArr[i]);
-			}
-		}
-	}
-	
 	public static void printUPIArray(String msg, AllegroGraph ts, UPI[] objArr) throws AllegroGraphException {
 		System.out.println(msg);
 		if (objArr != null) {
@@ -429,29 +421,6 @@ class AgUtils {
 		return buf.toString();
 	}
 	
-	public static void printStringArray(String msg, String[] objArr) {
-		System.out.println(msg);
-		if (objArr != null) {
-			for (int i=0; i<objArr.length;i++) {
-				System.out.println("  "+i+": "+objArr[i]);
-			}
-		}
-	}
-
-	public static String elapsedTime(long start) {
-		long total = System.currentTimeMillis() - start;
-		long min = total/60000;
-		long msec = total%60000;
-		double sec = msec/1000.0;
-		String report;
-		if (min > 0) {
-			report = min + ":" + sec + " minutes:seconds";
-		} else {
-			report = sec + " seconds";
-		}
-		return report;
-	}
-
 	/**
 	 * Load a single RDF/XML file into the default graph and time the load.
 	 * 
@@ -475,7 +444,7 @@ class AgUtils {
 		System.out.println("Loading RDF from " + rdfFile);
 		long start = System.currentTimeMillis();
 		long n = ts.loadRDFXML(rdfFile, graph);
-		System.out.println("Done loading " + n + " triples in " + elapsedTime(start));
+		System.out.println("Done loading " + n + " triples in " + TsUtil.elapsedTime(start));
 	}
 
 	/**
@@ -499,7 +468,7 @@ class AgUtils {
 		else {
 			n = ts.parseNTriples(contents, graph);
 		}
-		log.debug("Done loading " + n + " triples in " + elapsedTime(start));
+		log.debug("Done loading " + n + " triples in " + TsUtil.elapsedTime(start));
 	}
 
 
@@ -647,7 +616,7 @@ class AgUtils {
 		log.debug("Indexing all triples...");
 		long start = System.currentTimeMillis();
 		ts.indexAllTriples(wait);
-		log.debug("done in " + elapsedTime(start));
+		log.debug("done in " + TsUtil.elapsedTime(start));
 	}
 
 }

@@ -41,8 +41,25 @@
 		</init-param>
 
 		<init-param>
+			<param-name>virtuoso.host</param-name>
+			<param-value>@virtuoso.host@</param-value>
+		</init-param>
+		<init-param>
+			<param-name>virtuoso.username</param-name>
+			<param-value>@virtuoso.username@</param-value>
+		</init-param>
+		<init-param>
+			<param-name>virtuoso.password</param-name>
+			<param-value>@virtuoso.password@</param-value>
+		</init-param>
+		
+		<init-param>
 			<param-name>jena.tdb.dir</param-name>
 			<param-value>@jena.tdb.dir@</param-value>
+		</init-param>
+		<init-param>
+			<param-name>jena.tdb.assembler</param-name>
+			<param-value>@jena.tdb.assembler@</param-value>
 		</init-param>
 
 		<init-param>

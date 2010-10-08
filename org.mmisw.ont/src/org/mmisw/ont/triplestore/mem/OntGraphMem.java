@@ -42,6 +42,7 @@ import com.hp.hpl.jena.util.PrintUtil;
  * 
  * @author Carlos Rueda
  */
+@Deprecated
 public class OntGraphMem implements ITripleStore {
 	
 	private final Log log = LogFactory.getLog(OntGraphMem.class);
@@ -107,15 +108,14 @@ public class OntGraphMem implements ITripleStore {
 	 */
 	public void init() throws ServletException {
 		if ( _model == null ) {
-			final boolean withInference = true;
-			log.info("init called. withInference=" +withInference);
+			log.info("init called.");
 			
 			aquaUploadsDir = OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY.getValue();
-			_doInitModel(withInference);
+			_doInitModel();
 			log.info("init complete.");
 		}
 		else {
-			log.debug("init: already initialized (withInference = " +(_infModel != null)+ ")");
+			log.debug("init: already initialized.");
 		}
 	}
 
@@ -131,52 +131,54 @@ public class OntGraphMem implements ITripleStore {
 		
 	}
 	
-
 	/**
-	 * Reinitializes the graph.
-	 * @param withInference true to enable inference.
+	 * Clears the triple store.
 	 * @throws ServletException
 	 */
-	public void reinit(boolean withInference) throws ServletException {
-		log.info("reinit called. withInference=" +withInference);
-		_doInitModel(withInference);
+	public void clear() throws ServletException {
+		// TODO just most obvious implementation -- NOT TESTED
+		_model = ModelFactory.createDefaultModel();
+		_infModel = _createInfModel();
+	}
+	
+	/**
+	 * Reinitializes the graph.
+	 * @throws ServletException
+	 */
+	public void reinit() throws ServletException {
+		log.info("reinit called.");
+		_doInitModel();
 		log.info("reinit complete.");
 	}
 	
-	private void _doInitModel(boolean withInference) throws ServletException {
+	private void _doInitModel() throws ServletException {
 		if ( true ) {
-			_doInitModel2(withInference);
+			_doInitModel2();
 		}
 		else {
-			_doInitModel1(withInference);
+			_doInitModel1();
 		}
 	}
 
 	/**
 	 * Version 2: creates first the InfModel and then add all the ontologies to
 	 * this InfMode.
-	 * Inits the _model and, if withInference is true, also the _infModel.
-	 * @param withInference true to create the inference model
+	 * Inits the _model and also the _infModel.
 	 * @throws ServletException
 	 */
-	private void _doInitModel2(boolean withInference) throws ServletException {
+	private void _doInitModel2() throws ServletException {
 		
 		_model = ModelFactory.createDefaultModel();
-		if ( withInference ) {
-			log.info("_doInitModel2: starting creation of inference model...");
-			long startTime = System.currentTimeMillis();
-			_infModel = _createInfModel();
-			if ( _infModel != null ) {
-				long endTime = System.currentTimeMillis();
-				log.info("_doInitModel2: creation of inference model completed successfully. (" +(endTime-startTime)+ " ms)");
-			}
-			else {
-				// Log.error messages have been already generated.
-			}
+		log.info("_doInitModel2: starting creation of inference model...");
+		long startTime = System.currentTimeMillis();
+		_infModel = _createInfModel();
+		if ( _infModel != null ) {
+			long endTime = System.currentTimeMillis();
+			log.info("_doInitModel2: creation of inference model completed successfully. (" +(endTime-startTime)+ " ms)");
 		}
 		else {
-			_infModel = null;
-		}		
+			// Log.error messages have been already generated.
+		}
 		
 		// get the list of (latest-version) ontologies:
 		// fixed Issue 223: ontology graph with all versions
@@ -208,11 +210,10 @@ public class OntGraphMem implements ITripleStore {
 	}
 	
 	/**
-	 * Inits the _model and, if withInference is true, also the _infModel.
-	 * @param withInference true to create the inference model
+	 * Inits the _model and also the _infModel.
 	 * @throws ServletException
 	 */
-	private void _doInitModel1(boolean withInference) throws ServletException {
+	private void _doInitModel1() throws ServletException {
 		_infModel = null;  // make sure loadOntology(ontology) below does not use _infModel
 		
 		_model = ModelFactory.createDefaultModel();
@@ -245,23 +246,18 @@ public class OntGraphMem implements ITripleStore {
 		
 		log.info("size of base model: " +_model.size());
 		
-		if ( withInference ) {
-			log.info("starting creation of inference model...");
-			long startTime = System.currentTimeMillis();
-			_infModel = _createInfModel();
-			if ( _infModel != null ) {
-				long endTime = System.currentTimeMillis();
-				log.info("creation of inference model completed successfully. (" +(endTime-startTime)+ " ms)");
-				
-				// this takes time -- do not do it for now
-				//log.info("estimated size of inference model: " +_infModel.size());
-			}
-			else {
-				// Log.error messages have been already generated.
-			}
+		log.info("starting creation of inference model...");
+		long startTime = System.currentTimeMillis();
+		_infModel = _createInfModel();
+		if ( _infModel != null ) {
+			long endTime = System.currentTimeMillis();
+			log.info("creation of inference model completed successfully. (" +(endTime-startTime)+ " ms)");
+
+			// this takes time -- do not do it for now
+			//log.info("estimated size of inference model: " +_infModel.size());
 		}
 		else {
-			_infModel = null;
+			// Log.error messages have been already generated.
 		}
 
 		if ( false && log.isDebugEnabled() ) {

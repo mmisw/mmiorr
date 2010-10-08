@@ -31,7 +31,12 @@ public class OntConfig {
 		
 		PORTAL_SERVICE_URL            ("portal.service.url"),
 		
+		VIRTUOSO_HOST                 ("virtuoso.host", false),
+		VIRTUOSO_USERNAME             ("virtuoso.username", false),
+		VIRTUOSO_PASSWORD             ("virtuoso.password", false),
+		
 		JENA_TDB_DIR                  ("jena.tdb.dir", false),
+		JENA_TDB_ASSEMBLER            ("jena.tdb.assembler", false),
 		
 		AGRAPH_HOST                   ("agraph.host", false),
 		AGRAPH_PORT                   ("agraph.port"),

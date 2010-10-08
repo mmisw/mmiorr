@@ -7,7 +7,7 @@ import org.mmisw.ont.sparql.QueryResult;
 
 
 /**
- * Interface to handle the ontology graphs.
+ * Interface to a triple store.
  * 
  * @author Carlos Rueda
  */
@@ -21,12 +21,7 @@ public interface ITripleStore {
 	final boolean USE_UNVERSIONED = true;
 
 	/**
-	 * Initializes the graph with all latest version of the ontologies 
-	 * as returned by {@link org.mmisw.ont.db.Db#getAllOntologies(boolean) with false argument}.
-	 * 
-	 * <p>
-	 * Inference is enabled by default. If inference should be disabled,
-	 * call {@link #reinit(boolean)} with a false argument.
+	 * Initializes the triple store.
 	 * 
 	 * <p>
 	 * Does nothing if already initialized.
@@ -41,11 +36,17 @@ public interface ITripleStore {
 	public void destroy() throws ServletException;
 	
 	/**
-	 * Reinitializes the graph.
-	 * @param withInference true to enable inference.
+	 * Reinitializes the triple store.
+	 * As part of this, re-loads all latest versions of the ontologies. 
 	 * @throws ServletException
 	 */
-	public void reinit(boolean withInference) throws ServletException;
+	public void reinit() throws ServletException;
+	
+	/**
+	 * Clears the triple store.
+	 * @throws ServletException
+	 */
+	public void clear() throws ServletException;
 	
 	/**
 	 * Executes a SPARQL query.
@@ -59,7 +60,7 @@ public interface ITripleStore {
 
 
 	/**
-	 * Reindexes the graph.
+	 * Reindexes the triple store.
 	 * @param wait If true, then return only after indexing is completed.
 	 *    If false, schedule an indexing task to run in the background
 	 *    and return immediately.
@@ -68,7 +69,7 @@ public interface ITripleStore {
 	public void reindex(boolean wait) throws ServletException;
 	
 	/**
-	 * Loads the given model into the graph.
+	 * Loads the given model into the triple store.
 	 * 
 	 * <p>
 	 * If the user-specified graph is not given (null), then it is loaded into the default graph.
@@ -91,7 +92,7 @@ public interface ITripleStore {
 
 	
 	/**
-	 * Removes an ontology.
+	 * Removes an ontology from the triple store.
 	 * This means, 
 	 * i) removes all statements associated with the "proper" graph (ie., the
 	 * graph whose URI is the same as the ontology URI); 

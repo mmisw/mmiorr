@@ -4,6 +4,46 @@ $Id$
 
 ChangeLog
 
+2010-10-07  2.0.11.beta
+	Additional evaluation of TDB and Virtuoso, and several related adjustments
+	on the triple store implementations.
+	
+	- AgTripleStore: in clear() and reinit() now calling renew() on the store
+	  according to recent reply from mm@franz.com:
+		>>Does this clear() call have the effect of deleting but retaining
+		>>the triples as with any other removal operation?
+		
+		Unfortunately, you are here the victim of our quick-and-dirty Jena
+		implementation for AllegroGraph 3.  The clear() method eventually
+		calls AllegroGraphGraph.removeAll() which simply marks all the triples
+		as deleted.	
+		The recommended way to start with a fresh empty store is to call the
+		renew() method instead of open().
+		
+	- Also evaluating OpenLink Virtuoso server, which seems promising. 
+	  Installation of the server on the mmi2 machine was straightforward (basically
+	  using the classical ``./configure && make && sudo make install'' sequence.
+	  The implementation class is JenaVirtuosoTripleStore. Preliminary tests OK.
+	  
+	- General adjustments in ITripleStore interface, including new operation clear()
+	  to completely clear the triple store (including graphs).  Also removed the
+	  'withInference' parameter in some operations (in principle, inference should 
+	  always be enabled).
+	  
+	- sample.build.properties updated to allow the specification of the triple
+	  store to be used, one of:
+	  	- Virtuoso
+	  	- Jena TDB
+	  	- AllegroGraph
+	  The first option that is appropriately specified (ie., with the required 
+	  non-blank values) will be used. By default, a Jena Model in memory is used.
+
+	  --- NOTE --- 
+	      The AllegroGraph option continues to be the one for production; the
+	      others are still under development/internal testing.  
+	
+	
+	
 2010-10-06  2.0.10.beta
 	- Fix 284: "empty reponse with incorrect content type"
 	  see SparqlDispatcher.

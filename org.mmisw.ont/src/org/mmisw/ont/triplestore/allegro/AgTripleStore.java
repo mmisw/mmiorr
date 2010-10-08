@@ -17,6 +17,7 @@ import org.mmisw.ont.db.Db;
 import org.mmisw.ont.mmiuri.MmiUri;
 import org.mmisw.ont.sparql.QueryResult;
 import org.mmisw.ont.triplestore.ITripleStore;
+import org.mmisw.ont.triplestore.TsUtil;
 import org.mmisw.ont.util.OntUtil;
 
 import com.franz.agbase.AllegroGraph;
@@ -61,22 +62,30 @@ public class AgTripleStore implements ITripleStore {
 	
 	
 	/**
-	 * AllegroGraph connection. Usage idiom:
+	 * Connection. Usage idiom:
 	 * <pre>
-	 *   Ag ag = new Ag();
+	 *   _Conn _conn = new _Conn();
 	 *   try {
 	 *       ...
 	 *   }
 	 *   finally {
-	 *       ag.end();
+	 *       _conn.end();
 	 *   }
 	 * </pre>
 	 */
-	private class Ag {
+	private class _Conn {
 		AllegroGraphConnection ags;
 		AllegroGraph ts;
 		
-		Ag() throws ServletException {
+		/** Open a connection using access */
+		_Conn() throws ServletException {
+			this(false);
+		}
+		
+		/** If renew is true, opens a connection using renew(), so the triple store is recreated 
+		 * Otherwise, it uses access()
+		 */
+		_Conn(boolean renew) throws ServletException {
 			log.info("Connecting to triple store...");
 			try {
 				ags = new AllegroGraphConnection();
@@ -89,8 +98,14 @@ public class AgTripleStore implements ITripleStore {
 			}
 
 			try {
-				ts = ags.access(tripleStoreName, tripleStoreDir);
-				log.info("CONNECTION OPEN");
+				if ( renew ) {
+					ts = ags.renew(tripleStoreName, tripleStoreDir);
+					log.info("CONNECTION OPEN WITH renew");
+				}
+				else {
+					ts = ags.access(tripleStoreName, tripleStoreDir);					
+					log.info("CONNECTION OPEN");
+				}
 			}
 			catch (AllegroGraphException e) {
 				throw new ServletException("Error accessing triple store.", e);
@@ -134,11 +149,8 @@ public class AgTripleStore implements ITripleStore {
 
 	
 	/**
-	 * Creates an instance of this helper.
+	 * Constructor.
 	 * 
-	 * @param ontConfig Used at initialization to obtain the "uploads" directory, where the
-	 *        actual ontology files are located.
-	 *        
 	 * @param db The database helper.
 	 */
 	public AgTripleStore(Db db, AdminDispatcher adminDispatcher) {
@@ -164,21 +176,21 @@ public class AgTripleStore implements ITripleStore {
 		aquaUploadsDir = OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY.getValue();
 
 		// test that we can connect to the server
-		Ag _ag = new Ag();
+		_Conn _conn = new _Conn();
 		try {
-			log.info("AllegroGraph Server version = " +_ag.ags.getServerVersion());
-			String[] idxFlavors = _ag.ts.getIndexFlavors();
+			log.info("AllegroGraph Server version = " +_conn.ags.getServerVersion());
+			String[] idxFlavors = _conn.ts.getIndexFlavors();
 			log.info(" Index flavors = " +(idxFlavors == null ? "null" : Arrays.asList(idxFlavors)));
-			log.info(" unindexed threshold = " +_ag.ts.getUnindexedThreshold());
-			log.info(" #unindexed triples = " +_ag.ts.getUnindexedTripleCount());
-			log.info(" #triples = " +_ag.ts.numberOfTriples());
+			log.info(" unindexed threshold = " +_conn.ts.getUnindexedThreshold());
+			log.info(" #unindexed triples = " +_conn.ts.getUnindexedTripleCount());
+			log.info(" #triples = " +_conn.ts.numberOfTriples());
 		}
 		catch (AllegroGraphException e) {
 			log.error("Error with AlegroGraph.", e);
 			throw new ServletException("Error with AlegroGraph.", e);
 		}
 		finally {
-			_ag.end();
+			_conn.end();
 		}
 
 		log.info("init complete.");
@@ -191,22 +203,22 @@ public class AgTripleStore implements ITripleStore {
 
 
 	public void reindex(boolean wait) throws ServletException {
-		Ag _ag = new Ag();
+		_Conn _conn = new _Conn();
 		try {
-			_reindex(_ag, wait);
+			_reindex(_conn, wait);
 		}
 		finally {
-			_ag.end();
+			_conn.end();
 		}
 	}
 	
-	private void _reindex(Ag _ag, boolean wait) throws ServletException {
+	private void _reindex(_Conn _conn, boolean wait) throws ServletException {
 		log.info("reindex called. wait=" +wait);
 		long start = System.currentTimeMillis();
 		try {
-			_ag.ts.indexAllTriples(wait);
-			_ag.debugIndexInfo();
-			log.info("reindex completed (" +AgUtils.elapsedTime(start)+ ")");
+			_conn.ts.indexAllTriples(wait);
+			_conn.debugIndexInfo();
+			log.info("reindex completed (" +TsUtil.elapsedTime(start)+ ")");
 		}
 		catch (AllegroGraphException e) {
 			log.error("Error reindexing", e);
@@ -215,46 +227,59 @@ public class AgTripleStore implements ITripleStore {
 	}
 	
 	/**
-	 * Reinitializes the graph.
-	 * @param withInference NOT USED. 
+	 * Reinitializes the triple store.
 	 * @throws ServletException
 	 */
-	public void reinit(boolean withInference) throws ServletException {
-		log.info("reinit called. withInference=" +withInference);
+	public void reinit() throws ServletException {
+		log.info("reinit called.");
 		log.info("Creating connection to triple store ...");
-		Ag _ag = new Ag();
+		_Conn _conn = new _Conn();
 		try {
 			// populate the triple store:
 			long start = System.currentTimeMillis();
-			long numberOfTriples = _doReInitModel(_ag);
-			log.debug("triple store populated (" +AgUtils.elapsedTime(start)+ ").  " +
+			long numberOfTriples = _doReInit(_conn);
+			log.debug("triple store populated (" +TsUtil.elapsedTime(start)+ ").  " +
 					"#triples= " +numberOfTriples);
 			
 			// index:
 			boolean wait = true;
-			_reindex(_ag, wait);
+			_reindex(_conn, wait);
 		}
 		finally {
-			_ag.end();
+			_conn.end();
 		}
 	}
 	
 	/**
-	 * Re-Inits the graph.
-	 * @return number of triples. -1 if some error happens while obtaining this number.
+	 * Clears the triple store.
 	 * @throws ServletException
 	 */
-	private long _doReInitModel(Ag _ag) throws ServletException {
-		
-		log.debug("clearing triple store...");
+	public void clear() throws ServletException {
+		log.info("clear called. Creating connection with call to renew() on triple store ...");
+		_Conn _conn = new _Conn(true);
 		try {
-			_ag.ts.clear();
-			log.debug("clearing triple store...done.  #triples= " +_ag.ts.numberOfTriples());
+			log.debug("clear done.  #triples= " +_conn.ts.numberOfTriples());
 		}
 		catch (AllegroGraphException e) {
 			log.error("Error clearing triple store", e);
 			throw new ServletException("Error clearing triple store", e);
 		}
+		finally {
+			_conn.end();
+		}
+	}
+	
+	
+	/**
+	 * Re-Inits the triple store. This starts by calling {@link #clear()} and then
+	 * re-loading all the ontologies.
+	 * 
+	 * @return number of triples. -1 if some error happens while obtaining this number.
+	 * @throws ServletException
+	 */
+	private long _doReInit(_Conn _conn) throws ServletException {
+		
+		clear();
 		
 		// get the list of (latest-version) ontologies:
 		final boolean allVersions = false;
@@ -262,7 +287,6 @@ public class AgTripleStore implements ITripleStore {
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("Using unversioned ontologies: " +USE_UNVERSIONED);
-			
 			log.debug("About to load the following " +onts.size()+ " ontologies: ");
 			for ( OntologyInfo ontology : onts ) {
 				log.debug(ontology.getOntologyId()+ " :: " +ontology.getUri());
@@ -278,7 +302,7 @@ public class AgTripleStore implements ITripleStore {
 				
 				boolean clearGraphFirst = false;  // the triple store starts empty; see above
 				
-				_loadOntology(_ag, ontology, graphId, full_path, clearGraphFirst);
+				_loadOntology(_conn, ontology, graphId, full_path, clearGraphFirst);
 			}
 			catch (Throwable ex) {
 				log.error("Error loading ontology: " +full_path+ " (continuing..)", ex);
@@ -286,11 +310,11 @@ public class AgTripleStore implements ITripleStore {
 		}
 		
 		// enable inferencing:
-		_loadSupportingStatements(_ag);
+		_loadSupportingStatements(_conn);
 		
 		// load internal resources (graph relationships, etc.):
 		try {
-			_loadInternalResources(_ag);
+			_loadInternalResources(_conn);
 		}
 		catch (AllegroGraphException e) {
 			log.error("Error loading internal resources", e);
@@ -299,7 +323,7 @@ public class AgTripleStore implements ITripleStore {
 		
 		long numberOfTriples = -1;
 		try {
-			numberOfTriples = _ag.ts.numberOfTriples();
+			numberOfTriples = _conn.ts.numberOfTriples();
 		}
 		catch (AllegroGraphException e) {
 			log.error("Error getting number of triples", e);
@@ -311,17 +335,17 @@ public class AgTripleStore implements ITripleStore {
 	/**
 	 * load supporting statements for inference
 	 */
-	private void _loadSupportingStatements(Ag _ag) {
+	private void _loadSupportingStatements(_Conn _conn) {
 		log.info("Loading supporting statements to allegrograph triplestore");
 		try {
 			String[][] namespaces = adminDispatcher.getSupportingNamespaces();
 			for ( String[] ns : namespaces ) {
-				_ag.ts.registerNamespace(ns[0], ns[1]);
+				_conn.ts.registerNamespace(ns[0], ns[1]);
 				log.info("namespace registered: " +ns[0]+ " : " +ns[1]);
 			}
 			
 			for ( String[] statement : AgSupport.SUPPORTING_STATEMENTS ) {
-				_ag.ts.addStatement(statement[0], statement[1], statement[2]);
+				_conn.ts.addStatement(statement[0], statement[1], statement[2]);
 				log.info("statement added: " +statement[0]+ " " +statement[1]+ " " +statement[2]);
 			}
 		}
@@ -335,7 +359,7 @@ public class AgTripleStore implements ITripleStore {
 	 * load internal resources (graphs, etc) in the triple store.
 	 * @throws AllegroGraphException 
 	 */
-	private void _loadInternalResources(Ag _ag) throws AllegroGraphException {
+	private void _loadInternalResources(_Conn _conn) throws AllegroGraphException {
 		log.info("_loadInternalResources called.");
 		List<Statement> statements = adminDispatcher.getInternalStatements();
 		
@@ -350,26 +374,26 @@ public class AgTripleStore implements ITripleStore {
 				prd = '<' + prd + '>';
 				obj = '<' + obj + '>';
 				
-				_ag.ts.addStatement(sbj, prd, obj);
+				_conn.ts.addStatement(sbj, prd, obj);
 				log.info("Added statement: " +stmt);
 			}
 		}		
 	}
 
 	public void loadOntology(OntologyInfo ontology, String graphId) throws Exception {
-		Ag _ag = new Ag();
+		_Conn _conn = new _Conn();
 		try {
 			String full_path = aquaUploadsDir+ "/" +ontology.getFilePath() + "/" + ontology.getFilename();
 			log.info("Loading: " +full_path+ " in graph: " +(graphId == null ? "(default graph)" : graphId));
 			boolean clearGraphFirst = true;
-			_loadOntology(_ag, ontology, graphId, full_path, clearGraphFirst);
+			_loadOntology(_conn, ontology, graphId, full_path, clearGraphFirst);
 			
 			// launch indexing of new triples in the background and return:
 			boolean wait = false;
-			_ag.ts.indexNewTriples(wait);
+			_conn.ts.indexNewTriples(wait);
 		}
 		finally {
-			_ag.end();
+			_conn.end();
 		}
 
 	}
@@ -377,14 +401,14 @@ public class AgTripleStore implements ITripleStore {
 	/**
 	 * Loads an ontology to the given graph.
 	 * 
-	 * @param _ag
+	 * @param _conn
 	 * @param ontology
 	 * @param graphId User-specified graph. Can be null.
 	 * @param full_path
 	 * @param clearGraphFirst true to remove all statements associated with the graph directly associated with the
 	 *        ontology.
 	 */
-	private void _loadOntology(Ag _ag, OntologyInfo ontology, String graphId, String full_path, boolean clearGraphFirst) {
+	private void _loadOntology(_Conn _conn, OntologyInfo ontology, String graphId, String full_path, boolean clearGraphFirst) {
 		
 		String graphUri;
 		
@@ -434,11 +458,11 @@ public class AgTripleStore implements ITripleStore {
 				if ( log.isDebugEnabled() ) {
 					log.debug("Removing all statements in graph " +ownGraph+ " ...");
 				}
-				_ag.ts.removeStatements(null, null, null, ownGraph);
+				_conn.ts.removeStatements(null, null, null, ownGraph);
 			}
 			
 			// now, create the new graph:
-			AgUtils.parseWithTiming(_ag.ts, true, serialization, ownGraph);
+			AgUtils.parseWithTiming(_conn.ts, true, serialization, ownGraph);
 			
 			
 			// add the graph statement to the graphs resource:
@@ -448,7 +472,7 @@ public class AgTripleStore implements ITripleStore {
 			// now, add the subGraphOf relationship if graphId != null
 			if ( graphId != null ) {
 				graphUri = adminDispatcher.getWellFormedGraphUri(graphId);
-				_addSubGraph(_ag, ownGraphUri, graphUri);
+				_addSubGraph(_conn, ownGraphUri, graphUri);
 			}
 			
 		}
@@ -461,12 +485,12 @@ public class AgTripleStore implements ITripleStore {
 	
 	/**
 	 * Updates the graphs resource and then the triple store.
-	 * @param _ag
+	 * @param _conn
 	 * @param subGraphUri  Assumed to be well-formed
 	 * @param superGraphUri  Assumed to be well-formed
 	 * @throws AllegroGraphException
 	 */
-	private void _addSubGraph(Ag _ag, String subGraphUri, String superGraphUri) throws AllegroGraphException {
+	private void _addSubGraph(_Conn _conn, String subGraphUri, String superGraphUri) throws AllegroGraphException {
 		
 		// first, update the graphs resource:
 		List<Statement> statements = adminDispatcher.newSubGraph(subGraphUri, superGraphUri);
@@ -482,20 +506,20 @@ public class AgTripleStore implements ITripleStore {
 				prd = '<' + prd + '>';
 				obj = '<' + obj + '>';
 				
-				_ag.ts.addStatement(sbj, prd, obj);
+				_conn.ts.addStatement(sbj, prd, obj);
 				log.info("Added statement: " +stmt);
 			}
 		}		
 	}
 
 	public void removeOntology(OntologyInfo ontology) throws Exception {
-		Ag _ag = new Ag();
+		_Conn _conn = new _Conn();
 		try {
 			log.info("Removing: id=" +ontology.getId()+ " of ontologyId=" +ontology.getOntologyId()+ " ...");
-			_removeOntology(_ag, ontology);
+			_removeOntology(_conn, ontology);
 		}
 		finally {
-			_ag.end();
+			_conn.end();
 		}
 
 	}
@@ -509,12 +533,12 @@ public class AgTripleStore implements ITripleStore {
 	 * ii) removes all statements having the "proper" graph as subject (in particular, subGraphOf 
 	 * relationships and the typeOf-graph statement will be removed).
 	 * 
-	 * @param _ag
+	 * @param _conn
 	 * @param ontology
 	 * @throws Exception 
 	 *        
 	 */
-	private void _removeOntology(Ag _ag, OntologyInfo ontology) throws Exception {
+	private void _removeOntology(_Conn _conn, OntologyInfo ontology) throws Exception {
 		
 		String ontologyUri = ontology.getUri();
 		
@@ -551,7 +575,7 @@ public class AgTripleStore implements ITripleStore {
 			if ( log.isDebugEnabled() ) {
 				log.debug("Removing all statements in graph " +ownGraph+ " ...");
 			}
-			_ag.ts.removeStatements(null, null, null, ownGraph);
+			_conn.ts.removeStatements(null, null, null, ownGraph);
 		}
 		catch (AllegroGraphException e) {
 			log.error("Error removing ontology statements from graph.", e);
@@ -572,6 +596,9 @@ public class AgTripleStore implements ITripleStore {
 			// for more updates, ie., any existing subGraphOf statements will remain valid.
 			log.debug("_removeOntology: No need to remove subGraphOf statements");
 			
+			// FIXME but we need to load the contents of the latest version that remains
+			// ...
+			
 			return;
 		}
 
@@ -582,18 +609,18 @@ public class AgTripleStore implements ITripleStore {
 		// subGraphOf relationships and the typeOf-graph statement will be removed):
 		//
 		String ownGraphUri = adminDispatcher.getWellFormedGraphUri(ownGraph);
-		_removeAllStatementsForSubject(_ag, ownGraphUri);
+		_removeAllStatementsForSubject(_conn, ownGraphUri);
 		
 	}
 
 	/**
 	 * Removes all statements for a given subject.
 	 * Updates the graphs resource and then the triple store.
-	 * @param _ag
+	 * @param _conn
 	 * @param subGraphUri  Assumed to be well-formed
 	 * @throws AllegroGraphException
 	 */
-	private void _removeAllStatementsForSubject(Ag _ag, String subGraphUri) throws AllegroGraphException {
+	private void _removeAllStatementsForSubject(_Conn _conn, String subGraphUri) throws AllegroGraphException {
 		
 		log.debug("_removeAllStatementsForSubject: " +subGraphUri);
 		
@@ -601,7 +628,7 @@ public class AgTripleStore implements ITripleStore {
 		adminDispatcher.removeAllStatementsFromSubject(subGraphUri);
 		
 		// then, update the triple store with the corresponding statements:
-		_ag.ts.removeStatements("<" +subGraphUri+ ">", null, null);
+		_conn.ts.removeStatements("<" +subGraphUri+ ">", null, null);
 		
 	}
 
@@ -616,17 +643,17 @@ public class AgTripleStore implements ITripleStore {
 	 * @throws Exception 
 	 */
 	public QueryResult executeQuery(String sparqlQuery, String form) throws Exception {
-		Ag _ag = new Ag();
+		_Conn _conn = new _Conn();
 		try {
-			return _executeQuery(_ag, sparqlQuery, form);
+			return _executeQuery(_conn, sparqlQuery, form);
 		}
 		finally {
-			_ag.end();
+			_conn.end();
 		}
 	}
 	
 	
-	private QueryResult _executeQuery(Ag _ag, String sparqlQuery, String form) throws Exception {
+	private QueryResult _executeQuery(_Conn _conn, String sparqlQuery, String form) throws Exception {
 		if ( log.isDebugEnabled() ) {
 			log.debug("_executeQuery called.  form=" +form);
 		}
@@ -638,7 +665,7 @@ public class AgTripleStore implements ITripleStore {
 		QueryResult queryResult = new QueryResult();
 
 		SPARQLQuery sq = new SPARQLQuery();
-		sq.setTripleStore(_ag.ts);
+		sq.setTripleStore(_conn.ts);
 		sq.setQuery(sparqlQuery);
 		sq.setIncludeInferred(true);
 		
