@@ -364,14 +364,19 @@ public class OntServlet extends HttpServlet {
 			return;
 		}
 		
-		// reload graph?
+		// reload triple store?
 		if ( Util.yes(req.request, "_reload")  ) {
 			_reload(req);
 			return;
 		}
-		// reindex graph?
+		// reindex triple store?
 		if ( Util.yes(req.request, "_reidx")  ) {
 			_reindex(req);
+			return;
+		}
+		// clear triple store?
+		if ( Util.yes(req.request, "_clear")  ) {
+			_clear(req);
 			return;
 		}
 		
@@ -1021,9 +1026,7 @@ public class OntServlet extends HttpServlet {
 	 * Executes the reload operation.
 	 */
 	private void _reload(Request req) throws ServletException, IOException {
-		String _reload = Util.getParam(req.request, "_reload", "");
-		boolean withInference = _reload.length() == 0 || _reload.equals("inf");
-		tripleStore.reinit(withInference);
+		tripleStore.reinit();
 	}
 	
 	/**
@@ -1035,6 +1038,13 @@ public class OntServlet extends HttpServlet {
 		tripleStore.reindex(wait);
 	}
 
+	/**
+	 * Executes the clear operation.
+	 */
+	private void _clear(Request req) throws ServletException, IOException {
+		tripleStore.clear();
+	}
+	
 	
 	/**
 	 * Unregisters a concrete version of an ontology.
