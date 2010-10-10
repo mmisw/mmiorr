@@ -1,5 +1,5 @@
 /**
- * Defines the metadata vocabularies.
+ * Defines supporting vocabularies.
  */
 package org.mmisw.ont.vocabulary;
 
