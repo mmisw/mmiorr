@@ -4,6 +4,33 @@ $Id$
 
 ChangeLog
 
+2010-10-08  2.0.11.beta
+	- VirtuosoTest: Some testing of reasoning capabality: enabling and execution.
+	  In summary, inference is enabled from the query itself (via corresponding
+	  options), and this is done in a NON STANDARD way.
+	  See <a href="http://docs.openlinksw.com/virtuoso/virtuosofaq.html#virtuosofaq7
+	  In this test the query is:
+		PREFIX skos: <http://www.w3.org/2004/02/skos/core#> 
+		SELECT ?o 
+		WHERE { <http://localhost:8080/ont/mmitest/vocres/a>   
+		        skos:exactMatch   
+		        ?o   OPTION(TRANSITIVE)  // <<-- Jena triggers error here; but Virtuoso handles it
+		} 
+        	
+	- sample.build.properties updated to allow the specification of the triple
+	  store to be used, one of:
+	  	- AllegroGraph
+	  	- Virtuoso
+	  	- Jena TDB
+	  The first option that is appropriately specified (ie., with the required 
+	  non-blank values) will be used. By default, a Jena Model in memory is used.
+	  The class TripleStore determines the implementation to use based on configuration properties.
+
+	  --- NOTE --- 
+	      The AllegroGraph option continues to be the one for production.
+	      The other implementations are incomplete/not fully tested.
+	
+
 2010-10-07  2.0.11.beta
 	Additional evaluation of TDB and Virtuoso, and several related adjustments
 	on the triple store implementations.
@@ -30,19 +57,6 @@ ChangeLog
 	  'withInference' parameter in some operations (in principle, inference should 
 	  always be enabled).
 	  
-	- sample.build.properties updated to allow the specification of the triple
-	  store to be used, one of:
-	  	- Virtuoso
-	  	- Jena TDB
-	  	- AllegroGraph
-	  The first option that is appropriately specified (ie., with the required 
-	  non-blank values) will be used. By default, a Jena Model in memory is used.
-
-	  --- NOTE --- 
-	      The AllegroGraph option continues to be the one for production; the
-	      others are still under development/internal testing.  
-	
-	
 	
 2010-10-06  2.0.10.beta
 	- Fix 284: "empty reponse with incorrect content type"

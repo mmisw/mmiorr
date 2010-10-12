@@ -153,6 +153,16 @@ public class JenaVirtuosoTripleStore implements ITripleStore {
 		finally {
 			vqe.close();
 		}
+		
+		// NOTE
+		// Since we're using Virtuoso, we could allow possible extensions in the query by
+		// passing the string directly to VirtuosoQueryExecutionFactory:
+		//
+//		VirtuosoQueryExecution vqe = VirtuosoQueryExecutionFactory.create(sparqlQuery, _conn._graph);
+		// 
+		// however, to continue the dispatch, I'd need to know the kind of the query (SELECT, 
+		// CONSTRUCT, etc), but I don't see any Virtuoso API that can tell me that! 
+		
 	}
 
 	/**

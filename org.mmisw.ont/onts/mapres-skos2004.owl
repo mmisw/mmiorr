@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns="http://example.org/mapres/"
+    xml:base="http://example.org/mapres">
+    <rdf:Description rdf:about="http://example.org/vocres/AAA">
+        <skos:exactMatch>
+            <rdf:Description rdf:about="http://example.org/vocres/BBB">
+                <skos:exactMatch>
+                    <rdf:Description rdf:about="http://example.org/vocres/CCC">
+                        <skos:exactMatch rdf:resource="http://example.org/vocres/DDD"/>
+                    </rdf:Description>
+                </skos:exactMatch>
+            </rdf:Description>
+        </skos:exactMatch>
+    </rdf:Description>
+</rdf:RDF>

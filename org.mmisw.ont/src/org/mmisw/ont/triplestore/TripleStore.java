@@ -14,6 +14,10 @@ import org.mmisw.ont.triplestore.virtuoso.JenaVirtuosoTripleStore;
 
 /**
  * Proxy to the actual implementation of {@link ITripleStore}.
+ * 
+ * The {@link #init()} method in this class instantiates the actual implementation, 
+ * once the configuration information is available.
+ * 
  * @author Carlos Rueda
  */
 public class TripleStore implements ITripleStore {
@@ -36,6 +40,10 @@ public class TripleStore implements ITripleStore {
 		this._adminDispatcher = adminDispatcher;
 	}
 	
+	/**
+	 * Instantiates the actual implementation based on configuration parameters and calls
+	 * {@link ITripleStore#init()} on it.
+	 */
 	public void init() throws ServletException {
 		if ( _impl == null ) {
 			_impl = _createTripleStoreInstance();
@@ -47,8 +55,18 @@ public class TripleStore implements ITripleStore {
 	/**
 	 * Creates the actual {@link ITripleStore} implementation based on configuration parameters.
 	 */
+	@SuppressWarnings("deprecation")
 	private ITripleStore _createTripleStoreInstance() {
 		
+		//
+		// If the AllegroGraph server host is given, then use the AG implementation.
+		//
+		String agraphHost = OntConfig.Prop.AGRAPH_HOST.getValue();
+		boolean useAllegroGraph = agraphHost != null && agraphHost.trim().length() > 0;
+		if ( useAllegroGraph  ) {
+			return new AgTripleStore(_db, _adminDispatcher);
+		}
+
 		//
 		// If VIRTUOSO_HOST is given, then use the Virtuoso implementation.
 		//
@@ -68,22 +86,13 @@ public class TripleStore implements ITripleStore {
 		}
 
 		//
-		// Otherwise, if the AllegroGraph server host is given, then use the AG implementation.
-		//
-		String agraphHost = OntConfig.Prop.AGRAPH_HOST.getValue();
-		boolean useAllegroGraph = agraphHost != null && agraphHost.trim().length() > 0;
-		if ( useAllegroGraph  ) {
-			return new AgTripleStore(_db, _adminDispatcher);
-		}
-
-		//
 		// Otherwise, use the memory based implementation.
 		// 
 		if ( true ) {  // new JenaMem implementation
 			return new JenaMemTripleStore(_db);
 		}
 		else {
-			// TODO: remove this when JenaMem tested.
+			// TODO: remove this previous version of the memory-based impl when JenaMem is tested.
 			return new org.mmisw.ont.triplestore.mem.OntGraphMem(_db);
 		}
 	}
