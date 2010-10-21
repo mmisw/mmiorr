@@ -3,8 +3,6 @@ package org.mmisw.ont;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
@@ -256,35 +254,9 @@ public class OntServlet extends HttpServlet {
 		}
 	}
 	
-	
-	/**
-	 * If userAgentList contains Googlebot, it dispatches the request with a
-	 * NO_CONTENT response and returns true; otherwise returns false.
-	 */
-	private boolean _filterOutGooglebot(Request req) {
-		for ( String ua: req.userAgentList ) {
-			if ( ua.matches(".*Googlebot.*") ) {
-				log.debug("returning NO_CONTENT to googlebot");
-				try {
-					req.response.sendError(HttpServletResponse.SC_NO_CONTENT);
-				}
-				catch (IOException ignore) {
-				}
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	private void dispatch(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	private void _dispatch(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		Request req = new Request(getServletContext(), request, response);
-		
-		if ( false ) {   // Disabled as the robots.txt is now active.
-			if ( _filterOutGooglebot(req) ) {
-				return;
-			}
-		}
 		
 		// first, see if there are any testing requests to dispatch 
 		
@@ -468,7 +440,7 @@ public class OntServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		dispatch(request, response);
+		_dispatch(request, response);
 		if ( log.isDebugEnabled() ) {
 			log.debug("\n");
 		}
@@ -893,32 +865,6 @@ public class OntServlet extends HttpServlet {
 
 		return file;
 	}
-
-	/** 
-	 * Gets the serialization of a model in the given language.
-	 * <p>
-	 * (Similar to JenaUtil.getOntModelAsString(OntModel model).) 
-	 * @deprecated Use {{@link #serializeModelToOutputStream(Model, String, OutputStream)}
-	 */
-	@Deprecated
-	static StringReader serializeModel(Model model, String lang) {
-		StringWriter sw = new StringWriter();
-		String uriForEmptyPrefix = model.getNsPrefixURI("");
-		RDFWriter writer = model.getWriter(lang);
-		String baseUri = null;
-		if ( uriForEmptyPrefix != null ) {
-			baseUri = JenaUtil2.removeTrailingFragment(uriForEmptyPrefix);
-			writer.setProperty("xmlbase", baseUri);
-		}
-		writer.setProperty("showXmlDeclaration", "true");
-		writer.setProperty("relativeURIs", "same-document");
-		writer.setProperty("tab", "4");
-		writer.write(model, sw, baseUri);
-
-		StringReader reader = new StringReader(sw.toString());
-		return reader;
-	}
-
 
 	/** 
 	 * Gets the serialization of a model in the given language.

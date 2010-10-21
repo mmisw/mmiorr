@@ -4,11 +4,18 @@ $Id$
 
 ChangeLog
 
+2010-10-14  2.0.12.beta
+	- OntServlet: 
+	  - removed unused code to handle googlebot (robots.txt is in place)
+	  - removed unused method serializeModel(Model model, String lang)
+	- Removed unused class HtmlDispatcher
+	
+
 2010-10-08  2.0.11.beta
 	- VirtuosoTest: Some testing of reasoning capabality: enabling and execution.
 	  In summary, inference is enabled from the query itself (via corresponding
 	  options), and this is done in a NON STANDARD way.
-	  See <a href="http://docs.openlinksw.com/virtuoso/virtuosofaq.html#virtuosofaq7
+	  See http://docs.openlinksw.com/virtuoso/virtuosofaq.html#virtuosofaq7
 	  In this test the query is:
 		PREFIX skos: <http://www.w3.org/2004/02/skos/core#> 
 		SELECT ?o 
