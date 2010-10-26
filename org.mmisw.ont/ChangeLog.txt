@@ -4,6 +4,15 @@ $Id$
 
 ChangeLog
 
+2010-10-25  2.0.12.beta
+	- Some exercises to reproduce issue #287: Concurrency.
+	  See http://marinemetadata.org/mmiorrdeplmtech/orrtests/jmx
+	  Note: Although some general measures related with synchronization have been taken, 
+	  thread-safety has not been addressed systematically.
+	  The most immediate next adjustments is to properly make the shared resources
+	  in the servlet thread-safe.
+	  
+	  
 2010-10-14  2.0.12.beta
 	- OntServlet: 
 	  - removed unused code to handle googlebot (robots.txt is in place)
