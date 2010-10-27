@@ -5,6 +5,8 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
+import net.jcip.annotations.Immutable;
+
 /**
  * Represents an MMI ontology or term URI.
  * 
@@ -49,9 +51,10 @@ import java.util.regex.Pattern;
  * 
  * @author Carlos Rueda
  */
-public final class MmiUri {
+@Immutable
+public final class MmiUri implements Cloneable {
 
-	private static Pattern VERSION_PATTERN = 
+	private static final Pattern VERSION_PATTERN = 
 		Pattern.compile("^\\d{4}(\\d{2}(\\d{2})?)?(T\\d{2})?(\\d{2}(\\d{2})?)?$");
 	
 	// TODO put LATEST_VERSION_INDICATOR as a configuration parameter
@@ -106,6 +109,9 @@ public final class MmiUri {
 	
 	/** The extension (<code>.owl</code>)*/
 	private final String extension;
+	
+	/** lazily initilized */
+	private volatile Integer hashCode;
 	
 	
 	/**
@@ -343,11 +349,45 @@ public final class MmiUri {
 		}
 		
 		if ( version == null ) {
-			return o.version == null;
+			if ( o.version != null ) {
+				return false;
+			}
+		}
+		else if ( !version.equals(o.version) ) {
+			return false;			
 		}
 		
-		return version.equals(o.version);
+		if ( extension == null ) {
+			return o.extension == null;
+		}
+		
+		return extension.equals(o.extension);
 	}
+	
+	public int hashCode() {
+		Integer result = hashCode;
+		if ( result == null ) {
+			synchronized (this) {
+				result = hashCode;
+				if ( result == null ) {
+					hashCode = result = _computeHashCode();
+				}
+			}
+		}
+		return result.intValue();
+	}
+
+	private int _computeHashCode() {
+		int result = 17;
+		result += 31 * result + untilRoot.hashCode();
+		result += 31 * result + authority.hashCode();
+		result += 31 * result + (version != null ? version.hashCode() : 0);
+		result += 31 * result + topic.hashCode();
+		result += 31 * result + (extension != null ? extension.hashCode() : 0);
+		result += 31 * result + (term != null ? term.hashCode() : 0);
+		return result;
+	}
+
 
 	/** 
 	 * @returns the URI corresponding to the ontology (not including the term).
