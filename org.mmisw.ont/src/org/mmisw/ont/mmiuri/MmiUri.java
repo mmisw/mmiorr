@@ -110,7 +110,14 @@ public final class MmiUri implements Cloneable {
 	/** The extension (<code>.owl</code>)*/
 	private final String extension;
 	
-	/** lazily initilized */
+	/** 
+	 * Lazily initialized.
+	 * Note that this is still an immutable class; this hashCode member is private, and
+	 * is computed from final members. The hash code is computed lazily because instances of
+	 * this class will not always be used as keys in maps or something.
+	 * (FindBugs generates a warning because this member is not final; I could probably avoid
+	 * the warning with a FB annotation but am not including any FB library just for this.) 
+	 */
 	private volatile Integer hashCode;
 	
 	
