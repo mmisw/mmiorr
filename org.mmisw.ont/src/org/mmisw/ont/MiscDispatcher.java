@@ -606,11 +606,11 @@ public class MiscDispatcher {
 		out = response.getWriter();
 		out.println("<html>");
 		out.println("<head>");
-		out.println("<title>" +OntServlet.FULL_TITLE+ "</title>");
+		out.println("<title>" +OntVersion.getFullTitle()+ "</title>");
 		out.println("<link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\">");
 		out.println("</head>");
 		out.println("<body>");
-		out.println("<b>" +OntServlet.FULL_TITLE+ "</b><br/><br/>");
+		out.println("<b>" +OntVersion.getFullTitle()+ "</b><br/><br/>");
 		out.println(" Full requested URI: <code>" + fullRequestedUri + "</code> <br/><br/>");
 		
 		// parse the given URI:

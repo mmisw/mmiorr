@@ -42,13 +42,6 @@ import com.hp.hpl.jena.shared.UnknownPropertyException;
 public class OntServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	static final String TITLE = "MMI Ontology and Term URI Resolver";
-	
-	private static String VERSION = "?";   // determined at init() time -- see build.xml and version.properties
-	static String FULL_TITLE = "?";
-
-
-
 	private final Log log = LogFactory.getLog(OntServlet.class);
 	
 	private final OntConfig ontConfig = new OntConfig();
@@ -58,23 +51,17 @@ public class OntServlet extends HttpServlet {
 	
 	private final ITripleStore tripleStore = new TripleStore(db, adminDispatcher);
 	
-	
 	private final MiscDispatcher miscDispatcher = new MiscDispatcher(ontConfig, db);
-
 
 	private final SparqlDispatcher sparqlDispatcher = new SparqlDispatcher(tripleStore);
 
 	private final UriDispatcher uriDispatcher = new UriDispatcher(sparqlDispatcher);
 
-	// NOTE: Refactoring underway
 	private final UriResolver2 uriResolver2 = new UriResolver2(this, ontConfig, db, tripleStore);
-	
 	
 	private final RegularFileDispatcher regularFileDispatcher = new RegularFileDispatcher();
 	
-	// Analytics
 	private final Analytics analytics = Analytics.getInstance();
-	
 	
 	
 	private final ThreadLocal<OntRequest> perThreadOntRequest = new ThreadLocal<OntRequest>();
@@ -82,7 +69,7 @@ public class OntServlet extends HttpServlet {
 	
 	/**
 	 * Initializes this service.
-	 * This basically consists of
+	 * This basically consists of:
 	 * retrieval of configuration parameters, 
 	 * initialization of the database helper, 
 	 * initialization of the triple store, 
@@ -90,10 +77,8 @@ public class OntServlet extends HttpServlet {
 	 * initialization of analytics. 
 	 */
 	public void init() throws ServletException {
-		VERSION = OntVersion.getVersion()+ " (" +OntVersion.getBuild()+ ")";
-		FULL_TITLE = TITLE + ". Version " +VERSION;
 		
-		log.info(FULL_TITLE+ ": initializing");
+		log.info(OntVersion.getFullTitle()+ ": initializing");
 		
 		try {
 			ServletConfig servletConfig = getServletConfig();
@@ -103,7 +88,7 @@ public class OntServlet extends HttpServlet {
 			adminDispatcher.init();
 			analytics.init();
 			
-			log.info(FULL_TITLE+ ": init complete.");
+			log.info(OntVersion.getFullTitle()+ ": init complete.");
 		} 
 		catch (Exception ex) {
 			log.error("Cannot initialize: " +ex.getMessage(), ex);
@@ -113,7 +98,7 @@ public class OntServlet extends HttpServlet {
 	}
 	
 	public void destroy() {
-		log.info(FULL_TITLE+ ": destroy called.\n\n");
+		log.info(OntVersion.getFullTitle()+ ": destroy called.\n\n");
 		try {
 			tripleStore.destroy();
 		}

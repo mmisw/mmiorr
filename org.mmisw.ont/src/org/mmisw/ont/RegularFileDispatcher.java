@@ -29,7 +29,7 @@ import org.apache.commons.logging.LogFactory;
  * @author Carlos Rueda
  * @version $Id$
  */
-public class RegularFileDispatcher {
+class RegularFileDispatcher {
 	
 	private final Log log = LogFactory.getLog(RegularFileDispatcher.class);
 	
@@ -94,7 +94,7 @@ public class RegularFileDispatcher {
 		out = response.getWriter();
 		out.println("<html>");
 		out.println("<head>");
-		out.println("<title>" +OntServlet.FULL_TITLE+ "</title>");
+		out.println("<title>" +OntVersion.getFullTitle()+ "</title>");
 		out.println("<link rel=stylesheet href=\"" +contextPath + "/main.css\" type=\"text/css\">");
 		out.println("</head>");
 		out.println("<body>");
@@ -110,13 +110,13 @@ public class RegularFileDispatcher {
 				"</a>" + "\n" +
 				"<br/>" + 
 				"<br/>" + "\n" +
-				"<b>" +OntServlet.TITLE+ "</b>" + "\n" +
+				"<b>" +OntVersion.getTitle()+ "</b>" + "\n" +
 				"</br>This service is part of the " +
 				"<a href=\"http://marinemetadata.org/semanticframework\">" +
 				"MMI Semantic Framework</a>" + "\n" +
 				"<br/>" +
 				"<br/>" +
-				"<font color=\"gray\" size=\"-2\">" +OntServlet.FULL_TITLE+ "</font>" +
+				"<font color=\"gray\" size=\"-2\">" +OntVersion.getFullTitle()+ "</font>" +
 				"</td>" +
 				"</tr>" +
 				"</table>" +
