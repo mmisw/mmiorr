@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -117,10 +118,9 @@ public class Util {
         
         out.println("request.getParameterMap()       = " + request.getParameterMap()  );
 		Map<String, String[]> params = Util.getParams(request);
-		for ( String key: params.keySet() ) {
-			out.println("    " +key+ " => " + Arrays.asList(params.get(key))  );	
+		for (Entry<String, String[]> pair : params.entrySet() ) {
+			out.println("    " +pair.getKey()+ " => " + Arrays.asList(pair.getValue()));	
 		}
-        
         out.println("request.getContextPath()        = " + request.getContextPath() ); 
         out.println("request.getMethod()             = " + request.getMethod()  ); 
         out.println("request.getPathInfo()           = " + request.getPathInfo()  ); 
