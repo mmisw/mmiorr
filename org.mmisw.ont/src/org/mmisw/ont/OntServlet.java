@@ -84,9 +84,10 @@ public class OntServlet extends HttpServlet {
 	 * Initializes this service.
 	 * This basically consists of
 	 * retrieval of configuration parameters, 
-	 * initialization of the database connection, 
-	 * loading of the ontology graph,
-	 * and retrieval of version information.
+	 * initialization of the database helper, 
+	 * initialization of the triple store, 
+	 * initialization of the admin dispatcher, 
+	 * initialization of analytics. 
 	 */
 	public void init() throws ServletException {
 		VERSION = OntVersion.getVersion()+ " (" +OntVersion.getBuild()+ ")";
@@ -97,12 +98,9 @@ public class OntServlet extends HttpServlet {
 		try {
 			ServletConfig servletConfig = getServletConfig();
 			ontConfig.init(servletConfig);
-			
 			db.init();
 			tripleStore.init();
-			
 			adminDispatcher.init();
-			
 			analytics.init();
 			
 			log.info(FULL_TITLE+ ": init complete.");
@@ -120,7 +118,7 @@ public class OntServlet extends HttpServlet {
 			tripleStore.destroy();
 		}
 		catch (ServletException e) {
-			log.error("error while destroyng graph object", e);
+			log.error("error while destroying triple store object", e);
 		}
 	}
 	

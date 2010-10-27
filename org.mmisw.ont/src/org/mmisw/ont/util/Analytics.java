@@ -15,6 +15,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.OntConfig;
+import org.mmisw.ont.OntServlet;
 import org.mmisw.ont.OntConfig.Prop;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
@@ -39,6 +40,7 @@ public class Analytics {
 
 	private static Analytics instance = null;
 	
+	/** Called by {@link OntServlet} and creation time. */
 	public static Analytics getInstance() {
 		if ( instance == null ) {
 			instance = new Analytics();

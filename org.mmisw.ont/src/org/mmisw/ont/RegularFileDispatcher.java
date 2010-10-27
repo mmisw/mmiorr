@@ -22,6 +22,10 @@ import org.apache.commons.logging.LogFactory;
  * gets dispatched through this service, so, besides ontologies and terms, other possible resources
  * should be resolved by the service.
  * 
+ * <p>
+ * Note: This class is efectively a singleton as it is only intantiated once by {@link OntServlet}
+ * (ie., the singleton-ness is not forced here).
+ * 
  * @author Carlos Rueda
  * @version $Id$
  */
@@ -29,6 +33,9 @@ public class RegularFileDispatcher {
 	
 	private final Log log = LogFactory.getLog(RegularFileDispatcher.class);
 	
+	/** constructor (package-visible) */
+	RegularFileDispatcher() {
+	}
 
 	/**
 	 * Does the dispatch.

@@ -31,5 +31,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/tdb-0.8.7.jar" sourcepath="/Users/carueda/Software/TDB-0.8.7/tdb-0.8.7-sources.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/virt_jena.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/virtjdbc3.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jcip-annotations-1.0.jar" sourcepath="/Users/carueda/Software/jcip-annotations-src.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

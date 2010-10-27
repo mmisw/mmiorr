@@ -3,6 +3,7 @@ package org.mmisw.ont.triplestore;
 import javax.servlet.ServletException;
 
 import org.mmisw.ont.OntConfig;
+import org.mmisw.ont.OntServlet;
 import org.mmisw.ont.OntologyInfo;
 import org.mmisw.ont.admin.AdminDispatcher;
 import org.mmisw.ont.db.Db;
@@ -17,6 +18,10 @@ import org.mmisw.ont.triplestore.virtuoso.JenaVirtuosoTripleStore;
  * 
  * The {@link #init()} method in this class instantiates the actual implementation, 
  * once the configuration information is available.
+ * 
+ * <p>
+ * Note: This class is efectively a singleton as it is only intantiated once by {@link OntServlet}
+ * (ie., the singleton-ness is not forced here).
  * 
  * @author Carlos Rueda
  */

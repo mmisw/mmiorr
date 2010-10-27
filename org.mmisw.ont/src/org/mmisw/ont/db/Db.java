@@ -19,19 +19,27 @@ import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.sql.DataSource;
 
+import net.jcip.annotations.ThreadSafe;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.OntConfig;
+import org.mmisw.ont.OntServlet;
 import org.mmisw.ont.OntologyInfo;
 import org.mmisw.ont.mmiuri.MmiUri;
 import org.mmisw.ont.util.OntUtil;
 
 
 /**
- * A helper to work with the aquaportal database.
+ * A (singleton) helper to work with the aquaportal database.
+ * 
+ * <p>
+ * Note: This class is efectively a singleton as it is only intantiated once by {@link OntServlet}
+ * (ie., the singleton-ness is not forced here).
  * 
  * @author Carlos Rueda
  */
+@ThreadSafe
 public class Db {
 	
 	private final Log log = LogFactory.getLog(Db.class);
@@ -45,7 +53,7 @@ public class Db {
 	
 
 	/** 
-	 * Creates an instance of this helper. 
+	 * Creates the instance of this helper. 
 	 * Call {@link #init()} to initialize it.
 	 * @param ontConfig Used at initialization.
 	 */

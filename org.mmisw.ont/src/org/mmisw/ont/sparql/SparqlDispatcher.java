@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.ont.OntServlet;
 import org.mmisw.ont.triplestore.ITripleStore;
 import org.mmisw.ont.util.Unfinished;
 import org.mmisw.ont.util.Util;
@@ -20,6 +21,10 @@ import org.mmisw.ont.util.Util;
 
 /**
  * Dispatcher of SPARQL queries.
+ * 
+ * <p>
+ * Note: This class is efectively a singleton as it is only intantiated once by {@link OntServlet}
+ * (ie., the singleton-ness is not forced here).
  * 
  * @author Carlos Rueda
  */

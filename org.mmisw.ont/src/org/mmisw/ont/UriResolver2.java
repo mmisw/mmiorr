@@ -8,6 +8,8 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
+import net.jcip.annotations.ThreadSafe;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.db.Db;
@@ -24,8 +26,13 @@ import com.hp.hpl.jena.rdf.model.Model;
  * <p>
  * TODO: update documentation.
  * 
+ * <p>
+ * Note: This class is efectively a singleton as it is only intantiated once by {@link OntServlet}
+ * (ie., the singleton-ness is not forced here).
+ * 
  * @author Carlos Rueda
  */
+@ThreadSafe
 public class UriResolver2 {
 	
 	private final Log log = LogFactory.getLog(UriResolver2.class);

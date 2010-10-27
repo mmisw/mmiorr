@@ -19,6 +19,10 @@ import org.mmisw.ont.sparql.SparqlDispatcher;
  * 
  * TODO rename this class to EntityUriDispatcher.
  * 
+ * <p>
+ * Note: This class is efectively a singleton as it is only intantiated once by {@link OntServlet}
+ * (ie., the singleton-ness is not forced here).
+ * 
  * @author Carlos Rueda
  * @version $Id$
  */
