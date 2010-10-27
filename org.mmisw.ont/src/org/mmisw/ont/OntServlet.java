@@ -4,12 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -47,7 +44,7 @@ public class OntServlet extends HttpServlet {
 	static final String TITLE = "MMI Ontology and Term URI Resolver";
 	
 	private static String VERSION = "?";   // determined at init() time -- see build.xml and version.properties
-	static String FULL_TITLE = TITLE + ". Version " +VERSION;
+	static String FULL_TITLE = "?";
 
 
 
@@ -69,7 +66,7 @@ public class OntServlet extends HttpServlet {
 	private final UriDispatcher uriDispatcher = new UriDispatcher(sparqlDispatcher);
 
 	// NOTE: Refactoring underway
-	private final UriResolver2 uriResolver2 = new UriResolver2(ontConfig, db, tripleStore);
+	private final UriResolver2 uriResolver2 = new UriResolver2(this, ontConfig, db, tripleStore);
 	
 	
 	private final RegularFileDispatcher regularFileDispatcher = new RegularFileDispatcher();
@@ -78,137 +75,9 @@ public class OntServlet extends HttpServlet {
 	private final Analytics analytics = Analytics.getInstance();
 	
 	
-	/**
-	 * A request object. It keeps info associated with the request from the client.
-	 */
-	public class Request {
-		final ServletContext servletContext;
-		final HttpServletRequest request; 
-		public final HttpServletResponse response;
-		
-		final List<String> userAgentList;
-		
-		final Accept accept;
-		
-		final String fullRequestedUri;
-		final MmiUri mmiUri;
-		final String outFormat;
-		
-		// in case the ontology info is obtained somehow, use it:
-		OntologyInfo ontology;
-		
-		// in case an explicit version is requested
-		final String version;
-		
-		
-		Request(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) {
-			this.servletContext = servletContext;
-			this.request = request;
-			this.response = response;
-			
-			userAgentList = Util.getHeader(request, "user-agent");
-			accept = new Accept(request);
-			
-			fullRequestedUri = request.getRequestURL().toString();
-			
-			String formParam = Util.getParam(request, "form", "");
-			
-			//////////////////////////////////////
-			// get the requested MmiUri:
-			
-			// after the following block mmiUriTest will be NON-null only if the requested
-			// URI (either from the "uri" parameter if given, or from the fullRequestedUri)
-			// is "ont"-resolvable (OntUtil.isOntResolvableUri) and a syntactically valid MmiUri:
-			MmiUri mmiUriTest = null;
-			try {
-				if ( Util.yes(request, "uri") ) {
-					// when the "uri" parameter is passed, its value is used.
-					String entityUri = Util.getParam(request, "uri", "");
-					if ( OntUtil.isOntResolvableUri(entityUri) ) {
-						mmiUriTest = new MmiUri(entityUri);
-					}
-				}
-				else {
-					mmiUriTest = new MmiUri(fullRequestedUri);
-				}
-			}
-			catch (URISyntaxException e) {
-				// Ok, not a regular MmiUri request.
-			}
-			
-			String outFormatTest;
-			String versionTest = null;
-			
-			if ( mmiUriTest != null ) {
-				// get output format to be used:
-				outFormatTest = OntServlet.getOutFormatForMmiUri(formParam, accept, mmiUriTest, log);
-			}
-			else {
-				// NOT a regular MmiUri request.
-				outFormatTest = OntServlet.getOutFormatForNonMmiUri(formParam, log); 
-			}
-			
-			if ( outFormatTest.length() == 0 ) {     
-				// No explicit outFormat.
-				// use content negotiation:
-				
-				outFormatTest = getOutFormatByContentNegotiation(accept);
-				
-				log.debug("Not explicit output format given (either file extension or form parameter). " +
-						"Using [" +outFormatTest+ "] by content negotiation."
-				);
-			}
-
-			
-			if ( Util.yes(request, "version") ) {
-				// explicit version given:
-				versionTest = Util.getParam(request, "version", null);
-			}
-			
-			
-			mmiUri = mmiUriTest;
-			outFormat = outFormatTest;
-			version = versionTest;
-
-			if ( log.isDebugEnabled() ) {
-				_debug();
-			}
-		}
-
-
-		private void _debug() {
-			List<String> pcList = Util.getHeader(request, "PC-Remote-Addr");
-			String dominating = accept.dominating == null ? null : "\"" +accept.dominating+ "\"";
-			log.debug("__Request: fullRequestedUri: " +fullRequestedUri);
-
-			StringBuilder sbParams = new StringBuilder("{");
-			Map<String, String[]> params = Util.getParams(request);
-			for ( String key: params.keySet() ) {
-				sbParams.append(key+ "=>" + Arrays.asList(params.get(key))+ ",");	
-			}
-			sbParams.append("}");
-			log.debug("                     Params: " +sbParams);
-			
-			log.debug("                 user-agent: " +userAgentList);
-			log.debug("             PC-Remote-Addr: " +pcList);
-			log.debug("             Accept entries: " +accept.getEntries());
-			log.debug("           Dominating entry: " +dominating);
-			
-			log.debug("                     mmiUri: " +mmiUri);
-			log.debug("                  outFormat: " +outFormat);
-			log.debug("                    version: " +version);			
-		}
-		
-		public String toString() {
-			return "<" +
-				"fullRequestedUri=" +fullRequestedUri+
-				" mmiUri=" +mmiUri+
-				" outFormat=" +outFormat+
-				" version=" +version+
-				">"
-			;			
-		}
-	}
+	
+	private final ThreadLocal<OntRequest> perThreadOntRequest = new ThreadLocal<OntRequest>();
+	
 	
 	/**
 	 * Initializes this service.
@@ -254,10 +123,8 @@ public class OntServlet extends HttpServlet {
 		}
 	}
 	
-	private void _dispatch(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		Request req = new Request(getServletContext(), request, response);
-		
+	private void _dispatch() throws ServletException, IOException {
+		OntRequest req = getThreadLocalOntRequest();
 		// first, see if there are any testing requests to dispatch 
 		
 		// show request info?
@@ -372,7 +239,7 @@ public class OntServlet extends HttpServlet {
 				req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing uri parameter");
 				return;
 			}
-			if ( ! _dispatchUri(req, ontOrEntUri) ) {
+			if ( ! _dispatchUri(ontOrEntUri) ) {
 				// the explicit given uri could not be resolved, so respond with NOT_FOUND
 				req.response.sendError(HttpServletResponse.SC_NOT_FOUND, ontOrEntUri);
 			}
@@ -404,7 +271,7 @@ public class OntServlet extends HttpServlet {
 		if ( req.mmiUri != null ) {
 			String ontOrEntUri = req.mmiUri.getTermUri();
 			log.debug("To dispatch MmiUri: " +ontOrEntUri);
-			resolved = _dispatchUri(req, ontOrEntUri);
+			resolved = _dispatchUri(ontOrEntUri);
 		}
 		else {
 			log.debug("To dispatch non-MmiUri: " +req.fullRequestedUri);
@@ -440,10 +307,21 @@ public class OntServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		_dispatch(request, response);
-		if ( log.isDebugEnabled() ) {
-			log.debug("\n");
+		OntRequest req = new OntRequest(getServletContext(), request, response);
+		try {
+			perThreadOntRequest.set(req);
+			_dispatch();
+			if ( log.isDebugEnabled() ) {
+				log.debug("\n");
+			}
 		}
+		finally {
+			perThreadOntRequest.set(null);
+		}
+	}
+	
+	OntRequest getThreadLocalOntRequest() {
+		return perThreadOntRequest.get();
 	}
 	
 	/**
@@ -456,8 +334,8 @@ public class OntServlet extends HttpServlet {
 	 * 
 	 * @return true iff dispatch completed here.
 	 */
-	private boolean _dispatchUri(Request req, String ontOrEntUri) throws ServletException, IOException {
-		
+	private boolean _dispatchUri(String ontOrEntUri) throws ServletException, IOException {
+		OntRequest req = getThreadLocalOntRequest();
 		if ( log.isDebugEnabled() ) {
 			log.debug("_dispatchUri: ontOrEntUri=" +ontOrEntUri);
 		}
@@ -520,7 +398,7 @@ public class OntServlet extends HttpServlet {
 			// use ontology member in req and make sure the Uri attribute is set
 			req.ontology = ontology;
 			req.ontology.setUri(ontOrEntUri);
-			uriResolver2.serviceForOntology(req);
+			uriResolver2.serviceForOntology();
 			return true;
 		}
 		else {
@@ -543,7 +421,7 @@ public class OntServlet extends HttpServlet {
 	 */
 	@SuppressWarnings("unused")
 	// TODO remove this old method.  Actual method is _dispatchUri
-	private boolean _dispatchUri_Old(Request req, String ontOrEntUri) throws ServletException, IOException {
+	private boolean _dispatchUri_Old(OntRequest req, String ontOrEntUri) throws ServletException, IOException {
 		
 		if ( log.isDebugEnabled() ) {
 			log.debug("_dispatchUri: ontOrEntUri=" +ontOrEntUri);
@@ -605,7 +483,7 @@ public class OntServlet extends HttpServlet {
 			// use ontology member in req and make sure the Uri attribute is set
 			req.ontology = ontology;
 			req.ontology.setUri(ontOrEntUri);
-			uriResolver2.serviceForOntology(req);
+			uriResolver2.serviceForOntology();
 			return true;
 		}
 		else {
@@ -756,7 +634,7 @@ public class OntServlet extends HttpServlet {
 	 * @param mmiUri
 	 * @param log
 	 */
-	private static String getOutFormatForMmiUri(String formParam, Accept accept, MmiUri mmiUri, Log log) {
+	static String getOutFormatForMmiUri(String formParam, Accept accept, MmiUri mmiUri, Log log) {
 		// The response type depends (initially) on the following elements:
 		String extension = mmiUri.getExtension();
 		String outFormat = formParam;
@@ -795,7 +673,7 @@ public class OntServlet extends HttpServlet {
 	 * @param req
 	 * @param log
 	 */
-	private static String getOutFormatForNonMmiUri(String formParam, Log log) {
+	static String getOutFormatForNonMmiUri(String formParam, Log log) {
 		String outFormat = formParam;
 		
 		if ( log.isDebugEnabled() ) {
@@ -806,34 +684,6 @@ public class OntServlet extends HttpServlet {
 		return outFormat;
 	}
 
-	private String getOutFormatByContentNegotiation(Accept accept) {
-		// accept empty? --> OWL
-		if ( accept.isEmpty() ) {
-			return "owl";
-		}
-
-		// Dominating Accept: application/rdf+xml dominates? --> OWL
-		else if ( accept.getDominating().equalsIgnoreCase("application/rdf+xml") ) {
-			return "owl";
-		}
-
-		// Dominating Accept contains "xml"? --> OWL
-		else if ( accept.getDominating().indexOf("xml") >= 0 ) {
-			return "owl";
-		}
-
-		// Dominating Accept: text/html dominates? --> HTML
-		else if ( accept.getDominating().equalsIgnoreCase("text/html") ) {
-			return "html";
-		}
-
-		// default:
-		else {
-			return "owl";
-		}
-	}
-
-	
 	/**
 	 * Gets the full path to get to the uploaded ontology file.
 	 * @param ontology
@@ -899,7 +749,7 @@ public class OntServlet extends HttpServlet {
 	 * Loads the ontology indicated with the "_lo" parameter in the request.
 	 * The value is taken as the URI of the ontology.
 	 */
-	private void _loadOntologyIntoGraph(Request req) throws ServletException, IOException {
+	private void _loadOntologyIntoGraph(OntRequest req) throws ServletException, IOException {
 		String ontUri = Util.getParam(req.request, "_lo", "");
 		if ( ontUri.length() == 0 ) {
 			req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing value for _lo parameter");
@@ -945,7 +795,7 @@ public class OntServlet extends HttpServlet {
 	/**
 	 * _usri=username
 	 */
-	private void _getUserInfo(Request req) throws ServletException, IOException {
+	private void _getUserInfo(OntRequest req) throws ServletException, IOException {
 		StringBuffer result = new StringBuffer();
 		
 		String ontUri = Util.getParam(req.request, "_usri", "");
@@ -971,14 +821,14 @@ public class OntServlet extends HttpServlet {
 	/**
 	 * Executes the reload operation.
 	 */
-	private void _reload(Request req) throws ServletException, IOException {
+	private void _reload(OntRequest req) throws ServletException, IOException {
 		tripleStore.reinit();
 	}
 	
 	/**
 	 * Executes the reindex operation.
 	 */
-	private void _reindex(Request req) throws ServletException, IOException {
+	private void _reindex(OntRequest req) throws ServletException, IOException {
 		String _reidx = Util.getParam(req.request, "_reidx", "");
 		boolean wait = _reidx.length() == 0 || _reidx.equals("wait");
 		tripleStore.reindex(wait);
@@ -987,7 +837,7 @@ public class OntServlet extends HttpServlet {
 	/**
 	 * Executes the clear operation.
 	 */
-	private void _clear(Request req) throws ServletException, IOException {
+	private void _clear(OntRequest req) throws ServletException, IOException {
 		tripleStore.clear();
 	}
 	
@@ -1005,7 +855,7 @@ public class OntServlet extends HttpServlet {
 	 * the database.
 	 * 
 	 */
-	private void _unregisterOntology(Request req) throws ServletException, IOException {
+	private void _unregisterOntology(OntRequest req) throws ServletException, IOException {
 		
 		String ontUri = Util.getParam(req.request, "_unr", "");
 		if ( ontUri.length() == 0 ) {

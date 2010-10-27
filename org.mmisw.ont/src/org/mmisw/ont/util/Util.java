@@ -165,9 +165,10 @@ public class Util {
 	 */
 	public static void doDbQuery(HttpServletRequest request, HttpServletResponse response, Db db) throws ServletException, IOException {
 		Connection _con = null;
+		Statement _stmt = null;
 		try {
 			_con = db.getConnection();
-			Statement _stmt = _con.createStatement();
+			_stmt = _con.createStatement();
 			String table = Util.getParam(request, "table", "v_ncbo_ontology");
 			int limit = Integer.parseInt(Util.getParam(request, "limit", "500"));
 
@@ -212,7 +213,7 @@ public class Util {
 			throw new ServletException(e);
 		}
 		finally {
-			db.closeConnection(_con);
+			db.closeStatementAndConnection(_stmt, _con);
 		}
 	}
 	
@@ -296,6 +297,38 @@ public class Util {
 		}
 		
 		return null;
+	}
+
+	/**
+	 * Gets the output format corresponding to the given Accept object. 
+	 * @param accept
+	 * @return
+	 */
+	public static String getOutFormatByContentNegotiation(Accept accept) {
+		// accept empty? --> OWL
+		if ( accept.isEmpty() ) {
+			return "owl";
+		}
+
+		// Dominating Accept: application/rdf+xml dominates? --> OWL
+		else if ( accept.getDominating().equalsIgnoreCase("application/rdf+xml") ) {
+			return "owl";
+		}
+
+		// Dominating Accept contains "xml"? --> OWL
+		else if ( accept.getDominating().indexOf("xml") >= 0 ) {
+			return "owl";
+		}
+
+		// Dominating Accept: text/html dominates? --> HTML
+		else if ( accept.getDominating().equalsIgnoreCase("text/html") ) {
+			return "html";
+		}
+
+		// default:
+		else {
+			return "owl";
+		}
 	}
 
 	

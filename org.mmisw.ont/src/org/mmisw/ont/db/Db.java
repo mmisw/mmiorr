@@ -56,18 +56,28 @@ public class Db {
 	 * Required initialization.
 	 */
 	public void init() throws Exception {
-		log.debug("init called.");
+		log.info("init called.");
 		aquaportalDatasource = OntConfig.Prop.AQUAPORTAL_DATASOURCE.getValue(); 
 		
+		Context initialContext = null;
 		try {
-			Context initialContext = new InitialContext();
+			initialContext = new InitialContext();
 			dataSource = (DataSource) initialContext.lookup(aquaportalDatasource);
 			if ( dataSource == null ) {
-				throw new ServletException("Failed to lookup datasource.");
+				throw new Exception("Failed to lookup datasource: " +aquaportalDatasource);
 			}
 		}
 		catch ( NamingException ex ) {
-			throw new ServletException("Failed to lookup datasource.", ex);
+			throw new Exception("Failed to lookup datasource: " +aquaportalDatasource, ex);
+		}
+		
+		if ( initialContext != null ) {
+			// release context resources:
+			try {
+				initialContext.close();
+			}
+			catch (NamingException ignore) {
+			}
 		}
 
 	}
@@ -77,7 +87,6 @@ public class Db {
 	 * 
 	 * @return
 	 * @throws SQLException
-	 * @throws ServletException
 	 */
 	public Connection getConnection() throws SQLException {
 		Connection result = dataSource.getConnection();
@@ -85,26 +94,38 @@ public class Db {
     }
 	
 	/**
-	 * Calls connection.close() if the connection is not already closed. Any
-	 * {@link SQLException} is logged as a warning and absorbed.
+	 * Calls stmt.close() if stmt is not null.
+	 * Calls connection.close() if the connection is not not null and is not already closed. 
+	 * Any {@link SQLException} during the above operations is logged as 
+	 * a warning and absorbed.
 	 *  
+	 * @param stmt
+	 *          The statement to close. Can be null.
 	 * @param connection
-	 *          The connection to close. If null, this methods does nothing.
+	 *          The connection to close. Can be null.
 	 */
-	public void closeConnection(Connection connection) {
-		if ( connection == null ) {
-			return;
-		}
-		try {
-			if ( ! connection.isClosed() ) {
-				connection.close();
+	public void closeStatementAndConnection(Statement stmt, Connection connection) {
+		if ( stmt != null ) {
+			try {
+				stmt.close();
+			}
+			catch (SQLException e) {
+				log.warn("error closing SQL statment", e);
 			}
 		}
-		catch (SQLException e) {
-			log.warn("error closing connection", e);
+		
+		if ( connection != null ) {
+			try {
+				if ( ! connection.isClosed() ) {
+					connection.close();
+				}
+			}
+			catch (SQLException e) {
+				log.warn("error closing connection", e);
+			}
 		}
 	}
-	
+		
 	/**
 	 * Obtains basic ontology info by the given URI and version.
 	 * 
@@ -116,9 +137,10 @@ public class Db {
 	 */
 	public OntologyInfo getOntologyVersion(final String ontologyUri, final String version) throws ServletException {
 		Connection _con = null;
+		Statement _stmt = null;
 		try {
 			_con = getConnection();
-			Statement _stmt = _con.createStatement();
+			_stmt = _con.createStatement();
 
 			String query = 
 				"select v.id, v.ontology_id, v.file_path, f.filename " +
@@ -155,7 +177,7 @@ public class Db {
 			throw new ServletException(e);
 		}
 		finally {
-			closeConnection(_con);
+			closeStatementAndConnection(_stmt, _con);
 		}
 		
 		return null;
@@ -183,9 +205,10 @@ public class Db {
 	 */
 	public OntologyInfo getOntology(String ontologyUri) throws ServletException {
 		Connection _con = null;
+		Statement _stmt = null;
 		try {
 			_con = getConnection();
-			Statement _stmt = _con.createStatement();
+			_stmt = _con.createStatement();
 
 			String query = 
 				"select v.id, v.ontology_id, v.file_path, f.filename " +
@@ -217,7 +240,7 @@ public class Db {
 			throw new ServletException(e);
 		}
 		finally {
-			closeConnection(_con);
+			closeStatementAndConnection(_stmt, _con);
 		}
 		
 		return null;
@@ -328,9 +351,10 @@ public class Db {
 		
 		// ok, now run the "like" query
 		Connection _con = null;
+		Statement _stmt = null;
 		try {
 			_con = getConnection();
-			Statement _stmt = _con.createStatement();
+			_stmt = _con.createStatement();
 
 			String query = 
 				"select v.id, v.ontology_id, v.file_path, v.urn, f.filename " +
@@ -375,7 +399,7 @@ public class Db {
 			throw new ServletException(e);
 		}
 		finally {
-			closeConnection(_con);
+			closeStatementAndConnection(_stmt, _con);
 		}
 		
 		return onts;
@@ -437,9 +461,10 @@ public class Db {
 	List<OntologyInfo> getOntologies() throws ServletException {
 		List<OntologyInfo> onts = new ArrayList<OntologyInfo>();
 		Connection _con = null;
+		Statement _stmt = null;
 		try {
 			_con = getConnection();
-			Statement _stmt = _con.createStatement();
+			_stmt = _con.createStatement();
 
 			// NOTE:
 			//    v_ncbo_ontology.id  ==  ncbo_ontology_file.ontology_version_id
@@ -465,7 +490,7 @@ public class Db {
 			throw new ServletException(e);
 		}
 		finally {
-			closeConnection(_con);
+			closeStatementAndConnection(_stmt, _con);
 		}
 	
 		return onts;
@@ -491,9 +516,10 @@ public class Db {
 		// See below.
 		
 		Connection _con = null;
+		Statement _stmt = null;
 		try {
 			_con = getConnection();
-			Statement _stmt = _con.createStatement();
+			_stmt = _con.createStatement();
 
 			// note that this is sorted in increasing ontology_id,version_number
 			String query = 
@@ -539,7 +565,7 @@ public class Db {
 			throw new ServletException(e);
 		}
 		finally {
-			closeConnection(_con);
+			closeStatementAndConnection(_stmt, _con);
 		}
 	}
 	
@@ -550,9 +576,10 @@ public class Db {
 	 */
 	public Map<String,String> getUserInfo(String username) throws ServletException {
 		Connection _con = null;
+		Statement _stmt = null;
 		try {
 			_con = getConnection();
-			Statement _stmt = _con.createStatement();
+			_stmt = _con.createStatement();
 
 			String query = 
 				"select id, username, email, firstname, lastname, phone, date_created " +
@@ -582,7 +609,7 @@ public class Db {
 			throw new ServletException(e);
 		}
 		finally {
-			closeConnection(_con);
+			closeStatementAndConnection(_stmt, _con);
 		}
 	}
 	
@@ -596,9 +623,10 @@ public class Db {
 		
 		List<Map<String,String>> list = new ArrayList<Map<String,String>>();
 		Connection _con = null;
+		Statement _stmt = null;
 		try {
 			_con = getConnection();
-			Statement _stmt = _con.createStatement();
+			_stmt = _con.createStatement();
 
 			String query = 
 				"select id, username, email, firstname, lastname, phone, date_created " +
@@ -634,7 +662,7 @@ public class Db {
 			throw new ServletException(e);
 		}
 		finally {
-			closeConnection(_con);
+			closeStatementAndConnection(_stmt, _con);
 		}
 	}
 

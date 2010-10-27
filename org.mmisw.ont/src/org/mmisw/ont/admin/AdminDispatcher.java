@@ -20,7 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.JenaUtil2;
 import org.mmisw.ont.OntConfig;
-import org.mmisw.ont.OntServlet.Request;
+import org.mmisw.ont.OntRequest;
 import org.mmisw.ont.db.Db;
 import org.mmisw.ont.util.ServletUtil;
 import org.mmisw.ont.vocabulary.Rdfg;
@@ -96,7 +96,7 @@ public class AdminDispatcher {
 	/**
 	 * Responds an RDF with registered users. Every user URI will be *versioned* with the current time.
 	 */
-	public void getUsersRdf(Request req) throws ServletException, IOException {
+	public void getUsersRdf(OntRequest req) throws ServletException, IOException {
 		final String MMIORR_NS = "http://mmisw.org/ont/mmi/mmiorr/";
 		
 		log.debug("getUsersRdf called.");

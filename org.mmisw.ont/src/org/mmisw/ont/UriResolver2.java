@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mmisw.ont.OntServlet.Request;
 import org.mmisw.ont.db.Db;
 import org.mmisw.ont.mmiuri.MmiUri;
 import org.mmisw.ont.triplestore.ITripleStore;
@@ -23,11 +22,7 @@ import com.hp.hpl.jena.rdf.model.Model;
  * This is main dispatcher used by the entry point OntServlet.
  * 
  * <p>
- * Note: under development; this class is going to be a refactored version of UriResolver, which
- * will eventually disappear.
- * The strategy is to incrementally provide the central operations through this UriResolver2 class.
- * Some stuff will be moved out from UriResolver to OntServlet and some stuff refactored into
- * UriResolver2.
+ * TODO: update documentation.
  * 
  * @author Carlos Rueda
  */
@@ -38,15 +33,26 @@ public class UriResolver2 {
 	private final OntConfig ontConfig;
 	private final Db db;
 
+	/** Used to obtain the thread-local OntRequest */
+	private final OntServlet ontServlet;
 	
-	private Request req;
-	
-	
-	public UriResolver2(OntConfig ontConfig, Db db, ITripleStore tripleStore) {
+	/**
+	 * 
+	 * @param ontServlet 
+	 *                    Used to obtain the thread-local OntRequest.
+	 * @param ontConfig
+	 * @param db
+	 * @param tripleStore
+	 */
+	public UriResolver2(OntServlet ontServlet, OntConfig ontConfig, Db db, ITripleStore tripleStore) {
+		this.ontServlet = ontServlet;
 		this.ontConfig = ontConfig;
 		this.db = db;
 	}
 	
+	private OntRequest _getThreadLocalOntRequest() {
+		return ontServlet.getThreadLocalOntRequest();
+	}
 	
 	/**
 	 * Represents a response to be sent to the client
@@ -67,8 +73,9 @@ public class UriResolver2 {
 			if ( log.isDebugEnabled() ) {
 				log.debug("Redirecting to latest version: " + url);
 			}
-			String redir = req.response.encodeRedirectURL(url);
-			req.response.sendRedirect(redir);
+			OntRequest ontReq = _getThreadLocalOntRequest();
+			String redir = ontReq.response.encodeRedirectURL(url);
+			ontReq.response.sendRedirect(redir);
 		}
 	}
 	
@@ -79,7 +86,8 @@ public class UriResolver2 {
 			this.res = res;
 		}
 		void dispatch() throws IOException {
-			req.response.sendError(HttpServletResponse.SC_NOT_FOUND, res);
+			OntRequest ontReq = _getThreadLocalOntRequest();
+			ontReq.response.sendError(HttpServletResponse.SC_NOT_FOUND, res);
 		}
 	}
 	
@@ -96,7 +104,8 @@ public class UriResolver2 {
 		}
 		void dispatch() throws IOException {
 			log.error(msg, thr);
-			req.response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, msg);
+			OntRequest ontReq = _getThreadLocalOntRequest();
+			ontReq.response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, msg);
 		}
 	}
 	
@@ -109,65 +118,66 @@ public class UriResolver2 {
 		}
 		
 		void dispatch() throws IOException {
+			OntRequest ontReq = _getThreadLocalOntRequest();
 			
 			if ( log.isDebugEnabled() ) {
-				log.debug(this.getClass().getName()+ ": dispatching with outFormat=" +req.outFormat);
+				log.debug(this.getClass().getName()+ ": dispatching with outFormat=" +ontReq.outFormat);
 			}
 
-			ServletOutputStream os = req.response.getOutputStream();
+			ServletOutputStream os = ontReq.response.getOutputStream();
 
 			///////////////////////////////////////////////////////////////////
 			// OWL
-			if ( req.outFormat.equalsIgnoreCase("owl")
-			||   req.outFormat.equalsIgnoreCase("rdf")
+			if ( ontReq.outFormat.equalsIgnoreCase("owl")
+			||   ontReq.outFormat.equalsIgnoreCase("rdf")
 			) {
 				if ( log.isDebugEnabled() ) {
 					log.debug(this.getClass().getName()+ ": Serializing to RDF/XML-ABBREV");
 				}
-				ServletUtil.setContentTypeRdfXml(req.response);
+				ServletUtil.setContentTypeRdfXml(ontReq.response);
 //				is = OntServlet.serializeModel(model, "RDF/XML-ABBREV");
 				OntServlet.serializeModelToOutputStream(model, "RDF/XML-ABBREV", os);
 			}
 			
 			///////////////////////////////////////////////////////////////////
 			// N3
-			else if ( req.outFormat.equalsIgnoreCase("n3") ) {
-				ServletUtil.setContentTypeTextPlain(req.response);
+			else if ( ontReq.outFormat.equalsIgnoreCase("n3") ) {
+				ServletUtil.setContentTypeTextPlain(ontReq.response);
 				OntServlet.serializeModelToOutputStream(model, "N3", os);
 			}
 			
 			///////////////////////////////////////////////////////////////////
 			// NT
-			else if ( req.outFormat.equalsIgnoreCase("nt") ) {
-				ServletUtil.setContentTypeTextPlain(req.response);
+			else if ( ontReq.outFormat.equalsIgnoreCase("nt") ) {
+				ServletUtil.setContentTypeTextPlain(ontReq.response);
 				OntServlet.serializeModelToOutputStream(model, "N-TRIPLE", os);
 			}
 			
 			///////////////////////////////////////////////////////////////////
 			// TTL
-			else if ( req.outFormat.equalsIgnoreCase("ttl") ) {
-				ServletUtil.setContentTypeTextPlain(req.response);
+			else if ( ontReq.outFormat.equalsIgnoreCase("ttl") ) {
+				ServletUtil.setContentTypeTextPlain(ontReq.response);
 				OntServlet.serializeModelToOutputStream(model, "TURTLE", os);
 			}
 			
 			///////////////////////////////////////////////////////////////////
 			// HTML
-			else if ( req.outFormat.equalsIgnoreCase("html") ) {
+			else if ( ontReq.outFormat.equalsIgnoreCase("html") ) {
 				
 				// Redirect to the appropriate service.
 				
 				String ontologyUri;
 				
-				if ( req.ontology != null ) {
-					ontologyUri = req.ontology.getUri();
+				if ( ontReq.ontology != null ) {
+					ontologyUri = ontReq.ontology.getUri();
 				}
-				else if ( req.mmiUri != null ) {
+				else if ( ontReq.mmiUri != null ) {
 					// Note: drop any extension here (the Orr service will do the appropriate request
 					// back to this Ont service): 
-					ontologyUri = req.mmiUri.getOntologyUriWithExtension("");
+					ontologyUri = ontReq.mmiUri.getOntologyUriWithExtension("");
 				}
 				else {
-					ontologyUri = req.fullRequestedUri;
+					ontologyUri = ontReq.fullRequestedUri;
 				}
 				
 				String portalServiceUrl = OntConfig.Prop.PORTAL_SERVICE_URL.getValue();
@@ -176,16 +186,16 @@ public class UriResolver2 {
 				if ( log.isDebugEnabled() ) {
 					log.debug("REDIRECTING TO: " +url);
 				}
-				String redir = req.response.encodeRedirectURL(url);
-				req.response.sendRedirect(redir);
+				String redir = ontReq.response.encodeRedirectURL(url);
+				ontReq.response.sendRedirect(redir);
 				return;
 			}
 			
 			///////////////////////////////////////////////////////////////////
 			// BAD REQUEST
 			else {
-				req.response.sendError(HttpServletResponse.SC_BAD_REQUEST,
-						"ModelResponse: outFormat " +req.outFormat+ " not recognized"
+				ontReq.response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+						"ModelResponse: outFormat " +ontReq.outFormat+ " not recognized"
 				);
 				return;
 			}
@@ -214,17 +224,17 @@ public class UriResolver2 {
 	/**
 	 * The main dispatcher.
 	 */
-	void service(Request req) throws ServletException, IOException {
-		this.req = req;
+	void service() throws ServletException, IOException {
+		OntRequest ontReq = _getThreadLocalOntRequest();
 		
 		Response resp = null;
 		
 		
 		if ( log.isDebugEnabled() ) {
-			log.debug("UriResolver2.service: mmiUri = " +req.mmiUri);
+			log.debug("UriResolver2.service: mmiUri = " +ontReq.mmiUri);
 		}
 		
-		if ( req.mmiUri != null ) {
+		if ( ontReq.mmiUri != null ) {
 			if ( log.isDebugEnabled() ) {
 				log.debug("UriResolver2._getResponseForMmiUri.");
 			}
@@ -242,8 +252,8 @@ public class UriResolver2 {
 			resp.dispatch();
 		}
 		else {
-			String fullRequestedUri = req.request.getRequestURL().toString();
-			req.response.sendError(HttpServletResponse.SC_NOT_FOUND, fullRequestedUri);		
+			String fullRequestedUri = ontReq.request.getRequestURL().toString();
+			ontReq.response.sendError(HttpServletResponse.SC_NOT_FOUND, fullRequestedUri);		
 		}
 	}
 	
@@ -261,7 +271,8 @@ public class UriResolver2 {
 		boolean unversionedRequest = false;
 		MmiUri foundMmiUri = null;
 		
-		String version = req.mmiUri.getVersion();
+		OntRequest ontReq = _getThreadLocalOntRequest();
+		String version = ontReq.mmiUri.getVersion();
 		if ( version == null || version.equals(MmiUri.LATEST_VERSION_INDICATOR) ) {
 			
 			//
@@ -269,7 +280,7 @@ public class UriResolver2 {
 			//
 			
 			// Get latest version trying all possible topic extensions:
-			OntologyInfo mostRecentOntology = db.getMostRecentOntologyVersion(req.mmiUri);
+			OntologyInfo mostRecentOntology = db.getMostRecentOntologyVersion(ontReq.mmiUri);
 
 			if ( mostRecentOntology != null ) {
 				
@@ -278,18 +289,18 @@ public class UriResolver2 {
 					// Note that mostRecentOntology.getUri() won't have the term component.
 					// So, we have to transfer it to foundMmiUri:
 					//
-					foundMmiUri = new MmiUri(mostRecentOntology.getUri()).copyWithTerm(req.mmiUri.getTerm());
+					foundMmiUri = new MmiUri(mostRecentOntology.getUri()).copyWithTerm(ontReq.mmiUri.getTerm());
 					
 					if ( log.isDebugEnabled() ) {
 						log.debug("Found ontology version: " +mostRecentOntology.getUri());
 
-						if ( ! req.mmiUri.getExtension().equals(foundMmiUri.getExtension()) ) {
-							log.debug("Restored requested extension to: " +req.mmiUri);
+						if ( ! ontReq.mmiUri.getExtension().equals(foundMmiUri.getExtension()) ) {
+							log.debug("Restored requested extension to: " +ontReq.mmiUri);
 						}
 					}
 					
 					// also, restore the original requested extension:
-					foundMmiUri = foundMmiUri.copyWithExtension(req.mmiUri.getExtension());
+					foundMmiUri = foundMmiUri.copyWithExtension(ontReq.mmiUri.getExtension());
 				}
 				catch (URISyntaxException e) {
 					return new InternalErrorResponse("Shouldn't happen", e);
@@ -327,12 +338,12 @@ public class UriResolver2 {
 
 		if ( ontology == null ) {
 			// obtain info about the ontology:
-			ontology = db.getOntologyWithExts(req.mmiUri, null);
+			ontology = db.getOntologyWithExts(ontReq.mmiUri, null);
 		}
 		
 		if ( ontology == null ) {
 			if ( log.isDebugEnabled() ) {
-				log.debug("_getResponseForMmiUri: not dispatched here. mmiUri = " +req.mmiUri);
+				log.debug("_getResponseForMmiUri: not dispatched here. mmiUri = " +ontReq.mmiUri);
 			}
 			return null;
 		}
@@ -366,7 +377,7 @@ public class UriResolver2 {
 		
 		if ( unversionedRequest ) {
 
-			unversionedModel = UnversionedConverter.getUnversionedModel(originalModel, req.mmiUri);
+			unversionedModel = UnversionedConverter.getUnversionedModel(originalModel, ontReq.mmiUri);
 			
 			if ( unversionedModel != null ) {
 				if ( log.isDebugEnabled() ) {
@@ -381,7 +392,7 @@ public class UriResolver2 {
 			}
 		}
 
-		String term = req.mmiUri.getTerm();
+		String term = ontReq.mmiUri.getTerm();
 		
 		OntModel model = unversionedModel != null ? unversionedModel : originalModel;
 
@@ -393,7 +404,7 @@ public class UriResolver2 {
 			if ( log.isDebugEnabled() ) {
 				log.debug("_getResponseForMmiUri: term=[" +term+ "].");
 			}
-			Model termModel = TermExtractor.getTermModel(model, req.mmiUri);
+			Model termModel = TermExtractor.getTermModel(model, ontReq.mmiUri);
 			if ( termModel != null ) {
 				return new TermResponse(termModel);
 			}
@@ -407,16 +418,16 @@ public class UriResolver2 {
 	/**
 	 * Gets the response for a given ontology
 	 */
-	void serviceForOntology(Request req) throws ServletException, IOException {
-		this.req = req;
+	void serviceForOntology() throws ServletException, IOException {
+		OntRequest ontReq = _getThreadLocalOntRequest();
 		
 		if ( log.isDebugEnabled() ) {
-			log.debug("serviceForOntology: req: " +req);
+			log.debug("serviceForOntology: req: " +ontReq);
 		}
 		
 		Response resp = null;
 		
-		final File file = OntServlet.getFullPath(req.ontology, ontConfig, log);
+		final File file = OntServlet.getFullPath(ontReq.ontology, ontConfig, log);
 		
 		if ( !file.canRead() ) {
 			// This should not happen.
@@ -445,8 +456,8 @@ public class UriResolver2 {
 				OntModel model = originalModel;
 
 				// no explicit version requested and it's an unversioned MmiUri?
-				if ( req.version == null && req.mmiUri != null && req.mmiUri.getVersion() == null ) {
-					model = UnversionedConverter.getUnversionedModel(originalModel, req.mmiUri);
+				if ( ontReq.version == null && ontReq.mmiUri != null && ontReq.mmiUri.getVersion() == null ) {
+					model = UnversionedConverter.getUnversionedModel(originalModel, ontReq.mmiUri);
 				}
 				// issue #252: "omv:version gone?"
 				else {
@@ -465,7 +476,7 @@ public class UriResolver2 {
 			resp.dispatch();
 		}
 		else {
-			req.response.sendError(HttpServletResponse.SC_NOT_FOUND, req.ontology.getUri());		
+			ontReq.response.sendError(HttpServletResponse.SC_NOT_FOUND, ontReq.ontology.getUri());		
 		}
 
 	}

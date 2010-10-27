@@ -4,7 +4,39 @@ $Id$
 
 ChangeLog
 
-2010-10-25  2.0.12.beta
+2010-10-26  2.0.13.beta
+	Some code refactoring to facilitate investigation of #287 "concurrency"
+	- Made class OntServlet.Request top-level and renamed it to OntRequest
+	- Db.closeConnection(Connection) replaced with closeStatementAndConnection(Statement, Connection)
+	
+	
+	= Adjustments/Fixes for thread-safety =
+	
+	OntServlet:
+		OntRequest object maintained in a ThreadLocal variable.
+		
+	UriResolver2:
+		Member ontRequest was not properly shared. Now the ontRequest object is obtained
+		from the ThreadLocal variable maintained by OntServlet.
+		
+	The following test plans (using JMeter) caused NPE sometimes due to concurrency, but 
+	they are now completing successfully (run on my laptop deployment):
+	 
+		Users: 30
+		Ramp-up period: 0
+		Loop count: 200
+		Request: /ont/cf-small/parameter.owl
+		==> OK, no exceptions at all.
+			
+		Users: 30
+		Ramp-up period: 0
+		Loop count: 200
+		Request: /ont?listall=yes
+		==>  OK   
+		
+			
+	
+2010-10-25
 	- Some exercises to reproduce issue #287: Concurrency.
 	  See http://marinemetadata.org/mmiorrdeplmtech/orrtests/jmx
 	  Note: Although some general measures related with synchronization have been taken, 

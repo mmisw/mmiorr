@@ -65,9 +65,10 @@ public class MiscDispatcher {
 	 */
 	void listOntologies(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Connection _con = null;
+		Statement _stmt = null;
 		try {
 			_con = db.getConnection();
-			Statement _stmt = _con.createStatement();
+			_stmt = _con.createStatement();
 			String table = "v_ncbo_ontology";
 			int limit = Integer.parseInt(Util.getParam(request, "limit", "500"));
 
@@ -126,7 +127,7 @@ public class MiscDispatcher {
 			throw new ServletException(e);
 		}
 		finally {
-			db.closeConnection(_con);
+			db.closeStatementAndConnection(_stmt, _con);
 		}
 	}
 
@@ -143,9 +144,10 @@ public class MiscDispatcher {
 		String table = "v_ncbo_ontology";
 		
 		Connection _con = null;
+		Statement _stmt = null;
 		try {
 			_con = db.getConnection();
-			Statement _stmt = _con.createStatement();
+			_stmt = _con.createStatement();
 
 			String query = 
 				"select urn, display_label " +
@@ -192,7 +194,7 @@ public class MiscDispatcher {
 			throw new ServletException(e);
 		}
 		finally {
-			db.closeConnection(_con);
+			db.closeStatementAndConnection(_stmt, _con);
 		}
 	}
 
@@ -209,9 +211,10 @@ public class MiscDispatcher {
 		String table = "v_ncbo_ontology";
 		
 		Connection _con = null;
+		Statement _stmt = null;
 		try {
 			_con = db.getConnection();
-			Statement _stmt = _con.createStatement();
+			_stmt = _con.createStatement();
 
 			String query = 
 				"select urn, display_label " +
@@ -258,7 +261,7 @@ public class MiscDispatcher {
 			throw new ServletException(e);
 		}
 		finally {
-			db.closeConnection(_con);
+			db.closeStatementAndConnection(_stmt, _con);
 		}
 	}
 	
@@ -273,9 +276,10 @@ public class MiscDispatcher {
 		final String sep = "'|'";
 		
 		Connection _con = null;
+		Statement _stmt = null;
 		try {
 			_con = db.getConnection();
-			Statement _stmt = _con.createStatement();
+			_stmt = _con.createStatement();
 
 			String query = 
 				"select o.urn, o.display_label, o.user_id, o.contact_name, o.version_number, " +
@@ -344,7 +348,7 @@ public class MiscDispatcher {
 			throw new ServletException(e);
 		}
 		finally {
-			db.closeConnection(_con);
+			db.closeStatementAndConnection(_stmt, _con);
 		}
 	}
 
