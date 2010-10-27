@@ -16,7 +16,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public final class OntVersion {
 	
-	// This info is retrieved from the version.properties resource in this package.
+	// Version and build info is retrieved from the version.properties resource in this package.
 	// This resource is prepared by build.xml from a master version.properties.
 	//
 	// If the associated resource cannot be read or the corresponding properties are
@@ -37,10 +37,42 @@ public final class OntVersion {
 		return build;
 	}
 	
-		
+	/**
+	 * Returns a descriptive string with version and build.
+	 */
+	public static String getVersionAndBuild() {
+		return versionAndBuild;
+	}
+	
+	/**
+	 * Returns the full title of the service.
+	 */
+	public static String getFullTitle() {
+		return fullTitle;
+	}
+	
+	/**
+	 * Returns the title (without version) of the service.
+	 */
+	public static String getTitle() {
+		return TITLE;
+	}
+	
+	
+	/** retrieved from properties file */
 	private static String version;
+	
+	/** retrieved from properties file */
 	private static String build;
 	
+
+	private static final String TITLE = "MMI Ontology and Term URI Resolver";
+	
+	/** composed from version and build */
+	private static String versionAndBuild = "?";
+	
+	/** composed from title, version and build */
+	private static String fullTitle = "?";
 	
 	private static final String VERSION_PROP = "ont.version";
 	private static final String BUILD_PROP = "ont.build";
@@ -61,11 +93,16 @@ public final class OntVersion {
 				verProps.load(is);
 				version = verProps.getProperty(VERSION_PROP, VERSION_UNDEF_VALUE);
 				build = verProps.getProperty(BUILD_PROP, BUILD_UNDEF_VALUE);
+				
+				versionAndBuild = version+ " (" +build+ ")";
+				fullTitle = TITLE + ". Version " +versionAndBuild;
 			}
 			catch (IOException e) {
 				log.warn("Cannot load version.properties", e);
 			}
-			IOUtils.closeQuietly(is);
+			finally {
+				IOUtils.closeQuietly(is);
+			}
 		}
 	}
 	
