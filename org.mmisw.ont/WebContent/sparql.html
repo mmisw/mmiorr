@@ -123,7 +123,7 @@ WHERE { ?class rdf:type owl:Class. } LIMIT 20</textarea>
     <form name="testForm" method="get" action="/ont/?sparql">
         <textarea rows="5" cols="60" name="sparql" readonly="yes">PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
-CONSTRUCT {?instance ?class } 
+CONSTRUCT {?instance rdf:type ?class } 
 WHERE { ?class rdf:type owl:Class .
         ?instance rdf:type ?class . } LIMIT 200
 </textarea>
