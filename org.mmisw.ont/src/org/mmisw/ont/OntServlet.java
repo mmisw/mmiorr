@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -796,7 +797,7 @@ public class OntServlet extends HttpServlet {
 	 * _usri=username
 	 */
 	private void _getUserInfo(OntRequest req) throws ServletException, IOException {
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		
 		String ontUri = Util.getParam(req.request, "_usri", "");
 		if ( ontUri.length() == 0 ) {
@@ -805,15 +806,15 @@ public class OntServlet extends HttpServlet {
 		else {
 			Map<String, String> ui = db.getUserInfo(ontUri);
 			if ( ui != null ) {
-				for ( String key : ui.keySet() ) {
-					result.append(key+ ": " +ui.get(key)+ "\n");
+				for (Entry<String, String> pair : ui.entrySet() ) {
+					result.append(pair.getKey()+ ": " +pair.getValue()+ "\n");
 				}
 			}
 		}
 		
 		req.response.setContentType("text/plain");
 		ServletOutputStream os = req.response.getOutputStream();
-		IOUtils.write(result, os);
+		IOUtils.write(result.toString(), os, "UTF-8");
 		os.close();
 	}
 

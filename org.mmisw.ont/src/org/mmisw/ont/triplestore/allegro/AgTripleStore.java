@@ -3,6 +3,7 @@ package org.mmisw.ont.triplestore.allegro;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 
@@ -338,10 +339,9 @@ public class AgTripleStore implements ITripleStore {
 	private void _loadSupportingStatements(_Conn _conn) {
 		log.info("Loading supporting statements to allegrograph triplestore");
 		try {
-			String[][] namespaces = adminDispatcher.getSupportingNamespaces();
-			for ( String[] ns : namespaces ) {
-				_conn.ts.registerNamespace(ns[0], ns[1]);
-				log.info("namespace registered: " +ns[0]+ " : " +ns[1]);
+			for ( Entry<String, String> ns : adminDispatcher.getSupportingNamespaces().entrySet() ) {
+				_conn.ts.registerNamespace(ns.getKey(), ns.getValue());
+				log.info("namespace registered: " +ns.getKey()+ " : " +ns.getValue());
 			}
 			
 			for ( String[] statement : AgSupport.SUPPORTING_STATEMENTS ) {

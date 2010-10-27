@@ -4,6 +4,7 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -128,8 +129,8 @@ public class OntRequest {
 
 		StringBuilder sbParams = new StringBuilder("{");
 		Map<String, String[]> params = Util.getParams(request);
-		for ( String key: params.keySet() ) {
-			sbParams.append(key+ "=>" + Arrays.asList(params.get(key))+ ",");	
+		for (Entry<String, String[]> pair : params.entrySet() ) {
+			sbParams.append(pair.getKey()+ " => " + Arrays.asList(pair.getValue()));	
 		}
 		sbParams.append("}");
 		log.debug("                     Params: " +sbParams);
