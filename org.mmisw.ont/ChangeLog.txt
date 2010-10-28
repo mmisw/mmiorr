@@ -4,6 +4,11 @@ $Id$
 
 ChangeLog
 
+2010-10-27  2.0.14.beta
+	- #287 "concurrency" - AdminDispatcher: now thread-safe.
+		
+	- Misc: build.xml: added deploy-war target
+	
 2010-10-26  2.0.14.beta
 	#287 "concurrency"
 	Continuing with more load testing using JMeter and code clean-up and adjustments
@@ -31,9 +36,6 @@ ChangeLog
 		[2] http://findbugs.sourceforge.net/
 		
 		- Some documentation about effective singletons used by OntServlet.
-		
-	= AdminDispatcher =
-		Various adjustments for thread-safety. Not checked in yet.
 		
 		
 2010-10-26  2.0.13.beta

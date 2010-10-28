@@ -47,7 +47,7 @@ public class OntServlet extends HttpServlet {
 	private final OntConfig ontConfig = new OntConfig();
 	private final Db db = new Db(ontConfig);
 	
-	private final AdminDispatcher adminDispatcher = new AdminDispatcher(db);
+	private final AdminDispatcher adminDispatcher = AdminDispatcher.createInstance(db);
 	
 	private final ITripleStore tripleStore = new TripleStore(db, adminDispatcher);
 	

@@ -5,15 +5,19 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
+
+import net.jcip.annotations.ThreadSafe;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -32,54 +36,83 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
-
-
 
 /**
  * Dispatcher of admin-related operations.
  * 
+ * <p>
+ * This singleton maintains a "graphs" file with appropriate control of concurrency access
+ * with respect to the running virtual machine where the Ont service is running.
+ * It is assumed that the file is not modified externally.
+ * 
+ * <p>
+ * All public methods, except {@link #init(Db)}, will throw {@link IllegalStateException}
+ * if the instance has not been initialized.
+ * 
  * @author Carlos Rueda
  */
+@ThreadSafe
 public class AdminDispatcher {
 	
-	private static File internalDir;
-	private static File graphsFile;
-
+	/** the singleton instance of this class */
+	private static AdminDispatcher instance = null;
 	
-	private static final String[][] SUPPORTING_NAMESPACES = new String[][] {
-			{ "skos", "http://www.w3.org/2004/02/skos/core#" }, 
-			{ "skos2", "http://www.w3.org/2008/05/skos#" }, 
-			{ "rdfg", "http://www.w3.org/2004/03/trix/rdfg-1/" }, 
-		};
-		
+	/**
+	 * Creates the singleton instance of this class.
+	 * {@link #init()} should be called for the actual initialization of the returned object.
+	 * 
+	 * @param db
+	 *           used to retrieve user information
+	 *           
+	 * @throw IllegalArgumentException if argument is null
+	 * @throw IllegalStateException if already created
+	 */
+	public static AdminDispatcher createInstance(Db db) {
+		if ( db == null ) {
+			throw new IllegalArgumentException();
+		}
+		if ( instance != null ) {
+			throw new IllegalStateException("instance already created");
+		}
+		instance = new AdminDispatcher(db);
+		return instance;
+	}
+	
+	/** unmodifiable map of prefix-namespace pairs for some required namespaces. */
+	@SuppressWarnings("serial")
+	private static final Map<String,String> SUPPORTING_NAMESPACES = Collections.unmodifiableMap(
+			new HashMap<String, String>() {{ 
+				put("skos", "http://www.w3.org/2004/02/skos/core#");
+				put("skos2", "http://www.w3.org/2008/05/skos#");
+				put("rdfg", "http://www.w3.org/2004/03/trix/rdfg-1/");
+			}}
+	);
 	
 	private final Log log = LogFactory.getLog(AdminDispatcher.class);
 	
-	private Db db;
+	/** 
+	 * Used to retrieve user information.
+	 */
+	private final Db db;
 	
-	public AdminDispatcher(Db db) {
-		this.db = db;
-	}
+	/** set at {@link #init()} time */
+	private File internalDir;
+	
+	/** set at {@link #init()} time */
+	private File graphsFile;
 
 	
 	/**
-	 * Gets prefix-namespace pairs for some required namespaces
+	 * Initializes internal resources.
 	 * 
-	 * @return the namespaces.
+	 * <p>
+	 * Any errors are logged out as warnings. This is due to the fact that
+	 * these internal resources (currently a model -backed by a file- with
+	 * graphs and subGraphOf relations) are only partially supported in the
+	 * overall ORR system. So, errors here are not considered critical in this sense. 
 	 */
-	public String[][] getSupportingNamespaces() {
-		return SUPPORTING_NAMESPACES;
-	}
-
-
-	/**
-	 * Initializes some internal resources.
-	 * 
-	 * @throws ServletException
-	 */
-	public void init() throws ServletException {
+	public void init()  {
 		log.info("init called.");
 		
 		internalDir = new File(OntConfig.Prop.ONT_INTERNAL_DIR.getValue());
@@ -89,12 +122,27 @@ public class AdminDispatcher {
 		log.info("graphsFile: " +graphsFile);
 
 		// create graphs file if not already created:
-		getGraphsModel();
+		_getGraphsModel();
 	}
 	
 	
 	/**
-	 * Responds an RDF with registered users. Every user URI will be *versioned* with the current time.
+	 * Gets prefix-namespace pairs for some required namespaces.
+	 * The returned map is unmodifiable.
+	 * 
+	 * @return the namespaces.
+	 */
+	public Map<String,String> getSupportingNamespaces() {
+		return SUPPORTING_NAMESPACES;
+	}
+
+
+	/**
+	 * Responds an RDF with registered users. 
+	 * Every user URI will be *versioned* with the current time.
+	 * 
+	 * <p>
+	 * NOTE: RDF structure is preliminary.
 	 */
 	public void getUsersRdf(OntRequest req) throws ServletException, IOException {
 		final String MMIORR_NS = "http://mmisw.org/ont/mmi/mmiorr/";
@@ -129,21 +177,18 @@ public class AdminDispatcher {
 				continue;
 			}
 			
-			Resource userInstance = model.createResource( users_ns + username );
+			// avoid spaces in the local name
+			username = username.replaceAll("\\s", "_");
 			
+			Resource userInstance = model.createResource( users_ns + username );
 			// type:
 			model.add(userInstance, RDF.type, userClass);
-			
 			for (String[] fieldPropName : fieldPropNames ) {
-				
 				String propValue = user.get(fieldPropName[0]);
-				
 				if ( propValue == null || propValue.length() == 0 ) {
 					continue;
 				}
-				
 				Property propUri = model.createProperty( MMIORR_NS , fieldPropName[1] );
-				
 				if ( "hasDateCreated".equals(fieldPropName[1]) ) {
 					model.add(userInstance, propUri, propValue,  XSDDatatype.XSDdateTime);
 				}
@@ -154,38 +199,34 @@ public class AdminDispatcher {
 		}
 		
 		String result = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV");
-		
 		ServletUtil.writeResponseRdfXml(req.response, result);
 	}
-
-	
-	
 
 	/**
 	 * Adds a new graph to the internal graphs resource.
 	 * 
-	 * @param graphUri    URI of the graph. Assumed to be well-formed.
+	 * @param graphUri    
+	 *            URI of the graph. Assumed to be well-formed.
 	 */
 	public void newGraph(String graphUri) {
-		
-		Model model = getGraphsModel();
-		
-		Resource subGraphRes = ResourceFactory.createResource(graphUri);
-		
-		Statement stmt = ResourceFactory.createStatement(subGraphRes, RDF.type, Rdfg.Graph);
-		model.add(stmt);
-		log.debug("newGraph: added statement: " +stmt);
-		
-		try {
-			updateGraphsFile(model);
-		}
-		catch (Exception e) {
-			log.error("Cannot write out to file " +graphsFile, e);
+		synchronized (this) {
+			Model model = _getGraphsModel();
+			Resource subGraphRes = ResourceFactory.createResource(graphUri);
+			Statement stmt = ResourceFactory.createStatement(subGraphRes, RDF.type, Rdfg.Graph);
+			model.add(stmt);
+			log.debug("newGraph: added statement: " +stmt);
+			try {
+				_updateGraphsFile(model);
+			}
+			catch (Exception e) {
+				log.error("Cannot write out to file " +graphsFile, e);
+			}
 		}
 	}
 	
 	
 	/**
+	 * Creates a new subGraphOf relation.
 	 * Updates the internal graphs resource.
 	 * 
 	 * @param subGraphUri    URI of subject of the subGraphOf property. Assumed to be well-formed.
@@ -194,34 +235,32 @@ public class AdminDispatcher {
 	 * @return corresponding statements suitable to update the main graph.
 	 */
 	public List<Statement> newSubGraph(String subGraphUri, String superGraphUri) {
-		
-		Model model = getGraphsModel();
-		
 		List<Statement> statements = new ArrayList<Statement>();
-		
-		Resource subGraphRes = ResourceFactory.createResource(subGraphUri);
-		Resource superGraphRes = ResourceFactory.createResource(superGraphUri);
-		
-		statements.add(ResourceFactory.createStatement(subGraphRes, RDF.type, Rdfg.Graph));
-		statements.add(ResourceFactory.createStatement(superGraphRes, RDF.type, Rdfg.Graph));
-		statements.add(ResourceFactory.createStatement(subGraphRes, Rdfg.subGraphOf, superGraphRes));
-		
-		for (Statement stmt : statements) {
-			model.add(stmt);
-			log.debug("newSubGraph: added statement: " +stmt);
-		}
-		
-		try {
-			updateGraphsFile(model);
-		}
-		catch (Exception e) {
-			log.error("Cannot write out to file " +graphsFile, e);
+		synchronized (this) {
+			Model model = _getGraphsModel();
+
+			Resource subGraphRes = ResourceFactory.createResource(subGraphUri);
+			Resource superGraphRes = ResourceFactory.createResource(superGraphUri);
+
+			statements.add(ResourceFactory.createStatement(subGraphRes, RDF.type, Rdfg.Graph));
+			statements.add(ResourceFactory.createStatement(superGraphRes, RDF.type, Rdfg.Graph));
+			statements.add(ResourceFactory.createStatement(subGraphRes, Rdfg.subGraphOf, superGraphRes));
+
+			for (Statement stmt : statements) {
+				model.add(stmt);
+				log.debug("newSubGraph: added statement: " +stmt);
+			}
+
+			try {
+				_updateGraphsFile(model);
+			}
+			catch (Exception e) {
+				log.error("Cannot write out to file " +graphsFile, e);
+			}
 		}
 		
 		return statements;
 	}
-	
-	
 	
 	/**
 	 * Removes all statements for a given subject in the internal graphs resource 
@@ -230,25 +269,35 @@ public class AdminDispatcher {
 	 *                    URI of subject. Assumed to be well-formed.
 	 */
 	public void removeAllStatementsFromSubject(String subjectUri) {
-		
-		Model model = getGraphsModel();
-		
-		Resource subGraphRes = ResourceFactory.createResource(subjectUri);
-		
-		if ( log.isDebugEnabled() ) {
-			log.debug("removeAllStatementsFromSubject: " +subGraphRes);
-		}
-		
-		model.removeAll(subGraphRes, null, null);
-		try {
-			updateGraphsFile(model);
-		}
-		catch (Exception e) {
-			log.error("removeAllStatementsFromSubject: Cannot write out to file " +graphsFile, e);
+		synchronized (this) {
+			Model model = _getGraphsModel();
+
+			Resource subGraphRes = ResourceFactory.createResource(subjectUri);
+
+			if ( log.isDebugEnabled() ) {
+				log.debug("removeAllStatementsFromSubject: " +subGraphRes);
+			}
+
+			model.removeAll(subGraphRes, null, null);
+			try {
+				_updateGraphsFile(model);
+			}
+			catch (Exception e) {
+				log.error("removeAllStatementsFromSubject: Cannot write out to file " +graphsFile, e);
+			}
 		}
 	}
 
-	
+	/**
+	 * Removes any leading/trailing angle brackets to the given string.
+	 * If the resulting string, <i>RES</i>, contains only word characters or hyphens, then
+	 * it is used as a local name to create and return the full URI 
+	 * <i>ONT_SERVICE_URL</i>/mmiorr-internal/graphs/<i>RES</i>.
+	 * Otherwise, <i>RES</i> is returned.
+	 * 
+	 * @param uri
+	 * @return The resulting string.
+	 */
 	public String getWellFormedGraphUri(String uri) {
 		// remove any leading/trailing angle brackets:
 		uri = uri.trim().replaceAll("^<+|>+$", "");
@@ -269,35 +318,44 @@ public class AdminDispatcher {
 	/**
 	 * Gets the statements in the internal resources.
 	 * 
-	 * @return corresponding statements suitable to update the main graph.
+	 * @return corresponding statements suitable to update the triple store.
+	 *         null if some error happens, in such a case warnings are logged. 
+	 *         NOTE: This behavior is subject to change as more overall support for graphs is
+	 *         implemented.
 	 */
 	public List<Statement> getInternalStatements() {
-		
-		Model model = getGraphsModel();
+		Model model = null;
+		synchronized (this) {
+			model = _getGraphsModel();
+		}
 		if ( model == null ) {
 			return null;
 		}
-		
-		List<Statement> statements = new ArrayList<Statement>();
-		
-		StmtIterator stmsIter = model.listStatements();
-		while ( stmsIter.hasNext() ) {
-			Statement stmt = stmsIter.nextStatement();
-			statements.add(stmt);
-		}
-		
-		return statements;
+		return model.listStatements().toList();
 	}
 	
+
+	/**
+	 * {@link #init()} does the actual initialization.
+	 */
+	private AdminDispatcher(Db db) {
+		this.db = db;
+	}
 
 
 	/**
 	 * Gets the current contents of the graphs file. If the file does not exist, it is created
 	 * with an initial contents.
 	 * 
-	 * @return the model for the graphs file.
+	 * <p>
+	 * Note: caller is responsible for any necessary synchronization.
+	 * 
+	 * @return the model for the graphs file. 
+	 *         null if some error happens, in such a case warnings are logged. 
+	 *         NOTE: This behavior is subject to change as more overall support for graphs is
+	 *         implemented.
 	 */
-	private Model getGraphsModel() {
+	private Model _getGraphsModel() {
 		
 		Model model = JenaUtil2.createDefaultRDFModel();
 		boolean createFile = false;
@@ -305,7 +363,7 @@ public class AdminDispatcher {
 		if ( ! graphsFile.isFile() ) {
 			if ( ! internalDir.isDirectory() ) {
 				if ( ! internalDir.mkdirs() ) {
-					log.error("Cannot create directory " +internalDir);
+					log.warn("Cannot create directory " +internalDir);
 					return null;
 				}
 			}
@@ -313,16 +371,18 @@ public class AdminDispatcher {
 		}
 		
 		if ( createFile ) {
-			String[][] namespaces = getSupportingNamespaces();
-			for ( String[] ns : namespaces ) {
-				model.setNsPrefix(ns[0], ns[1]);
+			// brand new graphs file.
+			//
+			// save a model with just the supporting namespaces:
+			for ( Entry<String, String> ns : getSupportingNamespaces().entrySet() ) {
+				model.setNsPrefix(ns.getKey(), ns.getValue());
 			}
 			try {
 				model.write(new FileOutputStream(graphsFile), "RDF/XML-ABBREV");
 				log.info(graphsFile+ ": model created.");
 			}
 			catch (FileNotFoundException e) {
-				log.error("Cannot write out to file " +graphsFile, e);
+				log.warn("Cannot write out to file " +graphsFile, e);
 				return null;
 			}
 		}
@@ -334,17 +394,32 @@ public class AdminDispatcher {
 		return model;
 	}
 
-	private void updateGraphsFile(Model model) throws Exception {
+	/**
+	 * Updates the graphs file. 
+	 * <p>
+	 * Note: caller is responsible for any necessary synchronization.
+	 * 
+	 * @param model
+	 * @throws Exception
+	 */
+	private void _updateGraphsFile(Model model) throws Exception {
 		String rdf = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV");
 		_writeRdfToFile(rdf, graphsFile);
 		log.info(graphsFile+ ": model updated.");
 	}
 	
-	private static void _writeRdfToFile(String rdf, File reviewedFile) throws Exception {
-		PrintWriter os = new PrintWriter(reviewedFile, "UTF-8");
-		StringReader is = new StringReader(rdf);
-		IOUtils.copy(is, os);
-		os.flush();
+	/**
+	 * Writes the given string into the given file in UTF-8.
+	 * <p>Note: caller is responsible for any necessary synchronization.
+	 */
+	private static void _writeRdfToFile(String str, File file) throws Exception {
+		PrintWriter os = new PrintWriter(file, "UTF-8");
+		try {
+			IOUtils.write(str, os);
+			os.flush();
+		}
+		finally {
+			IOUtils.closeQuietly(os);
+		}
 	}
-
 }
