@@ -42,6 +42,14 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 /**
  * Helper class to dispatch some miscelaneous, ad hoc requests.
  * 
+ * <p>
+ * Note: This class is effectively a singleton as it is only instantiated once by {@link OntServlet}
+ * (ie., the singleton-ness is not forced here).
+ * 
+ * <p>
+ * Thread-safety: This class is not strictly thread-safe, but it is "effectively thread-safe"
+ * in conjunction with {@link OntServlet} and other callers. 
+ * 
  * @author Carlos Rueda
  * @version $Id$
  */

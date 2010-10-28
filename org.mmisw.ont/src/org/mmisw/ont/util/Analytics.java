@@ -26,7 +26,18 @@ import org.mozilla.javascript.ScriptableObject;
  * Helper class to generate events to the Google analytics engine.
  * It uses the Rhino implementation of JavaScript and the EnvJs environment.
  * 
- * If {@link OntConfig.Prop#GA_UA_NUMBER} is not defined, this module does nothing.
+ * If {@link OntConfig.Prop#GA_UA_NUMBER} is not defined, this class behaves as
+ * a "null object".
+ * 
+ * <p>
+ * Thread-safety: This class is not strictly thread-safe, but it is "effectively thread-safe"
+ * in conjunction with {@link OntServlet} and other callers:
+ * 
+ * <ul>
+ * <li> {@link #getInstance()} is only called by {@link OntServlet} at creation time
+ * <li> {@link #init()} is only called by {@link OntServlet#init()}.
+ * <li> internal state does not change anymore after initialization
+ * </ul>
  * 
  * @author Carlos Rueda
  */
@@ -51,8 +62,8 @@ public class Analytics {
 	
 	private final Log log = LogFactory.getLog(Analytics.class);
 	
+	/** these fields are set at {@link #init()} and not changed anymore */ 
 	private boolean enabled;
-	
 	private String gaSnippet = null;
 	private File gaDirectory;
 	

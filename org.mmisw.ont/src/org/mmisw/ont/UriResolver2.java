@@ -27,7 +27,7 @@ import com.hp.hpl.jena.rdf.model.Model;
  * TODO: update documentation.
  * 
  * <p>
- * Note: This class is efectively a singleton as it is only intantiated once by {@link OntServlet}
+ * Note: This class is effectively a singleton as it is only instantiated once by {@link OntServlet}
  * (ie., the singleton-ness is not forced here).
  * 
  * @author Carlos Rueda

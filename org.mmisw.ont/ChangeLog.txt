@@ -6,6 +6,7 @@ ChangeLog
 
 2010-10-28  2.0.14.beta
 	- Updated ReadMe documentation.
+	- Updated several javadoc comments regarding thread-safety.
 	
 2010-10-27  2.0.14.beta
 	- #287 "concurrency" - AdminDispatcher: now thread-safe.

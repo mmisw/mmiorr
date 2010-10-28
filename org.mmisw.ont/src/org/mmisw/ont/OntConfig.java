@@ -10,8 +10,14 @@ import org.apache.commons.logging.LogFactory;
  * These properties are obtained from the ServletConfig object.
  * 
  * <p>
- * Note: This class is efectively a singleton as it is only intantiated once by {@link OntServlet}
+ * Note: This class is effectively a singleton as it is only instantiated once by {@link OntServlet}
  * (ie., the singleton-ness is not forced here).
+ * 
+ * <p>
+ * Thread-safety: This class is not strictly thread-safe, but it is "effectively thread-safe"
+ * in conjunction with {@link OntServlet} and other callers because modification to the 
+ * configuration object happens only at initialization of the servlet. 
+ * Subsequent accesses are read-only.
  * 
  * @author Carlos Rueda
  */

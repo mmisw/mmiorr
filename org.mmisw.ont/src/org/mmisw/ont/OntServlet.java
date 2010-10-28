@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.jcip.annotations.ThreadSafe;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,11 +36,14 @@ import com.hp.hpl.jena.rdf.model.RDFWriter;
 import com.hp.hpl.jena.shared.UnknownPropertyException;
 
 /**
- * The entry point.
+ * The Ont servlet.
+ * 
+ * <p>
+ * Thread-safety: This class is considered thread-safe.
  * 
  * @author Carlos Rueda
- * @version $Id$
  */
+@ThreadSafe
 public class OntServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
