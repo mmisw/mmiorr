@@ -1,4 +1,5 @@
-= BioPortal back-end =
+BioPortal back-end set-up for the Ont service
+$Id$
 
 The Ont service requires a running instance of the BioPortal back-end in the same machine. 
 

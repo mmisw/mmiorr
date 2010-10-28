@@ -2,6 +2,9 @@ org.mmisw.orrportal: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-10-28  2.0.14.beta
+	- Updated ReadMe documentation.
+
 2010-10-27  2.0.14.beta
 	- sync'ing version with OrrClient and Ont service.
 	

@@ -1,6 +1,7 @@
 org.mmisw.orrclient - ORR Client Library
 Carlos Rueda  -  http://marinemetadata.org
 May 2009
+$Id$
 
 This module provides a library for clients to interact with an ORR deployment.
 By ORR deployment we mean:
@@ -15,10 +16,10 @@ The "exported" (ie., public) types for clients of the library are:
 	
 Typical usage starts with:
 	OrrClientConfiguration config = new OrrClientConfiguration();
-	occ.setOntServiceUrl(ontServiceUrl);
-	occ.setPreviewDirectory(previewDirectory)
+	config.setOntServiceUrl(ontServiceUrl);
+	config.setPreviewDirectory(previewDirectory)
 	// ... other config parameters
-	IOrrClient orrClient = IOrrClient.Manager.init(occ);
+	IOrrClient orrClient = IOrrClient.Manager.init(config);
 	// use the library, eg.,
 	RegisteredOntologyInfo roi = orrClient.getOntologyInfo(ontologyUri);
 	// ...

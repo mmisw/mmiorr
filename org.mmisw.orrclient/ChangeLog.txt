@@ -3,6 +3,9 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2010-10-28  2.0.14.beta
+	- Updated ReadMe documentation.
+
 2010-10-27  2.0.14.beta
 	- No changes here - sync'ing version with Ont service.
 	
