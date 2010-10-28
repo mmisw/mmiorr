@@ -28,7 +28,7 @@ import com.hp.hpl.jena.vocabulary.DC;
  * 
  * @author Carlos Rueda
  */
-class OntUploader {
+public class OntUploader {
 	
 	static final String ONTOLOGIES  = "/ontologies";
 
