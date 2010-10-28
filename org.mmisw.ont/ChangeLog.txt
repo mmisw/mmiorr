@@ -5,6 +5,9 @@ $Id$
 ChangeLog
 
 2010-10-27  2.0.14.beta
+	- Updated ReadMe documentation.
+	
+2010-10-27  2.0.14.beta
 	- #287 "concurrency" - AdminDispatcher: now thread-safe.
 		
 	- Misc: build.xml: added deploy-war target

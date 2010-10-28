@@ -1,64 +1,94 @@
-org.mmisw.ont - Ontology URI resolver 
+org.mmisw.ont - The MMI Ont service 
 Carlos Rueda - carueda@mbari.org
 
-org.mmisw.ont is a Web application to dereference Ontology URIs against the
-"aquaportal" database. The application is packaged as "ont.war" so it gets
-appropriately deployed in the tomcat container, that is, the "ont" part in 
-the address of the service coincides with the <ontologiesRoot> component of 
-the ontology URIs as described in the MMI recommendation. 
+org.mmisw.ont is a Web service that supports programmatic interaction with a
+BioPortal repository instance as well as ontology and term URI dereferencing
+for users and clients in general.
 
-* Using the service
+= Using the service =
 
-For the following description, I use our deployment in http://mmisw.org/ont.
-(Note that the code is written in a way that is independent of the actual server 
-and root components in the URI.)
+The following description assumes http://example.net as the base address of the involved
+services. In particular, the Ont service address would be http://example.net/ont.
+However, note that the code is written in a way that is independent of the actual server 
+and root components in the URI.
 
-The central functionality is that any URI that starts with "http://mmisw.org/ont/"
-is resolved by this service, for example: http://mmisw.org/ont/mmi/someVocab.owl.
+A central functionality is that any URI that starts with "http://example.net/ont/"
+is resolved by this service, for example: "http://example.net/ont/mmi/someVocab".
 Resolution means that the given URI is used to search for the corresponding
 ontology in the database. If found, the contents of the ontology is returned to
-the client in the appropriate format.
-
-As a convenience, the parameter "info" can be added to the URI to retrieve general
-information about the requested URI, in particular, it shows the parse result 
-according to the MMI recommendation, as well as some attributes in the database 
-that are relevant to locate the uploaded ontology file. 
-
-For example, the request:
-
-  http://mmisw.org/ont/mmi/someVocab.owl/someTerm?info
-
-gets an HTML response that looks like:
-
-	Full requested URI: http://mmisw.org/ont/mmi/someVocab.owl/someTerm
-	
-	Parse result:
-	       Ontology URI: http://mmisw.org/ont/mmi/someVocab.owl
-	          authority: mmi
-	              topic: someVocab.owl
-	               Term: someTerm
-	
-	Database result: ERROR: Ontology not found by the given URI. 
-	
+the client in the appropriate format according to content negotiation or explicit
+file extension or "form" parameter if given.
 
 
-* Creating the WAR file:
+= Requirements =
 
-  - Copy sample.build.properties as build.properties.
-  - Edit build.properties to adjust any properties.
-  - Run Apache Ant: 
-	   ant
-The generated file is _generated/ont.war.
+== BioPortal back-end ==
 
-* Current design
+The Ont service requires a running instance of the BioPortal back-end in the same machine. 
+Please see ReadMe-BioPortal.txt for instructions to build and deploy the BioPortal back-end
+so it can be used by the Ont service. 
 
-NOTE: Current major refactoring underway (see OntServelet, UriResolver2, others)
-Main classes in package org.mmisw.ont:
-	- UriResolver: the main servlet.
-	- OntConfig: configuration.
-	- MmiUri: helper class to decompose a requested URI.
-	- Ontology: basic info about an ontology retrieved from the database.
-	- Db: a helper class to interact with the database.
+== AllegroGraph triple store server ==
+
+Although the Ont service can operate with various triple store implementations, the most
+robust option at the moment is AllegroGraph (http://www.franz.com/agraph). Please have an
+AllegroGraph server running somewhere in your network.
+
+Here are some quick instructions:
+    * Download the package for your environment from http://www.franz.com/agraph/downloads/
+    * Extract the contents into /some/directory/ of your choice
+    * cd /some/directory/
+    * sudo ./AllegroGraphServer
+    The server continues running in the background. The log file is /some/directory/agraph.log.
+    You can of course instruct your OS to launch this server at boot time.
+It is highly recommended that you install the most recent stable version of AllegroGraph.
+
+= Building and deploying the Ont service =
+
+Using latest code image from trunk in the SVN repository:
+  cd SOME_DIRECTORY
+  svn checkout http://mmisw.googlecode.com/svn/trunk/org.mmisw.ont
+  cd org.mmisw.ont
+  cp sample.build.properties build.properties
+
+Edit build.properties and complete/adjust the following as appropriate, for example:
+  appserver.home = /usr/local/tomcat
+  appserver.host = http://example.net
+  aquaportal.resource.directory = /mmiorr_workspace/bioportal/resources
+  aquaportal.voc2rdf.dir = /mmiorr_workspace/mmiregistry/preuploads/voc2rdf/
+  aquaportal.jdbc.url = jdbc:mysql://localhost:3306/bioportal
+  aquaportal.jdbc.password = THE_ACTUAL_PASSWORD
+  aquaportal.rest.url = http://example.net/bioportal/rest
+  agraph.host = localhost
+  agraph.ts.dir = /mmiorr_workspace/mmiregistry/agraph/ts
+  portal.service.url = http://example.net/orr
+  ont.internal.dir = /mmiorr_workspace/mmiregistry/internal
+  ga.uanumber = UA-00000000-0
+  ga.domainName = example.com
+  ga.dir = /mmiorr_workspace/mmiregistry/ga
+More details in build.properties.
+
+Some of the mentioned working directories need to exist so:
+  mkdir -p /mmiorr_workspace/mmiregistry/agraph/ts
+  mkdir -p /mmiorr_workspace/bioportal/resources
+  mkdir -p /mmiorr_workspace/mmiregistry/preuploads/voc2rdf
+  mkdir -p /mmiorr_workspace/mmiregistry/internal
+  mkdir -p /mmiorr_workspace/mmiregistry/ga
+  
+We're ready to build Ont, but the following is needed so the MySQL JDBC driver
+is found at runtime: the driver library should be located under Tomcat's lib/
+directory. If not already there, make a copy (for example, using the library 
+coming with BioPortal, mysql-connector-java-5.1.6-bin.jar) and restart Tomcat.
+
+Now:
+  ant war
+  ant deploy-war     # you may need to run this as 'root' (eg., with sudo)
+
+Inspect the ont.log and catalina.out logs (under /usr/local/tomcat/logs/) to verify
+the installation.
+
+
+= Change log =
 
 See ChangeLog.txt
 
