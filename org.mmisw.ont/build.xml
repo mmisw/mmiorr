@@ -25,7 +25,7 @@
 		</tstamp>
 	</target>
 
-	<target name="compile" depends="init">
+	<target name="compile" depends="init" description="compiles the project">
 		<mkdir dir="${build.dir}/classes" />
 		<javac srcdir="src" destdir="${build.dir}/classes" includes="**" debug="on" debuglevel="lines,vars,source">
 			<classpath refid="project.class.path" />
@@ -55,7 +55,7 @@
 	<!-- ==================================================================== -->
 	<!-- client library -->
 
-	<target name="client-lib" depends="compile">
+	<target name="client-lib" depends="compile" description="creates the MMI Ont Client library">
 		<mkdir dir="${build.dir}/lib" />
 		<jar destfile="org.mmisw.ont.client.jar">
 			<fileset dir="${build.dir}/classes">
@@ -94,7 +94,7 @@
 	</target>
 	
 	<!-- all tests -->
-	<target name="tests" depends="mmiuriTests" />
+	<target name="tests" depends="mmiuriTests" description="runs the available tests"/>
 	
 	
 	<target name="prepare2war" depends="tests">
@@ -172,7 +172,7 @@
 	</target>
 	
 	
-	<target name="war" depends="prepare2war">
+	<target name="war" depends="prepare2war" description="creates ${build.dir}/ont.war">
 		<war warfile="${build.dir}/ont.war" webxml="${build.dir}/tmp.WebContent/WEB-INF/web.xml">
 			<fileset dir="${build.dir}/tmp.WebContent" />
 			<lib dir="${build.dir}/tmp.web-inf-lib" />
@@ -185,9 +185,12 @@
 		</delete>
 	</target>
 	
+	<target name="deploy-war" depends="war" description="copies the WAR to ${appserver.deploy.dir}">
+		<copy file="${build.dir}/ont.war" todir="${appserver.deploy.dir}" preservelastmodified="true" />
+	</target>
+	
 	<!-- ==================================================================== -->
-	<!-- See ChangeLog.txt 2010-08-20 note -->
-	<target name="deploy" depends="jar" description="deploys the MMI Ont Client library">
+	<target name="deploy-lib" depends="jar" description="deploys the MMI Ont Client library to maven repository">
 		<copy file="resource/templ-pom.xml" tofile="_generated/tmp-pom.xml" overwrite="true">
 			<filterset>
 				<filter token="ont.version" value="${ont.version}" />
