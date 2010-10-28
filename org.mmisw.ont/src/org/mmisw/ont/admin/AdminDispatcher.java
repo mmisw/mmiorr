@@ -17,7 +17,7 @@ import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 
-import net.jcip.annotations.ThreadSafe;
+import net.jcip.annotations.NotThreadSafe;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.JenaUtil2;
 import org.mmisw.ont.OntConfig;
 import org.mmisw.ont.OntRequest;
+import org.mmisw.ont.OntServlet;
 import org.mmisw.ont.db.Db;
 import org.mmisw.ont.util.ServletUtil;
 import org.mmisw.ont.vocabulary.Rdfg;
@@ -47,12 +48,21 @@ import com.hp.hpl.jena.vocabulary.RDF;
  * It is assumed that the file is not modified externally.
  * 
  * <p>
- * All public methods, except {@link #init(Db)}, will throw {@link IllegalStateException}
- * if the instance has not been initialized.
+ * Thread-safety: This class is not strictly thread-safe, but it is "effectively thread-safe"
+ * in conjunction with {@link OntServlet} because:
+ * <ul>
+ * <li> Construction of the singleton instance of this class is called only once at 
+ *       construction of {@link OntServlet}.
+ * <li> Initialization of the instance of this class is called only once at 
+ *      initialization of {@link OntServlet}.
+ * <li> All remaining operations in this class are thread-safe. 
+ * </ul>
+ * Additional mechanisms could be added to make this class thread-safe by itself, but
+ * there is no need.
  * 
  * @author Carlos Rueda
  */
-@ThreadSafe
+@NotThreadSafe
 public class AdminDispatcher {
 	
 	/** the singleton instance of this class */
