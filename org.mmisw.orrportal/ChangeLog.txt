@@ -2,6 +2,18 @@ org.mmisw.orrportal: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2010-10-27  2.0.14.beta
+	- sync'ing version with OrrClient and Ont service.
+	
+	- OntologyPanel: Upon first disclosure, the data contents panel was expanded 
+	  in readOnly mode for editing of new version -> fixed. See OntologyPanel. 
+	  
+	- #211: "Remove unnecesary registration confirmation dialogs"
+	  OntologyPanel: removed the Window.confirm call (doRegister called directly).
+	  
+	- Misc: build.xml: added deploy-war target
+	  
+	
 2010-09-29  2.0.9.beta
 	- Updates in the OrrClient library.
 	

@@ -70,6 +70,8 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	private static final boolean USE_ONTOLOGY_URI_PANEL = false; 
 	private OntologyUriPanel ontologyUriPanel = USE_ONTOLOGY_URI_PANEL? new OntologyUriPanel() : null;
 	
+	// true for view interface; false for editing interface
+	private boolean readOnly;
 
 	// re-created depending on type of interface: editing or viewing
 	private MetadataPanel metadataPanel;
@@ -112,10 +114,11 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	 * Prepares the overall interface for the given ontology.
 	 * 
 	 * @param ontologyInfo
-	 * @param readOly the initial mode
+	 * @param readOnly the initial mode
 	 */
 	public OntologyPanel(BaseOntologyInfo ontologyInfo, boolean readOnly, boolean versionExplicit) {
 		super();
+		this.readOnly = readOnly;
 		setWidth("100%");
 		container.setWidth("100%");
 		
@@ -126,7 +129,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		
 		mdDisclosure.setAnimationEnabled(true);
 		
-		_prepareDataDisclosure(readOnly);
+		_prepareDataDisclosure();
 		
 		metadataPanel = new MetadataPanel(this, !readOnly);
 		mdDisclosure.setContent(metadataPanel);
@@ -136,7 +139,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		CellPanel panel = new VerticalPanel();
 		panel.setSpacing(5);
 		
-		headerPanel = new HeaderPanel(readOnly);
+		headerPanel = new HeaderPanel();
 		
 		panel.add(headerPanel.getWidget());
 		panel.add(mdDisclosure);
@@ -147,18 +150,18 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	    container.add(panel);
 	    
 	    if ( this.ontologyInfo instanceof RegisteredOntologyInfo && this.ontologyInfo.getUri() != null ) {
-	    	_getOntologyMetadata(readOnly);
+	    	_getOntologyMetadata();
 	    }
 	    // if Uri is null, then this is a new ontology being created in the interface.
 	}
 	
 	
-	private void _prepareDataDisclosure(final boolean readOnly) {
+	private void _prepareDataDisclosure() {
 		dataDisclosure.setContent(DATA_PROGRESS_HTML);
 		dataDisclosure.addEventHandler(new DisclosureHandler() {
 			public void onOpen(DisclosureEvent event) {
 				if ( dataDisclosure.getContent() == DATA_PROGRESS_HTML ) {
-					_getOntologyContents(readOnly);
+					_getOntologyContents();
 				}
 			}
 			
@@ -185,10 +188,10 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	
 	
 	private void createNewBase() {
-		
+		readOnly = false;
 		ontologyInfo.setDisplayLabel("(creating new ontology)");
 		ontologyInfo.setUri("");
-		headerPanel.resetElements(false, true);
+		headerPanel.resetElements(true);
 		headerPanel.updateTitle("<b>" +ontologyInfo.getDisplayLabel()+ "</b> - "+ontologyInfo.getUri()+ "<br/>");
 		metadataPanel = new MetadataPanel(this, true);
 		mdDisclosure.setContent(metadataPanel);
@@ -314,9 +317,9 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		
 		assert interfaceType != InterfaceType.ONTOLOGY_EDIT_NEW ;
 		
-		boolean readOnly = interfaceType == InterfaceType.BROWSE || interfaceType == InterfaceType.ONTOLOGY_VIEW;
+		readOnly = interfaceType == InterfaceType.BROWSE || interfaceType == InterfaceType.ONTOLOGY_VIEW;
 		
-		headerPanel.resetElements(readOnly, interfaceType == InterfaceType.ONTOLOGY_EDIT_NEW);
+		headerPanel.resetElements(interfaceType == InterfaceType.ONTOLOGY_EDIT_NEW);
 		metadataPanel = new MetadataPanel(this, !readOnly);
 		mdDisclosure.setContent(metadataPanel);
 
@@ -341,7 +344,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	 * 267: Lazy loading of ontology contents.
 	 * First retrieve only the metadata.
 	 */
-	private void _getOntologyMetadata(final boolean readOnly) {
+	private void _getOntologyMetadata() {
 		
 		assert ontologyInfo instanceof RegisteredOntologyInfo ;
 		RegisteredOntologyInfo roi = (RegisteredOntologyInfo) ontologyInfo;
@@ -362,7 +365,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 					Orr.log(CLASS_NAME+": RET getOntologyMetadata: error = " +error);
 				}
 				
-				_ontologyMetadataRetrieved(ontologyInfo, readOnly);
+				_ontologyMetadataRetrieved(ontologyInfo);
 			}
 		};
 
@@ -378,7 +381,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		Orr.service.getOntologyMetadata(roi, null, callback);
 	}
 
-	private void _ontologyMetadataRetrieved(BaseOntologyInfo ontologyInfo, boolean readOnly) {
+	private void _ontologyMetadataRetrieved(BaseOntologyInfo ontologyInfo) {
 		this.ontologyInfo = ontologyInfo;
 		String error = ontologyInfo.getError();
 		if ( error != null ) {
@@ -397,7 +400,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	
 	
 	
-	private void _getOntologyContents(final boolean readOnly) {
+	private void _getOntologyContents() {
 		
 		assert ontologyInfo instanceof RegisteredOntologyInfo ;
 		RegisteredOntologyInfo roi = (RegisteredOntologyInfo) ontologyInfo;
@@ -418,7 +421,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 					Orr.log(CLASS_NAME+": RET getOntologyContents: error = " +error);
 				}
 				
-				ontologyContentsRetrieved(ontologyInfo, readOnly);
+				ontologyContentsRetrieved(ontologyInfo);
 			}
 		};
 
@@ -431,7 +434,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	}
 
 
-	private void ontologyContentsRetrieved(BaseOntologyInfo ontologyInfo, boolean readOnly) {
+	private void ontologyContentsRetrieved(BaseOntologyInfo ontologyInfo) {
 		this.ontologyInfo = ontologyInfo;
 		String error = ontologyInfo.getError();
 		if ( error != null ) {
@@ -462,6 +465,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	}
 	
 	private void enable(boolean enabled) {
+		readOnly = !enabled;
 		if ( metadataPanel != null ) {
 			metadataPanel.enable(enabled);
 		}
@@ -485,30 +489,30 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		private HTML descriptionHtml = new HTML();
 		
 		
-		HeaderPanel(boolean readOnly) {
+		HeaderPanel() {
 			widget.setWidth("100%");
 			widget.setSpacing(5);
 			widget.setVerticalAlignment(ALIGN_MIDDLE);
 //			widget.setBorderWidth(1);
 			
 			if ( USE_ONTOLOGY_URI_PANEL ) {
-			if ( ! readOnly ) {
-				ontologyUriPanel.update();
-			}
+				if ( ! readOnly ) {
+					ontologyUriPanel.update();
+				}
 			}
 			
-			resetElements(readOnly, false);
+			resetElements(false);
 		}
 		
-		void resetElements(boolean readOnly, boolean newOntology) {
+		void resetElements(boolean newOntology) {
 			widget.clear();
 			widget.add(titleHtml);
 			widget.add(descriptionHtml);
 			
 			if ( USE_ONTOLOGY_URI_PANEL ) {
-			if ( ! readOnly && newOntology ) {
-				widget.add(ontologyUriPanel);
-			}
+				if ( ! readOnly && newOntology ) {
+					widget.add(ontologyUriPanel);
+				}
 			}
 		}
 		
@@ -687,7 +691,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			// prepare uploadButton
 			PushButton registerButton = new PushButton("Register", new ClickListener() {
 				public void onClick(Widget sender) {
-					register(popup, true, createOntologyResult);
+					doRegister(popup, createOntologyResult);
 				}
 			});
 			registerButton.setTitle("Registers the new version of the ontology");
@@ -718,14 +722,6 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 
 	}
 	
-	private void register(MyDialog popup, boolean confirm, CreateOntologyResult createOntologyResult) {
-		if ( confirm && 
-			! Window.confirm("This action will commit your ontology into the MMI Registry") ) {
-			return;
-		}
-		doRegister(popup, createOntologyResult);
-	}
-
 	private void doRegister(MyDialog createPopup, CreateOntologyResult createOntologyResult) {
 		
 		createPopup.hide();

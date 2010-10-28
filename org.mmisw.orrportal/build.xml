@@ -173,6 +173,11 @@
     	
     </target>     	
 
+	<target name="deploy-war" depends="war" description="copies the WAR to ${appserver.deploy.dir}">
+		<copy file="${build.dir}/orr.war" todir="${appserver.deploy.dir}" preservelastmodified="true" />
+	</target>
+
+	
   <target name="clean">
     <delete file="base_war/WEB-INF/lib/org.mmisw.orrportal.gwt.jar"/>
     <delete>
