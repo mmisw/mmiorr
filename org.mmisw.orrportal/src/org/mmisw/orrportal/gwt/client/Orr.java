@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mmisw.orrclient.gwt.client.rpc.AppInfo;
+import org.mmisw.orrclient.gwt.client.rpc.GetAllOntologiesResult;
 import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
 import org.mmisw.orrclient.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
@@ -21,6 +22,7 @@ import org.mmisw.orrportal.gwt.client.util.OrrUtil;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.HTML;
@@ -225,16 +227,24 @@ public class Orr {
 	
 	public static void refreshListAllOntologies() {
 		
-		AsyncCallback<List<RegisteredOntologyInfo>> callback = new AsyncCallback<List<RegisteredOntologyInfo>>() {
+		AsyncCallback<GetAllOntologiesResult> callback = new AsyncCallback<GetAllOntologiesResult>() {
 
 			public void onFailure(Throwable thr) {
 				_addToMainPanel(new HTML(thr.toString()));
 			}
 
-			public void onSuccess(List<RegisteredOntologyInfo> result) {
-				ontologyInfos = result;
-				Orr.log("ORR: Got list of registered ontologies: " +result.size());
-				portalMainPanel.refreshedListAllOntologies(ontologyInfos);
+			public void onSuccess(GetAllOntologiesResult result) {
+				if ( result.getError() == null ) {
+					ontologyInfos = result.getOntologyList();
+					Orr.log("ORR: Got list of registered ontologies: " +ontologyInfos.size());
+					portalMainPanel.refreshedListAllOntologies(ontologyInfos);
+				}
+				else {
+					Orr.log("Error getting list of ontologies: " +result.getError());
+					Window.alert("Error getting list of ontologies. Please try again later." 
+							+ "\n\n" +result.getError()
+					);
+				}
 			}
 			
 		};

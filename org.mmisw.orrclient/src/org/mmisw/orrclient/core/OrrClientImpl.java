@@ -56,6 +56,7 @@ import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.CreateUpdateUserAccountResult;
 import org.mmisw.orrclient.gwt.client.rpc.DataCreationInfo;
 import org.mmisw.orrclient.gwt.client.rpc.EntityInfo;
+import org.mmisw.orrclient.gwt.client.rpc.GetAllOntologiesResult;
 import org.mmisw.orrclient.gwt.client.rpc.HostingType;
 import org.mmisw.orrclient.gwt.client.rpc.InternalOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
@@ -415,9 +416,22 @@ public class OrrClientImpl implements IOrrClient {
 		// TODO: Determine HostingType.INDEXED case.
 	}
 	
-	
-	public List<RegisteredOntologyInfo> getAllOntologies(boolean includeAllVersions) throws Exception {
+	public GetAllOntologiesResult getAllOntologies(boolean includeAllVersions) {
+		GetAllOntologiesResult result = new GetAllOntologiesResult();
+		try {
+			List<RegisteredOntologyInfo> list = _doGetAllOntologies(includeAllVersions);
+			result.setOntologyList(list);
+		}
+		catch (Throwable ex) {
+			String error = "Error getting list of all ontologies: " +ex.getMessage();
+			log.warn(error, ex);
+			result.setError(error);
+		}
+		return result;
+	}
 		
+	
+	private List<RegisteredOntologyInfo> _doGetAllOntologies(boolean includeAllVersions) throws Exception {
 		// {unversionedUri -> list of versioned URIs }  for all unversioned URIs ontologies
 		Map<String, List<RegisteredOntologyInfo>> unversionedToVersioned = _getUnversionedToOntologyInfoListMap(null);
 		

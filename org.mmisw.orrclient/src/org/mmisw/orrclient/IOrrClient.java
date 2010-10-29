@@ -9,6 +9,7 @@ import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.CreateUpdateUserAccountResult;
 import org.mmisw.orrclient.gwt.client.rpc.EntityInfo;
+import org.mmisw.orrclient.gwt.client.rpc.GetAllOntologiesResult;
 import org.mmisw.orrclient.gwt.client.rpc.InternalOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
 import org.mmisw.orrclient.gwt.client.rpc.MetadataBaseInfo;
@@ -83,17 +84,22 @@ public interface IOrrClient {
 	 * Gets all (latest versions of the) ontologies in the registry.
 	 * 
 	 * <p>
-	 * Note that the all corresponding URIs (getUri()) of the main entries in the list 
+	 * Note that all the corresponding URIs (getUri()) of the main entries in the list 
 	 * will be in UNversioned form. The elements in the priorVersion lists will be in
 	 * versioned form.  
 	 * Note that the priorVersion list WILL also contain the main (most recent) element, but in 
 	 * versioned form (that is, getUri() for that element will be versioned.
 	 * 
-	 * @param includeAllVersions true to include all versions for each element
-	 * @return
+	 * @param includeAllVersions 
+	 *         true to include all versions for each element
+	 *                 
+	 * @return the result of the operation. Caller should first check result.getError()
+	 *         for any possible error. If result.getError() == null, then it's safe
+	 *         to retrieve the list, result.getOntologyList().
+	 *         
 	 * @throws Exception
 	 */
-	List<RegisteredOntologyInfo> getAllOntologies(boolean includeAllVersions) throws Exception;
+	GetAllOntologiesResult getAllOntologies(boolean includeAllVersions);
 	
 	
 	/**

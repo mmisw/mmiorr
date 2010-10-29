@@ -2,6 +2,16 @@ org.mmisw.orrportal: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+
+2010-10-28  2.0.15.beta
+	- new GetAllOntologiesResult for the getAllOntologies operation.
+
+TODOs 
+  - regarding #287 "concurrency"
+	 - in OrrClientProxy, review:
+ 	   portalBaseInfo: perhaps it can be created at initialization time rather than on demand.
+ 	
+
 2010-10-28  2.0.14.beta
 	- Updated ReadMe documentation.
 

@@ -7,6 +7,7 @@ import org.mmisw.orrclient.gwt.client.rpc.AppInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.CreateUpdateUserAccountResult;
+import org.mmisw.orrclient.gwt.client.rpc.GetAllOntologiesResult;
 import org.mmisw.orrclient.gwt.client.rpc.InternalOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
 import org.mmisw.orrclient.gwt.client.rpc.MetadataBaseInfo;
@@ -40,7 +41,7 @@ public interface OrrServiceAsync {
 	
 	void getMetadataBaseInfo(boolean includeVersion, AsyncCallback<MetadataBaseInfo> callback);
 
-	void getAllOntologies(boolean includePriorVersions, AsyncCallback <List<RegisteredOntologyInfo>> callback);
+	void getAllOntologies(boolean includePriorVersions, AsyncCallback <GetAllOntologiesResult> callback);
 
 	void refreshOptions(AttrDef attrDef, AsyncCallback<AttrDef> callback);
 

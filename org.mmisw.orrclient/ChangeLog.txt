@@ -3,6 +3,26 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+
+2010-10-28  2.0.15.beta
+	- new GetAllOntologiesResult for the getAllOntologies operation.
+	
+
+Some TODOs 
+  - Regarding #287 "concurrency"
+ 	- in OrrClientImpl, review:
+ 	  metadataBaseInfo: looks like there is no need to assign this "on demand" but rather
+ 	  create the info and make this object "final". Better obtain this object at initialization
+ 	  of the library.
+ 	  Related with this, capture the parameters (resourceTypeClassUri, authorityClassUri)
+ 	  in OrrClientConfiguration
+ 
+  - OrrClientImpl.LISTALL: this operation should be encapsulated in the OntClient library.
+    In general, review that all operations that are requests to the Ont service be provided
+    by corresponding OntClient methods.
+    
+
+
 2010-10-28  2.0.14.beta
 	- Updated ReadMe documentation.
 

@@ -1,6 +1,5 @@
 package org.mmisw.orrportal.gwt.server;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -15,6 +14,7 @@ import org.mmisw.orrclient.gwt.client.rpc.AppInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.CreateUpdateUserAccountResult;
+import org.mmisw.orrclient.gwt.client.rpc.GetAllOntologiesResult;
 import org.mmisw.orrclient.gwt.client.rpc.InternalOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
 import org.mmisw.orrclient.gwt.client.rpc.MetadataBaseInfo;
@@ -50,9 +50,6 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 	
 	private OrrClientProxy orrClient;
 	
-	
-	private static final List<RegisteredOntologyInfo> EMPTY_ONTOLOGY_INFO_LIST = new ArrayList<RegisteredOntologyInfo>();
-
 	
 	private final Log log = LogFactory.getLog(OrrServiceImpl.class);
 	
@@ -104,14 +101,8 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 		return orrClient.getBaseInfo();
 	}
 	
-	public List<RegisteredOntologyInfo> getAllOntologies(boolean includePriorVersions) {
-		try {
-			return orrClient.getAllOntologies(includePriorVersions);
-		}
-		catch (Exception e) {
-			log.error("error getting list of ontologies", e);
-			return EMPTY_ONTOLOGY_INFO_LIST;
-		}
+	public GetAllOntologiesResult getAllOntologies(boolean includePriorVersions) {
+		return orrClient.getAllOntologies(includePriorVersions);
 	}
 	
 	public MetadataBaseInfo getMetadataBaseInfo(boolean includeVersion) {

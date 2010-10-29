@@ -7,6 +7,7 @@ import org.mmisw.orrclient.gwt.client.rpc.AppInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.CreateUpdateUserAccountResult;
+import org.mmisw.orrclient.gwt.client.rpc.GetAllOntologiesResult;
 import org.mmisw.orrclient.gwt.client.rpc.InternalOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
 import org.mmisw.orrclient.gwt.client.rpc.MetadataBaseInfo;
@@ -59,7 +60,7 @@ public interface OrrService extends RemoteService {
 	 * @param includePriorVersions
 	 * @return
 	 */
-	public List<RegisteredOntologyInfo> getAllOntologies(boolean includePriorVersions);
+	public GetAllOntologiesResult getAllOntologies(boolean includePriorVersions);
 	
 
 	/**
