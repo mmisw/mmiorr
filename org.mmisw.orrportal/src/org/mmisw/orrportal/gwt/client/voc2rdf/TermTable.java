@@ -51,12 +51,26 @@ public class TermTable extends VerticalPanel {
 		"All term labels must be unique. " +
 		"<br/>" +
 		"<br/>" +
-		"Type Enter to edit a cell. Type Enter again to complete the change (or just move to a different " +
-		"field in the form using the navigation keys or the mouse). " +
+		"<b>Editing the contents</b><br/>" +
+		"If you are creating a new vocabulary or a new version of an existing vocabulary, " +
+		"you can edit the contents of the table as indicated below." +
 		"<br/>" +
 		"<br/>" +
-		"Use the Import button to set the contents of the table from CSV formatted text. <br/>" +
-		"Use the Export button to get a text version of the current contents of the table. " 
+		"<b>Editing the cells</b><br/>" +
+		"Locate the desired cell and type Enter to start editing the contents. " +
+		"When done with the editing, type Enter again to complete the changes. " +
+		"<br/>" +
+		"<br/>" +
+		"<b>Adding/removing rows or columns</b><br/>" +
+		"Open the drop-down menu corresponding to the row or column and select the " +
+		"desired option. " +
+		"<br/>" +
+		"<br/>" +
+		"<b>Importing/Exporting the table</b>" +
+		"<br/>" +
+		"Open the drop-down menu in the upper-left corner of the table; then:<br/>" +
+		" Select the Import option to set the contents of the table from CSV formatted text.<br/>" +
+		" Select the Export button to get a text version of the current contents of the table." 
 		;
 
 	private static final int CONTROL_ROW = 0;

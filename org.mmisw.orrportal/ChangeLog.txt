@@ -3,6 +3,27 @@ Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
 
+2010-11-03  2.0.15.beta
+	- OrrClientProxy.portalBaseInfo: now final and created in constructor.
+ 	   
+	- TermTable: improve help message regarding cell editing and importing/exporting:
+	
+		Editing the contents
+		If you are creating a new vocabulary or a new version of an existing vocabulary, you 
+		can edit the contents of the table as indicated below.
+		
+		Editing the cells
+		Locate the desired cell and type Enter to start editing the contents. When done with 
+		the editing, type Enter again to complete the changes.
+		
+		Adding/removing rows or columns
+		Open the drop-down menu corresponding to the row or column and select the desired option.
+		
+		Importing/Exporting the table
+		Open the drop-down menu in the upper-left corner of the table; then:
+		Select the Import option to set the contents of the table from CSV formatted text.
+		Select the Export button to get a text version of the current contents of the table.		
+			
 2010-10-28  2.0.15.beta
 	- new GetAllOntologiesResult for the getAllOntologies operation.
 

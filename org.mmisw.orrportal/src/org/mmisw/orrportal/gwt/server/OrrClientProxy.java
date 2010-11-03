@@ -66,7 +66,7 @@ public class OrrClientProxy  {
 	
 	private final Log log = LogFactory.getLog(OrrClientProxy.class);
 	
-	private PortalBaseInfo portalBaseInfo = null;
+	private final PortalBaseInfo portalBaseInfo;
 	
 	
 	private IOrrClient orrClient;
@@ -86,6 +86,8 @@ public class OrrClientProxy  {
 		String mailUser = PortalConfig.Prop.MAIL_USER.getValue();
 		String mailPassword = PortalConfig.Prop.MAIL_PASSWORD.getValue();
 		
+		portalBaseInfo = _prepareBaseInfo();
+		
 		// create OrrClientConfiguration and initialize orrclient library:
 		OrrClientConfiguration occ = new OrrClientConfiguration();
 		occ.setOntServiceUrl(ontServiceUrl);
@@ -99,24 +101,17 @@ public class OrrClientProxy  {
 	}
 
 	public PortalBaseInfo getBaseInfo() {
-		if ( portalBaseInfo == null ) {
-			prepareBaseInfo();
-		}
 		return portalBaseInfo;
 	}
 	
-	private void prepareBaseInfo() {
-		log.info("base info: preparing...");
-		
-		portalBaseInfo = new PortalBaseInfo();
-		
-		portalBaseInfo.setAppServerUrl(PortalConfig.Prop.APPSERVER_HOST.getValue());
-		portalBaseInfo.setOntServiceUrl(PortalConfig.Prop.ONT_SERVICE_URL.getValue());
-		portalBaseInfo.setOntbrowserServiceUrl(PortalConfig.Prop.ONTBROWSER_SERVICE_URL.getValue());
-
-		portalBaseInfo.setGaUaNumber(PortalConfig.Prop.GA_UA_NUMBER.getValue());
-
-		log.info("base info: done.");
+	private PortalBaseInfo _prepareBaseInfo() {
+		PortalBaseInfo pbi = new PortalBaseInfo();
+		pbi.setAppServerUrl(PortalConfig.Prop.APPSERVER_HOST.getValue());
+		pbi.setOntServiceUrl(PortalConfig.Prop.ONT_SERVICE_URL.getValue());
+		pbi.setOntbrowserServiceUrl(PortalConfig.Prop.ONTBROWSER_SERVICE_URL.getValue());
+		pbi.setGaUaNumber(PortalConfig.Prop.GA_UA_NUMBER.getValue());
+		log.info("portal base info: done.");
+		return pbi;
 	}
 	
 	
