@@ -4,6 +4,11 @@ $Id$
 
 ChangeLog
 
+2010-11-03  2.0.15.beta
+	- Update of version (sync'ing with other ORR modules)
+	- clarifying that AdminDispatcher is "effectively thread-safe" (see the javadoc)
+	  
+	  
 2010-10-28  2.0.14.beta
 	- Updated ReadMe documentation.
 	- Updated several javadoc comments regarding thread-safety.
