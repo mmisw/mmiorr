@@ -13,6 +13,14 @@ $Id$
 	Interestingly, GWT 1.5.2 works fine here, and it should be so as the element is NOT 
 	actually used. One other weird thing about the newer GWT versions!
 	
+	Not significant outcome from this new attempt: Development mode continues to be
+	intolerably slow (perhaps because of the mix between old and new underlying GWT mechanisms?),
+	and the build process continues to be complicated, in fact, I couldn't make 2.1 to run
+	properly because of an error related with SmartGWT, which does not happen with 2.0.4).
+	So, reverting to the previous state, except for the change in OrrService above and the
+	removal of the dependency on module com.google.gwt.gen2.Gen2 (ie., gwt-incubator_1-5_Dec_28.jar)
+	as the code for this is not activated and will still need a more stable basis in general.
+	
 	
 2010-11-03  2.0.15.beta
 	- OrrClientProxy.portalBaseInfo: now final and created in constructor.

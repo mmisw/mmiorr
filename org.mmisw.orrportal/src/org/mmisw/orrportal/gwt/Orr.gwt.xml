@@ -13,7 +13,7 @@
       <!-- orrclient module                                           -->
       <inherits name='org.mmisw.orrclient.gwt.OrrClient'/>
 
-      <inherits name='com.google.gwt.gen2.Gen2' />
+      <!-- inherits name='com.google.gwt.gen2.Gen2' /-->
         
       <!-- Specify the app entry point class.                         -->
       <entry-point class='org.mmisw.orrportal.gwt.client.OrrEntryPoint'/>
