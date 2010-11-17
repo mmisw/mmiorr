@@ -3,6 +3,17 @@ Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
 
+2010-11-16 
+	Giving GWT 2.x another try. Now, with the latest as of today, which is 2.1.
+	
+	OrrService: Removed unnecessary import org.mmisw.orrportal.gwt.server.UploadServlet, 
+	which was added by Eclipe because of a reference in a javadoc comment, but not actually 
+	used in the code.  This made the GWT compiler (2.1) generate an error because this 
+	server-side element is not part of the 'shared' interface (and that's correct). 
+	Interestingly, GWT 1.5.2 works fine here, and it should be so as the element is NOT 
+	actually used. One other weird thing about the newer GWT versions!
+	
+	
 2010-11-03  2.0.15.beta
 	- OrrClientProxy.portalBaseInfo: now final and created in constructor.
  	   
