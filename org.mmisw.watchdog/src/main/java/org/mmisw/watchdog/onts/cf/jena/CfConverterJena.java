@@ -55,6 +55,10 @@ public class CfConverterJena extends BaseConverter {
 	
 	/** created concepts in SKOS ontology */
 	private int numConcepts;
+	
+	
+	private int numWithNoCanonicalUnits;
+	private int numWithNoDefinitions;
 
 	
 	private void _createNewOntology() {
@@ -132,9 +136,20 @@ public class CfConverterJena extends BaseConverter {
 //			concept.addProperty(Skos.prefLabel, id.replace('_', ' '));
 //			concept.addProperty(RDFS.label, id);
 			
-			concept.addProperty(canonical_units, canonicalUnits);
+			if ( canonicalUnits != null ) {
+				concept.addProperty(canonical_units, canonicalUnits);
+			}
+			else {
+				numWithNoCanonicalUnits++;
+			}
 			
-			concept.addProperty(Skos.definition, description);
+			if ( description != null ) {
+				concept.addProperty(Skos.definition, description);
+			}
+			else {
+				numWithNoDefinitions++;
+			}
+			
 //			concept.addProperty(RDFS.comment, description);
 
 			currentTopConcept.addProperty(Skos.narrower, concept);
@@ -142,6 +157,8 @@ public class CfConverterJena extends BaseConverter {
 
 		props.put("entries", String.valueOf(numEntries));
 		props.put("concepts", String.valueOf(numConcepts));
+		props.put("withNoCanonicalUnits", String.valueOf(numWithNoCanonicalUnits));
+		props.put("withNoDefinitions", String.valueOf(numWithNoDefinitions));
 	}
 
 	

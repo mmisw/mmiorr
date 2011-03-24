@@ -1,6 +1,32 @@
 watchdog ChangeLog
 Carlos Rueda - MMI/MBARI
 
+
+2011-03-24
+	- CfConverterJena: today's new version of CF exposed a NPE because there are now
+	  entries with no description. So this is now checked, and for completeness the 
+	  canonical_units is also checked. Added corresponding counters, numWithNoCanonicalUnits
+	  and numWithNoDefinitions so they are included in the final report:
+	  
+	$ mvn exec:java -Dexec.args="Cf --ws workspace/cf"
+	...
+	[Cf] Loading http://cf-pcmdi.llnl.gov/documents/cf-standard-names/standard-name-table/current/cf-standard-name-table.xml
+	[Cf] 	      version_number : 17
+	[Cf] 	       last_modified : 2011-03-24T11:54:30Z
+	[Cf] 	         institution : Program for Climate Model Diagnosis and Intercomparison
+	[Cf] 	             contact : webmaster@pcmdi.llnl.gov
+	[Cf] 	             entries : 2148
+	[Cf] 	            concepts : 2149
+	[Cf] 	withNoCanonicalUnits : 0
+	[Cf] 	   withNoDefinitions : 31
+	[Cf] workspace/cf/cf-standard-name-table-17.xml: input saved
+	New SKOS Ontology saved in: workspace/cf/cf-standard-name-table-17-jena.owl
+	Size of the new Ontology: 8569
+	[Cf] workspace/cf/cf-standard-name-table-17-jena.owl: resulting ontology saved
+	[Cf] Skipping registration (indicate at least --password to perform registration)
+	...
+	  
+
 2010-09-28
 	- Updates according to new orrclient and ontclient libraries:
 		<dependency>
