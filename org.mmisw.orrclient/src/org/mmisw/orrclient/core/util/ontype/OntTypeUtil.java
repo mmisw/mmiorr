@@ -78,7 +78,9 @@ public class OntTypeUtil {
 		}
 		
 		if ( log.isDebugEnabled() ) {
-			String ontUriMsg = "ontUri=" +ont.getURI();
+			// 2011-03-24: while updating CF vocabulary with new version (17) released today,
+			// a NPE was exposed here: ont might be null; so check for that:
+			String ontUriMsg = "ontUri=" +(ont != null ? ont.getURI() : "(ont is null)")+ " ontologyUri=" +ontologyUri;
 			log.debug("determineType: " +ontUriMsg + " --> other" );
 		}
 		

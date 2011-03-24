@@ -4,6 +4,13 @@ Created: 2009-05-13
 $Id$
 
 
+2011-03-24  2.0.16.beta
+	- bug fix: possible NPE in OntTypeUtil.determineType().
+	  Exposed while trying to upload new version of CF vocab released today.
+	- build.xml: explicitly compiling with source="1.5" target="1.5"
+	
+	
+	
 2010-10-28  2.0.15.beta
 	- new GetAllOntologiesResult for the getAllOntologies operation.
 	

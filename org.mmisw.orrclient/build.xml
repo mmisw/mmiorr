@@ -28,7 +28,8 @@
 	<target name="compile" depends="init">
 		<mkdir dir="bin" />
 		<mkdir dir="${build.dir}/classes" />
-		<javac srcdir="src" destdir="${build.dir}/classes" includes="**" debug="on" debuglevel="lines,vars,source">
+		<javac srcdir="src" destdir="${build.dir}/classes" includes="**" debug="on" debuglevel="lines,vars,source"
+		 source="1.5" target="1.5">
 			<classpath refid="project.class.path" />
 		</javac>
 
