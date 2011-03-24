@@ -80,7 +80,8 @@
     <javac srcdir="src" destdir="${build.dir}/classes" 
     	includes="**" 
     	excludes="**/JDTCompiler15.java" 
-    	debug="on" debuglevel="lines,vars,source">
+    	debug="on" debuglevel="lines,vars,source"
+    	source="1.5" target="1.5">
       <classpath refid="project.class.path"/>
     </javac>
   </target>
