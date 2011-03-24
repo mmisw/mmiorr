@@ -2,6 +2,10 @@ org.mmisw.orrportal: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2011-03-24  2.0.16.beta
+	- bug fix in orrclient module: possible NPE in OntTypeUtil.determineType().
+	  Exposed while trying to upload new version of CF vocab released today.
+
 
 2010-11-16 
 	Giving GWT 2.x another try. Now, with the latest as of today, which is 2.1.
