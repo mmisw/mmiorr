@@ -151,6 +151,7 @@ public class OntRequest {
 			" mmiUri=" +mmiUri+
 			" outFormat=" +outFormat+
 			" version=" +version+
+			" " +(ontology != null ? "ontologyUri=" +ontology.getUri() : "ontology=null") +
 			">"
 		;			
 	}
