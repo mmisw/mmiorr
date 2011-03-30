@@ -4,6 +4,21 @@ $Id$
 
 ChangeLog
 
+2011-03-30  2.0.17.beta
+	- build.xml: explicitly compiling with source="1.5" target="1.5"
+	
+	- build.xml: exclude **/*_trailingFragment.java", some incomplete code I tried
+	  while investigating http://code.google.com/p/mmisw/issues/detail?id=289
+	  "Re-hosted ontology not showing metadata." Current functionality is not
+	  affected at all. (but the excluded files, which are modified copies of existing
+	  sources, are not ready to be incorporated.)
+	  A good part of the issue has to do with the handling of the trailing slash that 
+	  is present in the ontology that is failing here. In summary, the handling of 
+	  possible trailing fragment in ontologies (including the xml:base and the namespace 
+	  for the empty prefix) NEEDS a careful revisit and redesign.  
+	- Syncing with orrclient on 2.0.17.beta
+	
+	
 2010-11-03  2.0.15.beta
 	- Update of version (sync'ing with other ORR modules)
 	- clarifying that AdminDispatcher is "effectively thread-safe" (see the javadoc)
