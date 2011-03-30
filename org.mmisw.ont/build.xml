@@ -27,7 +27,10 @@
 
 	<target name="compile" depends="init" description="compiles the project">
 		<mkdir dir="${build.dir}/classes" />
-		<javac srcdir="src" destdir="${build.dir}/classes" includes="**" debug="on" debuglevel="lines,vars,source">
+		<javac srcdir="src" destdir="${build.dir}/classes" includes="**" debug="on" debuglevel="lines,vars,source"
+			source="1.5" target="1.5"
+			excludes="**/*_trailingFragment.java"
+		>
 			<classpath refid="project.class.path" />
 		</javac>
 		
