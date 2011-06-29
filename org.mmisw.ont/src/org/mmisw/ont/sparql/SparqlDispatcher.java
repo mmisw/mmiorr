@@ -105,6 +105,8 @@ public class SparqlDispatcher {
 	)
 	throws ServletException, IOException {
 		
+		response.setHeader("Access-Control-Allow-Origin", "*");
+
 		QueryResult queryResult;
 		try {
 			queryResult = _execute(query, outFormat);

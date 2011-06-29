@@ -4,6 +4,19 @@ $Id$
 
 ChangeLog
 
+2011-06-28  2.0.18.beta
+	- #288 Enable CORS
+	  Partially enabled.
+	  response.setHeader("Access-Control-Allow-Origin", "*") call added in some 
+	  places in these sources:
+		  - MiscDispatcher
+		  - SparqlDispatcher
+		  - ServletUtil
+	  The selection of places was not very systematic; in general this will
+	  eventually require a more careful examination, unless we decide that CORS 
+	  can simply be enabled for ALL resources.
+		 
+		  
 2011-03-30  2.0.17.beta
 	- build.xml: explicitly compiling with source="1.5" target="1.5"
 	

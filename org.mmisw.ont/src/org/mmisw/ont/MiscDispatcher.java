@@ -87,6 +87,7 @@ public class MiscDispatcher {
 			ResultSet rs = _stmt.executeQuery(query);
 			
 			response.setContentType("text/html");
+			response.setHeader("Access-Control-Allow-Origin", "*");
 	        PrintWriter out = response.getWriter();
 	        out.println("<html>");
 	        out.println("<head> <link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\"> </head>");
@@ -164,6 +165,7 @@ public class MiscDispatcher {
 			ResultSet rs = _stmt.executeQuery(query);
 			
 			response.setContentType("text/plain");
+			response.setHeader("Access-Control-Allow-Origin", "*");
 	        PrintWriter out = response.getWriter();
 
 	        while ( rs.next() ) {
@@ -425,6 +427,7 @@ public class MiscDispatcher {
 		}
 		
 		response.setContentType("text/plain");
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		PrintWriter out = response.getWriter();
     	out.println(ontVersion);
 	}
@@ -466,6 +469,7 @@ public class MiscDispatcher {
 
 		// start the response page:
 		response.setContentType("text/plain");
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		out = response.getWriter();
 		
 		// parse the given URI:

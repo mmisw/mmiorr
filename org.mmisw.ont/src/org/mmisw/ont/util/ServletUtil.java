@@ -44,6 +44,8 @@ public class ServletUtil {
 			HttpServletResponse response
 	) throws IOException {
 		
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		
 		if ( USE_NEW_IMPL ) {
 			response.setContentType(CT_APPLICATION_RDF_XML_UTF8);
 		}
@@ -64,6 +66,8 @@ public class ServletUtil {
 	public static void setContentTypeTextPlain(
 			HttpServletResponse response
 	) throws IOException {
+		
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		
 		if ( USE_NEW_IMPL ) {
 			response.setContentType(CT_TEXT_PLAIN_UTF8);
@@ -87,6 +91,8 @@ public class ServletUtil {
 			HttpServletResponse response, 
 			String responseContent
 	) throws IOException {
+		
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		
 		if ( USE_NEW_IMPL ) {
 			// new version
@@ -123,6 +129,8 @@ public class ServletUtil {
 			String responseContent,
 			String contentType
 	) throws IOException {
+		
+		response.setHeader("Access-Control-Allow-Origin", "*");
 
 		byte[] responseBytes = responseContent.getBytes(UTF8_CHARSET);
 		
