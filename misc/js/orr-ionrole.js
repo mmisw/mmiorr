@@ -2,7 +2,7 @@ function ionrole(term, tableId, anchorId) {
 	this.ionroleprefix = "http://mmisw.org/ont/ooi/ionrole/";
 	this.term = term;
 	this.termId = term.replace(/ /g, '_');
-	this.uri =  ionroleprefix + this.termId;
+	this.uri = this.ionroleprefix + this.termId;
 
 
 	this.tableId = tableId;
