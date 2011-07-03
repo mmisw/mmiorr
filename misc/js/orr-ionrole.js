@@ -1,11 +1,11 @@
 /**
  * @param term The ID of the term (not the full URI)
- * @param anchorId Used to identofy the elements to update
+ * @param anchorId Used to identify the elements to update
  */
 function IonRoleTooltip(term, anchorId) {
 	var ionroleprefix = "http://mmisw.org/ont/ooi/ionrole/";
 	var termId = term.replace(/ /g, '_');
-	var uri = ionroleprefix + termId;
+	this.uri = ionroleprefix + termId;
 
 	var data = null;
  	var uriElem = document.getElementById("uri" + anchorId);
@@ -17,8 +17,8 @@ function IonRoleTooltip(term, anchorId) {
 				return;
 			}
 
-			uriElem.href = uri;
-			uriElem.innerHTML = uri;
+			uriElem.href = this.uri;
+			uriElem.innerHTML = this.uri;
 			
 			query = "prefix ionrole: <" +ionroleprefix+ "> " +
 						  "SELECT ?role ?description " +
