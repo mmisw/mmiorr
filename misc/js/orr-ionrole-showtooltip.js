@@ -1,5 +1,4 @@
-
-		function ionrole_showTooltip(tableId, aid) {
+		function ionrole_showTooltip(ionroledict, tableId, aid) {
 			var anchorId = aid;
 			resultElem = document.getElementById(tableId);
 			if ( resultElem.data != null ) {
