@@ -4,16 +4,19 @@ function ionrole(term, tableId, anchorId) {
 	this.termId = term.replace(/ /g, '_');
 	this.uri = this.ionroleprefix + this.termId;
 
-
 	this.tableId = tableId;
 	this.anchorId = anchorId;
 
+  var uriElem = document.getElementById("uri" + this.anchorId);
+   var nameElem = document.getElementById("name" + this.anchorId);
+	 var descriptionElem = document.getElementById("description" + this.anchorId);
+ 
 	this.showTooltip = function() {
 			resultElem = document.getElementById(this.tableId);
 			if ( resultElem.data != null ) {
 				return;
 			}
-			var uriElem = document.getElementById("uri" + this.anchorId);
+
 			uriElem.href = this.uri;
 			uriElem.innerHTML = this.uri;
 			
@@ -34,8 +37,6 @@ function ionrole(term, tableId, anchorId) {
 					xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
 				}
 				xmlhttp.onreadystatechange=function() {
-					var nameElem = document.getElementById("name" + this.anchorId);
-					var descriptionElem = document.getElementById("description" + this.anchorId);
 					if (xmlhttp.readyState==4 ) {
 						if ( xmlhttp.status==200) {
 							data = xmlhttp.responseText;
