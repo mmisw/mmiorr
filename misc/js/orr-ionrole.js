@@ -1,15 +1,19 @@
-function IonRoleTooltip(term, tableId, anchorId) {
+/**
+ * @param term The ID of the term (not the full URI)
+ * @param anchorId Used to identofy the elements to update
+ */
+function IonRoleTooltip(term, anchorId) {
 	var ionroleprefix = "http://mmisw.org/ont/ooi/ionrole/";
 	var termId = term.replace(/ /g, '_');
 	var uri = ionroleprefix + termId;
 
-	var resultElem = document.getElementById(tableId);
+	var data = null;
  	var uriElem = document.getElementById("uri" + anchorId);
  	var nameElem = document.getElementById("name" + anchorId);
 	var descriptionElem = document.getElementById("description" + anchorId);
  
 	this.show = function() {		
-			if ( resultElem.data != null ) {
+			if ( data != null ) {
 				return;
 			}
 
@@ -36,7 +40,6 @@ function IonRoleTooltip(term, tableId, anchorId) {
 					if (xmlhttp.readyState==4 ) {
 						if ( xmlhttp.status==200) {
 							data = xmlhttp.responseText;
-							resultElem.data = data;
 							array = jQuery.csv(',', '"', '\n')(data);
 							nameElem.innerHTML = array[1][0];
 							descriptionElem.innerHTML = array[1][1];
