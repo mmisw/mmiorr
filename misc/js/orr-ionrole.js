@@ -1,30 +1,26 @@
-function ionrole(term, tableId, anchorId) {
-	this.ionroleprefix = "http://mmisw.org/ont/ooi/ionrole/";
-	this.term = term;
-	this.termId = term.replace(/ /g, '_');
-	this.uri = this.ionroleprefix + this.termId;
+function IonRoleTooltip(term, tableId, anchorId) {
+	var ionroleprefix = "http://mmisw.org/ont/ooi/ionrole/";
+	var termId = term.replace(/ /g, '_');
+	var uri = ionroleprefix + termId;
 
-	this.tableId = tableId;
-	this.anchorId = anchorId;
-
-  var uriElem = document.getElementById("uri" + this.anchorId);
-   var nameElem = document.getElementById("name" + this.anchorId);
-	 var descriptionElem = document.getElementById("description" + this.anchorId);
+	var resultElem = document.getElementById(tableId);
+ 	var uriElem = document.getElementById("uri" + anchorId);
+ 	var nameElem = document.getElementById("name" + anchorId);
+	var descriptionElem = document.getElementById("description" + anchorId);
  
-	this.showTooltip = function() {
-			resultElem = document.getElementById(this.tableId);
+	this.show = function() {		
 			if ( resultElem.data != null ) {
 				return;
 			}
 
-			uriElem.href = this.uri;
-			uriElem.innerHTML = this.uri;
+			uriElem.href = uri;
+			uriElem.innerHTML = uri;
 			
-			query = "prefix ionrole: <" +this.ionroleprefix+ "> " +
+			query = "prefix ionrole: <" +ionroleprefix+ "> " +
 						  "SELECT ?role ?description " +
 						  " WHERE { " + 
-						  " ionrole:" +this.termId+ " ionrole:User_Role ?role. " +
-						  " ionrole:" +this.termId+ " ionrole:Description ?description.\n" +
+						  " ionrole:" +termId+ " ionrole:User_Role ?role. " +
+						  " ionrole:" +termId+ " ionrole:Description ?description.\n" +
 						  "}";
 			
 
@@ -58,3 +54,4 @@ function ionrole(term, tableId, anchorId) {
 			loadInfo("http://mmisw.org/ont?form=csv&sparql=" +query);
 		}
 }
+
