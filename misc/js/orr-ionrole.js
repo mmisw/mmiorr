@@ -53,12 +53,12 @@ function IonRoleTooltip(term, anchorId) {
 				}
 				try {
 					xmlhttp.open("GET", url, true);
+          xmlhttp.send();
 				}
 				catch(e) {
 					nameElem.innerHTML = "";
 					descriptionElem.innerHTML = "<i>Error. Your browser may have denied access to ORR.</i>";
 				}
-				xmlhttp.send();
 			}	
 			query = query.replace(/ /g, '+');
 			loadInfo("http://mmisw.org/ont?form=csv&sparql=" +query);
