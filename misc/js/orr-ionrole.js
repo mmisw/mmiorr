@@ -33,11 +33,28 @@ function IonRoleTooltip(term, anchorId) {
 				if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
 					xmlhttp = new window.XMLHttpRequest();
 				}
-				else {// code for IE6, IE5
-					xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-					//xmlhttp = new ActiveXObject("MSXML2.XMLHTTP.3.0"););
+				else if (window.XDomainRequest) { 
+					var xdr = new XDomainRequest(); // Create a new XDR object
+					xdr.onload = function() {
+						data = xdr.responseText;
+						array = jQuery.csv(',', '"', '\n')(data);
+						nameElem.innerHTML = array[1][0];
+						descriptionElem.innerHTML = array[1][1];
+					}
+					try {
+						xdr.open("get", url);
+						xdr.send();
+					}
+					catch(e) {
+						nameElem.innerHTML = "";
+						descriptionElem.innerHTML = "<i>Error using XDomainRequest.</i>";
+					}
 				}
-				xmlhttp.onreadystatechange=function() {
+				else {// code for IE6, IE5
+					//xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+					xmlhttp = new ActiveXObject("MSXML2.XMLHTTP.3.0");
+				}
+				xmlhttp.onreadystatechange = function() {
 					if (xmlhttp.readyState==4 ) {
 						if ( xmlhttp.status==200) {
 							data = xmlhttp.responseText;
@@ -53,7 +70,7 @@ function IonRoleTooltip(term, anchorId) {
 				}
 				try {
 					xmlhttp.open("GET", url, true);
-          xmlhttp.send();
+					xmlhttp.send();
 				}
 				catch(e) {
 					nameElem.innerHTML = "";
@@ -64,4 +81,5 @@ function IonRoleTooltip(term, anchorId) {
 			loadInfo("http://mmisw.org/ont?form=csv&sparql=" +query);
 		}
 }
+
 
