@@ -51,7 +51,13 @@ function IonRoleTooltip(term, anchorId) {
 						}
 					}
 				}
-				xmlhttp.open("GET", url, true);
+				try {
+					xmlhttp.open("GET", url, true);
+				}
+				catch(e) {
+					nameElem.innerHTML = "";
+					descriptionElem.innerHTML = "Error. Perhaps you browser has denied access to ORR";
+				}
         xmlhttp.setRequestHeader("Origin", "https://confluence-dev.oceanobservatories.org");
 				xmlhttp.send();
 			}	
