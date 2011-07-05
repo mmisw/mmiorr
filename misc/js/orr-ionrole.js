@@ -49,6 +49,7 @@ function IonRoleTooltip(term, anchorId) {
 						nameElem.innerHTML = "";
 						descriptionElem.innerHTML = "<i>Error using XDomainRequest.</i>";
 					}
+          return;
 				}
 				else {// code for IE6, IE5
 					//xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
