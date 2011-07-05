@@ -34,8 +34,9 @@ function IonRoleTooltip(term, anchorId) {
 					xmlhttp = new window.XMLHttpRequest();
 				}
 				else {// code for IE6, IE5
-					//xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-					xmlhttp = new ActiveXObject("MSXML2.XMLHTTP.3.0");
+					xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+					//xmlhttp = new ActiveXObject("MSXML2.XMLHTTP.3.0");
+          xmlhttp.setRequestHeader("Origin", "https://confluence-dev.oceanobservatories.org");
 				}
 				xmlhttp.onreadystatechange=function() {
 					if (xmlhttp.readyState==4 ) {
