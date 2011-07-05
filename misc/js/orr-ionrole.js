@@ -31,10 +31,11 @@ function IonRoleTooltip(term, anchorId) {
 			function loadInfo(url) {
 				var xmlhttp;
 				if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
-					xmlhttp=new XMLHttpRequest();
+					xmlhttp = new window.XMLHttpRequest();
 				}
 				else {// code for IE6, IE5
-					xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+					//xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+					xmlhttp = new ActiveXObject("MSXML2.XMLHTTP.3.0");
 				}
 				xmlhttp.onreadystatechange=function() {
 					if (xmlhttp.readyState==4 ) {
