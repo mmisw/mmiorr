@@ -35,8 +35,7 @@ function IonRoleTooltip(term, anchorId) {
 				}
 				else {// code for IE6, IE5
 					xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-					//xmlhttp = new ActiveXObject("MSXML2.XMLHTTP.3.0");
-          xmlhttp.setRequestHeader("Origin", "https://confluence-dev.oceanobservatories.org");
+					//xmlhttp = new ActiveXObject("MSXML2.XMLHTTP.3.0"););
 				}
 				xmlhttp.onreadystatechange=function() {
 					if (xmlhttp.readyState==4 ) {
@@ -53,6 +52,7 @@ function IonRoleTooltip(term, anchorId) {
 					}
 				}
 				xmlhttp.open("GET", url, true);
+        xmlhttp.setRequestHeader("Origin", "https://confluence-dev.oceanobservatories.org");
 				xmlhttp.send();
 			}	
 			query = query.replace(/ /g, '+');
