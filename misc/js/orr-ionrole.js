@@ -56,7 +56,7 @@ function IonRoleTooltip(term, anchorId) {
 				}
 				catch(e) {
 					nameElem.innerHTML = "";
-					descriptionElem.innerHTML = "Error. Perhaps you browser has denied access to ORR";
+					descriptionElem.innerHTML = "<i>Error. Your browser may have denied access to ORR.</i>";
 				}
         xmlhttp.setRequestHeader("Origin", "https://confluence-dev.oceanobservatories.org");
 				xmlhttp.send();
