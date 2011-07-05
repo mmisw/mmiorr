@@ -41,15 +41,15 @@ function IonRoleTooltip(term, anchorId) {
 						nameElem.innerHTML = array[1][0];
 						descriptionElem.innerHTML = array[1][1];
 					}
-					try {
+					//try {
 						xdr.open("get", url);
 						xdr.send();
-					}
-					catch(e) {
-						nameElem.innerHTML = "";
-						descriptionElem.innerHTML = "<i>Error using XDomainRequest.</i>";
-					}
-          return;
+					//}
+					//catch(e) {
+					//	nameElem.innerHTML = "";
+					//	descriptionElem.innerHTML = "<i>Error using XDomainRequest.</i>";
+					//}
+					return;
 				}
 				else {// code for IE6, IE5
 					//xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
@@ -69,14 +69,14 @@ function IonRoleTooltip(term, anchorId) {
 						}
 					}
 				}
-				try {
+				//try {
 					xmlhttp.open("GET", url, true);
 					xmlhttp.send();
-				}
-				catch(e) {
-					nameElem.innerHTML = "";
-					descriptionElem.innerHTML = "<i>Error. Your browser may have denied access to ORR.</i>";
-				}
+				//}
+				//catch(e) {
+				//	nameElem.innerHTML = "";
+				//	descriptionElem.innerHTML = "<i>Error. Your browser may have denied access to ORR.</i>";
+				//}
 			}	
 			query = query.replace(/ /g, '+');
 			loadInfo("http://mmisw.org/ont?form=csv&sparql=" +query);
