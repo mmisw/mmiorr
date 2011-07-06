@@ -1,6 +1,5 @@
 /**
- * @param term The ID of the term (not the full URI)
- * @param tableId Used to identify the elements to update
+ * @param tableId Id of the DOM element where the table will be inserted
  */
 function IonRoleVocab(tableId) {
 	var ionroleprefix = "http://mmisw.org/ont/ooi/ionrole/";  
@@ -21,8 +20,8 @@ function IonRoleVocab(tableId) {
 		for(var i = 1; i < array.length; i++) {
 			sb = sb.concat('<tr>');
 			var instance = array[i][0];
-			var role = array[i][1];
-			var description = array[i][2];
+			var role = array[i][1].replace(/[,]/g, ',');
+			var description = array[i][2].replace(/[,]/g, ',');
 			sb = sb.concat(
 				'<td><a target="_blank" href="' +instance+ '">' +role + '</a></td>',
 				'<td>' +description + '</td>'
@@ -31,8 +30,6 @@ function IonRoleVocab(tableId) {
 		}
 		sb = sb.concat('</table>\n');
 		
-		alert(sb);
-
 		tableElem.innerHTML = sb;
 	};                                                       
 	
@@ -108,5 +105,4 @@ function IonRoleVocab(tableId) {
 			loadInfo("http://mmisw.org/ont?form=csv&sparql=" +query);
 		}
 }
-
 
