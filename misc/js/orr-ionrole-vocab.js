@@ -17,7 +17,8 @@ function IonRoleVocab(tableId) {
 			'<th>' +'Description' + '</th>',
 			'</tr>'
 		);
-		for(var i = 0; i < array.length; i++) {
+		// omit first row, which is the header
+		for(var i = 1; i < array.length; i++) {
 			sb = sb.concat('<tr>');
 			var instance = array[i][0];
 			var role = array[i][1];
@@ -107,4 +108,5 @@ function IonRoleVocab(tableId) {
 			loadInfo("http://mmisw.org/ont?form=csv&sparql=" +query);
 		}
 }
+
 
