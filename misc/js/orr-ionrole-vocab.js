@@ -23,8 +23,8 @@ function IonRoleVocab(tableId) {
 			if (!instance || instance.length == 0 ) {
 				continue;
 			}
-			var role = array[i][1].replace(/[,]/g, ',');
-			var description = array[i][2].replace(/[,]/g, ',');
+			var role = array[i][1].replace(/\[,\]/g, ',');
+			var description = array[i][2].replace(/\[,\]/g, ',');
 			sb = sb.concat(
 				'<td><a target="_blank" href="' +instance+ '">' +role + '</a></td>',
 				'<td>' +description + '</td>'
