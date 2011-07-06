@@ -116,7 +116,7 @@ function IonRoleVocab(tableId) {
  */
 function replaceCommaThing(str) {
 	while (str.indexOf("[,]") != -1) {
-		str = str.replace(str, ",");
+		str = str.replace("[,]", ",");
 	}
 	return str;
 }
