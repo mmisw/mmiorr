@@ -82,7 +82,7 @@ function IonRoleVocab(tableId) {
 					gotError("xhr error:", e);
 				}
 			}	
-			query = query.replace(/ /g, '+');
+			query = encodeURIComponent(query);
 			loadInfo("http://mmisw.org/ont?form=csv&sparql=" +query);
 		}
 }
