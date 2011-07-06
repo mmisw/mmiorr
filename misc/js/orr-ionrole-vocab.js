@@ -20,6 +20,9 @@ function IonRoleVocab(tableId) {
 		for(var i = 1; i < array.length; i++) {
 			sb = sb.concat('<tr>');
 			var instance = array[i][0];
+			if (!instance || instance.length == 0 ) {
+				continue;
+			}
 			var role = array[i][1];
 			var description = array[i][2];
 			sb = sb.concat(
