@@ -55,7 +55,7 @@ function IonRoleTooltip(term, anchorId) {
 						xdr.send();
 					}
 					catch(e) {
-						gotError("IE: " +e);    
+						gotError("xdr error: " +e+ " (" +navigator.appName+ ")");    
 					}
 					return;
 				}
@@ -70,7 +70,7 @@ function IonRoleTooltip(term, anchorId) {
 						}
 						else {
 							nameElem.innerHTML = "";                                                
-							descriptionElem.innerHTML = "Error. Code returned: " + xmlhttp.status;   
+							descriptionElem.innerHTML = "Error. Status returned: " + xmlhttp.status;   
 						}
 					}
 				}
@@ -79,7 +79,7 @@ function IonRoleTooltip(term, anchorId) {
 					xmlhttp.send();
 				}
 				catch(e) {
-					gotError(e+ " (" +navigator.appName+ ")");
+					gotError("xhr error: " +e+ " (" +navigator.appName+ ")");
 				}
 			}	
 			query = query.replace(/ /g, '+');
