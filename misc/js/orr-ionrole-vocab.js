@@ -12,10 +12,10 @@ function IonRoleVocab(tableId) {
 		alert(data);
 		array = jQuery.csv(',', '"', '\n')(data);
 		var sb = '<table>\n';
-		jQuery.each(array, function() {
+		for (var row in array) {
 			sb = sb.concat('<tr>');
-			jQuery.each(this[0], function() {
-				sb = sb.concat('<td>' +this[0] + "</td>");
+			for (var col in row) {
+				sb = sb.concat('<td>' +col + "</td>");
 			});
 			sb = sb.concat('</tr>\n');
 		});
@@ -95,5 +95,4 @@ function IonRoleVocab(tableId) {
 			loadInfo("http://mmisw.org/ont?form=csv&sparql=" +query);
 		}
 }
-
 
