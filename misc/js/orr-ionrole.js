@@ -38,7 +38,7 @@ function IonRoleTooltip(term, anchorId) {
 			uriElem.innerHTML = this.uri;
 			
 			query = "prefix ionrole: <" +ionroleprefix+ "> " +
-						  "SELECT ?role ?description " +
+						  "SELECT DISTINCT ?role ?description " +
 						  " WHERE { " + 
 						  " ionrole:" +termId+ " ionrole:User_Role ?role. " +
 						  " ionrole:" +termId+ " ionrole:Description ?description.\n" +
@@ -91,5 +91,4 @@ function IonRoleTooltip(term, anchorId) {
 			loadInfo("http://mmisw.org/ont?form=csv&sparql=" +query);
 		}
 }
-
 
