@@ -18,9 +18,14 @@ function IonRoleTooltip(term, anchorId) {
 		descriptionElem.innerHTML = array[1][1];
 	};
 	
- 	var gotError = function(msg) {
+ 	var gotError = function(prefix, e) {
 		nameElem.innerHTML = "";
-		descriptionElem.innerHTML = '<i>' +msg+ '</i>';
+		descriptionElem.innerHTML = '<i>' +prefix+ " " +
+			(e.description ? e.description :
+			e.message ? e.message :
+			e) +
+			" (" +navigator.appName+ ")" +
+			'</i>';
 	};
  
 
@@ -55,7 +60,7 @@ function IonRoleTooltip(term, anchorId) {
 						xdr.send();
 					}
 					catch(e) {
-						gotError("xdr error: " +e+ " (" +navigator.appName+ ")");    
+						gotError("xdr error", e);    
 					}
 					return;
 				}
@@ -79,12 +84,11 @@ function IonRoleTooltip(term, anchorId) {
 					xmlhttp.send();
 				}
 				catch(e) {
-					gotError("xhr error: " +e+ " (" +navigator.appName+ ")");
+					gotError("xhr error", e);
 				}
 			}	
 			query = query.replace(/ /g, '+');
 			loadInfo("http://mmisw.org/ont?form=csv&sparql=" +query);
 		}
 }
-
 
