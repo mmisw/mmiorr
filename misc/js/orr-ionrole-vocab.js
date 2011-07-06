@@ -23,8 +23,8 @@ function IonRoleVocab(tableId) {
 			if (!instance || instance.length == 0 ) {
 				continue;
 			}
-			var role = array[i][1].replace(/\[\,\]/g, ',');
-			var description = array[i][2].replace(/\[\,\]/g, ',');
+			var role = replaceCommaThing(array[i][1]);
+			var description = replaceCommaThing(array[i][2]);
 			sb = sb.concat(
 				'<td><a target="_blank" href="' +instance+ '">' +role + '</a></td>',
 				'<td>' +description + '</td>'
@@ -108,5 +108,16 @@ function IonRoleVocab(tableId) {
 			query = encodeURIComponent(query);
 			loadInfo("http://mmisw.org/ont?form=csv&sparql=" +query);
 		}
+}
+
+/**
+ * With regular expression, this was not straightforward:
+ * str = str.replace(/\[\,\]/g, ',')
+ */
+function replaceCommaThing(str) {
+	while (str.indexOf("[,]") != -1) {
+		str = str.replace(str, ",");
+	}
+	return str;
 }
 
