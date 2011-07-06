@@ -79,11 +79,12 @@ function IonRoleTooltip(term, anchorId) {
 					xmlhttp.send();
 				}
 				catch(e) {
-					gotError(e+ " (" +navigator.appCodeName + ")");
+					gotError(e+ " (" +navigator.appName+ ")");
 				}
 			}	
 			query = query.replace(/ /g, '+');
 			loadInfo("http://mmisw.org/ont?form=csv&sparql=" +query);
 		}
 }
+
 
