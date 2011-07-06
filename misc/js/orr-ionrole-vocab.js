@@ -11,16 +11,15 @@ function IonRoleVocab(tableId) {
 	var gotData = function(data) {
 		alert(data);
 		array = jQuery.csv(',', '"', '\n')(data);
-		var sb = new StringBuffer();
-		sb.append('<table>\n');
+		var sb = '<table>\n';
 		jQuery.each(array, function() {
-			sb.append('<tr>');
+			sb = sb.concat('<tr>');
 			jQuery.each(this[0], function() {
-				ss.append('<td>' +this[0] + "</td>");
+				sb = sb.concat('<td>' +this[0] + "</td>");
 			});
-			sb.append('</tr>\n');
+			sb = sb.concat('</tr>\n');
 		});
-		sb.append('</table>\n');
+		sb = sb.concat('</table>\n');
 
 		tableElem.innerHTML = sb;
 	};                                                       
