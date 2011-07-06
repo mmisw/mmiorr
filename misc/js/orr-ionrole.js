@@ -20,7 +20,7 @@ function IonRoleTooltip(term, anchorId) {
 	
  	var gotError = function(msg) {
 		nameElem.innerHTML = "";
-		descriptionElem.innerHTML = '<font color="red">' +msg+ '</font>';
+		descriptionElem.innerHTML = '<i>' +msg+ '</i>';
 	};
  
 
@@ -79,7 +79,7 @@ function IonRoleTooltip(term, anchorId) {
 					xmlhttp.send();
 				}
 				catch(e) {
-					gotError(e+ "(" +navigator.appName+ ")");
+					gotError(e+ " (" +navigator.appCodeName + ")");
 				}
 			}	
 			query = query.replace(/ /g, '+');
