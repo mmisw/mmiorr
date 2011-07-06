@@ -60,7 +60,7 @@ function IonRoleTooltip(term, anchorId) {
 						xdr.send();
 					}
 					catch(e) {
-						gotError("xdr error", e);    
+						gotError("xdr error:", e);    
 					}
 					return;
 				}
@@ -84,11 +84,12 @@ function IonRoleTooltip(term, anchorId) {
 					xmlhttp.send();
 				}
 				catch(e) {
-					gotError("xhr error", e);
+					gotError("xhr error:", e);
 				}
 			}	
 			query = query.replace(/ /g, '+');
 			loadInfo("http://mmisw.org/ont?form=csv&sparql=" +query);
 		}
 }
+
 
