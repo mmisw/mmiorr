@@ -54,7 +54,7 @@ function IonRoleVocab(tableId) {
 			query = 
 				"prefix ionrole: <" +ionroleprefix+ "> " +
 				"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
-				"SELECT ?instance ?role ?description " +
+				"SELECT DISTINCT ?instance ?role ?description " +
 				" WHERE { " +      
 				" ?instance rdf:type ionrole:Role. " +
 				" ?instance ionrole:User_Role ?role. " +
