@@ -11,6 +11,12 @@ function IonRoleTooltip(term, anchorId) {
  	var uriElem = document.getElementById("uri" + anchorId);
  	var nameElem = document.getElementById("name" + anchorId);
 	var descriptionElem = document.getElementById("description" + anchorId);
+	
+	var gotData = function(data) {
+		array = jQuery.csv(',', '"', '\n')(data);
+		nameElem.innerHTML = array[1][0];
+		descriptionElem.innerHTML = array[1][1];
+	};
  
 	this.show = function() {		
 			if ( data != null ) {
@@ -31,15 +37,12 @@ function IonRoleTooltip(term, anchorId) {
 			function loadInfo(url) {
 				var xmlhttp;
 				if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
-					xmlhttp = new window.XMLHttpRequest();
+					xmlhttp = new XMLHttpRequest();
 				}
 				else if (window.XDomainRequest) { 
-					var xdr = new XDomainRequest(); // Create a new XDR object
+					var xdr = new XDomainRequest();
 					xdr.onload = function() {
-						data = xdr.responseText;
-						array = jQuery.csv(',', '"', '\n')(data);
-						nameElem.innerHTML = array[1][0];
-						descriptionElem.innerHTML = array[1][1];
+						gotData(xdr.responseText);
 					}
 					//try {
 						xdr.open("get", url);
@@ -52,16 +55,13 @@ function IonRoleTooltip(term, anchorId) {
 					return;
 				}
 				else {// code for IE6, IE5
-					//xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-					xmlhttp = new ActiveXObject("MSXML2.XMLHTTP.3.0");
+					xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+					//xmlhttp = new ActiveXObject("MSXML2.XMLHTTP.3.0");
 				}
 				xmlhttp.onreadystatechange = function() {
 					if (xmlhttp.readyState==4 ) {
 						if ( xmlhttp.status==200) {
-							data = xmlhttp.responseText;
-							array = jQuery.csv(',', '"', '\n')(data);
-							nameElem.innerHTML = array[1][0];
-							descriptionElem.innerHTML = array[1][1];
+							gotData(xmlhttp.responseText);
 						}
 						else {
 							nameElem.innerHTML = "";
