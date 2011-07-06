@@ -9,7 +9,6 @@ function IonRoleVocab(tableId) {
 	var tableElem = document.getElementById(tableId);
 	
 	var gotData = function(data) {
-		alert(data);
 		array = jQuery.csv(',', '"', '\n')(data);
 		var sb = '<table>\n';
 		for (var row in array) {
@@ -20,6 +19,8 @@ function IonRoleVocab(tableId) {
 			sb = sb.concat('</tr>\n');
 		}
 		sb = sb.concat('</table>\n');
+		
+		alert(sb);
 
 		tableElem.innerHTML = sb;
 	};                                                       
