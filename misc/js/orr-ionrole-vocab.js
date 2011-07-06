@@ -8,6 +8,7 @@ function IonRoleVocab(tableId) {
 	var tableElem = document.getElementById(tableId);
 	
 	var gotData = function(data) {
+		alert(data);
 		array = jQuery.csv(',', '"', '\n')(data);
 		var sb = '<table>\n';
 		sb = sb.concat(
