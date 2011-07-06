@@ -11,11 +11,21 @@ function IonRoleVocab(tableId) {
 	var gotData = function(data) {
 		array = jQuery.csv(',', '"', '\n')(data);
 		var sb = '<table>\n';
+		sb = sb.concat(
+			'<tr>',
+			'<th>' +'Role'+ '</th>',
+			'<th>' +'Description' + '</th>',
+			'</tr>'
+		);
 		for(var i = 0; i < array.length; i++) {
 			sb = sb.concat('<tr>');
-			for(var j = 0; j < array[i].length; j++) {
-				sb = sb.concat('<td>' +array[i][j] + "</td>");
-			}
+			var instance = array[i][0];
+			var role = array[i][1];
+			var description = array[i][2];
+			sb = sb.concat(
+				'<td><a target="_blank" href="' +instance+ '">' +role + '</a></td>',
+				'<td>' +description + '</td>'
+			);
 			sb = sb.concat('</tr>\n');
 		}
 		sb = sb.concat('</table>\n');
@@ -48,7 +58,8 @@ function IonRoleVocab(tableId) {
 				" ?instance rdf:type ionrole:Role. " +
 				" ?instance ionrole:User_Role ?role. " +
 				" ?instance ionrole:Description ?description.\n" +
-				"}";
+				"} " +
+				"ORDER BY ?instance";
 			
 
 			function loadInfo(url) {
@@ -96,5 +107,4 @@ function IonRoleVocab(tableId) {
 			loadInfo("http://mmisw.org/ont?form=csv&sparql=" +query);
 		}
 }
-
 
