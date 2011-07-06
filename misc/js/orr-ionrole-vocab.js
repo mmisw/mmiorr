@@ -48,7 +48,7 @@ function IonRoleVocab(tableId) {
 				return;
 			}
 			
-			tableElem.innerHTML = '<img src="http://mmisw.org/orr/images/loading.gif"/><i>Loading...</i>";
+			tableElem.innerHTML = '<img src="http://mmisw.org/orr/images/loading.gif"/><i>Loading...</i>';
 			
 			query = 
 				"prefix ionrole: <" +ionroleprefix+ "> " +
