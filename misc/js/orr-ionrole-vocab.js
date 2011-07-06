@@ -3,14 +3,14 @@
  * @param tableId Used to identify the elements to update
  */
 function IonRoleVocab(tableId) {
-	var ionroleprefix = "http://mmisw.org/ont/ooi/ionrole/";
+	var ionroleprefix = "http://mmisw.org/ont/ooi/ionrole/";  
 
 	var data = null;
 	var tableElem = document.getElementById(tableId);
 	
 	var gotData = function(data) {
 		array = jQuery.csv(',', '"', '\n')(data);
-		tableElem.innerHTML = array[1][0] + "br/>" +
+		tableElem.innerHTML = array[1][0] + "<br/>" +
 		array[1][1];
 	};                                                       
 	
