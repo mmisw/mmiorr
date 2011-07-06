@@ -36,7 +36,10 @@ function IonRoleTooltip(term, anchorId) {
 
 			function loadInfo(url) {
 				var xmlhttp;
-				if (window.XDomainRequest) { 
+				if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+					xmlhttp = new XMLHttpRequest();
+				}
+				else if (window.XDomainRequest) { 
 					var xdr = new XDomainRequest();
 					xdr.onload = function() {
 						gotData(xdr.responseText);
@@ -50,9 +53,6 @@ function IonRoleTooltip(term, anchorId) {
 						descriptionElem.innerHTML = "<i>Error: " +e+ "</i>";    
 					}
 					return;
-				}
-				else if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
-					xmlhttp = new XMLHttpRequest();
 				}
 				else {// code for IE6, IE5
 					xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
