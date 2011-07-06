@@ -17,7 +17,13 @@ function IonRoleTooltip(term, anchorId) {
 		nameElem.innerHTML = array[1][0];
 		descriptionElem.innerHTML = array[1][1];
 	};
+	
+ 	var gotError = function(msg) {
+		nameElem.innerHTML = "";
+		descriptionElem.innerHTML = '<font color="red">' +msg+ '</font>';
+	};
  
+
 	this.show = function() {		
 			if ( data != null ) {
 				return;
@@ -49,8 +55,7 @@ function IonRoleTooltip(term, anchorId) {
 						xdr.send();
 					}
 					catch(e) {
-						nameElem.innerHTML = "";
-						descriptionElem.innerHTML = "<i>Error: " +e+ "</i>";    
+						gotError("IE: " +e);    
 					}
 					return;
 				}
@@ -74,8 +79,7 @@ function IonRoleTooltip(term, anchorId) {
 					xmlhttp.send();
 				}
 				catch(e) {
-					nameElem.innerHTML = "";
-					descriptionElem.innerHTML = "<i>Error: " +e+ "</i>";
+					gotError(e+ "(" +navigator.appName+ ")");
 				}
 			}	
 			query = query.replace(/ /g, '+');
