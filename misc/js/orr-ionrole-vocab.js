@@ -16,9 +16,9 @@ function IonRoleVocab(tableId) {
 			sb = sb.concat('<tr>');
 			for (var col in row) {
 				sb = sb.concat('<td>' +col + "</td>");
-			});
+			}
 			sb = sb.concat('</tr>\n');
-		});
+		}
 		sb = sb.concat('</table>\n');
 
 		tableElem.innerHTML = sb;
@@ -95,4 +95,5 @@ function IonRoleVocab(tableId) {
 			loadInfo("http://mmisw.org/ont?form=csv&sparql=" +query);
 		}
 }
+
 
