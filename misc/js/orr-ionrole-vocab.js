@@ -48,8 +48,6 @@ function IonRoleVocab(tableId) {
 				return;
 			}
 			
-			tableElem.innerHTML = '<img src="http://mmisw.org/orr/images/loading.gif"/><i>Loading...</i>';
-			
 			query = 
 				"prefix ionrole: <" +ionroleprefix+ "> " +
 				"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
@@ -107,5 +105,4 @@ function IonRoleVocab(tableId) {
 			loadInfo("http://mmisw.org/ont?form=csv&sparql=" +query);
 		}
 }
-
 
