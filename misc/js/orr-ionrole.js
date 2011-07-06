@@ -14,8 +14,8 @@ function IonRoleTooltip(term, anchorId) {
 	
 	var gotData = function(data) {
 		array = jQuery.csv(',', '"', '\n')(data);
-		nameElem.innerHTML = array[1][0];
-		descriptionElem.innerHTML = array[1][1];
+		nameElem.innerHTML = replaceCommaThing(array[1][0]);
+		descriptionElem.innerHTML = replaceCommaThing(array[1][1]);
 	};
 	
  	var gotError = function(prefix, e) {
@@ -91,4 +91,16 @@ function IonRoleTooltip(term, anchorId) {
 			loadInfo("http://mmisw.org/ont?form=csv&sparql=" +query);
 		}
 }
+
+/**
+ * Replaces each "/[,]/" into ",".
+ */
+function replaceCommaThing(str) {
+	if (str) {
+		str = str.replace(/\/\[,\]\//g, ',');
+	}
+	return str;
+}
+
+  
 
