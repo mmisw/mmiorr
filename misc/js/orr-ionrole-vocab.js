@@ -115,8 +115,8 @@ function IonRoleVocab(tableId) {
  * str = str.replace(/\[\,\]/g, ',')
  */
 function replaceCommaThing(str) {
-	while (str.indexOf("[,]") != -1) {
-		str = str.replace("[,]", ",");
+	while (str.indexOf("\[,\]") != -1) {
+		str = str.replace("\[,\]", ",");
 	}
 	return str;
 }
