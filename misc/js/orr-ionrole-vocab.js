@@ -32,6 +32,7 @@ function IonRoleVocab(tableId) {
 			sb = sb.concat('</tr>\n');
 		}
 		sb = sb.concat('</table>\n');
+		alert(sb);
 		
 		tableElem.innerHTML = sb;
 	};                                                       
