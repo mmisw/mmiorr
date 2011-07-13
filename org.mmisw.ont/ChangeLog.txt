@@ -30,7 +30,8 @@ ChangeLog
 	  But the request should have been dispatched earlier, in 
 	         OntServlet._dispatchUri(String ontOrEntUri).
 	  and this has just been adjusted, see OntServlet._handleLatestVersionRedirection, for
-	  at least doing the redirection.
+	  at least doing the redirection. TODO NOTE: seems like the extension nor the term 
+	  component are transferred for the redirection.
 	  
 	
 2011-06-28  2.0.18.beta
