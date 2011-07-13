@@ -13,7 +13,7 @@ ChangeLog
 	  or term hasn't been supported for a long time. In particular, we are not loading
 	  any "versioned" ontology contents into the triple store. For clarification, whole
 	  ontologies could still be handled (they do not require the triple store) so this
-	  is bug in this case.
+	  is bug in this case (which has been just fixed, see below).
 	- If we want to revisit this functionality, then, an ideal scenario would be that 
 	  the ORR provide support (including inferencing using the triple store) for all 
 	  versions of all registered ontologies. This would require the necessary analysis, 
@@ -25,12 +25,12 @@ ChangeLog
 	  reference":
 	  .. String.replaceAll(String.java:2000)
 	  .. UriDispatcher._dispatchUriHtml(UriDispatcher.java:129)
-	  and that is because the '$' character is not escaped for the regex (this is a bug).
+	  and that is because the '$' character is not escaped for the regex (it is a bug here
+	  that the replacement is done with a regex-based utility).
 	  But the request should have been dispatched earlier, in 
 	         OntServlet._dispatchUri(String ontOrEntUri).
-	  
-	Did just a minor update in OntServlet to (partially) dispatch ontology requests with the
-	'$' indicator -- see comments there.
+	  and this has just been adjusted, see OntServlet._handleLatestVersionRedirection, for
+	  at least doing the redirection.
 	  
 	
 2011-06-28  2.0.18.beta

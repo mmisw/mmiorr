@@ -369,29 +369,15 @@ public class OntServlet extends HttpServlet {
 			// 2011-07-13
 			if ( finalVersion.equals(MmiUri.LATEST_VERSION_INDICATOR) ) {
 				if ( req.mmiUri != null ) {
-					ontology = db.getMostRecentOntologyVersion(req.mmiUri);
-					if ( ontology != null ) {
-						/*
-						 * Do redirection and return true.
-						 * TODO See UriResolver2 where a more complete dispatch of
-						 * the latest version indicator is performed. I'm not attempting
-						 * a full solution here right now, just a basic (probably incomplete)
-						 * dispatch because of time contraints. (2011-07-13).
-						 */
-						ontOrEntUri = ontology.getUri();
-						if ( log.isDebugEnabled() ) {
-							log.debug("Redirecting to latest version: " + ontOrEntUri);
-						}
-						String redir = req.response.encodeRedirectURL(ontOrEntUri);
-						req.response.sendRedirect(redir);
-						return true;
-					}
+					_handleLatestVersionRedirection(req, ontOrEntUri);
+					return true;
 				}
 				else {
 					// this shouldn't happen(?)
 					if ( log.isDebugEnabled() ) {
 						log.debug("request with latest version indicator but not req.mmiUri available");
 					}
+					// TODO should send error response or something
 				}
 			}
 			else {
@@ -428,6 +414,52 @@ public class OntServlet extends HttpServlet {
 		}
 	}
 	
+	/**
+	 * Handles redirection for a request containing the latest version indicator.
+	 */
+	private void _handleLatestVersionRedirection(OntRequest req, String ontOrEntUri) 
+	throws ServletException, IOException {
+		OntologyInfo ontology = db.getMostRecentOntologyVersion(req.mmiUri);
+		if ( ontology != null ) {
+			ontOrEntUri = ontology.getUri();
+			
+			MmiUri foundMmiUri;
+			
+			try {
+				//
+				// Note that mostRecentOntology.getUri() won't have the term component.
+				// So, we have to transfer it to foundMmiUri:
+				//
+				foundMmiUri = new MmiUri(ontology.getUri()).copyWithTerm(req.mmiUri.getTerm());
+				
+				if ( log.isDebugEnabled() ) {
+					log.debug("Found ontology version: " +ontology.getUri());
+
+					if ( ! req.mmiUri.getExtension().equals(foundMmiUri.getExtension()) ) {
+						log.debug("Restored requested extension to: " +req.mmiUri);
+					}
+				}
+				
+				// also, restore the original requested extension:
+				foundMmiUri = foundMmiUri.copyWithExtension(req.mmiUri.getExtension());
+			}
+			catch (URISyntaxException e) {
+				if ( log.isDebugEnabled() ) {
+					log.debug("Shouldn't happen", e);
+				}
+			}
+			
+			if ( log.isDebugEnabled() ) {
+				log.debug("Redirecting to latest version: " + ontOrEntUri);
+			}
+			String redir = req.response.encodeRedirectURL(ontOrEntUri);
+			req.response.sendRedirect(redir);
+		}
+		else {
+			req.response.sendError(HttpServletResponse.SC_NOT_FOUND, ontOrEntUri);
+		}
+	}
+
 	/**
 	 * Dispatches the given uri.
 	 * If the uri corresponds to a stored ontology, then the ontology is resolved
