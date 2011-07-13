@@ -4,6 +4,35 @@ $Id$
 
 ChangeLog
 
+2011-07-13  2.0.19.beta
+	What happended with the '$' version indicator for ontology/term URI requests? A request 
+	like http://mmisw.org/ont/mmi/$/device was supported long time ago (by a redirection to
+	the explicit latest version, eg., http://mmisw.org/ont/mmi/20090413T193509/device).
+	 
+	- In general, the '$' mechanism for redirection to the latest version of an ontology
+	  or term hasn't been supported for a long time. In particular, we are not loading
+	  any "versioned" ontology contents into the triple store. For clarification, whole
+	  ontologies could still be handled (they do not require the triple store) so this
+	  is bug in this case.
+	- If we want to revisit this functionality, then, an ideal scenario would be that 
+	  the ORR provide support (including inferencing using the triple store) for all 
+	  versions of all registered ontologies. This would require the necessary analysis, 
+	  design, and implementation adjustments, testing and tune up (note also that the 
+	  current triple store server has stability issues that will likely be exacerbated 
+	  with the incremented size of the triple store). 
+
+	- BTW, a $-request like the above triggers an "IllegalArgumentException: Illegal group 
+	  reference":
+	  .. String.replaceAll(String.java:2000)
+	  .. UriDispatcher._dispatchUriHtml(UriDispatcher.java:129)
+	  and that is because the '$' character is not escaped for the regex (this is a bug).
+	  But the request should have been dispatched earlier, in 
+	         OntServlet._dispatchUri(String ontOrEntUri).
+	  
+	Did just a minor update in OntServlet to (partially) dispatch ontology requests with the
+	'$' indicator -- see comments there.
+	  
+	
 2011-06-28  2.0.18.beta
 	- #288 Enable CORS
 	  Partially enabled.

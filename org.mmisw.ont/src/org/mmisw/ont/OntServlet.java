@@ -366,7 +366,37 @@ public class OntServlet extends HttpServlet {
 				log.debug("Explicit version requested: " +finalVersion);
 			}
 			
-			ontology = db.getOntologyVersion(ontOrEntUri, finalVersion);
+			// 2011-07-13
+			if ( finalVersion.equals(MmiUri.LATEST_VERSION_INDICATOR) ) {
+				if ( req.mmiUri != null ) {
+					ontology = db.getMostRecentOntologyVersion(req.mmiUri);
+					if ( ontology != null ) {
+						/*
+						 * Do redirection and return true.
+						 * TODO See UriResolver2 where a more complete dispatch of
+						 * the latest version indicator is performed. I'm not attempting
+						 * a full solution here right now, just a basic (probably incomplete)
+						 * dispatch because of time contraints. (2011-07-13).
+						 */
+						ontOrEntUri = ontology.getUri();
+						if ( log.isDebugEnabled() ) {
+							log.debug("Redirecting to latest version: " + ontOrEntUri);
+						}
+						String redir = req.response.encodeRedirectURL(ontOrEntUri);
+						req.response.sendRedirect(redir);
+						return true;
+					}
+				}
+				else {
+					// this shouldn't happen(?)
+					if ( log.isDebugEnabled() ) {
+						log.debug("request with latest version indicator but not req.mmiUri available");
+					}
+				}
+			}
+			else {
+				ontology = db.getOntologyVersion(ontOrEntUri, finalVersion);
+			}
 		}
 		else {
 			//
