@@ -78,8 +78,7 @@ function IonRoleTooltip(term, anchorId) {
                 catch(e) {
                     gotError("xhr error:", e);
                 }
-            }    
-            query = query.replace(/ /g, '+');
+            }
             loadInfo("https://orrexp.appspot.com/_relay_?get=ionrole_" + termId);
         }
 }
