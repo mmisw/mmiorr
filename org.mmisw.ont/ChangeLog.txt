@@ -4,6 +4,30 @@ $Id$
 
 ChangeLog
 
+2011-12-15  2.0.20.beta
+	Starting triple store implementation based on AllegroGraph 4.x, which is a major 
+	version change wrt version 3.3, the one we've been using so far.
+	Ref: http://www.franz.com/agraph/support/documentation/current/convert3to4.html
+	
+	It seems the two client libraries (agraph.jar and agraph-4.4.jar, which are for
+	versions 3.3 and 4.4 respectively) can be used simultaneously because the base
+	AG types live in different packages. This will facilitate the transitioning.
+
+	Libraries copied from AG 4.4 to WebContent/WEB_INF/lib/
+		- agraph-4.4.jar
+		- openrdf-sesame-2.3.2-onejar.jar
+		
+	New package for the AG4 based implementation:
+	     org.mmisw.ont.triplestore.allegro4
+	     
+	The AG4 SPARQL endpoint will be the main mechanism for the allegro4.AgTripleStore 
+	implementation.
+	
+	Preliminary exploration at this point.
+	     
+	     
+	
+
 2011-07-13  2.0.19.beta
 	What happended with the '$' version indicator for ontology/term URI requests? A request 
 	like http://mmisw.org/ont/mmi/$/device was supported long time ago (by a redirection to

@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry excluding="org/mmisw/ont/OntServlet_trailingFragment.java|org/mmisw/ont/UriResolver2_trailingFragment.java" kind="src" path="src"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-dbcp-1.2.2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-io-1.4.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-logging-1.1.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-pool-1.4.jar"/>
-	<classpathentry kind="lib" path="/Users/carueda/Software/apache-tomcat-6.0.18/lib/servlet-api.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/concurrent.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/antlr-2.7.5.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/agraph.jar" sourcepath="/Applications/AllegroGraph/agsrc-3-2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-codec-1.3.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-httpclient-3.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/js.jar"/>
@@ -32,5 +30,9 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/virt_jena.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/virtjdbc3.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jcip-annotations-1.0.jar" sourcepath="/Users/carueda/Software/jcip-annotations-src.jar"/>
+	<classpathentry kind="lib" path="/Users/carueda/Software/apache-tomcat-6.0.29/lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/agraph.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/openrdf-sesame-2.3.2-onejar.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/agraph-4.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
