@@ -143,6 +143,7 @@
 				<filter token="jena.tdb.dir" value="${jena.tdb.dir}" />
 				<filter token="jena.tdb.assembler" value="${jena.tdb.assembler}" />
 				
+				<filter token="agraph.version" value="${agraph.version}" />
 				<filter token="agraph.host" value="${agraph.host}" />
 				<filter token="agraph.port" value="${agraph.port}" />
 				<filter token="agraph.ts.dir" value="${agraph.ts.dir}" />

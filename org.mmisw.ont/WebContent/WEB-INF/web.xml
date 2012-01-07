@@ -67,6 +67,10 @@
 			<param-value>@agraph.ts.dir@</param-value>
 		</init-param>
 		<init-param>
+			<param-name>agraph.version</param-name>
+			<param-value>@agraph.version@</param-value>
+		</init-param>
+		<init-param>
 			<param-name>agraph.host</param-name>
 			<param-value>@agraph.host@</param-value>
 		</init-param>
