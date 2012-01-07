@@ -10,30 +10,45 @@ public class AgUtil {
 
 	/**
 	 * Gets mime type corresponding to the given format.
+	 *
+	 * Note that upon an invalid "accept" value for a SELECT query,
+	 * AG 4.4 reports :
+	<pre>
+	No suitable response format available. (Supported formats:
+	application/json, application/x-lisp-structured-expression,
+	text/integer, application/sparql-results+xml,
+	application/sparql-results+json, application/processed-csv, text/csv,
+	application/x-direct-upis)
+	</pre>
 	 * 
 	 * @param form
 	 * @return
 	 */
 	public static String mimeType(String form) {
 		/*
-		 * FIXME
+		 * TODO how to resolve for html or rdf or n3?
 		 */
-		String mimeType = "text/plain";
-		if (form == null || form.equals("txt")) {
-			return mimeType;
+		String mimeType = "text/csv";
+		if (form == null || form.equals("txt") || form.equals("csv")) {
+			// Ok, "text/csv".
 		}
 		else if (form.equals("json")) {
 			mimeType = "application/json";
 		}
 		else if (form.equals("rdf") || form.equals("owl")) {
+			/*
+			 * TODO These would not be allowed. Let it go as this for the moment
+			 * and let the response indicate the error to the user.
+			 */
 			mimeType = "application/rdf+xml";
 		}
 		else if (form.equals("n3")) {
+			/*
+			 * TODO These would not be allowed. Let it go as this for the moment
+			 * and let the response indicate the error to the user.
+			 */
 			mimeType = "text/rdf+n3";
 		}
-		/*
-		 * TODO others plus adjustments. for example, how to resolve for html?
-		 */
 		else if (form.equals("html")) {
 			mimeType = "text/html";
 		}
