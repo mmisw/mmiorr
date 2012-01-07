@@ -4,6 +4,11 @@ $Id$
 
 ChangeLog
 
+2012-01-06  2.0.20.beta
+	WebContent/sparql.html: use relative URL (/ont?...), which will work in general
+	as well. (besides it facilitates preliminary tests in the current server migration.
+
+
 2011-12-15  2.0.20.beta
 	Starting triple store implementation based on AllegroGraph 4.x, which is a major 
 	version change wrt version 3.3, the one we've been using so far.
