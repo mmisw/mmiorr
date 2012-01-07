@@ -9,6 +9,7 @@ import org.mmisw.ont.admin.AdminDispatcher;
 import org.mmisw.ont.db.Db;
 import org.mmisw.ont.sparql.QueryResult;
 import org.mmisw.ont.triplestore.allegro.AgTripleStore;
+import org.mmisw.ont.triplestore.allegro4.Ag4TripleStore;
 import org.mmisw.ont.triplestore.mem.JenaMemTripleStore;
 import org.mmisw.ont.triplestore.tdb.JenaTbdTripleStore;
 import org.mmisw.ont.triplestore.virtuoso.JenaVirtuosoTripleStore;
@@ -68,12 +69,18 @@ public class TripleStore implements ITripleStore {
 	private ITripleStore _createTripleStoreInstance() {
 		
 		//
-		// If the AllegroGraph server host is given, then use the AG implementation.
+		// If an AllegroGraph server version is given, then use corresponding AG implementation.
 		//
-		String agraphHost = OntConfig.Prop.AGRAPH_HOST.getValue();
-		boolean useAllegroGraph = agraphHost != null && agraphHost.trim().length() > 0;
+		String agraphVersion = OntConfig.Prop.AGRAPH_VERSION.getValue();
+		boolean useAllegroGraph = agraphVersion != null && agraphVersion.trim().length() > 0;
 		if ( useAllegroGraph  ) {
-			return new AgTripleStore(_db, _adminDispatcher);
+			agraphVersion = agraphVersion.trim();
+			if ( agraphVersion.startsWith("4.") ) {
+				return new Ag4TripleStore(_db, _adminDispatcher);
+			}
+			else if ( agraphVersion.startsWith("3.") ) {
+				return new AgTripleStore(_db, _adminDispatcher);
+			}
 		}
 
 		//

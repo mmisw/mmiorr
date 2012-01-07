@@ -44,7 +44,7 @@ import com.hp.hpl.jena.rdf.model.Statement;
  * 
  * @author Carlos Rueda
  */
-public class AgTripleStore implements ITripleStore {
+public class Ag4TripleStore implements ITripleStore {
 
 	/**
 	 * Servlet resource containing the model with properties for inference
@@ -53,7 +53,7 @@ public class AgTripleStore implements ITripleStore {
 	@SuppressWarnings("unused")
 	private static final String INF_PROPERTIES_MODEL_NAME_NT = "inf_properties.nt";
 
-	private final Log log = LogFactory.getLog(AgTripleStore.class);
+	private final Log log = LogFactory.getLog(Ag4TripleStore.class);
 
 	private String serverHost;
 	private int serverPort;
@@ -167,7 +167,7 @@ public class AgTripleStore implements ITripleStore {
 	 * @param db
 	 *            The database helper.
 	 */
-	public AgTripleStore(Db db, AdminDispatcher adminDispatcher) {
+	public Ag4TripleStore(Db db, AdminDispatcher adminDispatcher) {
 		this.db = db;
 		this.adminDispatcher = adminDispatcher;
 		log.debug(getClass().getSimpleName() + " instance created.");

@@ -5,8 +5,13 @@ $Id$
 ChangeLog
 
 2012-01-06  2.0.20.beta
-	WebContent/sparql.html: use relative URL (/ont?...), which will work in general
-	as well. (besides it facilitates preliminary tests in the current server migration.
+	- WebContent/sparql.html: use relative URL (/ont?...), which will work in general
+	  as well. (besides it facilitates preliminary tests in the current server migration.
+	  
+	- TripleStore._createTripleStoreInstance: now checks the new "agraph.version" 
+	  configuration property ({sample.}build.properties) to determine which AG triple
+	  store implementation to use.
+	  
 
 
 2011-12-15  2.0.20.beta
@@ -25,7 +30,7 @@ ChangeLog
 	New package for the AG4 based implementation:
 	     org.mmisw.ont.triplestore.allegro4
 	     
-	The AG4 SPARQL endpoint will be the main mechanism for the allegro4.AgTripleStore 
+	The AG4 SPARQL endpoint will be the main mechanism for the allegro4.Ag4TripleStore 
 	implementation.
 	
 	Preliminary exploration at this point.

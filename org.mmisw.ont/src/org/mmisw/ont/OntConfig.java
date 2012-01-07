@@ -48,6 +48,7 @@ public class OntConfig {
 		JENA_TDB_DIR                  ("jena.tdb.dir", false),
 		JENA_TDB_ASSEMBLER            ("jena.tdb.assembler", false),
 		
+		AGRAPH_VERSION                ("agraph.version", false),
 		AGRAPH_HOST                   ("agraph.host", false),
 		AGRAPH_PORT                   ("agraph.port"),
 		AGRAPH_TS_DIR                 ("agraph.ts.dir"),
