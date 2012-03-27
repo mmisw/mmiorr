@@ -189,7 +189,7 @@
 		</delete>
 	</target>
 	
-	<target name="deploy-war" depends="war" description="copies the WAR to ${appserver.deploy.dir}">
+	<target name="deploy-war" description="copies the WAR to ${appserver.deploy.dir}">
 		<copy file="${build.dir}/ont.war" todir="${appserver.deploy.dir}" preservelastmodified="true" />
 	</target>
 	
