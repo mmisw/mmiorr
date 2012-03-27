@@ -50,8 +50,12 @@ public class AgUtil {
 			mimeType = "text/rdf+n3";
 		}
 		else if (form.equals("html")) {
-			mimeType = "text/html";
+			// TODO "text/html" is invalid response formats for AG 4.x; 
+			//mimeType = "text/html";
+			// keep text/csv for the moment:
+			mimeType = "text/csv";
 		}
+		
 		return mimeType;
 	}
 

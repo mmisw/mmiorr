@@ -92,9 +92,8 @@ class OntClientImpl implements IOntClient {
 		return OntClientUtil.isOntResolvableUri(uri);
 	}
 
-	public boolean isRegisteredOntologyUri(String uriModel,
-			String... acceptEntries) throws Exception {
-		return OntClientUtil.isRegisteredOntologyUri(uriModel, acceptEntries);
+	public boolean isRegisteredOntologyUri(String uriModel) throws Exception {
+		return OntClientUtil.isRegisteredOntologyUri(uriModel);
 	}
 
 	public boolean loadOntologyInGraph(String uriModel, String graphId)

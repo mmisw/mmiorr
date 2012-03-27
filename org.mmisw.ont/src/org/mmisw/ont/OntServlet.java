@@ -220,6 +220,13 @@ public class OntServlet extends HttpServlet {
 			return;
 		}
 		
+		// "ontology exists" request?
+		if ( Util.yes(req.request, "oe") ) {
+			String uri = Util.getParam(req.request, "oe", "");
+			_dispatchIsOntologyRegistered(uri);
+			return;
+		}
+		
 		// if the "uri" parameter is included, resolve by the given URI
 		if ( Util.yes(req.request, "uri") ) {
 			// get (ontology or entity) URI from the parameter:
@@ -407,10 +414,108 @@ public class OntServlet extends HttpServlet {
 			return true;
 		}
 		else {
-			// try to dispatch entity URI (not complete ontology).
+			/*
+			 * It is not a registered ontology.
+			 * If it is an Ont-resolvable URI corresponding to an ontology (ie., not term),
+			 * then respond NotFound
+			 */
+			if ( req.mmiUri != null 
+			&& req.mmiUri.getTerm().length() == 0
+			&& OntUtil.isOntResolvableUri(req.mmiUri.getOntologyUri()) ) {
+				if (log.isDebugEnabled()) {
+					log.debug("_dispatchUri: ontOrEntUri=" +ontOrEntUri + " => " +
+							"Ont-resolvable URI for non-registered ontology, responding 404");
+				}
+				req.response.sendError(HttpServletResponse.SC_NOT_FOUND, req.mmiUri.getOntologyUri());
+				return true;
+			}
+			
+			// Else: try to dispatch as it were an entity URI (not complete ontology).
 			return uriDispatcher.dispatchEntityUri(req.request, req.response, ontOrEntUri,
 					req.outFormat
 			);
+		}
+	}
+	
+	/**
+	 * Does the uri correspond to a registered ontology?
+	 * This method always completes the dispatch to the client.
+	 */
+	private void _dispatchIsOntologyRegistered(String uri) throws ServletException, IOException {
+		/*
+		 * Based on _dispatchUri
+		 */
+		OntRequest req = getThreadLocalOntRequest();
+		if ( log.isDebugEnabled() ) {
+			log.debug("_dispatchIsOntologyRegistered: uri=" +uri);
+		}
+		
+		if ( uri == null || uri.length() == 0 ) {
+			req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing value for 'oe' parameter");
+			return;
+		}
+		
+		String finalVersion = null;
+		
+		// explicit version and MmiUri with version given?
+		if ( req.version != null ) {
+			if ( req.mmiUri != null && req.mmiUri.getVersion() != null ) {		
+				//
+				// Both, versioned URI and "version" parameter given.
+				// Check that the two components are equal.
+				//
+				if ( ! req.version.equals(req.mmiUri.getVersion()) ) {
+					// versioned request AND explicit version parameter -> BAD REQUEST:
+					req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, 
+					"Versioned URI and \"version\" parameter requested simultaneously; both values must be equal.");
+					return;
+				}
+				finalVersion = req.version;
+			}
+		}
+		else if ( req.mmiUri != null  ) {
+			finalVersion = req.mmiUri.getVersion();
+		}
+		
+		// will be non-null if request corresponds to an ontology
+		OntologyInfo ontology = null;
+		
+		if ( finalVersion != null ) {
+			//
+			// explicit version requested (either from version parameter or from MmiUri).
+			//
+			if ( log.isDebugEnabled() ) {
+				log.debug("Explicit version requested: " +finalVersion);
+			}
+			
+			if ( finalVersion.equals(MmiUri.LATEST_VERSION_INDICATOR) ) {
+				// LATEST_VERSION_INDICATOR not handled in this method -> BAD REQUEST:
+				req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, 
+					"Latest version indicator in MmiUri not handled.");
+				return;
+			}
+			else {
+				ontology = db.getOntologyVersion(uri, finalVersion);
+			}
+		}
+		else {
+			//
+			// No explicit version requested.
+			//
+			log.debug("No explicit version requested.");
+			ontology = _getRegisteredOntology(uri);
+		}
+		
+		if ( log.isDebugEnabled() ) {
+			log.debug("_dispatchIsOntologyRegistered: uri=" +uri + 
+					" => " + (ontology != null ? "YES" : "NO"));
+		}
+
+		if ( ontology != null ) {
+			req.response.setStatus(HttpServletResponse.SC_OK);
+		}
+		else {
+			req.response.sendError(HttpServletResponse.SC_NOT_FOUND, uri);
 		}
 	}
 	

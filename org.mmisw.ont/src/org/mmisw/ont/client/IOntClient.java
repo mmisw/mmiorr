@@ -76,11 +76,10 @@ public interface IOntClient {
 	 * Determines if the URI corresponds to a registered ontology.
 	 * 
 	 * @param uriModel  The URI of the desired ontlogy.
-	 * @param acceptEntries list of accept header entries
 	 * @return true iff the ontology is registered.
 	 * @throws Exception
 	 */
-	public boolean isRegisteredOntologyUri(String uriModel, String... acceptEntries) throws Exception ;
+	public boolean isRegisteredOntologyUri(String uriModel) throws Exception ;
 
 
 	/**

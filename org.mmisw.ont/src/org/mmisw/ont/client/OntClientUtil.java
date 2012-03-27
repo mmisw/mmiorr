@@ -90,18 +90,25 @@ class OntClientUtil {
 	/**
 	 * Determines if the URI corresponds to a registered ontology.
 	 * 
-	 * @param uriModel  The URI of the desired ontlogy.
-	 * @param acceptEntries list of accept header entries
+	 * @param uriModel  The URI of the desired ontology.
 	 * @return true iff the ontology is registered.
 	 * @throws Exception
 	 */
-	static boolean isRegisteredOntologyUri(String uriModel, String... acceptEntries) throws Exception {
-		
+	static boolean isRegisteredOntologyUri(String uriModel) throws Exception {
+		/*
+		 * Use the "oe" (ontology exists) request.
+		 */
 		String ontServiceUrl = _config().getOntServiceUrl();
 		uriModel = URLEncoder.encode(uriModel, "UTF-8");
-		// TODO (perf) Use a request that *only* checks the URI is registered
-		String ontServiceRequest = ontServiceUrl + "?uri=" +uriModel;
-		int statusCode = HttpUtil.httpGetStatusCode(ontServiceRequest, acceptEntries);
+		String ontServiceRequest = ontServiceUrl + "?oe=" +uriModel;
+		if (log.isDebugEnabled()) {
+			log.debug("isRegisteredOntologyUri: ontServiceRequest = " + ontServiceRequest);
+		}
+		int statusCode = HttpUtil.httpGetStatusCode(ontServiceRequest);
+		if (log.isDebugEnabled()) {
+			log.debug("isRegisteredOntologyUri: ontServiceRequest = " + ontServiceRequest + 
+					" => statusCode=" +statusCode);
+		}
 		
 		return statusCode == HttpStatus.SC_OK;
 	}
