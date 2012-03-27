@@ -4,6 +4,13 @@ Created: 2009-05-13
 $Id$
 
 
+2012-03-27  2.0.21.beta
+	- Adjustments to align with changes in the Ont client library, which are
+	  in part due to enabling the use of AllegroGraph 4.4 and others while
+	  doing migration of the main ORR deployment to a new hosting.
+	- Syncing with Ont 2.0.21.beta
+
+
 2011-03-30  2.0.17.beta
 	- build.xml: exclude **/*_trailingFragment.java", some incomplete code I tried
 	  while investigating http://code.google.com/p/mmisw/issues/detail?id=289

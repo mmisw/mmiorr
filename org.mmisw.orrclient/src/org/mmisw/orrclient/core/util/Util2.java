@@ -113,7 +113,7 @@ public class Util2 {
 		
 		// we just need to know whether this URI resolves against the registry:
 		try {
-			possibleOntologyExists = OntServiceUtil.isRegisteredOntologyUri(possibleOntologyUri, "application/rdf+xml");
+			possibleOntologyExists = OntServiceUtil.isRegisteredOntologyUri(possibleOntologyUri);
 		}
 		catch (Exception e) {
 			// report the error and return false (we shouldn't continue with the upload):

@@ -33,8 +33,8 @@ public class OntServiceUtil {
 		return _ontClient.resolveOntologyUri(uriModel, version, acceptEntries);
 	}
 
-	public static boolean isRegisteredOntologyUri(String uriModel, String... acceptEntries) throws Exception {
-		return _ontClient.isRegisteredOntologyUri(uriModel, acceptEntries);
+	public static boolean isRegisteredOntologyUri(String uriModel) throws Exception {
+		return _ontClient.isRegisteredOntologyUri(uriModel);
 	}
 	
 	public static OntModel retrieveModel(String uriModel, String version) throws Exception {
