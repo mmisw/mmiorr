@@ -2,6 +2,12 @@ org.mmisw.orrportal: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2012-03-27  2.0.21.beta
+	- Adjustments to align with changes in the Ont and Orr client libraries, which are
+	  in part due to enabling the use of AllegroGraph 4.4 and others while
+	  doing migration of the main ORR deployment to a new hosting.
+	- Syncing on the 2.0.21.beta version.
+
 2011-03-24  2.0.16.beta
 	- bug fix in orrclient module: possible NPE in OntTypeUtil.determineType().
 	  Exposed while trying to upload new version of CF vocab released today.
