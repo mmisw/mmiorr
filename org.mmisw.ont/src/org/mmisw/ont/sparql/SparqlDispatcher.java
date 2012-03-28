@@ -100,8 +100,8 @@ public class SparqlDispatcher {
 	 * @throws IOException
 	 */
 	private boolean _executeWithCompletion(HttpServletRequest request, HttpServletResponse response, 
-			String query, String requestedEntity,
-			String outFormat, boolean forceCompletion
+			final String query, String requestedEntity,
+			final String outFormat, boolean forceCompletion
 	)
 	throws ServletException, IOException {
 		
@@ -126,6 +126,12 @@ public class SparqlDispatcher {
 			IOUtils.copy(is, os);
 			os.close();
 			return true;
+		}
+		
+		if (log.isDebugEnabled()) {
+			log.debug("outFormat=" + outFormat+ 
+					" queryResult: contentType=" + queryResult.getContentType()+ 
+					" isEmpty=" +queryResult.isEmpty());
 		}
 		
 		// set the content type now (although this might be changed below)
@@ -202,6 +208,18 @@ public class SparqlDispatcher {
 			response.setContentType(queryResult.getContentType());
 		}
 		
+		/*
+		 * The following checks the case when the request was for "html-frag", which
+		 * is actually dispatched as "text/csv" when using AllegroGraph 4.4. In this
+		 * case, do the conversion from CSV to the requested HTML:
+		 */
+		else if ( queryResult.getContentType() != null
+			&& queryResult.getContentType().contains("text/csv") 
+			&& "html-frag".equals(outFormat) ) {
+			result = Util.csv2html(result);
+			response.setContentType("text/html");
+		}
+		
 		else {
 			response.setContentType(queryResult.getContentType());
 		}
@@ -216,7 +234,7 @@ public class SparqlDispatcher {
 	private QueryResult _execute(String sparqlQuery, String form) throws Exception {
 		
 		if ( log.isDebugEnabled() ) {
-			log.debug("_execute: query string = [" +sparqlQuery+ "]");
+			log.debug("_execute: query string = [" +sparqlQuery+ "] form=" +form);
 		}
 		long start = System.currentTimeMillis();
 		QueryResult queryResult = tripleStore.executeQuery(sparqlQuery, form);

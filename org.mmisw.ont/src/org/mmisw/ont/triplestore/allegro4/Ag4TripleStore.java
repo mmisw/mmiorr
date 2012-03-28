@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,6 +27,7 @@ import org.mmisw.ont.sparql.QueryResult;
 import org.mmisw.ont.triplestore.ITripleStore;
 import org.mmisw.ont.triplestore.TsUtil;
 import org.mmisw.ont.util.OntUtil;
+import org.mmisw.ont.util.Util;
 import org.openrdf.OpenRDFException;
 import org.openrdf.repository.RepositoryException;
 
@@ -744,8 +746,20 @@ public class Ag4TripleStore implements ITripleStore {
 		String accept = AgUtil.mimeType(form);
 		HttpResponse httpResponse = HttpUtil.httpGet(urlRequest, accept);
 
-		queryResult.setResult(httpResponse.body);
-		queryResult.setContentType(httpResponse.contentType);
+		/*
+		 * Note that AgUtil.mimeType returns "text/csv" for form="html"
+		 * The following checks that case to convert the returned CSV into HTML.
+		 */
+		if ("html".equals(form) && "text/csv".equals(accept) 
+		&& httpResponse.statusCode == HttpServletResponse.SC_OK ) {
+			String html = Util.csv2html(httpResponse.body);
+			queryResult.setResult(html);
+			queryResult.setContentType("text/html");
+		}
+		else {
+			queryResult.setResult(httpResponse.body);
+			queryResult.setContentType(httpResponse.contentType);
+		}
 
 		return queryResult;
 	}

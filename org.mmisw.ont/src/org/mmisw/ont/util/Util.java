@@ -227,7 +227,53 @@ public class Util {
 		return s.replaceAll("--", "\\\\-\\\\-");
 	}
 	
-	
+	/**
+	 * Converts CSV contents into an HTML table.
+	 * @param csv The CSV contents
+	 * @return the HTML contents.
+	 */
+	public static String csv2html(String csv) {
+		StringBuilder html = new StringBuilder();
+		
+		html.append("<table class=\"inline\">\n");
+		
+		String thtd = "th";
+		String[] lines = csv.split("\n|\r\n");
+		for (String line : lines) {
+			if (line.startsWith("\"") && line.endsWith("\"")) {
+				line = line.substring(1, line.length() -1);
+			}
+			
+			String[] cols = line.split("\",\"");
+			
+			html.append("<tr>");
+			
+			for (String col : cols) {
+				while (col.startsWith("\"") && col.endsWith("\"")) {
+					col = col.substring(1, col.length() -1);
+				}
+				if (col.startsWith("<") && col.endsWith(">")) {
+					col = col.substring(1, col.length() -1);
+				}
+				
+				String link = Util.getLink(col);
+				if ( link != null ) {
+					col = String.format("<a target=\"_blank\" href=\"%s\">%s</a>", link, Util.toHtml(col));
+				}
+				else {
+					col = Util.toHtml(col);
+				}
+				
+				html.append("\n\t" + "<" +thtd+ ">" + col + "</" +thtd+ ">");
+			}
+			html.append("\n</tr>\n");
+			thtd = "td";
+		}
+		
+		html.append("</table>\n");
+		return html.toString();
+	}
+
 	public static String elapsedTime(long start) {
 		long total = System.currentTimeMillis() - start;
 		long min = total/60000;

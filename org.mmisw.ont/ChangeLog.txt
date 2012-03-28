@@ -7,6 +7,9 @@ ChangeLog
 2012-03-27  2.0.21.beta
 	- OntSevlet: New "ontology exists" (oe) request dispatched
 	- IOntClient.isRegisteredOntologyUri: removed unnecessary acceptEntries parameter.
+	- Util.csv2html: implemented in particular to get the HTML version of CSV contents 
+	  for AllegroGraph 4.4, which does not provide a direct HTML response format.
+	  Used in SparqlDispatcher and Ag4TripleStore
 
 2012-01-06  2.0.20.beta
 	- WebContent/sparql.html: use relative URL (/ont?...), which will work in general
