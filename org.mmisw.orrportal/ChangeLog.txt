@@ -2,6 +2,9 @@ org.mmisw.orrportal: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2012-03-22  2.0.22.beta
+	- More adjustments related with use of new AllegroGraph 4.4
+
 2012-03-27  2.0.21.beta
 	- Adjustments to align with changes in the Ont and Orr client libraries, which are
 	  in part due to enabling the use of AllegroGraph 4.4 and others while

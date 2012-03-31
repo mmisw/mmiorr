@@ -80,6 +80,8 @@ import org.mmisw.orrclient.gwt.client.rpc.vine.RelationInfo;
 import org.mmisw.orrclient.gwt.client.vocabulary.AttrDef;
 import org.mmisw.orrclient.gwt.client.vocabulary.AttrGroup;
 
+import au.com.bytecode.opencsv.CSVReader;
+
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -497,7 +499,7 @@ public class OrrClientImpl implements IOrrClient {
 		// because the query needs to be against all registered ontologies.
 		
 		String query = 
-			"SELECT ?prop ?value " +
+			"SELECT DISTINCT ?prop ?value " +
 			"WHERE { <" +uri+ "> ?prop ?value . }"
 		;
 		String format = "csv";
@@ -520,19 +522,40 @@ public class OrrClientImpl implements IOrrClient {
 			log.debug("RESULT=" +result);
 		}
 		
-		boolean ok = false;
+		boolean ok = true;
 		
-		if ( ! result.toLowerCase().startsWith("error:") ) {
+		CSVReader reader = new CSVReader(new StringReader(result));
+		List<String[]> lines;
+		try {
+			lines = reader.readAll();
+		}
+		catch (IOException e) {
+			// Should not happen.
+			String error = "Error while parsing CSV: " +e.getMessage();
+			resolveUriResult.setError(error);
+			return;
+		}
+		
+		if (lines.size() > 0) {
+			String[] line = lines.get(0);
+			if (line.length > 0 && line[0].toLowerCase().startsWith("error:") ) {
+				ok = false;
+			}
+		}
+		
+		if ( ok ) {
 			EntityInfo entityInfo = new EntityInfo();
 			
-			String[] lines = result.split("\n|\r\n|\n");
-			for (String string : lines) {
-				String[] toks = string.split(",", 2);
-				if ( toks.length != 2 || ("prop".equals(toks[0]) && "value".equals(toks[1])) ) {
+			for (String[] toks : lines) {
+				if ( toks.length != 2 ) {
 					continue;
 				}
-				String prop = toks[0];
-				String value = toks.length > 1 ? toks[1] : null;
+				String prop = _removeBrackets(toks[0]);
+				String value = _removeBrackets(toks[1]);
+				
+				if ("prop".equals(prop) && "value".equals(value)) {
+					continue;
+				}
 				
 				Resource propResource = ResourceFactory.createResource(prop);
 				
@@ -540,15 +563,7 @@ public class OrrClientImpl implements IOrrClient {
 				pv.setPropName(propResource.getLocalName());
 				pv.setPropUri(prop);
 				
-				boolean valueIsUri = false;
-				try {
-					URI jUri = new URI(value);  // just check to see whether is a URI
-					valueIsUri = jUri.isAbsolute();
-				}
-				catch (URISyntaxException e) {
-					// ignore.
-				}
-				if ( valueIsUri ) {
+				if ( _isAbsoluteUri(value) ) {
 					pv.setValueUri(value);
 					Resource objResource = ResourceFactory.createResource(value);
 					pv.setValueName(objResource.getLocalName());
@@ -562,29 +577,62 @@ public class OrrClientImpl implements IOrrClient {
 			
 			int size = entityInfo.getProps().size();
 			if ( size > 0 ) {
-				ok = true;
 				entityInfo.setUri(uri);
 				if ( log.isDebugEnabled() ) {
 					log.debug("Added " +size+ " property/value pairs to " +uri);
 				}
 				resolveUriResult.setEntityInfo(entityInfo);
 			}
+			else {
+				ok = false;
+			}
 		}
 
 		if ( ! ok ) {
-			try {
-				// is it at least a valid URL?
-				new URL(uri);
-				resolveUriResult.setIsUrl(true);
-			}
-			catch (MalformedURLException e) {
-				resolveUriResult.setIsUrl(false);
-			}
+			// is it at least a valid URL?
+			resolveUriResult.setIsUrl(_isUrl(uri));
 		}
 	}
 
-	
+	/**
+	 * Removes leading '<' and trailing '>' if any.
+	 */
+	private static String _removeBrackets(String string) {
+		if (string.matches("<[^>]*>")) {
+			return string.substring(1, string.length() -1);
+		}
+		else{
+			return string;
+		}
+	}
 
+	/**
+	 * Does the string represent an absolute URI?
+	 */
+	private static boolean _isAbsoluteUri(String string) {
+		try {
+			URI jUri = new URI(string);
+			return jUri.isAbsolute();
+		}
+		catch (URISyntaxException ignore) {
+		}
+		return false;
+	}
+	
+	/**
+	 * Does the string represent a valid URL?
+	 */
+	private static boolean _isUrl(String string) {
+		try {
+			// is it at least a valid URL?
+			new URL(string);
+			return true;
+		}
+		catch (MalformedURLException ignore) {
+		}
+		return false;
+	}
+	
 	public RegisteredOntologyInfo getOntologyInfo(String ontologyUri) {
 		
 		log.debug("getOntologyInfo: ontologyUri=" +ontologyUri);

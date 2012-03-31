@@ -746,11 +746,12 @@ public class Ag4TripleStore implements ITripleStore {
 		String accept = AgUtil.mimeType(form);
 		HttpResponse httpResponse = HttpUtil.httpGet(urlRequest, accept);
 
-		/*
-		 * Note that AgUtil.mimeType returns "text/csv" for form="html"
-		 * The following checks that case to convert the returned CSV into HTML.
-		 */
-		if ("html".equals(form) && "text/csv".equals(accept) 
+        /*
+         * Note that AgUtil.mimeType returns a CSV format for form="html"
+         * The following checks that case to convert the returned CSV into HTML.
+         * (the regex is for application/processed-csv and text/csv)
+         */
+        if ("html".equals(form) && accept.matches(".*\\Wcsv$")
 		&& httpResponse.statusCode == HttpServletResponse.SC_OK ) {
 			String html = Util.csv2html(httpResponse.body);
 			queryResult.setResult(html);

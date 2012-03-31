@@ -4,6 +4,9 @@ $Id$
 
 ChangeLog
 
+2012-03-22  2.0.22.beta
+	- More adjustments related with use of new AllegroGraph 4.4
+
 2012-03-27  2.0.21.beta
 	- OntSevlet: New "ontology exists" (oe) request dispatched
 	- IOntClient.isRegisteredOntologyUri: removed unnecessary acceptEntries parameter.
