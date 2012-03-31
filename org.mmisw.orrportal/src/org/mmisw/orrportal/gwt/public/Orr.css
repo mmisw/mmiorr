@@ -131,7 +131,7 @@ table.inline td {
 }
 
 .OntologyTable-row {
-  text-align: center;
+  text-align: left;
   padding: 3px;
   padding-left: 9px;
   padding-right: 9px;
