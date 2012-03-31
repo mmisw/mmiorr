@@ -91,7 +91,10 @@ public class EntityPanel extends VerticalPanel {
 		List<PropValue> props = entity.getProps();
 		for ( PropValue pv : props ) {
 			
-			String htmlStr;
+            cf.setStyleName(row, 0, "OntologyTable-row");
+            cf.setStyleName(row, 1, "OntologyTable-row");
+
+            String htmlStr;
 			
 			// column 0
 			String propName = pv.getPropName();

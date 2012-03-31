@@ -4,6 +4,7 @@ $Id$
 
 2012-03-22  2.0.22.beta
 	- More adjustments related with use of new AllegroGraph 4.4
+	- EntityPanel: Added some padding for easier legibility (OntologyTable-row style)
 
 2012-03-27  2.0.21.beta
 	- Adjustments to align with changes in the Ont and Orr client libraries, which are
