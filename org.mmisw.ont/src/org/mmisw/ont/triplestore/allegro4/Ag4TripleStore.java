@@ -8,6 +8,7 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
@@ -39,6 +40,8 @@ import com.franz.agraph.repository.AGRepository;
 import com.franz.agraph.repository.AGRepositoryConnection;
 import com.franz.agraph.repository.AGServer;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 
 /**
@@ -61,6 +64,9 @@ public class Ag4TripleStore implements ITripleStore {
 	private int serverPort;
 	// private String tripleStoreDir; AG4: Not needed
 	private String tripleStoreName;
+	
+	private String username;
+	private String password;
 
 	private String tripleStoreUrl;
 
@@ -109,8 +115,8 @@ public class Ag4TripleStore implements ITripleStore {
 		_Conn(boolean renew) throws ServletException {
 			log.info("Connecting to triple store...");
 			try {
-				_server = new AGServer(serverHost + ":" + serverPort, "super",
-						"blackwidow");
+				_server = new AGServer(serverHost + ":" + serverPort, username,
+						password);
 				_catalog = _server.getCatalog();
 			}
 			catch (Throwable e) {
@@ -190,6 +196,9 @@ public class Ag4TripleStore implements ITripleStore {
 		// needed
 		tripleStoreName = OntConfig.Prop.AGRAPH_TS_NAME.getValue();
 		aquaUploadsDir = OntConfig.Prop.AQUAPORTAL_UPLOADS_DIRECTORY.getValue();
+		
+		username = OntConfig.Prop.AGRAPH_USERNAME.getValue();
+		password = OntConfig.Prop.AGRAPH_PASSWORD.getValue();
 
 		tripleStoreUrl = serverHost + ":" + serverPort + "/repositories/"
 				+ tripleStoreName;
@@ -259,10 +268,6 @@ public class Ag4TripleStore implements ITripleStore {
 			long numberOfTriples = _doReInit(_conn);
 			log.debug("triple store populated (" + TsUtil.elapsedTime(start)
 					+ ").  " + "#triples= " + numberOfTriples);
-
-			// index: NOT needed in AG 4
-			// boolean wait = true;
-			// _reindex(_conn, wait);
 		}
 		finally {
 			_conn.end();
@@ -275,11 +280,9 @@ public class Ag4TripleStore implements ITripleStore {
 	 * @throws ServletException
 	 */
 	public void clear() throws ServletException {
-		log
-				.info("clear called. Creating connection with call to renew() on triple store ...");
+		log.info("clear called. Creating connection with call to renew() on triple store ...");
 		_Conn _conn = new _Conn(true);
 		try {
-			// log.debug("clear done.  #triples= " +_conn.ts.numberOfTriples());
 			log.debug("clear done.  #triples= " + _conn.ags.size());
 		}
 		catch (RepositoryException e) {
@@ -312,8 +315,7 @@ public class Ag4TripleStore implements ITripleStore {
 			log.debug("About to load the following " + onts.size()
 					+ " ontologies: ");
 			for (OntologyInfo ontology : onts) {
-				log
-						.debug(ontology.getOntologyId() + " :: "
+				log.debug(ontology.getOntologyId() + " :: "
 								+ ontology.getUri());
 			}
 		}
@@ -361,28 +363,26 @@ public class Ag4TripleStore implements ITripleStore {
 	 * load supporting statements for inference
 	 */
 	private void _loadSupportingStatements(_Conn _conn) {
-		/*
-		 * TODO AG4:
-		 */
-		log
-				.info("TODO AG4 Loading supporting statements to allegrograph triplestore");
-		// try {
-		// for ( Entry<String, String> ns :
-		// adminDispatcher.getSupportingNamespaces().entrySet() ) {
-		// _conn.ts.registerNamespace(ns.getKey(), ns.getValue());
-		// log.info("namespace registered: " +ns.getKey()+ " : "
-		// +ns.getValue());
-		// }
-		//			
-		// for ( String[] statement : AgSupport.SUPPORTING_STATEMENTS ) {
-		// _conn.ts.addStatement(statement[0], statement[1], statement[2]);
-		// log.info("statement added: " +statement[0]+ " " +statement[1]+ " "
-		// +statement[2]);
-		// }
-		// }
-		// catch (AllegroGraphException e) {
-		// log.error("Error adding statements to graph.", e);
-		// }
+		log.info("Loading supporting statements to allegrograph triplestore");
+			for (Entry<String, String> ns : adminDispatcher.getSupportingNamespaces().entrySet()) {
+				try {
+					_conn.ags.setNamespace(ns.getKey(), ns.getValue());
+					log.info("namespace registered: " + ns.getKey() + " : "
+							+ ns.getValue());
+				}
+				catch (RepositoryException e) {
+					log.error("Error adding namespace.", e);
+				}
+			}
+
+			for (String[] statement : AgSupport.SUPPORTING_STATEMENTS) {
+				Resource s = _conn._model.createResource(statement[0]);
+				Property p = _conn._model.createProperty(statement[1]);
+				Resource o = _conn._model.createResource(statement[2]);
+				_conn._model.add(s, p, o);
+				log.info("statement added: " + statement[0] + " "
+						+ statement[1] + " " + statement[2]);
+			}
 	}
 
 	/**

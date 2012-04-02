@@ -148,6 +148,8 @@
 				<filter token="agraph.port" value="${agraph.port}" />
 				<filter token="agraph.ts.dir" value="${agraph.ts.dir}" />
 				<filter token="agraph.ts.name" value="${agraph.ts.name}" />
+				<filter token="agraph.username" value="${agraph.username}" />
+				<filter token="agraph.password" value="${agraph.password}" />
 				
 				<filter token="ont.internal.dir"   value="${ont.internal.dir}" />
 				<filter token="ga.uanumber"   value="${ga.uanumber}" />

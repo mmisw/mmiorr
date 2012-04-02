@@ -82,6 +82,14 @@
 			<param-name>agraph.ts.name</param-name>
 			<param-value>@agraph.ts.name@</param-value>
 		</init-param>
+		<init-param>
+			<param-name>agraph.username</param-name>
+			<param-value>@agraph.username@</param-value>
+		</init-param>
+		<init-param>
+			<param-name>agraph.password</param-name>
+			<param-value>@agraph.password@</param-value>
+		</init-param>
 
 		<init-param>
 			<param-name>ga.uanumber</param-name>

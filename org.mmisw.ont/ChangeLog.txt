@@ -4,9 +4,12 @@ $Id$
 
 ChangeLog
 
-2012-04-02  2.0.22.beta
+2012-04-02  2.0.23.beta
 	- Ag4TripleStore.executeQuery: enable reasoning (which is disabled by default)
 	  by including "infer=true" in the request.
+	- sample.build.properties: include properties for AG 4.4: agraph.username, agraph.password.
+	- Ag4TripleStore._loadSupportingStatements: add supporting statements related with SKOS
+	  taking into consideration that AG 4.4 supports owl:SymmetricProperty. 
 
 2012-03-22  2.0.22.beta
 	- More adjustments related with use of new AllegroGraph 4.4
