@@ -93,6 +93,8 @@ public class AdminDispatcher {
 	@SuppressWarnings("serial")
 	private static final Map<String,String> SUPPORTING_NAMESPACES = Collections.unmodifiableMap(
 			new HashMap<String, String>() {{ 
+				put("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+				put("owl", "http://www.w3.org/2002/07/owl#");
 				put("skos", "http://www.w3.org/2004/02/skos/core#");
 				put("skos2", "http://www.w3.org/2008/05/skos#");
 				put("rdfg", "http://www.w3.org/2004/03/trix/rdfg-1/");
