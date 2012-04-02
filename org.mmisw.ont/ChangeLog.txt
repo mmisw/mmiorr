@@ -4,6 +4,10 @@ $Id$
 
 ChangeLog
 
+2012-04-02  2.0.22.beta
+	- Ag4TripleStore.executeQuery: enable reasoning (which is disabled by default)
+	  by including "infer=true" in the request.
+
 2012-03-22  2.0.22.beta
 	- More adjustments related with use of new AllegroGraph 4.4
 

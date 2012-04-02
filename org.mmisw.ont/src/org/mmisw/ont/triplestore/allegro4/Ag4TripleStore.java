@@ -742,7 +742,7 @@ public class Ag4TripleStore implements ITripleStore {
 		 * Make the request to the AllegroGraph HTTP endpoint.
 		 */
 		query = URLEncoder.encode(query, "UTF-8");
-		String urlRequest = tripleStoreUrl + "?query=" + query;
+		String urlRequest = tripleStoreUrl + "?infer=true&query=" + query;
 		String accept = AgUtil.mimeType(form);
 		HttpResponse httpResponse = HttpUtil.httpGet(urlRequest, accept);
 
