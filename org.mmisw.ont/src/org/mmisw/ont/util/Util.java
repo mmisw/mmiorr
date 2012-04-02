@@ -228,6 +228,13 @@ public class Util {
 	}
 	
 	/**
+	 * Does the string correspond to a CSV contentType?
+	 */
+	public static boolean contentTypeIsCsv(String ct) {
+		return ct != null && (ct.contains("application/processed-csv") || ct.contains("text/csv"));
+	}
+
+	/**
 	 * Converts CSV contents into an HTML table.
 	 * @param csv The CSV contents
 	 * @return the HTML contents.

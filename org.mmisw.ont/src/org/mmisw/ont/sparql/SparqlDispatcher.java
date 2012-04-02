@@ -210,12 +210,10 @@ public class SparqlDispatcher {
 		
 		/*
 		 * The following checks the case when the request was for "html-frag", which
-		 * is actually dispatched as "text/csv" when using AllegroGraph 4.4. In this
+		 * is actually dispatched as CSV when using AllegroGraph 4.4. In this
 		 * case, do the conversion from CSV to the requested HTML:
 		 */
-		else if ( queryResult.getContentType() != null
-			&& queryResult.getContentType().contains("text/csv") 
-			&& "html-frag".equals(outFormat) ) {
+		else if ("html-frag".equals(outFormat) && Util.contentTypeIsCsv(queryResult.getContentType())) {
 			result = Util.csv2html(result);
 			response.setContentType("text/html");
 		}
