@@ -53,13 +53,6 @@ import com.hp.hpl.jena.rdf.model.Statement;
  */
 public class Ag4TripleStore implements ITripleStore {
 
-	/**
-	 * Servlet resource containing the model with properties for inference
-	 * purposes, N-triples format
-	 */
-	@SuppressWarnings("unused")
-	private static final String INF_PROPERTIES_MODEL_NAME_NT = "inf_properties.nt";
-
 	private final Log log = LogFactory.getLog(Ag4TripleStore.class);
 
 	private String serverHost;
@@ -368,7 +361,7 @@ public class Ag4TripleStore implements ITripleStore {
 			}
 		}
 
-		// enable inferencing:
+		// statements for inferencing:
 		_loadSupportingStatements(_conn);
 
 		// load internal resources (graph relationships, etc.):
@@ -756,12 +749,13 @@ public class Ag4TripleStore implements ITripleStore {
 	 * Executes a SPARQL query.
 	 * 
 	 * @param sparqlQuery
+	 * @param infer With inference?
 	 * @param form
 	 *            Only used for a "select" query.
 	 * @return
 	 * @throws Exception
 	 */
-	public QueryResult executeQuery(String query, String form) throws Exception {
+	public QueryResult executeQuery(String query, boolean infer, String form) throws Exception {
 
 		final QueryResult queryResult = new QueryResult();
 
@@ -769,8 +763,11 @@ public class Ag4TripleStore implements ITripleStore {
 		 * Make the request to the AllegroGraph HTTP endpoint.
 		 */
 		query = URLEncoder.encode(query, "UTF-8");
-		String urlRequest = tripleStoreUrl + "?infer=true&query=" + query;
+		String urlRequest = tripleStoreUrl + "?infer=" +infer+ "&query=" + query;
 		String accept = AgUtil.mimeType(form);
+		if (log.isDebugEnabled()) {
+			log.debug("Making http get request: " +urlRequest+ " Accept: " +accept);
+		}
 		HttpResponse httpResponse = HttpUtil.httpGet(urlRequest, accept);
 
         /*

@@ -2,6 +2,9 @@ org.mmisw.orrportal: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2012-04-03  2.0.24.beta
+	- version sync with the other modules.
+
 2012-04-02  2.0.23.beta
 	- version sync with the other modules.
 

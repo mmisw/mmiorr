@@ -91,16 +91,22 @@ public abstract class JenaTripleStore implements ITripleStore {
 
 	/**
 	 * Gets the model in place for updates. If this object has been initialized with
-	 * inference, then the corresponding InfModel is returned; otherwise the raw model.
+	 * inference and infer is true, then the corresponding InfModel is returned; otherwise the raw model.
 	 */
-	private Model _getEffectiveModel()  {
+	private Model _getEffectiveModel(boolean infer)  {
 		InfModel infModel = _getInfModel();
-		return infModel != null ? infModel : _getModel();
+		if (infModel == null || !infer) {
+			return _getModel();
+		}
+		else {
+			return infModel;
+		}
+		
 	}
 	
-	public QueryResult executeQuery(String sparqlQuery, String form) throws Exception {
+	public QueryResult executeQuery(String sparqlQuery, boolean infer, String form) throws Exception {
 		log.debug(getClass().getSimpleName()+ " executeQuery called.");
-		QueryResult queryResult = Sparql.executeQuery(_getEffectiveModel(), sparqlQuery, form);
+		QueryResult queryResult = Sparql.executeQuery(_getEffectiveModel(infer), sparqlQuery, form);
 		return queryResult;
 	}
 
@@ -303,7 +309,7 @@ public abstract class JenaTripleStore implements ITripleStore {
 	}
 
 	private void _loadOntology(OntologyInfo ontology, String full_path) {
-		final Model model2update = _getEffectiveModel();
+		final Model model2update = _getEffectiveModel(_getInfModel() != null);
 		if ( USE_UNVERSIONED ) {
 			OntModel model = JenaUtil2.loadModel("file:" +full_path, false);
 

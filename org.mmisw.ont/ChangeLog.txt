@@ -4,6 +4,20 @@ $Id$
 
 ChangeLog
 
+2012-04-03  2.0.24.beta
+	- Instead of inference being enabled by default for queries, now an explicit parameter
+	  (infer) has been added to the corresp APIs. The particular reason for this change was the
+	  poor performance of AllegroGraph 4.4 and 4.5 for queries like the following:
+		   SELECT ?subject ?predicate ?object 
+		   WHERE { ?subject ?predicate ?object. 
+		           FILTER regex(?object, "pressure", "i" ) 
+		   } 
+		   ORDER BY ?subject LIMIT 5
+	  that are used in the "search terms" interface in the main ORR portal. This query caused 
+	  AG to work a 99.9% CPU and without returning any response after an hour or so.
+	  So, the default is now "no inference in SPARQL queries".
+	  TODO determine mechanism for users to indicate that inference is desired for the query. 
+
 2012-04-02  2.0.23.beta
 	- Ag4TripleStore.executeQuery: enable reasoning (which is disabled by default)
 	  by including "infer=true" in the request.

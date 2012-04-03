@@ -3,6 +3,10 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2012-04-03  2.0.24.beta
+	- 'infer' parameter for queries was added.
+	- version sync with the other modules.
+
 2012-04-02  2.0.23.beta
 	- version sync with the other modules.
 

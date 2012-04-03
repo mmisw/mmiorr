@@ -52,11 +52,12 @@ public interface ITripleStore {
 	 * Executes a SPARQL query.
 	 * 
 	 * @param sparqlQuery
+	 * @param infer With inference?
 	 * @param form Only used for a "select" query.
 	 * @return
 	 * @throws Exception 
 	 */
-	public QueryResult executeQuery(String sparqlQuery, String form) throws Exception ;
+	public QueryResult executeQuery(String sparqlQuery, boolean infer, String form) throws Exception ;
 
 
 	/**

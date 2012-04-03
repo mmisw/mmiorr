@@ -130,9 +130,13 @@ public class JenaVirtuosoTripleStore implements ITripleStore {
 	public void destroy() throws ServletException {
 	}
 
-	public QueryResult executeQuery(String sparqlQuery, String form) throws Exception {
+	/**
+	 * TODO: NOTE: infer parameter IGNORED.
+	 */
+	public QueryResult executeQuery(String sparqlQuery, boolean infer, String form) throws Exception {
 		_Conn _conn = new _Conn();
 		try {
+			log.debug("executeQuery called. infer=" +infer+ " param IGNORED");
 			return _executeQuery(_conn, sparqlQuery, form);
 		}
 		finally {

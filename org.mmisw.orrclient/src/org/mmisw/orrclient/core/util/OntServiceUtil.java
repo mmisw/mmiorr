@@ -46,11 +46,13 @@ public class OntServiceUtil {
 	}
 	
 	public static String runSparqlQuery(String query, String format, String... acceptEntries) throws Exception {
-		return _ontClient.runSparqlQuery(query, format, acceptEntries);
+		// Note: with infer=false
+		return _ontClient.runSparqlQuery(query, false, format, acceptEntries);
 	}
 
 	public static String runSparqlQuery(SparqlQueryInfo sqi) throws Exception {
-		return _ontClient.runSparqlQuery(sqi.getEndPoint(), sqi.getQuery(), sqi.getFormat(), sqi.getAcceptEntries());
+		return _ontClient.runSparqlQuery(sqi.getEndPoint(), sqi.getQuery(), sqi.isInfer(), 
+				sqi.getFormat(), sqi.getAcceptEntries());
 	}
 
 	public static boolean loadOntologyInGraph(String uriModel, String graphId) throws Exception {

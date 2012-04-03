@@ -114,12 +114,14 @@ public interface IOntClient {
 	 * TODO better dispatch mechanism, includig paging
 	 * 
 	 * @param query  The query
+	 * @param infer With inference?
 	 * @param format Desired format ("form" parameter). Can be null.
 	 * @param acceptEntries list of accept header entries
 	 * @return The response of the "ont" service.
 	 * @throws Exception
 	 */
-	public String runSparqlQuery(String query, String format, String... acceptEntries) throws Exception ;
+	public String runSparqlQuery(String query, boolean infer,
+			String format, String... acceptEntries) throws Exception ;
 
 	
 	/**
@@ -130,6 +132,7 @@ public interface IOntClient {
 	 * 
 	 * @param endPoint
 	 * @param query
+	 * @param infer With inference?
 	 * @param format
 	 * @param acceptEntries
 	 * @return The response of the "ont" service.
@@ -138,6 +141,7 @@ public interface IOntClient {
 	public String runSparqlQuery(
 			String endPoint,
 			String query,
+			boolean infer,
 			String format,
 			String... acceptEntries
 			

@@ -117,8 +117,8 @@ public class TripleStore implements ITripleStore {
 		_impl.destroy();
 	}
 
-	public QueryResult executeQuery(String sparqlQuery, String form) throws Exception {
-		return _impl.executeQuery(sparqlQuery, form);
+	public QueryResult executeQuery(String sparqlQuery, boolean infer, String form) throws Exception {
+		return _impl.executeQuery(sparqlQuery, infer, form);
 	}
 
 	public void loadOntology(OntologyInfo ontology, String graphId) throws Exception {

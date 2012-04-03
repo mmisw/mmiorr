@@ -638,14 +638,15 @@ public class AgTripleStore implements ITripleStore {
 	 * Executes a SPARQL query.
 	 * 
 	 * @param sparqlQuery
+	 * @param infer With inference?
 	 * @param form Only used for a "select" query.
 	 * @return
 	 * @throws Exception 
 	 */
-	public QueryResult executeQuery(String sparqlQuery, String form) throws Exception {
+	public QueryResult executeQuery(String sparqlQuery, boolean infer, String form) throws Exception {
 		_Conn _conn = new _Conn();
 		try {
-			return _executeQuery(_conn, sparqlQuery, form);
+			return _executeQuery(_conn, sparqlQuery, infer, form);
 		}
 		finally {
 			_conn.end();
@@ -653,7 +654,7 @@ public class AgTripleStore implements ITripleStore {
 	}
 	
 	
-	private QueryResult _executeQuery(_Conn _conn, String sparqlQuery, String form) throws Exception {
+	private QueryResult _executeQuery(_Conn _conn, String sparqlQuery, boolean infer, String form) throws Exception {
 		if ( log.isDebugEnabled() ) {
 			log.debug("_executeQuery called.  form=" +form);
 		}
@@ -667,7 +668,7 @@ public class AgTripleStore implements ITripleStore {
 		SPARQLQuery sq = new SPARQLQuery();
 		sq.setTripleStore(_conn.ts);
 		sq.setQuery(sparqlQuery);
-		sq.setIncludeInferred(true);
+		sq.setIncludeInferred(infer);
 		
 		boolean useRun = false;
 		

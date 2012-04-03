@@ -78,17 +78,22 @@ public class OntGraphMem implements ITripleStore {
 	}
 
 	/**
-	 * Gets the model containing the graph. If the graph has been initialized with
-	 * inference, then the corresponding InfModel is returned; otherwise the raw model.
+	 * Gets the model containing the graph.  If this object has been initialized with
+	 * inference and infer is true, then the corresponding InfModel is returned; otherwise the raw model.
 	 * 
 	 * @return the model as described.
 	 */
-	private Model _getModel() throws Exception {
-		return _infModel != null ? _infModel : _model;
+	private Model _getModel(boolean infer) throws Exception {
+		if (_infModel == null || !infer) {
+			return _model;
+		}
+		else {
+			return _infModel;
+		}
 	}
 	
-	public QueryResult executeQuery(String sparqlQuery, String form) throws Exception {
-		QueryResult queryResult = Sparql.executeQuery(_getModel(), sparqlQuery, form);
+	public QueryResult executeQuery(String sparqlQuery, boolean infer, String form) throws Exception {
+		QueryResult queryResult = Sparql.executeQuery(_getModel(infer), sparqlQuery, form);
 		return queryResult;
 	}
 

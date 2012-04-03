@@ -192,11 +192,12 @@ class OntClientUtil {
 	 * @return The response of the "ont" service.
 	 * @throws Exception
 	 */
-	static String runSparqlQuery(String query, String format, String... acceptEntries) throws Exception {
+	static String runSparqlQuery(String query, boolean infer, 
+			String format, String... acceptEntries) throws Exception {
 		
 		String ontServiceUrl = _config().getOntServiceUrl();
 		query = URLEncoder.encode(query, "UTF-8");
-		String ontServiceRequest = ontServiceUrl + "?sparql=" +query;
+		String ontServiceRequest = ontServiceUrl + "?infer=" +infer+ "&sparql=" +query;
 		if ( format != null ) {
 			ontServiceRequest += "&form=" +format;
 		}
@@ -223,6 +224,7 @@ class OntClientUtil {
 	static String runSparqlQuery(
 			String endPoint,
 			String query,
+			boolean infer, 
 			String format,
 			String... acceptEntries
 			
@@ -231,7 +233,7 @@ class OntClientUtil {
 		String ontServiceUrl = endPoint == null ? _config().getOntServiceUrl() : endPoint;
 		
 		query = URLEncoder.encode(query, "UTF-8");
-		String ontServiceRequest = ontServiceUrl + "?sparql=" +query;
+		String ontServiceRequest = ontServiceUrl + "?infer=" +infer+ "&sparql=" +query;
 		if ( format != null ) {
 			ontServiceRequest += "&form=" +format;
 		}

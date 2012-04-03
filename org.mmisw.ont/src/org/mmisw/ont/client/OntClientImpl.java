@@ -112,14 +112,14 @@ class OntClientImpl implements IOntClient {
 		return OntClientUtil.retrieveModel(uriModel, version);
 	}
 
-	public String runSparqlQuery(String query, String format,
+	public String runSparqlQuery(String query, boolean infer, String format,
 			String... acceptEntries) throws Exception {
-		return OntClientUtil.runSparqlQuery(query, format, acceptEntries);
+		return OntClientUtil.runSparqlQuery(query, infer, format, acceptEntries);
 	}
 
-	public String runSparqlQuery(String endPoint, String query, String format,
-			String... acceptEntries) throws Exception {
-		return OntClientUtil.runSparqlQuery(endPoint, query, format,
+	public String runSparqlQuery(String endPoint, String query, boolean infer, 
+			String format, String... acceptEntries) throws Exception {
+		return OntClientUtil.runSparqlQuery(endPoint, query, infer, format,
 				acceptEntries);
 	}
 

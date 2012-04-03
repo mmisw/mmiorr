@@ -14,6 +14,8 @@ public class SparqlQueryInfo implements Serializable {
 	
 	private String query;
 	
+	private boolean infer;
+	
 	private String format;
 	
 	private String[] acceptEntries;
@@ -77,5 +79,14 @@ public class SparqlQueryInfo implements Serializable {
 		return parseResult;
 	}
 
+
+	public boolean isInfer() {
+		return infer;
+	}
+
+	public SparqlQueryInfo setInfer(boolean infer) {
+		this.infer = infer;
+		return this;
+	}
 	
 }

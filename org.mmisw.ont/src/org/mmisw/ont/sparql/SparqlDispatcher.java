@@ -55,9 +55,9 @@ public class SparqlDispatcher {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "sparql parameter value not given");
 			return;
 		}
-
+		boolean infer = "true".equalsIgnoreCase(Util.getParam(request, "infer", "false"));
 		String form = Util.getParam(request, "form", null);
-		_executeWithCompletion(request, response, query, null, form, true);
+		_executeWithCompletion(request, response, query, infer, null, form, true);
 	}
 	
 	/** 
@@ -75,7 +75,7 @@ public class SparqlDispatcher {
 	)
 	throws ServletException, IOException {
 		
-		return _executeWithCompletion(request, response, query, requestedEntity, outFormat, false);
+		return _executeWithCompletion(request, response, query, false, requestedEntity, outFormat, false);
 	}
 	
 	
@@ -100,7 +100,7 @@ public class SparqlDispatcher {
 	 * @throws IOException
 	 */
 	private boolean _executeWithCompletion(HttpServletRequest request, HttpServletResponse response, 
-			final String query, String requestedEntity,
+			final String query, boolean infer, String requestedEntity,
 			final String outFormat, boolean forceCompletion
 	)
 	throws ServletException, IOException {
@@ -109,7 +109,7 @@ public class SparqlDispatcher {
 
 		QueryResult queryResult;
 		try {
-			queryResult = _execute(query, outFormat);
+			queryResult = _execute(query, infer, outFormat);
 		}
 		catch (Exception e) {
 			String error = "ERROR: " +e.getMessage();
@@ -229,13 +229,13 @@ public class SparqlDispatcher {
 		return true;
 	}
 
-	private QueryResult _execute(String sparqlQuery, String form) throws Exception {
+	private QueryResult _execute(String sparqlQuery, boolean infer, String form) throws Exception {
 		
 		if ( log.isDebugEnabled() ) {
-			log.debug("_execute: query string = [" +sparqlQuery+ "] form=" +form);
+			log.debug("_execute: query=[" +sparqlQuery+ "] infer=" +infer+ " form=" +form);
 		}
 		long start = System.currentTimeMillis();
-		QueryResult queryResult = tripleStore.executeQuery(sparqlQuery, form);
+		QueryResult queryResult = tripleStore.executeQuery(sparqlQuery, infer, form);
 
 		if ( log.isDebugEnabled() ) {
 			if ( queryResult.isEmpty() ) {
