@@ -218,6 +218,26 @@ public class SparqlDispatcher {
 			response.setContentType("text/html");
 		}
 		
+		/*
+		 * The following checks the case when there was no explicit outFormat and the
+		 * dispatch generated a CSV format. if so, do the conversion from CSV to the requested HTML:
+		 */
+		else if (outFormat == null && Util.contentTypeIsCsv(queryResult.getContentType())) {
+			result = Util.csv2html(result);
+			response.setContentType("text/html");
+			
+			String queryComm = "\n<!-- Query:\n\n" +Util.toHtmlComment(query)+ "\n-->\n\n";
+			String pre = "<html><head><title>Query result</title>" +
+					"<link rel=stylesheet href=\"" +
+					request.getContextPath()+ "/main.css\" type=\"text/css\">" +
+					"</head><body>\n" +
+					queryComm
+			;
+			String pos = "</body></html>";
+
+			result = pre + result + pos;
+		}
+		
 		else {
 			response.setContentType(queryResult.getContentType());
 		}
