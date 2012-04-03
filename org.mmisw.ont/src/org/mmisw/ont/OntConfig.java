@@ -119,7 +119,9 @@ public class OntConfig {
 		
 		if ( log != null && log.isDebugEnabled() ) {
 			for ( Prop prop : Prop.values() ) {
-				log.debug(prop.getName()+ " = " +prop.getValue());
+				String val = prop.getName().toLowerCase().indexOf("password") >= 0 
+						? "*****" : prop.getValue();					
+				log.debug(prop.getName()+ " = " +val);
 			}
 		}
 	}
