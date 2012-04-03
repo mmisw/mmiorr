@@ -17,6 +17,11 @@ ChangeLog
 	  AG to work a 99.9% CPU and without returning any response after an hour or so.
 	  So, the default is now "no inference in SPARQL queries".
 	  TODO determine mechanism for users to indicate that inference is desired for the query. 
+	  
+	- SparqlDispatcher._executeWithCompletion: convert to HTML if no explicit outFormat was
+	  given and the response from the query processor is CSV.
+	  
+	- sparql.html: added checkbox for inference; more examples with the "form" parameter.
 
 2012-04-02  2.0.23.beta
 	- Ag4TripleStore.executeQuery: enable reasoning (which is disabled by default)
