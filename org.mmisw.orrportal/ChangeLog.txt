@@ -2,6 +2,9 @@ org.mmisw.orrportal: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2012-04-02  2.0.23.beta
+	- version sync with the other modules.
+
 2012-03-22  2.0.22.beta
 	- More adjustments related with use of new AllegroGraph 4.4
 	- EntityPanel: Added some padding for easier legibility (OntologyTable-row style)

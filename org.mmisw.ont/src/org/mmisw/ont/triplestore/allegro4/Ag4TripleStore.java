@@ -3,7 +3,9 @@
  */
 package org.mmisw.ont.triplestore.allegro4;
 
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
@@ -67,6 +69,8 @@ public class Ag4TripleStore implements ITripleStore {
 	
 	private String username;
 	private String password;
+	
+	private HttpUtil.Credentials credentials;
 
 	private String tripleStoreUrl;
 
@@ -199,6 +203,8 @@ public class Ag4TripleStore implements ITripleStore {
 		
 		username = OntConfig.Prop.AGRAPH_USERNAME.getValue();
 		password = OntConfig.Prop.AGRAPH_PASSWORD.getValue();
+		
+		_setCredentials();
 
 		tripleStoreUrl = serverHost + ":" + serverPort + "/repositories/"
 				+ tripleStoreName;
@@ -238,6 +244,27 @@ public class Ag4TripleStore implements ITripleStore {
 		}
 
 		log.info("init complete.");
+	}
+
+	/**
+	 * Sets the credentials object.
+	 */
+	private void _setCredentials() {
+		credentials = new HttpUtil.Credentials();
+		try {
+			// serverHost is expected to include a protocol; get the
+			// host for the credential via a URL:
+			credentials.host = new URL(serverHost).getHost();
+		}
+		catch (MalformedURLException e) {
+			// should not happen
+			log.warn("Parsing of URL failed for serverHost: " + serverHost, e);
+			credentials.host = serverHost;
+		}
+		credentials.port = serverPort;
+		credentials.username = username;
+		credentials.password = password;
+		log.info("Credentials set to: " + credentials);
 	}
 
 	/** nothing done here */
@@ -807,11 +834,11 @@ public class Ag4TripleStore implements ITripleStore {
 		String urlRequest = tripleStoreUrl + "?update=" + encUpdate;
 
 		if (log.isDebugEnabled()) {
-			log.debug("Making request...");
+			log.debug("_doUpdate: Making request...");
 		}
-		HttpResponse httpResponse = HttpUtil.httpPost(urlRequest, vars);
+		HttpResponse httpResponse = HttpUtil.httpPost(credentials, urlRequest, vars);
 		if (log.isDebugEnabled()) {
-			log.debug("httpResponse = " + httpResponse);
+			log.debug("_doUpdate: httpResponse = " + httpResponse);
 		}
 	}
 

@@ -7,6 +7,8 @@ import java.util.Map.Entry;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
@@ -19,6 +21,21 @@ import org.apache.commons.httpclient.methods.multipart.StringPart;
  * @author Carlos Rueda
  */
 public class HttpUtil {
+	
+	/**
+	 * Credentials. 
+	 */
+	public static class Credentials {
+		public String host;
+		public int port;
+		public String username;
+		public String password;
+		
+		public String toString() {
+			return String.format("host='%s'; port=%d; username='%s'; password=***", host, port, username);
+		}
+	}
+	
 	public static String getAsString(String uri, String... acceptEntries) throws Exception {
 //		System.out.println("getAsString. uri= " +uri);
 		return getAsString(uri, Integer.MAX_VALUE, acceptEntries);
@@ -157,6 +174,22 @@ public class HttpUtil {
 	public static HttpResponse httpPost(String urlRequest, Map<String,String> vars,
 			String... acceptEntries) throws Exception {
 
+		return httpPost(null, urlRequest, vars, acceptEntries);
+	}
+	
+	/**
+	 * Makes an HTTP POST request.
+	 * 
+	 * @param credentials Credentials for the request. Can be null.
+	 * @param urlRequest
+	 * @param vars
+	 * @param acceptEntries
+	 * @return
+	 * @throws Exception
+	 */
+	public static HttpResponse httpPost(Credentials credentials, String urlRequest, Map<String,String> vars,
+			String... acceptEntries) throws Exception {
+
 		PostMethod meth = new PostMethod(urlRequest);
 		
 		List<Part> partList = new ArrayList<Part>();
@@ -176,6 +209,11 @@ public class HttpUtil {
 		meth.setRequestEntity(new MultipartRequestEntity(parts, meth.getParams()));
 		HttpClient client = new HttpClient();
 		client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+		
+		if (credentials != null) {
+			_setCredentials(client, credentials);
+			meth.setDoAuthentication(true);
+		}
 
 		try {
 			client.executeMethod(meth);
@@ -195,6 +233,17 @@ public class HttpUtil {
 		finally {
 			meth.releaseConnection();
 		}
+	}
+
+	/**
+	 * Sets credential information to the client.
+	 * @param client
+	 * @param credentials
+	 */
+	private static void _setCredentials(HttpClient client, Credentials credentials) {
+		client.getState().setCredentials(
+				new AuthScope(credentials.host, credentials.port),
+				new UsernamePasswordCredentials(credentials.username, credentials.password));		
 	}
 
 }

@@ -10,7 +10,10 @@ ChangeLog
 	- sample.build.properties: include properties for AG 4.4: agraph.username, agraph.password.
 	- Ag4TripleStore._loadSupportingStatements: add supporting statements related with SKOS
 	  taking into consideration that AG 4.4 supports owl:SymmetricProperty. 
-
+	- Ag4TripleStore._doUpdate: now including credentials for the request per
+	  http://www.franz.com/agraph/support/documentation/4.4/http-protocol.html#header2-223
+	
+	
 2012-03-22  2.0.22.beta
 	- More adjustments related with use of new AllegroGraph 4.4
 
