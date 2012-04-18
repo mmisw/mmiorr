@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry excluding="org/mmisw/orrportal/gwt/server/gwtbug/JDTCompiler15.java" kind="src" path="src"/>
-	<classpathentry kind="lib" path="/Users/carueda/Software/apache-tomcat-6.0.18/lib/servlet-api.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/activation.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/mail.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/commons-codec-1.3.jar"/>

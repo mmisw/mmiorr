@@ -78,8 +78,8 @@
     <mkdir dir="bin"/>
     <mkdir dir="${build.dir}/classes"/>
     <javac srcdir="src" destdir="${build.dir}/classes" 
-    	includes="**" 
-    	excludes="**/JDTCompiler15.java" 
+    	includes="**/*.java"
+    	excludes="**/JDTCompiler15.java, **/OntologyTableGwt24.java" 
     	debug="on" debuglevel="lines,vars,source"
     	source="1.5" target="1.5">
       <classpath refid="project.class.path"/>

@@ -34,8 +34,11 @@
 	</target>
 
 	<target name="compile" depends="init">
+		<copy file="${BASE}/src/org/mmisw/orrportal/gwt/client/util/table/ontab/OntologyTableGwt24.java_" 
+			tofile="${BASE}/src/org/mmisw/orrportal/gwt/client/util/table/ontab/OntologyTableGwt24.java"/>
 		<mkdir dir="${build.dir}/classes" />
-		<javac srcdir="${BASE}/src" destdir="${build.dir}/classes" includes="**" debug="on" debuglevel="lines,vars,source">
+		<javac srcdir="${BASE}/src" destdir="${build.dir}/classes" includes="**" debug="on" debuglevel="lines,vars,source"
+			includeantruntime="false">
 			<classpath refid="project.class.path" />
 		</javac>
 	</target>
@@ -139,10 +142,13 @@
 			<classpath>
 				<pathelement location="${BASE}/src" />
 				<path refid="project.class.path" />
+				<pathelement path="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar"/>
+				<pathelement path="${gwt.sdk}/validation-api-1.0.0.GA.jar"/>
 			</classpath>
 			<!-- add jvmarg -Xss16M or similar if you see a StackOverflowError -->
 			<jvmarg value="-Xmx256M" />
 			<!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
+			<arg value="-strict" />
 			<arg line="${gwt.args}" />
 			<arg value="org.mmisw.orrportal.gwt.Orr2" />
 		</java>
@@ -153,20 +159,26 @@
 			<classpath>
 				<pathelement location="${BASE}/src" />
 				<pathelement location="${classes}" />
+				<pathelement location="${build.dir}/classes" />
 				<path refid="project.class.path" />
+				<pathelement path="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar"/>
+				<pathelement path="${gwt.sdk}/validation-api-1.0.0.GA.jar"/>
 			</classpath>
 			<jvmarg value="-Dbuild.compiler=org.mmisw.orrportal.gwt.server.gwtbug.JDTCompiler15" />
 			<jvmarg value="-Xmx1024M" />
 			<arg value="-startupUrl" />
 			<arg value="index.jsp" />
-			<!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
-			<arg line="${gwt.args}" />
 			<arg value="org.mmisw.orrportal.gwt.Orr2" />
 		</java>
 	</target>
 
 	<target name="war" depends="createwar, gwtc" description="Create the war file">
 		<zip destfile="${BASE}/_generated/orr2.war" basedir="${BASE}/war" />
+	</target>
+	
+	<target name="clean">
+		<delete file="${BASE}/src/org/mmisw/orrportal/gwt/client/util/table/ontab/OntologyTableGwt24.java" />
+		<delete dir="${build.dir}" />
 	</target>
 
 </project>

@@ -2,6 +2,104 @@ org.mmisw.orrportal: MMI ORR Portal
 Upgrading GWT to a recent version
 Carlos Rueda
 
+2012-04-17: Additional tests with latest GWT 2.4.0
+
+- Locally adjusting build.properties to define gwt.sdk=/Users/carueda/Software/gwt-2.4.0
+- Running in development mode as follows: 
+    ant -f build2.xml devmode
+  Note that for the time being Orr2.gwt.xml defines <set-property name="user.agent" value="gecko1_8" />
+    
+- Create war with all user agents:
+  - Adjust Orr2.gwt.xml to remove the "user.agent" property setting, so the build will
+    include all permutations. 
+  - Create war:
+	$ ant -f build2.xml clean war 
+	Buildfile: /Users/carueda/mmiworkspace/org.mmisw.orrportal/gwt2/build2.xml
+	
+	clean:
+	
+	init:
+	
+	compile:
+	     [copy] Copying 1 file to /Users/carueda/mmiworkspace/org.mmisw.orrportal/src/org/mmisw/orrportal/gwt/client/util/table/ontab
+	    [mkdir] Created dir: /Users/carueda/mmiworkspace/org.mmisw.orrportal/gwt2/_generated/classes
+	    [javac] Compiling 129 source files to /Users/carueda/mmiworkspace/org.mmisw.orrportal/gwt2/_generated/classes
+	    [javac] Note: Some input files use or override a deprecated API.
+	    [javac] Note: Recompile with -Xlint:deprecation for details.
+	    [javac] Creating empty /Users/carueda/mmiworkspace/org.mmisw.orrportal/gwt2/_generated/classes/org/mmisw/orrportal/gwt/server/package-info.class
+	    [javac] Creating empty /Users/carueda/mmiworkspace/org.mmisw.orrportal/gwt2/_generated/classes/org/mmisw/orrportal/gwt/client/voc2rdf/rpc/package-info.class
+	    [javac] Creating empty /Users/carueda/mmiworkspace/org.mmisw.orrportal/gwt2/_generated/classes/org/mmisw/orrportal/gwt/client/rpc/package-info.class
+	    [javac] Creating empty /Users/carueda/mmiworkspace/org.mmisw.orrportal/gwt2/_generated/classes/org/mmisw/orrportal/gwt/client/package-info.class
+	
+	jar:
+	      [jar] Building jar: /Users/carueda/mmiworkspace/org.mmisw.orrportal/war/WEB-INF/lib/org.mmisw.orrportal.gwt.jar
+	
+	gaDef:
+	
+	gaUndef:
+	
+	ga:
+	     [echo] ga_snippet = ''
+	
+	createwar:
+	     [copy] Copying 1 file to /Users/carueda/mmiworkspace/org.mmisw.orrportal/war/WEB-INF
+	     [copy] Copying 1 file to /Users/carueda/mmiworkspace/org.mmisw.orrportal/war/WEB-INF/classes
+	     [copy] Copying 1 file to /Users/carueda/mmiworkspace/org.mmisw.orrportal/war
+	     [copy] Copying 1 file to /Users/carueda/mmiworkspace/org.mmisw.orrportal/war/WEB-INF/lib
+	
+	gwtc:
+	     [java] Compiling module org.mmisw.orrportal.gwt.Orr2
+	     [java]    Compiling 6 permutations
+	     [java]       Compiling permutation 0...
+	     [java]       Compiling permutation 1...
+	     [java]       Compiling permutation 2...
+	     [java]       Compiling permutation 3...
+	     [java]       Compiling permutation 4...
+	     [java]       Compiling permutation 5...
+	     [java]    Compile of permutations succeeded
+	     [java] Linking into /Users/carueda/mmiworkspace/org.mmisw.orrportal/war/orr2
+	     [java]    Link succeeded
+	     [java]    Compilation succeeded -- 51.258s
+	
+	war:
+	      [zip] Building zip: /Users/carueda/mmiworkspace/org.mmisw.orrportal/_generated/orr2.war
+	
+	BUILD SUCCESSFUL
+	Total time: 58 seconds
+
+- Clean: do "clean" when you're done with testing:
+	ant -f build2.xml clean
+  In particular, this removes OntologyTableGwt24.java (see below), which is a copy of the actual source 
+  file OntologyTableGwt24.java_ (note, trailing underscore). This was an easy way to avoid
+  affecting the regular GWT1.5.2-based build (unfortunately there doesn't seem to be a way 
+  to skip selected source files for the GWT 1.5.2 compiler).
+  
+- So far (apart from the new OntologyTableGwt24, which is not complete yet), the various tests
+  with the pre-existing widgets seem to work fine with GWT 2.4.0. But more exhaustive
+  tests are in order before switching to it. 
+  
+- New org.mmisw.orrportal.gwt.client.util.table.ontab.OntologyTableGwt24 as a better table
+  implementation based on new GWT widgets
+- Locally adjusting OntologyTableCreator to return an instance of OntologyTableGwt24 for testing.
+- orr-gwt24-mainpage.png: screenshot.
+
+General things to keep in mind:
+
+- As expected, lots of "deprecated" compile warnings (mainly related with "listener" elements), 
+  but not critical (as long as they are still supported).
+
+- "GWT no longer supports Quirks Mode" warning message in devmode.	
+  Without much more investigation at this point, I adjusted the first line in index2.jsp to be:
+	<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+  The warning is gone and at first glance, there're just a few perceptible but not terribly 
+  wrong changes in the ORR interface. More testing is necessary.
+
+  Some refs:
+	- http://en.wikipedia.org/wiki/Quirks_mode
+	- http://gwt-code-reviews.appspot.com/1422816/
+
+
+
 2010-09-23
 	
 = intro =

@@ -139,42 +139,6 @@ public class OntologyTable extends BaseOntologyTable {
 			"Account name of the user that registered the ontology."
 	);
 
-	// #209: list of ontologies ordered by time of registration; most recent first
-	private String sortColumn = "version";
-	private int sortFactor = -1;    // -1=down   +1:up
-	
-	private Comparator<RegisteredOntologyInfo> cmp = new Comparator<RegisteredOntologyInfo>() {
-		public int compare(RegisteredOntologyInfo o1, RegisteredOntologyInfo o2) {
-			String s1, s2;
-			if ( sortColumn.equalsIgnoreCase("version") ) {
-				s1 = _getVersion(o1);
-				s2 = _getVersion(o2);
-			}
-			else if ( sortColumn.equalsIgnoreCase("name") ) {
-				s1 = _getName(o1);
-				s2 = _getName(o2);
-			}
-			else if ( sortColumn.equalsIgnoreCase("author") ) {
-				s1 = _getAuthor(o1);
-				s2 = _getAuthor(o2);
-			}
-			else if ( sortColumn.equalsIgnoreCase("uri") ) {
-				s1 = _getUri(o1);
-				s2 = _getUri(o2);
-			}
-			else if ( sortColumn.equalsIgnoreCase("submitter") ) {
-				s1 = _getUsername(o1);
-				s2 = _getUsername(o2);
-			}
-			else {
-				s1 = _getName(o1);
-				s2 = _getName(o2);
-			}
-			
-			return sortFactor * s1.compareToIgnoreCase(s2);
-		}
-	};
-
 	/**
 	 * Performs sorting of the table entries in a deferred command.
 	 */

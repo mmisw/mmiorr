@@ -1,0 +1,382 @@
+package org.mmisw.orrportal.gwt.client.util.table.ontab;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
+import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.orrportal.gwt.client.Orr;
+import org.mmisw.orrportal.gwt.client.portal.ControlsPanel;
+import org.mmisw.orrportal.gwt.client.portal.PortalControl;
+import org.mmisw.orrportal.gwt.client.util.OrrUtil;
+import org.mmisw.orrportal.gwt.client.util.table.IQuickInfo;
+
+import com.google.gwt.cell.client.ButtonCell;
+import com.google.gwt.cell.client.Cell;
+import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.cell.client.SafeHtmlCell;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.TableRowElement;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.user.cellview.client.AbstractCellTable;
+import com.google.gwt.user.cellview.client.CellTable;
+import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.ColumnSortList;
+import com.google.gwt.user.cellview.client.DataGrid;
+import com.google.gwt.user.cellview.client.SimplePager;
+import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
+import com.google.gwt.user.cellview.client.ColumnSortList.ColumnSortInfo;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.MenuBar;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.view.client.ListDataProvider;
+
+/**
+ * Implementation based on new GWT widgets.
+ * 
+ * https://developers.google.com/web-toolkit/doc/latest/DevGuideUiCellTable
+ * 
+ * @author Carlos Rueda
+ */
+public class OntologyTableGwt24 extends BaseOntologyTable {
+
+	private static final String URI = "uri";
+	private static final String NAME = "name";
+	private static final String AUTHOR = "author";
+	private static final String VERSION = "version";
+	private static final String SUBMITTER = "submitter";
+	private static final String QINFO = "";
+
+	private AbstractCellTable<RegisteredOntologyInfo> table;
+
+	private ListDataProvider<RegisteredOntologyInfo> dataProvider;
+
+	private abstract class ColInfo implements
+			Comparator<RegisteredOntologyInfo> {
+
+		abstract String extract(RegisteredOntologyInfo oi);
+
+		public int compare(RegisteredOntologyInfo o1, RegisteredOntologyInfo o2) {
+			if (o1 == o2) {
+				return 0;
+			}
+			if (o1 != null) {
+				return (o2 != null) ? extract(o1).compareTo(extract(o2)) : 1;
+			}
+			return -1;
+		}
+	}
+
+	private static class Col {
+		Column<RegisteredOntologyInfo, ?> column;
+		int index;
+		ColInfo ci;
+
+		Col(Column<RegisteredOntologyInfo, ?> column, int index, ColInfo ci) {
+			this.column = column;
+			this.index = index;
+			this.ci = ci;
+		}
+
+	}
+
+	private Map<String, Col> columns = new HashMap<String, Col>();
+	private SimplePager pager;
+
+	/**
+	 * 
+	 * @param quickInfo
+	 * @param isVersionsTable
+	 */
+	public OntologyTableGwt24(final IQuickInfo quickInfo,
+			final boolean isVersionsTable) {
+		super(quickInfo, isVersionsTable);
+
+		if (isVersionsTable) {
+			CellTable<RegisteredOntologyInfo> cellTable = new CellTable<RegisteredOntologyInfo>();
+			cellTable.setWidth("100%", true);
+			table = cellTable;
+		}
+		else {
+			table = new DataGrid<RegisteredOntologyInfo>();
+			table.setWidth("100%");
+			pager = new SimplePager();
+			pager.setDisplay(table);
+		}
+		// table.setLoadingIndicator(new HTML("<img src=\""
+		// +GWT.getModuleBaseURL()+ "images/loading.gif\">"));
+		table.setEmptyTableWidget(new Label("Empty table"));
+
+		table.setHeight("100%");
+		// table.setSelectionModel(new
+		// NoSelectionModel<RegisteredOntologyInfo>());
+
+		dataProvider = new ListDataProvider<RegisteredOntologyInfo>();
+		dataProvider.addDataDisplay(table);
+
+		if (quickInfo != null) {
+			_prepareQuickInfo();
+		}
+	}
+
+	private void _createRegularColumns() {
+		// remove all regular columns (ie., except the quickInfo one):
+		while (table.getColumnCount() > 1) {
+			table.removeColumn(table.getColumn(1));
+		}
+		columns.clear();
+
+		// URI //////////////////
+		_createColumn(true, URI, "40%", true, new ColInfo() {
+			@Override
+			public String extract(RegisteredOntologyInfo oi) {
+				return _getUri(oi);
+			}
+		});
+
+		// NAME /////////////
+		_createColumn(true, NAME, "60%", true, new ColInfo() {
+			@Override
+			public String extract(RegisteredOntologyInfo oi) {
+				return _getName(oi);
+			}
+		});
+
+		// AUTHOR /////////////////
+		_createColumn(false, AUTHOR, "200px", true, new ColInfo() {
+			@Override
+			public String extract(RegisteredOntologyInfo oi) {
+				return _getAuthor(oi);
+			}
+		});
+
+		// VERSION /////////////////
+		_createColumn(false, VERSION, "120px", true, new ColInfo() {
+			@Override
+			public String extract(RegisteredOntologyInfo oi) {
+				return _getVersion(oi);
+			}
+		});
+
+		if (isAdmin && columns.get(SUBMITTER) == null) {
+			_createColumn(false, SUBMITTER, "100px", true, new ColInfo() {
+				@Override
+				public String extract(RegisteredOntologyInfo oi) {
+					return _getUsername(oi);
+				}
+			});
+		}
+	}
+
+	private void _prepareQuickInfo() {
+		ButtonCell btnCell = new ButtonCell();
+		Column<RegisteredOntologyInfo, String> column = _addColumn(btnCell,
+				QINFO, new GetValue<String>() {
+					public String getValue(RegisteredOntologyInfo oi) {
+						String label = ">";
+						return label;
+					}
+				}, new FieldUpdater<RegisteredOntologyInfo, String>() {
+					public void update(int index, RegisteredOntologyInfo oi,
+							String value) {
+
+						final PopupPanel menuPopup = new PopupPanel(true, true) {
+							protected void onPreviewNativeEvent(
+									NativePreviewEvent event) {
+								super.onPreviewNativeEvent(event);
+								switch (event.getTypeInt()) {
+								case Event.ONKEYDOWN:
+									if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE) {
+										hide();
+									}
+									break;
+								}
+							}
+						};
+
+						ControlsPanel controlsPanel = PortalControl
+								.getInstance().getMenuBarPanel();
+
+						MenuBar menu = controlsPanel.createOntologyMenuBar(oi,
+								false, includeVersionInLinks, !isVersionsTable);
+
+						menuPopup.setWidget(menu);
+						TableRowElement sender = table.getRowElement(index);
+						menuPopup.setPopupPosition(sender.getAbsoluteLeft(),
+								sender.getAbsoluteBottom());
+						menuPopup.show();
+					}
+				});
+
+		table.setColumnWidth(column, "50px");
+	}
+
+	public void clear() {
+		dataProvider.getList().clear();
+	}
+
+	public Widget getWidget() {
+		return table;
+	}
+
+	public void setOntologyInfos(
+			final List<RegisteredOntologyInfo> ontologyInfos,
+			LoginResult loginResult) {
+
+		this.ontologyInfos = ontologyInfos;
+		isAdmin = loginResult != null && loginResult.isAdministrator();
+
+		Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+			public void execute() {
+				Collections.sort(ontologyInfos, cmp);
+				update();
+			}
+		});
+	}
+
+	private void update() {
+		_createRegularColumns();
+
+		List<RegisteredOntologyInfo> list = dataProvider.getList();
+		list.clear();
+		for (RegisteredOntologyInfo oi : ontologyInfos) {
+			list.add(oi);
+		}
+		Orr.log("HERE");
+		setSortColumn(VERSION, true);
+
+		pager.setPageSize(list.size());
+	}
+
+	public void setSortColumn(String sortColumn, final boolean down) {
+		final Col col = columns.get(sortColumn);
+		if (col == null) {
+			throw new IllegalArgumentException("invalid column name: "
+					+ sortColumn);
+		}
+		this.sortColumn = sortColumn;
+		Orr.log("setSortColumn: '" + sortColumn + "' down=" + down + " index="
+				+ col.index);
+		ColumnSortList sortList = table.getColumnSortList();
+		ColumnSortInfo csi = col.index < sortList.size() ? sortList
+				.get(col.index) : null;
+		if (csi == null) {
+			csi = new ColumnSortInfo(col.column, !down);
+		}
+		sortList.push(csi);
+	}
+
+	public void showProgress() {
+		clear();
+	}
+
+	/**
+	 * @param linkUri
+	 * @param name
+	 * @param width
+	 * @param sorteable
+	 * @param ci
+	 * @return
+	 */
+	private Column<RegisteredOntologyInfo, ?> _createColumn(boolean linkUri,
+			String name, String width, boolean sorteable, final ColInfo ci) {
+
+		Column<RegisteredOntologyInfo, ?> column = null;
+
+		if (linkUri) {
+			SafeHtmlCell cell = new SafeHtmlCell();
+			column = _addColumn(cell, name, new GetValue<SafeHtml>() {
+				public SafeHtml getValue(RegisteredOntologyInfo oi) {
+					SafeHtmlBuilder sb = new SafeHtmlBuilder();
+					String uri = _getUri(oi);
+					String info = ci.extract(oi);
+					String html = "<a href=\"#" + uri + "\">" + info + "</a>";
+
+					boolean isTesting = OrrUtil.isTestingOntology(oi);
+					boolean isInternal = isTesting ? false : OrrUtil
+							.isInternalOntology(oi);
+					if (isTesting || isInternal) {
+						// add a mark
+						html += isTesting ? TESTING_ONT_MARK
+								: INTERNAL_ONT_MARK;
+						// html.setTitle(isTesting ? TESTING_ONT_TOOLTIP :
+						// INTERNAL_ONT_TOOLTIP);
+					}
+
+					sb.appendHtmlConstant(html);
+					SafeHtml safeHtml = sb.toSafeHtml();
+					return safeHtml;
+				}
+			}, null);
+		}
+		else {
+			column = new TextColumn<RegisteredOntologyInfo>() {
+				@Override
+				public String getValue(RegisteredOntologyInfo oi) {
+					return ci.extract(oi);
+				}
+			};
+			table.addColumn(column, name);
+		}
+
+		column.setSortable(sorteable);
+		table.setColumnWidth(column, width);
+
+		columns.put(name, new Col(column, columns.size(), ci));
+
+		if (sorteable) {
+			List<RegisteredOntologyInfo> list = dataProvider.getList();
+			ListHandler<RegisteredOntologyInfo> columnSortHandler = new ListHandler<RegisteredOntologyInfo>(
+					list);
+			columnSortHandler.setComparator(column, ci);
+			table.addColumnSortHandler(columnSortHandler);
+		}
+
+		return column;
+
+	}
+
+	private static interface GetValue<C> {
+		C getValue(RegisteredOntologyInfo contact);
+	}
+
+	/**
+	 * Add a column with a header.
+	 * 
+	 * @param <C>
+	 *            the cell type
+	 * @param cell
+	 *            the cell used to render the column
+	 * @param headerText
+	 *            the header string
+	 * @param getter
+	 *            the value getter for the cell
+	 */
+	private <C> Column<RegisteredOntologyInfo, C> _addColumn(Cell<C> cell,
+			String headerText, final GetValue<C> getter,
+			FieldUpdater<RegisteredOntologyInfo, C> fieldUpdater) {
+		Column<RegisteredOntologyInfo, C> column = new Column<RegisteredOntologyInfo, C>(
+				cell) {
+			@Override
+			public C getValue(RegisteredOntologyInfo object) {
+				return getter.getValue(object);
+			}
+		};
+		if (fieldUpdater != null) {
+			column.setFieldUpdater(fieldUpdater);
+		}
+
+		table.addColumn(column, headerText);
+		return column;
+	}
+}

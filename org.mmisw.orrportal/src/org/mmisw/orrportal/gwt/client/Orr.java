@@ -272,8 +272,15 @@ public class Orr {
 		if ( logWidget != null ) {
 			panel.add(logWidget);
 		}
+
+		// add version line, centered:
+		Widget versionHtml = new HTML("<span style=\"color:gray;font-size:8pt\">" +footer+ "</span><br/><br/>");
+		HorizontalPanel versionPanel = new HorizontalPanel();
+		versionPanel.setWidth("100%");
+		versionPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
+		versionPanel.add(versionHtml);
+		panel.add(versionPanel);
 		
-		panel.add(OrrUtil.createHtml("<font color=\"gray\">" +footer+ "</font><br/><br/>", 10));
 		return panel;
 	}
 

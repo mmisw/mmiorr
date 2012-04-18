@@ -303,10 +303,11 @@ public class ControlsPanel extends HorizontalPanel {
 
 	
 	
-	MenuBar createOntologyMenuBar(RegisteredOntologyInfo oi, boolean includeEdit, boolean includeVersion,
+	public MenuBar createOntologyMenuBar(RegisteredOntologyInfo oi, boolean includeEdit, boolean includeVersion,
 			boolean includeVersionsMenu
 	) {
 		MenuBar ont_mb = new MenuBar(true);
+		ont_mb.setAutoOpen(true);
 		
 		if ( includeEdit && pctrl.checkCanEditOntology(oi) == null ) {
 			ont_mb.addItem(_createMenuItemCreateNewVersion());
