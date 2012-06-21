@@ -2,6 +2,9 @@ org.mmisw.orrportal: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2012-06-20  2.0.26.beta
+	- Sort term table by the ID (localName) of the terms (#290). See OrrClient module.
+
 2012-04-17  2.0.25.beta
 	- GWT 2.4.0 tests, see gwt2/gwt2.txt
 
