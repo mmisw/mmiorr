@@ -1,6 +1,8 @@
 package org.mmisw.orrclient.core.util.ontinfo;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,6 +34,15 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  */
 abstract class BaseOntInfo implements IOntInfo {
 	
+	// Addresses in part #290 - "Alphabetized order while editing vocabulary table" but
+	// the effect here is just to display the table in order; the actual editing will 
+	// not necessarily preserve the order of the terms mainly upon row insertions.
+	private static final Comparator<IndividualInfo> individualComparator = new Comparator<IndividualInfo>() {
+		public int compare(IndividualInfo arg0, IndividualInfo arg1) {
+			return arg0.getLocalName().compareTo(arg1.getLocalName());
+		}
+	};
+
 	/**
 	 * Helper to get the localName of an entity given the entityUri and
 	 * the URI of an ontology to see if the entity "belongs" to the ontology.
@@ -242,6 +253,9 @@ abstract class BaseOntInfo implements IOntInfo {
 			classData.setIndividuals(individuals);
 			
 			List<IndividualInfo> individualInfos = baseData.getIndividuals();
+			
+			Collections.sort(individualInfos, individualComparator);
+			
 			for ( IndividualInfo individualInfo : individualInfos ) {
 				String individualClass = individualInfo.getClassUri();
 				if ( classUri.equals(individualClass) ) {
