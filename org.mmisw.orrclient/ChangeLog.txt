@@ -3,7 +3,7 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
-2012-06-20  2.0.25.beta
+2012-06-20  2.0.26.beta
 	- BaseOntInfo: Sort term table by the ID (localName) of the terms. Addresses in 
 	  part #290 - "Alphabetized order while editing vocabulary table" but the effect
 	  here is just to display the table in order; the actual editing will 
