@@ -39,7 +39,7 @@ abstract class BaseOntInfo implements IOntInfo {
 	// not necessarily preserve the order of the terms mainly upon row insertions.
 	private static final Comparator<IndividualInfo> individualComparator = new Comparator<IndividualInfo>() {
 		public int compare(IndividualInfo arg0, IndividualInfo arg1) {
-			return arg0.getLocalName().compareTo(arg1.getLocalName());
+			return arg0.getLocalName().compareToIgnoreCase(arg1.getLocalName());
 		}
 	};
 
