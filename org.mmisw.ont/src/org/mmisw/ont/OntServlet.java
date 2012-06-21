@@ -227,6 +227,10 @@ public class OntServlet extends HttpServlet {
 			return;
 		}
 		
+		if ( _dispatchAuthority() ) {
+			return;
+		}
+		
 		// if the "uri" parameter is included, resolve by the given URI
 		if ( Util.yes(req.request, "uri") ) {
 			// get (ontology or entity) URI from the parameter:
@@ -321,6 +325,27 @@ public class OntServlet extends HttpServlet {
 	}
 	
 	/**
+	 * Dispatches authority if that's the case
+	 * 
+	 * @return true iff dispatch completed here.
+	 */
+	private boolean _dispatchAuthority() throws ServletException, IOException {
+		OntRequest req = getThreadLocalOntRequest();
+		
+		// #294: "ontology listing for a particular authority"
+		if ( req.authority != null ) {
+			// got an "authority" request.
+			if ( log.isDebugEnabled() ) {
+				log.debug("_dispatchAuthority: '" +req.authority+ "'");
+			}
+			
+			return miscDispatcher.listOntologiesForAuthority(req.request, req.response, 
+					req.authority, req.outFormat);
+		}
+		return false;
+	}	
+	
+	/**
 	 * Dispatches the given uri.
 	 * If the uri corresponds to a stored ontology, then the ontology is resolved
 	 * as it were a regular self-served ontology.
@@ -338,7 +363,7 @@ public class OntServlet extends HttpServlet {
 		
 		// TODO (#158: analytics) under preliminary testing
 		analytics.trackPageview(ontOrEntUri);
-		
+
 		String finalVersion = null;
 		
 		// explicit version and MmiUri with version given?
@@ -786,13 +811,13 @@ public class OntServlet extends HttpServlet {
 	
 	/**
 	 * Gets the output format according to the given MmiUri and other request parameters.
-	 * @param req
-	 * @param mmiUri
+	 * @param formParam
+	 * @param accept
+	 * @param extension
 	 * @param log
 	 */
-	static String getOutFormatForMmiUri(String formParam, Accept accept, MmiUri mmiUri, Log log) {
+	static String getOutFormatForMmiUri(String formParam, Accept accept, String extension, Log log) {
 		// The response type depends (initially) on the following elements:
-		String extension = mmiUri.getExtension();
 		String outFormat = formParam;
 		
 		// NOTE: I use this 'outFormat' variable to handle the extension of the topic as well as the

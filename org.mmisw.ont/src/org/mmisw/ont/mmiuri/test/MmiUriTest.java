@@ -187,4 +187,41 @@ public class MmiUriTest extends TestCase {
     	}
     }
 
+    public void testExtensions() throws URISyntaxException {
+    	// multiple extensions but equal
+    	MmiUri mmiUri = new MmiUri("http://mmisw.org/ont/mmi/someVocab.owl/someTerm.owl");
+    	assertEquals(".owl", mmiUri.getExtension());
+
+    	// multiple extensions but different
+    	try {
+    		new MmiUri("http://mmisw.org/ont/mmi/someVocab.n3/someTerm.owl");
+    		fail(); // test fails!
+    	}
+    	catch (URISyntaxException ok) {
+    	}
+    	
+    	// multiple extensions but equal, including extension in the authority
+    	mmiUri = new MmiUri("http://mmisw.org/ont/mmi.rdf/someVocab.rdf/someTerm.rdf", true);
+    	assertEquals(".rdf", mmiUri.getExtension());
+    }
+
+    public void testAcceptUntilAuthority() throws URISyntaxException {
+    	
+    	// actually only until the authority:
+    	MmiUri mmiUri = new MmiUri("http://mmisw.org/ont/mmi", true);
+    	assertEquals("mmi", mmiUri.getAuthority());
+    	assertEquals("", mmiUri.getExtension());
+    	assertEquals("", mmiUri.getTopic());
+    	
+    	// actually only until the authority including extension:
+    	mmiUri = new MmiUri("http://mmisw.org/ont/mmi.rdf", true);
+    	assertEquals("mmi", mmiUri.getAuthority());
+    	assertEquals(".rdf", mmiUri.getExtension());
+    	assertEquals("", mmiUri.getTopic());
+    	
+    	// but with other stuff as well:
+    	mmiUri = new MmiUri("http://mmisw.org/ont/mmi/someVocab", true);
+    	assertEquals("someVocab", mmiUri.getTopic());
+    	assertEquals("mmi", mmiUri.getAuthority());
+    }
 }

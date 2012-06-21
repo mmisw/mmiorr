@@ -13,6 +13,8 @@ public class OntologyInfo {
 	private String filename;
 	
 	private String uri;
+	
+	private String displayLabel;
 
 	public String getUri() {
 		return uri;
@@ -52,6 +54,14 @@ public class OntologyInfo {
 
 	public String getFilename() {
 		return filename;
+	}
+
+	public String getDisplayLabel() {
+		return displayLabel;
+	}
+
+	public void setDisplayLabel(String displayLabel) {
+		this.displayLabel = displayLabel;
 	}
 
 }

@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -66,6 +67,111 @@ public class MiscDispatcher {
 	MiscDispatcher(OntConfig ontConfig, Db db) {
 		this.ontConfig = ontConfig;
 		this.db = db;
+	}
+
+	/**
+	 * List the registered ontologies for a given authority.
+	 * 
+	 * @param request
+	 * @param response
+	 * @param authority
+	 * @param outFormat  TODO use it
+	 * 
+	 * @return true iff dispatch completed here.
+	 */
+	boolean listOntologiesForAuthority(HttpServletRequest request, HttpServletResponse response, 
+			String authority, String outFormat) 
+	throws ServletException, IOException {
+		
+		// get the list of (latest-version) ontologies:
+		final boolean allVersions = false;
+		List<OntologyInfo> onts = db.getAllOntologies(allVersions);
+		
+		List<OntologyInfo> selected = new ArrayList<OntologyInfo>();
+		
+		for (OntologyInfo ontology : onts) {
+			try {
+				MmiUri mmiUri = new MmiUri(ontology.getUri());
+				if ( authority.equalsIgnoreCase(mmiUri.getAuthority())) {
+					selected.add(ontology);
+				}
+			}
+			catch (URISyntaxException ignore) {
+			} 
+		}
+
+		log.info("listOntologiesForAuthority: " +authority+ " = " +selected.size()+ " entries.");
+
+		if (selected.size() == 0 ) {
+			return false; // not dispatched
+		}
+		
+		// TODO use the given outForm. For now, always dispatching as html
+		
+		response.setContentType("text/html");
+		response.setHeader("Access-Control-Allow-Origin", "*");
+        PrintWriter out = response.getWriter();
+        out.println("<html>");
+        out.println("<head> <link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\"> </head>");
+        out.println("<title>" +"Authority: " +authority+ "</title>");
+        out.println("</head>");
+        out.println("<body>");
+        
+        
+        out.println("<h1>" +"Authority: " +authority+ "</h1>");
+        
+        
+        
+        // ontology table
+        
+        out.println("<table class=\"inline\" width=\"100%\">");
+        // header
+    	out.println("<tr>");
+    	
+    	out.println("<th>Ontology</th>");
+    	out.println("<th>Name</th>");
+    	out.println("<th>Version</th>");
+
+        out.println("</tr>");
+
+        for (OntologyInfo ontology : selected) {
+        	MmiUri mmiUri;
+        	String displayLabel = ontology.getDisplayLabel();
+        	String version;
+        	String unversionedUri;
+        	try {
+				mmiUri = new MmiUri(ontology.getUri());
+				version = mmiUri.getVersion();
+				unversionedUri = mmiUri.copyWithVersion(null).getOntologyUri();
+			}
+			catch (URISyntaxException e) {
+				// should not happen.
+				continue;
+			}
+        	
+        	out.println("<tr>");
+        	
+        	out.println("<td>");
+			out.println("<a href=\"" +unversionedUri+ "\">" +unversionedUri+ "</a>");
+            out.println("</td>");
+
+            out.println("<td>");
+            out.println(displayLabel);
+            out.println("</td>");
+
+            out.println("<td>");
+            out.println(version);
+            out.println("</td>");
+            
+	        out.println("</tr>");
+			
+		}
+        
+        out.println("</table>");
+        out.println("</body>");
+        out.println("</html>");
+        
+        return true;
 	}
 
 	/**

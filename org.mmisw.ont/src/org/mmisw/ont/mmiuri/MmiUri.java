@@ -3,6 +3,8 @@ package org.mmisw.ont.mmiuri;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import net.jcip.annotations.Immutable;
@@ -120,7 +122,7 @@ public final class MmiUri implements Cloneable {
 	 */
 	private volatile Integer hashCode;
 	
-	
+
 	/**
 	 * Creates an MmiUri by parsing the given string.
 	 * 
@@ -129,6 +131,19 @@ public final class MmiUri implements Cloneable {
 	 * @throws URISyntaxException if the requested URI is invalid according to the MMI specification.
 	 */
 	public MmiUri(String str) throws URISyntaxException {
+		this(str, false);
+	}	
+
+	/**
+	 * Creates an MmiUri by parsing the given string.
+	 * 
+	 * @param str (<code>http://mmisw.org/ont/mmi/someVocab.owl/someTerm</code>)
+	 * @param allowUntilAuthority If true, only until the authority component 
+	 *              (<code>http://mmisw.org/ont/mmi</code>) will be accepted.
+	 * 
+	 * @throws URISyntaxException if the requested URI is invalid according to the MMI specification.
+	 */
+	public MmiUri(String str, boolean allowUntilAuthority) throws URISyntaxException {
 		URI juri = new URI(str);
 		
 		//
@@ -172,22 +187,31 @@ public final class MmiUri implements Cloneable {
 		
 		String[] parts = afterRoot.split("/");
 
-		// Either:  2 parts = { mmi, someVocab.owl }
+		// Either:  1 part = { mmi }  if allowUntilAuthority
+		//     or:  2 parts = { mmi, someVocab.owl }
 		//     or:  3 parts = { mmi, someVocab.owl, someTerm }
 		//               or = { mmi, someVersion, someVocab.owl}
 		//     or:  4 parts = { mmi, someVersion, someVocab.owl, someTerm }
 		if ( parts.length < 2 || parts.length > 4 ) {
-			throw new URISyntaxException(fullRequestedUri, "2, 3, or 4 parts expected: "
-					+Arrays.asList(parts));
+			// if only one part, then accepted only if allowUntilAuthority
+			if ( parts.length == 1 && allowUntilAuthority ) {
+				// OK
+			}
+			else {
+				throw new URISyntaxException(fullRequestedUri, "2, 3, or 4 parts expected: "
+						+Arrays.asList(parts));
+			}
 		}
 
-		authority =  parts[0];
-		
 		String _version = null; // will remain null if not given.
 		String _topic = "";
 		String _term = "";     // will remain "" if not given
 		
-		if ( parts.length == 2 ) {
+		if ( parts.length == 1 ) {
+			// OK
+			assert allowUntilAuthority;
+		}
+		else if ( parts.length == 2 ) {
 			_topic = parts[1];
 		}
 		else if ( parts.length == 4 ) {
@@ -218,38 +242,52 @@ public final class MmiUri implements Cloneable {
 			}
 		}
 		
-		// remove any extension from _topic and _term, but remember them to assign this.extension below
+		String _authority = parts[0];
+				
+		// remove any extension from _authority, _topic and _term, but remember them to assign this.extension below
+		
+		Set<String> extensions = new HashSet<String>();
+		
+		String _authorityExt = "";
+		int dotIdx = _authority.lastIndexOf('.');
+		if ( dotIdx >= 0) {
+			_authorityExt = _authority.substring(dotIdx).toLowerCase();
+			_authority = _authority.substring(0, dotIdx);
+			extensions.add(_authorityExt);
+		}
+
 		String _topicExt = "";
-		int dotIdx = _topic.lastIndexOf('.');
+		dotIdx = _topic.lastIndexOf('.');
 		if ( dotIdx >= 0) {
 			_topicExt = _topic.substring(dotIdx).toLowerCase();
 			_topic = _topic.substring(0, dotIdx);
+			extensions.add(_topicExt);
 		}
+		
 		String _termExt = "";
 		dotIdx = _term.lastIndexOf('.');
 		if ( dotIdx >= 0) {
 			_termExt = _term.substring(dotIdx).toLowerCase();
 			_term = _term.substring(0, dotIdx);
+			extensions.add(_termExt);
 		}
 		
-		if ( _topicExt.length() > 0 && _termExt.length() > 0 ) {
-			// Both topic and term have extensions; if different, throw exception:
-			if ( !_topicExt.equals(_termExt) ) {
-				throw new URISyntaxException(fullRequestedUri, "Both the topic and the term have been " +
-						"given extensions but they are different: " +_topicExt+ " and " +_termExt);
-			}
+		
+		if ( extensions.size() > 1 ) {
+			// there are different extensions:
+			throw new URISyntaxException(fullRequestedUri, "Explicit extensions given but different: " +extensions);
 		}
 
 		////////////////////////////////////////////////////////////////////////////////
 		// now, assign to my final fields and do remaining checks:
 		
+		authority =  _authority;
+		
 		version = _version;
 		topic =   _topic;
 		term =    _term;
 		
-		// the extension is obtained from the term (if given), or from the topic.
-		// So, note that if both are given, then, the topic extension is ignored.
-		extension = _termExt.length() > 0 ? _termExt : _topicExt;
+		extension = extensions.size() == 1 ? extensions.iterator().next() : "";
 		
 		
 		if ( authority.length() == 0 ) {
@@ -261,10 +299,10 @@ public final class MmiUri implements Cloneable {
 		if ( Character.isDigit(authority.charAt(0)) ) {
 			throw new URISyntaxException(fullRequestedUri, "Authority cannot start with digit");
 		}
-		if ( topic.length() == 0 ) {
+		if ( ! allowUntilAuthority && topic.length() == 0 ) {
 			throw new URISyntaxException(fullRequestedUri, "Missing topic in URI");
 		}
-		if ( Character.isDigit(topic.charAt(0)) ) {
+		if ( topic.length() > 0 && Character.isDigit(topic.charAt(0)) ) {
 			throw new URISyntaxException(fullRequestedUri, "Topic cannot start with digit");
 		}
 		

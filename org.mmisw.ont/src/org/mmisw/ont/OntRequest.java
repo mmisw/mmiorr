@@ -40,6 +40,9 @@ public class OntRequest {
 	// in case an explicit ontology version is requested
 	final String version;
 	
+	// in case it is a self-resolvable MmiUri but just until the authority component, in which case
+	// only the authority string is saved here but mmiUri will still be null.
+	final String authority;
 	
 	/**
 	 * Constructor.
@@ -71,11 +74,11 @@ public class OntRequest {
 				// when the "uri" parameter is passed, its value is used.
 				String entityUri = Util.getParam(request, "uri", "");
 				if ( OntUtil.isOntResolvableUri(entityUri) ) {
-					mmiUriTest = new MmiUri(entityUri);
+					mmiUriTest = new MmiUri(entityUri, true); // allowing only until authority
 				}
 			}
 			else {
-				mmiUriTest = new MmiUri(fullRequestedUri);
+				mmiUriTest = new MmiUri(fullRequestedUri, true);  // allowing only until authority
 			}
 		}
 		catch (URISyntaxException e) {
@@ -87,7 +90,7 @@ public class OntRequest {
 		
 		if ( mmiUriTest != null ) {
 			// get output format to be used:
-			outFormatTest = OntServlet.getOutFormatForMmiUri(formParam, accept, mmiUriTest, log);
+			outFormatTest = OntServlet.getOutFormatForMmiUri(formParam, accept, mmiUriTest.getExtension(), log);
 		}
 		else {
 			// NOT a regular MmiUri request.
@@ -110,7 +113,16 @@ public class OntRequest {
 			// explicit version given:
 			versionTest = Util.getParam(request, "version", null);
 		}
+
+		String authorityTest = null;
 		
+		if ( mmiUriTest != null && mmiUriTest.getTopic() == "" ) {
+			// it is only until the authority. Just keep the authority
+			authorityTest = mmiUriTest.getAuthority();
+			mmiUriTest = null;
+		}
+		
+		authority = authorityTest;
 		
 		mmiUri = mmiUriTest;
 		outFormat = outFormatTest;
@@ -141,6 +153,7 @@ public class OntRequest {
 		log.debug("           Dominating entry: " +dominating);
 		
 		log.debug("                     mmiUri: " +mmiUri);
+		log.debug("                  authority: " +authority);
 		log.debug("                  outFormat: " +outFormat);
 		log.debug("                    version: " +version);			
 	}
@@ -149,6 +162,7 @@ public class OntRequest {
 		return "<" +
 			"fullRequestedUri=" +fullRequestedUri+
 			" mmiUri=" +mmiUri+
+			" authority=" +authority+
 			" outFormat=" +outFormat+
 			" version=" +version+
 			" " +(ontology != null ? "ontologyUri=" +ontology.getUri() : "ontology=null") +

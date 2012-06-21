@@ -4,6 +4,12 @@ $Id$
 
 ChangeLog
 
+2012-06-20  2.0.26.beta
+	- #294: "ontology listing for a particular authority"
+	  MiscDispatcher.listOntologiesForAuthority: preliminary implementation: shows an html
+	  table with all the ontologies associated with a given authority.
+	  TODO: complement with info from the authority vocabulary (need configuration param from this)
+	
 2012-04-03  2.0.24.beta
 	- Instead of inference being enabled by default for queries, now an explicit parameter
 	  (infer) has been added to the corresp APIs. The particular reason for this change was the

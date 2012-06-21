@@ -535,7 +535,7 @@ public class Db {
 
 			// note that this is sorted in increasing ontology_id,version_number
 			String query = 
-				"select v.id, v.ontology_id, v.file_path, f.filename, v.urn " +
+				"select v.id, v.ontology_id, v.file_path, f.filename, v.urn, v.display_label " +
 				"from v_ncbo_ontology v, ncbo_ontology_file f " +
 				"where v.id = f.ontology_version_id " +
 				"order by v.ontology_id, v.version_number";
@@ -550,6 +550,7 @@ public class Db {
 	        	ontology.setFilePath(rs.getString(3));
 	        	ontology.setFilename(rs.getString(4));
 	        	ontology.setUri(rs.getString(5));
+	        	ontology.setDisplayLabel(rs.getString(6));
 	        	
 	        	if ( allVersions ) {
 	        		// just add item immediately:
