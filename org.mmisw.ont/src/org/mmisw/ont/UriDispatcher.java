@@ -35,7 +35,8 @@ public class UriDispatcher {
 	/** SELECT Query template to obtain all properties associated with an entity */
 	private static final String PROPS_SELECT_QUERY_TEMPLATE =
 		"SELECT DISTINCT ?prop ?value " +
-		"WHERE { <{E}> ?prop ?value . }"
+		"WHERE { <{E}> ?prop ?value . } " +
+		"ORDER BY ?prop"
 	;
 	
 	
