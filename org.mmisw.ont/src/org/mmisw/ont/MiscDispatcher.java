@@ -179,7 +179,7 @@ public class MiscDispatcher {
 		}
         
         out.println("</table>");
-        out.println("<font color=\"gray\" size=\"-2\">" +OntVersion.getFullTitle()+ "</font>");
+        out.println("<font color=\"gray\" size=\"-2\"><br/>" +OntVersion.getFullTitle()+ "</font>");
         out.println("</div>");
         out.println("</body>");
         out.println("</html>");
