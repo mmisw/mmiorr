@@ -15,6 +15,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -87,13 +89,23 @@ public class MiscDispatcher {
 		final boolean allVersions = false;
 		List<OntologyInfo> onts = db.getAllOntologies(allVersions);
 		
-		List<OntologyInfo> selected = new ArrayList<OntologyInfo>();
+		class Item {
+			String uri;
+			String name;
+			String version;
+		}
+		
+		List<Item> selected = new ArrayList<Item>();
 		
 		for (OntologyInfo ontology : onts) {
 			try {
 				MmiUri mmiUri = new MmiUri(ontology.getUri());
 				if ( authority.equalsIgnoreCase(mmiUri.getAuthority())) {
-					selected.add(ontology);
+					Item item = new Item();
+					item.name = ontology.getDisplayLabel();
+					item.version = mmiUri.getVersion();
+					item.uri = mmiUri.copyWithVersion(null).getOntologyUri();
+					selected.add(item);
 				}
 			}
 			catch (URISyntaxException ignore) {
@@ -105,6 +117,13 @@ public class MiscDispatcher {
 		if (selected.size() == 0 ) {
 			return false; // not dispatched
 		}
+		
+		// order by descending version
+		Collections.sort(selected, new Comparator<Item>() {
+			public int compare(Item o1, Item o2) {
+				return - o1.version.compareToIgnoreCase(o2.version);
+			}
+		});
 		
 		// TODO use the given outForm. For now, always dispatching as html
 		
@@ -118,36 +137,28 @@ public class MiscDispatcher {
         out.println("<body>");
         
         
-        out.println("<h1>" +"Authority: " +authority+ "</h1>");
-        
+        out.println("<br/>");
+        out.println("<div align=\"center\">");
         
         
         // ontology table
         
-        out.println("<table class=\"inline\" width=\"100%\">");
+        out.println("<table class=\"inline2\">");
         // header
     	out.println("<tr>");
-    	
-    	out.println("<th>Ontology</th>");
-    	out.println("<th>Name</th>");
-    	out.println("<th>Version</th>");
-
+    	out.println("<td colspan=3 align=\"center\">Registered ontologies under authority: <b>" +authority+ "</b></td>");
         out.println("</tr>");
 
-        for (OntologyInfo ontology : selected) {
-        	MmiUri mmiUri;
-        	String displayLabel = ontology.getDisplayLabel();
-        	String version;
-        	String unversionedUri;
-        	try {
-				mmiUri = new MmiUri(ontology.getUri());
-				version = mmiUri.getVersion();
-				unversionedUri = mmiUri.copyWithVersion(null).getOntologyUri();
-			}
-			catch (URISyntaxException e) {
-				// should not happen.
-				continue;
-			}
+        out.println("<tr>");
+    	out.println("<th>URI</th>");
+    	out.println("<th>Name</th>");
+    	out.println("<th>Version</th>");
+        out.println("</tr>");
+
+        for (Item item : selected) {
+        	String displayLabel = item.name;
+        	String version = item.version;
+        	String unversionedUri = item.uri;
         	
         	out.println("<tr>");
         	
@@ -168,6 +179,8 @@ public class MiscDispatcher {
 		}
         
         out.println("</table>");
+        out.println("<font color=\"gray\" size=\"-2\">" +OntVersion.getFullTitle()+ "</font>");
+        out.println("</div>");
         out.println("</body>");
         out.println("</html>");
         

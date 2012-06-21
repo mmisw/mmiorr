@@ -45,4 +45,23 @@ table.inline td {
 }
 
 
+table.inline2 {
+  font-size: normal;
+  background-color: #ffffff;
+  border-spacing: 0px;
+  border-collapse: collapse;
+}
+
+table.inline2 th {
+  padding: 8px;
+  border: 1px solid #8cacbb;
+  background-color: #dee7ec;
+}
+
+table.inline2 td {
+  padding: 8px;
+  border: 1px solid #8cacbb;
+}
+
+
 

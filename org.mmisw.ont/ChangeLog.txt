@@ -4,11 +4,13 @@ $Id$
 
 ChangeLog
 
-2012-06-20  2.0.26.beta
+2012-06-21  2.0.26.beta
 	- #294: "ontology listing for a particular authority"
 	  MiscDispatcher.listOntologiesForAuthority: preliminary implementation: shows an html
 	  table with all the ontologies associated with a given authority.
-	  TODO: complement with info from the authority vocabulary (need configuration param from this)
+	  TODO: complement with info from the authority vocabulary (need configuration param for this).
+	  
+	- UriDispatcher: add "ORDER BY ?prop" in select query for properties of an entity. 
 	
 2012-04-03  2.0.24.beta
 	- Instead of inference being enabled by default for queries, now an explicit parameter
