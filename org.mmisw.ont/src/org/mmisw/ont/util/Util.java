@@ -242,7 +242,7 @@ public class Util {
 	public static String csv2html(String csv) {
 		StringBuilder html = new StringBuilder();
 		
-		html.append("<table class=\"inline\">\n");
+		html.append("<table class=\"inline2\">\n");
 		
 		String thtd = "th";
 		String[] lines = csv.split("\n|\r\n");

@@ -188,7 +188,7 @@ class AgUtils {
 //	    log.debug("Number of solutions: " + it.getCount());
 		
 		
-		out.printf("<table class=\"inline\">%n");
+		out.printf("<table class=\"inline2\">%n");
 
 		// header
 		out.printf("<tr>%n");

@@ -200,9 +200,20 @@ public class SparqlDispatcher {
 								"<link rel=stylesheet href=\"" +
 								request.getContextPath()+ "/main.css\" type=\"text/css\">" +
 								"</head><body>\n" +
-						queryComm
+						queryComm + "\n" +
+								"<br/><div align=\"center\">\n"
 				;
-				pos = "</body></html>";
+				
+				/*
+				 * TODO better to have this piece as a specific "header" parameter
+				 */
+				if (requestedEntity != null) {
+					pre += "<b>" + requestedEntity + "</b><br/>\n";
+				}
+
+				
+				
+				pos = "</div></body></html>";
 			}
 			result = pre + result + pos;
 			response.setContentType(queryResult.getContentType());
@@ -234,7 +245,7 @@ public class SparqlDispatcher {
 					queryComm
 			;
 			String pos = "</body></html>";
-
+			
 			result = pre + result + pos;
 		}
 		

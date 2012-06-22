@@ -34,9 +34,9 @@ public class UriDispatcher {
 	
 	/** SELECT Query template to obtain all properties associated with an entity */
 	private static final String PROPS_SELECT_QUERY_TEMPLATE =
-		"SELECT DISTINCT ?prop ?value " +
-		"WHERE { <{E}> ?prop ?value . } " +
-		"ORDER BY ?prop"
+		"SELECT DISTINCT ?property ?value " +
+		"WHERE { <{E}> ?property ?value . } " +
+		"ORDER BY ?property"
 	;
 	
 	
@@ -130,7 +130,7 @@ public class UriDispatcher {
 		String query = PROPS_SELECT_QUERY_TEMPLATE.replaceAll("\\{E\\}", entityUri);
 		
 		// note, pass null so the caller can continue the dispatch if the query gets empty result
-		String requestedEntity = null;
+		String requestedEntity = entityUri;
 		return sparqlDispatcher.execute(request, response, query, requestedEntity, outFormat);
 	}
 }
