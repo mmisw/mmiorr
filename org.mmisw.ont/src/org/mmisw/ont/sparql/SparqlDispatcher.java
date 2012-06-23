@@ -13,6 +13,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.OntServlet;
+import org.mmisw.ont.OntVersion;
 import org.mmisw.ont.triplestore.ITripleStore;
 import org.mmisw.ont.util.Unfinished;
 import org.mmisw.ont.util.Util;
@@ -189,7 +190,7 @@ public class SparqlDispatcher {
 		
 		else if ( "text/html".equalsIgnoreCase(queryResult.getContentType()) ) {
 			String queryComm = "\n<!-- Query:\n\n" +Util.toHtmlComment(query)+ "\n-->\n\n";
-			String pre, pos;
+			String pre, pos = "";
 			
 			if ( "html-frag".equals(outFormat) ) {
 				pre = queryComm;
@@ -208,12 +209,13 @@ public class SparqlDispatcher {
 				 * TODO better to have this piece as a specific "header" parameter
 				 */
 				if (requestedEntity != null) {
-					pre += "<b>" + requestedEntity + "</b><br/>\n";
+					pre += "<b>" + requestedEntity + "</b><br/><br/>\n";
+					pos += "<font color=\"gray\" size=\"-2\"><br/>" +OntVersion.getFullTitle()+ "</font>";
 				}
 
 				
 				
-				pos = "</div></body></html>";
+				pos += "</div></body></html>";
 			}
 			result = pre + result + pos;
 			response.setContentType(queryResult.getContentType());
