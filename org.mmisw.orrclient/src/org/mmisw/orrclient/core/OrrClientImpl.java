@@ -1456,15 +1456,15 @@ public class OrrClientImpl implements IOrrClient {
 
 			
 		
-		final String original_base_ = JenaUtil2.removeTrailingFragment(uriForEmpty);
+		final String original_base_ = uriForEmpty == null ? null : JenaUtil2.removeTrailingFragment(uriForEmpty);
 
 		// and this is the info for the requested URI:
 		final String ontUri = createOntologyInfo.getUri();
 		final String ns_ = JenaUtil2.appendFragment(ontUri);
 		final String base_ = JenaUtil2.removeTrailingFragment(ontUri);
 
-		log.info("createOntologyReHosted: original namespace: '" +original_base_+ "'");
-		if ( ! original_base_.equals(base_) ) {
+		log.info("createOntologyReHosted: original namespace: " +original_base_);
+		if ( original_base_ != null && ! original_base_.equals(base_) ) {
 			// In this re-hosted case, we force the original URI and the new URI to be the same.
 			// This may happen only in the case of a submission of a new version.
 			String error = "The new base URI (" +base_+ ") is not equal to the registered " +

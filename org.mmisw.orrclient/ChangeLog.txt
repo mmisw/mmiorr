@@ -3,6 +3,12 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2012-08-18  2.0.27.beta
+	- OrrClientImpl: Prevent possible NPE when there is no URI for original_base_.
+	  The NPE happended when trying to upload a new version of the re-hosted
+	  http://vocab.ndg.nerc.ac.uk/list/P021/current vocabulary, whose contents
+	  do not provide information to extract a base URI.
+
 2012-06-20  2.0.26.beta
 	- BaseOntInfo: Sort term table by the ID (localName) of the terms. Addresses in 
 	  part #290 - "Alphabetized order while editing vocabulary table" but the effect
