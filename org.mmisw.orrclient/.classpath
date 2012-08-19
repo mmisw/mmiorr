@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry excluding="org/mmisw/orrclient/core/OrrClientImpl_trailingFragment.java" kind="src" path="src"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/commons-httpclient-3.1.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/commons-codec-1.3.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/commons-logging.jar"/>
@@ -25,5 +25,6 @@
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/wstx-asl-3.2.9.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/jena/xercesImpl-2.7.1.jar"/>
 	<classpathentry kind="lib" path="base_war/WEB-INF/lib/org.mmisw.ont.client.jar" sourcepath="/org.mmisw.ont/src"/>
+	<classpathentry kind="lib" path="base_war/WEB-INF/lib/opencsv-2.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

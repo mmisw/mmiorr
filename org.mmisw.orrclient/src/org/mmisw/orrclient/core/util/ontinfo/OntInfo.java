@@ -3,6 +3,8 @@ package org.mmisw.orrclient.core.util.ontinfo;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -275,6 +277,12 @@ class OntInfo extends BaseOntInfo {
 				Resource r = (Resource) rdfNode;
 				valueName = r.getLocalName();
 				valueUri = r.getURI();
+				if (valueName == null || valueName.trim().length() == 0) {
+					// The localName is empty, so use the URI for the valueName.
+					// This was first noted with the BODC vocabularies, which use names 
+					// ending with slash (/).
+					valueName = valueUri;
+				}
 			}
 			else {
 				valueName = rdfNode.toString();
@@ -296,6 +304,18 @@ class OntInfo extends BaseOntInfo {
 			entityInfo.getProps().add(pv);
 		}
 		
+		// sort the PropValues by the property URI and the value, such that
+		// the properties get grouped better:
+		Collections.sort(entityInfo.getProps(), new Comparator<PropValue>() {
+			public int compare(PropValue arg0, PropValue arg1) {
+				int cmp = arg0.getPropUri().compareTo(arg1.getPropUri());
+				if (cmp != 0) {
+					return cmp;
+				}
+				cmp = arg0.getValueName().compareTo(arg1.getValueName());
+				return cmp;
+			}
+		});
 	}
 
 	
