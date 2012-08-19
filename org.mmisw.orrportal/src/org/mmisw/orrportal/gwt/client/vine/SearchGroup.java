@@ -130,10 +130,14 @@ public class SearchGroup extends VerticalPanel {
 		// TODO use a parameter to apply case-sensitive or not
 		text = text.toLowerCase();
 		
-		// TODO get this flags from parameters
+		// TODO get these flags from parameters
 		boolean useLocalName = true;
 		boolean useProps = true;
 		
+		boolean includeSubjects = true;
+		boolean includeIndividuals = true;
+		boolean includeClasses = true;
+		boolean includeProperties = true;
 		
 		List<EntityInfo> foundEntities = new ArrayList<EntityInfo>();
 		for (RegisteredOntologyInfo ont : uris ) {
@@ -150,18 +154,45 @@ public class SearchGroup extends VerticalPanel {
 			}
 			
 			BaseOntologyData baseOntologyData = ontologyData.getBaseOntologyData();
+
+			// TODO remove this old code
+			//Object[] entityArray = {
+			//						
+			//				// Only individuals ...
+			//				baseOntologyData.getIndividuals(),
+			//				
+			//				// ... TODO determine whether classes and properties should be included and how.
+			//				// For now, omitting classes and properties
+			//				//baseOntologyData.getClasses(),
+			//				//baseOntologyData.getProperties(),
+			//				
+			//};
+		
+			List<List<? extends EntityInfo>> entityArray = new ArrayList<List<? extends EntityInfo>>();
+
+			if (includeSubjects) {
+				List<? extends EntityInfo> entities = baseOntologyData.getSubjects();
+				Orr.log("subjects = " + entities);
+				entityArray.add(entities);
+			}
 			
-			Object[] entityArray = {
-					
-					// Only individuals ...
-					baseOntologyData.getIndividuals(),
-					
-					// ... TODO determine whether classes and properties should be included and how.
-					// For now, omitting classes and properties
-					//baseOntologyData.getClasses(),
-					//baseOntologyData.getProperties(),
-					
-			};
+			if (includeIndividuals) {
+				List<? extends EntityInfo> entities = baseOntologyData.getIndividuals();
+				Orr.log("individuals = " + entities);
+				entityArray.add(entities);
+			}
+			
+			if (includeClasses) {
+				List<? extends EntityInfo> entities = baseOntologyData.getClasses();
+				Orr.log("classes = " + entities);
+				entityArray.add(entities);
+			}
+			
+			if (includeProperties) {
+				List<? extends EntityInfo> entities = baseOntologyData.getProperties();
+				Orr.log("properties = " + entities);
+				entityArray.add(entities);
+			}
 			
 			for (Object object : entityArray) {
 				
