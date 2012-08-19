@@ -12,7 +12,7 @@ import java.util.List;
  * 
  * @author Carlos Rueda
  */
-public class EntityInfo implements Serializable {
+public class EntityInfo implements Serializable, Comparable<EntityInfo> {
 	private static final long serialVersionUID = 1L;
 
 	private String uri;
@@ -41,6 +41,21 @@ public class EntityInfo implements Serializable {
 		this.uri = uri;
 	}
 	
+	public int hashCode() {
+		return uri.hashCode();
+	}
+	
+	public boolean equals(Object other) {
+		if (other instanceof EntityInfo) {
+			return false;
+		}
+		return this.uri.equals(((EntityInfo) other).uri);
+	}
+	
+	public int compareTo(EntityInfo o) {
+		return this.uri.compareTo(o.uri);
+	}
+
 	public String getLocalName() {
 		return localName;
 	}
