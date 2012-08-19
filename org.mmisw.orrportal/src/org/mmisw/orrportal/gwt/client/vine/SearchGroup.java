@@ -1,7 +1,10 @@
 package org.mmisw.orrportal.gwt.client.vine;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyData;
 import org.mmisw.orrclient.gwt.client.rpc.EntityInfo;
@@ -155,81 +158,61 @@ public class SearchGroup extends VerticalPanel {
 			
 			BaseOntologyData baseOntologyData = ontologyData.getBaseOntologyData();
 
-			// TODO remove this old code
-			//Object[] entityArray = {
-			//						
-			//				// Only individuals ...
-			//				baseOntologyData.getIndividuals(),
-			//				
-			//				// ... TODO determine whether classes and properties should be included and how.
-			//				// For now, omitting classes and properties
-			//				//baseOntologyData.getClasses(),
-			//				//baseOntologyData.getProperties(),
-			//				
-			//};
-		
-			List<List<? extends EntityInfo>> entityArray = new ArrayList<List<? extends EntityInfo>>();
+			Set<EntityInfo> entityArray = new LinkedHashSet<EntityInfo>();
 
 			if (includeSubjects) {
 				List<? extends EntityInfo> entities = baseOntologyData.getSubjects();
 				Orr.log("subjects = " + entities);
-				entityArray.add(entities);
+				entityArray.addAll(entities);
 			}
 			
 			if (includeIndividuals) {
 				List<? extends EntityInfo> entities = baseOntologyData.getIndividuals();
 				Orr.log("individuals = " + entities);
-				entityArray.add(entities);
+				entityArray.addAll(entities);
 			}
 			
 			if (includeClasses) {
 				List<? extends EntityInfo> entities = baseOntologyData.getClasses();
 				Orr.log("classes = " + entities);
-				entityArray.add(entities);
+				entityArray.addAll(entities);
 			}
 			
 			if (includeProperties) {
 				List<? extends EntityInfo> entities = baseOntologyData.getProperties();
 				Orr.log("properties = " + entities);
-				entityArray.add(entities);
+				entityArray.addAll(entities);
 			}
 			
-			for (Object object : entityArray) {
+			for (EntityInfo entityInfo : entityArray) {
 				
-				@SuppressWarnings("unchecked")
-				List<? extends EntityInfo> entities = (List<? extends EntityInfo>) object;
+				boolean add = false;
 
-
-				if ( entities == null || entities.size() == 0 ) {
-					continue;
+				// check localName
+				if ( (useLocalName && entityInfo.getLocalName().toLowerCase().indexOf(text) >= 0) ) {
+					add = true;
 				}
 
-				for ( EntityInfo entityInfo : entities ) {
-					boolean add = false;
-
-					// check localName
-					if ( (useLocalName && entityInfo.getLocalName().toLowerCase().indexOf(text) >= 0) ) {
-						add = true;
-					}
-
-					// check props
-					if ( !add && useProps ) {
-						List<PropValue> props = entityInfo.getProps();
-						for ( PropValue pv : props ) {
-							String str = pv.getValueName();
-							add = str != null && str.toLowerCase().indexOf(text) >= 0;
-							if ( add ) {
-								break;
-							}
+				// check props
+				if ( !add && useProps ) {
+					List<PropValue> props = entityInfo.getProps();
+					for ( PropValue pv : props ) {
+						String str = pv.getValueName();
+						add = str != null && str.toLowerCase().indexOf(text) >= 0;
+						if ( add ) {
+							break;
 						}
 					}
+				}
 
-					if ( add ) {
-						foundEntities.add(entityInfo);
-					}
+				if ( add ) {
+					foundEntities.add(entityInfo);
 				}
 			} 
 		}
+		
+		Collections.sort(foundEntities);
+		
 		return foundEntities;
 	}
 
