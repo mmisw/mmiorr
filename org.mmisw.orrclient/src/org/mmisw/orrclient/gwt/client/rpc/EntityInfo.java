@@ -46,7 +46,7 @@ public class EntityInfo implements Serializable, Comparable<EntityInfo> {
 	}
 	
 	public boolean equals(Object other) {
-		if (other instanceof EntityInfo) {
+		if (!(other instanceof EntityInfo)) {
 			return false;
 		}
 		return this.uri.equals(((EntityInfo) other).uri);
