@@ -60,6 +60,12 @@ class OntInfo extends BaseOntInfo {
 		String ontologyUri = baseOntologyInfo.getUri();
 
 		Set<Property> dtProps = new HashSet<Property>();
+		
+		
+		// subjects:
+		List<EntityInfo> subjects = _getSubjects(null, ontModel, ontologyUri, dtProps);
+		
+		
 		// individuals:
 		List<IndividualInfo> individuals = _getIndividuals(null, ontModel, ontologyUri, dtProps);
 
@@ -80,10 +86,18 @@ class OntInfo extends BaseOntInfo {
 		_setDomainClassesForProperties(classes, properties);
 		
 		BaseOntologyData baseOntologyData = new BaseOntologyData();
+		baseOntologyData.setSubjects(subjects);
 		baseOntologyData.setIndividuals(individuals);
 		baseOntologyData.setProperties(properties);
 		baseOntologyData.setClasses(classes);
 		
+		if (log.isDebugEnabled()) {
+			log.debug("subjects = " + subjects);
+			log.debug("individuals = " + individuals);
+			log.debug("classes = " + classes);
+			log.debug("properties = " + properties);
+		}
+
 		// now, determine the type of ontology data to be created:
 
 		OntologyType ontype = OntTypeUtil.determineType(ontModel, ontologyUri, dtProps);
@@ -114,6 +128,47 @@ class OntInfo extends BaseOntInfo {
 		
 		return baseOntologyInfo;
 	}
+	
+	/**
+	 * Adds the subjects defined in the model to the given list.
+	 * @param entities
+	 * @param ontModel
+	 * @param ontologyUri
+	 * @param dtProps 
+	 *         if not null, the found properties whose objects are not resources 
+	 *         are added to this set
+	 */
+	private List<EntityInfo> _getSubjects(List<EntityInfo> entities,
+			OntModel ontModel, String ontologyUri, Set<Property> dtProps
+	) {
+		
+		if ( entities == null ) {
+			entities = new ArrayList<EntityInfo>();
+		}
+		
+		for ( Resource ind : ontModel.listSubjects().toList() ) {
+			
+			if ( ind.isAnon() ) {
+				continue;
+			}
+			String entityUri = ind.getURI();
+			if ( entityUri == null ) {
+				continue;
+			}
+			
+			EntityInfo entityInfo = new EntityInfo();
+			entityInfo.setUri(entityUri);
+
+			String localName = _getLocalName(entityUri, ontologyUri);
+			entityInfo.setLocalName(localName);
+
+			_addProps(entityUri, entityInfo, ontModel, dtProps);
+			entities.add(entityInfo);
+		}
+		
+		return entities;
+	}
+
 	
 	/**
 	 * Adds the individuals defined in the model to the given list.

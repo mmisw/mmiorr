@@ -11,8 +11,10 @@ public class BaseOntologyData implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	
-	private List<IndividualInfo> individuals;
+	private List<EntityInfo> subjects;
 
+	private List<IndividualInfo> individuals;
+	
 	private List<PropertyInfo> properties;
 
 	private List<ClassInfo> classes;
@@ -20,6 +22,16 @@ public class BaseOntologyData implements Serializable {
 	
 	public BaseOntologyData() {
 	}
+
+
+	public List<EntityInfo> getSubjects() {
+		return subjects;
+	}
+
+	public void setSubjects(List<EntityInfo> subjects) {
+		this.subjects = subjects;
+	}
+
 
 
 	/**
