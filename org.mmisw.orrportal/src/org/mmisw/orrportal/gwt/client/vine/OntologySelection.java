@@ -8,6 +8,7 @@ import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.ExternalOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.orrportal.gwt.client.Orr;
+import org.mmisw.orrportal.gwt.client.util.OrrUtil;
 import org.mmisw.orrportal.gwt.client.vine.util.TLabel;
 
 import com.google.gwt.user.client.DOM;
@@ -90,16 +91,22 @@ public class OntologySelection extends VerticalPanel {
 			});
 			hp.add(addButton);
 
-			if (true) {
-				final PushButton addXButton = new PushButton("AddX...");
-				addXButton.setTitle("Allows to add an external ontology");
-				DOM.setElementAttribute(addXButton.getElement(), "id", "my-button-id");
-				addXButton.addClickListener(new ClickListener() {
-					public void onClick(Widget sender) {
-						getExternalOntology("http://sweet.jpl.nasa.gov/2.3/human.owl");
-					}
-				});
-				hp.add(addXButton);
+			//
+			// TODO The following is testing code
+			//
+			Map<String, String> params = OrrUtil.getParams();
+			if (params != null) {
+				final String ontologyUri = (String) params.get("_xont");
+				if (ontologyUri != null) {
+					final PushButton addXButton = new PushButton("add: " +ontologyUri);
+					DOM.setElementAttribute(addXButton.getElement(), "id", "my-button-id");
+					addXButton.addClickListener(new ClickListener() {
+						public void onClick(Widget sender) {
+							addExternalOntology(ontologyUri);
+						}
+					});
+					hp.add(addXButton);
+				}
 			}
 		}
 		
@@ -266,13 +273,9 @@ public class OntologySelection extends VerticalPanel {
 	}
 
 	/**
-	 * 
-	 * @param x
-	 *            Position for the popup
-	 * @param y
-	 *            Position for the popup
+	 * Adds an external ontology to the working group.
 	 */
-	private void getExternalOntology(String ontologyUri) {
+	private void addExternalOntology(String ontologyUri) {
 		AsyncCallback<ExternalOntologyInfo> callback = new AsyncCallback<ExternalOntologyInfo>() {
 			public void onFailure(Throwable thr) {
 				Orr.log("calling getExternalOntologyInfo ... failure! ");
@@ -285,16 +288,11 @@ public class OntologySelection extends VerticalPanel {
 
 			public void onSuccess(ExternalOntologyInfo ontologyInfo) {
 				Orr.log("calling getExternalOntologyInfo ... success");
-				VineMain.ontologySucessfullyLoaded(ontologyInfo);
-				VineMain.addWorkingUri(ontologyInfo.getUri());
-				refreshListWorkingUris();
-
+				mainPanel.notifyWorkingExternalOntologyAdded(OntologySelection.this, ontologyInfo);
 			}
 		};
 
 		Orr.log("calling getExternalOntologyInfo: " + ontologyUri);
 		Orr.service.getExternalOntologyInfo(ontologyUri, callback);
-
 	}
-
 }

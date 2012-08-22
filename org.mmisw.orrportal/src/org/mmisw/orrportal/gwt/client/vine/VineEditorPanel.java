@@ -222,6 +222,21 @@ public class VineEditorPanel extends VerticalPanel {
 
 	
 	/**
+	 * Gets the entities and then notifies the event to dependent components.
+	 * @param ontologySelection 
+	 * @param ontologyInfo
+	 */
+	void notifyWorkingExternalOntologyAdded(final OntologySelection ontologySelection, BaseOntologyInfo ontologyInfo) {
+		VineMain.ontologySucessfullyLoaded(ontologyInfo);
+		VineMain.addWorkingUri(ontologyInfo.getUri());
+		ontologySelection.refreshListWorkingUris();
+		if ( mapperPage != null ) {
+			mapperPage.notifyWorkingOntologyAdded(ontologyInfo);
+		}
+	}
+	
+	
+	/**
 	 * Loads the data for the working ontologies that do not have data yet.
 	 * This is a recursive routine used to traverse the list of working
 	 * ontologies with a RPC call for each entry needing the retrieval of data.
