@@ -10,6 +10,7 @@ import org.mmisw.orrclient.OrrClientConfiguration;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.CreateUpdateUserAccountResult;
+import org.mmisw.orrclient.gwt.client.rpc.ExternalOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.GetAllOntologiesResult;
 import org.mmisw.orrclient.gwt.client.rpc.InternalOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
@@ -176,6 +177,13 @@ public class OrrClientProxy  {
 		return orrClient.getDefaultVineRelationInfos();
 	}
 	
+	/**
+	 * Gets an external ontology.
+	 */
+	public ExternalOntologyInfo getExternalOntologyInfo(String ontologyUri) {
+		return orrClient.getExternalOntologyInfo(ontologyUri);
+	}
+
 	// :VINE
 	////////////////////////////////////////////////////////////////////////////////////////////
 

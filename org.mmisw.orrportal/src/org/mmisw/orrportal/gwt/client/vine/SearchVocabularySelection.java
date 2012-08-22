@@ -3,7 +3,7 @@ package org.mmisw.orrportal.gwt.client.vine;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.orrportal.gwt.client.Orr;
 import org.mmisw.orrportal.gwt.client.vine.util.TLabel;
 
@@ -50,8 +50,8 @@ public class SearchVocabularySelection extends VerticalPanel {
 	 * Returns a list of the Main.workingUris that are selected for search.
 	 * @return
 	 */
-	List<RegisteredOntologyInfo> getSelectedVocabularies() {
-		List<RegisteredOntologyInfo> selectedUris = new ArrayList<RegisteredOntologyInfo>();
+	List<BaseOntologyInfo> getSelectedVocabularies() {
+		List<BaseOntologyInfo> selectedUris = new ArrayList<BaseOntologyInfo>();
 		int count = buttons.getWidgetCount();
 		assert count == VineMain.getWorkingUris().size();
 		
@@ -59,7 +59,7 @@ public class SearchVocabularySelection extends VerticalPanel {
 			if ( ((ToggleButton) buttons.getWidget(i)).isDown() ) {
 				
 				String uri = VineMain.getWorkingUris().get(i);
-				RegisteredOntologyInfo roi = VineMain.getRegisteredOntologyInfo(uri);
+				BaseOntologyInfo roi = VineMain.getOntologyInfo(uri);
 				if ( roi != null ) {
 					selectedUris.add(roi);
 				}
@@ -85,7 +85,7 @@ public class SearchVocabularySelection extends VerticalPanel {
 			DOM.setElementAttribute(sel.getElement(), "id", "my-button-id");
 			buttons.add(sel);
 			
-			RegisteredOntologyInfo s = VineMain.getRegisteredOntologyInfo(uri);
+			BaseOntologyInfo s = VineMain.getOntologyInfo(uri);
 			if ( s != null ) {
 				sel.setTitle(s.getDisplayLabel());
 				sel.addClickListener(new ClickListener() {

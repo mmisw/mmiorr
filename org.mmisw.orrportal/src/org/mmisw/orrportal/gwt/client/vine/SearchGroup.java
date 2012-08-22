@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyData;
+import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.EntityInfo;
 import org.mmisw.orrclient.gwt.client.rpc.OntologyData;
 import org.mmisw.orrclient.gwt.client.rpc.PropValue;
-import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.orrportal.gwt.client.Orr;
 import org.mmisw.orrportal.gwt.client.vine.util.TLabel;
 
@@ -118,7 +118,7 @@ public class SearchGroup extends VerticalPanel {
 	}
 	
 	private void executeSearch(String text) {
-		List<RegisteredOntologyInfo> selectedVocabs = vocabularySelection.getSelectedVocabularies();
+		List<BaseOntologyInfo> selectedVocabs = vocabularySelection.getSelectedVocabularies();
 		List<EntityInfo> entities = search(text, selectedVocabs );
 		
 		Orr.log("search: retrieved " +entities.size()+ " terms");
@@ -128,7 +128,7 @@ public class SearchGroup extends VerticalPanel {
 		searchResultsForm.updateEntities(entities);
 	}
 	
-	private List<EntityInfo> search(String text, List<RegisteredOntologyInfo> uris) {
+	private List<EntityInfo> search(String text, List<BaseOntologyInfo> uris) {
 		
 		// TODO use a parameter to apply case-sensitive or not
 		text = text.toLowerCase();
@@ -143,7 +143,7 @@ public class SearchGroup extends VerticalPanel {
 		boolean includeProperties = true;
 		
 		List<EntityInfo> foundEntities = new ArrayList<EntityInfo>();
-		for (RegisteredOntologyInfo ont : uris ) {
+		for (BaseOntologyInfo ont : uris ) {
 			
 			if ( ont.getError() != null ) {
 				Orr.log("Error: " +ont.getError());

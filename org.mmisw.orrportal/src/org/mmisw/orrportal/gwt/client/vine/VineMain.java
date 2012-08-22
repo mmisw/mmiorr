@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.vine.RelationInfo;
 import org.mmisw.orrportal.gwt.client.Orr;
@@ -27,8 +28,8 @@ public class VineMain {
 
 
 	// cached list of all ontologies
-	// Map: URI -> RegisteredOntologyInfo
-	private static final Map<String, RegisteredOntologyInfo> allUrisMap = new LinkedHashMap<String,RegisteredOntologyInfo>();
+	// Map: URI -> BaseOntologyInfo
+	private static final Map<String, BaseOntologyInfo> allUrisMap = new LinkedHashMap<String,BaseOntologyInfo>();
 	
 	// selected ontologies to work on:
 	// the code for the i-th entry is code = 'A' + i
@@ -40,21 +41,36 @@ public class VineMain {
 	
 	
 	
-	public static List<RegisteredOntologyInfo> getAllUris() {
-		return new ArrayList<RegisteredOntologyInfo>(allUrisMap.values());
+	public static List<BaseOntologyInfo> getAllUris() {
+		return new ArrayList<BaseOntologyInfo>(allUrisMap.values());
 	}
 
-	public static RegisteredOntologyInfo getRegisteredOntologyInfo(String uri) {
+	/**
+	 * Gets ontology info for the given URI.
+	 * @param uri
+	 * @return
+	 */
+	public static BaseOntologyInfo getOntologyInfo(String uri) {
 		return allUrisMap.get(uri);
 	}
 
+	/**
+	 * Resets the list of all ontologies available for mapping.
+	 * @param allUris
+	 */
 	public static void setAllUris(List<RegisteredOntologyInfo> allUris) {
 		allUrisMap.clear();
-		for ( RegisteredOntologyInfo roi : allUris ) {
+		for ( BaseOntologyInfo roi : allUris ) {
 			allUrisMap.put(roi.getUri(), roi);
 		}
 	}
 
+	/**
+	 * Gets the selected ontologies to work on.
+	 * the code for the i-th entry is code = 'A' + i
+	 * 
+	 * @return the list of working ontologies.
+	 */
 	public static List<String>  getWorkingUris() {
 		return workingUris;
 	}
@@ -110,8 +126,8 @@ public class VineMain {
 		return code;
 	}
 
-	public static boolean containsWorkingUri(RegisteredOntologyInfo roi) {
-		return workingUris.indexOf(roi.getUri()) >= 0 ;
+	public static boolean containsWorkingUri(BaseOntologyInfo oi) {
+		return workingUris.indexOf(oi.getUri()) >= 0 ;
 	}
 
 	/**
@@ -122,7 +138,7 @@ public class VineMain {
 	 * 
 	 * @param roi
 	 */
-	public static void ontologySucessfullyLoaded(RegisteredOntologyInfo roi) {
+	public static void ontologySucessfullyLoaded(BaseOntologyInfo roi) {
 		allUrisMap.put(roi.getUri(), roi);
 	}
 	

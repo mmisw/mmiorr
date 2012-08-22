@@ -4,12 +4,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.ExternalOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.orrportal.gwt.client.Orr;
 import org.mmisw.orrportal.gwt.client.vine.util.TLabel;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -85,6 +89,18 @@ public class OntologySelection extends VerticalPanel {
 				}
 			});
 			hp.add(addButton);
+
+			if (true) {
+				final PushButton addXButton = new PushButton("AddX...");
+				addXButton.setTitle("Allows to add an external ontology");
+				DOM.setElementAttribute(addXButton.getElement(), "id", "my-button-id");
+				addXButton.addClickListener(new ClickListener() {
+					public void onClick(Widget sender) {
+						getExternalOntology("http://sweet.jpl.nasa.gov/2.3/human.owl");
+					}
+				});
+				hp.add(addXButton);
+			}
 		}
 		
 		layout.add(workingUrisPanel);
@@ -97,12 +113,12 @@ public class OntologySelection extends VerticalPanel {
 		int nn = 0;
 		for ( String uri : VineMain.getWorkingUris() ) {
 			char code = (char) ((int) 'A' + (nn++));
-			RegisteredOntologyInfo ontologyInfo = VineMain.getRegisteredOntologyInfo(uri);
+			BaseOntologyInfo ontologyInfo = VineMain.getOntologyInfo(uri);
 			_addWorkingUriHtml(code, ontologyInfo, uri);
 		}
 	}
 	
-	private void _addWorkingUriHtml(char code, RegisteredOntologyInfo ontologyInfo, String uri) {
+	private void _addWorkingUriHtml(char code, BaseOntologyInfo ontologyInfo, String uri) {
 		if ( ontologyInfo != null ) {
 			_addWorkingUriHtmlRegistered(code, ontologyInfo);
 		}
@@ -111,7 +127,7 @@ public class OntologySelection extends VerticalPanel {
 		}
 	}
 	
-	private void _addWorkingUriHtmlRegistered(char code, RegisteredOntologyInfo ontologyInfo) {
+	private void _addWorkingUriHtmlRegistered(char code, BaseOntologyInfo ontologyInfo) {
 		String uri = ontologyInfo.getUri();
 		String label = ontologyInfo.getDisplayLabel(); 
 		workingUrisPanel.add(new HTML("<b>" +code+ "</b>: " 
@@ -139,13 +155,20 @@ public class OntologySelection extends VerticalPanel {
 		// A map from a suggestion to its corresponding RegisteredOntologyInfo:
 		final Map<String,RegisteredOntologyInfo> suggestions = new HashMap<String,RegisteredOntologyInfo>();
 		
-		List<RegisteredOntologyInfo> allUris = VineMain.getAllUris();
+		List<BaseOntologyInfo> allUris = VineMain.getAllUris();
 		for ( int index = 0, count = allUris.size(); index < count; index++ ) {
-			RegisteredOntologyInfo ontologyInfo = allUris.get(index);
+			BaseOntologyInfo ontologyInfo = allUris.get(index);
 			if ( VineMain.containsWorkingUri(ontologyInfo) ) {
 				// do not add any suggestion for an entry that is already in the workingUris
 				continue;
 			}
+			
+			if ( ! (ontologyInfo instanceof RegisteredOntologyInfo)) {
+				// only add suggestions for registered ontologies
+				continue;
+			}
+			
+			RegisteredOntologyInfo registeredOntologyInfo = (RegisteredOntologyInfo) ontologyInfo;
 			
 			String lab = ontologyInfo.getDisplayLabel();
 			String uri = ontologyInfo.getUri();
@@ -155,7 +178,7 @@ public class OntologySelection extends VerticalPanel {
 			String suggestion = "* " +uri+ " : " +lab;
 			
 			listBox.addItem(uri+ " : " +lab, suggestion);
-			suggestions.put(suggestion, ontologyInfo);
+			suggestions.put(suggestion, registeredOntologyInfo);
 			oracle.add(suggestion);
 		}
 
@@ -240,6 +263,38 @@ public class OntologySelection extends VerticalPanel {
 				popup.setPopupPosition(left, top);
 			}
 		});
+	}
+
+	/**
+	 * 
+	 * @param x
+	 *            Position for the popup
+	 * @param y
+	 *            Position for the popup
+	 */
+	private void getExternalOntology(String ontologyUri) {
+		AsyncCallback<ExternalOntologyInfo> callback = new AsyncCallback<ExternalOntologyInfo>() {
+			public void onFailure(Throwable thr) {
+				Orr.log("calling getExternalOntologyInfo ... failure! ");
+				String error = thr.getClass().getName()+ ": " +thr.getMessage();
+				while ( (thr = thr.getCause()) != null ) {
+					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
+				}
+				Window.alert(error);
+			}
+
+			public void onSuccess(ExternalOntologyInfo ontologyInfo) {
+				Orr.log("calling getExternalOntologyInfo ... success");
+				VineMain.ontologySucessfullyLoaded(ontologyInfo);
+				VineMain.addWorkingUri(ontologyInfo.getUri());
+				refreshListWorkingUris();
+
+			}
+		};
+
+		Orr.log("calling getExternalOntologyInfo: " + ontologyUri);
+		Orr.service.getExternalOntologyInfo(ontologyUri, callback);
+
 	}
 
 }

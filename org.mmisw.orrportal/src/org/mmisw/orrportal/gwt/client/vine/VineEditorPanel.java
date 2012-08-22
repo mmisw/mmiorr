@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.MappingOntologyData;
 import org.mmisw.orrclient.gwt.client.rpc.OntologyData;
 import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
@@ -243,7 +244,7 @@ public class VineEditorPanel extends VerticalPanel {
 		final String log_prefix = "_loadDataOfWorkingOntologiesForMapping(" +currentIdx+ "): ";
 		
 		String uri = uris.get(currentIdx);
-		RegisteredOntologyInfo ontologyInfo = VineMain.getRegisteredOntologyInfo(uri);
+		BaseOntologyInfo ontologyInfo = VineMain.getOntologyInfo(uri);
 		
 		if ( ontologyInfo == null ) {
 			// Not a registered ontology; continue to next entry:
@@ -265,6 +266,14 @@ public class VineEditorPanel extends VerticalPanel {
 		}
 		
 		// this entry needs data.
+		
+		if (! (ontologyInfo instanceof RegisteredOntologyInfo)) {
+			Orr.log("Ontology from VineMain is not a RegisteredOntologyInfo");
+			_loadDataOfWorkingOntologiesForMapping(currentIdx + 1);
+			return;
+		}
+		
+		RegisteredOntologyInfo registeredOntologyInfo = (RegisteredOntologyInfo) ontologyInfo;
 		
 		Orr.log(log_prefix +ontologyInfo.getUri()+ " starting");
 		AsyncCallback<RegisteredOntologyInfo> callback = new AsyncCallback<RegisteredOntologyInfo>() {
@@ -302,7 +311,7 @@ public class VineEditorPanel extends VerticalPanel {
 			}
 			
 		};
-		Orr.service.getOntologyContents(ontologyInfo, null, callback );
+		Orr.service.getOntologyContents(registeredOntologyInfo, null, callback);
 	}
 
 }

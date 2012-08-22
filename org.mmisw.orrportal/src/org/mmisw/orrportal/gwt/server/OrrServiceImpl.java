@@ -14,6 +14,7 @@ import org.mmisw.orrclient.gwt.client.rpc.AppInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.CreateUpdateUserAccountResult;
+import org.mmisw.orrclient.gwt.client.rpc.ExternalOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.GetAllOntologiesResult;
 import org.mmisw.orrclient.gwt.client.rpc.InternalOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
@@ -198,6 +199,10 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 		return orrClient.getDefaultVineRelationInfos();
 	}
 	
+	public ExternalOntologyInfo getExternalOntologyInfo(String ontologyUri) {
+		return orrClient.getExternalOntologyInfo(ontologyUri);
+	}
+
 	// :VINE
 	////////////////////////////////////////////////////////////////////////////////////////////
 
