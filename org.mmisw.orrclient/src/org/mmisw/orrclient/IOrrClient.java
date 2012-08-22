@@ -9,6 +9,7 @@ import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.CreateUpdateUserAccountResult;
 import org.mmisw.orrclient.gwt.client.rpc.EntityInfo;
+import org.mmisw.orrclient.gwt.client.rpc.ExternalOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.GetAllOntologiesResult;
 import org.mmisw.orrclient.gwt.client.rpc.InternalOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
@@ -113,11 +114,17 @@ public interface IOrrClient {
 	
 	
 	/**
-	 * Gets basic information about a registered.
+	 * Gets basic information about an external ontology.
+	 * So, getOntologyMetadata() and getOntologyData on the returned object will return null.
+	 */
+	ExternalOntologyInfo getExternalOntologyInfo(String ontologyUri);
+
+	/**
+	 * Gets basic information about a registered ontology.
 	 * So, getOntologyMetadata() and getOntologyData on the returned object will return null.
 	 */
 	RegisteredOntologyInfo getOntologyInfo(String ontologyUri);
-
+	
 	
 	/**
 	 * Gets the metadata of the ontology.

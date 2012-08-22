@@ -3,6 +3,11 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2012-08-21  2.0.29.beta
+	- Initial additions to facilitate mappings against external ontologies. 
+	- New ExternalOntologyInfo as subclass of BaseOntologyInfo
+	- IOrrClient: new operation: ExternalOntologyInfo getExternalOntologyInfo(String ontologyUri)
+
 2012-08-18  2.0.28.beta
 	- All subjects in an ontology are now included for mapping purposes in the OrrPortal module:
 	  BaseOntologyData: include member: List<EntityInfo> subjects

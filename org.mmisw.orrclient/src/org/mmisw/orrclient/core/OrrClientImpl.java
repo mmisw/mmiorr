@@ -52,10 +52,12 @@ import org.mmisw.orrclient.core.vine.VineUtil;
 import org.mmisw.orrclient.gwt.client.rpc.AppInfo;
 import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo.PriorOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.CreateUpdateUserAccountResult;
 import org.mmisw.orrclient.gwt.client.rpc.DataCreationInfo;
 import org.mmisw.orrclient.gwt.client.rpc.EntityInfo;
+import org.mmisw.orrclient.gwt.client.rpc.ExternalOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.GetAllOntologiesResult;
 import org.mmisw.orrclient.gwt.client.rpc.HostingType;
 import org.mmisw.orrclient.gwt.client.rpc.InternalOntologyResult;
@@ -75,7 +77,6 @@ import org.mmisw.orrclient.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.UnregisterOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.UserInfoResult;
 import org.mmisw.orrclient.gwt.client.rpc.VocabularyDataCreationInfo;
-import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo.PriorOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.vine.RelationInfo;
 import org.mmisw.orrclient.gwt.client.vocabulary.AttrDef;
 import org.mmisw.orrclient.gwt.client.vocabulary.AttrGroup;
@@ -631,6 +632,27 @@ public class OrrClientImpl implements IOrrClient {
 		catch (MalformedURLException ignore) {
 		}
 		return false;
+	}
+	
+	public ExternalOntologyInfo getExternalOntologyInfo(String ontologyUri) {
+
+		log.debug("getExternalOntologyInfo: ontologyUri=" +ontologyUri);
+		
+		ExternalOntologyInfo oi = new ExternalOntologyInfo();
+		
+		oi.setUri(ontologyUri);
+		oi.setDisplayLabel(ontologyUri);
+		
+		try {
+			OntInfoUtil.getEntities(oi, null);
+			return oi;
+		}
+		catch (Exception e) {
+			String error = e.getMessage();
+			log.error("Error getting ExternalOntologyInfo: " +ontologyUri, e);
+			oi.setError(error);
+			return oi;
+		}
 	}
 	
 	public RegisteredOntologyInfo getOntologyInfo(String ontologyUri) {
