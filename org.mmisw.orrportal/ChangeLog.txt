@@ -8,6 +8,13 @@ $Id$
 	  with base class BaseOntologyInfo as much as possible.
 	- In the concrete case of loading an external ontology, use the new 
 	  service IOrrClient.getExternalOntologyInfo.
+	- TODOs include: 
+	  - SearchVocabularySelection.setToggleButtons: when starting to edit
+	    an existing mapping, the external ontology does not get loaded to allow
+	    for further editing of the mappings.
+	  - Provide actual UI for the user to indicate the desired external ontology
+	    Currently, this is given via _xont parameter for initial testing, eg:
+	      http://mmisw.org/orr_x/?_log=y&_xont=http://sweet.jpl.nasa.gov/2.3/state.owl
 	
 2012-08-18  2.0.28.beta
 	- SearchGroup: All subjects in an ontology are now included for mapping purposes.
