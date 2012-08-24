@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyInfo;
-import org.mmisw.orrclient.gwt.client.rpc.ExternalOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.orrportal.gwt.client.Orr;
 import org.mmisw.orrportal.gwt.client.util.OrrUtil;
@@ -14,7 +13,6 @@ import org.mmisw.orrportal.gwt.client.vine.util.TLabel;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -102,7 +100,7 @@ public class OntologySelection extends VerticalPanel {
 					DOM.setElementAttribute(addXButton.getElement(), "id", "my-button-id");
 					addXButton.addClickListener(new ClickListener() {
 						public void onClick(Widget sender) {
-							addExternalOntology(ontologyUri);
+							OntologySelection.this.mainPanel.addExternalOntology(ontologyUri);
 						}
 					});
 					hp.add(addXButton);
@@ -116,6 +114,7 @@ public class OntologySelection extends VerticalPanel {
 	}
 	
 	void refreshListWorkingUris() {
+		Orr.log("refreshListWorkingUris");
 		workingUrisPanel.clear();
 		int nn = 0;
 		for ( String uri : VineMain.getWorkingUris() ) {
@@ -270,29 +269,5 @@ public class OntologySelection extends VerticalPanel {
 				popup.setPopupPosition(left, top);
 			}
 		});
-	}
-
-	/**
-	 * Adds an external ontology to the working group.
-	 */
-	private void addExternalOntology(String ontologyUri) {
-		AsyncCallback<ExternalOntologyInfo> callback = new AsyncCallback<ExternalOntologyInfo>() {
-			public void onFailure(Throwable thr) {
-				Orr.log("calling getExternalOntologyInfo ... failure! ");
-				String error = thr.getClass().getName()+ ": " +thr.getMessage();
-				while ( (thr = thr.getCause()) != null ) {
-					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
-				}
-				Window.alert(error);
-			}
-
-			public void onSuccess(ExternalOntologyInfo ontologyInfo) {
-				Orr.log("calling getExternalOntologyInfo ... success");
-				mainPanel.notifyWorkingExternalOntologyAdded(OntologySelection.this, ontologyInfo);
-			}
-		};
-
-		Orr.log("calling getExternalOntologyInfo: " + ontologyUri);
-		Orr.service.getExternalOntologyInfo(ontologyUri, callback);
 	}
 }

@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.ExternalOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.MappingOntologyData;
 import org.mmisw.orrclient.gwt.client.rpc.OntologyData;
 import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
@@ -236,6 +237,30 @@ public class VineEditorPanel extends VerticalPanel {
 	}
 	
 	
+	/**
+	 * Adds an external ontology to the working group.
+	 */
+	void addExternalOntology(String ontologyUri) {
+		AsyncCallback<ExternalOntologyInfo> callback = new AsyncCallback<ExternalOntologyInfo>() {
+			public void onFailure(Throwable thr) {
+				Orr.log("calling getExternalOntologyInfo ... failure! ");
+				String error = thr.getClass().getName()+ ": " +thr.getMessage();
+				while ( (thr = thr.getCause()) != null ) {
+					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
+				}
+				Window.alert(error);
+			}
+
+			public void onSuccess(ExternalOntologyInfo ontologyInfo) {
+				Orr.log("calling getExternalOntologyInfo ... success");
+				notifyWorkingExternalOntologyAdded(ontSel, ontologyInfo);
+			}
+		};
+
+		Orr.log("calling getExternalOntologyInfo: " + ontologyUri);
+		Orr.service.getExternalOntologyInfo(ontologyUri, callback);
+	}
+
 	/**
 	 * Loads the data for the working ontologies that do not have data yet.
 	 * This is a recursive routine used to traverse the list of working
