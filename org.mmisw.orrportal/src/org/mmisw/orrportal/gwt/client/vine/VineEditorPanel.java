@@ -263,6 +263,7 @@ public class VineEditorPanel extends VerticalPanel {
 		
 		if ( ontologyInfo == null ) {
 			// Not a registered ontology; continue to next entry:
+			Orr.log(log_prefix +"VineMain.getOntologyInfo returned null: " +uri);
 			_loadDataOfWorkingOntologiesForMapping(currentIdx + 1);
 			return;
 		}
@@ -276,6 +277,7 @@ public class VineEditorPanel extends VerticalPanel {
 		OntologyData ontologyData = ontologyInfo.getOntologyData();
 		if ( ontologyData != null ) {
 			// this entry already has data; continue to next entry:
+			Orr.log(log_prefix +"already with OntologyData: " +uri);
 			_loadDataOfWorkingOntologiesForMapping(currentIdx + 1);
 			return;
 		}
@@ -283,7 +285,7 @@ public class VineEditorPanel extends VerticalPanel {
 		// this entry needs data.
 		
 		if (! (ontologyInfo instanceof RegisteredOntologyInfo)) {
-			Orr.log("Ontology from VineMain is not a RegisteredOntologyInfo");
+			Orr.log(log_prefix +"Ontology from VineMain is not a RegisteredOntologyInfo: " +uri);
 			_loadDataOfWorkingOntologiesForMapping(currentIdx + 1);
 			return;
 		}
