@@ -2,19 +2,23 @@ org.mmisw.orrportal: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2012-08-27  2.0.30.beta
+	- version sync with the other modules.
+	- OntologySelection: now dispatches both the selection of a registered ontology
+	  and the loading of an external ontology given its complete URL.
+	  The previous mechanism based on MultiWordSuggestOracle and SuggestBox
+	  is not used anymore. Instead, a TextBox and a ListBox are used with a
+	  similar but more complete dispatch.
+	  
+	  TODO: include option to "Load local ontology" (use similar "upload" mechanism
+	  as in the "Upload ontology" option.
+
 2012-08-21  2.0.29.beta
 	- Initial adjustments to facilitate mappings against external ontologies.
 	- Minimize dealing directly with RegisteredOntologyInfo; instead deal 
 	  with base class BaseOntologyInfo as much as possible.
 	- In the concrete case of loading an external ontology, use the new 
 	  service IOrrClient.getExternalOntologyInfo.
-	- TODOs include: 
-	  - SearchVocabularySelection.setToggleButtons: when starting to edit
-	    an existing mapping, the external ontology does not get loaded to allow
-	    for further editing of the mappings.
-	  - Provide actual UI for the user to indicate the desired external ontology
-	    Currently, this is given via _xont parameter for initial testing, eg:
-	      http://mmisw.org/orr_x/?_log=y&_xont=http://sweet.jpl.nasa.gov/2.3/state.owl
 	
 2012-08-18  2.0.28.beta
 	- SearchGroup: All subjects in an ontology are now included for mapping purposes.

@@ -157,6 +157,8 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	
 	
 	private void _prepareDataDisclosure() {
+		Orr.log(CLASS_NAME+": _prepareDataDisclosure: ontologyUri = '" +ontologyInfo.getUri()+ 
+				"' class=" +ontologyInfo.getClass().getName());
 		dataDisclosure.setContent(DATA_PROGRESS_HTML);
 		dataDisclosure.addEventHandler(new DisclosureHandler() {
 			public void onOpen(DisclosureEvent event) {
@@ -359,7 +361,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			}
 
 			public void onSuccess(RegisteredOntologyInfo ontologyInfo) {
-				Orr.log(CLASS_NAME+": RET getOntologyMetadata: ontologyUri = " +ontologyInfo.getUri());
+				Orr.log(CLASS_NAME+": RET getOntologyMetadata: ontologyUri = '" +ontologyInfo.getUri()+ "'");
 				String error = ontologyInfo.getError();
 				if ( error != null ) {
 					Orr.log(CLASS_NAME+": RET getOntologyMetadata: error = " +error);
@@ -377,7 +379,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		headerPanel.showProgressMessage(progressMsg);
 
 		metadataPanel.showProgressMessage(progressMsg);
-		Orr.log(CLASS_NAME+": getOntologyMetadata: ontologyUri = " +ontologyInfo.getUri());
+		Orr.log(CLASS_NAME+": getOntologyMetadata: ontologyUri = '" +ontologyInfo.getUri()+ "'");
 		Orr.service.getOntologyMetadata(roi, null, callback);
 	}
 
@@ -415,7 +417,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			}
 
 			public void onSuccess(RegisteredOntologyInfo ontologyInfo) {
-				Orr.log(CLASS_NAME+": RET getOntologyContents: ontologyUri = " +ontologyInfo.getUri());
+				Orr.log(CLASS_NAME+": RET getOntologyContents: ontologyUri = '" +ontologyInfo.getUri()+ "'");
 				String error = ontologyInfo.getError();
 				if ( error != null ) {
 					Orr.log(CLASS_NAME+": RET getOntologyContents: error = " +error);
@@ -429,7 +431,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 					+ "  (version "+roi.getVersionNumber()+ ")" + "<br/>";
 		;
 		headerPanel.updateTitle(title);
-		Orr.log(CLASS_NAME+": getOntologyContents: ontologyUri = " +ontologyInfo.getUri());
+		Orr.log(CLASS_NAME+": getOntologyContents: ontologyUri = '" +ontologyInfo.getUri()+ "'");
 		Orr.service.getOntologyContents(roi, null, callback);
 	}
 

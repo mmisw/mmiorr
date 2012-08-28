@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.ExternalOntologyInfo;
@@ -24,6 +24,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -64,7 +65,7 @@ public class VineEditorPanel extends VerticalPanel {
 		Orr.log("VineEditorPanel: _setUp");
 		layout.clear();
 		
-		Set<String> namespaces = ontologyData.getNamespaces();
+		final Set<String> namespaces = ontologyData.getNamespaces();
 		
 		VineMain.setWorkingUrisWithGivenNamespaces(namespaces);
 		
@@ -95,12 +96,29 @@ public class VineEditorPanel extends VerticalPanel {
 
 	    // prepare command to load data of working ontologies
 	    // (in particular, this will enable the search)
-		DeferredCommand.addCommand(new Command() {
-			public void execute() {
-				_loadDataOfWorkingOntologiesForMapping(0);
+	    DeferredCommand.addCommand(new Command() {
+	    	public void execute() {
+	    		_loadDataOfWorkingOntologiesForMapping(0);
+	    	}
+	    });
+	    
+	    if ( ! readOnly && namespaces != null ) {
+			// if there are any namespaces with no OntologyInfo, then
+			// try loading them as external ontologies
+			final List<String> urisToLoadAsExternal = new ArrayList<String>();
+			for ( String namespace : namespaces ) {
+				if ( null == VineMain.getOntologyInfo(namespace)) {
+					urisToLoadAsExternal.add(namespace);
+				}
 			}
-		});
-
+			if (urisToLoadAsExternal.size() > 0) {
+				DeferredCommand.addCommand(new Command() {
+					public void execute() {
+						_loadExternalOntologiesForMapping(urisToLoadAsExternal);
+					}
+				});
+			}
+	    }
 	}
 
 	/** saves in memory the given mappings (especially for its metadata), which are used
@@ -238,30 +256,6 @@ public class VineEditorPanel extends VerticalPanel {
 	
 	
 	/**
-	 * Adds an external ontology to the working group.
-	 */
-	void addExternalOntology(String ontologyUri) {
-		AsyncCallback<ExternalOntologyInfo> callback = new AsyncCallback<ExternalOntologyInfo>() {
-			public void onFailure(Throwable thr) {
-				Orr.log("calling getExternalOntologyInfo ... failure! ");
-				String error = thr.getClass().getName()+ ": " +thr.getMessage();
-				while ( (thr = thr.getCause()) != null ) {
-					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
-				}
-				Window.alert(error);
-			}
-
-			public void onSuccess(ExternalOntologyInfo ontologyInfo) {
-				Orr.log("calling getExternalOntologyInfo ... success");
-				notifyWorkingExternalOntologyAdded(ontSel, ontologyInfo);
-			}
-		};
-
-		Orr.log("calling getExternalOntologyInfo: " + ontologyUri);
-		Orr.service.getExternalOntologyInfo(ontologyUri, callback);
-	}
-
-	/**
 	 * Loads the data for the working ontologies that do not have data yet.
 	 * This is a recursive routine used to traverse the list of working
 	 * ontologies with a RPC call for each entry needing the retrieval of data.
@@ -356,4 +350,81 @@ public class VineEditorPanel extends VerticalPanel {
 		Orr.service.getOntologyContents(registeredOntologyInfo, null, callback);
 	}
 
+	/**
+	 * Adds an external ontology to the working group.
+	 */
+	void addExternalOntology(final String ontologyUri, final MyDialog popup) {
+		HorizontalPanel hp = new HorizontalPanel();
+		hp.setSpacing(10);
+		
+		hp.add(new HTML(
+			"<img src=\"" +GWT.getModuleBaseURL()+ "images/loading.gif\">" +
+			" Loading " +ontologyUri+ 
+			"<br/>Please wait..."
+		));
+		popup.setWidget(hp);
+		popup.setText("Loading ontology...");
+		
+		AsyncCallback<ExternalOntologyInfo> callback = new AsyncCallback<ExternalOntologyInfo>() {
+			public void onFailure(Throwable thr) {
+				popup.hide();
+				Orr.log("calling getExternalOntologyInfo ... failure! ");
+				String error = thr.getClass().getName()+ ": " +thr.getMessage();
+				while ( (thr = thr.getCause()) != null ) {
+					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
+				}
+				Window.alert(error);
+			}
+
+			public void onSuccess(ExternalOntologyInfo ontologyInfo) {
+				String error = ontologyInfo.getError();
+				if (error != null) {
+					Orr.log("calling getExternalOntologyInfo ... error=" + error);
+					popup.setWidget(new Label(error));
+					Window.alert("Error while trying to load '" +ontologyUri+ "':\n\n" + error);
+				}
+				else {
+					Orr.log("calling getExternalOntologyInfo ... success");
+					popup.setWidget(new HTML("Load complete"));
+					notifyWorkingExternalOntologyAdded(ontSel, ontologyInfo);
+				}
+				popup.hide();
+			}
+		};
+
+		Orr.log("calling getExternalOntologyInfo: " + ontologyUri);
+		Orr.service.getExternalOntologyInfo(ontologyUri, callback);
+	}
+
+	/**
+	 * Recursive routine to load the given external ontologies.
+	 */
+	private void _loadExternalOntologiesForMapping(final List<String> urisToLoadAsExternal) {
+		if (urisToLoadAsExternal.isEmpty()) {
+			return;   // done
+		}
+		
+		String ontologyUri = urisToLoadAsExternal.remove(0);
+		AsyncCallback<ExternalOntologyInfo> callback = new AsyncCallback<ExternalOntologyInfo>() {
+			public void onFailure(Throwable thr) {
+				Orr.log("calling getExternalOntologyInfo ... failure! ");
+				String error = thr.getClass().getName()+ ": " +thr.getMessage();
+				while ( (thr = thr.getCause()) != null ) {
+					error += "\ncaused by: " +thr.getClass().getName()+ ": " +thr.getMessage();
+				}
+				Window.alert(error);
+			}
+
+			public void onSuccess(ExternalOntologyInfo ontologyInfo) {
+				Orr.log("calling getExternalOntologyInfo ... success");
+				notifyWorkingExternalOntologyAdded(ontSel, ontologyInfo);
+				_loadExternalOntologiesForMapping(urisToLoadAsExternal);
+			}
+		};
+
+		Orr.log("calling getExternalOntologyInfo: " + ontologyUri);
+		Orr.service.getExternalOntologyInfo(ontologyUri, callback);
+	}
+
+	
 }

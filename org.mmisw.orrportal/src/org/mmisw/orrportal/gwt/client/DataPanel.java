@@ -86,6 +86,7 @@ public class DataPanel extends VerticalPanel {
 	 * external" ontology functionality.
 	 */
 	public void updateWith(TempOntologyInfo tempOntologyInfo, BaseOntologyInfo ontologyInfo, boolean readOnly) {
+		Orr.log("DataPanel.updateWith: ontologyInfo.class=" +ontologyInfo.getClass().getName()+ ", readOnly=" +readOnly);
 		this.readOnly = readOnly;
 		this.clear();
 		
@@ -109,6 +110,8 @@ public class DataPanel extends VerticalPanel {
 		else {
 			throw new AssertionError();
 		}
+		
+		Orr.log("DataPanel.updateWith: type=" +type);
 		
 		VerticalPanel vp = new VerticalPanel();
 		vp.add(new Label(type));

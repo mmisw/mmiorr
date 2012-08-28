@@ -3,30 +3,27 @@ package org.mmisw.orrportal.gwt.client.vine;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.orrportal.gwt.client.Orr;
-import org.mmisw.orrportal.gwt.client.util.OrrUtil;
 import org.mmisw.orrportal.gwt.client.vine.util.TLabel;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CellPanel;
-import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.KeyboardListener;
+import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.PushButton;
-import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.user.client.ui.SuggestionEvent;
-import com.google.gwt.user.client.ui.SuggestionHandler;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -88,24 +85,6 @@ public class OntologySelection extends VerticalPanel {
 				}
 			});
 			hp.add(addButton);
-
-			//
-			// TODO The following is testing code
-			//
-			Map<String, String> params = OrrUtil.getParams();
-			if (params != null) {
-				final String ontologyUri = (String) params.get("_xont");
-				if (ontologyUri != null) {
-					final PushButton addXButton = new PushButton("add: " +ontologyUri);
-					DOM.setElementAttribute(addXButton.getElement(), "id", "my-button-id");
-					addXButton.addClickListener(new ClickListener() {
-						public void onClick(Widget sender) {
-							OntologySelection.this.mainPanel.addExternalOntology(ontologyUri);
-						}
-					});
-					hp.add(addXButton);
-				}
-			}
 		}
 		
 		layout.add(workingUrisPanel);
@@ -114,34 +93,24 @@ public class OntologySelection extends VerticalPanel {
 	}
 	
 	void refreshListWorkingUris() {
-		Orr.log("refreshListWorkingUris");
+		List<String> workingUris = VineMain.getWorkingUris();
+		Orr.log("refreshListWorkingUris: " + workingUris.size());
 		workingUrisPanel.clear();
 		int nn = 0;
-		for ( String uri : VineMain.getWorkingUris() ) {
+		for ( String uri : workingUris ) {
 			char code = (char) ((int) 'A' + (nn++));
 			BaseOntologyInfo ontologyInfo = VineMain.getOntologyInfo(uri);
-			_addWorkingUriHtml(code, ontologyInfo, uri);
+
+			String label = ontologyInfo != null ? ontologyInfo.getDisplayLabel() : uri;
+			label = label.replaceAll("&", "&amp;").replaceAll("<", "&lt;");
+
+			workingUrisPanel.add(new HTML("<b>" +code+ "</b>: " 
+					+ "<a target=\"_blank\" href=\"" +uri+ "\">" +uri+ "</a>" 
+					+ " -- <i>" +label+ "</i>"
+			));
 		}
 	}
-	
-	private void _addWorkingUriHtml(char code, BaseOntologyInfo ontologyInfo, String uri) {
-		if ( ontologyInfo != null ) {
-			_addWorkingUriHtmlRegistered(code, ontologyInfo);
-		}
-		else {
-			workingUrisPanel.add(new HTML("<b>" +code+ "</b>: " +uri+ "</a>"));
-		}
-	}
-	
-	private void _addWorkingUriHtmlRegistered(char code, BaseOntologyInfo ontologyInfo) {
-		String uri = ontologyInfo.getUri();
-		String label = ontologyInfo.getDisplayLabel(); 
-		workingUrisPanel.add(new HTML("<b>" +code+ "</b>: " 
-				+ "<a target=\"_blank\" href=\"" +uri+ "\">" +uri+ "</a>" 
-				+ " -- <i>" +label+ "</i>"
-		));
-	}
-	
+
 	/**
 	 * Allows the user to choose a vocabulary that is not yet a working one, and
 	 * the loads it as a working vocabulary.
@@ -149,22 +118,23 @@ public class OntologySelection extends VerticalPanel {
 	 * @param y Position for the popup 
 	 */
 	private void addVocabulary(final int x, final int y) {
-		//
-		// Use a listBox and a SuggestBox with a MultiWordSuggestOracle.
-		//
+
+		final String width = "700px";
 		
 		// #194: Can't access all ontologies from VINE drop-down
 		// ListBox added as a fix to this issue.
 		final ListBox listBox = new ListBox();
-		MultiWordSuggestOracle oracle = new MultiWordSuggestOracle("/ :"); 
+		
+//		MultiWordSuggestOracle oracle = new MultiWordSuggestOracle("/ :"); 
 		
 		// A map from a suggestion to its corresponding RegisteredOntologyInfo:
 		final Map<String,RegisteredOntologyInfo> suggestions = new HashMap<String,RegisteredOntologyInfo>();
 		
 		List<BaseOntologyInfo> allUris = VineMain.getAllUris();
+		
 		for ( int index = 0, count = allUris.size(); index < count; index++ ) {
 			BaseOntologyInfo ontologyInfo = allUris.get(index);
-			if ( VineMain.containsWorkingUri(ontologyInfo) ) {
+			if ( VineMain.containsWorkingUri(ontologyInfo.getUri()) ) {
 				// do not add any suggestion for an entry that is already in the workingUris
 				continue;
 			}
@@ -179,22 +149,21 @@ public class OntologySelection extends VerticalPanel {
 			String lab = ontologyInfo.getDisplayLabel();
 			String uri = ontologyInfo.getUri();
 			
-			
-			// include a star as a convenience to see the whole list if the user types in a star: 
-			String suggestion = "* " +uri+ " : " +lab;
+//			// include a star as a convenience to see the whole list if the user types in a star: 
+//			String suggestion = "* " +uri+ " : " +lab;
+			String suggestion = uri;
 			
 			listBox.addItem(uri+ " : " +lab, suggestion);
 			suggestions.put(suggestion, registeredOntologyInfo);
-			oracle.add(suggestion);
+//			oracle.add(suggestion);
 		}
 
-		final SuggestBox box = new SuggestBox(oracle);
-		box.setWidth("500px");
+//		final SuggestBox box = new SuggestBox(oracle);
+//		box.setWidth(width);
 		
 		
 		CellPanel hp = new VerticalPanel();
 		final MyDialog popup = new MyDialog(hp) {
-			// Mydialog closes when ENTER is pressed-- avoid that:
 			public boolean onKeyUpPreview(char key, int modifiers) {
 				if ( key == KeyboardListener.KEY_ESCAPE ) {
 					hide();
@@ -204,60 +173,83 @@ public class OntologySelection extends VerticalPanel {
 			  }
 		};
 		hp.add(new TLabel("Ontology URI:", 
-				"Select the ontology to include in the list of working ontologies. " +
+				"Select or enter the URL of the ontology you want to include in the list of working ontologies. " +
 				"<br/>" +
 				"As you type, URIs are displayed according to matching components in the " +
 				"URI or the associated title."
 		));
-		hp.add(box);
 		
-		box.addEventHandler(new SuggestionHandler() {
-			public void onSuggestionSelected(SuggestionEvent event) {
-				String suggestion = event.getSelectedSuggestion().getReplacementString();
-				RegisteredOntologyInfo ontologyInfo = suggestions.get(suggestion);
-				mainPanel.notifyWorkingOntologyAdded(OntologySelection.this, ontologyInfo, popup);
-			}
-		});
+//		hp.add(box);
+//		box.addEventHandler(new SuggestionHandler() {
+//			public void onSuggestionSelected(SuggestionEvent event) {
+//				String suggestion = event.getSelectedSuggestion().getReplacementString();
+//				RegisteredOntologyInfo ontologyInfo = suggestions.get(suggestion);
+//				mainPanel.notifyWorkingOntologyAdded(OntologySelection.this, ontologyInfo, popup);
+//			}
+//		});
 		
-		// we use the star (*) to show the whole list of vocabs. If the user enters something
-		// different, then remove the star:
-		box.addKeyboardListener(new KeyboardListener() {
-			public void onKeyPress(Widget sender, char keyCode, int modifiers) {
-				// FIXME: if the user wants to use the down arrow to pick a suggestion after
-				// entering *, it cannot do it!
-				if ( keyCode != '*' && box.getText().trim().equals("*") ) {
-					box.setText("");
-				}
-			}
-			public void onKeyDown(Widget sender, char keyCode, int modifiers) {}
-			public void onKeyUp(Widget sender, char keyCode, int modifiers) {}
-		});
+		final TextBox textBox = createTextBox(suggestions, listBox, popup);
+		textBox.setWidth(width);
+		hp.add(textBox);
+		
+//		// we use the star (*) to show the whole list of vocabs. If the user enters something
+//		// different, then remove the star:
+//		box.addKeyboardListener(new KeyboardListener() {
+//			public void onKeyPress(Widget sender, char keyCode, int modifiers) {
+//				// FIXME: if the user wants to use the down arrow to pick a suggestion after
+//				// entering *, it cannot do it!
+//				if ( keyCode != '*' && box.getText().trim().equals("*") ) {
+//					box.setText("");
+//				}
+//			}
+//			public void onKeyDown(Widget sender, char keyCode, int modifiers) {}
+//			
+//			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+//				if ( keyCode == KeyboardListener.KEY_ENTER ) {
+//					String selectedUri = box.getText().trim();
+//					Orr.log("addVocabulary: ENTER: '" + selectedUri + "'");
+//					if (selectedUri.length() > 0) {
+//						if ( VineMain.containsWorkingUri(selectedUri) ) {
+//							// ignore the Enter
+//							return;
+//						}
+//						BaseOntologyInfo ontologyInfo = VineMain.getOntologyInfo(selectedUri);
+//						if (ontologyInfo instanceof RegisteredOntologyInfo) {
+//							// It is a registered ontology -- load it as a working one:
+//							RegisteredOntologyInfo roi = (RegisteredOntologyInfo) ontologyInfo;
+//							mainPanel.notifyWorkingOntologyAdded(OntologySelection.this, roi, popup);
+//						}
+//						else {
+//							// try as an external ontology:
+//							OntologySelection.this.mainPanel.addExternalOntology(selectedUri, popup);
+//						}
+//					}
+//				}				
+//			}
+//		});
 
-		popup.setText("Select a vocabulary");
+		popup.setText("Select an ontology");
 //		hp.add(new HTML("Elements are displayed as you type. Enter * to see the full list."));
 
-		
-		
-		
-		final String width = "500px";
 		listBox.setWidth(width);
-		listBox.setVisibleItemCount(Math.min(listBox.getItemCount(), 12));
+		listBox.setVisibleItemCount(Math.min(listBox.getItemCount() + 2, 12));
 		hp.add(listBox);
 
-		listBox.addChangeListener(new ChangeListener () {
-			public void onChange(Widget sender) {
-				String value = listBox.getValue(listBox.getSelectedIndex());
-				RegisteredOntologyInfo ontologyInfo = suggestions.get(value);
-				mainPanel.notifyWorkingOntologyAdded(OntologySelection.this, ontologyInfo, popup);
-			}
-		});
+//		listBox.addChangeListener(new ChangeListener () {
+//			public void onChange(Widget sender) {
+//				String value = listBox.getValue(listBox.getSelectedIndex());
+//				RegisteredOntologyInfo ontologyInfo = suggestions.get(value);
+//				mainPanel.notifyWorkingOntologyAdded(OntologySelection.this, ontologyInfo, popup);
+//			}
+//		});
 
 		
 		
 		// use a timer to request for focus in the suggest-box:
 		new Timer() {
 			public void run() {
-				box.setFocus(true);
+//				box.setFocus(true);
+				textBox.setFocus(true);
 			}
 		}.schedule(500);
 		    
@@ -269,5 +261,124 @@ public class OntologySelection extends VerticalPanel {
 				popup.setPopupPosition(left, top);
 			}
 		});
+	}
+	
+	
+	private TextBox createTextBox(final Map<String,RegisteredOntologyInfo> suggestions, final ListBox listBox, final MyDialog popup) {
+		final TextBox textBox = new TextBox();
+		KeyboardListener kb = new KeyboardListenerAdapter() {
+			String[] lastEntered = {""};
+			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+				String enteredText = textBox.getText().trim();
+				if ( keyCode == KeyboardListener.KEY_ENTER ) {
+					Orr.log("ENTER: '" + enteredText + "'");
+					if (listBox.getItemCount() > 0) {
+						// it means there are items in the listBox that match the entered text.
+						// Take the selected item:
+						enteredText = listBox.getValue(listBox.getSelectedIndex());
+					}
+					
+					handleEnteredText(enteredText, popup);
+				}	
+				else if ( sender == textBox && listBox.getItemCount() > 0 && 
+						(keyCode == KeyboardListener.KEY_UP || keyCode == KeyboardListener.KEY_DOWN) ) {
+					
+					if ( keyCode == KeyboardListener.KEY_UP) {
+						if (listBox.getSelectedIndex() > 0) {
+							listBox.setSelectedIndex(listBox.getSelectedIndex() - 1);
+						}
+					}
+					else if ( keyCode == KeyboardListener.KEY_DOWN) {
+						if (listBox.getSelectedIndex() < listBox.getItemCount() - 1) {
+							listBox.setSelectedIndex(listBox.getSelectedIndex() + 1);
+						}
+					}
+				}
+				else if (! enteredText.equalsIgnoreCase(lastEntered[0])) {
+					lastEntered[0] = enteredText;
+					updateListBox(suggestions, listBox, enteredText);
+				}
+			}
+			
+		};
+		
+		textBox.addKeyboardListener(kb);
+		listBox.addKeyboardListener(kb);
+		
+		listBox.addClickListener(new ClickListener() {
+			public void onClick(Widget sender) {
+				if (listBox.getSelectedIndex() > 0) {
+					String enteredText = listBox.getValue(listBox.getSelectedIndex());
+					handleEnteredText(enteredText, popup);
+				}				
+			}
+		});
+		
+		return textBox;	
+	}
+	
+	private void handleEnteredText(String enteredText, final MyDialog popup) {
+		if (enteredText.length() > 0) {
+			if ( VineMain.containsWorkingUri(enteredText) ) {
+				// ignore the Enter
+				return;
+			}
+			BaseOntologyInfo ontologyInfo = VineMain.getOntologyInfo(enteredText);
+			if (ontologyInfo instanceof RegisteredOntologyInfo) {
+				// It is a registered ontology -- load it as a working one:
+				RegisteredOntologyInfo roi = (RegisteredOntologyInfo) ontologyInfo;
+				mainPanel.notifyWorkingOntologyAdded(OntologySelection.this, roi, popup);
+			}
+			else {
+				// Try as an external ontology:
+				OntologySelection.this.mainPanel.addExternalOntology(enteredText, popup);
+			}
+		}
+	}
+	
+	private void updateListBox(final Map<String,RegisteredOntologyInfo> suggestions, final ListBox listBox, String enteredText) {
+		int selIndex = listBox.getSelectedIndex();
+		String currentSelected = selIndex >= 0 ? listBox.getItemText(selIndex) : null;
+		
+		String[] toks = enteredText.toLowerCase().split("\\s+");
+		listBox.clear();
+		int newIndexToSelect = -1;
+		int index = 0;
+		for ( Entry<String, RegisteredOntologyInfo> entry : suggestions.entrySet() ) {
+			String uri = entry.getKey();
+			RegisteredOntologyInfo roi = entry.getValue();
+			String entryText = uri + ": " + roi.getDisplayLabel();
+			String entryTextLc = entryText.toLowerCase();
+			
+			int pos = 0;
+			for (String tok : toks) {
+				pos = entryTextLc.indexOf(tok, pos);
+				if (pos < 0) {
+					break;
+				}
+				else {
+					pos += tok.length();
+				}
+			}
+			
+			if (pos >= 0) {
+				listBox.addItem(entryText, uri);
+				
+				// update the newIndexToSelect only of there is non-empty text entered:
+				if (enteredText.length() > 0 && entryText.equals(currentSelected)) {
+					newIndexToSelect = index;
+				}
+				
+				index++;
+			}
+		}
+		
+
+		if (newIndexToSelect >= 0) {
+			listBox.setSelectedIndex(newIndexToSelect);
+		}
+		else if (listBox.getItemCount() >= 1) {
+			listBox.setSelectedIndex(0);
+		}
 	}
 }

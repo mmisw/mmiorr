@@ -126,8 +126,8 @@ public class VineMain {
 		return code;
 	}
 
-	public static boolean containsWorkingUri(BaseOntologyInfo oi) {
-		return workingUris.indexOf(oi.getUri()) >= 0 ;
+	public static boolean containsWorkingUri(String uri) {
+		return workingUris.indexOf(uri) >= 0 ;
 	}
 
 	/**
