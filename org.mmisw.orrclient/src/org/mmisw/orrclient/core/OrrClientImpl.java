@@ -10,6 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -643,16 +644,26 @@ public class OrrClientImpl implements IOrrClient {
 		oi.setUri(ontologyUri);
 		oi.setDisplayLabel(ontologyUri);
 		
+		String error = null;
+		Exception ex = null;
 		try {
 			OntInfoUtil.getEntities(oi, null);
-			return oi;
+		}
+		catch (FileNotFoundException e) {
+			error = "File not found: '" +ontologyUri+ "'";
+		}
+		catch (UnknownHostException e) {
+			error = "Unknown host: '" +ontologyUri+ "'";
 		}
 		catch (Exception e) {
-			String error = e.getMessage();
-			log.error("Error getting ExternalOntologyInfo: " +ontologyUri, e);
-			oi.setError(error);
-			return oi;
+			ex = e;
+			error = e.getClass().getName() + ": " + e.getMessage();
 		}
+		if (log.isDebugEnabled() && ex != null) {
+			log.debug("Error getting ExternalOntologyInfo: " +ontologyUri, ex);
+		}
+		oi.setError(error);
+		return oi;
 	}
 	
 	public RegisteredOntologyInfo getOntologyInfo(String ontologyUri) {

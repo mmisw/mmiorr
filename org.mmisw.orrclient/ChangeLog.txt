@@ -3,6 +3,15 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2012-08-27  2.0.30.beta
+	- more adjustments to support mappings against external ontologies
+	- version sync with the other modules
+
+2012-08-25  2.0.29.beta
+	- OntInfo.getEntities: In the case of external ontology, always set type to OntologyType.OTHER.
+	- OntologySelection.refreshListWorkingUris: always include linkable reference to ontology URI
+	  even when VineMain.getOntologyInfo(uri) returns null (meaning it's an external ontology).
+
 2012-08-21  2.0.29.beta
 	- Initial additions to facilitate mappings against external ontologies. 
 	- New ExternalOntologyInfo as subclass of BaseOntologyInfo

@@ -22,6 +22,7 @@ import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyData;
 import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.ClassInfo;
 import org.mmisw.orrclient.gwt.client.rpc.EntityInfo;
+import org.mmisw.orrclient.gwt.client.rpc.ExternalOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.IndividualInfo;
 import org.mmisw.orrclient.gwt.client.rpc.OntologyData;
 import org.mmisw.orrclient.gwt.client.rpc.OntologyType;
@@ -94,15 +95,22 @@ class OntInfo extends BaseOntInfo {
 		baseOntologyData.setClasses(classes);
 		
 		if (log.isDebugEnabled()) {
-			log.debug("subjects = " + subjects);
-			log.debug("individuals = " + individuals);
-			log.debug("classes = " + classes);
-			log.debug("properties = " + properties);
+			log.debug(String.format("subjects=%d individuals=%d classes=%d properties=%d",
+					subjects.size(), individuals.size(), classes.size(), properties.size()));
 		}
 
+		//
 		// now, determine the type of ontology data to be created:
-
-		OntologyType ontype = OntTypeUtil.determineType(ontModel, ontologyUri, dtProps);
+		//
+		OntologyType ontype;
+		if (baseOntologyInfo instanceof ExternalOntologyInfo) {
+			// for external ontologies, always assign OTHER
+			log.debug("Type set to OTHER for external ontology: '" +ontologyUri+ "'");
+			ontype = OntologyType.OTHER;
+		}
+		else {
+			ontype = OntTypeUtil.determineType(ontModel, ontologyUri, dtProps);
+		}
 		baseOntologyInfo.setType(ontype);
 
 		OntologyData ontologyData;
