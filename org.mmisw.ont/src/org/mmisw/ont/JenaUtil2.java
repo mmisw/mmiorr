@@ -300,6 +300,7 @@ public class JenaUtil2 {
 
 	// adapted from JenaUtil
 	public static OntModel loadModel(String uriModel, boolean processImports) {
+		log.debug("Loading model '" + uriModel + "' with processImports=" +processImports);
 		uriModel = removeTrailingFragment(uriModel);
 		OntModel model = createDefaultOntModel();
 		model.setDynamicImports(false);

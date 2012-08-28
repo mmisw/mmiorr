@@ -4,6 +4,9 @@ $Id$
 
 ChangeLog
 
+2012-08-27  2.0.30.beta
+	- some minor adjustments; version sync with the other modules
+
 2012-06-21  2.0.26.beta
 	- #294: "ontology listing for a particular authority"
 	  MiscDispatcher.listOntologiesForAuthority: preliminary implementation: shows an html
