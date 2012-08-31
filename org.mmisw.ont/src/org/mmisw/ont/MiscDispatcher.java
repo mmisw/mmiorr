@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -60,6 +62,13 @@ public class MiscDispatcher {
 	
 	private static final String SEP = " , ";
 	
+
+	private static final Pattern MAPPING_TOPIC_PATTERN = Pattern.compile(".*_map($|_.*)");
+	
+	private static boolean _isMappingAccordingToTopic(String topic) {
+		Matcher matcher = MAPPING_TOPIC_PATTERN.matcher(topic);
+		return null != matcher && matcher.matches();
+	}
 
 	private final Log log = LogFactory.getLog(MiscDispatcher.class);
 	
@@ -296,9 +305,11 @@ public class MiscDispatcher {
 
 	        		// discard mapping ontologies:
 	        		String topic = mmiUri.getTopic().toLowerCase();
-	        		if ( topic.matches(".*_map($|_.*)") ) {
+	        		if (_isMappingAccordingToTopic(topic)) {
 	        			// discard mapping ontology
-	        			System.out.println("_doListVocabularies: mapping ontology discarded");
+	        			if (log.isDebugEnabled()) {
+	        				log.debug("listVocabularies: mapping ontology discarded: " + ontologyUri);
+	        			}
 	        			continue;
 	        		}
 
@@ -313,7 +324,10 @@ public class MiscDispatcher {
 	        		}
 	        	}
 	    		catch (URISyntaxException e) {
-	    			log.error("Shouldn't happen", e);
+	    			// ignore: ontologyUri is not an MMiUri; besides, the mechanism
+	    			// to properly determine the type of vacbulary still needs to be 
+	    			// properly implemented.
+//	    			log.error("Shouldn't happen", e);
 	    			continue;
 	    		}
 	        }
@@ -363,9 +377,11 @@ public class MiscDispatcher {
 
 	        		// only mapping ontologies:
 	        		String topic = mmiUri.getTopic().toLowerCase();
-	        		if ( ! topic.matches(".*_map($|_.*)") ) {
+	        		if (! _isMappingAccordingToTopic(topic)) {
 	        			// discard non-mapping ontology
-	        			System.out.println("_doListMappings: non-mapping ontology discarded");
+	        			if (log.isDebugEnabled()) {
+	        				log.debug("listMappings: non-mapping ontology discarded: " +ontologyUri);
+	        			}
 	        			continue;
 	        		}
 
@@ -380,7 +396,10 @@ public class MiscDispatcher {
 	        		}
 	        	}
 	    		catch (URISyntaxException e) {
-	    			log.error("Shouldn't happen", e);
+	    			// ignore: ontologyUri is not an MMiUri; besides, the mechanism
+	    			// to properly determine the type of vacbulary still needs to be 
+	    			// properly implemented.
+//	    			log.error("Shouldn't happen", e);
 	    			continue;
 	    		}
 	        }
@@ -442,7 +461,7 @@ public class MiscDispatcher {
 	        		MmiUri mmiUri = new MmiUri(ontologyUri);
 
 	        		String topic = mmiUri.getTopic().toLowerCase();
-	        		if ( topic.matches(".*_map($|_.*)") ) {
+	        		if (_isMappingAccordingToTopic(topic)) {
 	        			type = "mapping";
 	        		}
 	        	}
