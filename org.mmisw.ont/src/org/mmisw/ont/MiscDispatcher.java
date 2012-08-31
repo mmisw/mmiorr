@@ -63,7 +63,7 @@ public class MiscDispatcher {
 	private static final String SEP = " , ";
 	
 
-	private static final Pattern MAPPING_TOPIC_PATTERN = Pattern.compile(".*_map($|_.*)");
+	private static final Pattern MAPPING_TOPIC_PATTERN = Pattern.compile("^map_.*|.*_map($|_.*)");
 	
 	private static boolean _isMappingAccordingToTopic(String topic) {
 		Matcher matcher = MAPPING_TOPIC_PATTERN.matcher(topic);
