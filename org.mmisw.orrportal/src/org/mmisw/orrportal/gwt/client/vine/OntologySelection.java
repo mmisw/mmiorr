@@ -117,7 +117,7 @@ public class OntologySelection extends VerticalPanel {
 	 * @param x Position for the popup
 	 * @param y Position for the popup 
 	 */
-	private void addVocabulary(final int x, final int y) {
+	private void addVocabulary(final int xx, final int yy) {
 
 		final String width = "700px";
 		
@@ -257,7 +257,8 @@ public class OntologySelection extends VerticalPanel {
 		popup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
 			public void setPosition(int offsetWidth, int offsetHeight) {
 				int left = (Window.getClientWidth() - offsetWidth) / 2;
-				int top = Math.min(y, (Window.getClientHeight() - offsetHeight) / 2);
+				int top = yy;
+//				int top = Math.min(yy, (Window.getClientHeight() - offsetHeight) / 2);
 				popup.setPopupPosition(left, top);
 			}
 		});

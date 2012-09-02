@@ -81,6 +81,15 @@ public class MyDialog extends DialogBox {
 	public TextArea getTextArea() {
 		return ta;
 	}
+	
+	public void appendToTextArea(String line) {
+		if ( ta == null ) {
+			addTextArea(null);
+		}
+		String text = ta.getText() + line;
+		ta.setText(text);
+		ta.setCursorPos(text.length());
+	}
 
 	public boolean onKeyUpPreview(char key, int modifiers) {
 		if ( key == KeyboardListener.KEY_ESCAPE
