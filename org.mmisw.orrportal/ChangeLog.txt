@@ -3,8 +3,9 @@ Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
 2012-09-02  2.0.32.beta
-	- Fix 296: Direct load of mapping ontology does not load mapped ontologies when editing.
-	  VineEditorPanel
+	  Fix 296: Direct load of mapping ontology does not load mapped ontologies when editing.
+	- Fix 293: ontology list empty when entering vine interface directly
+	  Adjustments for these fixes mainly done in VineEditorPanel.
 	
 2012-09-01  2.0.31.beta
 	- Fix 297: error: "No data creation info provided! (please report this bug)"

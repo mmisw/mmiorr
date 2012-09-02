@@ -140,12 +140,12 @@ public class VineEditorPanel extends VerticalPanel {
 			public void onSuccess(GetAllOntologiesResult result) {
 				if ( result.getError() == null ) {
 					List<RegisteredOntologyInfo> ontologyInfos = result.getOntologyList();
-					Orr.log("ORR: Got list of registered ontologies: " +ontologyInfos.size());
+					Orr.log("_refreshListAllOntologies: calling getAllOntologies done: size=" +ontologyInfos.size());
 					pePopup.appendToTextArea("done\n");
 					_refreshedListAllOntologies(pePopup, ontologyInfos);
 				}
 				else {
-					Orr.log("Error getting list of ontologies: " +result.getError());
+					Orr.log("_refreshListAllOntologies: calling getAllOntologies error: " +result.getError());
 					Window.alert("Error getting list of ontologies. Please try again later." 
 							+ "\n\n" +result.getError()
 					);
@@ -153,17 +153,22 @@ public class VineEditorPanel extends VerticalPanel {
 			}
 			
 		};
-		Orr.log("ORR: Getting list of registered ontologies ...");
+		Orr.log("_refreshListAllOntologies: calling getAllOntologies ...");
 		pePopup.appendToTextArea("Refreshing list of registered ontologies ... ");
 		Orr.service.getAllOntologies(true, callback);
 	}
 	
 	private void _refreshedListAllOntologies(final MyDialog pePopup, List<RegisteredOntologyInfo> ontologyInfos) {
 		// update the list of all ontologies
+		Orr.log("_refreshedListAllOntologies called with " + ontologyInfos.size()+ " elements");
 		VineMain.setAllUris(ontologyInfos);
 		
-	    // and load data of the working ontologies (to properly enable the search)
-		pePopup.appendToTextArea("Loading working ontologies:\n");
+		// and load data of the working ontologies (to properly enable the search)
+	    int noWorkingOntologies = VineMain.getWorkingUris().size();
+		Orr.log("_refreshedListAllOntologies: Loading working ontologies: " +noWorkingOntologies);
+		if (noWorkingOntologies > 0) {
+			pePopup.appendToTextArea("Loading working ontologies:\n");
+		}
 		_loadDataOfWorkingOntologiesForMapping(pePopup, 0);
 	}
 
@@ -310,12 +315,14 @@ public class VineEditorPanel extends VerticalPanel {
     	 * if there are any namespaces with no OntologyInfo, then
     	 * try loading them as external ontologies
     	 */
-		final Set<String> namespaces = ontologyData.getNamespaces();
     	final List<String> urisToLoadAsExternal = new ArrayList<String>();
-    	for ( String namespace : namespaces ) {
-    		if ( null == VineMain.getOntologyInfo(namespace)) {
-    			urisToLoadAsExternal.add(namespace);
-    		}
+    	final Set<String> namespaces = ontologyData.getNamespaces();
+    	if (namespaces != null) {
+	    	for ( String namespace : namespaces ) {
+	    		if ( null == VineMain.getOntologyInfo(namespace)) {
+	    			urisToLoadAsExternal.add(namespace);
+	    		}
+	    	}
     	}
     	Orr.log("_loadExternalMappedOntologies: " + urisToLoadAsExternal);
     	if (urisToLoadAsExternal.size() > 0) {
@@ -336,6 +343,7 @@ public class VineEditorPanel extends VerticalPanel {
 	private void _loadDataOfWorkingOntologiesForMapping(final MyDialog pePopup, final int currentIdx) {
 		List<String> uris = VineMain.getWorkingUris();
 		if ( uris.size() == 0 || currentIdx >= uris.size() ) {
+			Orr.log("_loadDataOfWorkingOntologiesForMapping: done");
 			// Done.
 			// load any external mapped ontologies
 			_loadExternalMappedOntologies(pePopup);
