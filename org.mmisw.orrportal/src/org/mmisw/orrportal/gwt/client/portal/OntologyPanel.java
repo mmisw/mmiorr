@@ -27,6 +27,7 @@ import org.mmisw.orrportal.gwt.client.vine.VineMain;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CellPanel;
@@ -51,7 +52,11 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	
-	private final String CLASS_NAME = getClass().getName();
+	private static final String CLASS_NAME = OntologyPanel.class.getName();
+	
+	private static void log(String msg) {
+		Orr.log(CLASS_NAME+": " +msg);
+	}
 
 	private static final String DATA_PROGRESS_MSG = "<img src=\"" +GWT.getModuleBaseURL()+ "images/loading.gif\"> " +
 			"<i>Retrieving ontology data. Please wait...</i>";
@@ -157,13 +162,13 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	
 	
 	private void _prepareDataDisclosure() {
-		Orr.log(CLASS_NAME+": _prepareDataDisclosure: ontologyUri = '" +ontologyInfo.getUri()+ 
+		log("_prepareDataDisclosure: ontologyUri = '" +ontologyInfo.getUri()+ 
 				"' class=" +ontologyInfo.getClass().getName());
 		dataDisclosure.setContent(DATA_PROGRESS_HTML);
 		dataDisclosure.addEventHandler(new DisclosureHandler() {
 			public void onOpen(DisclosureEvent event) {
 				if ( dataDisclosure.getContent() == DATA_PROGRESS_HTML ) {
-					_getOntologyContents();
+					_getOntologyContents(null);
 				}
 			}
 			
@@ -328,7 +333,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		boolean link = true;
 		metadataPanel.resetToOriginalValues(ontologyInfo, null, false, link);
 	
-		Orr.log(CLASS_NAME+": OntologyPanel updateInterface, readOnly=" +readOnly);
+		log("OntologyPanel updateInterface, readOnly=" +readOnly);
 		
 		if ( readOnly ) {
 			// coming from edit mode to view only mode-- reload data
@@ -361,10 +366,10 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			}
 
 			public void onSuccess(RegisteredOntologyInfo ontologyInfo) {
-				Orr.log(CLASS_NAME+": RET getOntologyMetadata: ontologyUri = '" +ontologyInfo.getUri()+ "'");
+				log("RET getOntologyMetadata: ontologyUri = '" +ontologyInfo.getUri()+ "'");
 				String error = ontologyInfo.getError();
 				if ( error != null ) {
-					Orr.log(CLASS_NAME+": RET getOntologyMetadata: error = " +error);
+					log("RET getOntologyMetadata: error = " +error);
 				}
 				
 				_ontologyMetadataRetrieved(ontologyInfo);
@@ -379,7 +384,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		headerPanel.showProgressMessage(progressMsg);
 
 		metadataPanel.showProgressMessage(progressMsg);
-		Orr.log(CLASS_NAME+": getOntologyMetadata: ontologyUri = '" +ontologyInfo.getUri()+ "'");
+		log("getOntologyMetadata: ontologyUri = '" +ontologyInfo.getUri()+ "'");
 		Orr.service.getOntologyMetadata(roi, null, callback);
 	}
 
@@ -402,7 +407,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	
 	
 	
-	private void _getOntologyContents() {
+	private void _getOntologyContents(final Command postCmd) {
 		
 		assert ontologyInfo instanceof RegisteredOntologyInfo ;
 		RegisteredOntologyInfo roi = (RegisteredOntologyInfo) ontologyInfo;
@@ -417,13 +422,13 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			}
 
 			public void onSuccess(RegisteredOntologyInfo ontologyInfo) {
-				Orr.log(CLASS_NAME+": RET getOntologyContents: ontologyUri = '" +ontologyInfo.getUri()+ "'");
+				log("RET getOntologyContents: ontologyUri = '" +ontologyInfo.getUri()+ "'");
 				String error = ontologyInfo.getError();
 				if ( error != null ) {
-					Orr.log(CLASS_NAME+": RET getOntologyContents: error = " +error);
+					log("RET getOntologyContents: error = " +error);
 				}
 				
-				ontologyContentsRetrieved(ontologyInfo);
+				ontologyContentsRetrieved(ontologyInfo, postCmd);
 			}
 		};
 
@@ -431,12 +436,12 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 					+ "  (version "+roi.getVersionNumber()+ ")" + "<br/>";
 		;
 		headerPanel.updateTitle(title);
-		Orr.log(CLASS_NAME+": getOntologyContents: ontologyUri = '" +ontologyInfo.getUri()+ "'");
+		log("getOntologyContents: ontologyUri = '" +ontologyInfo.getUri()+ "'");
 		Orr.service.getOntologyContents(roi, null, callback);
 	}
 
 
-	private void ontologyContentsRetrieved(BaseOntologyInfo ontologyInfo) {
+	private void ontologyContentsRetrieved(BaseOntologyInfo ontologyInfo, final Command postCmd) {
 		this.ontologyInfo = ontologyInfo;
 		String error = ontologyInfo.getError();
 		if ( error != null ) {
@@ -445,6 +450,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			HTML errorHtml = new HTML(errorMsg);
 			dataDisclosure.clear();
 			dataDisclosure.setContent(errorHtml);
+			dataDisclosure.setOpen(true);
 		}
 		else {
 			// TODO put more info in the description
@@ -456,13 +462,28 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			dataDisclosure.clear();
 			
 			if ( dataPanel != null ) {
+				log("ontologyContentsRetrieved: updating dataPanel");
 				dataPanel.updateWith(null, ontologyInfo, readOnly);
 				dataDisclosure.setContent(dataPanel);
-
+			}
+			else {
+				log("ontologyContentsRetrieved: no dataPanel to update");
 			}
 //			else if ( editDataPanel != null ) {
 //				editDataPanel.updateWith(ontologyInfo);
 //			}
+			
+			if (postCmd != null) {
+				// A direct deferred command (ie. using DeferredCommand.add(postCmd))
+				// doesn't work, why?.  The effect is that postCmd won't see the 
+				// updated dataPanel! With a Timer all works fine.
+				new Timer() {
+					public void run() {
+						log("ontologyContentsRetrieved: executing post-command");
+						postCmd.execute();
+					}
+				}.schedule(500);
+			}
 		}
 	}
 	
@@ -539,19 +560,53 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	 * Cancels changes done to the metadata and data contents, if any.
 	 */
 	public void cancel() {
-		Orr.log("OntologyPanel.cancel");
+		log("OntologyPanel.cancel");
 		metadataPanel.cancel();
 		dataPanel.cancel();
 	}
 
-
+	
 	void reviewAndRegister() {
+		if ( dataDisclosure.getContent() == DATA_PROGRESS_HTML ) {
+			/*
+			 * 297: error: "No data creation info provided! (please report this bug)"
+			 * The issue was that the contents were not yet loaded at this point.
+			 * Just load contents first, and then do the actual review-and-register 
+			 * in a post-command:
+			 */
+			log("reviewAndRegister: loading contents first ...");
+			final MyDialog popup = new MyDialog(null);
+			popup.addTextArea(null).setSize("600", "150");
+			popup.getTextArea().setText("please wait ...");
+			PortalControl.getInstance().notifyActivity(true);
+			popup.center();
+			popup.setText("Loading ontology contents ...");
+			popup.show();
+			
+			_getOntologyContents(new Command() {
+				public void execute() {
+					log("reviewAndRegister: calling _doReviewAndRegister");
+					_doReviewAndRegister(popup);
+				}
+			});
+		}
+		else {
+			_doReviewAndRegister(null);
+		}
+	}
+
+	private void _doReviewAndRegister(final MyDialog aPopup) {
+		log("_doReviewAndRegister called.");
 		if ( ontologyInfo == null ) {
-			Window.alert("Please, load an ontology first");
+			String alert = "Please, load an ontology first";
+			log("_doReviewAndRegister: " + alert);
+			Window.alert(alert);
 			return;
 		}
 		if ( ontologyInfo.getError() != null ) {
-			Window.alert("Please, retry the loading of the ontology");
+			String alert = "Please, retry the loading of the ontology";
+			log("_doReviewAndRegister: " + alert);
+			Window.alert(alert);
 			return;
 		}
 		
@@ -559,6 +614,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		Map<String, String> newValues = new HashMap<String, String>();
 		String error = metadataPanel.putValues(newValues, true);
 		if ( error != null ) {
+			log("_doReviewAndRegister: " + error);
 			mdDisclosure.setOpen(true);
 			Window.alert(error);
 			return;
@@ -571,12 +627,15 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		// check data values
 		error = dataPanel.checkData(isNewVersion);
 		if ( error != null ) {
+			log("_doReviewAndRegister: " + error);
 			dataDisclosure.setOpen(true);
 			Window.alert(error);
 			return;
 		}
 		
 		DataCreationInfo dataCreationInfo = dataPanel.getCreateOntologyInfo();
+		
+		log("_doReviewAndRegister: dataCreationInfo=" + dataCreationInfo);
 		
 
 		//
@@ -649,13 +708,15 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 //		}
 		
 		
-		final MyDialog popup = new MyDialog(null);
-		popup.addTextArea(null).setSize("600", "150");
-		popup.getTextArea().setText("please wait ...");
-		PortalControl.getInstance().notifyActivity(true);
+		final MyDialog popup = aPopup == null ? new MyDialog(null): aPopup;
+		if (aPopup == null) {
+			popup.addTextArea(null).setSize("600", "150");
+			popup.getTextArea().setText("please wait ...");
+			PortalControl.getInstance().notifyActivity(true);
+			popup.center();
+			popup.show();
+		}
 		popup.setText("Creating ontology ...");
-		popup.center();
-		popup.show();
 
 		AsyncCallback<CreateOntologyResult> callback = new AsyncCallback<CreateOntologyResult>() {
 			public void onFailure(Throwable thr) {
@@ -665,13 +726,13 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			}
 
 			public void onSuccess(CreateOntologyResult result) {
-				Orr.log(CLASS_NAME+": CreateOntologyResult obtained.");
+				log("CreateOntologyResult obtained." + result.getCreateOntologyInfo().getHostingType());
 				PortalControl.getInstance().notifyActivity(false);
 				reviewCompleted(popup, result);
 			}
 		};
 
-		Orr.log(CLASS_NAME+": Calling service createOntology ...");
+		log("Calling service createOntology, hostingType=" +createOntologyInfo.getHostingType());
 		Orr.service.createOntology(createOntologyInfo, callback);
 	}
 
@@ -720,7 +781,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 				: "Error");
 		popup.center();
 
-		Orr.log(CLASS_NAME+": Review result: " +msg);
+		log("Review result: " +msg);
 
 	}
 	
@@ -732,7 +793,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		popup.addTextArea(null).setText("please wait ...");
 		popup.getTextArea().setSize("600", "150");
 		
-		Orr.log(CLASS_NAME+": Registering ontology ...");
+		log("Registering ontology ...");
 		popup.setText("Registering ontology ...");
 		popup.center();
 		popup.show();
@@ -793,7 +854,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		}
 		
 		String msg = sb.toString();
-		Orr.log(CLASS_NAME+": Registration result: " +msg);
+		log("Registration result: " +msg);
 
 		final MyDialog popup = new MyDialog(null);
 		popup.setCloseButtonText("Return to ontology list");
