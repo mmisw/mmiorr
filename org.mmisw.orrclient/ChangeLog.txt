@@ -3,6 +3,11 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2012-08-27  2.0.33.beta
+	- 298: Load of external ontology for mapping does not use content negotiation
+	  OrrClientImpl.getExternalOntologyInfo now uses new supporting routine OntInfoUtil.loadExternalModel
+	  to first load the model in a way that performs content negotiation.
+ 
 2012-08-27  2.0.30.beta
 	- more adjustments to support mappings against external ontologies
 	- version sync with the other modules

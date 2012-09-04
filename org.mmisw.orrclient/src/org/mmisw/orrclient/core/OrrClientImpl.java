@@ -104,6 +104,8 @@ import com.hp.hpl.jena.vocabulary.RDF;
  */
 public class OrrClientImpl implements IOrrClient {
 	
+	private static final Log log = LogFactory.getLog(OrrClientImpl.class);
+	
 	private static final String LISTALL = "?listall";
 
 	/** Ontology URI prefix including root: */
@@ -111,7 +113,6 @@ public class OrrClientImpl implements IOrrClient {
 
 
 	private final AppInfo appInfo = new AppInfo("OrrClient Library");
-	private final Log log = LogFactory.getLog(OrrClientImpl.class);
 
 	private final OrrReadOnlyConfiguration config;
 	private final File previewDir;
@@ -411,13 +412,22 @@ public class OrrClientImpl implements IOrrClient {
 
 	
 	private static void _setHostingType(RegisteredOntologyInfo registeredOntologyInfo) {
-		if ( OntServiceUtil.isOntResolvableUri(registeredOntologyInfo.getUri()) ) {
-			registeredOntologyInfo.setHostingType(HostingType.FULLY_HOSTED);
+		String uri = registeredOntologyInfo.getUri();
+		boolean ontResolvableUri = OntServiceUtil.isOntResolvableUri(uri);
+		
+		HostingType hostingType;
+		if ( ontResolvableUri ) {
+			hostingType = HostingType.FULLY_HOSTED;
 		}
 		else {
-			registeredOntologyInfo.setHostingType(HostingType.RE_HOSTED);
+			hostingType = HostingType.RE_HOSTED;
 		}
 		// TODO: Determine HostingType.INDEXED case.
+		
+		registeredOntologyInfo.setHostingType(hostingType);
+		
+		log.info("_setHostingType: '" + uri + "' ontResolvableUri: " + ontResolvableUri +
+				"-> hostingType=" + hostingType);
 	}
 	
 	public GetAllOntologiesResult getAllOntologies(boolean includeAllVersions) {
@@ -647,7 +657,10 @@ public class OrrClientImpl implements IOrrClient {
 		String error = null;
 		Exception ex = null;
 		try {
-			OntInfoUtil.getEntities(oi, null);
+			// 298: Load of external ontology for mapping does not use content negotiation
+			// first load the model with this new supporting routine:
+			OntModel ontModel = OntInfoUtil.loadExternalModel(ontologyUri);
+			OntInfoUtil.getEntities(oi, ontModel);
 		}
 		catch (FileNotFoundException e) {
 			error = "File not found: '" +ontologyUri+ "'";
@@ -930,9 +943,12 @@ public class OrrClientImpl implements IOrrClient {
 	
 	public CreateOntologyResult createOntology(CreateOntologyInfo createOntologyInfo) {
 		
+		HostingType hostingType = createOntologyInfo.getHostingType();
+		log.info("createOntology: called. hostingType = " +hostingType);
+		
 		CreateOntologyResult createOntologyResult = null;
 		
-		if ( createOntologyInfo.getHostingType() != null ) {
+		if ( hostingType != null ) {
 			// use of this attribute indicates to use the new method
 			createOntologyResult = _createOntology_newMethod(createOntologyInfo);
 		}
@@ -948,7 +964,6 @@ public class OrrClientImpl implements IOrrClient {
 		
 		final HostingType hostingType = createOntologyInfo.getHostingType();
 		
-		log.info("createOntology: called. hostingType = " +hostingType);
 		CreateOntologyResult createOntologyResult = new CreateOntologyResult();
 		
 		if ( createOntologyInfo.getMetadataValues() == null ) {
@@ -1658,8 +1673,6 @@ public class OrrClientImpl implements IOrrClient {
 	@SuppressWarnings("deprecation")
 	private CreateOntologyResult _createOntology_oldMethod(CreateOntologyInfo createOntologyInfo) {
 			
-		log.info("createOntology: called.");
-		
 		CreateOntologyResult createOntologyResult = new CreateOntologyResult();
 		
 		DataCreationInfo dataCreationInfo = createOntologyInfo.getDataCreationInfo();

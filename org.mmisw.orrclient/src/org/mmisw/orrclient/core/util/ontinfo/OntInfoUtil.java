@@ -4,6 +4,9 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URL;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.io.IOUtils;
 import org.mmisw.ont.JenaUtil2;
 import org.mmisw.orrclient.core.util.Utf8Util;
@@ -41,6 +44,60 @@ public class OntInfoUtil {
 		return impl.getEntities(baseOntologyInfo, ontModel);
 	}
 	
+	/**
+	 * Loads an "external" model (meaning the URI is presumably an HTTP URL).
+	 * A number of content negotiation attempts are done trying to read a 
+	 * feasible format using different headers
+	 * 
+	 * @param uriModel URI of the model
+	 * @return the read model.
+	 * @throws Exception If unable to access the URI or read the model.
+	 */
+	public static OntModel loadExternalModel(String uriModel) throws Exception {
+		String[] acceptLangPairs = {
+			//  mime type,              Lang
+				"application/rdf+xml", "RDF/XML",
+				"text/turtle",         "N3",
+				"text/plain",          "N-TRIPLES",
+		};
+		
+		HttpClient client = new HttpClient();
+	    
+		// for the thrown exception in case we are unable to read the model:
+		StringBuilder tryMsgs = new StringBuilder("Unable to read ontology from URI='" +uriModel+ "':\n");
+		
+	    for (int i = 0; i < acceptLangPairs.length; i += 2) {
+	    	String acceptEntry = acceptLangPairs[i];
+	    	String lang = acceptLangPairs[i + 1];
+	    	
+	    	tryMsgs.append("Trying accept header: '" +acceptEntry+ "': ");
+	    	GetMethod meth = new GetMethod(uriModel);
+	    	meth.addRequestHeader("accept", acceptEntry);
+		    try {
+		        client.executeMethod(meth);
+	
+		        if (meth.getStatusCode() == HttpStatus.SC_OK) {
+		            InputStream is = meth.getResponseBodyAsStream();
+		    		OntModel model = createDefaultOntModel();
+		    		try {
+		    			model.read(is, uriModel, lang);
+		    			return model;
+		    		}
+		    		catch (Throwable ex) {
+		    			tryMsgs.append("error reading model: " +ex.getMessage()+ "\n");
+		    		}
+		        }
+		        else {
+		        	tryMsgs.append("error loading URI: " +meth.getStatusLine().toString()+ "\n");
+		        }
+		    }
+		    finally {
+		        meth.releaseConnection();
+		    }
+	    }
+	    throw new Exception(tryMsgs.toString());
+	}
+		
 
 	/**
 	 * Loads a model first verifying the source text is in UTF-8.
