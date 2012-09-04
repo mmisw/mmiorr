@@ -2,6 +2,10 @@ org.mmisw.orrportal: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2012-09-03  2.0.33.beta
+	- 298: Load of external ontology for mapping does not use content negotiation
+	  Fixed in OrrClient module.
+
 2012-09-02  2.0.32.beta
 	  Fix 296: Direct load of mapping ontology does not load mapped ontologies when editing.
 	- Fix 293: ontology list empty when entering vine interface directly
