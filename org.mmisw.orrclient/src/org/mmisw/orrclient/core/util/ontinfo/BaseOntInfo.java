@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.mmisw.ont.vocabulary.Skos;
 import org.mmisw.orrclient.core.vine.VineUtil;
@@ -130,11 +128,17 @@ abstract class BaseOntInfo implements IOntInfo {
 			List<IndividualInfo> individuals
 	) {
 		
-		Set<String> namespaces = new HashSet<String>();
+		List<String> namespaces = new ArrayList<String>();
 
 		// add the namespaces corresponding to the already provided mappings:
+		// 299: Not consistent assignment of short-hand prefixes in mapping tool
+		// To fix this, first scan the mapping subjects and then the objects so
+		// the first short-hand letters are given to the left hand-side in the ORR
+		// interface
 		for ( Mapping mapping : mappings ) {
 			_addNamespace(namespaces, mapping.getLeft(), null);
+		}
+		for ( Mapping mapping : mappings ) {
 			_addNamespace(namespaces, mapping.getRight(), null);
 		}
 
@@ -172,7 +176,7 @@ abstract class BaseOntInfo implements IOntInfo {
 	 * 
 	 * It does nothing if uri starts with "urn:" (ignoring case).
 	 */
-	private static void _addNamespace(Set<String> namespaces, String uri, String localName) {
+	private static void _addNamespace(List<String> namespaces, String uri, String localName) {
 		
 		if ( uri == null || uri.toLowerCase().startsWith("urn:") ) {
 			return;
@@ -199,7 +203,8 @@ abstract class BaseOntInfo implements IOntInfo {
 			ns = uriLen > locLen ? uri.substring(0, uriLen - locLen) : "";
 		}
 		
-		if ( ns.trim().length() > 0 ) {
+		ns = ns.trim();
+		if ( ns.length() > 0 && ! namespaces.contains(ns) ) {
 			namespaces.add(ns);
 		}
 	}

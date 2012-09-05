@@ -3,6 +3,12 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2012-09-05  2.0.34.beta
+	- 299: Not consistent assignment of short-hand prefixes in mapping tool
+	  MappingOntologyData: use List<String> for the namespaces (instead of Set<String>).
+	  BaseOntologyInfo._createMappingOntologyData: to collect the namespaces, scan the mapping 
+	  subjects first so the first short-hand letters are given to the left hand-side in the ORR interface. 
+
 2012-08-27  2.0.33.beta
 	- 298: Load of external ontology for mapping does not use content negotiation
 	  OrrClientImpl.getExternalOntologyInfo now uses new supporting routine OntInfoUtil.loadExternalModel

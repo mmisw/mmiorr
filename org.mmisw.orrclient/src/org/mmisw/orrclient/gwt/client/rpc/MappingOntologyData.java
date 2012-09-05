@@ -1,7 +1,6 @@
 package org.mmisw.orrclient.gwt.client.rpc;
 
 import java.util.List;
-import java.util.Set;
 
 import org.mmisw.orrclient.gwt.client.rpc.vine.Mapping;
 import org.mmisw.orrclient.gwt.client.rpc.vine.RelationInfo;
@@ -27,7 +26,7 @@ public class MappingOntologyData extends OntologyData {
 	/** 
 	 * Associated namespaces, ie., the URIs of the ontologies from which terms are mapped.
 	 */
-	private Set<String> namespaces;
+	private List<String> namespaces;
 	
 	public MappingOntologyData() {
 	}
@@ -40,11 +39,11 @@ public class MappingOntologyData extends OntologyData {
 		this.mappings = mappings;
 	}
 
-	public void setNamespaces(Set<String> namespaces) {
+	public void setNamespaces(List<String> namespaces) {
 		this.namespaces = namespaces;
 	}
 
-	public Set<String> getNamespaces() {
+	public List<String> getNamespaces() {
 		return namespaces;
 	}
 
