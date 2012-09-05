@@ -66,7 +66,7 @@ public class VineEditorPanel extends VerticalPanel {
 		Orr.log("VineEditorPanel._setUp: readOnly=" +readOnly);
 		layout.clear();
 		
-		final Set<String> namespaces = ontologyData.getNamespaces();
+		final List<String> namespaces = ontologyData.getNamespaces();
 		
 		VineMain.setWorkingUrisWithGivenNamespaces(namespaces);
 		
@@ -316,7 +316,7 @@ public class VineEditorPanel extends VerticalPanel {
     	 * try loading them as external ontologies
     	 */
     	final List<String> urisToLoadAsExternal = new ArrayList<String>();
-    	final Set<String> namespaces = ontologyData.getNamespaces();
+    	final List<String> namespaces = ontologyData.getNamespaces();
     	if (namespaces != null) {
 	    	for ( String namespace : namespaces ) {
 	    		if ( null == VineMain.getOntologyInfo(namespace)) {

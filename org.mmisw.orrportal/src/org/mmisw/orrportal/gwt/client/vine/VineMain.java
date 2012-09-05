@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
@@ -181,7 +180,7 @@ public class VineMain {
 	}
 
 	
-	public static void setWorkingUrisWithGivenNamespaces(Set<String> namespaces) {
+	public static void setWorkingUrisWithGivenNamespaces(List<String> namespaces) {
 		
 		workingUris.clear();
 		Orr.log("setWorkingUrisWithGivenNamespaces: " +namespaces);
