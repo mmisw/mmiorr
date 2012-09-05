@@ -516,6 +516,22 @@ class OntInfo extends BaseOntInfo {
 			}
 		}
 		
+		// sort the mappings lexicographically by <left><relation><right>:
+		Collections.sort(mappings, new Comparator<Mapping>() {
+			public int compare(Mapping arg0, Mapping arg1) {
+				int cmp = arg0.getLeft().compareTo(arg1.getLeft());
+				if ( cmp != 0 ) {
+					return cmp;
+				}
+				cmp = arg0.getRelation().compareTo(arg1.getRelation());
+				if ( cmp != 0 ) {
+					return cmp;
+				}
+				cmp = arg0.getRight().compareTo(arg1.getRight());
+				return cmp;
+			}
+		});
+		
 		return mappings;
 	}
 

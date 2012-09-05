@@ -8,6 +8,8 @@ $Id$
 	  MappingOntologyData: use List<String> for the namespaces (instead of Set<String>).
 	  BaseOntologyInfo._createMappingOntologyData: to collect the namespaces, scan the mapping 
 	  subjects first so the first short-hand letters are given to the left hand-side in the ORR interface. 
+	  
+	- OntInfo._getMappings: sort the mappings lexicographically by <left><relation><right>
 
 2012-08-27  2.0.33.beta
 	- 298: Load of external ontology for mapping does not use content negotiation
