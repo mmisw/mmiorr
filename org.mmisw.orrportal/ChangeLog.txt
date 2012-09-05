@@ -4,7 +4,11 @@ $Id$
 
 2012-09-05  2.0.34.beta
 	- 299: Not consistent assignment of short-hand prefixes in mapping tool
-	  VineEditorPanel, VineMain: now namespaces is a List<String> (not a Set<String>).	   	  
+	  VineEditorPanel, VineMain: now namespaces is a List<String> (not a Set<String>).
+	  See OrrClient module.	 
+	  
+	- Vine: when loaded, mappings are now sorted lexicographically by <left><relation><right>.
+	  See OrrClient module.  	  
 
 2012-09-03  2.0.33.beta
 	- 298: Load of external ontology for mapping does not use content negotiation
