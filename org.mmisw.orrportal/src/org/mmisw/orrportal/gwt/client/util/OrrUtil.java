@@ -34,8 +34,10 @@ import com.google.gwt.user.client.ui.UIObject;
  * @author Carlos Rueda
  */
 public class OrrUtil {
-	private static String[] TESTING_AUTHORITIES = { "mmitest", "testing", "test", };
+
+	private static final String TESTING_AUTHORITIES_REGEX = "mmitest|test(ing)?(_.*)?|.*_test(ing)?";
 	private static String[] INTERNAL_AUTHORITIES = { "mmiorr-internal", };
+	
 	
 	/**
 	 * Regex from: https://wave.google.com/wave/?pli=1#restored:wave:googlewave.com!w%252BsFbGJUukA
@@ -199,12 +201,7 @@ public class OrrUtil {
      */
     public static boolean isTestingOntology(RegisteredOntologyInfo oi) {
     	String authority = oi.getAuthority().toLowerCase();
-    	for ( String testAuth : TESTING_AUTHORITIES ) {
-    		if ( authority.equals(testAuth) ) {
-    			return true;
-    		}
-    	}
-    	return false;
+    	return authority.matches(TESTING_AUTHORITIES_REGEX);
     }
     
     /**
