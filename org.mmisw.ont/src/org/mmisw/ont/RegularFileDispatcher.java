@@ -35,6 +35,7 @@ import org.apache.commons.logging.LogFactory;
 class RegularFileDispatcher {
 	
 	private final Log log = LogFactory.getLog(RegularFileDispatcher.class);
+
 	
 	/** constructor (package-visible) */
 	RegularFileDispatcher() {
@@ -92,13 +93,15 @@ class RegularFileDispatcher {
 		String contextPath = request.getContextPath();
 		PrintWriter out = null; 
 		
+		String portalServiceUrl = OntConfig.Prop.PORTAL_SERVICE_URL.getValue();
+		
 		// start the response page:
 		response.setContentType("text/html");
 		out = response.getWriter();
 		out.println("<html>");
 		out.println("<head>");
 		out.println("<title>" +OntVersion.getFullTitle()+ "</title>");
-		out.println("<link rel=stylesheet href=\"" +contextPath + "/main.css\" type=\"text/css\">");
+		out.println("<link rel=\"stylesheet\" href=\"" +contextPath + "/main.css\" type=\"text/css\">");
 		out.println("</head>");
 		out.println("<body>");
 		out.println("<br/>");
@@ -113,13 +116,26 @@ class RegularFileDispatcher {
 				"</a>" + "\n" +
 				"<br/>" + 
 				"<br/>" + "\n" +
+				"You have reached the main entry point of the URI resolution service:<br/>" +
+				"<br/>" + 
 				"<b>" +OntVersion.getTitle()+ "</b>" + "\n" +
-				"</br>This service is part of the " +
+				"<br/>" +
+				"<font color=\"gray\" size=\"-2\">" +OntVersion.getVersionAndBuild()+ "</font>" +
+				"<br/>" +
+				"<br/>" +
+				"<br/>" +
+				"<br/>" +
+				"</br>The <b>MMI Ontology Registry and Repository</b> portal is located at:<br/>\n" +
+				"<br/>" + 
+				"<a href=\"" +portalServiceUrl+ "\">" +portalServiceUrl+ "</a>" + "\n" +
+				"<br/>" +
+				"<br/>" +
+				"<br/>" + 
+				"<br/>" +
+				"<br/>" +
+				"</br>These services are part of the " +
 				"<a href=\"http://marinemetadata.org/semanticframework\">" +
-				"MMI Semantic Framework</a>" + "\n" +
-				"<br/>" +
-				"<br/>" +
-				"<font color=\"gray\" size=\"-2\">" +OntVersion.getFullTitle()+ "</font>" +
+				"MMI Semantic Framework</a>." + "\n" +
 				"</td>" +
 				"</tr>" +
 				"</table>" +
