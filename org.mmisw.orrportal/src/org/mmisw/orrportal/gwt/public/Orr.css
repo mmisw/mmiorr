@@ -137,6 +137,7 @@ table.inline td {
   padding-right: 9px;
   border: 1px solid #dee7ec;
 }
+.OntologyTable-row:hover { background-color: #f3fcff !important; }
 
 
 .DataTable {
