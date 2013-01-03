@@ -129,8 +129,7 @@ class OntClientUtil {
 		
 		String str = resolveOntologyUri(uriModel, version, "application/rdf+xml");
 		
-		OntModel model = JenaUtil2.loadModel(uriModel, false);
-//		OntModel model = createDefaultOntModel();
+		OntModel model = createDefaultOntModel();
 		uriModel = JenaUtil2.removeTrailingFragment(uriModel);
 		
 		StringReader sr = new StringReader(str);

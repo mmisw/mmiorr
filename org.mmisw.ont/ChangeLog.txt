@@ -4,6 +4,13 @@ $Id$
 
 ChangeLog
 
+2013-01-02  2.0.37.beta
+	- Fix 303: "re-hosted ontologies failing to load"
+	  This was a regression caused by this change on 2012-08-27:
+	  http://code.google.com/p/mmisw/source/diff?spec=svn1397&r=1379&format=side&path=/trunk/org.mmisw.ont/src/org/mmisw/ont/client/OntClientUtil.java
+	  but OntClientUtil.retrieveModel should actually resolve the URO against the Ont service, not directly.
+	  This change was definitely unintended and I'm just reverting it.
+	  
 2012-12-07  2.0.31.beta
 	- RegularFileDispatcher._showServiceInfo: minor adjustment in main entry point 
 	  page to point to the ORR as well.
