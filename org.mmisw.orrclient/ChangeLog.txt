@@ -3,6 +3,9 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2013-01-02  2.0.37.beta
+	- Fix 303: "re-hosted ontologies failing to load" in Ont module.
+
 2012-09-05  2.0.34.beta
 	- 299: Not consistent assignment of short-hand prefixes in mapping tool
 	  MappingOntologyData: use List<String> for the namespaces (instead of Set<String>).
