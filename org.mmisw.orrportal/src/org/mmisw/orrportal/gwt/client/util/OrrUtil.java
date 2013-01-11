@@ -36,7 +36,6 @@ import com.google.gwt.user.client.ui.UIObject;
 public class OrrUtil {
 
 	private static final String TESTING_AUTHORITIES_REGEX = "mmitest|test(ing)?(_.*)?|.*_test(ing)?";
-	private static final String TESTING_SHORT_NAME_REGEX = "test(ing)?(_.*)?|.*_test(ing)?";
 	private static String[] INTERNAL_AUTHORITIES = { "mmiorr-internal", };
 	
 	
@@ -207,11 +206,7 @@ public class OrrUtil {
      */
     public static boolean isTestingOntology(RegisteredOntologyInfo oi) {
     	String authority = oi.getAuthority().toLowerCase();
-    	if ( authority.matches(TESTING_AUTHORITIES_REGEX) ) {
-    		return true;
-    	}
-    	String shortName = oi.getShortName().toLowerCase();
-    	return shortName.matches(TESTING_SHORT_NAME_REGEX);
+    	return authority.matches(TESTING_AUTHORITIES_REGEX);
     }
     
     /**
