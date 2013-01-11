@@ -2,6 +2,11 @@ org.mmisw.orrportal: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2013-01-11  2.0.38.beta
+	- OrrUtil.isTestingOntology: If the authority component doesn't determine it's a testing
+	  ontology, then use the short-name component (corresp to the acronym). In this case
+	  the regex is "test(ing)?(_.*)?|.*_test(ing)?". (For both components the case is ignored.)
+
 2013-01-02  2.0.37.beta
 	- Fix 303: "re-hosted ontologies failing to load" in Ont and OrrClient modules.
 

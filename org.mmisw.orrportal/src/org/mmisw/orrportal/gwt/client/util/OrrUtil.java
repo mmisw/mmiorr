@@ -36,6 +36,7 @@ import com.google.gwt.user.client.ui.UIObject;
 public class OrrUtil {
 
 	private static final String TESTING_AUTHORITIES_REGEX = "mmitest|test(ing)?(_.*)?|.*_test(ing)?";
+	private static final String TESTING_SHORT_NAME_REGEX = "test(ing)?(_.*)?|.*_test(ing)?";
 	private static String[] INTERNAL_AUTHORITIES = { "mmiorr-internal", };
 	
 	
@@ -195,13 +196,22 @@ public class OrrUtil {
 	}
 	
     /**
-     * Tells if the ontology is a "testing" one, according to the authority component.
+     * Tells if the ontology is a "testing" one, according to the authority and short name components.
+     * If the authority component doesn't determine it's a testing ontology, then use the short-name.
+     * 
+     * NOTE: This is far from an ideal mechanism to categorize "testing" entries, 
+     * see http://code.google.com/p/mmisw/issues/detail?id=279
+     * 
      * @param oi
      * @return
      */
     public static boolean isTestingOntology(RegisteredOntologyInfo oi) {
     	String authority = oi.getAuthority().toLowerCase();
-    	return authority.matches(TESTING_AUTHORITIES_REGEX);
+    	if ( authority.matches(TESTING_AUTHORITIES_REGEX) ) {
+    		return true;
+    	}
+    	String shortName = oi.getShortName().toLowerCase();
+    	return shortName.matches(TESTING_SHORT_NAME_REGEX);
     }
     
     /**
