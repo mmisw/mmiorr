@@ -367,18 +367,14 @@ public class MetadataGroupPanel extends VerticalPanel {
 					// actually the flag is used to check the value is well-formed.
 					// TODO review useage of the checkMissing flag and rename appropriately.
 					
-					// special cases: acronym, authority abbreviation
+					// special cases because they form part of the URI: acronym, authority abbreviation
 					// TODO a more general mechanism to handle this kind of verifications
 					if ( "http://omv.ontoware.org/2005/05/ontology#acronym".equals(uri)
 					||   "http://mmisw.org/ont/mmi/20081020/ontologyMetadata/origMaintainerCode".equals(uri)
 					) {
-						// do not accept some characters, in particular '/':
-						for ( char ch : "/\\:".toCharArray() ) {
-							if ( value.indexOf(ch) >= 0 ) {
-								String error = "Character '" +ch+ "' not allowed in value for: " +
-									elem.attr.getLabel();
-								return error;
-							}
+						String error = _checkUriComponent(value, elem.attr.getLabel());
+						if (error != null) {
+							return error;
 						}
 					}
 				}
@@ -392,6 +388,35 @@ public class MetadataGroupPanel extends VerticalPanel {
 		}
 		return null;
 	}
+	
+	/**
+	 * Checks the value for one of the ontology URI components: acronym, authority-abbreviation.
+	 * 
+	 * @param value        Assumed to be a trimmed string
+	 * @param fieldLabel   use for the error message
+	 * 
+	 * @return null iff check passes; otherwise an error message.
+	 */
+	private String _checkUriComponent(String value, String fieldLabel) {
+		/*
+		 * value must start with a letter or underscore and be only composed of letters, digits, underscores or hyphens..
+		 */
+		if (value.matches("[a-zA-Z_](\\w|-)*")) {
+			/*
+			 * .. and must contain at least one letter or digit:
+			 */
+			if (value.matches(".*([a-zA-Z]|\\d).*")) {
+				return null;  // OK
+			}
+			else {
+				return "Value must at least contain a letter or digit for: " + fieldLabel;
+			}
+		}
+		
+		return "Invalid value for: " + fieldLabel + ".\n" +
+				"The value must start with a letter or underscore and be only composed of letters, digits, underscores or hyphens.";
+	}
+	
 
 	void enable(boolean enabled) {
 		for ( Elem elem : widgets.values() ) {

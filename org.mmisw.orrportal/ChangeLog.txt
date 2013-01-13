@@ -2,6 +2,13 @@ org.mmisw.orrportal: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2013-01-13  2.0.38.beta
+	- Fix 304: ORR allows white space in acronym
+	  MetadataGroupPanel.putValues now calling a new supporting method _checkUriComponent where
+	  a more restrictive rule is checked. The value for acronym (and also authority abbreviation)
+	  must start with a letter or underscore and be only composed of letters, digits, underscores or hyphens,
+	  and contain at least one letter or digit. 
+
 2013-01-11
 	- Note: I change that I then reverted:
 		OrrUtil.isTestingOntology: If the authority component doesn't determine it's a testing
