@@ -4,6 +4,11 @@ $Id$
 
 ChangeLog
 
+2013-01-14  2.0.38.beta
+	- Fix 300: "No suitable response format available"
+	  Ag4TripleStore.executeQuery: If 406 Not Acceptable is returned, then
+	  retry with "application/rdf+xml". If this also fails then retry with "text/plain".
+
 2013-01-02  2.0.37.beta
 	- Fix 303: "re-hosted ontologies failing to load"
 	  This was a regression caused by this change on 2012-08-27:

@@ -769,6 +769,40 @@ public class Ag4TripleStore implements ITripleStore {
 			log.debug("Making http get request: " +urlRequest+ " Accept: " +accept);
 		}
 		HttpResponse httpResponse = HttpUtil.httpGet(urlRequest, accept);
+        if (log.isDebugEnabled()) {
+            log.debug(_debugHttpResponse(httpResponse));
+        }
+
+        /*
+         * Fix 300:No suitable response format available.
+         * If error returned is 406 Not Acceptable, retry with "application/rdf+xml".
+         * If this also fails then retry with "text/plain". 
+         */
+        if ( 406 == httpResponse.statusCode ) {
+    		accept = "application/rdf+xml";
+    		if (log.isDebugEnabled()) {
+    			log.debug("Got 406 Not Acceptable. Trying with Accept: " + accept + " Request: " +urlRequest);
+    		}
+    		httpResponse = HttpUtil.httpGet(urlRequest, accept);
+            if (log.isDebugEnabled()) {
+                log.debug(_debugHttpResponse(httpResponse));
+            }
+
+            /*
+             * 406 Not Acceptable got again?
+             * Then, just retry with "text/plain":
+             */
+            if ( 406 == httpResponse.statusCode ) {
+        		accept = "text/plain";
+        		if (log.isDebugEnabled()) {
+        			log.debug("Got 406 Not Acceptable. Trying with Accept: " + accept + " Request: " +urlRequest);
+        		}
+        		httpResponse = HttpUtil.httpGet(urlRequest, accept);
+                if (log.isDebugEnabled()) {
+                    log.debug(_debugHttpResponse(httpResponse));
+                }
+            }
+        }
 
         /*
          * Note that AgUtil.mimeType returns a CSV format for form="html"
@@ -787,6 +821,18 @@ public class Ag4TripleStore implements ITripleStore {
 		}
 
 		return queryResult;
+	}
+	
+	private static String _debugHttpResponse(HttpResponse httpResponse) {
+        String body = httpResponse.body;
+        if (body.length() > 300) {
+                body = body.substring(0, 256) + " ... " + body.substring(body.length() - 44);
+        }
+        return "httpResponse: statusCode: " +httpResponse.statusCode+ "\n" +
+                  "statusLine: " +httpResponse.statusLine+ "\n" +
+                  "contentType: " +httpResponse.contentType+ "\n" +
+                  "body: " +body+ "\n"
+        ;
 	}
 
 	/**
