@@ -17,6 +17,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.mmisw.ont.JenaUtil2;
 import org.mmisw.ont.OntConfig;
 import org.mmisw.ont.OntologyInfo;
@@ -531,8 +534,9 @@ public class Ag4TripleStore implements ITripleStore {
 					log.debug("Removing all statements in graph " + ownGraph
 							+ " ...");
 				}
-				// OLD AG3: _conn.ts.removeStatements(null, null, null,
-				// ownGraph);
+				// OLD AG3: _conn.ts.removeStatements(null, null, null, ownGraph);
+				// New AG4:
+				_removeStatementsFromDefaultGraph(ownGraph);
 				_clearGraph(ownGraph);
 			}
 
@@ -671,6 +675,7 @@ public class Ag4TripleStore implements ITripleStore {
 			// OLD AG3: _conn.ts.removeStatements(null, null, null, ownGraph);
 			
 			// New AG4:
+			_removeStatementsFromDefaultGraph(ownGraph);
 			_clearGraph(ownGraph);
 		}
 		catch (Exception e) {
@@ -854,10 +859,59 @@ public class Ag4TripleStore implements ITripleStore {
 		_conn._model.add(agModel);
 	}
 
+	/**
+	 * Removes all statements in the given graph from the default graph.
+	 * 
+	 * @param graph The graph whose statements are to be removed from the default graph.
+	 */
+	private void _removeStatementsFromDefaultGraph(String graph) throws Exception {
+        /*
+         * first, get the statements in the given graph:
+         */
+        String query = "select ?s ?p ?o" +
+                        " from " + graph +
+                        " where { ?s ?p ?o }";
+        if ( log.isDebugEnabled() ) {
+                log.debug("Executing query to get statements in graph: " + query);
+        }
+        QueryResult qr = executeQuery(query, false, "json");
+        String result = qr.getResult();
+
+        /*
+         * remove them from the default graph: Use a "delete data" statement, which
+         * requires explicit triples (no template or variables):
+         */
+        JSONTokener jsonParser = new JSONTokener(result);
+        JSONObject jsonObj = new JSONObject(jsonParser);
+//      JSONArray names = jsonObj.getJSONArray("names");
+        JSONArray values = jsonObj.getJSONArray("values");
+        if ( values.length() > 0 ) {
+            if ( log.isDebugEnabled() ) {
+                log.debug("Preparing query to delete " +values.length() + " triples from default graph");
+            }
+        	StringBuffer sb = new StringBuffer("delete data {\n");
+	        for (int i = 0; i < values.length(); i++ ) {
+	                JSONArray t = (JSONArray) values.get(i);
+	                sb.append(t.get(0).toString() + " " + t.get(1) + " " + t.get(2) + " . \n");
+	        }
+	        sb.append("}");
+	        String delQuery = sb.toString();
+	        _doUpdate(delQuery);
+        }
+        else {
+            if ( log.isDebugEnabled() ) {
+                log.debug("No statements in graph: " + graph);
+            }
+        }
+	}
+
+	/**
+	 * Clears the given graph, ie., removes all associated statements from the given graph.
+	 */
 	private void _clearGraph(String graph) throws Exception {
 		_doUpdate("clear graph " + graph);
 	}
-
+	
 	/**
 	 * Makes a SPARL Update request.
 	 * 

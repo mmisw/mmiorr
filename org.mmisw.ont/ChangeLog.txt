@@ -4,6 +4,15 @@ $Id$
 
 ChangeLog
 
+2013-01-22  2.0.39.beta
+	Changes addressing 
+	301: triple store not updated upon deletions in mapping ontology.
+	307: Triple store not properly updated
+		- Ag4TripleStore._removeStatementsFromDefaultGraph: supporting routine
+		  to remove the statements in a given graph from the default graph.
+	More tests and adjustments required.
+	  
+
 2013-01-14  2.0.38.beta
 	- Fix 300: "No suitable response format available"
 	  Ag4TripleStore.executeQuery: If 406 Not Acceptable is returned, then
