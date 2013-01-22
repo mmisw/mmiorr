@@ -50,7 +50,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 
 /**
- * Triple store implementation using AllegroGraph 4. TODO WORK IN PROGRESS
+ * Triple store implementation using AllegroGraph 4.
  * 
  * @author Carlos Rueda
  */
@@ -696,15 +696,13 @@ public class Ag4TripleStore implements ITripleStore {
 		}
 
 		if (latestOntology != null) {
-			// there still is an existing ontology version. So, no need
-			// for more updates, ie., any existing subGraphOf statements will
-			// remain valid.
-			log
-					.debug("_removeOntology: No need to remove subGraphOf statements");
-
-			// FIXME but we need to load the contents of the latest version that
-			// remains
-			// ...
+			/*
+			 * there still is an existing ontology version.
+			 * Existing subGraphOf statements will remain valid.
+			 * Just load the found latest ontology:
+			 */
+			log.debug("_removeOntology: Loading latestOntology after removal");
+			loadOntology(latestOntology, null);
 
 			return;
 		}
