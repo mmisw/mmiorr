@@ -229,6 +229,7 @@ public class VocabCreator {
 		//
 		final String voc2rdfDirectory = _config().getVoc2rdfDirectory();
 		String full_path_csv = voc2rdfDirectory + getPathOnServer() + ".csv";
+		log.debug("saving copy of text contents in " + full_path_csv);
 		try {
 			FileOutputStream os = new FileOutputStream(full_path_csv);
 			IOUtils.write(ascii, os, "UTF-8");
@@ -243,6 +244,7 @@ public class VocabCreator {
 
 		// now save the RDF:
 		String full_path = voc2rdfDirectory + getPathOnServer();
+		log.debug("saving RDF in " + full_path);
 		try {
 			FileOutputStream os = new FileOutputStream(full_path);
 			IOUtils.write(rdf, os, "UTF-8");
@@ -300,14 +302,15 @@ public class VocabCreator {
 		
 		Map<String, Property> uriPropMap = MdHelper.getUriPropMap();
 		for ( String uri : values.keySet() ) {
-			String value = values.get(uri);
-			if ( value.trim().length() > 0 ) {
+			String value = values.get(uri).trim();
+			if ( value.length() > 0 ) {
 				Property prop = uriPropMap.get(uri);
 				if ( prop == null ) {
 					log.warn("No property found for uri='" +uri+ "'");
 					continue;
 				}
-				ont.addProperty(prop, value.trim());
+				//log.debug("adding property " + prop + " = " + value);
+				ont.addProperty(prop, value);
 			}
 		}
 		
@@ -354,7 +357,10 @@ public class VocabCreator {
 	
 	private void createOntologIndividuals(String fileInText) throws Exception {
 
-		DataFile read = DataFile.createReader("8859_1");
+		log.debug("opening " + fileInText + " using UTF-8 encoding");
+		
+		// issue 309: Special charater issue: wrong encoding used!
+		DataFile read = DataFile.createReader("UTF-8");
 		if ( "csv".equalsIgnoreCase(fieldSeparator) ) {
 			read.setDataFormat(new CSVFormat());
 		}
@@ -451,7 +457,9 @@ public class VocabCreator {
 
 					} else {
 						DatatypeProperty dp = (DatatypeProperty) r;
-						ind.addProperty(dp, row.getString(i).trim());
+						String value = row.getString(i).trim();
+						//log.debug("adding datatype property: " + dp + " = " + value);
+						ind.addProperty(dp, value);
 
 					}
 				}

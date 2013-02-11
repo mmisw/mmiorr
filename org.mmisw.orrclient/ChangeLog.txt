@@ -3,6 +3,10 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2013-02-11  2.0.39.beta
+	- fix issue 309: Special charater issue
+	  VocabCreator: wrong encoding used!
+
 2013-01-02  2.0.37.beta
 	- Fix 303: "re-hosted ontologies failing to load" in Ont module.
 
