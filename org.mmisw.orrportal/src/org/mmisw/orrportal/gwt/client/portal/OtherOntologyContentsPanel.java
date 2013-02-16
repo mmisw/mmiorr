@@ -231,11 +231,31 @@ public class OtherOntologyContentsPanel extends BaseOntologyContentsPanel {
 
 		IUtilTable utilTable = UtilTableCreator.create(colNames);
 		List<IRow> rows = new ArrayList<IRow>();
+		
 		for ( EntityInfo entity : entities ) {
+			Orr.log("_createOtherWidgetForEntities: entity=" + entity.getUri());
+			
+			// vals: propName -> all corresp. values
 			final Map<String, String> vals = new HashMap<String, String>();
+			
 			List<PropValue> props = entity.getProps();
+			
 			for ( PropValue pv : props ) {
-				vals.put(pv.getPropName(), pv.getValueName());
+				// Issue 310: multiple property values not shown
+				// Simply put as value the concatenation of all the values for the same property:
+				
+				final String n = pv.getPropName();
+				final String v = pv.getValueName();
+				
+				String rv = vals.get(n);
+				//Orr.log("_createOtherWidgetForEntities: n=" + n + " v=" +v+ " rv=" +rv);
+				if (rv == null) {
+					rv = v;
+				}
+				else {
+					rv += ", " + v;
+				}
+				vals.put(n, rv);
 			}
 
 			vals.put("Name", entity.getLocalName());
