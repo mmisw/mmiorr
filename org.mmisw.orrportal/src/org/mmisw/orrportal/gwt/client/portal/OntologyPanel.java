@@ -160,6 +160,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	}
 	
 	private void _prepareMdDisclosure() {
+		mdDisclosure.getHeader().setStyleName("ont-DisclosurePanel-header");
 		mdDisclosure.setAnimationEnabled(true);
 		mdDisclosure.getHeader().setTitle("This section shows the metadata associated to the ontology.");
 	}
@@ -167,6 +168,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	private void _prepareDataDisclosure() {
 		log("_prepareDataDisclosure: ontologyUri = '" +ontologyInfo.getUri()+ 
 				"' class=" +ontologyInfo.getClass().getName());
+		dataDisclosure.getHeader().setStyleName("ont-DisclosurePanel-header");
 		dataDisclosure.getHeader().setTitle("This section shows either the full contents or a synopsis of the ontology.");
 		dataDisclosure.setContent(DATA_PROGRESS_HTML);
 		dataDisclosure.addEventHandler(new DisclosureHandler() {
