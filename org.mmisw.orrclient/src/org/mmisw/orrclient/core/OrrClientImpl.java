@@ -864,6 +864,11 @@ public class OrrClientImpl implements IOrrClient {
 			log.debug("getOntologyMetadata(RegisteredOntologyInfo): getting metadata");
 		}
 		MetadataExtractor.prepareOntologyMetadata(metadataBaseInfo, ontModel, registeredOntologyInfo);
+		
+		registeredOntologyInfo.setSize(ontModel.size());
+		if ( log.isDebugEnabled() ) {
+			log.debug("getOntologyMetadata(RegisteredOntologyInfo): ontology size=" + registeredOntologyInfo.getSize());
+		}
 
 		return registeredOntologyInfo;
 	}

@@ -21,6 +21,9 @@ public abstract class BaseOntologyInfo extends Errorable implements Serializable
 	private OntologyData ontologyData;
 
 	private OntologyType type;
+	
+	/** actual or estimated size of the ontology in number of statements */
+	private long size;
 
 	
 	public BaseOntologyInfo() {
@@ -76,5 +79,21 @@ public abstract class BaseOntologyInfo extends Errorable implements Serializable
 	 */
 	public OntologyData getOntologyData() {
 		return ontologyData;
+	}
+
+	/**
+	 * Get the actual or estimated size of the ontology in number of statements.
+	 * @return the size
+	 */
+	public long getSize() {
+		return size;
+	}
+
+	/**
+	 * Sets actual or estimated size of the ontology in number of statements.
+	 * @param size the size to set
+	 */
+	public void setSize(long size) {
+		this.size = size;
 	}
 }
