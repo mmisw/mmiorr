@@ -132,8 +132,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		
 		add(container);
 		
-		mdDisclosure.setAnimationEnabled(true);
-		
+		_prepareMdDisclosure();
 		_prepareDataDisclosure();
 		
 		metadataPanel = new MetadataPanel(this, !readOnly);
@@ -160,10 +159,15 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	    // if Uri is null, then this is a new ontology being created in the interface.
 	}
 	
+	private void _prepareMdDisclosure() {
+		mdDisclosure.setAnimationEnabled(true);
+		mdDisclosure.getHeader().setTitle("This section shows the metadata associated to the ontology.");
+	}
 	
 	private void _prepareDataDisclosure() {
 		log("_prepareDataDisclosure: ontologyUri = '" +ontologyInfo.getUri()+ 
 				"' class=" +ontologyInfo.getClass().getName());
+		dataDisclosure.getHeader().setTitle("This section shows either the full contents or a synopsis of the ontology.");
 		dataDisclosure.setContent(DATA_PROGRESS_HTML);
 		dataDisclosure.addEventHandler(new DisclosureHandler() {
 			public void onOpen(DisclosureEvent event) {
@@ -401,6 +405,14 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			boolean link = true;
 			metadataPanel.resetToOriginalValues(ontologyInfo, null, false, link);
 			mdDisclosure.setOpen(true);
+			
+			// 308: immediately show vocabulary contents
+			Orr.log("_ontologyMetadataRetrieved: ontologyInfo.getSize=" + ontologyInfo.getSize());
+			if ( dataDisclosure.getContent() == DATA_PROGRESS_HTML 
+			&& ontologyInfo.getSize() <= PortalConsts.MAX_ONTOLOGY_SIZE_SHOW_DATA ) {
+				dataDisclosure.setOpen(true);
+				_getOntologyContents(null);
+			}
 		}
 	}
 	
