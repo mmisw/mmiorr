@@ -394,7 +394,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		Orr.service.getOntologyMetadata(roi, null, callback);
 	}
 
-	private void _ontologyMetadataRetrieved(BaseOntologyInfo ontologyInfo) {
+	private void _ontologyMetadataRetrieved(final BaseOntologyInfo ontologyInfo) {
 		this.ontologyInfo = ontologyInfo;
 		String error = ontologyInfo.getError();
 		if ( error != null ) {
@@ -406,15 +406,21 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			
 			boolean link = true;
 			metadataPanel.resetToOriginalValues(ontologyInfo, null, false, link);
-			mdDisclosure.setOpen(true);
 			
 			// 308: immediately show vocabulary contents
-			Orr.log("_ontologyMetadataRetrieved: ontologyInfo.getSize=" + ontologyInfo.getSize());
-			if ( dataDisclosure.getContent() == DATA_PROGRESS_HTML 
-			&& ontologyInfo.getSize() <= PortalConsts.MAX_ONTOLOGY_SIZE_SHOW_DATA ) {
-				dataDisclosure.setOpen(true);
-				_getOntologyContents(null);
-			}
+			// REVERTED: regression issue: new terms are not captured for saving!
+//			long ontSize = ontologyInfo.getSize();
+//			Orr.log("_ontologyMetadataRetrieved: ontologyInfo.getSize=" + ontSize);
+//			if ( ontSize > 0 && ontSize <= PortalConsts.MAX_ONTOLOGY_SIZE_SHOW_DATA 
+//			     && dataDisclosure.getContent() == DATA_PROGRESS_HTML 
+//			) {
+//				dataDisclosure.setOpen(true);
+//			}
+//			DeferredCommand.addCommand(new Command() {
+//				public void execute() {
+//					_getOntologyContents(null);
+//				}
+//			});
 		}
 	}
 	
@@ -479,6 +485,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 				log("ontologyContentsRetrieved: updating dataPanel");
 				dataPanel.updateWith(null, ontologyInfo, readOnly);
 				dataDisclosure.setContent(dataPanel);
+				dataDisclosure.setOpen(true);
 			}
 			else {
 				log("ontologyContentsRetrieved: no dataPanel to update");
