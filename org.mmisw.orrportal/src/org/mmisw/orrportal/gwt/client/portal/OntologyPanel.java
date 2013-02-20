@@ -406,6 +406,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			
 			boolean link = true;
 			metadataPanel.resetToOriginalValues(ontologyInfo, null, false, link);
+			mdDisclosure.setOpen(true);
 			
 			// 308: immediately show vocabulary contents
 			// REVERTED: regression issue: new terms are not captured for saving!
