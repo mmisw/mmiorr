@@ -1,4 +1,4 @@
-org.mmisw.ontmd Ontology Metadata Manager
+org.mmisw.orrportal: The MMI Ontology Registry and Repository, ORR
 Carlos Rueda - MMI / MBARI
 
 See http://code.google.com/p/mmisw/issues/list

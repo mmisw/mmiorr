@@ -2,9 +2,12 @@ org.mmisw.orrportal: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2013-02-22  2.0.42.beta
+	- 308: immediately show vocabulary contents - Fixed regression introduced in first version.
+
 2013-02-16  2.0.41.beta
 	- 308: immediately show vocabulary contents
-	  OntologyPanel: Using new size attribute in RegisteredOntologyInfo (see orrclient module), and new 
+	  OntologyPanel: Using new size attribute in RegisteredOntologyInfo (see orrclient module), and new
 	  constant PortalConsts.MAX_ONTOLOGY_SIZE_SHOW_DATA to immediately retrieve and show the contents 
 	  of the ontology. This max size set to 1000 statements but subject to change.
 	- OntologyPanel: added tooltips to metadata and contents disclosure headers. 

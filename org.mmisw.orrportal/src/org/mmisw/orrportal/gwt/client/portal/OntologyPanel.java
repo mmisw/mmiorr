@@ -58,10 +58,12 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		Orr.log(CLASS_NAME+": " +msg);
 	}
 
-	private static final String DATA_PROGRESS_MSG = "<img src=\"" +GWT.getModuleBaseURL()+ "images/loading.gif\"> " +
-			"<i>Retrieving ontology data. Please wait...</i>";
-	private final HTML DATA_PROGRESS_HTML = new HTML(DATA_PROGRESS_MSG); 
-	
+    private static final String progressMsg(String msg) {
+        return "<img src=\"" +GWT.getModuleBaseURL()+ "images/loading.gif\"><i>" + msg + ". Please wait...</i>";
+    }
+
+	private final HTML DATA_PROGRESS_HTML = new HTML(progressMsg("Retrieving ontology data"));
+
 	private CellPanel container = new VerticalPanel();
 
 	
@@ -171,9 +173,14 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 		dataDisclosure.getHeader().setStyleName("ont-DisclosurePanel-header");
 		dataDisclosure.getHeader().setTitle("This section shows either the full contents or a synopsis of the ontology.");
 		dataDisclosure.setContent(DATA_PROGRESS_HTML);
+        /*
+         * Ontology contents are retrieved when this disclosure is open, either by the
+         * user or programmatically (see  _ontologyMetadataRetrieved).
+         */
 		dataDisclosure.addEventHandler(new DisclosureHandler() {
 			public void onOpen(DisclosureEvent event) {
 				if ( dataDisclosure.getContent() == DATA_PROGRESS_HTML ) {
+                    log("dataDisclosure onOpen: calling _getOntologyContents(null)");
 					_getOntologyContents(null);
 				}
 			}
@@ -384,7 +391,7 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 
 		String title = "<b>" +roi.getDisplayLabel()+ "</b> - " +roi.getUri()
 					+ "  (version "+roi.getVersionNumber()+ ")" + "<br/>";
-		;
+
 		headerPanel.updateTitle(title);
 		String progressMsg = "Retrieving ontology metadata. Please wait...";
 		headerPanel.showProgressMessage(progressMsg);
@@ -408,20 +415,22 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 			metadataPanel.resetToOriginalValues(ontologyInfo, null, false, link);
 			mdDisclosure.setOpen(true);
 			
-			// 308: immediately show vocabulary contents
-			// REVERTED: regression issue: new terms are not captured for saving!
-//			long ontSize = ontologyInfo.getSize();
-//			Orr.log("_ontologyMetadataRetrieved: ontologyInfo.getSize=" + ontSize);
-//			if ( ontSize > 0 && ontSize <= PortalConsts.MAX_ONTOLOGY_SIZE_SHOW_DATA 
-//			     && dataDisclosure.getContent() == DATA_PROGRESS_HTML 
-//			) {
-//				dataDisclosure.setOpen(true);
-//			}
-//			DeferredCommand.addCommand(new Command() {
-//				public void execute() {
-//					_getOntologyContents(null);
-//				}
-//			});
+			/*
+			 * 308: immediately show vocabulary contents
+			 * If the ontology is not "too" big, just call dataDisclosure.setOpen(true)
+			 * to trigger _getOntologyContents.
+			 * (Note: a previous version *also* called getOntologyContents here resulting in a misbehavior:
+			 * new terms were not captured for saving of new version of ontology.)
+			 */
+			long ontSize = ontologyInfo.getSize();
+			log("_ontologyMetadataRetrieved: ontologyInfo.getSize=" + ontSize);
+			if ( ontSize <= PortalConsts.MAX_ONTOLOGY_SIZE_SHOW_DATA
+			     && dataDisclosure.getContent() == DATA_PROGRESS_HTML
+			) {
+                log("_ontologyMetadataRetrieved: calling dataDisclosure.setOpen(true) " +
+                        "to trigger _getOntologyContents");
+				dataDisclosure.setOpen(true);
+			}
 		}
 	}
 	
