@@ -7,6 +7,8 @@ import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Authenticator;
 
 import com.sun.mail.smtp.SMTPTransport;
 
@@ -37,7 +39,7 @@ public class MailSender {
 	 * @throws Exception
 	 */
 	public static void sendMessage(
-			String user, String password,
+			final String user, final String password,
 			boolean debug,
 			String from, String to, String replyTo,
 			String subject,
@@ -54,7 +56,13 @@ public class MailSender {
 	    	props.put("mail." + prot + ".port", mailport);
 	    }
 
-		Session session = Session.getInstance(props, null);
+		Session session = Session.getInstance(props,
+				new Authenticator() {
+					protected PasswordAuthentication getPasswordAuthentication() {
+						return new PasswordAuthentication(user, password);
+					}
+				});
+
 		if (debug) {
 			session.setDebug(true);
 		}
