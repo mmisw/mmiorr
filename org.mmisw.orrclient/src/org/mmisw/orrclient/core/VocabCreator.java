@@ -31,10 +31,6 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDFS;
-import com.infomata.data.CSVFormat;
-import com.infomata.data.DataFile;
-import com.infomata.data.DataRow;
-import com.infomata.data.TabFormat;
 
 /**
  * Dispatchs the conversion.
@@ -50,6 +46,10 @@ import com.infomata.data.TabFormat;
  * @author Carlos Rueda
  */
 public class VocabCreator {
+
+	// 2013-08-05 adjustments addressing "truncated vocabulary" issue reported by IOOS.
+
+	private VocabularyDataCreationInfo vocabularyDataCreationInfo;
 
 	private String orgAbbreviation;
 	private String shortName;
@@ -116,7 +116,7 @@ public class VocabCreator {
 	//////////////////////////////////////////////////////////////////////////////////////
 	
 	
-	private String _createAscii(VocabularyDataCreationInfo createOntologyInfo) {
+	private String _createAscii() {
 
 		final String SEPARATOR = ",";
 		final String QUOTE = "\"";
@@ -126,7 +126,7 @@ public class VocabCreator {
 		String sep;
 		StringBuilder sb = new StringBuilder();
 		
-		List<String> header = createOntologyInfo.getColNames();
+		List<String> header = vocabularyDataCreationInfo.getColNames();
 		sep = "";
 		for (String str : header ) {
 			sb.append(sep + QUOTE + str + QUOTE);
@@ -134,7 +134,7 @@ public class VocabCreator {
 		}
 		sb.append("\n");
 		
-		List<List<String>> rows = createOntologyInfo.getRows();
+		List<List<String>> rows = vocabularyDataCreationInfo.getRows();
 		for ( List<String> values : rows ) {
 			
 			int col = 0;
@@ -172,6 +172,9 @@ public class VocabCreator {
 			CreateOntologyInfo createOntologyInfo,
 			VocabularyDataCreationInfo vocabularyDataCreationInfo
 	) throws Exception {
+
+
+		this.vocabularyDataCreationInfo = vocabularyDataCreationInfo;
 		
 		
 		Map<String, String> values = createOntologyInfo.getMetadataValues();
@@ -183,7 +186,7 @@ public class VocabCreator {
 		this.shortName = createOntologyInfo.getShortName();
 		
 		this.primaryClass = vocabularyDataCreationInfo.getClassName();
-		this.ascii = _createAscii(vocabularyDataCreationInfo);
+		this.ascii = _createAscii();
 		this.values = values;
 		
 		log.info("!!!!!!!!!!!!!!!! VocabCreator: values = " +values);
@@ -349,57 +352,30 @@ public class VocabCreator {
 			ont.addProperty(OmvMmi.origMaintainerCode, orgAbbreviation.trim());
 		}
 		
-		createOntologIndividuals(fileInText);
+		createOntologIndividuals();
 	}
 
 
 	
 	
-	private void createOntologIndividuals(String fileInText) throws Exception {
+	private void createOntologIndividuals() throws Exception {
 
-		log.debug("opening " + fileInText + " using UTF-8 encoding");
-		
-		// issue 309: Special charater issue: wrong encoding used!
-		DataFile read = DataFile.createReader("UTF-8");
-		if ( "csv".equalsIgnoreCase(fieldSeparator) ) {
-			read.setDataFormat(new CSVFormat());
-		}
-		else if ( "tab".equalsIgnoreCase(fieldSeparator) ) {
-			read.setDataFormat(new TabFormat());
-		}
-		else {
-			throw new Exception("Unexpected field separator value: " +fieldSeparator+
-					"\nMust be one of: csv, tab");
-		}
-		
-		read.open(new File(fileInText));
+		List<List<String>> read = vocabularyDataCreationInfo.getRows();
+		log.debug("processing rows: " + read.size());
 
-		try {
-			DataRow row = null;
-			// first row
-			row = read.next();
-			if (row != null) {
-				createPropertiesAndClasses(row);
-			}
+		// first row
+		List<String> row0 = read.get(0);
+		createPropertiesAndClasses(row0);
 
-			try {
-				for (row = read.next(); row != null; row = read.next()) {
-					createIndividual(row);
-				}
-			} catch (ArrayIndexOutOfBoundsException ae) {
-				throw (ae);
-			}
-
-		} catch (Exception e) {
-			throw (e);
+		for (int i = 1; i < read.size(); i++) {
+			List<String> row = read.get(i);
+			createIndividual(row);
 		}
 
-		finally {
-			read.close();
-		}
+
 	}
 
-	private void createPropertiesAndClasses(DataRow row) {
+	private void createPropertiesAndClasses(List<String> row) {
 		int size = row.size();
 		res = new Resource[size];
 
@@ -413,12 +389,14 @@ public class VocabCreator {
 
 			log.info("converting column header " + i
 					+ " to a datatype property");
-			res[i] = createDatatypeProperty(row, i);
+
+			String str = row.get(i).trim();
+			res[i] = createDatatypeProperty(str, i);
 		}
 
 	}
 
-	private void createIndividual(DataRow row) throws Exception {
+	private void createIndividual(List<String> row) throws Exception {
 		// create individual
 		Individual ind = null;
 		try {
@@ -436,13 +414,14 @@ public class VocabCreator {
 	}
 	
 	
-	private void createNotHierarchyIndividual(Individual ind, DataRow row) throws Exception {
+	private void createNotHierarchyIndividual(Individual ind, List<String> row) throws Exception {
 
 		if (ind != null) {
 			for (int i = 0; i < row.size(); i++) {
 				// this contains either classes or datatypeproperties
 				Resource r = res[i];
-				if (row.getString(i).length() > 0) {
+				final String str = row.get(i).trim();
+				if (str.length() > 0) {
 					if (r instanceof OntClass) {
 						OntClass cls = (OntClass) r;
 						Individual ind2 = createIndividual(row, i, cls);
@@ -457,7 +436,7 @@ public class VocabCreator {
 
 					} else {
 						DatatypeProperty dp = (DatatypeProperty) r;
-						String value = row.getString(i).trim();
+						String value = str;
 						//log.debug("adding datatype property: " + dp + " = " + value);
 						ind.addProperty(dp, value);
 
@@ -484,8 +463,8 @@ public class VocabCreator {
 
 
 
-	private boolean isGood(DataRow row, int id) {
-		return row.getString(id).trim().length() > 0;
+	private boolean isGood(String str) {
+		return str.length() > 0;
 
 	}
 
@@ -502,9 +481,10 @@ public class VocabCreator {
 	 * @return
 	 * @throws Exception 
 	 */
-	private Individual createIndividual(DataRow row, int id, OntClass cs) throws Exception {
+	private Individual createIndividual(List<String> row, int id, OntClass cs) throws Exception {
 
-		if (isGood(row, id)) {
+		final String str = row.get(id).trim();
+		if (isGood(str)) {
 			boolean allowColon = true;
 			String resourceString;
 			
@@ -516,7 +496,7 @@ public class VocabCreator {
 				
 				// New: regarding Issue #164 "Keep periods and case in term URI" and 
 				// more generally, just check that it's a valid URI and do no conversions at all
-				String uri = row.getString(id).trim();
+				String uri = str;
 				try {
 					new URI(uri);
 					resourceString = uri; // good URI
@@ -529,11 +509,11 @@ public class VocabCreator {
 				// "locate" the individual within the namespace of the ontology
 				// #221 retain the original camelCase in the URLs
 				//resourceString = ns_ + getGoodName(row, id, allowColon).toLowerCase();
-				resourceString = ns_ + getGoodName(row, id, allowColon);
+				resourceString = ns_ + getGoodName(str, allowColon);
 			}
 			
 			Individual ind = newOntModel.createIndividual(resourceString, cs);
-			ind.addProperty(RDFS.label, row.getString(id).trim());
+			ind.addProperty(RDFS.label, str);
 			log.info("ind created " + ind);
 			return ind;
 		}
@@ -542,13 +522,13 @@ public class VocabCreator {
 
 
 	
-	private DatatypeProperty createDatatypeProperty(DataRow row, int id) {
+	private DatatypeProperty createDatatypeProperty(String str, int id) {
 		boolean allowColon = false;
 		
-		String keyName = row.getString(id).trim();
+		String keyName = str;
 		// #221 retain the original camelCase in the URLs
 		//String goodName = getGoodName(row, id, allowColon).toLowerCase();
-		String goodName = getGoodName(row, id, allowColon);
+		String goodName = getGoodName(str, allowColon);
 		
 		if ( id == 0 && keyName.equalsIgnoreCase("uri")) {
 			// use the key values in this column as the complet URI of each term.
@@ -562,15 +542,15 @@ public class VocabCreator {
 		String resourceString = ns_ + goodName ;
 		log.info("datatype Property created " + resourceString);
 		DatatypeProperty p = newOntModel.createDatatypeProperty(resourceString);
-		p.addProperty(RDFS.label, row.getString(id).trim());
+		p.addProperty(RDFS.label, str);
 		p.addDomain(classForTerms);
 		return p;
 	}
 
-	private String getGoodName(DataRow row, int id, boolean allowColon) {
+	private String getGoodName(String str, boolean allowColon) {
 //		return finalUri + cleanStringforID(row.getString(id).trim());
 //		return ns_ + cleanStringforID(row.getString(id).trim());
-		return       cleanStringforID(row.getString(id).trim(), allowColon);
+		return       cleanStringforID(str, allowColon);
 	}
 
 	private String cleanStringforID(String s, boolean allowColon) {
