@@ -360,23 +360,22 @@ public class VocabCreator {
 	
 	private void createOntologIndividuals() throws Exception {
 
-		List<List<String>> read = vocabularyDataCreationInfo.getRows();
-		log.debug("processing rows: " + read.size());
+		List<String> header     = vocabularyDataCreationInfo.getColNames();
+		List<List<String>> rows = vocabularyDataCreationInfo.getRows();
+		log.debug("createOntologIndividuals: header=" + header + ", processing rows: " + rows.size());
 
-		// first row
-		List<String> row0 = read.get(0);
-		createPropertiesAndClasses(row0);
+		createPropertiesAndClasses(header);
 
-		for (int i = 1; i < read.size(); i++) {
-			List<String> row = read.get(i);
+		for (int i = 0; i < rows.size(); i++) {
+			List<String> row = rows.get(i);
 			createIndividual(row);
 		}
 
 
 	}
 
-	private void createPropertiesAndClasses(List<String> row) {
-		int size = row.size();
+	private void createPropertiesAndClasses(List<String> header) {
+		int size = header.size();
 		res = new Resource[size];
 
 		// object properties is set up later, when creating individuals
@@ -390,7 +389,7 @@ public class VocabCreator {
 			log.info("converting column header " + i
 					+ " to a datatype property");
 
-			String str = row.get(i).trim();
+			String str = header.get(i).trim();
 			res[i] = createDatatypeProperty(str, i);
 		}
 
