@@ -2,6 +2,9 @@ org.mmisw.orrportal: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2013-09-07  2.0.42
+    - update logo
+
 2013-02-22  2.0.42.beta
 	- 308: immediately show vocabulary contents - Fixed regression introduced in first version.
 
