@@ -4,6 +4,9 @@ $Id$
 
 ChangeLog
 
+2013-09-13  2.0.42
+    fix logo img in sparql.html
+
 2013-09-07  2.0.42
     update logo
 
