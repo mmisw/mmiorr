@@ -64,7 +64,7 @@ public class SearchVocabularySelection extends VerticalPanel {
 					selectedUris.add(roi);
 				}
 				else {
-					char code = (char) ('A' + i);
+					String code = VineMain.index2code(i);
 					Orr.log("Button " +code+ " selected but not registed uri: " +uri);
 				}
 			}
@@ -80,7 +80,7 @@ public class SearchVocabularySelection extends VerticalPanel {
 		buttons.clear();
 		int idx = 0;
 		for ( String uri : VineMain.getWorkingUris() ) {
-			char id = (char) ('A' + idx);
+			String id = VineMain.index2code(idx);
 			final ToggleButton sel = new ToggleButton("" +id);
 			DOM.setElementAttribute(sel.getElement(), "id", "my-button-id");
 			buttons.add(sel);

@@ -2,6 +2,9 @@ org.mmisw.orrportal: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2013-09-14  2.0.43
+    - fix 317: confusing prefixes when mapping more than 26 ontologies
+
 2013-09-07  2.0.42
     - update logo
 

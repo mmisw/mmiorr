@@ -76,10 +76,6 @@ public class ResourceViewer extends VerticalPanel {
 		
 		String name = entityInfo.getLocalName();
 		
-//		char code = entityInfo.getCode();
-//		int nn = code - 'A';
-//		String uri = VineMain.getWorkingUris().get(nn) + name;
-		
 		String uri = VineMain.getCodedTerm(entityInfo.getUri());
 		
 		

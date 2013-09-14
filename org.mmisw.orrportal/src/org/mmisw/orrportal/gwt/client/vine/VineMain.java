@@ -31,7 +31,7 @@ public class VineMain {
 	private static final Map<String, BaseOntologyInfo> allUrisMap = new LinkedHashMap<String,BaseOntologyInfo>();
 	
 	// selected ontologies to work on:
-	// the code for the i-th entry is code = 'A' + i
+	// the code for the i-th entry is index2code(i);
 	private static final List<String> workingUris = new ArrayList<String>();
 	
 	
@@ -66,7 +66,7 @@ public class VineMain {
 
 	/**
 	 * Gets the selected ontologies to work on.
-	 * the code for the i-th entry is code = 'A' + i
+	 * the code for the i-th entry is index2code(i);
 	 * 
 	 * @return the list of working ontologies.
 	 */
@@ -74,6 +74,56 @@ public class VineMain {
 		return workingUris;
 	}
 	
+	/**
+	 * Gets the code for the given index.
+	 *     idx = 0   => code = "A"
+	 *     idx = 1   => code = "B"
+	 *     idx = 25  => code = "Z"
+	 *     idx = 26  => code = "AA"
+	 *     idx = 27  => code = "AB"
+	 *
+	 * @param idx  integer >= 0
+	 * @return
+	 */
+	static String index2code(final int idx) {
+		int number = idx;
+		if (number == 0){
+			return "A";
+		}
+		final int base = 26;
+		int offset = 0;
+		StringBuilder sb = new StringBuilder();
+		while (number > 0) {
+			int digit = number % base;
+			sb.insert(0, (char) ('A' + digit - offset));
+			number /= base;
+			offset = 1;   // start from A for the next digit
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * Gets the index for the given code.
+	 *     code = "A"  => idx = 0
+	 *     code = "B"  => idx = 1
+	 *     code = "Z"  => idx = 25
+	 *     code = "AA" => idx = 26
+	 *     code = "AB" => idx = 27
+	 * The index is limited by workingUris.size().
+	 *
+	 * @param  code  the code
+	 * @return index such that index2code(index) == code and index in [0, workingUris.size()).
+	 *         -1 otherwise.
+	 */
+	private static int code2index(String code) {
+		for (int idx = 0; idx < workingUris.size(); idx++) {
+			if (index2code(idx).equals(code)) {
+				return idx;
+			}
+		}
+		return -1;
+	}
+
 	/**
 	 * Gets the "coded" style for the given term.
 	 * @param termUri
@@ -83,7 +133,7 @@ public class VineMain {
 		int idx = VineMain.getWorkingUriIndex(termUri);
 		if ( idx >= 0 ) {
 			String namespace = VineMain.getWorkingUris().get(idx);
-			char code = (char) ('A' + idx);
+			String code = index2code(idx);
 			return code+ ":" +termUri.substring(namespace.length());
 		}
 		return termUri;
@@ -97,15 +147,16 @@ public class VineMain {
 	public static String getExpandedTerm(String termUri) {
 		
 		String[] toks = termUri.split(":", 2);
-		if ( toks.length == 2 && toks[0].length() == 1 ) {
-			char code = toks[0].charAt(0);
-			int idx = code - 'A';
-			String namespace = VineMain.getWorkingUris().get(idx);
-			return namespace + toks[1];
+		if ( toks.length == 2 ) {
+			String code = toks[0];
+			int idx = code2index(code);
+			if (idx >= 0) {
+				String namespace = VineMain.getWorkingUris().get(idx);
+				return namespace + toks[1];
+			}
 		}
-		else {
-			return termUri;
-		}
+
+		return termUri;
 	}
 
 
@@ -115,14 +166,13 @@ public class VineMain {
 	 * @param uri
 	 * @return The corresponding code.
 	 */
-	public static char addWorkingUri(String uri) {
+	public static String addWorkingUri(String uri) {
 		int idx = VineMain.workingUris.indexOf(uri);
 		if ( idx < 0 ) {
 			idx = VineMain.workingUris.size();
 			VineMain.workingUris.add(uri);
 		}
-		char code = (char) ('A' + idx);
-		return code;
+		return index2code(idx);
 	}
 
 	public static boolean containsWorkingUri(String uri) {

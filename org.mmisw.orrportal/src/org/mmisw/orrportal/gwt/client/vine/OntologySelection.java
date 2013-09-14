@@ -98,7 +98,7 @@ public class OntologySelection extends VerticalPanel {
 		workingUrisPanel.clear();
 		int nn = 0;
 		for ( String uri : workingUris ) {
-			char code = (char) ((int) 'A' + (nn++));
+			String code = VineMain.index2code(nn++);
 			BaseOntologyInfo ontologyInfo = VineMain.getOntologyInfo(uri);
 
 			String label = ontologyInfo != null ? ontologyInfo.getDisplayLabel() : uri;
