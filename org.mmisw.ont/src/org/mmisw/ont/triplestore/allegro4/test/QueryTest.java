@@ -12,8 +12,8 @@ public class QueryTest extends Common {
 
 	public static void main(String[] args) throws Exception {
 
-//		_select();
-		_selectCsv();
+		_select();
+//		_selectCsv();
 	}
 
 	private static void _select() throws Exception {

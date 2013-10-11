@@ -5,8 +5,8 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 public class Common {
-	public static final String TRIPLE_STORE_URL = "http://mmi2.shore.mbari.org:10035/repositories/mmiorr";
-	
+	public static final String TRIPLE_STORE_URL = "http://mmisw.org/sparql";
+
 	public static void _showJson(String str) throws Exception {
 		JSONTokener jsonParser = new JSONTokener(str);
 		JSONObject jsonObj = new JSONObject(jsonParser);
