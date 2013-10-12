@@ -4,6 +4,10 @@ $Id$
 
 ChangeLog
 
+2013-10-11  2.0.43
+    -include author and version in OntologyInfo
+    -new listonts operation
+
 2013-09-13  2.0.42
     fix logo img in sparql.html
 

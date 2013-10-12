@@ -16,6 +16,9 @@ public class OntologyInfo {
 	
 	private String displayLabel;
 
+	private String author;
+	private String version;
+
 	public String getUri() {
 		return uri;
 	}
@@ -62,6 +65,22 @@ public class OntologyInfo {
 
 	public void setDisplayLabel(String displayLabel) {
 		this.displayLabel = displayLabel;
+	}
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+		this.version = version;
 	}
 
 }

@@ -20,6 +20,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Map;
+import java.util.LinkedHashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +30,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.mmisw.ont.db.Db;
 import org.mmisw.ont.mmiuri.MmiUri;
 import org.mmisw.ont.util.Util;
@@ -500,6 +504,41 @@ public class MiscDispatcher {
 		}
 	}
 
+
+	/**
+	 * List all ontologies (only latest versions) in json.
+	 */
+	void listOnts(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // get the list of (latest-version) ontologies:
+        final boolean allVersions = false;
+        List<OntologyInfo> onts = db.getAllOntologies(allVersions);
+
+        List<JSONObject> list = new ArrayList<JSONObject>();
+
+        for (OntologyInfo ontology : onts) {
+            Map<String,String> map = new LinkedHashMap<String, String>();
+            map.put("uri",     ontology.getUri());
+            map.put("name",    ontology.getDisplayLabel());
+            map.put("author",  ontology.getAuthor());
+            map.put("version", ontology.getVersion());
+
+            try {
+                MmiUri mmiUri = new MmiUri(ontology.getUri());
+                map.put("uri",     mmiUri.copyWithVersion(null).clone().getOntologyUri());
+            }
+            catch (URISyntaxException ignore) {
+            }
+
+            JSONObject obj = new JSONObject(map);
+            list.add(obj);
+        }
+
+        response.setContentType("application/json");
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        PrintWriter out = response.getWriter();
+        JSONArray result = new JSONArray(list);
+        out.println(result.toString());
+	}
 
 
 	

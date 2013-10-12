@@ -128,6 +128,12 @@ public class OntServlet extends HttpServlet {
 			return;
 		}
 		
+		// "new" dispatch list of ontologies?
+		if ( Util.yes(req.request, "listonts")  ) {
+			miscDispatcher.listOnts(req.request, req.response);
+			return;
+		}
+
 		// report Ont service version?
 		if ( Util.yes(req.request, "_version")  ) {
 			miscDispatcher.reportOntVersion(req.request, req.response);
