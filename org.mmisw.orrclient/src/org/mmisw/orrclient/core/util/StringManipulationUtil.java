@@ -56,9 +56,11 @@ public class StringManipulationUtil {
 
 	// Issue #124: Keep colons in values
 	// (Note that I'm doing minimal changes to the original code in this class - TODO simplify this class)
-	
+
+
 	// This allows colons:
-	private static final String[] patternStringsAllowColon = { "[^a-zA-Z0-9-_:]+", "(_+)$" };
+    // Fix #320: allow parenthesis in term identifiers:
+	private static final String[] patternStringsAllowColon = { "[^a-zA-Z0-9-_:()]+", "(_+)$" };
 	private static final Pattern[] patternsAllowColon = new Pattern[patternStringsAllowColon.length];
 	
 	// the original pattern array (which replaces colons):
