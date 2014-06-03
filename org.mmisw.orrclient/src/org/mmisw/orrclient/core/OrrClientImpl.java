@@ -1,25 +1,13 @@
 package org.mmisw.orrclient.core;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import javax.mail.internet.AddressException;
@@ -2200,14 +2188,123 @@ public class OrrClientImpl implements IOrrClient {
 	
 	public RegisterOntologyResult registerOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult) {
 		RegisterOntologyResult registerOntologyResult = null;
-		
-		if ( createOntologyResult.getCreateOntologyInfo().getHostingType() != null ) {
+
+        CreateOntologyInfo createOntologyInfo = createOntologyResult.getCreateOntologyInfo();
+		if ( createOntologyInfo.getHostingType() != null ) {
 			// use of this attribute indicates to use the new method
 			registerOntologyResult = registerOntology_newMethod(createOntologyResult, loginResult);
 		}
 		else {
 			registerOntologyResult = registerOntology_oldMethod(createOntologyResult, loginResult);
 		}
+
+        if (registerOntologyResult.getError() == null) {
+            /////////////////////////////////////////////////////////////////////////
+            // send email to notify successful registration
+            // (this is very ad hoc -- will be more configurable in a next version)
+            /////////////////////////////////////////////////////////////////////////
+
+            final String notifyEmailsFilename = "/etc/mmiorr/notifyemails";
+
+            final Set<String> recipients = new LinkedHashSet<String>();
+            try {
+                File f = new File(notifyEmailsFilename);
+                FileInputStream is = new FileInputStream(f);
+                for (Object line: IOUtils.readLines(is)) {
+                    String email = String.valueOf(line).trim();
+                    if (email.length() > 0 && !email.startsWith("#")) {
+                        recipients.add(email);
+                    }
+                }
+                IOUtils.closeQuietly(is);
+            }
+            catch (Exception e) {
+                log.warn("could not read in: " + notifyEmailsFilename, e);
+            }
+
+            if (recipients.size() > 0) {
+                final Map<String, String> data = new LinkedHashMap<String, String>();
+                try {
+                    String ontologyUri = registerOntologyResult.getUri();
+                    String version = null;
+
+                    if ( OntServiceUtil.isOntResolvableUri(ontologyUri) ) {
+                        // prefer to show the unversioned URI
+                        try {
+                            MmiUri mmiUri = new MmiUri(ontologyUri);
+                            version = mmiUri.getVersion();
+                            ontologyUri = mmiUri.copyWithVersion(null).getOntologyUri();
+                        }
+                        catch (URISyntaxException ignore) {
+                        }
+                    }
+
+                    data.put("URI", ontologyUri);
+                    if (version != null) {
+                        data.put("version", version);
+                    }
+                    data.put("Registered by",  loginResult.getUserName());
+                    BaseOntologyInfo baseOntologyInfo = createOntologyInfo.getBaseOntologyInfo();
+                    if (baseOntologyInfo != null) {
+                        data.put("displayLabel", baseOntologyInfo.getDisplayLabel());
+                        data.put("size",         String.valueOf(baseOntologyInfo.getSize()));
+                    }
+                    Thread t = new Thread() {
+                        public void run() {
+                            final String mail_user = config.getMailUser();
+                            final String mail_password = config.getMailPassword();
+                            if ( mail_user == null || mail_user.equals("-") ) {
+                                String error = "Email server account not configured. Please report this bug. (u)";
+                                log.error(error);
+                                return;
+                            }
+                            if ( mail_password == null  || mail_password.equals("-") ) {
+                                String error = "Email server account not configured. Please report this bug. (p)";
+                                log.error(error);
+                                return;
+                            }
+
+                            boolean debug = false;
+                            final String from    = "MMI-ORR <techlead@marinemetadata.org>";
+                            final String replyTo = "techlead@marinemetadata.org";
+                            final String subject = "Ontology registered";
+
+                            String text = "The following ontology has been registered:\n";
+                            for (String key: data.keySet()) {
+                                text += "\n  " + key + ": " + data.get(key);
+                            }
+                            text += "\n\n";
+                            text += "(You have received this email because you address is included in " +notifyEmailsFilename + ")";
+
+                            String to = "", comma = "";
+                            for (String recipient : recipients) {
+                                to += comma + recipient;
+                                comma = ",";
+                            }
+                            log.debug("sending email to notify ontology registration: " +data+ "; recipients: " +to);
+                            try {
+                                MailSender.sendMessage(mail_user, mail_password, debug, from, to, replyTo, subject, text);
+                                log.debug("email sent to notify Ontology registered: " + data + "; recipients: " + to);
+                            }
+                            catch (Exception e) {
+                                String error = "Error sending email to notify ontology registered: " + data
+                                        + "; recipients: " +to+ ": " +e.getMessage();
+                                log.error(error, e);
+                            }
+                        }
+                    };
+                    t.setDaemon(true);
+                    t.start();
+                }
+                catch (Exception e) {
+                    log.error("Error preparing to send email to notify Ontology registered: " + data
+                              + ": " +e.getMessage(), e);
+                }
+            }
+            else {
+                log.debug("no recipients to send email: " + notifyEmailsFilename);
+            }
+        }
 		
 		return registerOntologyResult;
 	
