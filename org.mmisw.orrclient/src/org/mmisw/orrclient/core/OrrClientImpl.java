@@ -2204,7 +2204,7 @@ public class OrrClientImpl implements IOrrClient {
             // (this is very ad hoc -- will be more configurable in a next version)
             /////////////////////////////////////////////////////////////////////////
 
-            final String notifyEmailsFilename = "/etc/mmiorr/notifyemails";
+            // TODO update to reuse auxiliary methods introduced later
 
             final Set<String> recipients = new LinkedHashSet<String>();
             try {
@@ -2964,12 +2964,14 @@ public class OrrClientImpl implements IOrrClient {
 		
 		try {
 			SignInResult signInResult = ontClient.createUpdateUserAccount(values);
-			LoginResult loginResult = new LoginResult();
+			final LoginResult loginResult = new LoginResult();
 			loginResult.setSessionId(signInResult.getSessionId());
 			loginResult.setUserId(signInResult.getUserId());
 			loginResult.setUserName(signInResult.getUserName());
 			loginResult.setUserRole(signInResult.getUserRole());
 			result.setLoginResult(loginResult);
+
+            _notifyUserCreated(loginResult);
 		}
 		catch (Exception e) {
 			String error = "error updating user information: " +
@@ -2981,8 +2983,105 @@ public class OrrClientImpl implements IOrrClient {
 		return result;
 		
 	}
-	
-	
+
+    private final static String notifyEmailsFilename = "/etc/mmiorr/notifyemails";
+
+	private Set<String> _getRecipients() {
+        final Set<String> recipients = new LinkedHashSet<String>();
+        try {
+            File f = new File(notifyEmailsFilename);
+            FileInputStream is = new FileInputStream(f);
+            for (Object line: IOUtils.readLines(is)) {
+                String email = String.valueOf(line).trim();
+                if (email.length() > 0 && !email.startsWith("#")) {
+                    recipients.add(email);
+                }
+            }
+            IOUtils.closeQuietly(is);
+        }
+        catch (Exception e) {
+            log.warn("could not read in: " + notifyEmailsFilename, e);
+        }
+        if (recipients.size() == 0) {
+            log.debug("no recipients to send email: " + notifyEmailsFilename);
+        }
+        return recipients;
+    }
+
+	private void _notifyUserCreated(final LoginResult loginResult) {
+        Thread t = new Thread() {
+            public void run() {
+                final Set<String> recipients = _getRecipients();
+                if (recipients.size() == 0) {
+                    return;
+                }
+                final Map<String, String> data = new LinkedHashMap<String, String>();
+                String username = loginResult.getUserName();
+                data.put("username", username);
+                try {
+                    Map<String,String> userInfo = ontClient.getUserInfo(username);
+                    String[] skip = {"username", "id", "date_created"};
+                    for (String k: skip) {
+                        if (userInfo.containsKey(k)) {
+                            userInfo.remove(k);
+                        }
+                    }
+                    data.putAll(userInfo);
+                }
+                catch (Exception e) {
+                    log.warn("getUserInfo: username=" + username+ ": " +e.getMessage());
+                }
+
+                _sendEmail("User created/updated",
+                        "The following user account has been created or updated:",
+                        data, recipients);
+            }
+        };
+        t.setDaemon(true);
+        t.start();
+    }
+
+    private void _sendEmail(String subject, String header, Map<String, String> data, Set<String> recipients) {
+        final String mail_user = config.getMailUser();
+        final String mail_password = config.getMailPassword();
+        if ( mail_user == null || mail_user.equals("-") ) {
+            String error = "Email server account not configured. Please report this bug. (u)";
+            log.error(error);
+            return;
+        }
+        if ( mail_password == null || mail_password.equals("-") ) {
+            String error = "Email server account not configured. Please report this bug. (p)";
+            log.error(error);
+            return;
+        }
+
+        boolean debug = false;
+        final String from    = "MMI-ORR <techlead@marinemetadata.org>";
+        final String replyTo = "techlead@marinemetadata.org";
+
+        String text = header + "\n";
+        for (String key: data.keySet()) {
+            text += "\n    " + key + ": " + data.get(key);
+        }
+        text += "\n\n";
+        text += "(you have received this email because your address is included in " +notifyEmailsFilename + ")";
+
+        String to = "", comma = "";
+        for (String recipient : recipients) {
+            to += comma + recipient;
+            comma = ",";
+        }
+        log.debug("sending email to notify event: " +data+ "; recipients: " +to);
+        try {
+            MailSender.sendMessage(mail_user, mail_password, debug, from, to, replyTo, subject, text);
+            log.debug("email sent to notify event: " + data + "; recipients: " + to);
+        }
+        catch (Exception e) {
+            String error = "Error sending email to notify event: " + data
+                    + "; recipients: " +to+ ": " +e.getMessage();
+            log.error(error, e);
+        }
+    }
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	// OOI CI semantic prototype
