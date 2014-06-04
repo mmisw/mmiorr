@@ -2227,6 +2227,7 @@ public class OrrClientImpl implements IOrrClient {
                 try {
                     String ontologyUri = registerOntologyResult.getUri();
                     String version = null;
+                    String withUriParam = null;
 
                     if ( OntServiceUtil.isOntResolvableUri(ontologyUri) ) {
                         // prefer to show the unversioned URI
@@ -2238,16 +2239,28 @@ public class OrrClientImpl implements IOrrClient {
                         catch (URISyntaxException ignore) {
                         }
                     }
+                    else {
+                        withUriParam = config.getOntServiceUrl() + "?uri=" + ontologyUri;
+                    }
 
                     data.put("URI", ontologyUri);
                     if (version != null) {
                         data.put("version", version);
                     }
+                    if (withUriParam != null) {
+                        data.put("Resolve with", withUriParam);
+                    }
                     data.put("Registered by",  loginResult.getUserName());
                     BaseOntologyInfo baseOntologyInfo = createOntologyInfo.getBaseOntologyInfo();
                     if (baseOntologyInfo != null) {
-                        data.put("displayLabel", baseOntologyInfo.getDisplayLabel());
-                        data.put("size",         String.valueOf(baseOntologyInfo.getSize()));
+                        String displayLabel = baseOntologyInfo.getDisplayLabel();
+                        if (displayLabel != null) {
+                            data.put("DisplayLabel", baseOntologyInfo.getDisplayLabel());
+                        }
+                        long size = baseOntologyInfo.getSize();
+                        if (size > 0) {
+                            data.put("Size", String.valueOf(size));
+                        }
                     }
                     Thread t = new Thread() {
                         public void run() {
@@ -2274,7 +2287,7 @@ public class OrrClientImpl implements IOrrClient {
                                 text += "\n  " + key + ": " + data.get(key);
                             }
                             text += "\n\n";
-                            text += "(You have received this email because you address is included in " +notifyEmailsFilename + ")";
+                            text += "(you have received this email because your address is included in " +notifyEmailsFilename + ")";
 
                             String to = "", comma = "";
                             for (String recipient : recipients) {
