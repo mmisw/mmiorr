@@ -60,7 +60,6 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  * in conjunction with {@link OntServlet} and other callers. 
  * 
  * @author Carlos Rueda
- * @version $Id$
  */
 public class MiscDispatcher {
 	
@@ -435,7 +434,7 @@ public class MiscDispatcher {
 
 			String query = 
 				"select o.urn, o.display_label, o.user_id, o.contact_name, o.version_number, " +
-				"       o.date_created, u.username, o.ontology_id " +
+				"       o.date_created, u.username, o.ontology_id, o.version_status " +
 				"from v_ncbo_ontology o, ncbo_user u " +
 				"where o.user_id = u.id " +
 				"order by o.ontology_id, o.version_number";
@@ -454,7 +453,8 @@ public class MiscDispatcher {
 	        	String date_created = rs.getString(6);
 	        	String username = rs.getString(7);
 	        	String ontology_id = rs.getString(8);
-	        	
+	        	String version_status = rs.getString(9);
+
 	        	// mapping or vocabulary?
 	        	// TODO: a more robust mechanism to determine the type of an ontology. 
 	        	
@@ -490,6 +490,7 @@ public class MiscDispatcher {
 	    				+ sep +date_created
 	    				+ sep +username
 	    				+ sep +ontology_id
+	    				+ sep +version_status
 	    				+ "'"
 	    		);
 	    		
