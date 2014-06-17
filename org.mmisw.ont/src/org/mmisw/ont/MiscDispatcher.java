@@ -14,14 +14,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.Map;
-import java.util.LinkedHashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -424,6 +419,9 @@ public class MiscDispatcher {
 	 */
 	void listAll(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+        // helps propagate version_status from previous version to newer version when undefined in newer one
+        Map<String, String> version_statuses = new HashMap<String, String>();
+
 		final String sep = "'|'";
 		
 		Connection _con = null;
@@ -455,8 +453,14 @@ public class MiscDispatcher {
 	        	String ontology_id = rs.getString(8);
 	        	String version_status = rs.getString(9);
                 if (version_status == null || version_status.trim().length() == 0) {
-                    version_status = "undefined";
+                    if (version_statuses.containsKey(ontology_id)) {
+                        version_status = version_statuses.get(ontology_id);
+                    }
+                    else {
+                        version_status = "undefined";
+                    }
                 }
+                version_statuses.put(ontology_id, version_status);
 
 	        	// mapping or vocabulary?
 	        	// TODO: a more robust mechanism to determine the type of an ontology. 
