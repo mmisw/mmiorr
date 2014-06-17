@@ -454,6 +454,9 @@ public class MiscDispatcher {
 	        	String username = rs.getString(7);
 	        	String ontology_id = rs.getString(8);
 	        	String version_status = rs.getString(9);
+                if (version_status == null || version_status.trim().length() == 0) {
+                    version_status = "undefined";
+                }
 
 	        	// mapping or vocabulary?
 	        	// TODO: a more robust mechanism to determine the type of an ontology. 

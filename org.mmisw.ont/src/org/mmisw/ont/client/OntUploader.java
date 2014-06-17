@@ -179,7 +179,9 @@ public class OntUploader {
 
 	private String _getVersionStatus() {
 		// TODO a more general mechanism to assign versionStatus
-		String versionStatus = "testing";
+        // For the moment, assigning "undefined" at this point.
+        // See #279
+		String versionStatus = "undefined";
 		return versionStatus;
 	}
 
