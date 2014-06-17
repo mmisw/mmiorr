@@ -2,8 +2,7 @@
 
 <%@page import="org.mmisw.orrportal.gwt.server.PageUtil"%>
 <%
-String btop = getServletContext().getRealPath("/_btop.html");
-String bbot = getServletContext().getRealPath("/_bbot.html");
+PageUtil pageUtil = new PageUtil(getServletContext());
 %>
 
 <html>
@@ -15,7 +14,7 @@ String bbot = getServletContext().getRealPath("/_bbot.html");
   </head>
 
   <body>
-<%=PageUtil.include(btop)%>
+<%=pageUtil.includeTop()%>
   
   <div id="loading" align="center"><br/>
   	<script>
@@ -32,6 +31,6 @@ String bbot = getServletContext().getRealPath("/_bbot.html");
   <div id="main">
   </div>
    
-<%=PageUtil.include(bbot)%>
+<%=pageUtil.includeBottom()%>
   </body>
 </html>
