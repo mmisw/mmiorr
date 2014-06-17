@@ -129,9 +129,6 @@ public class OntUploader {
 			String versionNumber = _getVersionNumber();
 			partList.add(new StringPart("versionNumber", versionNumber));
 			
-			String versionStatus = _getVersionStatus();
-			partList.add(new StringPart("versionStatus", versionStatus));
-
 			// FIXME: the following are hard-coded for now as they are NOT used by us (ORR)
 			partList.add(new StringPart("format", "OWL-DL"));
 			partList.add(new StringPart("isRemote", "0"));
@@ -176,15 +173,6 @@ public class OntUploader {
 		}
 
 	}
-
-	private String _getVersionStatus() {
-		// TODO a more general mechanism to assign versionStatus
-        // For the moment, assigning "undefined" at this point.
-        // See #279
-		String versionStatus = "undefined";
-		return versionStatus;
-	}
-
 
 	private String _getVersionNumber() {
 		String versionNumber = values.get(Omv.version.getURI());
