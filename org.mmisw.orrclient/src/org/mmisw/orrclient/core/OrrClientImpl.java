@@ -245,14 +245,15 @@ public class OrrClientImpl implements IOrrClient {
 	private static RegisteredOntologyInfo _createOntologyInfo(
 			String ontologyUri,   // = toks[0];
 			String displayLabel,  // = toks[1];
-			OntologyType type,          // = toks[2];
+			OntologyType type,    // = toks[2];
 			String userId,        // = toks[3];
 			String contactName,   // = toks[4];
 			String versionNumber, // = toks[5];
 			String dateCreated,   // = toks[6];
 			String userName,      // = toks[7];
-			String ontologyId,     // = toks[8];
-			
+			String ontologyId,    // = toks[8];
+			String versionStatus, // = toks[9];
+
 			String unversionedUri,
 			String authority,
 			String shortName
@@ -268,7 +269,8 @@ public class OrrClientImpl implements IOrrClient {
 		registeredOntologyInfo.setDateCreated(dateCreated);
 		registeredOntologyInfo.setUsername(userName);
 		registeredOntologyInfo.setOntologyId(ontologyId, userId);
-		
+		registeredOntologyInfo.setVersionStatus(versionStatus);
+
 		registeredOntologyInfo.setUnversionedUri(unversionedUri);
 		registeredOntologyInfo.setAuthority(authority);
 		registeredOntologyInfo.setShortName(shortName);
@@ -319,6 +321,7 @@ public class OrrClientImpl implements IOrrClient {
 			String dateCreated   = toks[6];
 			String userName      = toks[7];
 			String ontologyId    = toks[8];
+			String versionStatus = toks[9];
 
 			String unversionedUri;
 			String authority;
@@ -361,6 +364,7 @@ public class OrrClientImpl implements IOrrClient {
 					dateCreated,
 					userName,
 					ontologyId,
+                    versionStatus,
 					
 					unversionedUri,
 					authority,
@@ -458,7 +462,8 @@ public class OrrClientImpl implements IOrrClient {
 					mostRecent.getDateCreated(),
 					mostRecent.getUsername(),
 					mostRecent.getOntologyId(),
-					
+					mostRecent.getVersionStatus(),
+
 					mostRecent.getUnversionedUri(),
 					mostRecent.getAuthority(),
 					mostRecent.getShortName()
@@ -801,7 +806,8 @@ public class OrrClientImpl implements IOrrClient {
 					mostRecent.getDateCreated(),
 					mostRecent.getUsername(),
 					mostRecent.getOntologyId(),
-					
+					mostRecent.getVersionStatus(),
+
 					mostRecent.getUnversionedUri(),
 					mostRecent.getAuthority(),
 					mostRecent.getShortName()

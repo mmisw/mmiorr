@@ -34,10 +34,10 @@ public class RegisteredOntologyInfo extends BaseOntologyInfo {
 	private String versionNumber;
 
 	private String dateCreated;
-	
-	
-	
-	
+
+    private String versionStatus;
+
+
 	
 	private List<RegisteredOntologyInfo> priorVersions;
 
@@ -180,4 +180,6 @@ public class RegisteredOntologyInfo extends BaseOntologyInfo {
 		return hostingType;
 	}
 
+    public String getVersionStatus() { return versionStatus; }
+    public void setVersionStatus(String versionStatus) { this.versionStatus = versionStatus; }
 }
