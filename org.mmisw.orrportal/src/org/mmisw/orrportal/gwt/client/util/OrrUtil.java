@@ -195,18 +195,29 @@ public class OrrUtil {
 	}
 	
     /**
-     * Tells if the ontology is a "testing" one, according to the authority and short name components.
-     * If the authority component doesn't determine it's a testing ontology, then use the short-name.
-     * 
-     * NOTE: This is far from an ideal mechanism to categorize "testing" entries, 
-     * see http://code.google.com/p/mmisw/issues/detail?id=279
+     * Tells if the ontology is a "testing" one.
+     * See http://code.google.com/p/mmisw/issues/detail?id=279
      * 
      * @param oi
-     * @return
+     * @return true if ontology is to be considered a "testing" one.
      */
     public static boolean isTestingOntology(RegisteredOntologyInfo oi) {
-    	String authority = oi.getAuthority().toLowerCase();
-    	return authority.matches(TESTING_AUTHORITIES_REGEX);
+        String versionStatus = oi.getVersionStatus().trim().toLowerCase();
+        if (versionStatus.equals("testing")) {
+            return true;
+        }
+        if (versionStatus.equals("stable")) {
+            return false;
+        }
+        if (versionStatus.equals("undefined") || versionStatus.equals("") ) {
+            // use traditional logic based on authority abbreviation
+            String authority = oi.getAuthority().toLowerCase();
+            return authority.matches(TESTING_AUTHORITIES_REGEX);
+        }
+        // unrecognized versionStatus: handle as "testing" to avoid showing entry in main ontology table
+        Orr.log("WARN: unrecognized versionStatus=" + versionStatus +
+                " for uri=" + oi.getUnversionedUri() + " version=" +oi.getVersionNumber());
+        return true;
     }
     
     /**
