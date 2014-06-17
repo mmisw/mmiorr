@@ -19,9 +19,11 @@ public class PortalConfig {
 		VERSION                       ("orrportal.app.version", "pendVersion"),
 		BUILD                         ("orrportal.app.build", "pendBuild"),
 
+		WORKSPACE_DIR         ("orrportal.workspace.dir", "/Users/Shared/mmiregistry/"),
+		
 		/** where the pre-loaded files are stored: */
 		PRE_UPLOADS_DIR         ("orrportal.pre.uploads.dir", "/Users/Shared/mmiregistry/ontmd/preuploads/"),
-		
+
 		/** where voc2rdf-generated files are stored: */
 		VOC2RDF_DIR             ("orrportal.voc2rdf.dir", "/Users/Shared/mmiregistry/ontmd/preuploads/voc2rdf/"),
 		

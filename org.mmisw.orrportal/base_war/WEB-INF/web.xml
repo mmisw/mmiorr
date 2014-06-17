@@ -31,10 +31,15 @@
 		</init-param>
 		
 		<init-param>
+			<param-name>orrportal.workspace.dir</param-name>
+			<param-value>@orrportal.workspace.dir@</param-value>
+		</init-param>
+		
+		<init-param>
 			<param-name>orrportal.pre.uploads.dir</param-name>
 			<param-value>@orrportal.pre.uploads.dir@</param-value>
 		</init-param>
-		
+
 		<init-param>
 			<param-name>orrportal.voc2rdf.dir</param-name>
 			<param-value>@orrportal.voc2rdf.dir@</param-value>
