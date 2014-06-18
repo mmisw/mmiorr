@@ -18,19 +18,18 @@ public class OrrEntryPoint implements EntryPoint {
 	 * This is the entry point for the ORR Portal application.
 	 */
 	public void onModuleLoad() {
-		boolean withLogging = false;
+		String logSpec = null;
 		
 		Map<String, String> params = OrrUtil.getParams();
 
 		if (params != null) {
-			String _log = (String) params.get("_log");
-			if (_log != null) {
-				withLogging = true;
+			logSpec = params.get("_log");
+			if (logSpec != null) {
 				params.remove("_log");
 			}
 		}
 		
-		Orr.init(withLogging);
+		Orr.init(logSpec);
 		
 		Orr.launch(params);
 	}

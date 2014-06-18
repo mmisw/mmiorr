@@ -48,13 +48,12 @@ public class Orr {
 	/**
 	 * Initialization method.
 	 * 
-	 * @param withLogging 
-	 *                   true to include logging.
+	 * @param logSpec
 	 */
-	static void init(boolean withLogging) {
+	static void init(String logSpec) {
 		
-		if ( withLogging ) {
-			_logger = new OrrLogger();
+		if ( logSpec != null ) {
+			_logger = new OrrLogger(logSpec);
 		}
 		
 		Orr.log("Util.getLocationProtocol() = " + OrrUtil.getLocationProtocol()
@@ -215,8 +214,8 @@ public class Orr {
 		
 		
 	    String historyToken = History.getToken();
+	    Orr.log("history token = [" +historyToken+ "]");
 	    if ( historyToken != null && historyToken.trim().length() > 0 ) {
-			Orr.log("history token = " +historyToken);
 	    	History.fireCurrentHistoryState();
 	    }
 	    else {

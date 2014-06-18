@@ -2,7 +2,6 @@ package org.mmisw.orrportal.gwt.client;
 
 import org.mmisw.orrportal.gwt.client.util.OrrUtil;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.ButtonBase;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
@@ -22,18 +21,13 @@ class OrrLogger {
 	/**
 	 * Initializes the logger.
 	 */
-	OrrLogger() {
-		
+	OrrLogger(String logSpec) {
+		String str = logSpec == null ? "" : logSpec.trim().toLowerCase();
+		if (str.length() == 0 || str.equals("*") || str.equals("y") ) {
+			str = null;  // do not filter anything
+		}
+		_filter = str;
 		_logBuffer = new StringBuffer();
-		
-		log("Util.getLocationProtocol() = " + OrrUtil.getLocationProtocol());
-		log("Util.getLocationHost()     = " + OrrUtil.getLocationHost());
-		log("GWT.getHostPageBaseURL()   = " + GWT.getHostPageBaseURL());
-		log("GWT.getModuleBaseURL()     = " + GWT.getModuleBaseURL());
-		log("GWT.getModuleName()        = " + GWT.getModuleName());
-//		String baseUrl = OrrUtil.getLocationProtocol() + "//" + OrrUtil.getLocationHost();
-//		baseUrl = baseUrl.replace("/+$", ""); // remove trailing slashes
-//		Orr.log("baseUrl = " + baseUrl);
 	}
 
 	/**
@@ -41,7 +35,17 @@ class OrrLogger {
 	 * @param msg
 	 */
 	void log(String msg) {
-		_logBuffer.append(msg + "\n");
+		if (_filter == null) {
+			_logBuffer.append(msg + "\n");			
+		}
+		else {
+			String[] lines = msg.split("\n");
+			for (String line : lines) {
+				if (line.toLowerCase().contains(_filter) ) {
+					_logBuffer.append(line).append("\n");
+				}
+			}
+		}
 	}
 
 	/**
@@ -80,6 +84,9 @@ class OrrLogger {
 	///////////////////////////////////////////////////////////////////////////////
 	// private
 	///////////////////////////////////////////////////////////////////////////////
+	
+	// to filter messages
+	private final String _filter;
 	
 	// buffer for keeping the logging info.
 	private final StringBuffer _logBuffer;
