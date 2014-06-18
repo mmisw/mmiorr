@@ -250,8 +250,26 @@ public class Util {
 			if (line.startsWith("\"") && line.endsWith("\"")) {
 				line = line.substring(1, line.length() -1);
 			}
-			
-			String[] cols = line.split("\",\"");
+
+            /* the following conditional split is because AllegroGraph mixes non-quoted
+             * with quoted fields for the Content-Type: application/processed-csv, for
+             * example:
+             *   http http://mmisw.org:10035/repositories/mmiorr\?infer\=false\&query\=SELECT+DISTINCT+%3Fproperty+%3Fvalue+WHERE+%7B+%3Chttp%3A%2F%2Fmmisw.org%2Font%2Fmmitest%2Fparameter%2FParameter%3E+%3Fproperty+%3Fvalue+.+%7D+ORDER+BY+%3Fproperty "Accept: application/processed-csv"
+             *   HTTP/1.1 200 OK
+             *   Cache-control: max-age=0, must-revalidate
+             *   Connection: keep-alive
+             *   Content-Encoding: gzip
+             *   Content-Type: application/processed-csv; charset=UTF-8
+             *   Date: Wed, 18 Jun 2014 03:08:54 GMT
+             *   Etag: 2c3000000000000000
+             *   Server: AllegroServe/1.3.19
+             *   Transfer-Encoding: chunked
+             *
+             *   property,value
+             *   "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>","<http://www.w3.org/2002/07/owl#Class>"
+             *   "<http://www.w3.org/2000/01/rdf-schema#label>","parameter"
+             */
+			String[] cols = line.indexOf('"') >= 0 ? line.split("\",\"") : line.split(",");
 			
 			html.append("<tr>");
 			
@@ -270,8 +288,7 @@ public class Util {
 				else {
 					col = Util.toHtml(col);
 				}
-				
-				html.append("\n\t" + "<" +thtd+ ">" + col + "</" +thtd+ ">");
+				html.append(String.format("\n\t<%s>%s</%s>", thtd, col, thtd));
 			}
 			html.append("\n</tr>\n");
 			thtd = "td";
