@@ -36,6 +36,12 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class DataPanel extends VerticalPanel {
 
+	private static final String CLASS_NAME = DataPanel.class.getName();
+	
+	private static void log(String msg) {
+		Orr.log(CLASS_NAME+": " +msg);
+	}
+
 	// created during refactoring process -- may be removed later
 	private class MyVocabPanel implements IVocabPanel {
 
@@ -86,7 +92,7 @@ public class DataPanel extends VerticalPanel {
 	 * external" ontology functionality.
 	 */
 	public void updateWith(TempOntologyInfo tempOntologyInfo, BaseOntologyInfo ontologyInfo, boolean readOnly) {
-		Orr.log("DataPanel.updateWith: ontologyInfo.class=" +ontologyInfo.getClass().getName()+ ", readOnly=" +readOnly);
+		log("updateWith: ontologyInfo.class=" +ontologyInfo.getClass().getName()+ ", readOnly=" +readOnly);
 		this.readOnly = readOnly;
 		this.clear();
 		
@@ -111,7 +117,7 @@ public class DataPanel extends VerticalPanel {
 			throw new AssertionError();
 		}
 		
-		Orr.log("DataPanel.updateWith: type=" +type);
+		log("updateWith: type='" +type+ "'");
 		
 		VerticalPanel vp = new VerticalPanel();
 		vp.add(new Label(type));
@@ -153,7 +159,7 @@ public class DataPanel extends VerticalPanel {
 
 	private Widget _createVocabularyWidget(VocabularyOntologyData ontologyData) {
 
-		Orr.log("Creating VocabularyWidget");
+		log("Creating VocabularyWidget");
 
 		List<ClassData> classes = ontologyData.getClasses();
 		
@@ -199,7 +205,7 @@ public class DataPanel extends VerticalPanel {
 			
 
 			List<IndividualInfo> individuals = classData.getIndividuals();
-			Orr.log("num individuals: " +individuals.size());
+			log("num individuals: " +individuals.size());
 			
 			List<IRow> rows = new ArrayList<IRow>();
 			
@@ -239,7 +245,7 @@ public class DataPanel extends VerticalPanel {
 	 */
 	private Widget _createOtherWidget(TempOntologyInfo tempOntologyInfo, OtherOntologyData ontologyData) {
 		
-		Orr.log("Creating OtherWidget");
+		log("Creating OtherWidget");
 		
 		OtherOntologyContentsPanel otherOntologyContentsPanel = new OtherOntologyContentsPanel(
 				tempOntologyInfo,
@@ -251,7 +257,7 @@ public class DataPanel extends VerticalPanel {
 	}
 	
 	private Widget _createMappingWidget(MappingOntologyData ontologyData) {
-		Orr.log("Creating MappingWidget");
+		log("Creating MappingWidget");
 
 		VineOntologyContentsPanel vineOntologyContentsPanel = new VineOntologyContentsPanel(ontologyData, readOnly);
 		baseOntologyContentsPanels.add(vineOntologyContentsPanel);
@@ -262,7 +268,7 @@ public class DataPanel extends VerticalPanel {
 	 * Cancels changes done to the data contents, if any.
 	 */
 	public void cancel() {
-		Orr.log("DataPanel.cancel");
+		log("DataPanel.cancel");
 		for ( BaseOntologyContentsPanel baseOntologyContentsPanel : baseOntologyContentsPanels ) {
 			baseOntologyContentsPanel.cancel();
 		}
