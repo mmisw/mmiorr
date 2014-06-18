@@ -918,7 +918,11 @@ public class Ag4TripleStore implements ITripleStore {
 	 */
 	private void _doUpdate(String update) throws Exception {
 		if (log.isDebugEnabled()) {
-			log.debug("update: " + update);
+			String mu = update;
+			if (update.length() > 300) {
+				mu = mu.subSequence(0, 128) + " ... " + mu.substring(update.length() - 100);
+			}
+			log.debug("update: " + mu);
 		}
 
 		final String encUpdate = URLEncoder.encode(update, "UTF-8");
