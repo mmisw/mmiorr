@@ -160,14 +160,17 @@ public class BrowsePanel extends VerticalPanel {
 		ontologyTable.setOntologyInfos(ontologyInfos, loginResult);
 	}
 		
-	void authorSelected(final String userId) {
+	void authorSelected(final String userStr, final boolean byUserName) {
 		ontologyTable.showProgress();
 		
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
 				selectedOntologyInfos.clear();
 				for ( RegisteredOntologyInfo oi : ontologyInfos ) {
-					if ( userId.equalsIgnoreCase(oi.getUserId()) ) {
+					if ( byUserName && userStr.equals(oi.getUsername()) ) {
+						selectedOntologyInfos.add(oi);
+					}
+					else if ( ! byUserName && userStr.equals(oi.getUserId()) ) {
 						selectedOntologyInfos.add(oi);
 					}
 				}

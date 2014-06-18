@@ -219,7 +219,7 @@ public class Orr {
 	    	History.fireCurrentHistoryState();
 	    }
 	    else {
-	    	History.newItem(PortalConsts.T_BROWSE);
+	    	portalMainPanel.dispatchMainPage("");
 	    }
 	}
 

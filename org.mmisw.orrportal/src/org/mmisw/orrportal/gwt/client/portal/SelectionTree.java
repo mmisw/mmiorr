@@ -9,6 +9,7 @@ import java.util.Map;
 import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
 
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.TreeListener;
@@ -24,19 +25,24 @@ public class SelectionTree extends Tree implements TreeListener {
 	private static final String REGISTERED_BY_ME = "Registered by me";
 	private static final String REGISTERED_BY = "Registered by:";
 	
+	
+	// {username -> userId} map
+	private final Map<String,String> authors = new HashMap<String,String>();
+	
+	
 	private final BrowsePanel browsePanel;
 	private final Tree tree = this;
 	
 	private TreeItem allOntsTreeItem;
 	
 	private class AuthorItem extends TreeItem implements Comparable<AuthorItem> {
-		private String userId;
-		AuthorItem(String name, String userId) {
-			super(name);
+		String username;
+		String userId;
+		
+		AuthorItem(String html, String username, String userId) {
+			super(html);
+			this.username = username;
 			this.userId = userId;
-		}
-		String getUserId() {
-			return userId;
 		}
 		
 		public boolean equals(Object other) {
@@ -85,8 +91,7 @@ public class SelectionTree extends Tree implements TreeListener {
 	void update(List<RegisteredOntologyInfo> ontologyInfos, LoginResult loginResult) {
 		initTree();
 		
-		// {username -> userId} map
-		Map<String,String> authors = new HashMap<String,String>();
+		authors.clear();
 		
 		List<String> authorities = new ArrayList<String>();
 		List<String> types = new ArrayList<String>();
@@ -111,7 +116,7 @@ public class SelectionTree extends Tree implements TreeListener {
 		}
 
 		if ( loginResult != null ) {
-			allOntsTreeItem.addItem(new AuthorItem(REGISTERED_BY_ME, loginResult.getUserId()));
+			allOntsTreeItem.addItem(new AuthorItem(REGISTERED_BY_ME, loginResult.getUserName(), loginResult.getUserId()));
 		
 			TreeItem registerByTreeItem = new TreeItem(REGISTERED_BY);
 
@@ -122,7 +127,7 @@ public class SelectionTree extends Tree implements TreeListener {
 			usernames.remove(loginResult.getUserName());
 			Collections.sort(usernames);
 			for ( String author : usernames ) {
-				registerByTreeItem.addItem(new AuthorItem(author, authors.get(author)));	
+				registerByTreeItem.addItem(new AuthorItem(author, author, authors.get(author)));	
 			}
 		}
 		allOntsTreeItem.setState(true);
@@ -151,12 +156,15 @@ public class SelectionTree extends Tree implements TreeListener {
 	public void onTreeItemSelected(TreeItem item) {
 		
 		if ( item instanceof AuthorItem ) {
-			String userId = ((AuthorItem) item).getUserId();
-			browsePanel.authorSelected(userId);
+//			String userId = ((AuthorItem) item).getUserId();
+			String username = ((AuthorItem) item).username;
+			History.newItem(PortalConsts.T_REGISTERED_BY_USER + "/" + username);
+//			browsePanel.authorSelected(userId, false);
 		}
 		else if ( item instanceof AuthorityItem ) {
 			String authority = item.getText();
-			browsePanel.authoritySelected(authority);
+			History.newItem(PortalConsts.T_REGISTERED_BY_AUTHORITY + "/" + authority);
+//			browsePanel.authoritySelected(authority);
 		}
 		else if ( item instanceof TypeItem ) {
 			String type = item.getText();
@@ -165,6 +173,7 @@ public class SelectionTree extends Tree implements TreeListener {
 		else {
 			String text = item.getText();
 			if ( text.equalsIgnoreCase(ALL_ONTOLOGIES) ) {
+				History.newItem(PortalConsts.T_BROWSE);
 				browsePanel.allSelected();
 			}
 		}
@@ -174,5 +183,4 @@ public class SelectionTree extends Tree implements TreeListener {
 		// TODO Auto-generated method stub
 	}
 	
-
 }

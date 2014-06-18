@@ -4,6 +4,7 @@ import org.mmisw.orrportal.gwt.client.Orr;
 import org.mmisw.orrportal.gwt.client.util.TLabel;
 
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -33,15 +34,13 @@ public class SearchOntologiesPanel extends HorizontalPanel {
 
 	private final PushButton searchButton = new PushButton(Orr.images.search().createImage(), new ClickListener() {
 		public void onClick(Widget sender) {
-			_doSearch();
+			_dispatchSearch();
 		}
 	});
 	
 
 	/**
 	 * Creates a field with a choose feature.
-	 * @param attr
-	 * @param cl
 	 */
 	public SearchOntologiesPanel() {
 		
@@ -52,7 +51,7 @@ public class SearchOntologiesPanel extends HorizontalPanel {
 		textBox.addKeyboardListener(new KeyboardListenerAdapter() {
 			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
 				if ( searchButton.isEnabled() && keyCode == KEY_ENTER ) {
-					_doSearch();
+					_dispatchSearch();
 				}
 			}
 		});
@@ -73,6 +72,21 @@ public class SearchOntologiesPanel extends HorizontalPanel {
 		}.schedule(300);
 	}
 
+	private void _dispatchSearch() {
+		String str = textBox.getText().trim();
+		if (str.length() > 0 ) {
+//			str = URL.encode(str).replace("/", "%2F");
+			History.newItem(PortalConsts.T_SEARCH_ONTS + "/" + str);
+		}
+		else {
+			History.newItem(PortalConsts.T_BROWSE);
+		}
+	}
+	
+	void dispatchSearchOntologies(String str) {
+		textBox.setText(str);
+		_doSearch();
+	}
 	
 	private void _doSearch() {
 		String searchString = getSearchString();

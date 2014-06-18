@@ -5,6 +5,7 @@ import org.mmisw.orrclient.gwt.client.rpc.SparqlQueryResult;
 import org.mmisw.orrportal.gwt.client.Orr;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -70,10 +71,8 @@ public class SearchTermsPanel extends VerticalPanel {
 	
 	/**
 	 * Creates a field with a choose feature.
-	 * @param attr
-	 * @param cl
 	 */
-	public SearchTermsPanel() {
+	public SearchTermsPanel(final String searchString) {
 		
 		super.setSpacing(5);
 		
@@ -82,10 +81,12 @@ public class SearchTermsPanel extends VerticalPanel {
 		textBox.addKeyboardListener(new KeyboardListenerAdapter() {
 			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
 				if ( searchButton.isEnabled() && keyCode == KEY_ENTER ) {
-					_doSearch();
+					_dispatchSearch();
 				}
 			}
 		});
+		
+		textBox.setText(searchString);
 		
 		add(new HTML("<h2>Keyword Search</h2>"));
 		
@@ -102,7 +103,7 @@ public class SearchTermsPanel extends VerticalPanel {
 		
 		searchButton = new PushButton(Orr.images.search().createImage(), new ClickListener() {
 			public void onClick(Widget sender) {
-				_doSearch();
+				_dispatchSearch();
 			}
 		});
 		
@@ -115,10 +116,22 @@ public class SearchTermsPanel extends VerticalPanel {
 			@Override
 			public void run() {
 				suggestBox.setFocus(true);
+				_doSearch();
 			}
 		}.schedule(300);
 	}
 
+	
+	private void _dispatchSearch() {
+		String str = textBox.getText().trim();
+		if (str.length() > 0 ) {
+//			str = URL.encode(str).replace("/", "%2F");
+			History.newItem(PortalConsts.T_SEARCH_TERMS + "/" + str);
+		}
+		else {
+			resultsPanel.setHtml("");
+		}
+	}
 	
 	private void _doSearch() {
 		

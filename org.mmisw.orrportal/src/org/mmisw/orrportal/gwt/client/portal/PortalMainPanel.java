@@ -240,69 +240,107 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		History.newItem(PortalConsts.T_USER_ACCOUNT);
 	}
 
+	
+	public void dispatchMainPage(String searchString) {
+		// in general, do not reload the list, except if the current known list is empty:
+		boolean reload = browsePanel.getNumberOfOntologies() == 0;
+		dispatchMainPanel(reload, searchString);		
+	}
 
 	public void onHistoryChanged(String historyToken) {
 		
-		Orr.log("onHistoryChanged: historyToken: " +historyToken);
+		Orr.log("onHistoryChanged: historyToken: [" +historyToken+ "]");
+		historyToken = historyToken.trim();
 		
 		// TODO trackPageview or trackEvent?
 		GaUtil.trackPageview(historyToken);
 		
-		String lowercase = historyToken.toLowerCase();
+		final String lowercase = historyToken.toLowerCase();
 		boolean dispatched = false;
-		
-		historyToken = historyToken.trim();
-		if ( historyToken.length() > 0 ) {
-			if ( lowercase.equals(PortalConsts.T_BROWSE) ) {
-				// in general, do not reload the list, except if the current known list is empty:
-				boolean reload = browsePanel.getNumberOfOntologies() == 0;
-				dispatchMainPanel(reload);
-				dispatched = true;
-			}
-			else if ( lowercase.equals(PortalConsts.T_SEARCH_TERMS) ) {
-				dispatchSearchTerms();		
-				dispatched = true;
-			}
-			else if ( lowercase.equals(PortalConsts.T_USER_ACCOUNT) ) {
-				dispatchUserAccount(false);		
-				dispatched = true;
-			}
-			else if ( lowercase.equals(PortalConsts.T_SIGN_IN)
-			||        lowercase.equals(PortalConsts.T_SIGN_OUT) ) {
-				// #220 "on browse page but tag remains in #login after signing in"
-				// history token mechanism not used anymore.
-				// Note: we could just let these tags be handle as URIs below. 
-				// But better force the default which is open the main browse page
-				dispatched = false;
-			}
-			else if ( lowercase.equals(PortalConsts.T_VOC2RDF) ) {
-				dispatchNewVocabulary();
-				dispatched = true;
-			}
-			else if ( lowercase.equals(PortalConsts.T_VINE) ) {
-				dispatchNewMappingOntology();
-				dispatched = true;
-			}
-			else if ( lowercase.equals(PortalConsts.T_REGISTER_EXTERNAL) ) {
-				dispatchUploadOntology();
-				dispatched = true;
-			}
-			else if ( lowercase.equals(PortalConsts.T_ADMIN) ) {
-				dispatchAdmin();		
-				dispatched = true;
-			}
-
-			else {
-				String uri = historyToken.trim();
-				Orr.log("onHistoryChanged: URI: " +uri);
-				dispatched = true;				
-				resolveUri(uri);
-			}
+				
+		if ( historyToken.length() == 0 || lowercase.equals(PortalConsts.T_BROWSE) ) {
+			dispatchMainPage("");
+			dispatched = true;
+            // TODO replace #b token with nothing
 		}
+
+		else if ( lowercase.startsWith(PortalConsts.T_SEARCH_ONTS) ) {
+			// remove first leading slash if any:
+			String searchString = historyToken.substring(PortalConsts.T_SEARCH_ONTS.length()).replaceAll("^/", "");
+//			searchString = URL.decode(searchString.replace("%2F", "/"));
+            // TODO if searchString is empty, go to main page while removing the #so token
+			dispatchMainPage(searchString);
+			dispatched = true;
+		}
+		
+		else if ( lowercase.startsWith(PortalConsts.T_SEARCH_TERMS) ) {
+			// remove first leading slash if any:
+			String searchString = historyToken.substring(PortalConsts.T_SEARCH_TERMS.length()).replaceAll("^/", "");
+//			searchString = URL.decode(searchString.replace("%2F", "/"));
+			dispatchSearchTerms(searchString);		
+			dispatched = true;
+		}
+
+		else if ( lowercase.equals(PortalConsts.T_USER_ACCOUNT) ) {
+			dispatchUserAccount(false);		
+			dispatched = true;
+		}
+		
+		else if ( lowercase.startsWith(PortalConsts.T_REGISTERED_BY_USER) ) {
+			// remove first leading slash if any:
+			String user = historyToken.substring(PortalConsts.T_REGISTERED_BY_USER.length()).replaceAll("^/", "");
+			dispatchRegisteredByUser(user);		
+			dispatched = true;
+            // TODO select corresponding element in the tree
+		}
+
+		else if ( lowercase.startsWith(PortalConsts.T_REGISTERED_BY_AUTHORITY) ) {
+			// remove first leading slash if any:
+			String authority = historyToken.substring(PortalConsts.T_REGISTERED_BY_AUTHORITY.length()).replaceAll("^/", "");
+			dispatchRegisteredByAuthority(authority);
+			dispatched = true;
+            // TODO select corresponding element in the tree
+		}
+		
+		else if ( lowercase.equals(PortalConsts.T_SIGN_IN)
+		||        lowercase.equals(PortalConsts.T_SIGN_OUT) ) {
+			// #220 "on browse page but tag remains in #login after signing in"
+			// history token mechanism not used anymore.
+			// Note: we could just let these tags be handle as URIs below. 
+			// But better force the default which is open the main browse page
+			dispatched = false;
+		}
+		
+		else if ( lowercase.equals(PortalConsts.T_VOC2RDF) ) {
+			dispatchNewVocabulary();
+			dispatched = true;
+		}
+		
+		else if ( lowercase.equals(PortalConsts.T_VINE) ) {
+			dispatchNewMappingOntology();
+			dispatched = true;
+		}
+		
+		else if ( lowercase.equals(PortalConsts.T_REGISTER_EXTERNAL) ) {
+			dispatchUploadOntology();
+			dispatched = true;
+		}
+		
+		else if ( lowercase.equals(PortalConsts.T_ADMIN) ) {
+			dispatchAdmin();		
+			dispatched = true;
+		}
+
+		else {
+			String uri = historyToken.trim();
+			dispatched = true;				
+			resolveUri(uri);
+		}
+
 		
 		if ( ! dispatched ) {
 			// just go the "home" page, ie., the main browse page:
-			History.newItem(PortalConsts.T_BROWSE);
+			History.newItem(null);
 		}
 	}
 
@@ -329,7 +367,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 
 
 	public void refreshListAllOntologies() {
-		dispatchMainPanel(true);
+		dispatchMainPanel(true, "");
 	}
 	
 	public void searchTerms() {
@@ -338,7 +376,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	
 	
 	
-	private void dispatchSearchTerms() {
+	private void dispatchSearchTerms(String searchString) {
 		
 		OntologyPanel ontologyPanel = pctrl.getOntologyPanel();
 		if ( ontologyPanel != null ) {
@@ -347,7 +385,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 			pctrl.setOntologyPanel(null);
 		}
 		
-		SearchTermsPanel searchTermsPanel = new SearchTermsPanel();
+		SearchTermsPanel searchTermsPanel = new SearchTermsPanel(searchString);
 
 		interfaceType = InterfaceType.SEARCH;
 	    controlsPanel.showMenuBar(interfaceType);
@@ -357,13 +395,21 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		bodyPanel.add(searchTermsPanel);
 	}
 	
+	private void dispatchRegisteredByUser(String user) {
+		browsePanel.authorSelected(user, true);
+	}
+	
+	private void dispatchRegisteredByAuthority(String authority) {
+		browsePanel.authoritySelected(authority);
+	}
+	
 
 	public void showRefreshingMessage() {
 	    bodyPanel.clear();
 	    bodyPanel.add(new HTML("<i>Refreshing...</i>"));
 	}
 	
-	private void dispatchMainPanel(boolean reloadList) {
+	private void dispatchMainPanel(boolean reloadList, final String searchString) {
 		Orr.log("__dispatchMainPanel: reloadList=" +reloadList);
 		OntologyPanel ontologyPanel = pctrl.getOntologyPanel();
 		if ( ontologyPanel != null ) {
@@ -394,6 +440,11 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	    		});
 	    	}
 	    }
+		DeferredCommand.addCommand(new Command() {
+			public void execute() {
+				controlsPanel.dispatchSearchOntologies(searchString);
+			}
+		});
 	}
 	
 	private void dispatchOntologyPanel(final RegisteredOntologyInfo ontologyInfo, final boolean versionExplicit) {
@@ -730,7 +781,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	}
 
 	public void completedRegisterOntologyResult(RegisterOntologyResult registerOntologyResult) {
-		dispatchMainPanel(true);
+		dispatchMainPanel(true, "");
 		History.newItem(PortalConsts.T_BROWSE);
 	}
 
@@ -923,7 +974,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	}
 
 	private void _completedUnregisterOntology(UnregisterOntologyResult unregisterOntologyResult) {
-		dispatchMainPanel(true);
+		dispatchMainPanel(true, "");
 		History.newItem(PortalConsts.T_BROWSE);
 	}
 

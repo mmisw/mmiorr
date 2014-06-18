@@ -431,4 +431,8 @@ public class ControlsPanel extends HorizontalPanel {
 	private void unregisterOntology(LoginResult loginResult, RegisteredOntologyInfo oi) {
 		pctrl.unregisterOntology(loginResult, oi);
 	}
+	
+	void dispatchSearchOntologies(String str) {
+		searchOntologiesPanel.dispatchSearchOntologies(str);
+	}
 }
