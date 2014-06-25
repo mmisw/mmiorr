@@ -529,6 +529,7 @@ public class MiscDispatcher {
             map.put("name",    ontology.getDisplayLabel());
             map.put("author",  ontology.getAuthor());
             map.put("version", ontology.getVersion());
+            map.put("version_status", ontology.getVersionStatus());
 
             try {
                 MmiUri mmiUri = new MmiUri(ontology.getUri());

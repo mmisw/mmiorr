@@ -19,6 +19,8 @@ public class OntologyInfo {
 	private String author;
 	private String version;
 
+	private String versionStatus;
+
 	public String getUri() {
 		return uri;
 	}
@@ -83,4 +85,10 @@ public class OntologyInfo {
 		this.version = version;
 	}
 
+    public String getVersionStatus() {
+        return versionStatus;
+    }
+    public void setVersionStatus(String versionStatus) {
+        this.versionStatus = versionStatus;
+    }
 }

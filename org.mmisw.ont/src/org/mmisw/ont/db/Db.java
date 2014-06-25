@@ -8,10 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -526,7 +523,10 @@ public class Db {
 		// If allVersions==true, we add to onts immediately; otherwise
 		// we keep track of the most recent ontology for each ontology_id in mostRecent.
 		// See below.
-		
+
+        // helps propagate version_status from previous version to newer version when undefined in newer one
+        Map<String, String> version_statuses = new HashMap<String, String>();
+
 		Connection _con = null;
 		Statement _stmt = null;
 		try {
@@ -535,7 +535,8 @@ public class Db {
 
 			// note that this is sorted in increasing ontology_id,version_number
 			String query = 
-				"select v.id, v.ontology_id, v.file_path, f.filename, v.urn, v.display_label, v.contact_name, v.version_number " +
+				"select v.id, v.ontology_id, v.file_path, f.filename, v.urn, v.display_label, v.contact_name, v.version_number," +
+                "       v.version_status " +
 				"from v_ncbo_ontology v, ncbo_ontology_file f " +
 				"where v.id = f.ontology_version_id " +
 				"order by v.ontology_id, v.version_number";
@@ -549,11 +550,23 @@ public class Db {
 	        	ontology.setOntologyId(rs.getString(2));
 	        	ontology.setFilePath(rs.getString(3));
 	        	ontology.setFilename(rs.getString(4));
-	        	ontology.setUri(rs.getString(5));
+                String ontology_id = rs.getString(5);
+	        	ontology.setUri(ontology_id);
 	        	ontology.setDisplayLabel(rs.getString(6));
 
 	        	ontology.setAuthor(rs.getString(7));
 	        	ontology.setVersion(rs.getString(8));
+                String version_status = rs.getString(9);
+                if (version_status == null || version_status.trim().length() == 0) {
+                    if (version_statuses.containsKey(ontology_id)) {
+                        version_status = version_statuses.get(ontology_id);
+                    }
+                    else {
+                        version_status = "undefined";
+                    }
+                }
+                version_statuses.put(ontology_id, version_status);
+                ontology.setVersionStatus(version_status);
 
 	        	if ( allVersions ) {
 	        		// just add item immediately:
