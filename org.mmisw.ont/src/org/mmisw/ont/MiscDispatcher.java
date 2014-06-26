@@ -529,11 +529,14 @@ public class MiscDispatcher {
             map.put("name",    ontology.getDisplayLabel());
             map.put("author",  ontology.getAuthor());
             map.put("version", ontology.getVersion());
-            map.put("version_status", ontology.getVersionStatus());
+            String versionStatus = ontology.getVersionStatus();
+            map.put("version_status", versionStatus);
 
             try {
                 MmiUri mmiUri = new MmiUri(ontology.getUri());
-                map.put("uri",     mmiUri.copyWithVersion(null).clone().getOntologyUri());
+                String uri = mmiUri.copyWithVersion(null).clone().getOntologyUri();
+                map.put("uri", uri);
+                map.put("version_status", getVersionStatus(versionStatus, uri));
             }
             catch (URISyntaxException ignore) {
             }
@@ -549,9 +552,23 @@ public class MiscDispatcher {
         out.println(result.toString());
 	}
 
+    private static final String TESTING_AUTHORITIES_REGEX = "mmitest|test(ing)?(_.*)?|.*_test(ing)?";
 
-	
-	/**
+    private static String getVersionStatus(String versionStatus, String uri) {
+        if (versionStatus.equals("undefined") || versionStatus.equals("") ) {
+            try {
+                // use traditional logic based on authority abbreviation
+                MmiUri mmiUri = new MmiUri(uri);
+                String authority = mmiUri.getAuthority().toLowerCase();
+                return authority.matches(TESTING_AUTHORITIES_REGEX) ? "testing" : "undefined";
+            }
+            catch (URISyntaxException ignore) {
+            }
+        }
+        return versionStatus;
+    }
+
+    /**
 	 * Helper method to dispatch a "_lpath" request.
 	 * The dispatch is always completed here.
 	 */
