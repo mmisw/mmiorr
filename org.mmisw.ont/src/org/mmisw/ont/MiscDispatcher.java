@@ -536,7 +536,10 @@ public class MiscDispatcher {
                 MmiUri mmiUri = new MmiUri(ontology.getUri());
                 String uri = mmiUri.copyWithVersion(null).clone().getOntologyUri();
                 map.put("uri", uri);
-                map.put("version_status", getVersionStatus(versionStatus, uri));
+                map.put("version_status", getVersionStatus(versionStatus, mmiUri));
+                if (isInternalOntology(mmiUri)) {
+                    map.put("internal", "true");
+                }
             }
             catch (URISyntaxException ignore) {
             }
@@ -554,18 +557,25 @@ public class MiscDispatcher {
 
     private static final String TESTING_AUTHORITIES_REGEX = "mmitest|test(ing)?(_.*)?|.*_test(ing)?";
 
-    private static String getVersionStatus(String versionStatus, String uri) {
+    private static String getVersionStatus(String versionStatus, MmiUri mmiUri) {
         if (versionStatus.equals("undefined") || versionStatus.equals("") ) {
-            try {
-                // use traditional logic based on authority abbreviation
-                MmiUri mmiUri = new MmiUri(uri);
-                String authority = mmiUri.getAuthority().toLowerCase();
-                return authority.matches(TESTING_AUTHORITIES_REGEX) ? "testing" : "undefined";
-            }
-            catch (URISyntaxException ignore) {
-            }
+            // use traditional logic based on authority abbreviation
+            String authority = mmiUri.getAuthority().toLowerCase();
+            return authority.matches(TESTING_AUTHORITIES_REGEX) ? "testing" : "undefined";
         }
         return versionStatus;
+    }
+
+    private static String[] INTERNAL_AUTHORITIES = { "mmiorr-internal", };
+
+    public static boolean isInternalOntology(MmiUri mmiUri) {
+        String authority = mmiUri.getAuthority().toLowerCase();
+        for ( String testAuth : INTERNAL_AUTHORITIES ) {
+            if ( authority.equals(testAuth) ) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
