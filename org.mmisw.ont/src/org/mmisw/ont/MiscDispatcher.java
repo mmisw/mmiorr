@@ -532,11 +532,17 @@ public class MiscDispatcher {
             String versionStatus = ontology.getVersionStatus();
             map.put("version_status", versionStatus);
 
+            map.put("authority", "-");
+
             try {
                 MmiUri mmiUri = new MmiUri(ontology.getUri());
                 String uri = mmiUri.copyWithVersion(null).clone().getOntologyUri();
+                String authority = mmiUri.getAuthority().toLowerCase();
+
                 map.put("uri", uri);
-                map.put("version_status", getVersionStatus(versionStatus, mmiUri));
+                map.put("version_status", getVersionStatus(versionStatus, authority));
+                map.put("authority", authority);
+
                 if (isInternalOntology(mmiUri)) {
                     map.put("internal", "true");
                 }
@@ -557,10 +563,9 @@ public class MiscDispatcher {
 
     private static final String TESTING_AUTHORITIES_REGEX = "mmitest|test(ing)?(_.*)?|.*_test(ing)?";
 
-    private static String getVersionStatus(String versionStatus, MmiUri mmiUri) {
+    private static String getVersionStatus(String versionStatus, String authority) {
         if (versionStatus.equals("undefined") || versionStatus.equals("") ) {
             // use traditional logic based on authority abbreviation
-            String authority = mmiUri.getAuthority().toLowerCase();
             return authority.matches(TESTING_AUTHORITIES_REGEX) ? "testing" : "undefined";
         }
         return versionStatus;
