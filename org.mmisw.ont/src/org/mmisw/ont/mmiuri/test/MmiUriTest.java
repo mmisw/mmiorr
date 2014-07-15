@@ -173,8 +173,16 @@ public class MmiUriTest extends TestCase {
 
     /** See <a href="http://code.google.com/p/mmisw/issues/detail?id=123">Issue #123</a> */
     public void testEncodedUri() throws URISyntaxException {
-    	MmiUri mmiUri = new MmiUri("http://mmisw.org/ont/mmi/someVocab/some%20Term");
-    	assertEquals("some%20Term", mmiUri.getTerm());
+    	assertEquals("some Term", new MmiUri("http://mmisw.org/ont/mmi/voc/some%20Term").getTerm());
+    	assertEquals("ångström",  new MmiUri("http://mmisw.org/ont/mmi/voc/%C3%A5ngstr%C3%B6m").getTerm());
+    	assertEquals("[brakets]", new MmiUri("http://mmisw.org/ont/mmi/voc/%5Bbrakets%5D").getTerm());
+
+        MmiUri m = new MmiUri("http://mmisw.org/ont/qu%C3%A9/ontolog%C3%ADa/t%C3%A9rmino");
+    	assertEquals("qué",       m.getAuthority());
+    	assertEquals("ontología", m.getTopic());
+    	assertEquals("término",   m.getTerm());
+
+        assertEquals("µß∑π", new MmiUri("http://mmisw.org/ont/mmi/voc/%C2%B5%C3%9F%E2%88%91%CF%80").getTerm());
     }
 
     

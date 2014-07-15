@@ -121,7 +121,6 @@ public final class MmiUri implements Cloneable {
 	 * the warning with a FB annotation but am not including any FB library just for this.) 
 	 */
 	private volatile Integer hashCode;
-	
 
 	/**
 	 * Creates an MmiUri by parsing the given string.
@@ -132,9 +131,24 @@ public final class MmiUri implements Cloneable {
 	 */
 	public MmiUri(String str) throws URISyntaxException {
 		this(str, false);
-	}	
+	}
 
-	/**
+    /**
+     * Returns the full decoded URI.
+     * Old "fix" to #123 ("encoded URI not properly handled") was wrong: we actually should
+     * use the decoded URI.
+     */
+    private static String getFullRequestedUri(URI juri) {
+        String scheme = juri.getScheme();
+        String res = String.format("%s%s",
+                scheme != null ? scheme + ":" : "",
+                juri.getSchemeSpecificPart()
+        );
+        //System.out.printf(" fullRequestedUri=[%s]\n", res);
+        return res;
+    }
+
+    /**
 	 * Creates an MmiUri by parsing the given string.
 	 * 
 	 * @param str (<code>http://mmisw.org/ont/mmi/someVocab.owl/someTerm</code>)
@@ -143,16 +157,12 @@ public final class MmiUri implements Cloneable {
 	 * 
 	 * @throws URISyntaxException if the requested URI is invalid according to the MMI specification.
 	 */
-	public MmiUri(String str, boolean allowUntilAuthority) throws URISyntaxException {
+	public MmiUri(final String str, boolean allowUntilAuthority) throws URISyntaxException {
 		URI juri = new URI(str);
-		
-		//
-		// Fix of issue #123: "encoded URI not properly handled"
-		// str may contain encoded parts, and note that URI.getPath() returns a *decoded* path.
-		// So, use URI.getRawPath() to keep everything consistent for extraction purposes.
-		//
-		final String path = juri.getRawPath();
-		
+        final String fullRequestedUri = getFullRequestedUri(juri);
+
+		final String path = juri.getPath();
+
 		if ( path == null ) {
 			throw new URISyntaxException(str, "not path");
 		}
@@ -169,9 +179,6 @@ public final class MmiUri implements Cloneable {
 		String reqUri = path;
 		String contextPath = root;
 		
-		
-		
-		String fullRequestedUri = str;
 		String requestedUri = reqUri;
 		// parsing described with an example:
 		
