@@ -34,8 +34,9 @@ public class PortalConsts {
 	
 	
 	/** Maximum ontology size (in #statements) for the data contents to be displayed automatically right after
-	 * the metadata loading in the OntologyPanel. See Issue #308:immediately show vocabulary contents. 
+	 * the metadata loading in the OntologyPanel. See Issue #308:immediately show vocabulary contents.
+     * From 1000 to 8000, see issue #325
 	 * */
-	public static final long MAX_ONTOLOGY_SIZE_SHOW_DATA = 1000;
+	public static final long MAX_ONTOLOGY_SIZE_SHOW_DATA = 8000;
 
 }
