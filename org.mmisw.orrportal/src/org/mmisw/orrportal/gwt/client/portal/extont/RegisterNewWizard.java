@@ -19,13 +19,13 @@ import com.google.gwt.user.client.Window;
 
 /**
  * Sequence of wizard pages to register an external ontology.
- * 
+ *
  * @author Carlos Rueda
  */
 public class RegisterNewWizard extends BaseWizard {
-	
+
 	private final RegisterNewPage1 page1 = new RegisterNewPage1(this);
-	
+
 	private final RegisterNewPage2 page2 = new RegisterNewPage2(this);
 
 	///////////////////////////////////////////////////////////////////////////////////
@@ -36,7 +36,7 @@ public class RegisterNewWizard extends BaseWizard {
 	private MetadataPage pageFullyHostedMetadataPage3;
 	private RegisterNewPageFullyHostedConfirmation pageFullyHostedConfirmation;
 
-	
+
 	///////////////////////////////////////////////////////////////////////////////////
 	// re-hosted type pages
 	private RegisterNewPageReHosted pageReHosted;
@@ -45,58 +45,67 @@ public class RegisterNewWizard extends BaseWizard {
 	private MetadataPage pageReHostedMetadataPage3;
 	private RegisterNewPageReHostedConfirmation pageReHostedConfirmation;
 
-	
+
 	///////////////////////////////////////////////////////////////////////////////////
 	// indexed type pages
 	private RegisterNewPageIndexed pageIndexed;
-	
-	
-	
+
+
+
 	// TODO
 	//private RegisterExternalOntologyPageReHostedConfirmation pageReHostedConfirmation;
-	
+
 	// TODO
 //	private private RegisterExternalOntologyPageIndexedConfirmation pageIndexedConfirmation;
-	
-	
-	
-	
+
+
+
+
 	private HostingType hostingType;
 
 	/**
-	 * @param portalMainPanel 
+	 * @param portalMainPanel
 	 */
 	public RegisterNewWizard(PortalMainPanel portalMainPanel) {
 		super(portalMainPanel);
 		contents.setSize("650px", "300px");
-		
+
 		contents.add(page1.getWidget());
 		statusLoad.setText("");
 	}
-	
-	
+
+
 	void ontologyInfoObtained(TempOntologyInfo tempOntologyInfo) {
 		assert tempOntologyInfo.getError() == null;
-		
+
 		this.setTempOntologyInfo(tempOntologyInfo);
+    prepareMdInitOptions();
 	}
-	
-	@Override
+
+  private Map<String, String> loadedMdValues;
+
+  private void prepareMdInitOptions() {
+    TempOntologyInfo tempOntologyInfo = getTempOntologyInfo();
+    loadedMdValues = tempOntologyInfo.getOntologyMetadata().getOriginalValues();
+    Orr.log("prepareMdInitOptions: loadedMdValues=" + loadedMdValues);
+  }
+
+  @Override
 	protected void pageNext(WizardPageBase cp) {
 		BasePage currentPage = (BasePage) cp;
 //		if ( tempOntologyInfo == null ) { TODO apply after testing
 //			return;
 //		}
-		
+
 		if ( currentPage == page1 ) {
 			contents.clear();
 			contents.add(page2.getWidget());
 		}
 		else if ( currentPage == page2 ) {
 			assert hostingType != null;
-			
+
 			BasePage nextPage = null;
-			
+
 			switch ( hostingType ) {
 			case FULLY_HOSTED:
 				if ( pageFullyHosted == null ) {
@@ -125,49 +134,52 @@ public class RegisterNewWizard extends BaseWizard {
 				nextPage = pageIndexed;
 				break;
 			}
-			
+
 			if ( nextPage != null ) {
 				contents.clear();
 				contents.add(nextPage.getWidget());
 				nextPage.activate();
 			}
 		}
-		
+
 		///////////////////////////////////////////////////////////////////////////////////
 		// fully-hosted type pages
 
 		else if ( currentPage == pageFullyHosted ) {
 			if ( pageFullyHostedMetadataPage1 == null ) {
-				pageFullyHostedMetadataPage1 = new MetadataPage(this, 
+				pageFullyHostedMetadataPage1 = new MetadataPage(this,
 				new MetadataSection1(HostingType.FULLY_HOSTED) {
 					protected void formChanged() {
 						pageFullyHostedMetadataPage1.formChanged();
 					}
 				});
+        pageFullyHostedMetadataPage1.mdSection.setValuesFromMap(loadedMdValues, false);
 			}
 			contents.clear();
 			contents.add(pageFullyHostedMetadataPage1.getWidget());
 		}
 		else if ( currentPage == pageFullyHostedMetadataPage1 ) {
 			if ( pageFullyHostedMetadataPage2 == null ) {
-				pageFullyHostedMetadataPage2 = new MetadataPage(this, 
+				pageFullyHostedMetadataPage2 = new MetadataPage(this,
 				new MetadataSection2() {
 					protected void formChanged() {
 						pageFullyHostedMetadataPage2.formChanged();
 					}
 				});
+        pageFullyHostedMetadataPage2.mdSection.setValuesFromMap(loadedMdValues, false);
 			}
 			contents.clear();
 			contents.add(pageFullyHostedMetadataPage2.getWidget());
 		}
 		else if ( currentPage == pageFullyHostedMetadataPage2 ) {
 			if ( pageFullyHostedMetadataPage3 == null ) {
-				pageFullyHostedMetadataPage3 = new MetadataPage(this, 
+				pageFullyHostedMetadataPage3 = new MetadataPage(this,
 				new MetadataSection3()  {
 					protected void formChanged() {
 						pageFullyHostedMetadataPage3.formChanged();
 					}
 				});
+        pageFullyHostedMetadataPage3.mdSection.setValuesFromMap(loadedMdValues, false);
 			}
 			contents.clear();
 			contents.add(pageFullyHostedMetadataPage3.getWidget());
@@ -179,42 +191,45 @@ public class RegisterNewWizard extends BaseWizard {
 			contents.clear();
 			contents.add(pageFullyHostedConfirmation.getWidget());
 		}
-		
+
 		///////////////////////////////////////////////////////////////////////////////////
 		// re-hosted type pages
 
 		else if ( currentPage == pageReHosted ) {
 			if ( pageReHostedMetadataPage1 == null ) {
-				pageReHostedMetadataPage1 = new MetadataPage(this, 
+				pageReHostedMetadataPage1 = new MetadataPage(this,
 				new MetadataSection1(HostingType.RE_HOSTED) {
 					protected void formChanged() {
 						pageReHostedMetadataPage1.formChanged();
 					}
 				});
+        pageReHostedMetadataPage1.mdSection.setValuesFromMap(loadedMdValues, false);
 			}
 			contents.clear();
 			contents.add(pageReHostedMetadataPage1.getWidget());
 		}
 		else if ( currentPage == pageReHostedMetadataPage1 ) {
 			if ( pageReHostedMetadataPage2 == null ) {
-				pageReHostedMetadataPage2 = new MetadataPage(this, 
+				pageReHostedMetadataPage2 = new MetadataPage(this,
 				new MetadataSection2() {
 					protected void formChanged() {
 						pageReHostedMetadataPage2.formChanged();
 					}
 				});
+        pageReHostedMetadataPage2.mdSection.setValuesFromMap(loadedMdValues, false);
 			}
 			contents.clear();
 			contents.add(pageReHostedMetadataPage2.getWidget());
 		}
 		else if ( currentPage == pageReHostedMetadataPage2 ) {
 			if ( pageReHostedMetadataPage3 == null ) {
-				pageReHostedMetadataPage3 = new MetadataPage(this, 
+				pageReHostedMetadataPage3 = new MetadataPage(this,
 				new MetadataSection3()  {
 					protected void formChanged() {
 						pageReHostedMetadataPage3.formChanged();
 					}
 				});
+        pageReHostedMetadataPage3.mdSection.setValuesFromMap(loadedMdValues, false);
 			}
 			contents.clear();
 			contents.add(pageReHostedMetadataPage3.getWidget());
@@ -226,9 +241,9 @@ public class RegisterNewWizard extends BaseWizard {
 			contents.clear();
 			contents.add(pageReHostedConfirmation.getWidget());
 		}
-		
+
 	}
-	
+
 	@Override
 	protected void pageBack(WizardPageBase cp) {
 		BasePage currentPage = (BasePage) cp;
@@ -236,14 +251,14 @@ public class RegisterNewWizard extends BaseWizard {
 			contents.clear();
 			contents.add(page1.getWidget());
 		}
-		else if ( currentPage == pageFullyHosted 
-		||   currentPage == pageReHosted 
-		||   currentPage == pageIndexed 
+		else if ( currentPage == pageFullyHosted
+		||   currentPage == pageReHosted
+		||   currentPage == pageIndexed
 		) {
 			contents.clear();
 			contents.add(page2.getWidget());
 		}
-		
+
 		else if ( currentPage == pageFullyHostedMetadataPage1
 		     ||   currentPage == pageReHostedMetadataPage1
 		) {
@@ -257,7 +272,7 @@ public class RegisterNewWizard extends BaseWizard {
 			else if ( pageIndexed != null ) {
 				nextPage = pageIndexed;
 			}
-			
+
 			if ( nextPage != null ) {
 				contents.clear();
 				contents.add(nextPage.getWidget());
@@ -275,7 +290,7 @@ public class RegisterNewWizard extends BaseWizard {
 			contents.clear();
 			contents.add(pageFullyHostedMetadataPage3.getWidget());
 		}
-		
+
 		else if ( currentPage == pageReHostedMetadataPage2 ) {
 			contents.clear();
 			contents.add(pageReHostedMetadataPage1.getWidget());
@@ -288,7 +303,7 @@ public class RegisterNewWizard extends BaseWizard {
 			contents.clear();
 			contents.add(pageReHostedMetadataPage3.getWidget());
 		}
-		
+
 	}
 
 
@@ -301,7 +316,7 @@ public class RegisterNewWizard extends BaseWizard {
 	@Override
 	protected void finish(WizardPageBase cp) {
 		BasePage currentPage = (BasePage) cp;
-		
+
 		if ( getTempOntologyInfo() == null ) {
 			// this should not normally happen -- only while I'm testing other functionalities
 			Window.alert("No ontology info has been specified--Please report this bug.");
@@ -314,17 +329,17 @@ public class RegisterNewWizard extends BaseWizard {
 			Window.alert("No user logged in at this point--Please report this bug.");
 			return;
 		}
-		
+
 
 		assert currentPage == pageFullyHostedConfirmation
 		    || currentPage == pageReHostedConfirmation
 //		    || currentPage == pageIndexedConfirmation    TODO
 		;
-		
+
 		/////////////////////////////////////////////////////////////////////
 		// Finish: fully hosted registration
 		if ( currentPage == pageFullyHostedConfirmation ) {
-			
+
 			// collect information and run the "review and register"
 			String error;
 			Map<String, String> newValues = new HashMap<String, String>();
@@ -337,32 +352,32 @@ public class RegisterNewWizard extends BaseWizard {
 				Window.alert(error);
 				return;
 			}
-			
+
 			CreateOntologyInfo createOntologyInfo = new CreateOntologyInfo();
 			createOntologyInfo.setHostingType(HostingType.FULLY_HOSTED);
-			
+
 			createOntologyInfo.setMetadataValues(newValues);
-			
+
 			OtherDataCreationInfo dataCreationInfo = new OtherDataCreationInfo();
 			dataCreationInfo.setTempOntologyInfo(getTempOntologyInfo());
 			createOntologyInfo.setDataCreationInfo(dataCreationInfo);
-			
+
 			// set info of original ontology:
 			createOntologyInfo.setBaseOntologyInfo(getTempOntologyInfo());
-			
+
 			// set the desired authority/shortName combination:
 			createOntologyInfo.setAuthority(pageFullyHosted.getAuthority());
 			createOntologyInfo.setShortName(pageFullyHosted.getShortName());
-			
+
 			RegisterNewExecute execute = new RegisterNewExecute(createOntologyInfo);
-			
+
 			execute.reviewAndRegisterNewOntology();
 		}
-		
+
 		/////////////////////////////////////////////////////////////////////
 		// Finish: re-hosted registration
 		else if ( currentPage == pageReHostedConfirmation ) {
-			
+
 			// collect information and run the "review and register"
 			String error;
 			Map<String, String> newValues = new HashMap<String, String>();
@@ -374,31 +389,31 @@ public class RegisterNewWizard extends BaseWizard {
 				Window.alert(error);
 				return;
 			}
-			
+
 			CreateOntologyInfo createOntologyInfo = new CreateOntologyInfo();
 			createOntologyInfo.setHostingType(HostingType.RE_HOSTED);
-			
+
 			createOntologyInfo.setMetadataValues(newValues);
-			
+
 			OtherDataCreationInfo dataCreationInfo = new OtherDataCreationInfo();
 			dataCreationInfo.setTempOntologyInfo(getTempOntologyInfo());
 			createOntologyInfo.setDataCreationInfo(dataCreationInfo);
-			
+
 			// set info of original ontology:
 			createOntologyInfo.setBaseOntologyInfo(getTempOntologyInfo());
-			
-			
+
+
 			RegisterNewExecute execute = new RegisterNewExecute(createOntologyInfo);
-			
+
 			execute.reviewAndRegisterNewOntology();
 		}
-		
+
 		/////////////////////////////////////////////////////////////////////
 		// TODO Finish: indexed registration
 //		else if ( currentPage == pageIndexedConfirmation ) {
-//			
+//
 //		}
-		
+
 
 	}
 

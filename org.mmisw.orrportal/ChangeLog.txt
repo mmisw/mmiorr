@@ -2,6 +2,21 @@ org.mmisw.orrportal: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2014-10-07:  2.1.2
+  - Fix #331:	metadata fields not updating on ontology upload
+    The loaded metadata properties were not transferred to the corresp wizard pages!
+    Fix applied on both the fully-hosted and re-hosted modes.
+
+2014: May-Aug:
+	- #325: set MAX_ONTOLOGY_SIZE_SHOW_DATA to 8000 (from 1000)
+	- 2.1.0: implement #321: 	more graceful handling of browser navigation including history...
+	- 2.0.52: more flexible inclusion of top and bottom html fragments for main web page (based on files under orrportal.workspace.dir)
+	- 2.0.51: fix in client library (version_status propagated from older version to new version; or simply "undefined" when null in underlying db)
+	- 2.0.5: use RegisteredOntologyInfo.versionStatus in isTestingOntology (#279)
+	- as implemented in orrclient library, in email upon a successful ontology registration include ont-based URL when no self-resolvable URI
+	- as implemented in orrclient library, send email upon a successful ontology registration to addresses in /etc/mmiorr/notifyemails
+	- Fix #320: allow parenthesis in term identifiers
+
 2013-09-14  2.0.43
     - fix 317: confusing prefixes when mapping more than 26 ontologies
 
@@ -14,10 +29,10 @@ $Id$
 2013-02-16  2.0.41.beta
 	- 308: immediately show vocabulary contents
 	  OntologyPanel: Using new size attribute in RegisteredOntologyInfo (see orrclient module), and new
-	  constant PortalConsts.MAX_ONTOLOGY_SIZE_SHOW_DATA to immediately retrieve and show the contents 
+	  constant PortalConsts.MAX_ONTOLOGY_SIZE_SHOW_DATA to immediately retrieve and show the contents
 	  of the ontology. This max size set to 1000 statements but subject to change.
-	- OntologyPanel: added tooltips to metadata and contents disclosure headers. 
-	  
+	- OntologyPanel: added tooltips to metadata and contents disclosure headers.
+
 2013-02-16  2.0.40.beta
 	- fix issue 310: multiple property values not shown. see OtherOntologyContentsPanel
 
@@ -29,7 +44,7 @@ $Id$
 	  MetadataGroupPanel.putValues now calling a new supporting method _checkUriComponent where
 	  a more restrictive rule is checked. The value for acronym (and also authority abbreviation)
 	  must start with a letter or underscore and be only composed of letters, digits, underscores or hyphens,
-	  and contain at least one letter or digit. 
+	  and contain at least one letter or digit.
 
 2013-01-11
 	- Note: I change that I then reverted:
@@ -51,10 +66,10 @@ $Id$
 2012-09-05  2.0.34.beta
 	- 299: Not consistent assignment of short-hand prefixes in mapping tool
 	  VineEditorPanel, VineMain: now namespaces is a List<String> (not a Set<String>).
-	  See OrrClient module.	 
-	  
+	  See OrrClient module.
+
 	- Vine: when loaded, mappings are now sorted lexicographically by <left><relation><right>.
-	  See OrrClient module.  	  
+	  See OrrClient module.
 
 2012-09-03  2.0.33.beta
 	- 298: Load of external ontology for mapping does not use content negotiation
@@ -64,7 +79,7 @@ $Id$
 	  Fix 296: Direct load of mapping ontology does not load mapped ontologies when editing.
 	- Fix 293: ontology list empty when entering vine interface directly
 	  Adjustments for these fixes mainly done in VineEditorPanel.
-	
+
 2012-09-01  2.0.31.beta
 	- Fix 297: error: "No data creation info provided! (please report this bug)"
 	  See OntologyPanel.reviewAndRegister.
@@ -76,21 +91,21 @@ $Id$
 	  The previous mechanism based on MultiWordSuggestOracle and SuggestBox
 	  is not used anymore. Instead, a TextBox and a ListBox are used with a
 	  similar but more complete dispatch.
-	  
+
 	  TODO: include option to "Load local ontology" (use similar "upload" mechanism
 	  as in the "Upload ontology" option.
 
 2012-08-21  2.0.29.beta
 	- Initial adjustments to facilitate mappings against external ontologies.
-	- Minimize dealing directly with RegisteredOntologyInfo; instead deal 
+	- Minimize dealing directly with RegisteredOntologyInfo; instead deal
 	  with base class BaseOntologyInfo as much as possible.
-	- In the concrete case of loading an external ontology, use the new 
+	- In the concrete case of loading an external ontology, use the new
 	  service IOrrClient.getExternalOntologyInfo.
-	
+
 2012-08-18  2.0.28.beta
 	- SearchGroup: All subjects in an ontology are now included for mapping purposes.
 	  This was mainly done to enable possible mappings using the BODC vocabularies.
-	  Duplicates within the same ontology are avoided using a Set<EntityInfo>. 
+	  Duplicates within the same ontology are avoided using a Set<EntityInfo>.
 
 2012-08-18  2.0.27.beta
 	- sync with orrclient module
@@ -123,16 +138,16 @@ $Id$
 	- build.xml: explicitly compiling with source="1.5" target="1.5" as I recently updated by
 	  local development environment (so, by default I would be compile for 1.6).
 
-2010-11-16 
+2010-11-16
 	Giving GWT 2.x another try. Now, with the latest as of today, which is 2.1.
-	
-	OrrService: Removed unnecessary import org.mmisw.orrportal.gwt.server.UploadServlet, 
-	which was added by Eclipe because of a reference in a javadoc comment, but not actually 
-	used in the code.  This made the GWT compiler (2.1) generate an error because this 
-	server-side element is not part of the 'shared' interface (and that's correct). 
-	Interestingly, GWT 1.5.2 works fine here, and it should be so as the element is NOT 
+
+	OrrService: Removed unnecessary import org.mmisw.orrportal.gwt.server.UploadServlet,
+	which was added by Eclipe because of a reference in a javadoc comment, but not actually
+	used in the code.  This made the GWT compiler (2.1) generate an error because this
+	server-side element is not part of the 'shared' interface (and that's correct).
+	Interestingly, GWT 1.5.2 works fine here, and it should be so as the element is NOT
 	actually used. One other weird thing about the newer GWT versions!
-	
+
 	Not significant outcome from this new attempt: Development mode continues to be
 	intolerably slow (perhaps because of the mix between old and new underlying GWT mechanisms?),
 	and the build process continues to be complicated, in fact, I couldn't make 2.1 to run
@@ -140,114 +155,114 @@ $Id$
 	So, reverting to the previous state, except for the change in OrrService above and the
 	removal of the dependency on module com.google.gwt.gen2.Gen2 (ie., gwt-incubator_1-5_Dec_28.jar)
 	as the code for this is not activated and will still need a more stable basis in general.
-	
-	
+
+
 2010-11-03  2.0.15.beta
 	- OrrClientProxy.portalBaseInfo: now final and created in constructor.
- 	   
+
 	- TermTable: improve help message regarding cell editing and importing/exporting:
-	
+
 		Editing the contents
-		If you are creating a new vocabulary or a new version of an existing vocabulary, you 
+		If you are creating a new vocabulary or a new version of an existing vocabulary, you
 		can edit the contents of the table as indicated below.
-		
+
 		Editing the cells
-		Locate the desired cell and type Enter to start editing the contents. When done with 
+		Locate the desired cell and type Enter to start editing the contents. When done with
 		the editing, type Enter again to complete the changes.
-		
+
 		Adding/removing rows or columns
 		Open the drop-down menu corresponding to the row or column and select the desired option.
-		
+
 		Importing/Exporting the table
 		Open the drop-down menu in the upper-left corner of the table; then:
 		Select the Import option to set the contents of the table from CSV formatted text.
-		Select the Export button to get a text version of the current contents of the table.		
-			
+		Select the Export button to get a text version of the current contents of the table.
+
 2010-10-28  2.0.15.beta
 	- new GetAllOntologiesResult for the getAllOntologies operation.
 
-TODOs 
+TODOs
   - regarding #287 "concurrency"
 	 - in OrrClientProxy, review:
  	   portalBaseInfo: perhaps it can be created at initialization time rather than on demand.
- 	
+
 
 2010-10-28  2.0.14.beta
 	- Updated ReadMe documentation.
 
 2010-10-27  2.0.14.beta
 	- sync'ing version with OrrClient and Ont service.
-	
-	- OntologyPanel: Upon first disclosure, the data contents panel was expanded 
-	  in readOnly mode for editing of new version -> fixed. See OntologyPanel. 
-	  
+
+	- OntologyPanel: Upon first disclosure, the data contents panel was expanded
+	  in readOnly mode for editing of new version -> fixed. See OntologyPanel.
+
 	- #211: "Remove unnecesary registration confirmation dialogs"
 	  OntologyPanel: removed the Window.confirm call (doRegister called directly).
-	  
+
 	- Misc: build.xml: added deploy-war target
-	  
-	
+
+
 2010-09-29  2.0.9.beta
 	- Updates in the OrrClient library.
-	
+
 
 2010-09-27  2.0.8.beta
 	- Using new Ont client library: org.mmisw.ont.client.jar, which replaces
 	  org.mmisw.ont.vocabulary.jar, org.mmisw.ont.misc.jar, org.mmisw.ont.mmiuri.jar
-	  
+
 	- Some testing for table widgets using the preliminary classes OntologyTableGwtIncubator
 	  and OntologyTableSc (in package org.mmisw.orrportal.gwt.client.util.table.ontab).
 	  After not very successful tests, these implementations are "disabled" and
-	  we continue with our basic OntologyTable implementation. However, I'm keeping 
+	  we continue with our basic OntologyTable implementation. However, I'm keeping
 	  the <inherits name='com.google.gwt.gen2.Gen2' /> in Orr.gwt.xml and the
 	  corresponding library (gwt-incubator_1-5_Dec_28.jar) to facilitate further
 	  attempts later on.
-	  
-	
-	
+
+
+
 2010-09-25  2.0.7.beta
 	Implemented 267: Lazy loading of ontology contents
 	- Using new service IOrrClient.getOntologyMetadata: the opening of a registered
 	  ontology starts by only retrieving the metadata. The contents (data) of the
 	  ontology is retrieved when the user expands the data DislosurePanel. In this
 	  operation the existing IOrrClient.getOntologyContents is used.
-	
-2010-09-23  2.0.6.beta
-	- GWT 2.0.x can now be used to create the application. However, performance has 
-	  in general degraded	(and significatly in development mode!). 
-	  Details in gwt2/gwt2.txt
-	
-	
-2010-09-22  2.0.6.beta
-	- Orr.css/UtilTable: using style cellTextBreakWord as a quick "fix" to limit the width of 
-	  columns, specially useful in the case of the CF vocabulary. Under testing.
-	  
-	- 268: "Upgrade GWT to most recent version"
-	  Started some preparations. 
 
-	
+2010-09-23  2.0.6.beta
+	- GWT 2.0.x can now be used to create the application. However, performance has
+	  in general degraded	(and significatly in development mode!).
+	  Details in gwt2/gwt2.txt
+
+
+2010-09-22  2.0.6.beta
+	- Orr.css/UtilTable: using style cellTextBreakWord as a quick "fix" to limit the width of
+	  columns, specially useful in the case of the CF vocabulary. Under testing.
+
+	- 268: "Upgrade GWT to most recent version"
+	  Started some preparations.
+
+
 2010-09-12  2.0.5.beta
 	- removed org.mmi.ont.util.jar: no longer needed; related operations now provided by Ont's
 	  org.mmisw.ont.misc.jar library (ie., by the JenaUtil2 class).
-	  
+
 	- removed dependency on org.mmi.util.jar library.
-	  
+
 2010-09-09   2.0.4.beta
 	- Removed unused org.mmisw.orrportal.gwt.server.MdUtil
-	
+
 	- Adjustments to retrieve AttrDef's options only on demand when getOptionsVocabulary() != null.
-	
+
 
 2010-09-07   2.0.3.beta
 	- index.html renamed to index.jsp for more flexibility and a bit of easier customization
 	  after deployment.
 	  It now has two "includes," one right after <body> and one right before </body>
-	  with the new files _btop.html and _bbot.html. 
-	  All lines starting with # are omitted for purposes of the included contents. 
+	  with the new files _btop.html and _bbot.html.
+	  All lines starting with # are omitted for purposes of the included contents.
 	  The contents are always included unless there is a line starting with ``# ignore: yes''.
 	  Note: This mechanism can be improved but it already helps customize the main page via the
 	  included fragments without the main page having to be modified.
-	  
+
 	- Lots of more clean-up:
 		- Removed PortalConfig.BIOPORTAL_REST_URL (now a orrclient's concern, not portal's anymore)
 		- removed unused org.mmisw.orrportal.gwt.client.metadata.UploadOntologyPanel
@@ -260,17 +275,17 @@ TODOs
 		- removed UploadResult upload(ReviewResult_Old reviewResult_Old, LoginResult loginResult_Old)
 		- removed many methods in OrrServiceImpl related with the above.
 		- removed org.mmisw.orrportal.gwt.server.OntologyUploader
-		
+
 	- TODO: review usage of the *_Old types (created some time ago as part of a previous unfinished refactoring)
 
-	
+
 2010-09-04   2.0.2.beta
 	- Changes because of changes in orrclient library (formerly iserver)
-	
+
 	- Renamings:
 		- Module at svn renamed to org.mmisw.orrportal (formerly org.mmisw.ontmd).
 		- Packages org.mmisw.ontmd{.**} --> org.mmisw.orrportal{.**}
-		
+
 
 2010-09-03   2.0.1.beta
 	More clean-up
@@ -286,23 +301,23 @@ TODOs
 					StringManipulationInterface.java
 					StringManipulationUtil.java
 					TransProperties.java
-					Transformation.java	
-					Transformer.java	
-					package-info.java	
-					
-		- class ..gwt.client.UploadPanel REMOVED (unused)		
+					Transformation.java
+					Transformer.java
+					package-info.java
+
+		- class ..gwt.client.UploadPanel REMOVED (unused)
 		- class ..gwt.server.portal.PortalImpl renamed/moved to ..gwt.server.OrrClientProxy
 		- packages	..gwt.server.portal and ..gwt.server.voc2rdf REMOVED (empty now)
 		- class ..gwt.server.MdHelper_OLD REMOVED (unused, obsolete)
-		
-		Several renamings to reflect new core name "orrService" (previously "ontmdService"): 
+
+		Several renamings to reflect new core name "orrService" (previously "ontmdService"):
 			- ..gwt.client.rpc.OntMdService{Async} --> ..gwt.client.rpc.OrrService{Async};
 			- ..gwt.server.OntMdServiceImpl --> ..gwt.server.OrrServiceImpl
 			- Orr.gwt.xml updated
-		
-		
-	
-	
+
+
+
+
 2010-09-02   2.0.1.beta
 
 	 - Completed refactoring changes for the new dispatch:
@@ -318,36 +333,36 @@ TODOs
 	 - As part of the new overall dispatch, the following issues fixed:
 	 	277: "ontology table loaded twice when logged in"
 		278: "more efficient ontology dispatch"
-		
+
 	 - New public/portal/index.jsp and public/voc2rdf/index.jsp with redirects to the
 	   main page, which corresponds to public/index.html (with index.html being implicit).
 	 - Removed corresponding public/portal/index.html and public/voc2rdf/index.html.
-	 
+
 	 - Obsolete files removed:
 	 	- removed voc2rdf.launch
 	 	- removed portal.launch
 	 	- setenv.sh
-	   
-	    
+
+
 2010-09-02
 
 	NOTE: Current version of all modules in the SVN repository, ie., with the first deployment
 	having the 2.0.0.beta version, was just tagged 'beta1-2010-08-27':
 	    http://code.google.com/p/mmisw/source/browse/#svn/tags/beta1-2010-08-27
-	    
+
 
 2010-08-29   2.0.0.beta
 	Lots of code clean-up. Besides the obvious objectives (simplify, facilitate maintenance), a
-	central goal at this point is to prepare for a more efficient dispatch when the ORR 
+	central goal at this point is to prepare for a more efficient dispatch when the ORR
 	application is open. For example, when open with a certain ontology, avoid loading the
 	list of registered ontologies (only load this list when necessary: for the main page or
 	for the Vine interface).
 	So the immediate target issues are:
 		277: "ontology table loaded twice when logged in"
 		278: "more efficient ontology dispatch"
-	
+
 	Many obsolete classes removed and some refactorings:
-	 
+
 	- ...gwt.client.Main: startGui(params, mainPanel) renamed to addMainPanel(params, mainPanel)
 	- ...gwt.client.util.Util renamed to ...gwt.client.util.OrrUtil
 	- Some elements moved from Main to new class Orr:
@@ -356,9 +371,9 @@ TODOs
 		log(String msg)
 		refreshOptions(attr, callback)
 	  Many sources updated with the corresponding new references.
-	  
+
 	- Removed unused class ...gwt.client.TestUploadPanel.
-		
+
 	- In package ...gwt.client.voc2rdf: Removed the following obsolete unused classes (which were
 	  developed for an old version of the voc2rdf tool):
 		ClassPanel
@@ -366,11 +381,11 @@ TODOs
 		Voc2Rdf
 		Voc2RdfMainPanel
 		VocPanel
-	
+
 	- New class Orr will provide the new dispatch mechanism eventually replacing Main and Portal
 	  .. UNDER DEVELOPMENT ...
-	  
-	  
+
+
 	TODO: by looking at referrals in the google analytics I see this page:
 	   http://www.w3.org/2006/07/SWD/SKOS/reference/20090315/implementation.html
 	which has links to:
@@ -386,62 +401,62 @@ TODOs
 	- Vine mappings: allowing to maintain the original SKOS namespace when editing a new version
 	  of a mapping ontology. That is, if a version of a mapping ontology uses the SKOS
 	  namespace "http://www.w3.org/2008/05/skos#", then any modification/addition of mappings
-	  for a new version will continue to use that namespace. 
-	
+	  for a new version will continue to use that namespace.
+
 
 
 2010-08-23   1.9.95.alpha
 	- iserver module: ONLY the following properties are considered for
 	  the extraction of metadata for a mapping:
 	     RDFS.comment, Vine.confidence, and Vine20071128.confidence
-	     
+
 	- MappingMetadataPanel: fix to properly assign TextBox.
 	- MappingsPanel: metadata section *not* anymore autmatically open for first mapping
 	  (it looks rather confusing; better "force" the user to click the metadata icon ;)
-	
-	
-	
+
+
+
 2010-08-21   1.9.95.alpha
-	- .../gwt/client/img/: enabled the "beta" logo: mmior.jpg; 
+	- .../gwt/client/img/: enabled the "beta" logo: mmior.jpg;
 	  (previous "alpha" logo file renamed to mmior_alpha.png)
-	
+
 	- Fixed 220: "on browse page but tag remains in #login after signing in"
 	  History token mechanism (eg., #login, #logout) not used anymore. Instead these actions
 	  are dispatched from buttons (and not gwt hyperlinks).
 
 	- Implemented 248: "Include mapped vocabularies in mapping ontology"
-	
-	
+
+
 2010-08-20   1.9.95.alpha
 	- class org.mmisw.ontmd.gwt.client.util.query.QueryUtil moved to here from the iserver module.
 	  However, its code has been disabled while we determine what to do with it.
 	  See iserver's changelog.
-	  
+
 	- Done: revert mapping metadata changes if user cancels editing.
-	
-	TODO: check the overall handling of the cancellation as it seems there are unnecesary repeated 
+
+	TODO: check the overall handling of the cancellation as it seems there are unnecesary repeated
 	calls to VineEditorPanel._setUp. (not critical, I hope).
-	
-	NOTE: In Chrome and Safari, clicking any of the fields in the mapping metadata panel does not 
+
+	NOTE: In Chrome and Safari, clicking any of the fields in the mapping metadata panel does not
 	focus the field! (works in firefox). I think this is related with the fact that the container
 	of these fields is also a focusable element (maybe).
-	Fixed: MappingMetadataPanel._createWidgetForValue: added a click listener to the field just 
-	to request focus. It works.  
-	
-	  
-	   
+	Fixed: MappingMetadataPanel._createWidgetForValue: added a click listener to the field just
+	to request focus. It works.
+
+
+
 2010-08-19   1.9.95.alpha
 
 	Removed the following unused methods (reflecting corresp. removals in IServer):
 	- OntMdService/OntMdServiceAsync/OntMdServiceImpl: List<EntityInfo> getEntities(String ontologyUri)
 	- PortalImpl: List<EntityInfo> getEntities(String ontologyUri)
-	
+
 	Also removed old unused method:
 	- OntMdService/OntMdServiceAsync/OntMdServiceImpl: DataResult getData(OntologyInfoPre ontologyInfoPre)
-	
+
 	Several changes to enable the new dispatch of ontology types, in particular mappings (Vine).
-	
-	
+
+
 	FIXME:  Mapping metadata need to be reverted if user cancels editing !!!
 
 
@@ -450,24 +465,24 @@ TODOs
 	Vine: enabling reification of mapping statements to allow metadata association, issues:
 	- 166: reification for mapping
 	- 169: metadata association per mapping
-	
-	
+
+
 
 
 2010-08-16   1.9.94.alpha
 	Syncing with iserver (re. UTF8 related problems).
-	
+
 2010-08-09  1.9.93.alpha
-	- Did pending addition of the panel to select file type in upload of a 
+	- Did pending addition of the panel to select file type in upload of a
 	  *new version* of a registered ontology.
-	
-	
+
+
 2010-08-05  1.9.92.alpha
 	Completed Issue #133 "allow to do narrower-than hierarquies trees with indentation simple files"
-	
+
 	- Concept hierarchy already supported (see iserver module).
 	- Updated related description texts in the interface in this module.
-	
+
 	In summary
 
 	This functionality has been enabled via one more possible format for the
@@ -484,88 +499,88 @@ TODOs
 
 	Of course, an interesting future feature is to provide an appropriate
 	GUI for the generated SKOS vocabularies (including good visualization of
-	the hierarchy of terms).	
+	the hierarchy of terms).
 
 
 2010-08-03  1.9.92.alpha
 
 	Issue #133 "allow to do narrower-than hierarquies trees with indentation simple files"
 
-	Several preparations.  
+	Several preparations.
 	This functionality is being enabled via one more possible format for the
 	registration of an external file. So far, only RDF/XML was accepted. But now, besides
 	accepting the various formats supported by Jena, there is a special file type, "voc2skos",
 	to do the conversion from a text file (CSV with a special header) into SKOS.
 	The registration itself is done in "RDF/XML".
 	See iserver module.
-	
+
 	Note that once registered, the ontology will continue to be handled in the
 	"other" category for purposes of display (ie., not as a "voc2rdf" or "vine").
 	TODO: perhaps enable the "voc2rdf" interface?
 	An appropriate GUI for the generated SKOS vocabularies (including good
 	visualization of the hierarchy of terms) is deferred to a later version.
-	
-		
+
+
 2010-08-03
 	- IRow.isHtml(colName) added to allow client to indicate a column is in HTML.
-	
-	
+
+
 	Code clean-up:
 	- Removed the follwoing methods which were not used for a long time while the corresponding
 	  alternatives were tests:
-	  	- PortalMainPanel.createNewFromFile(CreateOntologyInfo createOntologyInfo) 
+	  	- PortalMainPanel.createNewFromFile(CreateOntologyInfo createOntologyInfo)
 	      (using dispatchUploadOntology()).
 		- PortalMainPanel.getOntologyInfo(String ontologyUri) (using resolveUri(String uri)).
-	
-	
+
+
 2010-08-01
 	- some refactoring to prepare use of more advanced table widgets in a future version:
-	
+
 	  New package ...gwt.client.util.table.utab with:
-	  
+
 	  	- IUtilTable interface with public operations from UtilTable, which is now package-visible here.
 	  	- new factory UtilTableCreator for IUtilTable objects.
 	  	- for consistency, IRow also moved here.
-	  	
+
 	  New package ...gwt.client.util.table.ontab with:
-	  
+
 	  	- IOntologyTable interface with public operations from OntologyTable, which is now package-visible here.
 	  	- new factory OntologyTableCreator for IOntologyTable objects.
 	  	- OntologyTable's inner static interface IQuickInfo is now a top-level type here.
-	  	
-	  	
+
+
 	  Note, the two table things above will eventually be merged into one especially when we
 	  start using a common base toolkit like the smartgwt.
-	  
-	  
+
+
 	- SmartGWT test: I did a quick test to integrate smartgwt, see gwt.client.util.table.ontab.OntologyTableSgwt
-	  
-	  
-	  
+
+
+
 2010-07-26  1.9.91.alpha
 	- Issue #236 "Author column should show Content Creator"
 	  Change in iserver module. See ChangeLog there.
 	  OntologyTable: it now includes tooltips for the various columns, in particular to
 	  explain the 'Author' column.
-	  
+
 	- Misc: new utility class TooltipIcon that extract the icon/tooltip functionality from
 	  TLabel. TODO: Update TLabel to use TootipIcon.
-	  
+
 	- Issue #264 "versions table sorted up by default"
 	  Fixed: ControlsPanel.launchVersions: call ontologyTable.setSortColumn("version", true)
-	  (2nd param should be true for 'sort down').  
-	
-	
+	  (2nd param should be true for 'sort down').
+
+
 2010-07-23
 	- Some preparation to support direct registration in fully-hosted mode (so far, only
 	  re-hosted has been supported).
 	  See DirectRegistrationServlet.
-	  **NOTE** that fully-hosted is now processed but hasn't been tested. So, the 
+	  **NOTE** that fully-hosted is now processed but hasn't been tested. So, the
 	  recommendation is still to indicate an ontologyUri that is NOT
 	  resolvable by the corresponding Ont service (if it is, then it will be handled as
 	  a fully-hosted submission).
-	  
-	  
+
+
 2010-07-21
 	SKOS-based vocabularies (issues #133, #149)
 	- Reviewing current code and adding some logging in preparation for necessary
@@ -573,18 +588,18 @@ TODOs
 
 2010-06-30   1.9.8.alpha
 	- Completed Issue 44: "want sorting of columns in Browse view"
-	  Added an icon and dispatch of a popup menu with "Sort up" and "Sort down" options. 
+	  Added an icon and dispatch of a popup menu with "Sort up" and "Sort down" options.
 	  See OntologyTable.ColHeader
-	  
+
 	- PortalControl.quickInfo along with OntologyTable: include numbering in the browse table.
-	
+
 
 2010-06-29   1.9.8.alpha   (note: syncing version with Ont and orr modules)
 	Upgraded Jena library to 2.6.3:
 	As a general approach, I'm removing all the "old" libraries that have a corresponding JAR in the
 	new version of Jena, and then using the ones coming with Jena:
-	
-	- Removed "old" jars from base_war/WEB_INF/lib/ associated with Jena 2.5.6 that have versions 
+
+	- Removed "old" jars from base_war/WEB_INF/lib/ associated with Jena 2.5.6 that have versions
 	  in the new Jena:
 		-rw-r--r--  1 carueda  staff   151637 Aug  4  2009 arq-extra.jar
 		-rw-r--r--  1 carueda  staff  1203860 Aug  4  2009 xercesImpl.jar
@@ -594,7 +609,7 @@ TODOs
 		-rw-r--r--  1 carueda  staff  3147374 Aug  4  2009 icu4j_3_4.jar
 		-rw-r--r--  1 carueda  staff  1405635 Aug  4  2009 arq.jar
 		-rw-r--r--  1 carueda  staff   358085 Aug  4  2009 log4j-1.2.12.jar
-	
+
 	- base_war/WEB_INF/lib/jena/ new directory containing ALL(*) the jars associated with the latest
 	  version of Jena, which is 2.6.3:
 		-rw-r--r--@ 1 carueda  staff  1203860 Feb  5  2009 xercesImpl-2.7.1.jar
@@ -611,56 +626,56 @@ TODOs
 		-rw-r--r--@ 1 carueda  staff  1680523 May 28 14:26 arq-2.8.4.jar
 		-rw-r--r--@ 1 carueda  staff  1900385 Jun  1 14:31 jena-2.6.3.jar
 		-rw-r--r--@ 1 carueda  staff  1506473 Jun  1 14:32 jena-2.6.3-tests.jar
-	(*) I'm just following the indication in Jena-2.6.3/doc/readme.html: "Installation: ... set the Java 
+	(*) I'm just following the indication in Jena-2.6.3/doc/readme.html: "Installation: ... set the Java
 	classpath to include all the JAR files in the JENAROOT/lib/ directory."
 
 
 2010-06-29
 	PortalImpl now logs the IServer version and build, which is now properly reported by that
 	module: log.info("Using: " +iserver.getAppInfo())
-	
-	
+
+
 2010-06-17   1.9.4.alpha
 	#158: "Mechanism for tracking accesses to ontologies/terms"
 	Using Google analytics:
-	
+
 	- sample.build.properties: new ga.uanumber property
 	- PortalConfig.GA_UA_NUMBER captures this property
 	- PortalBaseInfo.gaUaNumber added
-	- GaUtil: new class for GA JSNI based utilities, which includes check to 
+	- GaUtil: new class for GA JSNI based utilities, which includes check to
 	  PortalBaseInfo.getGaUaNumber() to actually perform the tracker javascript calls.
-		  GaUtil.trackEvent(category, action, opt_label, opt_value)  
-		  GaUtil.trackPageview()  
+		  GaUtil.trackEvent(category, action, opt_label, opt_value)
+		  GaUtil.trackPageview()
 		  GaUtil.trackPageview(pageName)
-	
+
 	- Asynchronous snippet:
 	  - new base_war/WEB_INF/classes/ga_snipped.js with parameter ${ga.uanumber}
 	  - build.xml: if ga.uanumber is defined, then a parameter ga_snipped is initialized with
 	    the contents of ga_snipped.js with replacement of the ${ga.uanumber}. Then, this snippet is
 	    inserted at the bottom of the <head> section in index.html(*), which now has a token
-	    @ga_snippet@.  If ga.uanumber is NOT defined, @ga_snippet@ is replaced by an empty string. 
-	    
+	    @ga_snippet@.  If ga.uanumber is NOT defined, @ga_snippet@ is replaced by an empty string.
+
 	  (*) See http://code.google.com/apis/analytics/docs/tracking/asyncTracking.html
-	  
+
 	- PortalMainPanel.onHistoryChanged(historyToken) calls GaUtil.trackPageview(historyToken)
 	  TODO determine when to use trackEvent instead of trackPageview.
-	  
-	    
-	  
+
+
+
 2010-06-16   1.9.4.alpha
 	#158: "Mechanism for tracking accesses to ontologies/terms"
 	- preliminary preparations using Google analytics
-		  
-	
-	
+
+
+
 2010-06-16   1.9.3.alpha
 	Fixed issue #257:"version selection window remains open"
 	- OntologyTable: add listener also to the uri element.
-	
+
 	- ControlsPanel.launchVersions:
 	  - close dialog upon any change in browser history (this was kind of a bug)
 	  - better location for the dialog using popup.setPopupPositionAndShow
-	  
+
 
 2010-06-15   1.9.2.alpha   (note: syncing version with iserver and Ont modules)
 	Fixed issue #252: "omv:version gone?"
@@ -669,7 +684,7 @@ TODOs
 2010-06-15   1.9.1.alpha
 	- Fixed issue #245:"cannot find authority abbreviation after typing a few letters"
 	  FieldWithChoose: just set limit of the suggest box to the number of options.
-	  
+
 2010-06-14   1.9.0.alpha
 	Issue #242: "admin interface to remove an ontology" implemented:
 	- Changes in Ont and iserver modules completed.
@@ -679,82 +694,82 @@ TODOs
 2010-04-xx   1.9.0.alpha
 	Continuing implementation of admin operations
 	- unregister ontology
-	
+
 2009-12-29   1.8.1.alpha
 	- build.xml: generate orr.war (instead of old ontmd.war)
 	- Util.isOrrAdmin: Tells if the logged in user is the ORR admin.
 	- Used by HeaderPanel to include the Admin interface link.
-	
+
 2009-12-28   1.8.1.alpha
-	- AdminPanel moved to new package org.mmisw.ontmd.gwt.client.portal.admin 
+	- AdminPanel moved to new package org.mmisw.ontmd.gwt.client.portal.admin
 	- preliminary Server.createGroupsOntology (management of internal resources still under revision)
 
 2009-12-24   1.8.0.alpha
 	New Admin interface intended to provide various admin operations.
 	Initially with creation of the "internal" users instantiation ontology.
 	See modules iserver and ont.
-	 
+
 
 2009-12-23   1.8.0.alpha
 	Preparing for handling "internal" ontologies. An internal ontology provides supporting information
-	for the MMI ORR. 
-	
+	for the MMI ORR.
+
 	An internal ontology is visible only to administrators and its owner.
 	- Util.isInternalOntology: determines if an ontology is "internal" according to the authority component,
 	  currently, "mmiorr-internal". In general, internal ontologies are to be fully hosted.
-	  
+
 	- See http://marinemetadata.org/community/teams/tech/mmiorront
 	- See http://mmisw.org/orr/#http://mmisw.org/ont/mmi/mmiorr
-	
+
 	- The planned internal ontologies are:
-		.../mmiorr-internal/users - mmiorr:User instances -- to be updated automatically 
+		.../mmiorr-internal/users - mmiorr:User instances -- to be updated automatically
 		.../mmiorr-internal/groups - mmiorr:Group instances
-	
+
 
 2009-12-22   1.7.3.alpha
 	- changes according to removal of TempOntologyInfo's namespace attribute in iserver module.
-	- minor comments update. 
-	
+	- minor comments update.
+
 2009-12-21   1.7.2.alpha
 	Fixed Issue #213: ontology with hash fragment separator not handled appropriately
 	Proper handling of new submission with *no* original namespace associated.
 	See related changes in iserver module.
-	
+
 	RegisterNewPageReHosted: If namespace of submitted ontology isOntResolvable (new TempOntologyInfo method),
 	then it cannot be registered in re-hosted mode. An error message explains that the ontology would have
 	to be registered in fully hosted mode.
-	
+
 
 2009-12-06   1.7.1.alpha
 	- If header is "URI" in first column of TermTable, then the cells are now links to open
-	  the "HTML" version of the term using the "Ont" service. 
+	  the "HTML" version of the term using the "Ont" service.
 	  TODO: This was a quick way to enable this; a more appropriate mechanism is pending, for example,
 	  dispatching the same ORR with the the term (using Hyperlink).
-	
+
 	  Sources modified: TermTable, VocabClassPanel, PopulateTermTableCommand
-	  
-	
+
+
 2009-11-30   1.7.0.alpha
 	- Setting version to 1.7.0.alpha reflecting all the 1.6.1+ changes below.
 	  This is also sync'ed with iserver module.
 	- Current Ont version: MMI Ontology and Term URI Resolver. Version 1.4.2.beta (20091125194637)
-	
+
 	Issue 146: metadata panel: improve display including clickable URL when possible
 	- Now with clickable links. See Util.isUrl(String str) and call in MetadataGroupPanel.ViewOnlyCell
 	  This only applies when the whole attribute value matches a URL regex.
 	  TODO: detect and make clickable links for URLs embedded in a single value. Because of
-	  GWT limitations in the emulation of the JRE library, this may require help from the server side. 
-	  
-	
+	  GWT limitations in the emulation of the JRE library, this may require help from the server side.
+
+
 2009-11-24   1.6.2.alpha7
 	Issue 146: metadata panel: improve display including clickable URL when possible
 	- some improvement in display of metadata in view-only mode: not using
 	  a textbox but HTML. This is also preparation to include clickable links.
-	  
+
 	- direct visit to ...#voc2rdf and ...#vine didn't properly check that the user
 	  may be already logged in. Now it goes to the tool immediately if the user is logged in.
-	  
-	  
+
+
 2009-11-24   1.6.2.alpha6
 	- User account creation improved. Upon creation, the interface goes to the
 	  update mode of the panel.
@@ -770,97 +785,97 @@ TODOs
 
 2009-11-18   1.6.2.alpha5
 	issue #139: Can't select AGU as authority abbreviation
-	- FieldWithChoose: make sure no item is selected so we get an change event on the 
+	- FieldWithChoose: make sure no item is selected so we get an change event on the
 	  first item (needed for firefox at least).
-	
+
 2009-11-17   1.6.2.alpha5
 	Issue #222 - duplicate of issue #43: Handle non-UTF8 and UTF8 inputs
 	As part of this revision, I did this adjustment:
 	- UploadServlet: uploaded file should be handled as binary, so now a
 	   FileOutputStream is used to capture the contents instead of a FileWriter.
-	   
+
 	- RegisterNewPage1: nextButton.setEnabled(false) if there is error loading the file.
-	   
-	   
+
+
 
 2009-11-13   1.6.2.alpha4
 	Issue #221 retain the original camelCase in the URLs
 	fixed (see iserver module)
-		
-	
+
+
 2009-11-11   1.6.2.alpha3
 	Issue 212: remove "only index" option for registering external ontology
 	- Done. RegisterNewPage2
-	
+
 2009-11-10   1.6.2.alpha3
 
 	Issue 207: Remember me on this computer
 	- Implemented.  See LoginPanel, new CookieMan and references.
-	 
+
 	Issue 209: list of ontologies ordered by time of registration; most recent first
 	- Done, see OntologyTable: sortColumn, sortFactor.
-	
+
 	Issue 208: "return to ontology browser" instead of "close"
-	- Done. Added MyDialog.setCloseButtonText(String text) and called in appropriate places. 
-	
+	- Done. Added MyDialog.setCloseButtonText(String text) and called in appropriate places.
+
 	Issue 211: Remove unnecesary registration confirmation dialogs
 	- Done in RegisterNewExecute and RegisterVersionExecute
-	
+
 	Other:
 		- the "details" button (that shows the initial evaluation of the metadata of an uloaded file)
-		is now *only* included if the user is an administrator or the code is running not as Script.	
-	
-	
+		is now *only* included if the user is an administrator or the code is running not as Script.
+
+
 2009-11-10   1.6.2.alpha2
 	Issue #214: "Direct registration of ontology"
 	- see iserver: using new service IServer.registerOntologyDirectly.
 	  This now dispatches a "graphId" parameter intended to indicate the desired model
 	  graph at the "Ont" service back-end. At time of writing such service is not yet implemented
 	  in the "Ont" module.
-	  
+
 
 2009-11-09   1.6.2.alpha
-	Issue #214: "Direct registration of ontology" 
+	Issue #214: "Direct registration of ontology"
 	- First version implemented
 	- this version only processes hosting type "re-hosted"
-	
+
 	- updated UploadServlet to allow extension
 	- new server/DirectRegistrationServlet extends UploadServlet
 	- new public/direg.html -- form for demonstrating the functionality
 	- updated Main.gwt.xml, web.xml
-	
+
 	DirectRegistrationServlet extends UploadServlet to inherit the basic upload
 	functionality. Overwrites processItems to process the rest of the registration process.
-	
+
 	Information for the client:
-	--------------------------	
+	--------------------------
 	The fields in the POST request must indicate:
 		- username/password: MMI ORR user submitting the ontology
 		- ontologyUri:  URI associated with the submitted ontology
 		- file:  the selected file in the local system
-	
+
 	Note:
 		1) the client should indicate the ontology URI (ie., this is not
 			obtained automatically from the contents of the ontology)
 		2) if the ontology URI is already registered, then the submitting user must be
 			the same.
-			
-	
+
+
 
 2009-11-04   1.6.1.alpha
 	Implemented #203: Allow to upload file for new version instead of in-place editing
 	- PortalMainPanel.editNewVersion: now a confirmation dialog is shown so the user can
 	  decide whether s/he wants in-place editing of the contents of the ontology (and the metadata
 	  as well), OR upload a file for the new version. The message is:
-	  
+
 		Do you want to do in-place editing of the contents of the ontology?
 		Click OK to proceed with in-place editing of the contents and the metadata.
 		Click Cancel to proceed with file upload and metadata editing (file upload is optional).
-		
+
 	Fixed #186: "progress info remains open after task in completed"
 	- StatusPopup: now has an internal timer to auto-hide the popup every few seconds. The popup will
 	  show up again upon any update to the status. See StatusPopup for more details.
-	  
+
 	Fixed #194: "Can't access all ontologies from VINE drop-down"
 	- OntologySelection.addVocabulary: added a ListBox which the user can also use to select the
 	  ontology.
@@ -869,7 +884,7 @@ TODOs
 2009-11-03   1.6.0.alpha
 	- Setting version to 1.6.0.alpha reflecting all the 1.5.0.alpha30 changes below.
 	  This is also sync'ed with iserver module.
-	
+
 	- Note that Omv.acronym is now a required attribute (see iserver module), in particular
 	  because it is used *also* as the shortName component in the voc2rdf and vine interfaces.
 	- Enhancement #202: "Upload button (in new portal) is ambiguous"
@@ -880,16 +895,16 @@ TODOs
 		Create mapping
 			Allows to create a mapping ontology using the integrated VINE tool
 		Upload ontology
-			Allows to prepare and register an external ontology file 
-	- MetadataGroupPanel.putValues: special cases: acronym and authority abbreviation: 
+			Allows to prepare and register an external ontology file
+	- MetadataGroupPanel.putValues: special cases: acronym and authority abbreviation:
 		Do not allow '/', '\', or ':' (in particular '/') to avoid having an incorrect MmiUri.
 	- HeaderPanel: added link to Terms of Use: http://marinemetadata.org/orr/tou
-	  
 
-	misc changes:	  
+
+	misc changes:
 	- Renamed ontmd.launch to orr.launch
-	  
-	
+
+
 2009-10-20   1.5.0.alpha30
 	- RegisterVersionWizard sequence complete for both FULLY_HOSTED and RE_HOSTED hosting types:
   		- page 0: user indicates whether a file will be uploaded as basis for new version. If so,
@@ -903,81 +918,81 @@ TODOs
 			o Use only values from the loaded ontology
 			o Use only values from the registered ontology
 		  Includes a "details" button to show the values from the two sources.
-			
+
 		- next pages to edit metadata
 		- Finish with a call to RegisterVersionExecute.reviewAndRegisterVersionOntology
-		
+
 		Various test OK.
-		
+
 
 2009-10-19   1.5.0.alpha30
-	- package extont: made various file renamings in preparation for wizard sequence to 
+	- package extont: made various file renamings in preparation for wizard sequence to
 	  register a *new version* of a registered ontology.
 	- Now, the "Upload" button dispatches the #rx tag
-	
+
 	- PortalMainPanel.editNewVersion():
 		- checks the case of "external ontology" (ie, when the ontologyData is of
 		  type OtherOntologyData) to dispatch the new wizard
-		  
+
 	- RegisterVersionWizard: new wizard to register a *new version* of an *external ontology*:
 	  (yet to be implemented)
   		- page 0: user indicates whether a file will be uploaded as basis for new version
-		- page 1: the upload file page. The tool will prompt the user about overwriting or not 
-		  metadata values in the new file that are different from the ones in the registered 
+		- page 1: the upload file page. The tool will prompt the user about overwriting or not
+		  metadata values in the new file that are different from the ones in the registered
 		  current version.
 		- next pages to edit metadata (these will depend on the type of hosting)
 		- confirmation page
 	  ==> Continue with
 	  		PortalMainPanel.editNewVersion()
 			RegisterVersionWizard.finish()
-			  
-	  
-	  
+
+
+
 2009-10-16   1.5.0.alpha30
 	- more tests, preparing for release.
-	
-	
+
+
 2009-10-07   1.5.0.alpha30
 	issue #99 Normalize theme/topic/class throughout interface
 	issue #177: Re-hosting option is not clear
 		First complete tests OK for the following:
 			- Sequence for registering a new ontology in fully-hosted mode
 			- Sequence for registering a new ontology in re-hosted mode
-			
-			
+
+
 2009-10-06   1.5.0.alpha30
 	- issue #196 capture omv:reference
 		MetadataSection1: This property included here.
 		TODO: handle multiple entries in the same field (one per line, presumably)
-		
-		
-		
+
+
+
 2009-10-02   1.5.0.alpha30
 	- First test of full sequence to register an external ontology in full hosted mode:
 	  first basic test working, but details pending including:
-	  	- log in first and then run #rx (this will be the case when button "register external ont" be provided) 
+	  	- log in first and then run #rx (this will be the case when button "register external ont" be provided)
 	  	- proper handling of user-specified ontology URI (via given authority-shortName);
 	  	  the acronym (== resourceType) still used.  Need to clarify this.
-	
-	
+
+
 	- Reorganizing code (iserver included) to better capture info about starting ontology (either
 	  TempOntologyInfo or RegisteredOntologyInfo.
-	- Removing some use of RegisteredOntologyInfo where (the more generic) BaseOntologyInfo is more 
-	  appropriate.  TODO there still several places to adjust. 
+	- Removing some use of RegisteredOntologyInfo where (the more generic) BaseOntologyInfo is more
+	  appropriate.  TODO there still several places to adjust.
 	  Start from RegisterExternalOntologyWizard.finish(..), which does basically the following:
-	  
+
 		  CreateOntologyInfo createOntologyInfo = new CreateOntologyInfo();
 		  createOntologyInfo.setBaseOntologyInfo(tempOntologyInfo);
 		  // assign authority and shortName given by the user
 		  //..
 		  and the call:
-		  portalMainPanel.createNewFromFile(createOntologyInfo); 
+		  portalMainPanel.createNewFromFile(createOntologyInfo);
 	  The createOntologyInfo parameter here is new; the provided authority/shortName is NOT used yet
 	  in the rest of calls. TODO continue from here.
 	  NOTE: in particular, the intent is also to separate "shortName" from "resourceType",
 	  see Issue #99: "Normalize theme/topic/class throughout interface"
-	
-	
+
+
 2009-10-01   1.5.0.alpha30
 	Continuing #177: Re-hosting option is not clear
 	- Wizard sequence launched with #rx
@@ -985,7 +1000,7 @@ TODOs
 2009-09-30   1.5.0.alpha30
 	- Including org.mmisw.ont.misc.jar (generated by the "ont" module) because of changes in
 	  iserver module. In particular, JenaUtil2 is now in package org.mmisw.ont.
-	  
+
 	- Several more preparations for #177: Re-hosting option is not clear
 	  Wizard is now in new package org.mmisw.ontmd.gwt.client.portal.extont
 		Page1: selection and upload of local file into working space
@@ -994,86 +1009,86 @@ TODOs
 		PageReHosted: Summary to then proceed with regular ontology metadata editing and registration
 		PageIndexed: "Finish" in this page will complete the submission ("indexing")
 	  None of the "Finish" actions in these final pages are implemented yet.
-	  
+
 
 
 2009-09-29   1.5.0.alpha29
 	Fixed issue #192 "wrong versioned/unversioned response"
 	Fixed Issue #193 "list of versions include unversioned"
 	See iserver module.
-	
-	
+
+
 2009-09-28  1.5.0.alpha28
 	More preparations for #177: Re-hosting option is not clear
-	- RegisterExternalOntologyPageBase and subclasses: these will be wizard-like pages for a new sequence 
+	- RegisterExternalOntologyPageBase and subclasses: these will be wizard-like pages for a new sequence
 	  to upload and register an external ontology. Still preliminary. Call with #rx to launch the sequence.
 	  The idea is as follows:
 		  Page1: selection and upload of local file into working space
 		  Page2: selection of hosting option (fully hosted; re-hosted; re-indexed)
 		  Page3: Summary of the effect on the option selected
 		  Finish in page3: Continue with the usual ontology metadata editing and final registration
-	  
-	  
-	
+
+
+
 2009-09-22  1.5.0.alpha27
 	fixed #191 No feedback if javascript is disabled
 	- index.html: included <noscript> section with a message:
 		The MMI ORR Portal requires JavaScript enabled in your web browser.
 		Enable JavaScript and then refresh this page.
-	
+
 2009-09-21  1.5.0.alpha27
 	- Dispatching .../orr/#voc2rdf and .../orr/#vine
 	  For now, these tags "redirect" to the main browse page (.../orr/#b ) where a Window.alert
 	  is shown indicating something like:
 	  	Please, sign in and then select "<the corresponding button>" to use the integrated <tool name>
-	  	
+
 	  This change is mainly intended as a preparation to dispatch direct references to these tools.
 	  In particular, I'm updating mmisw.org/{voc2rdf,vine} (which appear in some marinemetadata site
 	  pages) to redirect to mmisw.org/orr/#{voc2rdf,vine}.
-	  
+
 	  TODO Two possible improvements:
 	  	- Immediatly prompt the user for Sign in, and then launch the corresponding tool
 		- Dispatch the tool even if the user is not logged in; prompt for sign in when necessary
-	  	
-	  
-	
+
+
+
 2009-09-21  1.5.0.alpha26
 	- fixed #188: Clarify search options on portal front page
 		SearchOntologiesPanel: using TLabel and with "Search ontologies:" label
 		OntMdImageBundle: transparent bg for tooltip icon (question12t.gif) for better display
-		
+
 	- fixed issue #187 CSV support broken
 		VocabClassPanel.SeparatorPanel: fixed handling of selected separator
-	
+
 2009-09-16-18  1.5.0.alpha25
 	 - implemented #172: search list of ontologies
 	 	- New "search ontologies" in the main page to find ontologies according to a given string, which is
 	   		searched in basic properties of the ontology.
 	 	- "Search" link now called "Search terms" to make clear the distinction
 	 	- Tooltips added to bot search options.
-	 	
+
 	- Implemented #184: Dispatch term URI in portal
 		- The dispatch is now generalized for both ontologies and terms:
 			.../orr/#<uri>
 	  	  This translates to a call to resolveUri in the iserver module. The return value will determine
 	  	  what specific panel and object to dispatch in the GUI.
 	 - some reorganization of the interface ("search" link now in the header section)
-	 
-	
-	
-		
+
+
+
+
 2009-09-16  1.5.0.alpha24
 	- MetadataGroupPanel: #183: Don't ask user whether the submitted ontology is a mapping
 	  This should be determined by examining the contents of the ontology.
 	  See "listall" operation in Ont module.
-	  
+
 	- ResourceTypeWidget(AttrDef attr, boolean editing, boolean includeIsMapCheck, ChangeListener cl):
 	  Smaller size of this area so it aligns better with rest of the fields in the form.
-	
+
 2009-09-15  1.5.0.alpha23
 	- implemented #181: Include ontology URI column in ontology table
 		OntologyTable: "URI" column included
-	
+
 	- implemented #180: "my submitted ontologies" entry in the tree
 		SelectionTree: the first subtree is now, when the user is logged:
 			+ All ontologies
@@ -1083,19 +1098,19 @@ TODOs
 					user2
 					...
 		and simply All ontologies when not logged in.
-		
+
 
 2009-09-15  1.5.0.alpha22
 	- Removed "portal.service.url" property and associated config methods from everywhere as it is not needed.
 	  This change makes it easy to redeploy the generated WAR file (with just a change in the name
-	  of the WAR if desired/necessary), without any needed internal changes. 
-	  
+	  of the WAR if desired/necessary), without any needed internal changes.
+
 	- Removed "vine.service.url" property and associated config methods from everywhere as it is not used.
-	
+
 	- Main: now, always launches the portal (TODOS lots of code clean-up)
-	
-	
-	  
+
+
+
 
 2009-09-11  1.5.0.alpha21
 	- General user account management, login, and password reset completed:
@@ -1106,7 +1121,7 @@ TODOs
 	  would include using the email (eg., sending some special URL that the user can click to
 	  verify/activate his/her account).
 	- Removed LoginListener (not needed anymore-- TODO lots of old code to be removed)
-		
+
 	- TODO Next: use cookies to keep the session (Issue #154)
 
 
@@ -1116,31 +1131,31 @@ TODOs
 
 	- various adjustments to dispatch user account creation/update
 	- user account creation/update: updates in iserver
-	
-	
+
+
 	- Renamed Config to PortalConfig
 	- PortalConfig: new properties: MAIL_USER, MAIL_PASSWORD
 	- Renamed UserPanel to LoginPanel
 	- Removed class Login (now using iserver's service authenticateUser)
-	- LoginPanel now with options to: 
+	- LoginPanel now with options to:
 		- reset password - working
 		- create account - preliminary code
 	- {activation,mail}.jar included included to support iserver's MailSender helper.
 
-	
+
 2009-09-09  1.5.0.alpha19
 	- Fixed a bug in OntologyPanel related with the mechanism to set shortName and authority.
 	  It was using the createOntologyInfo object by calling createOntologyInfo.{getAuthority(),getShortName()},
 	  but these attributes have not been assigned from the newValues map!
 	  It must be a regression problem.
-	  Temporary quick fix: assign 
+	  Temporary quick fix: assign
 	  	authority = newValues.get("http://mmisw.org/ont/mmi/20081020/ontologyMetadata/origMaintainerCode")
 	  	shortName = newValues.get("http://omv.ontoware.org/2005/05/ontology#acronym")
-	  TODO: clean up this code! 
+	  TODO: clean up this code!
 	  Note that RegisteredOntologyInfo ontologyInfo is being used here even for a brand new
 	  ontology that is just going to be registered (should it be a BaseOntologyInfo?)
-	
-	
+
+
 2009-09-08  1.5.0.alpha18
 	Fix for issue #174 and general improvement in related functionality.
 		See iserver's ChangeLog
@@ -1156,42 +1171,42 @@ TODOs
 		- List<Mapping> preAddMappings(Set<String> leftKeys, RelationInfo relInfo, Set<String> rightKeys)
 		- void addMappings(RelationInfo relInfo, List<Mapping> mappings)
 	  which are called from MapperPage._relButtonClicked(RelationInfo relInfo)
-	  
+
 	  TODO preAddMappings: a more efficient implementation to check for duplicates.
-	  
+
 	  TODO Re-organize the mappings by grouping according to relation. Instead of list
 	  of (left, rel, right) triples, have a list of RelGroup's where a relGroup has a
 	  relation and a list of (left, right) pairs. This will consume slightly less memory
 	  and will support a more efficient search for duplicates.
-	  
-	- New behavior: right after the click of the relation button, the selection of terms on both 
+
+	- New behavior: right after the click of the relation button, the selection of terms on both
 	  sides of the interface is cleared (only when any new mapping is actually inserted in the mapping
 	  panel). The previous behaviour was that the selections remain.
-	  
-	  
-		
+
+
+
 2009-09-01:  1.5.0.alpha15
 	- Some code clean-up:
 		- PortalMainPanel: removed unused historyTokenMap cache
 		- ControlsPanel: removed constant flag useMenuBar=false and related menuBar interface elements
 		  as they are not used.
-		  
+
 	- Added "Refresh" button to reload the list of registered ontologies.
-	
+
 	- Added "Search" functionality.
 	  New SearchTermsPanel class. Provides keyword search using the new operation runSparqlQuery(..) in
 	  iserver module. Also includes link to SPARQL page.
 	  TODO eventually include general SPARQL dispatch here.
-		  
-		
-		
+
+
+
 2009-08-28  1.5.0.alpha14
-	VINE: 
+	VINE:
 	- Integration and basic functionality (including creation/registration of new mapping
 	  ontology and update/registration of new version of mapping ontology) implemented.
 	- Selection (all, none) and removal of selected mappings implemented, so basic editing of mappings included
 	- disabled the disclosure panel associated to each mapping (it's not implemented yet).
-	
+
 	- SearchGroup: only *individuals* are searched (disabled classes and properties)
 	- TODO: for selection of working ontologies (OntologySelection), only include appropriate vocabularies,
 	  in particular, do not include other mappings. (check property Omv.usedOntologyEngineeringTool, for example).
@@ -1199,13 +1214,13 @@ TODOs
 	Other changes:
 	- Because of new version param in Server.getOntologyContents(RegisteredOntologyInfo registeredOntologyInfo, String version),
 	  updated the various call with version==null.
-	
-	
+
+
 
 2009-08-27  1.5.0.alpha14
 	VINE: More preparations
-	
-	 
+
+
 2009-08-26  1.5.0.alpha14
 	Incorporated VINE functionality into this module from the org.mmisw.vine project (which
 	will be removed eventually).
@@ -1219,74 +1234,74 @@ TODOs
 2009-08-25  1.5.0.alpha13
 	issue #148: "Need property to capture "creator/author of original source vocabulary""
 	Implemented in iserver and ont modules (just rebuild here with the updated libs)
-	
+
 2008-08-24  1.5.0.alpha12
 	Fixed issue #161 "New version forces upload of local file"
 	- OntologyPanel.reviewAndRegister: using new createOntologyInfo.setPriorOntologyInfo(..) to transfer
 	  all necessary info about prior version, now including the actual version.
-	- BaseOntologyContentsPanel/OtherOntologyContentsPanel.checkData(boolean isNewVersion): added flag 
+	- BaseOntologyContentsPanel/OtherOntologyContentsPanel.checkData(boolean isNewVersion): added flag
 	  to indicate if new version.
 
 
 2008-08-16   1.5.0.alpha11
-	- OntologyPanel.reviewAndRegister: Passing "uri" attribute in CreateOntologyInfo object, 
+	- OntologyPanel.reviewAndRegister: Passing "uri" attribute in CreateOntologyInfo object,
 	  which "remembers" previous URI when registering a new version.
-	  
+
 
 2008-08-13  1.5.0.alpha10
   	(only change in iserver library:
 		- Issue #164 Keep periods and case in term URI
 			- More in general, if the first column given to VocCreator is named "uri," the values
 			  are just checked for validity (according to java.net.URI constructor), and now
-			  no conversions at all are performed. 
+			  no conversions at all are performed.
   	)
-  	
-  	- CreateOntologyInfo and RegisteredOntologyInfo: removed namespaceRoot attribute -- this 
+
+  	- CreateOntologyInfo and RegisteredOntologyInfo: removed namespaceRoot attribute -- this
 	  was added in a preliminary approach to handle re-hosting. It is not necessary anymore.
-	  
-	  
+
+
 	- Fixed Issue #165: "versions" menu included in versions window
-	
-		  
+
+
 2009-08-11  1.5.0.alpha9
 	Issue #8: Improve HTML response
-	As a way to provide complementary ontology browsing capabilities, I links to the 
+	As a way to provide complementary ontology browsing capabilities, I links to the
 	Ontology Browser from http://code.google.com/p/ontology-browser/, which I deployed on
 	http://mmisw.org/browser (latest version 1.1.6)
-	
+
 		- sample.build.properties: new property ontbrowser.service.url
-		- If the value is not "-", "Ontology Browser" links will be included in the 
+		- If the value is not "-", "Ontology Browser" links will be included in the
 		  controls bar and in the popup menu associated with ontologies to open the ontology using that tool.
-		  
+
 	In a future version, we could probably embed the ontology-browser in the ontology panel.
-	
-	
+
+
 2009-08-11  1.5.0.alpha8
 	- Fixed bug: "version" param always added for requests to the "ont" service
-	
+
 	- The latest version is dispached in general; only versioned dispatch in done when an ontology
 	  is displayed from the "available versions" window, or if the requested URI is a versioned MmiUri.
-	
-	- "available versions" window now shows the unversioned URI in the title. The list is now sorted 
+
+	- "available versions" window now shows the unversioned URI in the title. The list is now sorted
 	  by descending version (so most recent version first).
-  
-  
+
+
 
 2008-08-10  1.5.0.alpha7   Issue #159: Re-host ontologies: versioning
 	- OntologyTable.update(): include version in hyperlinks
 	- PortalControl.getDownloadOptionHtml(): include "version" parameter
-	
-	
+
+
 	- log4j.xml: assigned same org.mmisw.ontmd's log level to org.mmisw.iserver module.
-	
+
 	Various adjustments in UI
 		- browse table now with cell padding 3
 		- HeaderPanel aligned to the left (so it doesn't get hidden when the contents of the
 		  ontology become too wide)
-		- "Versions" button re-enabled after fix in iserver (includes all version for each requested 
+		- "Versions" button re-enabled after fix in iserver (includes all version for each requested
 		  ontology).
-	
-	
+
+
 2009-08-05  1.5.0.alpha6
 	- Fixed issue #160 Loading an ontology file does not update associated metadata in the editor
 		Problem was that the listener registered with the DataPanel was not updated when the mode
@@ -1294,22 +1309,22 @@ TODOs
 		of the load. Now, the listener is retrieved from the PortalControl instance.
 
 2009-08-05  1.5.0.alpha5
-	- PortalMainPanel.dispatchMainPanel:  Once a registration was completed, the intended behavior 
-	  is to return to the "browse" list. This was not working, but it's now fixed: 
+	- PortalMainPanel.dispatchMainPanel:  Once a registration was completed, the intended behavior
+	  is to return to the "browse" list. This was not working, but it's now fixed:
 	  History.newItem("browse") is called to synchronize the state with the history.
-	  
+
 	- PortalMainPanel & OntologyTable: historyTokenMap is now not actually updated, so the
 	  RegisteredOntologyInfo objects are not cached. This simplifies things.
 	  TODO: either remove the cache (historyTokenMap) variable or decide how to maintain it.
-	
-	
+
+
 1.5.0.alpha4 (change in iserver library)
 	- Server.createOntology(CreateOntologyInfo): Do NOT remove "original OWL.Ontology individual"
 	  if we are in re-hosting mode (createOntologyResult.isPreserveOriginalBaseNamespace).
-	  If we did this on a model with the same original namespace, we would remove the owl:Ontology 
+	  If we did this on a model with the same original namespace, we would remove the owl:Ontology
 	  entry altogether and get an "rdf:Description" instead.
-	  
-	  
+
+
 2009-08-01,03:  1.5.0.alpha3 (was 1.5.0.alpha2)
 	- Added build and configuration params to allow deployment of the service on any machine (while
 	  removing several related hard-coded pieces, in particular about http://mmisw.org...):
@@ -1318,125 +1333,125 @@ TODOs
 		portal.service.url
 		vine.service.url
 		bioportal.rest.url
-		
-		 
-2009-07-31  
+
+
+2009-07-31
 	1.5.0.alpha2 - including updates in iserver for re-hosting ontologies
 	- PortalControl: adjusted link to resolve ontology in rdf and n3.
-	
+
 	- Also, preliminary additions to allow the user indicate the namespaceRoot for a newly
 	  created vocabulary. New class OntologyUriPanel used in OntologyPanel.
 	  This code is disabled in the SVN repository (using flag USE_ONTOLOGY_URI_PANEL).
-		
 
-	
+
+
 2009-07-26
-	
+
 	Preparations for re-hosting of external ontology:
 		"Re-hosting" means that the original base namespace of the submitted ontology is preserved.
 		Basically, the whole ontology is un-changed except for new metadata elements.
-	
+
 	- UploadLocalOntologyPanel: new checkbox for preserveOriginalBaseNamespace flag.
-	  
+
 	- Basic submission is now handled. I'm testing this with a simple ontology with base namespace
 	  http://EXAMPLE.org/abc/example
-	  
+
 	- Next: complement other actions:
 		- do not capture authority, or, shortName, and the like, associated with MMISW-based namespace
 		- "resolve" the ontology for display purposes. This will require adjustments in call to the "ont"
-		  service... 
+		  service...
 
 
-	  
+
 2009-07-24
 	- UploadServlet: MAX_FILE_SIZE set to unlimited (-1). See issue #153 "Large ontology file fails to load"
-	
-	
+
+
 2009-06-09
 	- TermTable2:   (same as TermTable 645 with updates for the following)
 		-  Issue 126: "Immediately enter edit mode when I type in a cell"
 			Regular key now starts editing mode immediately. Note that the key is appended to
-			the current contents of the cell (this contrasts to other systems, eg., google spreadsheet, 
-			where this action replaces the contents). 
-		
+			the current contents of the cell (this contrasts to other systems, eg., google spreadsheet,
+			where this action replaces the contents).
+
 		- issue #127: "Create row automatically"
-			While editing last column and row in term table, KEY_ENTER and KET_TAB will add a new 
+			While editing last column and row in term table, KEY_ENTER and KET_TAB will add a new
 			row and focus its first cell automatically.
 			Note, both KEY_ENTER and KET_TAB accept the text entered (previously, only KEY_ENTER).
 	  BUT: the behaviour is not as expected in firefox! :-(  so, still keeping TermTable as was before these changes.
-	
-	
+
+
 2009-06-07
 	- MenuBarPanel renamed to ControlsPanel; this better reflects the (new) actual contents of that
 	  panel, which are buttons and links, but not menus anymore. The buttons and links seem more intuitive.
-	
+
 2009-06-06
 	Issue #145: "Null response when uploading IOC "
 	Issue #43: "Handle non-UTF8 inputs"
-	- Included chardet.jar in build, as iserver is now doing verification of UTF-8. 
+	- Included chardet.jar in build, as iserver is now doing verification of UTF-8.
 	  In summary, an error will be reported whenever some external contents, which will be
 	  eventually incorporated in the registry, is not in UTF-8.
 	  Note: No attempts to make any automated conversion in case the verification fails.
-	
-	- MetadataPanel: "NewUri" panel removed -not needed anymore  
+
+	- MetadataPanel: "NewUri" panel removed -not needed anymore
 	- MetadataGroupPanel: show group info only in editing mode
 	- UploadLocalOntologyPanel: simplified and better control of buttons (en/disable)
-	
+
 	- See also iserver project for other several adjustments
-	
+
 	TODO: in general, either have a general mechanism to disable any controls (buttons, menus,..) in
 	the whole interface during  the execution of some task, or use a modal dialog. In any case,
 	also react to Browser events to properly cancel any task or open menu.
-	
- 
-	
+
+
+
 2009-06-05
 	- Main: logging buffer allocated only if _log parameter is given (less memory for regular use).
 	- UploadLocalOntologyPanel: fixed upload form action location.
-	
+
 	- several adjustments as the main operations are completed along with iserver module
 	- removed several interim dependencies
 	- some renamings of types and operations
 	- support for registering an uploaded file completed.  Various tests OK. TODO more tests!
-	 
 
-	
-	
+
+
+
 2009-06-04
-	- Including management of uploading of local file in the panel for "other" (not vine/voc2rdf) ontology. 
+	- Including management of uploading of local file in the panel for "other" (not vine/voc2rdf) ontology.
 	- Notification to the metadataPanel included (note: when the user loads a local file
 	  for purposes of updating the contents (dataPanel) of the ontology to be submitted, we need
 	  to notify the metadataPanel to handle any existing attributes in the uploaded file).
-	- Basic functionality of the local file uploading into the working space ready. This includes a 
+	- Basic functionality of the local file uploading into the working space ready. This includes a
 	  new checking for any possible overwriting of fields already filled in in the metadata panel; the
 	  user can decide whether replace or keep the values in the panel. See issue #143
-	  
+
 	Next: complete creation of ontology from local file and the associated action when creating
 	a new version.
-	
+
 
 2009-06-03
 	- Creation of vocabulary completed. Need more testing.
 	- Validation of term table re-enabled and improved.
 	- Hiding the option to create mapping (not implemented yet)
 	- fixed params to properly launch external tool for uploading an ontology from disk
-	  Next: include this option within the portal itself. 
-	
-	
+	  Next: include this option within the portal itself.
+
+
 2009-06-02
 	- fixed: consider all ontologies when an administrator is logged in.
 	- testing ontologies are marked with a T for easy spot
-	
+
 	- Versions option implemented: it dispatches an OntologyTable object in a popup dialog.
 	  If the user clicks one of the versions, the dialog is closed and the history management
 	  takes care of dispatching the requested ontology. We could make the dialog non-modal
 	  to keep it visible even as the user navigates the versions, but it would be tricker at
 	  this point to control the other possible actions, so safer just to use a modal dialog.
-	  
-	- QuickInfo menu added for each element in ontology list; this facilitates some actions 
+
+	- QuickInfo menu added for each element in ontology list; this facilitates some actions
 	  (eg viewing prior version, resolving in RDF, N3, etc.) without having to load the complete
 	  ontology.
-	   
+
 
 2009-06-01
 	- better links section (upper right) including "browse" hyperlink
@@ -1444,22 +1459,22 @@ TODOs
 	- close window: warning message only shown when in editing mode
 	- various other code changes
 	- TODO: check filtered out ontologies when administrator is logged in
-	
-	
+
+
 2009-05-31
 	- Many changes for including editing and creation of new version of a vocabulary ontology
 	  TODO: once registered the new version, the browse page is displayed with a reloading of
 	  the list of all ontologies. However, the hyperlink for the newly created version does not
 	  resolve immediately; it seems the history token is added but the notification does not happen
 	  immediately?
-	  
+
 	- Filtering out ontologies with authority "mmitest" and "testing"; these are included only when
 	  an adminsitrator is logged in.
-	  
-	- Quick adjustments to the "New" options (Vocabulary, Mapping, Uplaod) to at least launch the 
+
+	- Quick adjustments to the "New" options (Vocabulary, Mapping, Uplaod) to at least launch the
 	  not-yet-integrated mechanisms.
-	
-	
+
+
 2009-05-28
 	- continuing preparations for editing vocabulary
 	- view only vocabulary table now created incrementally (especially useful for large tables, eg., CF)
@@ -1470,61 +1485,61 @@ TODOs
 	  	- Disable in-place editing of the table (instead, include a direct import from a local file and process
 	  	  the CSV in the back-end for checking, and then update view-only-table for visual feed-back
 		- or, allow in-place editing but only for small vocabularies (say with no more than a couple hundred terms);
-		  direct the user to the import mechanism above in case of bigger vocabs.		
-			
+		  direct the user to the import mechanism above in case of bigger vocabs.
+
 2009-05-27
 	- Unifying interface; menuBar set-up depending on interface type; new controller PortalController
 	  to improve MVC design.  Better general layout.
-	 
+
 	- new EditDataPanel, preparing for editing vocabulary ...
-	
+
 2009-05-26
 	- DisclosurePanels used for metadata and components in synopsis of ontology
 	- ViewTable with column sorting capability
-	
+
 2009-05-25
 	- Different types of ontology data are now handled, see ViewDataPanel:
 		Vocabulary: for each class in the ontology, a table of corresponding datatype properties is shown.
 		Mapping: not dispatched yet
 		"Other": a synopsis of the classes, properties, and individuals is shown.
-	
+
 2009-05-24
 	- Per update in iserver module, ontology browse list now shows only the latest versions;
 	  each entry contains the prior versions of the ontology, but these are not shown yet.
-	  
+
 	  Note that unversioned URIs should be shown in general for the UI in the read-only mode;
 	  For editing, it should show versioned URIs.
-	   
+
 
 2009-05-23
 	- Moved most of metadata management to iserver ontmd module.
 	- Integrated retrieval of metadata and data: operation getOntologyContents
 	Basic functionality in place. Note that all contents are retrieved in a single call;
 	TODO: implement a paging mechanism.
-	
+
 	Next: display data in appropriate format according to "type" of ontology; we basically
 	have the following cases: vocabulary (a la voc2rdf), mapping (a la vine), and the others.
 	I'm planning on using the omv:usedOntologyEngineeringTool property to explicitly
 	assign it to ontologies created by voc2rdf and vine (I just created the related resources
 	in the Omv and OmvMmi vocabularies (see ont module).
-	
-	
+
+
 2009-05-22
 	- Author subtree now includes all usernames (if user is logged)
-	
+
 	- DataPanel now using the iserver-based getEntities operation
-	
-	
+
+
 2009-05-18
 	- OntMdServiceImpl: fixed a recently introduced bug in getOntologyInfoFromRegistry:
 		prepareOntologyInfo was not called in the "new mechanism"
-		
+
 	- Login: Capture role when user logs in.
-	
+
 	- OntologyUploader: if user logged in is an administrator, a special handling is done to
 	  allow the submission of an ontology (either brand new, or new version) to be associated
-	  to another userId. 
-	
+	  to another userId.
+
 2009-05-13
 	- Moved types from ...client related with the proper metadata editor to new package ...client.metadata:
 		MainPanel
@@ -1532,26 +1547,26 @@ TODOs
 		MetadataPanel
 		OntologyPanel
 		ResourceTypeWidget
-		
+
 	- Removed unused types:
 		voc2rdf.rpc.Voc2RdfService
 		voc2rdf.rpc.Voc2RdfServiceAsync
-		
+
 	- Preparing portal dispatch:
 		I created a new module org.mmisw.iserver, which I'm starting to use here to support
 		the portal interface and eventually other operations as the refactoring progresses.
 		See sibling project org.mmisw.iserver.
-	
-	
+
+
 2009-05-11
 	- Preparations to show ontology data in view only mode.
 		Initially, to show term table for a voc2rdf ontology (based on the associated CSV)
-		
+
 	- View only of an ontology now does requests to "Ont" to get the model (via Jena) and the
 	  contents of the CSV (if any) via a new Ont operation with (parameter "_csv").
 	  TODO remove the "_lpath" operation in "Ont"
-	
-	
+
+
 2009-05-07
 	- implemented issue #135: preserve URIS from simple vocabularies that allready have defines URIs
 	  It works as follows:
@@ -1560,44 +1575,44 @@ TODOs
 	  	- Converter: uses a flag keyIsUri which is set to true in createDatatypeProperty if the label
 	  	  of the first column is "URI"; then createIndividual uses the flag to determine the
 	  	  URI for the individual to be created.
-	
+
 2009-05-06
 	- fixed issue #131: use abbreviation of organization instead of authority in the web form
-	
+
 	- fixed issue 132: add (optional) on the "uri of class" label
 		But, instead of adding "optional" to the label, now the "name" field is marked with the
 		red star, indicating that the name of the class is required, while the label
 		for the URI of the class remains as it is. To complement, a preamble in the interface
 		says that "fields marked * are required" (which used to be there in a previous version, btw).
-		
+
 	- fixed issue #129:  "Convert to RDF" button below term table
-	
+
 2009-04-20
 	- Config: a useDefault flag now allows to use pre-defined parameters so I can quickly
 		run ontmd and voc2rdf from within eclipse. I will configure this much better, probably
 		when I start using GWT 1.6.  Also renamed Main.launch to ontmd.launch and
 		created voc2rdf.launch
-	
+
 	- preliminary stuff to alert the user when closing the window page.
-	
+
 	- Converter: save copy of CSV file.
 	- OntMdServiceImpl.upload: upon sucessfull upload, it renames the associated CSV (if any)
 	  to a name based on the final ontology URI.  This provides a convenient mechanism to use
 	  the CSV version for display purposes.
-	
+
 
 2009-04-16
 	- Issue #118: "Difficult to fix errors reported by voc2rdf"
 		As an additional improvement, now the affected cell is focused automatically.
-		
+
 	- Various GUI improvements to voc2rdf, including an icon for the popup menu associated
-	  with the control columns and rows (previously those menus were not apparent). 
+	  with the control columns and rows (previously those menus were not apparent).
 	  Also, simple conversion panel layout and new "download" button instead of embedding the
-	  resulting RDF contents in the window. This provides: 1) simpler interface (issue #75), 
+	  resulting RDF contents in the window. This provides: 1) simpler interface (issue #75),
 	  and 2) less memory consumption on the client.
-	  
+
 	- Incremental import so the GUI is responsive when importing big files.
-		
+
 2009-04-14
 	Issue #124: Keep colons in values
 		- Now colons are ONLY kept (not replaced with underscores) for the *term IDs* in voc2rdf;
@@ -1606,48 +1621,48 @@ TODOs
 		- See Converter.createIndividual()
 		- NOTE: Colons in the name of the class and in the column headers (which are converted to
 		  datatype properties in the ontology) are still converted to underscores.
-		   
-	
+
+
 2009-04-11, 13  (1.2.0.beta3)
 	Issue #116: editing interface in the table is not functional
 		- various changes including textbox in each field and navigation with keyboard
 		- enter key enables cell for editing; enter typed again returns to navigation
 		- first column and first row are made visible if the current focused cell is close
 		  enough.
-	Note: Some other improvements are of course possible; but any more sophisticated 
-	      spreadsheet-like interface would require some significant effort. 
-	      
+	Note: Some other improvements are of course possible; but any more sophisticated
+	      spreadsheet-like interface would require some significant effort.
+
 	Fixed issue #115: "Allow tab delimiter when importing data in voc2rdf"
-		Now, two buttons are included, both with options to select the desired separator: 
+		Now, two buttons are included, both with options to select the desired separator:
 			- "Import" allows to enter terms from a CSV formatted text: the user specifies what
 			  character should be interpreted as the field separator
 			- "Export" displays the current table in CSV format (for the user to copy-n-paste somewhere);
 			  the user indicates the desired separator character.
 		- the following separators are possible: comma (,), sem-colon (;), tab, and pipe (|)
-		
+
 	Fixed #118: "Difficult to fix errors reported by voc2rdf"
 		 Yes, this is difficult in the popup itself.
 		 Fix: just let the table be updated; then the user can continue editing; the system
 		 will make the error checking when attempting the "Convert to RDF action", anyway.
-	
-		
+
+
 2009-04-07
 	Implemented issue #84: "allow user-given namespace (URI) in voc2rdf"
 	VocabPanel.OntologyUriPanel handles the information about the resulting URI for the ontology.
-	The user can now specify the complete URI and later, if desired, revert to the automated 
+	The user can now specify the complete URI and later, if desired, revert to the automated
 	handling.
 
 2009-04-07
 	Fixed issue #120: "title doesn't get carried forward"
 	Problem was that Omv.name was assigned BOTH the class name and the fulltitle.
 	Only the fullTitle is now assigned.
-	
+
 2009-04-06
 	Fixed issue #119: "Allow empty fields in non-required columns"
 	This also required to generate "" column values for the missing fields so the original
 	voc2rdf scheme to make the conversion (which is based on the com.infomata.data library)
-	works with no ArrayOutOfBoundsException's. 
-	
+	works with no ArrayOutOfBoundsException's.
+
 2009-04-01
 	- setReadOnly(!enabled) instead of setEnabled(enabled) for text fields; this allows the
 	  user to select the text even if it's not editable.
@@ -1657,25 +1672,25 @@ TODOs
 	  namespace appropriately (I forgot to use the namespace (_ns) in Converter.createIndividual()
 	  after the change in getGoodName(), which now does not include the namespace itself)
 	  -> fixed.
-	  
-	
+
+
 2009-03-28,29:   voc2rdf 1.2.0.beta1
 
 	- Many updates to Voc2RDF
 		- More metadata captured (title, creator, description, authority)
 		- Button convert to RDF now opens a dialog (No tab for conversion)
 		- class & terms now in a tab (in preparation for multiple classes)
-				
+
 		- New editable, spreadsheet-like table for the terms:
 			- The editable table is now the main interface for capturing the terms
 			- A new CSV button displays the current table in CSV format; the user
 			  can use the text area to update the contents and re-import into the table.
 
-		
+
 2009-03-21
 	Issue 99: "Normalize theme/topic/class throughout interface"
 	http://code.google.com/p/mmisw/issues/detail?id=99
-	
+
 	Renamings before actual change to the function of the code:
 	- "shortName" is actually "resourceType: The current "shortName"-based names in the
 	  code actually refer to the "resourceType" concept. (But note that OmvMmi.shortNameUri
@@ -1684,121 +1699,121 @@ TODOs
 	So the renamings were applied in these places:
 		  	BaseInfo: shortNameUri -> resourceTypeUri
 		  	MetadataGroupPanel: shortName* -> resourceType*
-		  	MdHelper: mainClassAttrDef -> resourceTypeAttrDef 
+		  	MdHelper: mainClassAttrDef -> resourceTypeAttrDef
 		  	Voc2RdfBaseInfo: mainClass -> resourceTypeAttrDef
-		  	
+
 	Some refactoring and some minor adjustments:
 	- new ResourceTypeWidget to handle the resource type set of fields
 	- FieldWithChoose as a class in a separate file
 	- TLabel: now, internal click does NOT close the tooltip dialog
 
 	NOTE: Implemented my 3/21/09 proposal in issue #99: basically that the resourceType elements
-	are used to provide for the "Class" related fields. I assign the labels and 
+	are used to provide for the "Class" related fields. I assign the labels and
 	tooltips accordingly. Also, there is a single field for the ontologyUri.
 	This class related info is captured in the ontology metadata with thre Omv.acronym and
 	OmvMmi.shortNameUri, as it is currently done in OntMd, so OntMd will detect those in the
 	subsequent submission.
-	
 
-		  	
+
+
 	- Next:
-	  - OntMd's review operation uses shortName to do some checks; this refers to the actual shortName 
+	  - OntMd's review operation uses shortName to do some checks; this refers to the actual shortName
 	  concept BUT it's using the value of Omv.acronym (ie., resourceType); so, continue with adding
 	  the field for short name..
-	
-	
+
+
 2009-03-20
 	- some documentation updates.
 	- More code clean-up: deprecating Voc2RdfService* types; the voc2rdf operations are now
 	  provided through the ontmd service as well.
-	
+
 
 2009-03-19
-	- Completed fix of issue #45: "include URIs for Topic in the ontmd Topic URI -- 
+	- Completed fix of issue #45: "include URIs for Topic in the ontmd Topic URI --
 	  Review operation was removing the topic URI field value.
 	  1.0.8.beta (20090319092940)
-	  
+
 	- Fixed Issue 109: "second review not asked after further changes"
-	  Merged the "Review" and "Upload" actions into a single "Review and Upload" button. 
+	  Merged the "Review" and "Upload" actions into a single "Review and Upload" button.
 	  Complementary to this, the dialog for the successful review result now includes a button "Upload".
-	  The user can either proceed with the upload operation or close the review dialog and continue 
+	  The user can either proceed with the upload operation or close the review dialog and continue
 	  editing the metadata.
-	  
-	  
+
+
 	- Now, dynamic load of supporting vocabularies to drive drop-down menus. This way, the lists
 	  are always displayed with the most recent contents. Previously, these lists were only
 	  prepared at deployment time!
 	  Also, the options are sorted by name (ignoring case).
 	  Also, add sugestedBox to faciliate selection of option from the listBox.
 	  1.0.9.beta (20090319164948)
-	  
-	 
+
+
 2009-03-18
 	- Issue #45: "include URIs for Topic in the ontmd Topic URI field"  -- 1.0.8.beta (20090318234714)
 	  See OndMdServiceImpl, MetadataGroupPanel, Option, MdUtil, MdHelper.
-	  - OmvMmi.shortNameUri is now associated with Omv.acronym 
-	  - OndMdServiceImpl.prepareOntologyInfo(File file, OntologyInfo ontologyInfo): 
+	  - OmvMmi.shortNameUri is now associated with Omv.acronym
+	  - OndMdServiceImpl.prepareOntologyInfo(File file, OntologyInfo ontologyInfo):
 	  	if OmvMmi.shortNameUri is part of the list of attributes, then it also assigns OmvMmi.shortNameUri
 	  - MetadataGroupPanel: various adjustments.
-	    
+
 	- New version.properties as the single point to define the version for this application
-	  (both the back-end services and the front-ends). build.xml translates this to the 
-	  application via the web.xml (which is read by Config). Also, a "build number", which 
+	  (both the back-end services and the front-ends). build.xml translates this to the
+	  application via the web.xml (which is read by Config). Also, a "build number", which
 	  is a timestamp, is used for the full version. An AppInfo object is used to share the
-	  application info (version) between server and client. 
-	  
-	- Now, build.properties include many of the (previously) hard-coded parameters. build.xml 
-	  updates the web.xml accordingly and then Config makes the params available to the code. 
-	  
+	  application info (version) between server and client.
+
+	- Now, build.properties include many of the (previously) hard-coded parameters. build.xml
+	  updates the web.xml accordingly and then Config makes the params available to the code.
+
 
 2009-03-17
 	- Using Voc2RDF, I just created and submitted the following vocabularies (with the
 	  current values in the authorities.csv and resourcetypes.csv, respectively):
 	       http://mmisw.org/ont/mmi/20090317T183911/authority
 	       http://mmisw.org/ont/mmi/20090317T173755/resourcetype
-	  A next step is to use these ontologies (instead of the CSV files) to drive the 
+	  A next step is to use these ontologies (instead of the CSV files) to drive the
 	  corresponding drop-down menus.
-	  
-	  
-	- Fixed the ``,,'' issue in voc2rdf: issue #87	
-	
+
+
+	- Fixed the ``,,'' issue in voc2rdf: issue #87
+
 	-  Code clean-up:
 		- Moved MdHelper from org.mmisw.ont.util/ to org.mmisw.ontmd.gwt.server/
 		- New class org.mmisw.ontmd.gwt.server/MdUtil with utilities for MdHelper.
 		- Removed org.mmisw.ont.{Omv,OmvMmi} from this project; now, the ont generated
 		  library org.mmisw.ont.vocabulary.jar is used instead.
-		  
-		  
+
+
 	- Issue #106: "Use ontologies to drive drop-down menus"
 	  Started changes to implement this. See Config, MdHelper and MdUtil.
 	  Note that Config defines the URI of the class of the vocabulary to be loaded. However,
 	  TODO perhaps in a future version multiple classes could be supported in the
 	  ontology, so this scheme would have to change.     (1.0.4.beta (20090317))
-	  
-	  
+
+
 	- Partially fixed Issue #45: "include URIs for Topic in the ontmd Topic URI field"
 	  1.0.5.beta (20090317)
 	  See MetadataGroupPanel, Option, MdUtil, MdHelper.
-	  
+
 	- Using style OBF to reduce size of javascript (issue #108: "ontmd client: 1.0MB per load")
-	
-	
+
+
 2009-03-13
 	- Fixed http://code.google.com/p/mmisw/issues/detail?id=98:
 	                "new version allows the shortName and authority to be changed"
-	                
+
 		- See OntMdServiceImpl._checkUriKeyCombinationForNewVersion
 		  Now, OntMd doesn't allow the shortName (resource type) or the organization
 		  abbreviation to be changed when a *new version* submission is attempted.
-		  
-		  
+
+
 	- Implemented http://code.google.com/p/mmisw/issues/detail?id=87:
 					"Ability to have Voc2RDF handle quoted strings for table preview"
 		- See VocabPanel.parseLine(), which is used now in updateTabularView().
 		   Note: it only handles the double quote (") case.
 		- This is Voc2RDF 2.0.0.beta5
-		
-	                
+
+
 2009-03-12
 	- Fixed http://code.google.com/p/mmisw/issues/detail?id=63:
 	                Matching auth+topic not detected as potential update
@@ -1809,7 +1824,7 @@ TODOs
 		  See OntMdServiceImpl._checkNoPreexistingOntology
 		- Note, the _checkNoPreexistingOntology check is repeated in the "upload" operation
 		  in case there is a new registration done by other user in the meantime (from when the
-		  "review" was done). Of course, we are NOT completely solving the potential concurrency 
+		  "review" was done). Of course, we are NOT completely solving the potential concurrency
 		  problem with this re-check; we are just reducing the chances of that event.
 
 2009-03-11
@@ -1818,23 +1833,23 @@ TODOs
 	  In particular, I'm using this approach to set up logging to an ontmd.log file under
 	  the servlet container's logs directory. This follows the same strategy as in the
 	  "ont" project for ontology and term URI resolution.
-	- Using commons logging in server classes. 
+	- Using commons logging in server classes.
 
-		  
+
 
 2009-03-10
 
 	- Investigating http://code.google.com/p/mmisw/issues/detail?id=63:
 	                Matching auth+topic not detected as potential update
-	
+
 		-Created a base vocabulary:
 	      http://mmisw.org/ont/mmitest/20090310T221213/parametro
 
 
-	- Fixed http://code.google.com/p/mmisw/issues/detail?id=97: 
-	    Left and right borders are not displayed in firefox 
+	- Fixed http://code.google.com/p/mmisw/issues/detail?id=97:
+	    Left and right borders are not displayed in firefox
 	  The fix (well, workaround) was to remove ``table { empty-cells: hide; }'' in Main.css.
-	  
+
 
 
 
@@ -1842,28 +1857,28 @@ TODOs
 
 	Issue 27: URIs have # signs instead of / before terms
 	http://code.google.com/p/mmisw/issues/detail?id=27
-	
+
 	- JenaUtil2. Converter, OntMdServiceImpl:
 	  Re-setting fragment separator to / and doing necessary adjustments to start
 	  using / in general.
-	  
+
 	oops: some URIs are coming with trailing # in the links in the metadata panel.
 	For now, any trailing framegments are just removed before creating the links,
 	see MetadataPanel.NewUri.setUri(String uri, boolean link).
 
 	  ok: updated the issue with some instructions to verify the change.
-	
-	
-	
+
+
+
 	- weird behavior on my station: couldn't "load" a local file in the ontmd editor;
 	  seemed like a cache issue with my browser.  (no problem now).
-	  
-	 
+
+
 	- Voc2RDF: now transfers the sessionId/userId information from the given parameters
 	  (eg, from ORR front-end) to the ontmd tool so the user won't have to log in again.
 	  Fixes issue 30: http://code.google.com/p/mmisw/issues/detail?id=30
-	  
-	  
+
+
 2008-11-12
 
 	- Done Request 46: allow to manually specify version of submitted ontology (internal)
@@ -1874,34 +1889,34 @@ TODOs
 		    authorities.csv
 		    resourcetypes.csv
 	  See Config.java
-	   
-	
+
+
 	Voc2RDF (2.0.0.beta2)
-	Re. 43: Handle non-UTF8 inputs 
+	Re. 43: Handle non-UTF8 inputs
 	- Voc2RDF: New _convertToUtf8(String str) utility in Converter.
 	  FIXME implementation is rather simplistic:
 	     return new String(str.getBytes(), "UTF-8"))
 	  A better approach is to determine the actual original charset and
 	  then do the conversion to UTF-8.
-	  
-	  
+
+
 2008-11-11 (1.0.0.beta)    (Happy B-day Ini!)
 
 	- Declaring beta status!
-	
+
 	- Using new Voc2RDF logo created by Paul (thanks!).
 
 
 2008-11-10 (1.0.0.alpha7)
 	- Fixed 38: show the "owl" and "html" links
 	  --> include hot links in the read-only view of a registered ontology
-	
+
 2008-11-09 (1.0.0.alpha7)
 
 	- Voc2RDF functionality re-merged in this project.
 
 	- New tooltip handling via an "?" icon.
-	
+
 	- JenaUtil2: with some of the methods in JenaUtil but with some adjustments.
 	  Initially intended to handle the fragment separator, which is '#' always in
 	  the original version. Currently, JenaUtil2 still uses '#' but already
@@ -1913,108 +1928,108 @@ TODOs
 	  with '/'.  This may be just a cosmetic difference but I haven't tested
 	  this thoroughly yet (especially in terms of transferring elements from a
 	  given ontology to the new to be uploaded in the repository).
-	  
+
 	- Improved handling of the "_map" suffix in the shortName.
-	
+
 
 2008-11-06 (0.1.alpha6)
 
 	- OntologyPanel:  Since "load registry file" is not implemented directly,
 	  I removed the related GUI elements (via a flag, so I can return to that later
 	  if necessary). Note: the user would use the main front-end to choose a
-	  registered ontology, and then ontmd will be called to proceed 
+	  registered ontology, and then ontmd will be called to proceed
 	  with the creation of the new version.
-	
+
 	- Passing call parameters to the initialization (getBaseInfo) to better logging
 	  on the server side.
-	  
+
 	- Now handling aquaportal versions: a parameter "ontologyId", if given, will be
 	  used to perform the final REST upload call, so the new version gets linked with
 	  the same family of versions for the given ontology.
-	
+
 	- Added authority: mvco: Martha's Vineyard Coastal Observatory
 	- Main and BaseInfo: better handling of possible error while getting BaseInfo.
-	
+
 	- Fixed link to HTML version after upload. (it uses "?form=html" mechanism).
-	
-	
+
+
 2008-11-05
 	- Fixed Issue 25: Visiting ontology=>new without logging in does not require login.
-	  In general, the logic to handle initialization is much clear now. 
+	  In general, the logic to handle initialization is much clear now.
 	  See MainPanel() constructor.
-	  
+
 	- various GUI improvements.
-	
+
 2008-11-04 (0.1.alpha5)
 	- Message improvements
 	- Better integration with voc2rdf
-	
+
 	- Everything working pretty nicely! :-)
-	
+
 	TODO: Unify replicated code with voc2rdf !!
-	
-	
-	
+
+
+
 2008-11-03 (0.1.alpha4)
 
 	- Assign omv:creationDate with format yyyy-MM-dd'T'HH:mm:ssZ
-	
+
 	- Fixed the following: repeated attributes will come out in the resulting ontology
 	(eg, multiple omv:uri entries) when the original resource already contains those
 	attributes. Now, any pre-exisiting attributes that are given new values are
 	not tranferred from the original source, of course.
-	
+
 	- shortName attribute handled as a special case (time contrains force to take
-	  quick, not-so-elegant solutions :( 
-	
+	  quick, not-so-elegant solutions :(
+
 	- upload: setting file extension to .owl per aquaportal requirement
-	
+
 	- hot link to uploaded ontology upon succesful submission.
-	
-	
+
+
 2008-11-02
 
 	- Fixed Issue 10: load a registered ontology
 		- This is now completed for the case when the URI is passed as a parameter
 		  ontologyUri=uuuu along with the new parameter "_edit" which should be
 		  set to "_edit=y" to allow the edition of a new version of the ontology.
-		  
+
 		  (Note: the button to "load a registered ontology" is not yet implemented
 		  and perhaps it shouldn't at least initially, the reasons being:
 		  	- Main entry point to create a new version is the Aquaportal front-end;
 		  	- This way, the user is already logged-in and in fact she can only launch
 		  	  the edition of her own ontologies, so this control is already in place.
-		  	  
+
 	- Username is not shown if ontmd is launched with the userId and sessionId params.
-			
-		
+
+
 	- some code clean-up:
 		-MdHelper: removed unused stuff (AttributeValue class, title).
-		
+
 	- Fixed Issue 11: Assign DC from the Omv and OmvMmi props -- and vice versa!
 	  This happens at two moments:
 	  	- When an ontology is loaded: Existing DC attributes are used to fill in
 	  	  missing MMI attributes.
-	  	- When the "review" process is executed: Existing MMI attributes are used 
+	  	- When the "review" process is executed: Existing MMI attributes are used
 	  	  to fill in missing DC attributes.
 	  Equivalences were defined in MdHelper.
-	  
-	- Improved error checking and diagnostics upon initial loading of an ontology. 
-		
+
+	- Improved error checking and diagnostics upon initial loading of an ontology.
+
 2008-11-01
 	- MetadataPanel doesn't show the original base URI anymore; this info is already
 	  provided in the Ontology panel.
-	  
+
 	- Fixed 18: "namespace not updated". Main changes in OntMdServiceImpl:
 	  - _replaceNameSpace(OntModel model, String oldNameSpace, String newNameSpace)
 	    updates all statements having any element in the original namespace to be in the
 	    new namespace.
 	  - the pre-existing owl:Ontology, if any, is replaced with a new one that will have
 	    the appropriate URI.
-	  
+
 
 	- Improved login interface.
-	
+
 2008-10-31
 	- Fixed 17: example still data included.
 	  The general behavior was that resetting to original values was incorrect.
@@ -2030,7 +2045,7 @@ TODOs
 	- Fixed: 15: preview operation not idempotent
 	- Also fixed: multiple owl:Ontology sections: now the esiting one is used
 	  to add/updated the metadata attributes.
-	  
+
 	- ontologyUri= parameter: it is handled by just displaying the metadataPanel
 	  in no-editing mode:
 	  	- no buttons
@@ -2041,14 +2056,13 @@ TODOs
 	  	- HTML output in the Ont URI resolver (TODO)
 
 
-2008-10-29 
+2008-10-29
 	- submit new ontology starting from local file:
 		basic steps implemented: load-edit-review-upload
 
 TODOS:
 	- load a registered ontology
 	- Assign DC from the Omv and OmvMmi props
-	
+
 2008-10-28 (started; based on voc2rdf)
 
-	
