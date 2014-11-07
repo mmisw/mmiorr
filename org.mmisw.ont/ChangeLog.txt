@@ -1,8 +1,11 @@
-org.mmisw.ont - Ontology and Term URI resolver 
+org.mmisw.ont - Ontology and Term URI resolver
 Carlos Rueda - MMI / MBARI
 $Id$
 
 ChangeLog
+
+2014-07-15  2.1.1
+  - 2.1.1: correct fix for Issue #123: "encoded URI not properly handled"
 
 2013-10-11  2.0.43
     -include author and version in OntologyInfo
@@ -21,7 +24,7 @@ ChangeLog
 		- Ag4TripleStore._removeStatementsFromDefaultGraph: supporting routine
 		  to remove the statements in a given graph from the default graph.
 	More tests and adjustments required.
-	  
+
 
 2013-01-14  2.0.38.beta
 	- Fix 300: "No suitable response format available"
@@ -34,9 +37,9 @@ ChangeLog
 	  http://code.google.com/p/mmisw/source/diff?spec=svn1397&r=1379&format=side&path=/trunk/org.mmisw.ont/src/org/mmisw/ont/client/OntClientUtil.java
 	  but OntClientUtil.retrieveModel should actually resolve the URO against the Ont service, not directly.
 	  This change was definitely unintended and I'm just reverting it.
-	  
+
 2012-12-07  2.0.31.beta
-	- RegularFileDispatcher._showServiceInfo: minor adjustment in main entry point 
+	- RegularFileDispatcher._showServiceInfo: minor adjustment in main entry point
 	  page to point to the ORR as well.
 
 2012-08-27  2.0.30.beta
@@ -47,26 +50,26 @@ ChangeLog
 	  MiscDispatcher.listOntologiesForAuthority: preliminary implementation: shows an html
 	  table with all the ontologies associated with a given authority.
 	  TODO: complement with info from the authority vocabulary (need configuration param for this).
-	  
-	- UriDispatcher: add "ORDER BY ?prop" in select query for properties of an entity. 
-	
+
+	- UriDispatcher: add "ORDER BY ?prop" in select query for properties of an entity.
+
 2012-04-03  2.0.24.beta
 	- Instead of inference being enabled by default for queries, now an explicit parameter
 	  (infer) has been added to the corresp APIs. The particular reason for this change was the
 	  poor performance of AllegroGraph 4.4 and 4.5 for queries like the following:
-		   SELECT ?subject ?predicate ?object 
-		   WHERE { ?subject ?predicate ?object. 
-		           FILTER regex(?object, "pressure", "i" ) 
-		   } 
+		   SELECT ?subject ?predicate ?object
+		   WHERE { ?subject ?predicate ?object.
+		           FILTER regex(?object, "pressure", "i" )
+		   }
 		   ORDER BY ?subject LIMIT 5
-	  that are used in the "search terms" interface in the main ORR portal. This query caused 
+	  that are used in the "search terms" interface in the main ORR portal. This query caused
 	  AG to work a 99.9% CPU and without returning any response after an hour or so.
 	  So, the default is now "no inference in SPARQL queries".
-	  TODO determine mechanism for users to indicate that inference is desired for the query. 
-	  
+	  TODO determine mechanism for users to indicate that inference is desired for the query.
+
 	- SparqlDispatcher._executeWithCompletion: convert to HTML if no explicit outFormat was
 	  given and the response from the query processor is CSV.
-	  
+
 	- sparql.html: added checkbox for inference; more examples with the "form" parameter.
 
 2012-04-02  2.0.23.beta
@@ -74,36 +77,36 @@ ChangeLog
 	  by including "infer=true" in the request.
 	- sample.build.properties: include properties for AG 4.4: agraph.username, agraph.password.
 	- Ag4TripleStore._loadSupportingStatements: add supporting statements related with SKOS
-	  taking into consideration that AG 4.4 supports owl:SymmetricProperty. 
+	  taking into consideration that AG 4.4 supports owl:SymmetricProperty.
 	- Ag4TripleStore._doUpdate: now including credentials for the request per
 	  http://www.franz.com/agraph/support/documentation/4.4/http-protocol.html#header2-223
-	
-	
+
+
 2012-03-22  2.0.22.beta
 	- More adjustments related with use of new AllegroGraph 4.4
 
 2012-03-27  2.0.21.beta
 	- OntSevlet: New "ontology exists" (oe) request dispatched
 	- IOntClient.isRegisteredOntologyUri: removed unnecessary acceptEntries parameter.
-	- Util.csv2html: implemented in particular to get the HTML version of CSV contents 
+	- Util.csv2html: implemented in particular to get the HTML version of CSV contents
 	  for AllegroGraph 4.4, which does not provide a direct HTML response format.
 	  Used in SparqlDispatcher and Ag4TripleStore
 
 2012-01-06  2.0.20.beta
 	- WebContent/sparql.html: use relative URL (/ont?...), which will work in general
 	  as well. (besides it facilitates preliminary tests in the current server migration.
-	  
-	- TripleStore._createTripleStoreInstance: now checks the new "agraph.version" 
+
+	- TripleStore._createTripleStoreInstance: now checks the new "agraph.version"
 	  configuration property ({sample.}build.properties) to determine which AG triple
 	  store implementation to use.
-	  
+
 
 
 2011-12-15  2.0.20.beta
-	Starting triple store implementation based on AllegroGraph 4.x, which is a major 
+	Starting triple store implementation based on AllegroGraph 4.x, which is a major
 	version change wrt version 3.3, the one we've been using so far.
 	Ref: http://www.franz.com/agraph/support/documentation/current/convert3to4.html
-	
+
 	It seems the two client libraries (agraph.jar and agraph-4.4.jar, which are for
 	versions 3.3 and 4.4 respectively) can be used simultaneously because the base
 	AG types live in different packages. This will facilitate the transitioning.
@@ -111,102 +114,102 @@ ChangeLog
 	Libraries copied from AG 4.4 to WebContent/WEB_INF/lib/
 		- agraph-4.4.jar
 		- openrdf-sesame-2.3.2-onejar.jar
-		
+
 	New package for the AG4 based implementation:
 	     org.mmisw.ont.triplestore.allegro4
-	     
-	The AG4 SPARQL endpoint will be the main mechanism for the allegro4.Ag4TripleStore 
+
+	The AG4 SPARQL endpoint will be the main mechanism for the allegro4.Ag4TripleStore
 	implementation.
-	
+
 	Preliminary exploration at this point.
-	     
-	     
-	
+
+
+
 
 2011-07-13  2.0.19.beta
-	What happended with the '$' version indicator for ontology/term URI requests? A request 
+	What happended with the '$' version indicator for ontology/term URI requests? A request
 	like http://mmisw.org/ont/mmi/$/device was supported long time ago (by a redirection to
 	the explicit latest version, eg., http://mmisw.org/ont/mmi/20090413T193509/device).
-	 
+
 	- In general, the '$' mechanism for redirection to the latest version of an ontology
 	  or term hasn't been supported for a long time. In particular, we are not loading
 	  any "versioned" ontology contents into the triple store. For clarification, whole
 	  ontologies could still be handled (they do not require the triple store) so this
 	  is bug in this case (which has been just fixed, see below).
-	- If we want to revisit this functionality, then, an ideal scenario would be that 
-	  the ORR provide support (including inferencing using the triple store) for all 
-	  versions of all registered ontologies. This would require the necessary analysis, 
-	  design, and implementation adjustments, testing and tune up (note also that the 
-	  current triple store server has stability issues that will likely be exacerbated 
-	  with the incremented size of the triple store). 
+	- If we want to revisit this functionality, then, an ideal scenario would be that
+	  the ORR provide support (including inferencing using the triple store) for all
+	  versions of all registered ontologies. This would require the necessary analysis,
+	  design, and implementation adjustments, testing and tune up (note also that the
+	  current triple store server has stability issues that will likely be exacerbated
+	  with the incremented size of the triple store).
 
-	- BTW, a $-request like the above triggers an "IllegalArgumentException: Illegal group 
+	- BTW, a $-request like the above triggers an "IllegalArgumentException: Illegal group
 	  reference":
 	  .. String.replaceAll(String.java:2000)
 	  .. UriDispatcher._dispatchUriHtml(UriDispatcher.java:129)
 	  and that is because the '$' character is not escaped for the regex (it is a bug here
 	  that the replacement is done with a regex-based utility).
-	  But the request should have been dispatched earlier, in 
+	  But the request should have been dispatched earlier, in
 	         OntServlet._dispatchUri(String ontOrEntUri).
 	  and this has just been adjusted, see OntServlet._handleLatestVersionRedirection, for
-	  at least doing the redirection. TODO NOTE: seems like the extension nor the term 
+	  at least doing the redirection. TODO NOTE: seems like the extension nor the term
 	  component are transferred for the redirection.
-	  
-	
+
+
 2011-06-28  2.0.18.beta
 	- #288 Enable CORS
 	  Partially enabled.
-	  response.setHeader("Access-Control-Allow-Origin", "*") call added in some 
+	  response.setHeader("Access-Control-Allow-Origin", "*") call added in some
 	  places in these sources:
 		  - MiscDispatcher
 		  - SparqlDispatcher
 		  - ServletUtil
 	  The selection of places was not very systematic; in general this will
-	  eventually require a more careful examination, unless we decide that CORS 
+	  eventually require a more careful examination, unless we decide that CORS
 	  can simply be enabled for ALL resources.
-		 
-		  
+
+
 2011-03-30  2.0.17.beta
 	- build.xml: explicitly compiling with source="1.5" target="1.5"
-	
+
 	- build.xml: exclude **/*_trailingFragment.java", some incomplete code I tried
 	  while investigating http://code.google.com/p/mmisw/issues/detail?id=289
 	  "Re-hosted ontology not showing metadata." Current functionality is not
 	  affected at all. (but the excluded files, which are modified copies of existing
 	  sources, are not ready to be incorporated.)
-	  A good part of the issue has to do with the handling of the trailing slash that 
-	  is present in the ontology that is failing here. In summary, the handling of 
-	  possible trailing fragment in ontologies (including the xml:base and the namespace 
-	  for the empty prefix) NEEDS a careful revisit and redesign.  
+	  A good part of the issue has to do with the handling of the trailing slash that
+	  is present in the ontology that is failing here. In summary, the handling of
+	  possible trailing fragment in ontologies (including the xml:base and the namespace
+	  for the empty prefix) NEEDS a careful revisit and redesign.
 	- Syncing with orrclient on 2.0.17.beta
-	
-	
+
+
 2010-11-03  2.0.15.beta
 	- Update of version (sync'ing with other ORR modules)
 	- clarifying that AdminDispatcher is "effectively thread-safe" (see the javadoc)
-	  
-	  
+
+
 2010-10-28  2.0.14.beta
 	- Updated ReadMe documentation.
 	- Updated several javadoc comments regarding thread-safety.
-	
+
 2010-10-27  2.0.14.beta
 	- #287 "concurrency" - AdminDispatcher: now thread-safe.
-		
+
 	- Misc: build.xml: added deploy-war target
-	
+
 2010-10-26  2.0.14.beta
 	#287 "concurrency"
 	Continuing with more load testing using JMeter and code clean-up and adjustments
 	for thread-safety.
-	
+
 	= SPARQL queries =
 		Users: 5
 		Ramp-up period: 0
 		Loop count: 100
 		Request: /ont?sparql=SELECT  ?s ?p ?o WHERE {?s ?p ?o. } LIMIT 20   <-- ENCODED
 		==>  OK
-		
+
 		Users: 30
 		Ramp-up period: 0
 		Loop count: 100
@@ -214,63 +217,63 @@ ChangeLog
 		==>  OK
 
 	= General =
-	
-		- I'm including some net.jcip.annotations.* [1] annotations, especially to 
+
+		- I'm including some net.jcip.annotations.* [1] annotations, especially to
 		facilitate the related diagnostics generated by FindBugs [2]. So, the actual
 		thread-safety will not be initially guaranteed.
 		[1] http://www.javaconcurrencyinpractice.com/
 		[2] http://findbugs.sourceforge.net/
-		
+
 		- Some documentation about effective singletons used by OntServlet.
-		
-		
+
+
 2010-10-26  2.0.13.beta
 	Some code refactoring to facilitate investigation of #287 "concurrency"
 	- Made class OntServlet.Request top-level and renamed it to OntRequest
 	- Db.closeConnection(Connection) replaced with closeStatementAndConnection(Statement, Connection)
-	
-	
+
+
 	= Adjustments/Fixes for thread-safety =
-	
+
 	OntServlet:
 		OntRequest object maintained in a ThreadLocal variable.
-		
+
 	UriResolver2:
 		Member ontRequest was not properly shared. Now the ontRequest object is obtained
 		from the ThreadLocal variable maintained by OntServlet.
-		
-	The following test plans (using JMeter) caused NPE sometimes due to concurrency, but 
+
+	The following test plans (using JMeter) caused NPE sometimes due to concurrency, but
 	they are now completing successfully (run on my laptop deployment):
-	 
+
 		Users: 30
 		Ramp-up period: 0
 		Loop count: 200
 		Request: /ont/cf-small/parameter.owl
 		==> OK, no exceptions at all.
-			
+
 		Users: 30
 		Ramp-up period: 0
 		Loop count: 200
 		Request: /ont?listall=yes
-		==>  OK   
-		
-			
-	
+		==>  OK
+
+
+
 2010-10-25
 	- Some exercises to reproduce issue #287: Concurrency.
 	  See http://marinemetadata.org/mmiorrdeplmtech/orrtests/jmx
-	  Note: Although some general measures related with synchronization have been taken, 
+	  Note: Although some general measures related with synchronization have been taken,
 	  thread-safety has not been addressed systematically.
 	  The most immediate next adjustments is to properly make the shared resources
 	  in the servlet thread-safe.
-	  
-	  
+
+
 2010-10-14  2.0.12.beta
-	- OntServlet: 
+	- OntServlet:
 	  - removed unused code to handle googlebot (robots.txt is in place)
 	  - removed unused method serializeModel(Model model, String lang)
 	- Removed unused class HtmlDispatcher
-	
+
 
 2010-10-08  2.0.11.beta
 	- VirtuosoTest: Some testing of reasoning capabality: enabling and execution.
@@ -278,70 +281,70 @@ ChangeLog
 	  options), and this is done in a NON STANDARD way.
 	  See http://docs.openlinksw.com/virtuoso/virtuosofaq.html#virtuosofaq7
 	  In this test the query is:
-		PREFIX skos: <http://www.w3.org/2004/02/skos/core#> 
-		SELECT ?o 
-		WHERE { <http://localhost:8080/ont/mmitest/vocres/a>   
-		        skos:exactMatch   
+		PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+		SELECT ?o
+		WHERE { <http://localhost:8080/ont/mmitest/vocres/a>
+		        skos:exactMatch
 		        ?o   OPTION(TRANSITIVE)  // <<-- Jena triggers error here; but Virtuoso handles it
-		} 
-        	
+		}
+
 	- sample.build.properties updated to allow the specification of the triple
 	  store to be used, one of:
 	  	- AllegroGraph
 	  	- Virtuoso
 	  	- Jena TDB
-	  The first option that is appropriately specified (ie., with the required 
+	  The first option that is appropriately specified (ie., with the required
 	  non-blank values) will be used. By default, a Jena Model in memory is used.
 	  The class TripleStore determines the implementation to use based on configuration properties.
 
-	  --- NOTE --- 
+	  --- NOTE ---
 	      The AllegroGraph option continues to be the one for production.
 	      The other implementations are incomplete/not fully tested.
-	
+
 
 2010-10-07  2.0.11.beta
 	Additional evaluation of TDB and Virtuoso, and several related adjustments
 	on the triple store implementations.
-	
+
 	- AgTripleStore: in clear() and reinit() now calling renew() on the store
 	  according to recent reply from mm@franz.com:
 		>>Does this clear() call have the effect of deleting but retaining
 		>>the triples as with any other removal operation?
-		
+
 		Unfortunately, you are here the victim of our quick-and-dirty Jena
 		implementation for AllegroGraph 3.  The clear() method eventually
 		calls AllegroGraphGraph.removeAll() which simply marks all the triples
-		as deleted.	
+		as deleted.
 		The recommended way to start with a fresh empty store is to call the
 		renew() method instead of open().
-		
-	- Also evaluating OpenLink Virtuoso server, which seems promising. 
+
+	- Also evaluating OpenLink Virtuoso server, which seems promising.
 	  Installation of the server on the mmi2 machine was straightforward (basically
 	  using the classical ``./configure && make && sudo make install'' sequence.
 	  The implementation class is JenaVirtuosoTripleStore. Preliminary tests OK.
-	  
+
 	- General adjustments in ITripleStore interface, including new operation clear()
 	  to completely clear the triple store (including graphs).  Also removed the
-	  'withInference' parameter in some operations (in principle, inference should 
+	  'withInference' parameter in some operations (in principle, inference should
 	  always be enabled).
-	  
-	
+
+
 2010-10-06  2.0.10.beta
 	- Fix 284: "empty reponse with incorrect content type"
 	  see SparqlDispatcher.
 
 
 2010-10-01/05  2.0.10.beta
-	
+
 	Testing Jena TDB as a possible alternative for the triple store.
-	
-	NOTE: 
+
+	NOTE:
 	 - Preliminary tests on my local machine OK, including inferencing.
 	 - BUT DO NOT ENABLE in production--the implementation is NOT complete yet.
-	
+
 	  New build property 'jena.tdb.dir'. If this is defined, then the Jena TDB is
 	  used on the given directory.
-	  
+
 	  I'm using TDB 0.8.7. Note: from this distribution I only copied:
 	  	arq-2.8.5-tests.jar
 	  	arq-2.8.5.jar
@@ -349,7 +352,7 @@ ChangeLog
 	  	tdb-0.8.7.jar\
 	  to WebContent/WEB-INF/lib/.  But note that WebContent/WEB-INF/lib/jena/ already
 	  has arq-2.8.4.jar, TODO keep only the latest version.
-	  
+
 	"Ont graph" renamings:
 		"ont graph" is not a term that properly captures the actual functionality intended in
 		the IOntGraph interface. The term is now in general "triple store" (even if
@@ -359,8 +362,8 @@ ChangeLog
 			IOntGraph --> ITripleSore
 			OntGraph -->  TripleSore
 			and similar renamings for the implementation classes under this package.
-			
-			
+
+
 
 2010-09-29  2.0.9.beta
 	OntClient library:
@@ -373,7 +376,7 @@ ChangeLog
 2010-09-28  2.0.8.beta
 	Deployment of Ont client library to maven repository
 	- Created ad hoc maven POM (resource/templ-pom.xml) to deploy the Ont client library.
-	  ``ant deploy'' copies resource/templ-pom.xml into _generated/tmp-pom.xml with 
+	  ``ant deploy'' copies resource/templ-pom.xml into _generated/tmp-pom.xml with
 	  replacement of the Ont version; then calls `mvn --file _generated/tmp-pom.xml deploy''.
 	- With the current version, the dependency for clients will be:
 		<dependency>
@@ -381,7 +384,7 @@ ChangeLog
 			<artifactId>ontclient</artifactId>
 			<version>2.0.8.beta-SNAPSHOT</version>
 		</dependency>
-	- just deployed: 
+	- just deployed:
 	  https://oss.sonatype.org/content/repositories/snapshots/org/mmisw/ontclient/2.0.8.beta-SNAPSHOT/
 
 
@@ -400,10 +403,10 @@ ChangeLog
 	  - removed unused ImageDispatcher (only referenced by UriResolver). Image output formats
 	    have never been implemented (but they could be later on, as the "dot" one; see below).
 	  - removed the "dot" generation: this had old code, and the functionality has not
-	    been documented as part of the offered features. This may be re-incorporated by using the 
+	    been documented as part of the offered features. This may be re-incorporated by using the
 	    org.mmisw.ont2dot module at some point.
 	    So, removed org.mmisw.ont.util.DotGenerator and its reference in UriResolver2.
-	    
+
 	Client libraries unified in a single jar org.mmisw.ont.client.jar (generated by 'ant client-lib')
 	  - Previous libs (org.mmisw.ont.vocabulary.jar, org.mmisw.ont.misc.jar, org.mmisw.ont.mmiuri.jar)
 	    not generated anymore.
@@ -419,9 +422,9 @@ ChangeLog
 2010-09-26  2.0.7.beta
 
 	282: "mysql connection error" - http://code.google.com/p/mmisw/issues/detail?id=282
-	- From time to time i've seen the error mentioned in 
+	- From time to time i've seen the error mentioned in
 	      http://forums.mysql.com/read.php?39,180347,195402#msg-195402
-	  basically: mysql server is running with all queries successfully processed, 
+	  basically: mysql server is running with all queries successfully processed,
 	  but once in a while (looks like after a period of inactivity) the following
 	  kind of exception is thrown:
 		SEVERE: Servlet.service() for servlet ontServlet threw exception
@@ -437,20 +440,20 @@ ChangeLog
 		        at com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1383)
 		        at org.apache.tomcat.dbcp.dbcp.DelegatingStatement.executeQuery(DelegatingStatement.java:208)
 		        at org.mmisw.ont.MiscDispatcher.listAll(MiscDispatcher.java:306)
-		        
+
 	- I'm explicitly adding the recent mysql driver 5.1.13 in WEB-INF/lib/. This driver was
-	  previously copied manually at deployment time from the bioportal deployment (which is 5.1.6).	
-	  The library is actually copied into <tomcat>/lib/ since, for some reason, it is not taken 
+	  previously copied manually at deployment time from the bioportal deployment (which is 5.1.6).
+	  The library is actually copied into <tomcat>/lib/ since, for some reason, it is not taken
 	  by tomcap from Ont's WEB-INF/lib/.
-	- TODO: investigate use of c3p0 library. 
-	  
+	- TODO: investigate use of c3p0 library.
+
 	- While revising the above, I noted that MiscDispatcher was throwing an "already closed connection
 	  SQLException," which happened after the MySQL exception above (while processing a statement).
 	  Now, this closeConnection operation is handled by Db.closeConnection(Connection), so any
 	  SQLException is just logged but the exception is absorbed.
-	
+
 	  TODO: check behavior with new mysql driver.
-	  
+
 
 2010-09-22  2.0.6.beta
  	- Just a note Re. Issue 281: "Allegrograph memory problem"
@@ -464,14 +467,14 @@ ChangeLog
 		$ du -s *
 		116984	mmiorr
 		1669968	mmiorr.OLD
- 	  
+
 	- New ServletUtil with operations to set the content type and encoding for the responses.
  	  Created for better modularization and while testing adjustments related wth UTF-8 are done.
- 	  
-	
+
+
 2010-09-14  2.0.5.beta
 	- OntConfig.AGRAPH_HOST: agraph.host is not a required parameter
-	
+
 2010-09-12  2.0.5.beta
 	Removed dependency on org.mmi.ont.util.jar, that is, on the classes:
 		edu.drexel.util.rdf.JenaUtil
@@ -483,26 +486,26 @@ ChangeLog
 	  - Resource getFirstIndividual(Model model, Resource resType)
 	  OwlModel was only used in UnversionedConverter but the call "new OwlModel(model)" was directly
 	  changed to a call to "ModelFactory.createOntologyModel(model.getSpecification(), model)".
-	  
-	- One other addition to JenaUtil2: 
-		- Ontology getOntology(OntModel ontModel): gets the first Ontology associated 
+
+	- One other addition to JenaUtil2:
+		- Ontology getOntology(OntModel ontModel): gets the first Ontology associated
 		  with the base model of the given model.  This was moved from OntModelUtil in orrclient.
-		  
+
 	TODO: Review and replace calls to JenaUtil2.getFirstIndividual(model, OWL.Ontology) by
 	      JenaUtil2.getOntology(OntModel ontModel).
-	
-	
-	
+
+
+
 2010-09-09  2.0.4.beta
 	- OntServlet.Request: now initializes mmiUri when not only is syntactically a
 	  valid MmiUri, but also that is "ont"-resolvable.
-	  
+
 	- NOTE: while examining why http://inspire-registry.jrc.ec.europa.eu/registers/GLOSSARY
 	  didn't show any metadata in the portal, I noticed that it actually had 2 ontology resources:
 	    ...
 	    xml:base="http://inspire-registry.jrc.ec.europa.eu/registers/GLOSSARY">
 	    <owl:Ontology rdf:about="">
-		    .. typical metadata here for example...  
+		    .. typical metadata here for example...
 	        <omvmmi:origMaintainerCode>JRC-IES</omvmmi:origMaintainerCode>
 	    </owl:Ontology>
 	    <owl:Ontology rdf:about="http://inspire-registry.jrc.ec.europa.eu/registers/GLOSSARY/">
@@ -514,7 +517,7 @@ ChangeLog
 	  TODO: Review the methods in the various ORR modules that call Jena's OntModel.listOntologies();
 	  a possible strategy is to automatically do the merge when 2 or more ontology resources have
 	  the same URI (ie. the one corresponding to the registered entry).
-	  
+
 
 2010-09-05  2.0.2.beta
 	- cleared up some warnings upon upgrade to Jena 2.6.3
@@ -522,80 +525,80 @@ ChangeLog
 	- OntServlet: new operations:
 		- "_version": reports the Ont service version
 		- "_aqrest": reports the aquaportal REST URL
-	
-	
+
+
 2010-08-27  2.0.0.beta
 	- MmiUri: now, authority cannot start with a hyphen ``-''.  This seems a resonable restriction,
-	  while it allows to better maintain internal regular resources under the corresponding directory, 
-	  ie., if the service is deployed as "http://.../ont", then regular resources are located under 
-	  "http://.../ont/-/." This speeds up the dispatch of these resources (as they won't be 
+	  while it allows to better maintain internal regular resources under the corresponding directory,
+	  ie., if the service is deployed as "http://.../ont", then regular resources are located under
+	  "http://.../ont/-/." This speeds up the dispatch of these resources (as they won't be
 	  first tried as ontologies or terms against the registry).
 	  Note that elements in the root directory (eg., http://.../ont/main.css, http://.../ont/sparql.html)
 	  are quickly dispatched as regular resources because they are not valid MmiUris.
-	  The above change is specifically for the "img" resources, and just moved WebContent/img to 
+	  The above change is specifically for the "img" resources, and just moved WebContent/img to
 	  WebContent/-/img and updated sparql.html.
-	
+
 	- sparql.html: enabled the "beta" logo, WebContent/-/img/mmior.jpg (previous alpha logo: mmior.png).
-	- updated other sources to refer to -/img/semantic_framework.jpg 
-	
-	
+	- updated other sources to refer to -/img/semantic_framework.jpg
+
+
 2010-08-26   1.9.95.alpha
 	- AllegroGraph upgraded to 3.3
-	
-	 
+
+
 2010-08-25   1.9.95.alpha
 	- inf_rules.txt (used by OntGraphMem): fixed the symmetric rule:
 		[sym:    (?p rdf:type owl:SymmetricProperty) (?a ?p ?b) -> (?b ?p ?a)]
 	  It was previously indicating owl:Symmetric, which is incorrect.
 	  NOTE: currently OntGraphMem is not used, so this change does not have any effect in the
-	  current implementation; just did the change for consistency and eventual future enabling. 
-	  
+	  current implementation; just did the change for consistency and eventual future enabling.
+
 	- New AgSupport class (support for the AllegroGraph-based implementation of IOntGraph), with
 	  the SUPPORTING_STATEMENTS previously located in AdminDispatcher.
-	  
+
 	  AllegroGraph reasoner does not support owl:SymmetricProperty directly but it does support
 	  owl:inverseOf [1]. So, noting that [2]:
 	    (P owl:inverseOf P) iff (P rdf:type owl:SymmetricProperty),
-	  the statements here related with symmetric properties have been adjusted to use owl:inverseOf. 
-	  
+	  the statements here related with symmetric properties have been adjusted to use owl:inverseOf.
+
 	  However, (P owl:inverseOf P) is not processed by AG, which seem to be a bug. I've reported
 	  this to the AG people.
-	  
+
 	  [1] http://www.franz.com/agraph/allegrograph/doc/reasoner-tutorial.html
 	  [2] http://www.slideshare.net/ontotext/two-reasonable-views-to-the-web-of-linked-data (slide 11)
-	  
-	  
+
+
 	- Added "nt", and "ttl" to the list of possible output formats (besides "rdf", "owl", "n3", etc).
 	  TODO: however, this is just partially implemented!
-	  
-	  
+
+
 2010-08-24   1.9.95.alpha
 	- AdminDispatcher: added rules for the SKOS namespace "http://www.w3.org/2004/02/skos/core#"
 	  (ie. along with rules to the previous "http://www.w3.org/2008/05/skos#").
-	
-	
+
+
 2010-08-18   1.9.95.alpha
 	- Added org.mmisw.ont.vocabulary.Vine20071128 vocabulary, old namespace:
 	     http://marinemetadata.org/mmiws/20071128/vine#
-	     
+
 2010-08-17   1.9.95.alpha
 	- Added org.mmisw.ont.vocabulary.Vine vocabulary.
-	  URI: http://mmisw.org/ont/mmi/vine  
+	  URI: http://mmisw.org/ont/mmi/vine
 	  Actual vocab created in onts/vine/vine.owl (with Protege) and registered at ORR.
-	
-	
+
+
 2010-07-24
 	- just generated the misc, mmiuri, and vocabulary libraries.
-	    
-2010-06-29   1.9.8.alpha    
+
+2010-06-29   1.9.8.alpha
 Note: syncing version with Ont and orr modules especially because Ont now uses Jena 2.6.3
 and associated libraries.
 
 	Upgrading Jena library to 2.6.3:
 	As a general approach, I'm removing all the "old" libraries that have a corresponding JAR in the
 	new version of Jena, and then using the ones coming with Jena:
-	
-	- Removed "old" jars from base_war/WEB_INF/lib/ associated with Jena 2.5.6 that have versions 
+
+	- Removed "old" jars from base_war/WEB_INF/lib/ associated with Jena 2.5.6 that have versions
 	  in the new Jena:
 		-rw-r--r--  1 carueda  staff  1203860 Apr 29  2009 xercesImpl.jar
 		-rw-r--r--  1 carueda  staff  1485980 Apr 29  2009 jenatest.jar
@@ -605,7 +608,7 @@ and associated libraries.
 		-rw-r--r--  1 carueda  staff  1296938 Apr 29  2009 arq.jar
 		-rw-r--r--  1 carueda  staff   391834 Apr 29  2009 log4j-1.2.15.jar
 		-rw-r--r--  1 carueda  staff   121070 Apr 29  2009 junit.jar
-	
+
 	- base_war/WEB_INF/lib/jena/ new directory containing ALL(*) the jars associated with the latest
 	  version of Jena, which is 2.6.3:
 		-rw-r--r--@ 1 carueda  staff  1203860 Feb  5  2009 xercesImpl-2.7.1.jar
@@ -622,21 +625,21 @@ and associated libraries.
 		-rw-r--r--@ 1 carueda  staff  1680523 May 28 14:26 arq-2.8.4.jar
 		-rw-r--r--@ 1 carueda  staff  1900385 Jun  1 14:31 jena-2.6.3.jar
 		-rw-r--r--@ 1 carueda  staff  1506473 Jun  1 14:32 jena-2.6.3-tests.jar
-	(*) I'm just following the indication in Jena-2.6.3/doc/readme.html: "Installation: ... set the Java 
+	(*) I'm just following the indication in Jena-2.6.3/doc/readme.html: "Installation: ... set the Java
 	classpath to include all the JAR files in the JENAROOT/lib/ directory."
 
 
 2010-06-29
 	Issue #242: "admin interface to remove an ontology" was reopened because
-	there is still a statement not removed from the triple store:	
+	there is still a statement not removed from the triple store:
 		subject:   <THE URI OF THE REMOVED ONTOLOGY>
 		predicate: http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 		object:    http://www.w3.org/2004/03/trix/rdfg-1/Graph
 	I did various adjustments to properly remove all statements having the removed
 	ontology URI as subject, only in case where the ontology would be gone completely (if there
 	is a previous version available, no such statements will be removed).
-	
-	
+
+
 
 2010-06-28   1.9.6.alpha
 	#158: "Mechanism for tracking accesses to ontologies/terms"
@@ -644,9 +647,9 @@ and associated libraries.
 	- Keeping the original definition at /Users/Shared/mmiregistry/ga/env.rhino.1.2.js#1295
 			Envjs.log = print;
 	  but I'm now defining 'print' in Analytics:
-	  		function print(str) { __ont_log.debug("Analytics.print: " +str); } 
+	  		function print(str) { __ont_log.debug("Analytics.print: " +str); }
 	  where __ont_log is the logger.
-	  
+
 	- The only change in env.rhino.1.2.js is now at line 246:
 			Envjs.loadImage = function(node, src) {
 			    // carueda 2010-06-28
@@ -659,32 +662,32 @@ and associated libraries.
 			pageTracker._setDomainName("${ga.domainName}");
 			pageTracker._trackPageview("${ga.pageName}");
 
-	TODO: clean up.  (eg., perhaps ga.html is not needed)	
-	  	  
-	
+	TODO: clean up.  (eg., perhaps ga.html is not needed)
+
+
 
 2010-06-21   1.9.5.alpha
 	#158: "Mechanism for tracking accesses to ontologies/terms"
 	Testing Rhino+EnvJs as a way to trigger the analytics event from this server side module.
 	- js.jar from ftp://ftp.mozilla.org/pub/mozilla.org/js/rhino1_7R2.zip
-	- env.rhino.1.2.js from http://www.envjs.com/dist/env.rhino.1.2.js 
+	- env.rhino.1.2.js from http://www.envjs.com/dist/env.rhino.1.2.js
 	- ga.html: just an empty html page for GA to insert needed elements
 	- ga.js: the traditional GA snippet: http://code.google.com/apis/analytics/docs/tracking/gaTrackingOverview.html#standardSetup
 	- Analytics: new class supporting the generation of events to the GA engine.
-	
+
 	NOTE: the original env.rhino.1.2.js throws the following exception when it is loaded via
 	Analytics._addEnvJsScript():
 	org.mozilla.javascript.EcmaError: ReferenceError: "print" is not defined. (/Users/Shared/mmiregistry/ga/env.rhino.1.2.js#1295)
-	
-	Looking at http://env-js.appspot.com/doc/apis#platform-log, I'm "fixing" this by simply defining:	
+
+	Looking at http://env-js.appspot.com/doc/apis#platform-log, I'm "fixing" this by simply defining:
 		Envjs.log = function(string){
 		   //do something with the string
 		   return;
 		};
 	Now, no exception is thrown.
 	NEXT: to see that the actual events are being detected by the GA engine.
-	
-	
+
+
 2010-06-17   1.9.4.alpha
 	#158: "Mechanism for tracking accesses to ontologies/terms"
 	Preliminary preparations using Google analytics:
@@ -697,11 +700,11 @@ and associated libraries.
 	- Note: as part of the fix, OntServlet now also calls _dispatchUri() where
 	  the old dispatching mechanism was in place. This goes toward unifying various
 	  refactoring attemtps. A consequence of this is that content negotiation is now
-	  honored where it was not previously. For Firefox in particular, a request with 
+	  honored where it was not previously. For Firefox in particular, a request with
 	  no explicit format (via file extension or 'form' parameter) will resolve to "html"
-	  thus causing a redirection to the ORR portal. Previously this would resolve in 
-	  the "owl" response. 
-	- Various adjustments to properly dispatch a regular file after the normal URI 
+	  thus causing a redirection to the ORR portal. Previously this would resolve in
+	  the "owl" response.
+	- Various adjustments to properly dispatch a regular file after the normal URI
 	  resolution steps fail.
 
 
@@ -714,49 +717,49 @@ and associated libraries.
 	  Called by:
 	  	- UnversionedConverter: to take care of adding omv.version to the unversioned response
 	  	- UriResolver2: for cases where UnversionedConverter is not used.
-	  	
+
 	- Note that the solution above is to take care of already registered ontologies that are missing
-	  the omv.version property. The iserver module also has a corresponding fix so new submissions 
+	  the omv.version property. The iserver module also has a corresponding fix so new submissions
 	  now will have this property assigned.
-	  
-	  
-	
+
+
+
 2010-06-14   1.7.0.beta3
 	Issue #242: "admin interface to remove an ontology" implemented:
 	- OntConfig: new BIOPORTAL_REST_URL property similar to the one in ontmd2 module, ie.,
 	  URL of the "aquaportal" REST endpoint. Keeping the prefix "bioportal" because that's the
 	  one used in ontmd2 (so it's easier to track-- TODO: general clean-up).
-	  
+
 	- New OntologyDeleter for the basic removal from the bioportal back-end
-	
+
 	- OntServlet._unregisterOntology: calls the above and also updates the graphs resource
 	  and the triple store.
-	
+
 	- Moved getRegisteredOntologyLatestVersion(String potentialOntUri) from OntServlet to Db.
-	
+
 	- New org.mmisw.ont.vocabulary.Rdfg for definitions in http://www.w3.org/2004/03/trix/rdfg-1/
-	
+
 	Update of new graphs:
 	- Note: The graphs resource (<internal-dir>/graphs.rdf) was not updated upon regular submission
 	  of a new ontology. That is, the following statement was not added to it:
-	     <new ontology URI> rdf:type <rdfg:Graph>. 
+	     <new ontology URI> rdf:type <rdfg:Graph>.
 	  This is done now, see call to adminDispatcher.newGraph(ownGraphUri) in OntGraphAG._loadOntology.
 	  Prior to this change, the following query:
 			PREFIX rdfg: <http://www.w3.org/2004/03/trix/rdfg-1/>
 			PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-			SELECT ?graph 
+			SELECT ?graph
 			WHERE { ?graph rdf:type rdfg:Graph }
-	  returned only a couple of solutions corresponding to previous tests with the direct registration 
-	  mechanism, which was the only method passing non-null value for the graphId, thus triggering the 
+	  returned only a couple of solutions corresponding to previous tests with the direct registration
+	  mechanism, which was the only method passing non-null value for the graphId, thus triggering the
 	  whole addition of graph-related statements.
-	  
-	
+
+
 
 2010-05-23   1.7.0.beta2
 	- Issue #243 fixed.
 	  UnversionedConverter: omv:version obtained from the model itself with a new utility
 	  in JenaUtil2. Also, exactly the value (if any) is put in the unversioned result.
-	  
+
 2010-04-28   1.7.0.beta1
 	- continuing unregistration of ontology ...
 
@@ -764,13 +767,13 @@ and associated libraries.
 	Re-writing of Graphviz dot format generation moved to new module
 	org.mmisw.ont2dot
 	TODO: remove DotGenerator class and update dispatcher to use the new module.
-	
-	
-	
+
+
+
 2010-04-05   1.7.0.beta1
 	- Removal of an ontology ...
-	
-	
+
+
 2009-12-29   1.6.0.beta3
 	- NOTE about AllegroGraph bugs. See OntGraphAG._executeQuery:
 	  1) SPARQLQuery.run throws an exception! Documentation in this regard is very little. So, I'm
@@ -785,49 +788,49 @@ and associated libraries.
 	     http://localhost:8080/ont?uri=http://example.org/test1/termThree&form=csv
 	     http://localhost:8080/ont?uri=http://example.org/test1/termThree&form=html
 	  NOTE that this functionality is particularly for terms (not for whole ontologies)
-	  
-	
+
+
 2009-12-28   1.6.0.beta3
 	- OntGraphAG: removed unused code.
 	- new AdminDispatcher: helper for OntServlet
-	
+
 	Processing the association of user-specified named graphs:
-	
+
 	- IOntGraph.loadOntology(ontology, graphId): now with the graphId parameter.
 	  Only processed by the OntGraphAG implementation.
-	
+
 	- new build property ont.internal.dir (/Users/Shared/mmiregistry/internal) to store some internal
 	  resources, currently the graphs.rdf file, which is used to store the user-specified graphs
 	  following the RDFG vocabulary (http://www.w3.org/2004/03/trix/rdfg-1)
-	  
+
 	- AdminDispatcher: besides the SKOS-related statments for inference, the supporting statements also
 	  include a statement for the transitive property of rdfg:subGraphOf (not tested yet).
-	  
+
 	- OntGraphAG._loadOntology: the graphId (if given) is converted to a "well-formed" URI in case it matches
 	  a simple fragment:
 	     graphUri = OntConfig.Prop.ONT_SERVICE_URL.getValue() + "/mmiorr-internal/graphs/ + graphId
 	  For example, if graphId=="ooi-ci", then the resulting URI of the graph is
 	     http://mmisw.org/ont/mmiorr-internal/graphs/ooi-ci
 	  in the case of the MMI deployment.
-	  
-	  Note that all statements of a registered ontology with URI <ouri> are loaded in the graph with the same 
+
+	  Note that all statements of a registered ontology with URI <ouri> are loaded in the graph with the same
 	  URI <ouri> in the triple store (using the context parameter in the AG APIs).
 	  When the user specifies a desired <graphUri> for the ontology, the graph identified
 	  by <ouri> is made a subClassOf the graph identified by <graphUri>.
 	  See OntGraphAG._addSubGraph.
-	  
-	
-	
+
+
+
 2009-12-24   1.6.0.beta2
 	- OntServlet._getUsersRdf: adjustments. Versioned URIs (using current time). Empty prefix associated with
 	  the versioned URI.
-	
+
 2009-12-23   1.6.0.beta1
 	Preparing for handling "internal" ontologies. An internal ontology provides supporting information
-	for the MMI ORR. 
+	for the MMI ORR.
 
 	- OntServlet._getUsersRdf: "_usrsrdf": outputs the list of registered users in RDF/XML format.
-	
+
 
 2009-12-18   1.5.0.beta5
 	- OntGraphAG.loadOntology: load ontology and lauch indexing of new triples
@@ -838,28 +841,28 @@ and associated libraries.
 	  	- reinit always reindexes all triples
 	  	- loadOntology indexes the new triples
 	  Normally, unindexed triples at init time should be zero.
-	  
-	  NOTE: the setUnindexedThreshold is not yet used, so no automatic reindexing of the triple store is enabled. 
-	  
+
+	  NOTE: the setUnindexedThreshold is not yet used, so no automatic reindexing of the triple store is enabled.
+
 
 2009-12-18   1.5.0.beta4
 	Have been looking at other possible triple stores (Open Anzo, 4store, sesame, TDB, ...)
-	
+
 2009-12-18   1.5.0.beta4
 	- org.mmisw.ont.graph.allegro: new package for AG related types
 	- org.mmisw.ont.graph.mem: new package for the previous memory based model
-	
+
 	- OntGraphAG.init(): populates triple store and also indexes it.
-	
-	Fortunately, no strange behavior on the MMIWEB deployment. 
+
+	Fortunately, no strange behavior on the MMIWEB deployment.
 	Here are some stats:
-	
+
 	Reload (http://mmisw.org/ont/?_reload):
 		- 140 ontologies to be loaded
-		- triple store populated in 1:10.706 minutes:seconds  
+		- triple store populated in 1:10.706 minutes:seconds
 		- #triples= 92651
 		- indexing completed in 11.015 seconds
-		
+
 	Query involving inference:
 		PREFIX skos: <http://www.w3.org/2008/05/skos#>
 		PREFIX vocres: <http://mmisw.org/ont/testing/vocres/>
@@ -868,10 +871,10 @@ and associated libraries.
 		http://mmisw.org/ont/testing/vocres/b
 		http://mmisw.org/ont/testing/vocres/d
 		http://mmisw.org/ont/testing/vocres/c
-		
+
 	(the same query took 12 seconds before indexing).
-	
-	
+
+
 
 2009-12-17   1.5.0.beta4
 	*** Continuing enabling AllegroGraph as persistent triple store ***
@@ -884,21 +887,21 @@ and associated libraries.
 	  - query performance really bad! actually it may be not working at all (even though that
 	    'top' shows me >99% cpu usage!
 	  - however, the deployment at MMIWEB seems to be working fine.
-	  
-	
+
+
 2009-12-16   1.5.0.beta3
 	*** Continuing enabling AllegroGraph as persistent triple store ***
 	- enabling direct SPARQL query dispatch with AllegroGraph so reasoning can be enabled.
 	- unfortunately, AG serializers are not working ...
 	- TODO: query dispatch according to desired format needs more work and clean-up!
-	 
+
 
 2009-12-14   1.5.0.beta2
 	*** Continuing enabling AllegroGraph as persistent triple store ***
 	- Re-enabling inferences (issue #175 Enable inference mechanism)
-	- OntGraphAG.doReInitModel: 
+	- OntGraphAG.doReInitModel:
 		- load the skos properties model, inf_properties.nt (N-triples format required)
-	- OntGraphAG.executeQuery: 
+	- OntGraphAG.executeQuery:
 		- creates a Jena inference model on the fly using inf_rules.txt as in OntGraphMem.
 		  TODO: there is perhaps a mechanism to encode the rules in the triple store
 		         so it's not necessary to associate them every time a query is issued.
@@ -907,10 +910,10 @@ and associated libraries.
 			PREFIX skos: <http://www.w3.org/2008/05/skos#>
 			PREFIX vocres: <http://localhost:8080/ont/mmitest/vocres/>
 			SELECT ?o WHERE {vocres:a skos:exactMatch ?o. }
-			
+
 	NOTE: DISABLING THE JENA INFERENCE MODEL: makes query processing TOO slow!!
-		  
-	
+
+
 
 2009-12-12   1.5.0.beta1
 	*** Continuing enabling AllegroGraph as persistent triple store ***
@@ -923,53 +926,53 @@ and associated libraries.
 		agraph.ts.name - name of main triple store
 	- IOntGraph.Factory removed (replaced by the OntGraph proxy as follows)
 	- New OntGraph as a proxy to the actual implementation. In particular, init(), which is called
-	  after the config info is available, does the actual instantiation. If the config parameter 
+	  after the config info is available, does the actual instantiation. If the config parameter
 	  agraph.host is given, then the AllegroGraph implementation is used; otherwise the OntGraphMem one.
-	
+
 	NOTE: query processing time seems rather slow, for example for some simple queries like:
 	   select ?s ?p ?o where { ?s ?p ?o } limit 1
-	Similar queries using the standalone AgWebView seem to run much faster. 
+	Similar queries using the standalone AgWebView seem to run much faster.
 	TODO: improve performance.
-	
+
 	TODO: Enable rules for mappings as in the memory-based implementation.
-	
+
 
 2009-12-11   1.5.0.beta1
 	*** Continuing enabling AllegroGraph as persistent triple store ***
-	
+
 	- New package org.mmisw.ont.graph with IOntGraph as common interface for the memory-based
 	  implementation and the new AllegroGraph implementation.
 	- IOntGraph.Factory provides the construction of the implementation. For now, the
 	  selection of the implementation is hard-coded while I do the preparation and
 	  tests (eventually I can enable the "old" memory-based implementation to allow the
-	  commit of other unrelated changes and from there bew able to create other releases 
+	  commit of other unrelated changes and from there bew able to create other releases
 	  while the new AllegroGraph triple store is completed).
-	- As one of the dependencies is for dispatching SPARQL queries, I extracted 
-	  the QueryResult type from the Sparql class to eventually add the query dispatch 
+	- As one of the dependencies is for dispatching SPARQL queries, I extracted
+	  the QueryResult type from the Sparql class to eventually add the query dispatch
 	  operation to IOntGraph.
-	  
-	
+
+
 2009-12-10   1.5.0.beta1
 
 	*** Started enabling AllegroGraph as persistent triple store ***
 	Just preliminary code changes
-	
+
 	- sample.build.properties, OntConfig: new parameters:
 		agraph.ts.dir  - base dir for triple stores
 		agraph.ts.name - name of main triple store
-	- OntGraphMem.java: Copy of OntGraph.java right before the new changes, 894 11/25/09 7:43 PM 
+	- OntGraphMem.java: Copy of OntGraph.java right before the new changes, 894 11/25/09 7:43 PM
 	- included agraph.jar
-	
+
 	- OntGraph: just preliminary code for initialization of AllegroGraph
-	  Next: 
+	  Next:
 	    init(): should just set up the _ts (no reinitialization as the store is persistent)
 	    reinit(): should be only to reset the whole triple store -- to be called upon a
 	    special call to the servlet
-	    
+
 	    getModel(): reimplementation may be via the Jena interface provide by allegroGraph
 	    (haven't examined this part yet)
-	
-	
+
+
 
 
 2009-11-24   1.4.2.beta
@@ -978,87 +981,87 @@ and associated libraries.
 	  is not accurate; it returns all versions.
 	- new method getAllOntologies(boolean allVersions) with the correct behavior.
 	- Called in OntGraph._doInitModel.
-	  
-	
+
+
 2009-11-24   1.4.1.beta
 	- DotGenerator: generate instance diagram (see comments in the class).
 	  TODO: eventually provide this functionality in a separate module so it's easier
 	  to deploy as a standalone tool.
-	
-	
+
+
 2009-11-18   1.4.0.beta
 	Issue #222 - duplicate of issue #43: Handle non-UTF8 and UTF8 inputs
-	- New OntServlet.serializeModelToOutputStream(Model model, String lang, OutputStream os), 
+	- New OntServlet.serializeModelToOutputStream(Model model, String lang, OutputStream os),
 	  which basically fixes serializeModel(Model model, String lang) -> StringReader, that is,
 	  let Jena handle the encoding of the output, which should be UTF-8 in general.
 	  The problem with the former method was that it messes up the encoding.
-	
+
 	FIXME: SparqlDispatcher.execute: UTF-8 encoding especially for RDF/XML output
-	
-	
+
+
 	Other changes:
-		- OntGraph._doInitModel: continue initialization even if a model fails to be loaded. 
+		- OntGraph._doInitModel: continue initialization even if a model fails to be loaded.
 
 
 2009-11-10   1.3.15.beta
 	- Fixed issue #218: Request to (re)load re-hosted ontology in graph fails
 		- Db.getOntology(String ontologyUri): was missing an "ontology.setUri(ontologyUri);" assignment--fixed.
-	
-	-  Issue 219: Ability to maintain multiple graphs 
+
+	-  Issue 219: Ability to maintain multiple graphs
 		- Reviewing OntGraph and possible mechanism to have multiple graphs.
-	
+
 
 2009-10-06   1.3.14.beta
 	- issue #196 capture omv:reference
 		Omv: added omv:reference
-		
+
 	- issue #99 Normalize theme/topic/class throughout interface
 		OmvMmi: added omvmmi:hasResourceType
-	
-	
+
+
 2009-09-30   1.3.13.beta
 	- Creating org.mmisw.ont.misc.jar with common utilities that are used by other modules.
 	  Currently only with JenaUtil2 (this class was temporarily replicated in iserver).
 	  Except for a minor change in JenaUtil2, no other code changes.
-	  
+
 
 2009-09-29   1.3.12.beta
 	Investigating regression issue. Test with http://mmisw.org/ont/mmi/device -- it returns *versioned!*
 		UnversionedConverter: enabling debug info
-		
+
 	Ok, what happened was this: I uploaded a *versioned* device ontology to create a new version in the
 	registry. So the "old" (versioned) namespace got stuck in the contents. The UnversionedConverter moves
 	everything in the new (versioned) namespace to the unversioned namespace but will not do
 	anything to the stuff in the old (versioned) namespace. That's why I got what looks a versioned
 	response from the unversioned request.
-	This is definitely a potential issue. Where should it be fixed? 
+	This is definitely a potential issue. Where should it be fixed?
 		a) properly prepare the uploaded ontology so it removes the version component (if any, automatically);
 		and/or
 		b) in UnversionedConverter so it moves everything from related versioned namespaces to the unversioned
 		namespace.
 	See issue #192 "wrong versioned/unversioned response"
-	
-	
+
+
 2009-09-18   1.3.11.beta
 	- Sparql and SparqlDispatcher: catch potential runtime errors and respond an explicit message.
 	  In particular, QueryFactory.create() and/or QueryExecutionFactory.create() may throw such
 	  unchecked exceptions, so I put a catch-all statement. (The most likely error is a syntax error.)
 	  The returned message is always text/plain starting with "ERROR:".
-	   
-	
-	
+
+
+
 2009-09-17   1.3.10.beta
 	- fixed logo image link in sparql.html
 	- SparqlDispatcher: now returns SC_BAD_REQUEST if sparql parameter value is not given.
-	  (previously, a default example was dispatched, which was confusing in general). 
-	
+	  (previously, a default example was dispatched, which was confusing in general).
+
 2009-09-10   1.3.9.beta
 	- new "_usri" service to obtain user info given the username
 	- Db.getUserInfo(String username)
-	
+
 	- Do not compute _infModel.size() -- takes time.
-	
-	
+
+
 2009-09-09   1.3.8.beta
 	Inferences enabled (issue #175 Enable inference mechanism)
 	- New in WebContent/WEB-INF/classes/:
@@ -1070,17 +1073,17 @@ and associated libraries.
 	- OntGraph._createInfModel(): create the _infModel based on the inf_rules.txt
 	- OntGraph.loadOntology(Ontology ontology): note that the updated model depends on whether
 	  inference in enabled (ie., _infModel != null, then _infModel is the model updated; otherwise, _model).
-	  
+
 	So, at deployment time, the inference model is created by default. The size of the base model and
 	the estimated size of the inference model are logged. This is a first step to examine memory
 	consumption and then see if some critical situation should be handled soon.
-	
+
 	References:
 	 - http://jena.sourceforge.net/inference/index.html
 	 - http://www.ibm.com/developerworks/xml/library/j-jena/
 	 - http://vine.cvs.sf.net/viewvc/vine/org.mmi.mappingPolicy2/config/
-	
-	
+
+
 2009-09-03   1.3.7.beta
 	Issue #168: Submitted ontology not included for SPARQL query processing
 	- OntGraph: new operation loadOntology(Ontology) to support addition of an ontology
@@ -1089,24 +1092,24 @@ and associated libraries.
 	  ...?_lo=<uri>
 	  Normally the given <uri> will be an unversioned one (for those resolved directly by the
 	  "ont" service). In any case, the latest version is the one that gets loaded.
-	  
+
 	NOTE: this "_lo" service is to be used by the iserver module once a new submission has been
 	completed, so the graph gets updated and then dependent actions go as expected, in particular,
 	SPARQL queries.
-	
+
 	NOTE: While doing the above today, in Db I fixed a few places that retrieve the filename, which
-	were still based on the path associated to the URL. These parts were kind of old code. The right 
+	were still based on the path associated to the URL. These parts were kind of old code. The right
 	way to retrieve the filename is from the database itself.
 
 
 2009-08-25  1.3.6.beta
 	issue #148: "Need property to capture "creator/author of original source vocabulary""
 	- Added OmvMmi.hasContentCreator property (http://mmisw.org/ont/mmi/20081020/ontologyMetadata/hasContentCreator)
-	
+
 	Recall: the "vocabulary" library is used by other MMISW modules; rebuild it like this:
 		ant voc-jar
 	creates: org.mmisw.ont.vocabulary.jar
-	
+
 
 2009-08-14,16  1.3.5.beta
   	Issue #162: "External ontology considered to be internal"
@@ -1114,28 +1117,28 @@ and associated libraries.
 	  config parameter to determine if a given URI is resolvable by the deployed "ont" service.
 	  This returns true iff uri.startsWith(value of ont.service.url parameter).
 	  (there's a similar method in "iserver" module)
-	  
+
 	- OntConfig: removed Properties props member -- now, values are stored in the same enumeration.
-	  
+
 
 
 2009-08-13  1.3.4.beta
-	- Fixed issue #163 Empty result returned for inexistent term using uri parameter 
-	  If the URI is tried for a term or entity (as opposed to a registered ontology), 
+	- Fixed issue #163 Empty result returned for inexistent term using uri parameter
+	  If the URI is tried for a term or entity (as opposed to a registered ontology),
 	  and the result of the query is empty, then 404 is now returned to the client, instead of the
 	  corresponding formatted empty result.
-	  
-	  
+
+
 2009-08-11  1.3.3.beta
-	- "uri=" request for an external (re-hosted) ontology, and with NO "version=" parameter 
+	- "uri=" request for an external (re-hosted) ontology, and with NO "version=" parameter
 	  should return the latest version:
 	  	Db.getOntology(String ontologyUri): because on the "re-hosting" capability, the ontology URI is
-	 	no longer unique in the database, ie., there may be multiple versions associated with the 
+	 	no longer unique in the database, ie., there may be multiple versions associated with the
 	 	same ontology URI. Now, this method returns the most recent version associated
 	 	with the given URI.
 	 	This fixes the issue in general.
-	 	
-	 	
+
+
 2009-08-11  1.3.2.beta
 	Fixed bug with "uri" parameter: http://mmisw.org/ont?form=n3&uri=http://mmisw.org/ont/mmi/device
 	     is returning the *versioned* form (of the latest version) -- Should be the unversioned form.
@@ -1144,13 +1147,13 @@ and associated libraries.
 			if ( req.version == null && req.mmiUri != null && req.mmiUri.getVersion() == null ) {
 				model = UnversionedConverter.getUnversionedModel(originalModel, req.mmiUri);
 			}
-			
-	
+
+
 2009-08-08,10   1.3.1.beta
 	Dispatching "version" parameter in conjunction with "uri" parameter
 		- Example: http://localhost:8080/ont?form=owl&uri=http://EXAMPLE.org/external3&version=20090806T021338
 		- OntServlet: accept "version" parameter; see _dispatchUri(Request req).
-		
+
 	FIXME: Overall usage of MmiUri as a way to determine that the URI corresponds
 	to a *hosted* (ie., with namespace in the context of this web service), is NOT sufficient.
 	In particular, MmiUri constructors do not check the actual value of the hostname-root
@@ -1161,18 +1164,18 @@ and associated libraries.
 2009-08-03
 	- OntServlet.getRegisteredOntology(String potentialOntUri) -> Ontology
 	  method to obtain a registered ontology considering the various cases: versioned
-	  and unversioned MmiUri, and other URI. 
+	  and unversioned MmiUri, and other URI.
 	  This is used when dispatching the "uri" parameter (_dispatchUri).
-	
-	
+
+
 2009-08-01,03:   1.3.0.beta (was 1.2.3.beta)
 	- Added build and configuration params to allow deployment of the service on any machine (while
 	  removing several related hard-coded pieces, in particular about http://mmisw.org...):
 		appserver.host
 		portal.service.url
-		 
 
-2009-07-31  
+
+2009-07-31
 	1.2.3.beta
 	- OntServlet: check if requested uri (via "uri" param) corresponds to whole ontology; if so, dispatch it.
 	  Use ontology member in req and make sure the Uri attribute is set.
@@ -1183,117 +1186,117 @@ and associated libraries.
 		- OntGraph._doInitModel: catching URISyntaxException while getting the MmmiUri object
 		  as an indicador of re-hosted ontology.
 		  NOTE: this is just a preliminary mechanism.
-		  
+
 		- MiscDispatcher.listAll: include non-compliant MmiUri ontologies to provide for
 		  re-hosted ones.
-		  
+
 	- OntServlet now dispatchs the "uri" parameter such that it can dispatch a re-hosted ontology.
-		
-		
-2009-06-17                              
+
+
+2009-06-17
         - fix for issue #150: "file extension is lost in $ request"
           UriResolver: append the extension for the URI used in the redicrection.
           Note the MmiUri.getTermUri() --same for MmiUri.getOntologyUri()-- does not include the extension.
 
 2009-06-09
 	- DotGenerator and .dot response: just added parameter 'il' for "includeLegend"
-	
-	
+
+
 2009-06-03 -  version 1.2.2.beta
-	- UnversionedConverter: Disabled the alteration of attribute values, so the contents 
+	- UnversionedConverter: Disabled the alteration of attribute values, so the contents
 	  of the unversioned ontology will be exactly as that of the versioned ontology.
-	  TODO: we still need to determine the mechanism to explicitly indicate that the 
+	  TODO: we still need to determine the mechanism to explicitly indicate that the
 	  "unversioned" response is an unversioned form of the corresponding latest version.
-	  
+
 2009-05-31
 	- listall: include o.ontology_id
 
 2009-05-24
 	- listall: order by o.ontology_id, o.version_number.  The ontology URIs are shown in
 	  versioned form.
-	
+
 2009-05-23
 	- Omv: added: usedOntologyEngineeringTool
 	- OmvMmi: added: voc2rdf, vine
-	
-	  
+
+
 2009-05-22
 	MisDispatcher: include username in listall response.
-	
+
 2009-05-21
 	- DotGenerator now ignores owl:Thing to reduce cluttering the diagram
 	- New DotGeneratorProgram with a main program to exercise DotGenerator.
-	
+
 2009-05-20
 	- DotGenerator: no dependency on base URI--always use local name of RDFNode
 	  TODO: handle (potentially) different namespaces.
-	  
+
 2009-05-14
 	- MiscDispatcher.listForPortal: List all entries for use by the iserver
 
 2009-05-13
 	- UriResolver2: resolving HTML by redirecting to OntMd service
-	
+
 	- MiscDispatcher.resolveGetCsv: resolve unversioned request
-	
+
 2009-05-12
 	Refactoring:
 	- new OntServlet as main entry point and as a preparation to start refactoring of UriResolver
 	- new UriResolver2 as a support for the incremental refactoring
 	- UriResolver2: preliminary dispatch;
 	- OntServlet: calls uriResolver2 (and not uriResolver) if special developer parameter "ur2" is included in the request.
-	
+
 2009-05-11
 	- Added config property: aquaportal.voc2rdf.dir
 	- Added internal operation _csv to provide the CSV contents of an ontology
 	- TODO remove the "_lpath" operation in "Ont"
-	
-	
+
+
 2009-05-08
-	- if the "uri" parameter is included, resolve by the given URI, which is done 
-	  via a SPARQL query that depends on the "form" parameter. If form is "html" 
+	- if the "uri" parameter is included, resolve by the given URI, which is done
+	  via a SPARQL query that depends on the "form" parameter. If form is "html"
 	  or "csv" a SELECT query, otherwise, for "owl", "rdf", "n3", a CONSTRUCT query.
 	  The sparql dispatcher has been updated to handle these possible formats.
-	  
+
 	- dispatch form=json for SELECT SPARQL query.
-	
+
 2009-05-07
 	- MmiUri(String): prevent NPE when there is no path in the URI
-	
+
 2009-04-29:
 	- Some refactorings/clean-up:
 		- new RegularFileDispatcher
 		- moved some misc operations into a new MiscDispatcher
 		- preliminary code for dispatching an image request
-		
+
 2009-04-07:
 	- Fix of issue #123: "encoded URI not properly handled" (MmiUri, MmiUriTest)
 
 2009-04-01
 	- HtmlDispacher.appendHtmlIfResolvableByThisService is now the way to properly
-	  prepare refered resources that are resolvable by the service (so they are links 
+	  prepare refered resources that are resolvable by the service (so they are links
 	  to the HTML format as well).
-	  
+
 	- code clean-up: moved some special dispatchs from _resolveUri.
-	
-	
+
+
 2009-03-27
 	- UriResolver: some doc updates and minor code re-arrangements (no changes in logic)
-	
+
 	- JenaUtil2: some pending renamings done:
 		getURIForBase --> removeTrailingFragment
 		getURIForNS   --> appendFragment
-	
+
 	- Sparql: enabled DESCRIBE responses.
-	
+
 	- Fixed 100: "term URI always resolved in HTML"
 		- TermExtractor: extracts a model with information about the requested entity.
-		- UriResolver._resolveUriOntFormat: serialized resulting model in the requested format. 
-	
+		- UriResolver._resolveUriOntFormat: serialized resulting model in the requested format.
+
 2009-03-21
 	- Just comment about Omv.acronym saying that is about "resourceType" not "shortName"
-       
-	 
+
+
 2009-03-19:   (1.0.0.beta)
 	- Issue 8: "Improve HTML response"
 	  Added a header with logo and links to semanticframework
@@ -1302,48 +1305,48 @@ and associated libraries.
 	- Code clean-up:
 		- Removed unused types: MdDispatcher, MdHelper, AttrGroup, AttrDef.
 		  Medatada is handled in "ontmd" project. See 2008-11-14 comment below.
-		
-		
-		
+
+
+
 2009-03-16:
 	- Fixed Issue 102: "searches should be against the "unversioned" form of the latest ontologies"
  	  See OntGraph.
  	  NOTE: *only* the "unversioned" latest versions are loaded into the graph so all
 	  responses will be now in unversioned form.
 	  Fix available as of 0.2.0.beta6
-	  
+
 	- Sparql: make links for good URLs in html response. The ones that are good MmiUri's are
 	  appended ".html" so the HTML output format is transferred for subsequent resolution.
 	  This fixes Issue 103: "make links for well formed URLs in HTML query reponse"
- 	  
+
 
 2009-03-15:
 	- Fixed issue 101: "Inexistent term is resolved"
 	  The "problem" was that model.getResource "behaves identically to createResource(String)"
 	  so it *creates* a fresh resource if the resource does NOT exist!
 	  See http://jena.sourceforge.net/javadoc/com/hp/hpl/jena/rdf/model/Model.html#getResource(java.lang.String)
-	  I was using the call ``termRes = model.getResource(termUri)'', along with a termRes != null check to 
+	  I was using the call ``termRes = model.getResource(termUri)'', along with a termRes != null check to
 	  determine the existence of the term. The fix is to use an explicit "contains" check.
 	  Also removed the try with the "#" separator as we are now only using "/".
 	  A 404 is returned now as well.
 	  This is fixed in HtmlDispatcher.dispatchTerm() which is currently the only place where
 	  term URIs are being resolved.  See issue #100: "term URI always resolved in HTML"
-	  
+
 	- Sparql: Unused prefixes (except "") are now removed from the CONSTRUCT output.
 	  New JenaUtil2.removeUnusedNsPrefixes(Model model);
-	  
-	  
+
+
 	- New version.properties to handle version information for this service. build.xml translates
 	  this to the application via the web.xml (which is read by OntConfig). Also, a "build number",
-	  which is a timestamp, is used for the full version. 
-	  
-	  
+	  which is a timestamp, is used for the full version.
+
+
 2009-03-14:
 	- The following kind URI was accepted as valid:
 	       http://mmisw.org/ont/mmi/badversion/someVocab/someTerm
 	  Fixed.  See MmiUri public constructor and MmiUriTest.testVersionInvalid2().
-	  
-	  
+
+
 	- Completed review of MmiUri and simplification of constructor and operations.
 	  In particular, the "extension" concept has been re-worked; now, the extension is
 	  provided by getExtension() (instead of getTopicExtension(), which has been removed).
@@ -1352,34 +1355,34 @@ and associated libraries.
 	      http://mmisw.org/ont/mmi/someVocab/someTerm.owl
 	  But now, the extension is NOT included in any of the query operations, except, of course
 	  getExtension() itself. In general, the extension is to be used just as a way to help determine
-	  the output format desired by the requester. 
+	  the output format desired by the requester.
 	  Note also that the ontology URIs are never stored in the database with any extension.
-	  
+
 	- Fixed issue #51: "Fix unversioned HTML to be unversioned".
-	
-	
+
+
 2009-03-13:
 	- working on issue 51: "Fix unversioned HTML to be unversioned", in concrete the problem
 	  I described in today's comment.
-	
-	
+
+
 2009-03-03
-	Resuming work on issue 62: unversioned terms not resolving 
+	Resuming work on issue 62: unversioned terms not resolving
 	http://code.google.com/p/mmisw/issues/detail?id=62&sort=priority
-	
+
 	- adding some more log information
 	- MmiUri.getOntologyUri() was not honoring its documentation that says only the
 	  URI for the ontology is returned (not including the term, if any). However, this was
 	  not proporly guaranteed. Fixed.
-	
-	
+
+
 2008-12-29   0.2.0.beta3 (20081229)
 	- sparql: "select" query now also process new "form" parameter, which can be
 	  "html" (the default) or csv.
 	- updated sparql.html page.
-	
-	- dispatch new commands: vocabs, mappings.  
-	  Parameter "uv" can be used to get both unversioned and versioned URIs: uv=true.  
+
+	- dispatch new commands: vocabs, mappings.
+	  Parameter "uv" can be used to get both unversioned and versioned URIs: uv=true.
 	  By default, only unversioned URIs are returned.
 	  display_label included in output
 
@@ -1387,57 +1390,57 @@ and associated libraries.
 	- Dispatch the "root" request to report information about this service, ie.
 	      http://mmisw.org/ont/
 	  now reports something like:
-	  
+
 				  MMI Ontology URI Resolver
 			This service is part of the MMI Semantic Framework
-			
+
 			MMI Ontology URI Resolver. Version 0.2.0.beta2 (20081203)
 
 	  instead of returning 404.
-	
-	
+
+
 2008-11-18   0.2.0.beta2 (20081118)
-	- 62: default URL not resolving 
+	- 62: default URL not resolving
 	Db.getOntologyVersions: the term component in the given URI is ignored.
-	
-	
+
+
 2008-11-14  0.2.0.beta (20081114)
-	
-	- Issue 53: unversioned reponse wrong for "slash" ontologies 
+
+	- Issue 53: unversioned reponse wrong for "slash" ontologies
 	UnversionedConverter: Using JenaUtil2 to handle the fragments as in OntMd
 	(TODO JenaUtil2.java is a copy of the same file on ontmd -> unify in a libray)
-	
-	
+
+
 	- resolve term in html:  First, try with / separator; then with #
 	  Note: jena resolves a request with #, even if everything in the ontology
 	  is defined in terms of the slash. Then, since the tries were #-then-/ before,
 	  the # resolution was OK but made the rest of the dispatch unable to find
 	  statametes associated with the term.  With the new order /-then-#, this
 	  is now correct.
-	
+
 	- Deprecating MdDispatcher - MD display no longer done here (use ontmd instead)
 	TODO: See if MdHelper can also be deprecated/removed when doing code clean-up
-	
-	
+
+
 2008-11-13  0.2.0.beta (20081113)
 	- preliminary tests of unversioned response seem OK
 	  Issue 24, part 2): http://code.google.com/p/mmisw/issues/detail?id=24
-	  
-	  
+
+
 2008-11-12
 	- Starting "unversioned" version request dispatch
-	
-	
-	
+
+
+
 2008-11-11   (Happy B-day Ini!)
 	- MmiUri.LATEST_VERSION_INDICATOR = "$"
-	
+
 	- Issue 27: URIs have # signs instead of / before terms:
-		All URIs starting with http://mmisw.org/ont/ will get the "#" (if any) 
-		replaced by "/".   I think this works pretty well, I mean, not only as a 
+		All URIs starting with http://mmisw.org/ont/ will get the "#" (if any)
+		replaced by "/".   I think this works pretty well, I mean, not only as a
 		temporary solution, but also that it won't hurt once the submitted ontologies
 		get the namespace with the "/" fragment separator.
-	
+
 
 2008-11-10
 	- Rule added: (a.2) an OWL document if is the user-agent is "Java/*"
@@ -1446,82 +1449,82 @@ and associated libraries.
 		"application/rdf+xml" but it's not doing so, see bug:
 		   Wrong Accept-Header in HTTP-Connections - ID: 1424091
 		   http://sourceforge.net/tracker2/?func=detail&aid=1424091&group_id=40417&atid=430288
-	
-	
+
+
 2008-11-04
 	Re. 24: unversioned and latest-version requests
 		- Accept dash ('-') as a valid version in an ontology URI request.
 		- The dash requst is handled with a "redirect" to the actual latest version
 		- the "unversioned" request is still handled as usual: it simple returns the
 		  contents of the latest version without any modification.
-	
-	
+
+
 2008-11-03
 	- _getFullPath: try with or without ".owl" extension
-	
+
 2008-11-02
 	- UriResolver: now reportin PC-Remote-Addr; also googlebot check disabled as the
 	  the robots.txt is now active.
-	
+
 	- Db: log.warn instead of throwing the exception in the _con.close() call (sometimes
-	  an "already closed" exception is thrown --perhaps some pooling/cache thing-- but 
+	  an "already closed" exception is thrown --perhaps some pooling/cache thing-- but
 	  showing the error to the end-user is not necessary)
-	
-	
+
+
 2008-11-01
 	- New Db.getOntologyVersions(MmiUri mmiUri) to get the versions of a given
-	  ontology. The given mmiUri is used to create the query wildcard, ie, the 
+	  ontology. The given mmiUri is used to create the query wildcard, ie, the
 	  version part (mmiUri.getVersion()) is ignored.
-	  
+
 	- Issue 23: Resolve latest version
 	  See UriResolver._resolveUri:
 	  	If version is not explicitly requested, find the latest version of the
 	  	corresponding ontology (using "%" for version wildcard and the other components
 	  	in the URI), and continue regular processing with the URI found.
 	  	Note: topic extension is handled with a trailing ".%" to the base topic without
-	  	extension. Note: the dot is important to avoid getting topics that have the topic 
+	  	extension. Note: the dot is important to avoid getting topics that have the topic
 	  	in question as suffix.
-	  	
-	  
+
+
 	- Convenience parameter "_versions" to report the versions of a requested mmiUri, ex:
 	    http://mmisw.org/ont/mmi/parameter/?_versions
-	
-	
+
+
 2008-10-30
 	 - Issue 14: "mysql db connection timeout error"
 	   http://code.google.com/p/mmisw/issues/detail?id=14
-	   
+
 	   Db.java: move DataSource lookup to the init() method.
 	   Ref: http://www.ibm.com/developerworks/websphere/library/bestpractices/using_httpservlet_method.html
 	   TODO: still need to see if this helps solve the issue.
-	   
+
 	   Also, closing all connections after they are used.
-	   
+
 	 - Not resolving request with extension (eg., .../topic.html) when the original URI
 	   in the db is with no extension (eg, .../topic). -- Fixed.
-	   
+
 	 - Now using pattern: ^yyyy[mm[dd][Thh[mm[ss]]]$ to validate a non-null version string
 	   in the ontology URI.
-	   
-	 
+
+
 2008-10-29
-	- show requested URI, remote host, and user-agent 
+	- show requested URI, remote host, and user-agent
 	- return no-content to googlebot
-	
-	
+
+
 2008-10-24
 	build.xml: added "voc-jar" target to create org.mmisw.ont.vocabulary.jar to facilitate
 	the current updates in the voc2rdf project.
 	(note: these vocabularies could be located in an independed project).
-	
+
 2008-10-23
 	Paul:  Carlos, got an update: we're now using your table formatting, including CSS, on the
-	metadata table when we show ontologies. If you could change your output again (sorry) to 
-	only put out the contents of the table (starting with <tr> instead of <table>) then I 
+	metadata table when we show ontologies. If you could change your output again (sorry) to
+	only put out the contents of the table (starting with <tr> instead of <table>) then I
 	think it will become seamless.
-	
+
 	--> done.
-	
+
 
 2008-10-22
 	- HTML output improved a bit. New class HtmlDispatcher.
@@ -1530,8 +1533,8 @@ and associated libraries.
 	- Util.{toHtml,toHtmlComment}() added to avoid inserted code
 	  in html responses.
 	  TODO: use in ALL html output.
-	
-	
+
+
 2008-10-21
 	- Starting handling of metadata vocabularies.
 	- New package package org.mmisw.ont.vocabulary:
@@ -1540,7 +1543,7 @@ and associated libraries.
 	  The definition are based on the current contents of:
 	     http://marinemetadata.org/files/mmi/OntologyExampleOMV.owl
 	  which I saved in the same package for reference.
-	  
+
 	- Dispatching the metadata:
 		"_md" parameter used to display the metadata, example:
 		     http://mmisw.org/ont/foo/mytopic.owl?_md
@@ -1548,72 +1551,72 @@ and associated libraries.
 	  Main classes:
 		MdDispatcher: Dispatches the metadata output
 		MdHelper: Handles the metadata attributes.
-	
-	
+
+
 2008-10-20
 	- MmmUri: fixed getTermUri();  new getTopicExtension().
-	
+
 	- First implementation of the current Dereferencing rules, but unfinished.
 	- Accept: A helper class to query the "accept" header values.
 	- "form" parameter also handled. If given, this parameter takes precedence
 	  over the file extension.
-	  
+
 	- parameter "info" changed to "_debug"
-	
-	
-	
+
+
+
 2008-10-19
 	- new convenience annotation @org.mmisw.ont.util.Unfinished
 	- sparql stuff moved to package org.mmisw.ont.sparql
 	- package-info.java files added
-	
+
 	- sparql queries now working
 	- "construct" and "select" queries accepted and processed.
 	- WebContent/sparql.html - tests page
-	
-	
+
+
 2008-10-18  v. 0.1.1 (20081018)
 	- General code clean-up (loggers, non "static" classes)
 	- New OntConfig to handle configuration parameters; removed hard-coded params.
-	
+
 2008-10-17
 	- main.css: normal font (instead of x-small)
 	- minor logging changes
-	
-	
+
+
 2008-10-16
 	- Preliminaries for resolving terms
-	
+
 	- Process xslt for output of sparql query (with xslt parameter)
 	- Inline stylesheet with xslti parameter, but not working yet (in firefox at least)
-	 
+
 
 2008-10-15
 	- OntGraph: load all ontologies into memory
 	- Added sparql support: .../ont?sparql=CONSTRUCT  { ?s ?p ?o } where{?s ?p ?o. } LIMIT 20
 	  TODO testing
 	- Internal request to reload ontologies: .../ont?_reload
-	  TODO (perhaps): set up quantum (cronjob) to do the reload 
-	  
+	  TODO (perhaps): set up quantum (cronjob) to do the reload
+
 	- Db.getOntologies: Fixed link to obtaing ontologies:
 	  The correct link between the two tables is:
 	    v_ncbo_ontology.id  ==  ncbo_ontology_file.ontology_version_id
-	
-	
+
+
 2008-10-13
 	- added "list" parameter: shows the list of ontologies as a convenience for
 	  testing the existing entries in the database.
-	  
+
 	  Note that all these convenience parameters shouldn't be visible for the
 	  general user.
-	  
+
 	- added logging mechanism.
-	  
-	
+
+
 2008-10-12
 	- Initial version 0.1.0
 	- NOTE: <version> component not yet handled.
-	
+
 	Note: mysql driver not included in the project nor in the generated war.
 	Instead, this application assumes the driver to be available in the container.
 	(I saved it under <apache-tomcat-home>/lib/ on mmi).
