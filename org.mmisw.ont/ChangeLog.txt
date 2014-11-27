@@ -4,6 +4,9 @@ $Id$
 
 ChangeLog
 
+2014-11-25  2.1.3
+  - fix #333 "URL for simple list by authority doesn't work for CUAHSI"
+
 2014-07-15  2.1.1
   - 2.1.1: correct fix for Issue #123: "encoded URI not properly handled"
 
