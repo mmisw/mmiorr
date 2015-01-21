@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<catalog id="file:/Users/carueda/mmiworkspace/org.mmisw.watchdog/workspace/cf/" prefer="public" xml:base="file:/Users/carueda/mmiworkspace/org.mmisw.watchdog/workspace/cf/" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
-    <uri name="http://mmisw.org/ont/cf/parameter/" uri="cf-standard-name-table-14-jena.owl"/>
-</catalog>
