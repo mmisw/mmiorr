@@ -1,4 +1,5 @@
-Semantic Web services and tools created by the Marine Metadata Interoperability project, MMI.
+The MMI Ontology Registry and Repository is part of the semantic web services and tools 
+created by the Marine Metadata Interoperability project, MMI.
 
 ![](http://marinemetadata.org/files/mmi/semantic_framework.jpg)
 
