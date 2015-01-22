@@ -1,0 +1,7 @@
+build.properties
+_generated
+
+# eclipse stuff
+.classpath
+.project
+.settings
