@@ -35,7 +35,7 @@ import org.mmisw.ont.mmiuri.MmiUri;
  * @author Carlos Rueda
  */
 public class Util {
-	
+
 	private static final Log log = LogFactory.getLog(Util.class);
 
 	/** @returns true iff the given param is defined in the request
@@ -60,7 +60,7 @@ public class Util {
 	}
 
 
-	/** @returns The last value associated with the given parameter. If not value is 
+	/** @returns The last value associated with the given parameter. If not value is
 	 * explicitly associated, it returns the given default value.
 	 */
 	public static String getParam(HttpServletRequest request, String param, String defaultValue) {
@@ -69,7 +69,7 @@ public class Util {
 		if ( array == null || array.length == 0 ) {
 			return defaultValue;
 		}
-		// return last value in the array: 
+		// return last value in the array:
 		return array[array.length -1];
 	}
 
@@ -78,25 +78,25 @@ public class Util {
 		Map<String, String[]> params = request.getParameterMap();
 		return params;
 	}
-	
+
 	/**
 	 * @returns the list of values associated with a header. Never null.
 	 */
 	public static List<String> getHeader(HttpServletRequest request, String hname) {
 		List<String> values = new ArrayList<String>();
-		
+
     	Enumeration<?> hvals = request.getHeaders(hname.toString());
         while ( hvals.hasMoreElements() ) {
         	String hval = String.valueOf(hvals.nextElement());
         	values.add(hval);
         }
-		
+
 		return values;
 	}
-	
+
 	/**
 	 * Developer option.
-	 * @param httpServlet 
+	 * @param httpServlet
 	 */
 	public static  void showReq(HttpServlet httpServlet, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -109,37 +109,37 @@ public class Util {
         out.println("</head>");
         out.println("<body>");
         out.println("<pre>");
-        
+
         out.println("httpServlet.getServletContext().getContextPath()  = " +httpServlet.getServletContext().getContextPath() );
-        
+
         out.println("request.getRequestURL()         = " + request.getRequestURL()  );
         out.println("request.getRequestURI()         = " + request.getRequestURI()  );
         out.println("request.getQueryString()        = " + request.getQueryString()  );
-        
+
         out.println("request.getParameterMap()       = " + request.getParameterMap()  );
 		Map<String, String[]> params = Util.getParams(request);
 		for (Entry<String, String[]> pair : params.entrySet() ) {
-			out.println("    " +pair.getKey()+ " => " + Arrays.asList(pair.getValue()));	
+			out.println("    " +pair.getKey()+ " => " + Arrays.asList(pair.getValue()));
 		}
-        out.println("request.getContextPath()        = " + request.getContextPath() ); 
-        out.println("request.getMethod()             = " + request.getMethod()  ); 
-        out.println("request.getPathInfo()           = " + request.getPathInfo()  ); 
-        out.println("request.getPathTranslated()     = " + request.getPathTranslated()  ); 
+        out.println("request.getContextPath()        = " + request.getContextPath() );
+        out.println("request.getMethod()             = " + request.getMethod()  );
+        out.println("request.getPathInfo()           = " + request.getPathInfo()  );
+        out.println("request.getPathTranslated()     = " + request.getPathTranslated()  );
         out.println("request.getRemoteUser()         = " + request.getRemoteUser()  );
         out.println("request.getRequestedSessionId() = " + request.getRequestedSessionId()  );
         out.println("request.getServletPath()        = " + request.getServletPath()  );
-        out.println("request.getAttributeNames()     = " + request.getAttributeNames()  ); 
+        out.println("request.getAttributeNames()     = " + request.getAttributeNames()  );
         out.println("request.getCharacterEncoding()  = " + request.getCharacterEncoding()  );
         out.println("request.getContentLength()      = " + request.getContentLength()  );
         out.println("request.getContentType()        = " + request.getContentType()  );
         out.println("request.getProtocol()           = " + request.getProtocol()  );
         out.println("request.getRemoteAddr()         = " + request.getRemoteAddr()  );
-        out.println("request.getRemoteHost()         = " + request.getRemoteHost()  ); 
+        out.println("request.getRemoteHost()         = " + request.getRemoteHost()  );
         out.println("request.getScheme()             = " + request.getScheme()  );
         out.println("request.getServerName()         = " + request.getServerName()  );
         out.println("request.getServerPort()         = " + request.getServerPort()  );
-        out.println("request.isSecure()              = " + request.isSecure()  ); 
-        
+        out.println("request.isSecure()              = " + request.isSecure()  );
+
         out.println("request. headers             = ");
         Enumeration<?> hnames = request.getHeaderNames();
         while ( hnames.hasMoreElements() ) {
@@ -153,7 +153,7 @@ public class Util {
 				sep = "  ;  ";
             }
             out.println();
-        }        
+        }
 
         out.println("</pre>");
         out.println("</body>");
@@ -173,21 +173,21 @@ public class Util {
 			int limit = Integer.parseInt(Util.getParam(request, "limit", "500"));
 
 			String query = "select * from " +table+ "  limit " +limit;
-			
+
 			ResultSet rs = _stmt.executeQuery(query);
-			
+
 			response.setContentType("text/html");
 	        PrintWriter out = response.getWriter();
 	        out.println("<html>");
 	        out.println("<head>");
-	        out.println("<link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\">");
+	        out.println("<link rel=\"stylesheet\" href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\" />");
 	        out.println("<title>" +query+ "</title>");
 	        out.println("</head>");
 	        out.println("<body>");
 	        out.println("<code>" +query+ "</code>");
 	        out.println("<table class=\"inline\">");
 
-			
+
 	        ResultSetMetaData md = rs.getMetaData();
 	        int cols = md.getColumnCount();
 	        out.println("<tr>");
@@ -208,7 +208,9 @@ public class Util {
 	        	out.println("</tr>");
 	        }
 
-		} 
+			out.println("</table></body></html>");
+
+		}
 		catch (SQLException e) {
 			throw new ServletException(e);
 		}
@@ -216,17 +218,17 @@ public class Util {
 			db.closeStatementAndConnection(_stmt, _con);
 		}
 	}
-	
+
 	/** "cleans" the string so it can be embedded in html content */
 	public static String toHtml(String s) {
 		return s.replaceAll("&", "&amp;").replaceAll("<", "&lt;");
 	}
-	
+
 	/** "cleans" the string so it can be embedded in a html comment */
 	public static String toHtmlComment(String s) {
 		return s.replaceAll("--", "\\\\-\\\\-");
 	}
-	
+
 	/**
 	 * Does the string correspond to a CSV contentType?
 	 */
@@ -241,9 +243,9 @@ public class Util {
 	 */
 	public static String csv2html(String csv) {
 		StringBuilder html = new StringBuilder();
-		
+
 		html.append("<table class=\"inline2\">\n");
-		
+
 		String thtd = "th";
 		String[] lines = csv.split("\n|\r\n");
 		for (String line : lines) {
@@ -270,9 +272,9 @@ public class Util {
              *   "<http://www.w3.org/2000/01/rdf-schema#label>","parameter"
              */
 			String[] cols = line.indexOf('"') >= 0 ? line.split("\",\"") : line.split(",");
-			
+
 			html.append("<tr>");
-			
+
 			for (String col : cols) {
 				while (col.startsWith("\"") && col.endsWith("\"")) {
 					col = col.substring(1, col.length() -1);
@@ -280,7 +282,7 @@ public class Util {
 				if (col.startsWith("<") && col.endsWith(">")) {
 					col = col.substring(1, col.length() -1);
 				}
-				
+
 				String link = Util.getLink(col);
 				if ( link != null ) {
 					col = String.format("<a target=\"_blank\" href=\"%s\">%s</a>", link, Util.toHtml(col));
@@ -293,7 +295,7 @@ public class Util {
 			html.append("\n</tr>\n");
 			thtd = "td";
 		}
-		
+
 		html.append("</table>\n");
 		return html.toString();
 	}
@@ -312,7 +314,7 @@ public class Util {
 		return report;
 	}
 
-	
+
 	/**
 	 * helper method to retrieve the contents of a resource in the classpath .
 	 */
@@ -336,14 +338,14 @@ public class Util {
 		}
 	}
 
-	
-	
-	/** 
-	 * Returns a string that can be used as a link. 
+
+
+	/**
+	 * Returns a string that can be used as a link.
 	 * If it is an MmiUri, a ".html" is appended;
 	 * otherwise, if it is a valid URL, it is returned as it is;
 	 * otherwise, null is returned.
-	 * 
+	 *
 	 * @param value a potential URL
 	 * @return the string that can be used as a link as stated above; null if value is not a URL.
 	 */
@@ -356,7 +358,7 @@ public class Util {
 		catch (URISyntaxException e1) {
 			// ignore. Try URL below.
 		}
-		
+
 		// try regular URL:
 		try {
 			URL url = new URL(value);
@@ -365,12 +367,12 @@ public class Util {
 		catch (MalformedURLException e) {
 			// ignore.
 		}
-		
+
 		return null;
 	}
 
 	/**
-	 * Gets the output format corresponding to the given Accept object. 
+	 * Gets the output format corresponding to the given Accept object.
 	 * @param accept
 	 * @return
 	 */
@@ -401,6 +403,6 @@ public class Util {
 		}
 	}
 
-	
+
 	private Util() {}
 }
