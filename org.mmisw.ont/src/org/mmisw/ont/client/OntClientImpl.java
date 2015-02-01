@@ -128,6 +128,11 @@ class OntClientImpl implements IOntClient {
 		return OntClientUtil.unregisterOntology(ontUri, version);
 	}
 
+    public boolean markTestingOntology(String ontUri, String version, boolean markTesting)
+            throws Exception {
+        return OntClientUtil.markTestingOntology(ontUri, version, markTesting);
+    }
+
 	public SignInResult getSession(String userName, String userPassword)
 			throws Exception {
 		UserAuthenticator ua = new UserAuthenticator(userName, userPassword);

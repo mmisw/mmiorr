@@ -80,7 +80,25 @@ public class HttpUtil {
 	    }
 	}
 	
-	
+	/** Executes an HTTP POST request.
+	 * @returns the returned status code.
+	 */
+	public static int httpPostStatusCode(String uri, String... acceptEntries) throws Exception {
+		HttpClient client = new HttpClient();
+	    PostMethod meth = new PostMethod(uri);
+	    for ( String acceptEntry : acceptEntries ) {
+	    	meth.addRequestHeader("accept", acceptEntry);
+	    }
+	    try {
+	        client.executeMethod(meth);
+	        return meth.getStatusCode();
+	    }
+	    finally {
+	        meth.releaseConnection();
+	    }
+	}
+
+
 	
 	/////////////////////////////////////////////////////////
 	/*

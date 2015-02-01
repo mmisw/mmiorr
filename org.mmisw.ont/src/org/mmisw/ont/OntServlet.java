@@ -271,6 +271,12 @@ public class OntServlet extends HttpServlet {
 			return;
 		}
 
+		// mark testing ontology?
+		if ( Util.yes(req.request, "_mkt")  ) {
+            _markTestingOntology(req);
+			return;
+		}
+
 
 		boolean resolved = false;
 
@@ -1163,6 +1169,79 @@ public class OntServlet extends HttpServlet {
 		req.response.setContentType("text/plain");
 		ServletOutputStream os = req.response.getOutputStream();
 		IOUtils.write(result, os);
+		os.close();
+	}
+
+	private void _markTestingOntology(OntRequest req) throws ServletException, IOException {
+        if ("POST".equalsIgnoreCase(req.request.getMethod())) {
+            _doMarkTestingOntology(req);
+        }
+        else {
+            req.response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+        }
+    }
+
+	private void _doMarkTestingOntology(OntRequest req) throws ServletException, IOException {
+
+		String ontUri = Util.getParam(req.request, "_mkt", "");
+		if ( ontUri.length() == 0 ) {
+			req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing ontology URI");
+			return;
+		}
+		String version = Util.getParam(req.request, "version", "");
+		if ( version.length() == 0 ) {
+			req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing version");
+			return;
+		}
+		String testingStr = Util.getParam(req.request, "testing", "");
+		if ( testingStr.length() == 0 || (!testingStr.equals("true") && !testingStr.equals("false"))) {
+			req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing or invalid testing");
+			return;
+		}
+        boolean markTesting = testingStr.equals("true");
+
+        if ( OntUtil.isOntResolvableUri(ontUri) ) {
+            try {
+                MmiUri mmiUri = new MmiUri(ontUri);
+                String version2 = mmiUri.getVersion();
+                if ( version2 == null || version2.length() == 0 ) {
+                    // insert the version fragment so we are able to search in the database
+                    ontUri = mmiUri.copyWithVersion(version).getOntologyUri();
+                }
+            }
+            catch (URISyntaxException e) {
+                // Not an MmiUri. Just try to use the argument as given:
+                // continue below.
+            }
+        }
+
+		String uriAndVerion = "ontUri=" +ontUri+ "  version=" +version;
+
+		if ( log.isDebugEnabled() ) {
+			log.debug("_markTestingOntology: " +uriAndVerion);
+		}
+
+		// get ontology ID (version specific) from the database
+		OntologyInfo ontology = db.getOntologyVersion(ontUri, version);
+		if ( ontology == null ) {
+			if ( log.isDebugEnabled() ) {
+				log.debug("_markTestingOntology: NOT FOUND " +uriAndVerion);
+			}
+			req.response.sendError(HttpServletResponse.SC_NOT_FOUND, uriAndVerion);
+			return;
+		}
+
+        ontology.setVersion(version);
+
+		String result = db.markTestingOntology(ontology, markTesting);
+
+		if ( log.isDebugEnabled() ) {
+			log.debug("_markTestingOntology: " +uriAndVerion+ ". Result: " +result);
+		}
+
+		ServletOutputStream os = req.response.getOutputStream();
+		IOUtils.write(result, os);
+		req.response.setContentType("text/plain");
 		os.close();
 	}
 
