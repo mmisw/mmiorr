@@ -2,6 +2,9 @@ org.mmisw.orrportal: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2015-01-31  2.2.1
+  - admin operation to (un)mark ontology as 'testing'
+
 2014-10-07:  2.1.2
   - Fix #331:	metadata fields not updating on ontology upload
     The loaded metadata properties were not transferred to the corresp wizard pages!

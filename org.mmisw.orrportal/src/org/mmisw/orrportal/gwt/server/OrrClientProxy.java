@@ -238,4 +238,8 @@ public class OrrClientProxy  {
 	public UnregisterOntologyResult unregisterOntology(LoginResult loginResult, RegisteredOntologyInfo oi) {
 		return orrClient.unregisterOntology(loginResult, oi);
 	}
+
+	public String markTestingOntology(LoginResult loginResult, RegisteredOntologyInfo oi, boolean markTesting) {
+		return orrClient.markTestingOntology(loginResult, oi, markTesting);
+	}
 }
