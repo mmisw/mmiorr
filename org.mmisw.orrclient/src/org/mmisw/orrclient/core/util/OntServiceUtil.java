@@ -71,5 +71,9 @@ public class OntServiceUtil {
 		return _ontClient.unregisterOntology(ontUri, version);
 	}
 
+	public static boolean markTestingOntology(String ontUri, String version, boolean markTesting) throws Exception {
+		return _ontClient.markTestingOntology(ontUri, version, markTesting);
+	}
+
 }
 
