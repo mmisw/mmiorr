@@ -250,4 +250,6 @@ public interface IOrrClient {
 	public InternalOntologyResult createGroupsOntology(LoginResult loginResult);
 	
 	public UnregisterOntologyResult unregisterOntology(LoginResult loginResult, RegisteredOntologyInfo oi);
+
+    public String markTestingOntology(LoginResult loginResult, RegisteredOntologyInfo oi, boolean markTesting);
 }

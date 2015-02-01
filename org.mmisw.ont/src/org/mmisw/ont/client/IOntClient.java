@@ -189,7 +189,17 @@ public interface IOntClient {
 	 */
 	public boolean unregisterOntology(String ontUri, String version) throws Exception ;
 	
-	
+	/**
+	 * Marks/unmarks an ontology as 'testing'.
+	 *
+	 * @param ontUri  The URI of the desired ontology.
+	 * @param version the version to be updated.
+	 * @return true iff "ont" responds with an OK return code.
+	 * @throws Exception
+	 */
+	public boolean markTestingOntology(String ontUri, String version, boolean markTesting) throws Exception ;
+
+
 	
 	
 	/**

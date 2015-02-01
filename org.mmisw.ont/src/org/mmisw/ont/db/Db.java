@@ -695,4 +695,47 @@ public class Db {
 		}
 	}
 
+    /**
+     * Sets the 'version_status' attribute for the given ontology version.
+     */
+    public String markTestingOntology(OntologyInfo ontology, boolean markTesting) throws ServletException {
+        Connection _con = null;
+        Statement _stmt = null;
+        try {
+            _con = getConnection();
+            _stmt = _con.createStatement();
+
+            String old_version_status = null;
+            ResultSet rs = _stmt.executeQuery(String.format(
+                "select version_status from ncbo_ontology_version where ontology_id='%s' and id='%s'",
+                ontology.getOntologyId(), ontology.getId())
+            );
+            if (rs.next()) {
+                old_version_status = rs.getString(1);
+            }
+
+            String new_version_status = markTesting ? "testing" : "stable";
+            String update = String.format(
+                    "update ncbo_ontology_version set version_status='%s' " +
+                            "where ontology_id='%s' and id='%s'",
+                    new_version_status,
+                    ontology.getOntologyId(), ontology.getId()
+            );
+
+            int res = _stmt.executeUpdate(update);
+            if ( log.isDebugEnabled() ) {
+                log.debug(update+ " => " +res+ "; old_version_status=" + old_version_status);
+            }
+            return "Ontology: " + ontology.getUri() + "   Version: " + ontology.getVersion() + "\n" +
+                   "version_status set to: " +new_version_status +
+                   "   (previously: " +old_version_status+ ")";
+        }
+        catch (SQLException e) {
+            throw new ServletException(e);
+        }
+        finally {
+            closeStatementAndConnection(_stmt, _con);
+        }
+    }
+
 }

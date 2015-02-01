@@ -331,5 +331,16 @@ class OntClientUtil {
 		
 		return statusCode == HttpStatus.SC_OK;
 	}
+
+	static boolean markTestingOntology(String ontUri, String version, boolean markTesting) throws Exception {
+
+		String ontServiceUrl = _config().getOntServiceUrl();
+		ontUri = URLEncoder.encode(ontUri, "UTF-8");
+		version = URLEncoder.encode(version, "UTF-8");
+		String ontServiceRequest = ontServiceUrl + "?_mkt=" +ontUri+ "&version=" +version+ "&testing=" +markTesting;
+		int statusCode = HttpUtil.httpPostStatusCode(ontServiceRequest);
+
+		return statusCode == HttpStatus.SC_OK;
+	}
 }
 

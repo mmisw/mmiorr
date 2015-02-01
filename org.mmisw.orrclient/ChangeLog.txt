@@ -3,6 +3,9 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2015-01-31  2.2.1
+  - operation to (un)mark ontology as 'testing'
+
 2013-02-16  2.0.41.beta
 	- 308: immediately show vocabulary contents
 	  Added size attribute to BaseIntologyInfo class. This attribute could be associated in all

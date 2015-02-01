@@ -30,13 +30,13 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 /**
  * Interface to interact with the server.
- * 
+ *
  * @author Carlos Rueda
  * @version $Id$
  */
 @RemoteServiceRelativePath("orrService")
 public interface OrrService extends RemoteService {
-	
+
 	/**
 	 * Gets basic application info.
 	 */
@@ -47,9 +47,9 @@ public interface OrrService extends RemoteService {
 	 */
 	public PortalBaseInfo getPortalBaseInfo();
 
-	
+
 	/**
-	 * Gets general information about the metadata for ontologies. 
+	 * Gets general information about the metadata for ontologies.
 	 * @param includeVersion
 	 * @return
 	 */
@@ -62,28 +62,28 @@ public interface OrrService extends RemoteService {
 	 * @return
 	 */
 	public GetAllOntologiesResult getAllOntologies(boolean includePriorVersions);
-	
+
 
 	/**
 	 * Refreshes the options of the given attribute.
 	 * @return the given argument.
 	 */
 	AttrDef refreshOptions(AttrDef attrDef);
-	
+
 
 	/**
-	 * Both members of the result will be null if the URI could not be resolved (not found). 
+	 * Both members of the result will be null if the URI could not be resolved (not found).
 	 */
 	public ResolveUriResult resolveUri(String uri);
-	
+
 	public RegisteredOntologyInfo getOntologyMetadata(RegisteredOntologyInfo ontologyInfo, String version);
 
 	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo ontologyInfo, String version);
-	
-	
+
+
 	/**
 	 * Creates an ontology.
-	 * 
+	 *
 	 * @param createOntologyInfo
 	 * @return result of the creation
 	 */
@@ -93,17 +93,17 @@ public interface OrrService extends RemoteService {
 
 	/**
 	 * Registers an ontology.
-	 * 
+	 *
 	 * @param createOntologyResult Indicates the ontology to be registered.
 	 * @param loginResult
 	 * @return Result of the registration
 	 */
 	public RegisterOntologyResult registerOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult);
-	
+
 
 	/**
 	 * Gets ontology info from a file uploaded by the {@link org.mmisw.orrportal.gwt.server.UploadServlet}.
-	 * 
+	 *
 	 * @param fileType
 	 * @param uploadResults  Result from the UploadServlet
 	 * @param includeContents
@@ -118,24 +118,24 @@ public interface OrrService extends RemoteService {
 
 	////////////////////////////////////////////////////////////////////////////////////////////
 	// VINE:
-	
+
 	/**
 	 * Gets the default list of RelationInfo's.
 	 */
 	public List<RelationInfo> getDefaultVineRelationInfos();
-	
+
 	public ExternalOntologyInfo getExternalOntologyInfo(String ontologyUri);
-	
+
 	// Search:
-	
+
 	public SparqlQueryResult runSparqlQuery(SparqlQueryInfo query);
 
-	
+
 	// login/user info
-	
+
 	/**
 	 * Authenticates a user.
-	 * 
+	 *
 	 * @param userName
 	 * @param userPassword
 	 * @return
@@ -145,10 +145,12 @@ public interface OrrService extends RemoteService {
 	public ResetPasswordResult resetUserPassword(String username);
 	public UserInfoResult getUserInfo(String username);
 	public CreateUpdateUserAccountResult createUpdateUserAccount(Map<String,String> values);
-	
+
 	public InternalOntologyResult prepareUsersOntology(LoginResult loginResult);
 	public InternalOntologyResult createGroupsOntology(LoginResult loginResult);
-	
+
 	public UnregisterOntologyResult unregisterOntology(LoginResult loginResult, RegisteredOntologyInfo oi);
-	
+
+	public String markTestingOntology(LoginResult loginResult, RegisteredOntologyInfo oi, boolean markTesting);
+
 }

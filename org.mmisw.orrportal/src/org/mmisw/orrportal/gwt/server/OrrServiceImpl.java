@@ -245,4 +245,8 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 		return orrClient.unregisterOntology(loginResult, oi);
 	}
 	
+	public String markTestingOntology(LoginResult loginResult, RegisteredOntologyInfo oi, boolean markTesting) {
+		return orrClient.markTestingOntology(loginResult, oi, markTesting);
+	}
+
 }

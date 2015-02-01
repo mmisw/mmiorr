@@ -22,49 +22,49 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * 
+ *
  * @author Carlos Rueda
  */
 public class PortalControl {
 	private PortalControl() {}
-	
+
 	private static final PortalControl instance = new PortalControl();
-	
+
 	public static PortalControl getInstance() {
 		return instance;
 	}
-	
+
 	private PortalMainPanel portalMainPanel;
-	
+
 	private LoginResult loginResult;
 	private ControlsPanel controlsPanel;
-	
-	
+
+
 	private BaseOntologyInfo ontologyInfo;
 	private OntologyPanel ontologyPanel;
-	
+
 	private EntityInfo entityInfo;
 	private EntityPanel entityPanel;
-	
-	
+
+
 	/**
 	 * @return <code>{@link #getOntologyPanel()}.getMetadataPanel()</code>, if {@link #getOntologyPanel()} is not null.
 	 */
 	TempOntologyInfoListener getTempOntologyInfoListener() {
 		return ontologyPanel != null ? ontologyPanel.getMetadataPanel() : null;
 	}
-	
-	
+
+
 	public void createNewMappingOntology() {
 		portalMainPanel.createNewMappingOntology();
 	}
 
 
-	public void startRegisterExternal() {		
+	public void startRegisterExternal() {
 		portalMainPanel.startRegisterExternal();
 	}
 
-	
+
 	public void refreshListAllOntologies() {
 		portalMainPanel.refreshListAllOntologies();
 	}
@@ -86,11 +86,11 @@ public class PortalControl {
 	public void reviewAndRegister() {
 		portalMainPanel.reviewAndRegister(ontologyPanel);
 	}
-	
+
 	public void cancelEdit() {
 		portalMainPanel.cancelEdit(ontologyPanel);
 	}
-	
+
 	public void createAccount() {
 		portalMainPanel.loginCreateAccount();
 	}
@@ -99,36 +99,36 @@ public class PortalControl {
 		RDFXML("RDF/XML", "rdf"),
 		N3("N3", "n3"),
 		;
-		
+
 		private String name;
 		private String format;
-		
+
 		private DownloadOption(String name, String format) {
 			this.name = name;
 			this.format = format;
 		}
-		
+
 		public String getName() {
 			return name;
 		}
-		
+
 		public String toString() {
 			return name;
 		}
-		
+
 		public String getFormat() {
 			return format;
 		}
 	}
-		
+
 	static class ExternalViewersInfo {
 		HorizontalPanel hp = new HorizontalPanel();
 		HTML hrefHtml;
 		String tooltip;
-		
+
 		ExternalViewersInfo(String ontbrowserUrl, RegisteredOntologyInfo oi, boolean includeVersion) {
 			hp.setSpacing(3);
-			
+
 			// URI of the ontology to be retrieved from the "ont" service:
 			String uri = Orr.getPortalBaseInfo().getOntServiceUrl() + "?form=owl&uri=" +oi.getUri();
 			if ( includeVersion ) {
@@ -136,14 +136,14 @@ public class PortalControl {
 			}
 
 			uri = uri.replaceAll("\\?", "%3F").replaceAll("#", "%23").replaceAll("&", "%26");
-			
+
 			// the link for the ontology-browser tool:
 			String link = ontbrowserUrl+ "/manage/?action=load&clear=true&uri=" +uri;
 //			Main.log("ontology-browser link: " +link);
-			
+
 			String target = "_blank";
 			String href = "<a target=\"" +target+ "\" href=\"" +link+ "\">Ontology Browser</a>";
-			
+
 			hrefHtml = new HTML(href);
 			tooltip = "Opens the ontology using the external Ontology Browser tool. " +
 						"(See http://code.google.com/p/ontology-browser/.)";
@@ -151,17 +151,17 @@ public class PortalControl {
 			hp.add(hrefHtml);
 		}
 	}
-	
+
 	public ExternalViewersInfo getExternalViewersInfo(BaseOntologyInfo oi, boolean includeVersion) {
 		String ontbrowserUrl = Orr.getPortalBaseInfo().getOntbrowserServiceUrl();
 		if ( ontbrowserUrl == null || ontbrowserUrl.trim().length() == 0 ) {
 			return null;
 		}
-		
+
 		if ( oi == null ) {
 			oi = ontologyInfo;
 		}
-		
+
 		if ( oi instanceof RegisteredOntologyInfo ) {
 			return new ExternalViewersInfo(ontbrowserUrl, (RegisteredOntologyInfo) oi, includeVersion);
 		}
@@ -170,11 +170,11 @@ public class PortalControl {
 
 	public String getDownloadOptionHtml(DownloadOption dopc, BaseOntologyInfo oi,
 			boolean includeVersion) {
-		
+
 		if ( oi == null ) {
 			oi = ontologyInfo;
 		}
-		
+
 		if ( oi instanceof RegisteredOntologyInfo ) {
 			RegisteredOntologyInfo roi = (RegisteredOntologyInfo) oi;
 			final String ontService = Orr.getPortalBaseInfo().getOntServiceUrl();
@@ -185,7 +185,7 @@ public class PortalControl {
 			}
 			return "<a target=\"_blank\" href=\"" +url+ "\">" +dopc.getName()+ "</a>";
 		}
-		
+
 		return null;
 	}
 
@@ -203,7 +203,7 @@ public class PortalControl {
 		this.portalMainPanel = portalMainPanel;
 	}
 
-	
+
 	public void loginOk(LoginResult loginResult) {
 		portalMainPanel.loginOk(loginResult);
 	}
@@ -235,24 +235,24 @@ public class PortalControl {
 	}
 
 	public void setOntologyPanel(OntologyPanel ontologyPanel) {
-		this.ontologyPanel = ontologyPanel;		
+		this.ontologyPanel = ontologyPanel;
 	}
-	
+
 	public OntologyPanel getOntologyPanel() {
 		return ontologyPanel;
 	}
 
 	public void setEntityPanel(EntityPanel entityPanel) {
-		this.entityPanel = entityPanel;		
+		this.entityPanel = entityPanel;
 	}
-	
+
 	public EntityPanel getEntityPanel() {
-		return entityPanel;		
+		return entityPanel;
 	}
-	
-	
+
+
 	public void completedRegisterOntologyResult(RegisterOntologyResult registerOntologyResult) {
-		
+
 		portalMainPanel.completedRegisterOntologyResult(registerOntologyResult);
 	}
 
@@ -264,7 +264,7 @@ public class PortalControl {
 	public void userToSignIn() {
 		portalMainPanel.userToSignIn();
 	}
-	
+
 	public void userSignedOut() {
 		CookieMan.forgetPassword();
 		portalMainPanel.userSignedOut();
@@ -279,7 +279,7 @@ public class PortalControl {
 		return controlsPanel;
 	}
 
-	
+
 	public String checkCanEditOntology(BaseOntologyInfo oi) {
 		final String NOT_AUTHORIZED = "You are not authorized to edit this ontology";
 
@@ -287,7 +287,7 @@ public class PortalControl {
 			oi = ontologyInfo;
 		}
 		String error = null;
-		
+
 		if ( loginResult == null ) {
 			error = NOT_AUTHORIZED;
 		}
@@ -307,22 +307,22 @@ public class PortalControl {
 		}
 		return error;
 	}
-	
-	
+
+
 	private IQuickInfo quickInfo = new IQuickInfo() {
-		
+
 		public Widget getWidget(String name, final RegisteredOntologyInfo oi, final boolean includeVersionInLinks,
 				final boolean includeVersionsMenu) {
-			
+
 			if ( true ) {
 				// This fragment creates a menuBar for dispatching the options.
-				
+
 				ControlsPanel controlsPanel = PortalControl.getInstance().getMenuBarPanel();
-				
+
 				// Note: Edit option not included here.
 				MenuBar menu = controlsPanel.createOntologyMenuBar(oi, false, includeVersionInLinks, includeVersionsMenu);
 				MenuBar mb = new MenuBar(true);
-				
+
 				if ( name != null ) {
 					mb.addItem("<font size=\"-2\" color=\"gray\">" +name+ "</font>", true, menu);
 				}
@@ -333,15 +333,15 @@ public class PortalControl {
 			}
 			else {
 				// This fragment uses an icon and a click listener to open a popup with the options.
-				
+
 				Image img = Orr.images.triright().createImage();
 				img.addClickListener(new ClickListener() {
 					public void onClick(Widget sender) {
-						
+
 						ControlsPanel controlsPanel = PortalControl.getInstance().getMenuBarPanel();
-						
+
 						MenuBar menu = controlsPanel.createOntologyMenuBar(oi, false, includeVersionInLinks, includeVersionsMenu);
-						
+
 						final PopupPanel menuPopup = new PopupPanel(true);
 					    menuPopup.setWidget(menu);
 					    menuPopup.setPopupPosition(sender.getAbsoluteLeft(), sender.getAbsoluteTop());
@@ -351,7 +351,7 @@ public class PortalControl {
 				return img;
 			}
 		}
-	
+
 	};
 
 	/**
@@ -394,12 +394,12 @@ public class PortalControl {
 			break;
 		case UPLOAD_ONTOLOGY:
 			return "Registering your ontology";
-			
+
 		case UPLOAD_NEW_VERSION:
 			return "Registering new version" +
 			  (ontologyInfo != null ? " for " +ontologyInfo.getUri() : "");
 		}
-		
+
 		return null;
 	}
 
@@ -407,9 +407,13 @@ public class PortalControl {
 	public void searchOntologies(String searchString, Command doneCmd) {
 		portalMainPanel.searchOntologies(searchString, doneCmd);
 	}
-	
+
 	public void unregisterOntology(LoginResult loginResult, RegisteredOntologyInfo oi) {
 		portalMainPanel.unregisterOntology(loginResult, oi);
+	}
+
+	public void markTestingOntology(LoginResult loginResult, RegisteredOntologyInfo oi) {
+		portalMainPanel.markTestingOntology(loginResult, oi);
 	}
 
 }

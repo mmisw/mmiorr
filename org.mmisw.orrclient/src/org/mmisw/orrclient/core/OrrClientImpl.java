@@ -3177,4 +3177,47 @@ public class OrrClientImpl implements IOrrClient {
 		return result;
 		
 	}
+
+	public String markTestingOntology(LoginResult loginResult, RegisteredOntologyInfo oi, boolean markTesting) {
+
+		log.debug("markTestingOntology called.");
+
+		if ( loginResult == null || ! loginResult.isAdministrator() ) {
+			String error = "mark testing ontology: Only an administrator can perform this operation.";
+			log.debug(error);
+			return "Error: " + error;
+		}
+
+		String ontUri = oi.getUri();
+		String version = oi.getVersionNumber();
+
+		String error = null;
+		Throwable thr = null;
+
+		try {
+			if ( ! OntServiceUtil.markTestingOntology(ontUri, version, markTesting) ) {
+				error = "mark testing  ontology: Ont service could not perform the operation. " +
+						"Please try again later.\n\n" +
+						"If the problem persists, please notify the developers.";
+			}
+		}
+		catch (Exception e) {
+			error = e.getMessage();
+			thr = e;
+		}
+
+		if ( error != null ) {
+			log.debug(error, thr);
+			return "Error: " + error;
+		}
+		else {
+			return (markTesting
+                    ? "Ontology has been marked as 'testing'."
+                    : "The 'testing' mark has been removed.") + "\n" +
+                    "\n" +
+                    "URI: " + ontUri + "\n" +
+                    "version: " + version
+            ;
+		}
+	}
 }
