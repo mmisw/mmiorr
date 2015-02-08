@@ -3,6 +3,9 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2015-02-08  2.3.0
+  - sync and link with ont 2.3.0
+
 2015-01-31  2.2.1
   - operation to (un)mark ontology as 'testing'
 
