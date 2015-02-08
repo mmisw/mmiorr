@@ -417,9 +417,11 @@ public class OrrClientImpl implements IOrrClient {
 		// TODO: Determine HostingType.INDEXED case.
 		
 		registeredOntologyInfo.setHostingType(hostingType);
-		
-		log.info("_setHostingType: '" + uri + "' ontResolvableUri: " + ontResolvableUri +
-				"-> hostingType=" + hostingType);
+
+        if(log.isTraceEnabled()) {
+            log.trace("_setHostingType: '" + uri + "' ontResolvableUri: " + ontResolvableUri +
+                      "-> hostingType=" + hostingType);
+        }
 	}
 	
 	public GetAllOntologiesResult getAllOntologies(boolean includeAllVersions) {
