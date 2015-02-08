@@ -116,15 +116,74 @@ public class OntServlet extends HttpServlet {
 		OntRequest req = getThreadLocalOntRequest();
 		// first, see if there are any testing requests to dispatch
 
-		// show request info?
-		if ( Util.yes(req.params, "showreq")  ) {
-			Util.showReq(this, req);
-			return;
-		}
-
 		// dispatch list of ontologies for orrclient?
 		if ( Util.yes(req.params, "listall")  ) {
 			miscDispatcher.listAll(req.request, req.response);
+			return;
+		}
+
+        // if the "uri" parameter is included, resolve by the given URI
+        if ( Util.yes(req.params, "uri") ) {
+            // get (ontology or entity) URI from the parameter:
+            String ontOrEntUri = Util.getParam(req.params, "uri", "");
+            if ( ontOrEntUri.length() == 0 ) {
+                req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing uri parameter");
+                return;
+            }
+            if ( ! _dispatchUri(ontOrEntUri) ) {
+                // the explicit given uri could not be resolved, so respond with NOT_FOUND
+                req.response.sendError(HttpServletResponse.SC_NOT_FOUND, ontOrEntUri);
+            }
+            return;
+        }
+
+        // load an ontology into the graph?
+        if ( Util.yes(req.params, "_lo")  ) {
+            _loadOntologyIntoGraph(req);
+            return;
+        }
+
+        // report aquaportal rest url for orrclient?
+        if ( Util.yes(req.params, "_aqrest")  ) {
+            miscDispatcher.reportAquaportalRestUrl(req.request, req.response);
+            return;
+        }
+
+        // "ontology exists" request?
+        if ( Util.yes(req.params, "oe") ) {
+            String uri = Util.getParam(req.params, "oe", "");
+            _dispatchIsOntologyRegistered(uri);
+            return;
+        }
+
+        // dispatch a sparql-query?
+        if ( Util.yes(req.params, "sparql")  ) {
+            sparqlDispatcher.execute(req.request, req.params, req.response);
+            return;
+        }
+
+
+        // get user information?
+        if ( Util.yes(req.params, "_usri")  ) {
+            _getUserInfo(req);
+            return;
+        }
+
+        // unregister ontology?
+        if ( Util.yes(req.params, "_unr")  ) {
+            _unregisterOntology(req);
+            return;
+        }
+
+        // mark testing ontology?
+        if ( Util.yes(req.params, "_mkt")  ) {
+            _markTestingOntology(req);
+            return;
+        }
+
+        // show request info?
+		if ( Util.yes(req.params, "showreq")  ) {
+			Util.showReq(this, req);
 			return;
 		}
 
@@ -137,12 +196,6 @@ public class OntServlet extends HttpServlet {
 		// report Ont service version?
 		if ( Util.yes(req.params, "_version")  ) {
 			miscDispatcher.reportOntVersion(req.request, req.response);
-			return;
-		}
-
-		// report aquaportal rest url for orrclient?
-		if ( Util.yes(req.params, "_aqrest")  ) {
-			miscDispatcher.reportAquaportalRestUrl(req.request, req.response);
 			return;
 		}
 
@@ -192,12 +245,6 @@ public class OntServlet extends HttpServlet {
 			return;
 		}
 
-		// load an ontology into the graph?
-		if ( Util.yes(req.params, "_lo")  ) {
-			_loadOntologyIntoGraph(req);
-			return;
-		}
-
 		// reload triple store?
 		if ( Util.yes(req.params, "_reload")  ) {
 			_reload(req);
@@ -226,54 +273,7 @@ public class OntServlet extends HttpServlet {
 			return;
 		}
 
-		// "ontology exists" request?
-		if ( Util.yes(req.params, "oe") ) {
-			String uri = Util.getParam(req.params, "oe", "");
-			_dispatchIsOntologyRegistered(uri);
-			return;
-		}
-
 		if ( _dispatchAuthority() ) {
-			return;
-		}
-
-		// if the "uri" parameter is included, resolve by the given URI
-		if ( Util.yes(req.params, "uri") ) {
-			// get (ontology or entity) URI from the parameter:
-			String ontOrEntUri = Util.getParam(req.params, "uri", "");
-			if ( ontOrEntUri.length() == 0 ) {
-				req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing uri parameter");
-				return;
-			}
-			if ( ! _dispatchUri(ontOrEntUri) ) {
-				// the explicit given uri could not be resolved, so respond with NOT_FOUND
-				req.response.sendError(HttpServletResponse.SC_NOT_FOUND, ontOrEntUri);
-			}
-			return;
-		}
-
-		// dispatch a sparql-query?
-		if ( Util.yes(req.params, "sparql")  ) {
-			sparqlDispatcher.execute(req.request, req.params, req.response);
-			return;
-		}
-
-
-		// get user information?
-		if ( Util.yes(req.params, "_usri")  ) {
-			_getUserInfo(req);
-			return;
-		}
-
-		// unregister ontology?
-		if ( Util.yes(req.params, "_unr")  ) {
-			_unregisterOntology(req);
-			return;
-		}
-
-		// mark testing ontology?
-		if ( Util.yes(req.params, "_mkt")  ) {
-            _markTestingOntology(req);
 			return;
 		}
 
