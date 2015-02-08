@@ -1,6 +1,13 @@
 build.properties
 _generated
 
+org.mmisw.ont/WebContent/WEB-INF/lib/org.mmisw.ont.jar
+org.mmisw.orrportal/www
+
+# idea stuff
+out
+*.iml
+
 # eclipse stuff
 .classpath
 .project
