@@ -114,169 +114,170 @@ public class OntServlet extends HttpServlet {
 
 	private void _dispatch() throws ServletException, IOException {
 		OntRequest req = getThreadLocalOntRequest();
-		// first, see if there are any testing requests to dispatch
 
-		// dispatch list of ontologies for orrclient?
-		if ( Util.yes(req.params, "listall")  ) {
-			miscDispatcher.listAll(req.request, req.response);
-			return;
-		}
+        if (!req.params.isEmpty()) {
 
-        // if the "uri" parameter is included, resolve by the given URI
-        if ( Util.yes(req.params, "uri") ) {
-            // get (ontology or entity) URI from the parameter:
-            String ontOrEntUri = Util.getParam(req.params, "uri", "");
-            if ( ontOrEntUri.length() == 0 ) {
-                req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing uri parameter");
+            // dispatch list of ontologies for orrclient?
+            if ( Util.yes(req.params, "listall")  ) {
+                miscDispatcher.listAll(req.request, req.response);
                 return;
             }
-            if ( ! _dispatchUri(ontOrEntUri) ) {
-                // the explicit given uri could not be resolved, so respond with NOT_FOUND
-                req.response.sendError(HttpServletResponse.SC_NOT_FOUND, ontOrEntUri);
+
+            // if the "uri" parameter is included, resolve by the given URI
+            if ( Util.yes(req.params, "uri") ) {
+                // get (ontology or entity) URI from the parameter:
+                String ontOrEntUri = Util.getParam(req.params, "uri", "");
+                if ( ontOrEntUri.length() == 0 ) {
+                    req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing uri parameter");
+                    return;
+                }
+                if ( ! _dispatchUri(ontOrEntUri) ) {
+                    // the explicit given uri could not be resolved, so respond with NOT_FOUND
+                    req.response.sendError(HttpServletResponse.SC_NOT_FOUND, ontOrEntUri);
+                }
+                return;
             }
-            return;
+
+            // load an ontology into the graph?
+            if ( Util.yes(req.params, "_lo")  ) {
+                _loadOntologyIntoGraph(req);
+                return;
+            }
+
+            // report aquaportal rest url for orrclient?
+            if ( Util.yes(req.params, "_aqrest")  ) {
+                miscDispatcher.reportAquaportalRestUrl(req.request, req.response);
+                return;
+            }
+
+            // "ontology exists" request?
+            if ( Util.yes(req.params, "oe") ) {
+                String uri = Util.getParam(req.params, "oe", "");
+                _dispatchIsOntologyRegistered(uri);
+                return;
+            }
+
+            // dispatch a sparql-query?
+            if ( Util.yes(req.params, "sparql")  ) {
+                sparqlDispatcher.execute(req.request, req.params, req.response);
+                return;
+            }
+
+
+            // get user information?
+            if ( Util.yes(req.params, "_usri")  ) {
+                _getUserInfo(req);
+                return;
+            }
+
+            // unregister ontology?
+            if ( Util.yes(req.params, "_unr")  ) {
+                _unregisterOntology(req);
+                return;
+            }
+
+            // mark testing ontology?
+            if ( Util.yes(req.params, "_mkt")  ) {
+                _markTestingOntology(req);
+                return;
+            }
+
+            // show request info?
+            if ( Util.yes(req.params, "showreq")  ) {
+                Util.showReq(this, req);
+                return;
+            }
+
+            // "new" dispatch list of ontologies?
+            if ( Util.yes(req.params, "listonts")  ) {
+                miscDispatcher.listOnts(req.request, req.response);
+                return;
+            }
+
+            // report Ont service version?
+            if ( Util.yes(req.params, "_version")  ) {
+                miscDispatcher.reportOntVersion(req.request, req.response);
+                return;
+            }
+
+            // dispatch list of ontologies?
+            if ( Util.yes(req.params, "list")  ) {
+                miscDispatcher.listOntologies(req.request, req.params, req.response);
+                return;
+            }
+
+            // dispatch list of vocabularies?
+            if ( Util.yes(req.params, "vocabs")  ) {
+                miscDispatcher.listVocabularies(req.params, req.response);
+                return;
+            }
+
+            // dispatch list of mappings?
+            if ( Util.yes(req.params, "mappings")  ) {
+                miscDispatcher.listMappings(req.params, req.response);
+                return;
+            }
+
+            // if the "_lpath" parameter is included, reply with full local path of ontology file
+            // (this is just a quick way to help orrportal to so some of its stuff ;)
+            if ( Util.yes(req.params, "_lpath") ) {
+                miscDispatcher.resolveGetLocalPath(req.request, req.response);
+                return;
+            }
+
+            // if the "_csv" parameter is included, reply with contents of associated CSV file
+            // (this is just a quick way to help orrportal to so some of its stuff ;)
+            if ( Util.yes(req.params, "_csv") ) {
+                miscDispatcher.resolveGetCsv(req.request, req.response);
+                return;
+            }
+
+            // if the "_versions" parameter is included, reply with a list of the available
+            // version associated with the req.request
+            if ( Util.yes(req.params, "_versions") ) {
+                miscDispatcher.resolveGetVersions(req.request, req.response);
+                return;
+            }
+
+            // if the "_debug" parameter is included, show some info about the URI parse
+            // and the ontology from the database (but do not serve the contents)
+            if ( Util.yes(req.params, "_debug") ) {
+                miscDispatcher.resolveUriDebug(req.request, req.response);
+                return;
+            }
+
+            // reload triple store?
+            if ( Util.yes(req.params, "_reload")  ) {
+                _reload(req);
+                return;
+            }
+            // reindex triple store?
+            if ( Util.yes(req.params, "_reidx")  ) {
+                _reindex(req);
+                return;
+            }
+            // clear triple store?
+            if ( Util.yes(req.params, "_clear")  ) {
+                _clear(req);
+                return;
+            }
+
+            // get users RDF?
+            if ( Util.yes(req.params, "_usrsrdf")  ) {
+                adminDispatcher.getUsersRdf(req);
+                return;
+            }
+
+            // dispatch a db-query?
+            if ( Util.yes(req.params, "dbquery")  ) {
+                Util.doDbQuery(req.request, req.params, req.response, db);
+                return;
+            }
+
+            if ( _dispatchAuthority() ) {
+                return;
+            }
         }
-
-        // load an ontology into the graph?
-        if ( Util.yes(req.params, "_lo")  ) {
-            _loadOntologyIntoGraph(req);
-            return;
-        }
-
-        // report aquaportal rest url for orrclient?
-        if ( Util.yes(req.params, "_aqrest")  ) {
-            miscDispatcher.reportAquaportalRestUrl(req.request, req.response);
-            return;
-        }
-
-        // "ontology exists" request?
-        if ( Util.yes(req.params, "oe") ) {
-            String uri = Util.getParam(req.params, "oe", "");
-            _dispatchIsOntologyRegistered(uri);
-            return;
-        }
-
-        // dispatch a sparql-query?
-        if ( Util.yes(req.params, "sparql")  ) {
-            sparqlDispatcher.execute(req.request, req.params, req.response);
-            return;
-        }
-
-
-        // get user information?
-        if ( Util.yes(req.params, "_usri")  ) {
-            _getUserInfo(req);
-            return;
-        }
-
-        // unregister ontology?
-        if ( Util.yes(req.params, "_unr")  ) {
-            _unregisterOntology(req);
-            return;
-        }
-
-        // mark testing ontology?
-        if ( Util.yes(req.params, "_mkt")  ) {
-            _markTestingOntology(req);
-            return;
-        }
-
-        // show request info?
-		if ( Util.yes(req.params, "showreq")  ) {
-			Util.showReq(this, req);
-			return;
-		}
-
-		// "new" dispatch list of ontologies?
-		if ( Util.yes(req.params, "listonts")  ) {
-			miscDispatcher.listOnts(req.request, req.response);
-			return;
-		}
-
-		// report Ont service version?
-		if ( Util.yes(req.params, "_version")  ) {
-			miscDispatcher.reportOntVersion(req.request, req.response);
-			return;
-		}
-
-		// dispatch list of ontologies?
-		if ( Util.yes(req.params, "list")  ) {
-			miscDispatcher.listOntologies(req.request, req.params, req.response);
-			return;
-		}
-
-		// dispatch list of vocabularies?
-		if ( Util.yes(req.params, "vocabs")  ) {
-			miscDispatcher.listVocabularies(req.params, req.response);
-			return;
-		}
-
-		// dispatch list of mappings?
-		if ( Util.yes(req.params, "mappings")  ) {
-			miscDispatcher.listMappings(req.params, req.response);
-			return;
-		}
-
-		// if the "_lpath" parameter is included, reply with full local path of ontology file
-		// (this is just a quick way to help orrportal to so some of its stuff ;)
-		if ( Util.yes(req.params, "_lpath") ) {
-			miscDispatcher.resolveGetLocalPath(req.request, req.response);
-			return;
-		}
-
-		// if the "_csv" parameter is included, reply with contents of associated CSV file
-		// (this is just a quick way to help orrportal to so some of its stuff ;)
-		if ( Util.yes(req.params, "_csv") ) {
-			miscDispatcher.resolveGetCsv(req.request, req.response);
-			return;
-		}
-
-		// if the "_versions" parameter is included, reply with a list of the available
-		// version associated with the req.request
-		if ( Util.yes(req.params, "_versions") ) {
-			miscDispatcher.resolveGetVersions(req.request, req.response);
-			return;
-		}
-
-		// if the "_debug" parameter is included, show some info about the URI parse
-		// and the ontology from the database (but do not serve the contents)
-		if ( Util.yes(req.params, "_debug") ) {
-			miscDispatcher.resolveUriDebug(req.request, req.response);
-			return;
-		}
-
-		// reload triple store?
-		if ( Util.yes(req.params, "_reload")  ) {
-			_reload(req);
-			return;
-		}
-		// reindex triple store?
-		if ( Util.yes(req.params, "_reidx")  ) {
-			_reindex(req);
-			return;
-		}
-		// clear triple store?
-		if ( Util.yes(req.params, "_clear")  ) {
-			_clear(req);
-			return;
-		}
-
-		// get users RDF?
-		if ( Util.yes(req.params, "_usrsrdf")  ) {
-			adminDispatcher.getUsersRdf(req);
-			return;
-		}
-
-		// dispatch a db-query?
-		if ( Util.yes(req.params, "dbquery")  ) {
-			Util.doDbQuery(req.request, req.params, req.response, db);
-			return;
-		}
-
-		if ( _dispatchAuthority() ) {
-			return;
-		}
-
 
 		boolean resolved = false;
 
