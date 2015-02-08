@@ -203,14 +203,15 @@ public class MiscDispatcher {
 	/**
 	 * List the registered ontologies.
 	 */
-	void listOntologies(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	void listOntologies(HttpServletRequest request, Map<String, String[]> params, HttpServletResponse response)
+            throws ServletException, IOException {
 		Connection _con = null;
 		Statement _stmt = null;
 		try {
 			_con = db.getConnection();
 			_stmt = _con.createStatement();
 			String table = "v_ncbo_ontology";
-			int limit = Integer.parseInt(Util.getParam(request, "limit", "500"));
+			int limit = Integer.parseInt(Util.getParam(params, "limit", "500"));
 
 			String query =
 				"select id, ontology_id, user_id, urn " +
@@ -275,10 +276,10 @@ public class MiscDispatcher {
 	/**
 	 * List all vocabularies (not mappings)
 	 */
-	void listVocabularies(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	void listVocabularies(Map<String, String[]> params, HttpServletResponse response) throws ServletException, IOException {
 
-		boolean unverAndVer = Boolean.valueOf(Util.getParam(request, "uv", "false"));
-		String limit = Util.getParam(request, "limit", "");
+		boolean unverAndVer = Boolean.valueOf(Util.getParam(params, "uv", "false"));
+		String limit = Util.getParam(params, "limit", "");
 		if ( limit.length() > 0 ) {
 			limit = " limit " +limit;
 		}
@@ -348,10 +349,10 @@ public class MiscDispatcher {
 	/**
 	 * List all mappings.
 	 */
-	void listMappings(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	void listMappings(Map<String, String[]> params, HttpServletResponse response) throws ServletException, IOException {
 
-		boolean unverAndVer = Boolean.valueOf(Util.getParam(request, "uv", "false"));
-		String limit = Util.getParam(request, "limit", "");
+		boolean unverAndVer = Boolean.valueOf(Util.getParam(params, "uv", "false"));
+		String limit = Util.getParam(params, "limit", "");
 		if ( limit.length() > 0 ) {
 			limit = " limit " +limit;
 		}

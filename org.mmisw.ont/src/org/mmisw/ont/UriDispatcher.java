@@ -1,6 +1,7 @@
 package org.mmisw.ont;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -66,7 +67,7 @@ public class UriDispatcher {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	boolean dispatchEntityUri(HttpServletRequest request, HttpServletResponse response, 
+	boolean dispatchEntityUri(HttpServletRequest request, Map<String, String[]> params, HttpServletResponse response,
 			String entityUri, String outFormat
 	) 
 	throws ServletException, IOException {
@@ -84,7 +85,7 @@ public class UriDispatcher {
 		}
 		
 		if ( outFormat.equalsIgnoreCase("html") || outFormat.equalsIgnoreCase("csv") ) {
-			return _dispatchUriHtml(request, response, entityUri, outFormat);
+			return _dispatchUriHtml(request, params, response, entityUri, outFormat);
 		}
 		else if ( outFormat.equalsIgnoreCase("owl")
 			 ||   outFormat.equalsIgnoreCase("rdf")	 
@@ -92,7 +93,7 @@ public class UriDispatcher {
 			 ||   outFormat.equalsIgnoreCase("json")	 
 			 ||   outFormat.equalsIgnoreCase("nt")	 
 		) {
-			return _dispatchUriOntologyFormat(request, response, entityUri, outFormat);
+			return _dispatchUriOntologyFormat(request, params, response, entityUri, outFormat);
 		}
 		else {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "output format not recognized: " +outFormat);
@@ -105,7 +106,7 @@ public class UriDispatcher {
 	 * Dispatches with a CONSTRUCT query.
 	 * @return true iff dispatch completed here.
 	 */
-	private boolean _dispatchUriOntologyFormat(HttpServletRequest request, HttpServletResponse response, 
+	private boolean _dispatchUriOntologyFormat(HttpServletRequest request, Map<String, String[]> params, HttpServletResponse response,
 		String entityUri, String outFormat) 
 	throws IOException, ServletException {
 		
@@ -113,7 +114,7 @@ public class UriDispatcher {
 		
 		// note, pass null so the caller can continue the dispatch if the query gets empty result
 		String requestedEntity = null;
-		return sparqlDispatcher.execute(request, response, query, requestedEntity, outFormat);
+		return sparqlDispatcher.execute(request, params, response, query, requestedEntity, outFormat);
 	}
 
 
@@ -121,7 +122,7 @@ public class UriDispatcher {
 	 * Dispatches with a SELECT query.
 	 * @return true iff dispatch completed here.
 	 */
-	private boolean _dispatchUriHtml(HttpServletRequest request, HttpServletResponse response, 
+	private boolean _dispatchUriHtml(HttpServletRequest request, Map<String, String[]> params, HttpServletResponse response,
 		String entityUri,
 		String outFormat
 	) 
@@ -131,6 +132,6 @@ public class UriDispatcher {
 		
 		// note, pass null so the caller can continue the dispatch if the query gets empty result
 		String requestedEntity = entityUri;
-		return sparqlDispatcher.execute(request, response, query, requestedEntity, outFormat);
+		return sparqlDispatcher.execute(request, params, response, query, requestedEntity, outFormat);
 	}
 }

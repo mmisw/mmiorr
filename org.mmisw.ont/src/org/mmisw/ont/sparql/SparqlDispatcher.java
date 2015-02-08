@@ -3,6 +3,7 @@ package org.mmisw.ont.sparql;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -49,41 +50,41 @@ public class SparqlDispatcher {
 	 * Executes the query indicated as argument of the "sparql" parameter in the request.
 	 * Return SC_BAD_REQUEST to the client if value not given.
 	 */
-	public void execute(HttpServletRequest request, HttpServletResponse response) 
+	public void execute(HttpServletRequest request, Map<String, String[]> params, HttpServletResponse response)
 	throws ServletException, IOException {
-		String query = Util.getParam(request, "sparql", "");
+		String query = Util.getParam(params, "sparql", "");
 		if ( query.length() == 0 ) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "sparql parameter value not given");
 			return;
 		}
-		boolean infer = "true".equalsIgnoreCase(Util.getParam(request, "infer", "false"));
-		String form = Util.getParam(request, "form", null);
-		_executeWithCompletion(request, response, query, infer, null, form, true);
+		boolean infer = "true".equalsIgnoreCase(Util.getParam(params, "infer", "false"));
+		String form = Util.getParam(params, "form", null);
+		_executeWithCompletion(request, params, response, query, infer, null, form, true);
 	}
 	
-	/** 
+	/**
 	 * Executes the given query.
 	 * 
 	 * @param requestedEntity If non-null and the result of the query is empty, then 404 is returned to the client.
-	 * 
-	 * @return 
-	 *          true iff dispatch completed here. 
+	 *
+	 * @return
+	 *          true iff dispatch completed here.
 	 *          false iff requestedEntity is null AND query result is empty.
 	 */
-	public boolean execute(HttpServletRequest request, HttpServletResponse response, 
+	public boolean execute(HttpServletRequest request, Map<String, String[]> params, HttpServletResponse response,
 			String query, String requestedEntity,
 			String outFormat
 	)
 	throws ServletException, IOException {
-		
-		return _executeWithCompletion(request, response, query, false, requestedEntity, outFormat, false);
+
+		return _executeWithCompletion(request, params, response, query, false, requestedEntity, outFormat, false);
 	}
-	
-	
-	/** 
+
+
+	/**
 	 * Executes the given query.
-	 * 
-	 * 
+	 *
+	 *
 	 * @param request
 	 * @param response
 	 * @param query
@@ -100,9 +101,10 @@ public class SparqlDispatcher {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	private boolean _executeWithCompletion(HttpServletRequest request, HttpServletResponse response, 
-			final String query, boolean infer, String requestedEntity,
-			final String outFormat, boolean forceCompletion
+	private boolean _executeWithCompletion(HttpServletRequest request, Map<String, String[]> params,
+                                           HttpServletResponse response,
+                                           final String query, boolean infer, String requestedEntity,
+                                           final String outFormat, boolean forceCompletion
 	)
 	throws ServletException, IOException {
 		
@@ -155,7 +157,7 @@ public class SparqlDispatcher {
 		
 		if ( "Application/rdf+xml".equalsIgnoreCase(queryResult.getContentType()) ) {
 			// convert to HTML?
-			if ( Util.yes(request, "xslt") ) {
+			if ( Util.yes(params, "xslt") ) {
 				String XSLT_RESOURCE = "rdf.xslt";
 				InputStream xslt = getClass().getClassLoader().getResourceAsStream(XSLT_RESOURCE);
 				if ( xslt != null ) {
@@ -168,7 +170,7 @@ public class SparqlDispatcher {
 			}
 			
 			// put stylesheet at beginning of the result?
-			else if ( Util.yes(request, "xslti") ) {
+			else if ( Util.yes(params, "xslti") ) {
 				// what type? I've tried:
 				//   type="text/xsl"
 				//   type="text/xml"

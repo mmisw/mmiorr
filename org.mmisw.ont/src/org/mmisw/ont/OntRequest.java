@@ -23,12 +23,13 @@ import org.mmisw.ont.util.Util;
 public class OntRequest {
 	private final Log log = LogFactory.getLog(OntRequest.class);
 	final ServletContext servletContext;
-	final HttpServletRequest request; 
+    public final HttpServletRequest request;
 	public final HttpServletResponse response;
 	
 	final List<String> userAgentList;
 	
 	final Accept accept;
+    public final Map<String, String[]> params;
 	
 	final String fullRequestedUri;
 	final MmiUri mmiUri;
@@ -59,8 +60,10 @@ public class OntRequest {
 		accept = new Accept(request);
 		
 		fullRequestedUri = request.getRequestURL().toString();
-		
-		String formParam = Util.getParam(request, "form", "");
+
+        params = Util.getParams(request);
+
+		String formParam = Util.getParam(params, "form", "");
 		
 		//////////////////////////////////////
 		// get the requested MmiUri:
@@ -70,9 +73,9 @@ public class OntRequest {
 		// is "ont"-resolvable (OntUtil.isOntResolvableUri) and a syntactically valid MmiUri:
 		MmiUri mmiUriTest = null;
 		try {
-			if ( Util.yes(request, "uri") ) {
+            String entityUri = Util.getParam(params, "uri", null);
+			if (entityUri != null) {
 				// when the "uri" parameter is passed, its value is used.
-				String entityUri = Util.getParam(request, "uri", "");
 				if ( OntUtil.isOntResolvableUri(entityUri) ) {
 					mmiUriTest = new MmiUri(entityUri, true); // allowing only until authority
 				}
@@ -108,10 +111,9 @@ public class OntRequest {
 			);
 		}
 
-		
-		if ( Util.yes(request, "version") ) {
+		if ( Util.yes(params, "version") ) {
 			// explicit version given:
-			versionTest = Util.getParam(request, "version", null);
+			versionTest = Util.getParam(params, "version", null);
 		}
 
 		String authorityTest = null;
@@ -140,7 +142,6 @@ public class OntRequest {
 		log.debug("__Request: fullRequestedUri: " +fullRequestedUri);
 
 		StringBuilder sbParams = new StringBuilder("{");
-		Map<String, String[]> params = Util.getParams(request);
 		for (Entry<String, String[]> pair : params.entrySet() ) {
 			sbParams.append(pair.getKey()+ " => " + Arrays.asList(pair.getValue()));	
 		}

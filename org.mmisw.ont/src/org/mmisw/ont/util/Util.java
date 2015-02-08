@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.ont.OntRequest;
 import org.mmisw.ont.db.Db;
 import org.mmisw.ont.mmiuri.MmiUri;
 
@@ -38,33 +39,26 @@ public class Util {
 
 	private static final Log log = LogFactory.getLog(Util.class);
 
-	/** @returns true iff the given param is defined in the request
-	 * AND either no value is associated OR none of the values is equal to "n".
-	 */
-	public static boolean yes(HttpServletRequest request, String param) {
-		List<String> values = getParamValues(request, param);
-		return values != null && ! values.contains("n");
-	}
-
-	/** @returns the list of values associated to the given param.
-	 * null if the param is not included in the request.
-	 */
-	public static List<String> getParamValues(HttpServletRequest request, String param) {
-		Map<String, String[]> params = getParams(request);
-		String[] vals = params.get(param);
-		if ( null == vals ) {
-			return null;
-		}
-		List<String> list = Arrays.asList(params.get(param));
-		return list;
-	}
-
+    /** @return true iff the given param is defined in the params
+     * AND none of the values is equal to "n".
+     */
+    public static boolean yes(Map<String, String[]> params, String param) {
+        String[] vals = params.get(param);
+        if ( null == vals ) {
+            return false;
+        }
+        for(String val: vals) {
+            if ("n".equals(val)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
 	/** @returns The last value associated with the given parameter. If not value is
 	 * explicitly associated, it returns the given default value.
 	 */
-	public static String getParam(HttpServletRequest request, String param, String defaultValue) {
-		Map<String, String[]> params = getParams(request);
+	public static String getParam(Map<String, String[]> params, String param, String defaultValue) {
 		String[] array = params.get(param);
 		if ( array == null || array.length == 0 ) {
 			return defaultValue;
@@ -98,54 +92,53 @@ public class Util {
 	 * Developer option.
 	 * @param httpServlet
 	 */
-	public static  void showReq(HttpServlet httpServlet, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public static  void showReq(HttpServlet httpServlet, OntRequest req) throws ServletException, IOException {
 
-		response.setContentType("text/html");
-        PrintWriter out = response.getWriter();
+        req.response.setContentType("text/html");
+        PrintWriter out = req.response.getWriter();
         out.println("<html>");
         out.println("<head>");
         out.println("<title>Show req</title>");
-        out.println("<link rel=stylesheet href=\"" +request.getContextPath()+ "/main.css\" type=\"text/css\">");
+        out.println("<link rel=stylesheet href=\"" +req.request.getContextPath()+ "/main.css\" type=\"text/css\">");
         out.println("</head>");
         out.println("<body>");
         out.println("<pre>");
 
         out.println("httpServlet.getServletContext().getContextPath()  = " +httpServlet.getServletContext().getContextPath() );
 
-        out.println("request.getRequestURL()         = " + request.getRequestURL()  );
-        out.println("request.getRequestURI()         = " + request.getRequestURI()  );
-        out.println("request.getQueryString()        = " + request.getQueryString()  );
+        out.println("request.getRequestURL()         = " + req.request.getRequestURL()  );
+        out.println("request.getRequestURI()         = " + req.request.getRequestURI()  );
+        out.println("request.getQueryString()        = " + req.request.getQueryString()  );
 
-        out.println("request.getParameterMap()       = " + request.getParameterMap()  );
-		Map<String, String[]> params = Util.getParams(request);
-		for (Entry<String, String[]> pair : params.entrySet() ) {
+        out.println("request.getParameterMap()       = " + req.request.getParameterMap()  );
+		for (Entry<String, String[]> pair : req.params.entrySet() ) {
 			out.println("    " +pair.getKey()+ " => " + Arrays.asList(pair.getValue()));
 		}
-        out.println("request.getContextPath()        = " + request.getContextPath() );
-        out.println("request.getMethod()             = " + request.getMethod()  );
-        out.println("request.getPathInfo()           = " + request.getPathInfo()  );
-        out.println("request.getPathTranslated()     = " + request.getPathTranslated()  );
-        out.println("request.getRemoteUser()         = " + request.getRemoteUser()  );
-        out.println("request.getRequestedSessionId() = " + request.getRequestedSessionId()  );
-        out.println("request.getServletPath()        = " + request.getServletPath()  );
-        out.println("request.getAttributeNames()     = " + request.getAttributeNames()  );
-        out.println("request.getCharacterEncoding()  = " + request.getCharacterEncoding()  );
-        out.println("request.getContentLength()      = " + request.getContentLength()  );
-        out.println("request.getContentType()        = " + request.getContentType()  );
-        out.println("request.getProtocol()           = " + request.getProtocol()  );
-        out.println("request.getRemoteAddr()         = " + request.getRemoteAddr()  );
-        out.println("request.getRemoteHost()         = " + request.getRemoteHost()  );
-        out.println("request.getScheme()             = " + request.getScheme()  );
-        out.println("request.getServerName()         = " + request.getServerName()  );
-        out.println("request.getServerPort()         = " + request.getServerPort()  );
-        out.println("request.isSecure()              = " + request.isSecure()  );
+        out.println("request.getContextPath()        = " + req.request.getContextPath() );
+        out.println("request.getMethod()             = " + req.request.getMethod()  );
+        out.println("request.getPathInfo()           = " + req.request.getPathInfo()  );
+        out.println("request.getPathTranslated()     = " + req.request.getPathTranslated()  );
+        out.println("request.getRemoteUser()         = " + req.request.getRemoteUser()  );
+        out.println("request.getRequestedSessionId() = " + req.request.getRequestedSessionId()  );
+        out.println("request.getServletPath()        = " + req.request.getServletPath()  );
+        out.println("request.getAttributeNames()     = " + req.request.getAttributeNames()  );
+        out.println("request.getCharacterEncoding()  = " + req.request.getCharacterEncoding()  );
+        out.println("request.getContentLength()      = " + req.request.getContentLength()  );
+        out.println("request.getContentType()        = " + req.request.getContentType()  );
+        out.println("request.getProtocol()           = " + req.request.getProtocol()  );
+        out.println("request.getRemoteAddr()         = " + req.request.getRemoteAddr()  );
+        out.println("request.getRemoteHost()         = " + req.request.getRemoteHost()  );
+        out.println("request.getScheme()             = " + req.request.getScheme()  );
+        out.println("request.getServerName()         = " + req.request.getServerName()  );
+        out.println("request.getServerPort()         = " + req.request.getServerPort()  );
+        out.println("request.isSecure()              = " + req.request.isSecure()  );
 
         out.println("request. headers             = ");
-        Enumeration<?> hnames = request.getHeaderNames();
+        Enumeration<?> hnames = req.request.getHeaderNames();
         while ( hnames.hasMoreElements() ) {
         	Object hname = hnames.nextElement();
         	out.print("        " +hname+ " : ");
-        	Enumeration<?> hvals = request.getHeaders(hname.toString());
+        	Enumeration<?> hvals = req.request.getHeaders(hname.toString());
         	String sep = "";
             while ( hvals.hasMoreElements() ) {
             	Object hval = hvals.nextElement();
@@ -163,14 +156,14 @@ public class Util {
 	/**
 	 * Developer option.
 	 */
-	public static void doDbQuery(HttpServletRequest request, HttpServletResponse response, Db db) throws ServletException, IOException {
+	public static void doDbQuery(HttpServletRequest request, Map<String, String[]> params, HttpServletResponse response, Db db) throws ServletException, IOException {
 		Connection _con = null;
 		Statement _stmt = null;
 		try {
 			_con = db.getConnection();
 			_stmt = _con.createStatement();
-			String table = Util.getParam(request, "table", "v_ncbo_ontology");
-			int limit = Integer.parseInt(Util.getParam(request, "limit", "500"));
+			String table = Util.getParam(params, "table", "v_ncbo_ontology");
+			int limit = Integer.parseInt(Util.getParam(params, "limit", "500"));
 
 			String query = "select * from " +table+ "  limit " +limit;
 

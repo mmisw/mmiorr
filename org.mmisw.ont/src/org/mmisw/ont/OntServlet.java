@@ -117,118 +117,118 @@ public class OntServlet extends HttpServlet {
 		// first, see if there are any testing requests to dispatch
 
 		// show request info?
-		if ( Util.yes(req.request, "showreq")  ) {
-			Util.showReq(this, req.request, req.response);
+		if ( Util.yes(req.params, "showreq")  ) {
+			Util.showReq(this, req);
 			return;
 		}
 
 		// dispatch list of ontologies for orrclient?
-		if ( Util.yes(req.request, "listall")  ) {
+		if ( Util.yes(req.params, "listall")  ) {
 			miscDispatcher.listAll(req.request, req.response);
 			return;
 		}
 
 		// "new" dispatch list of ontologies?
-		if ( Util.yes(req.request, "listonts")  ) {
+		if ( Util.yes(req.params, "listonts")  ) {
 			miscDispatcher.listOnts(req.request, req.response);
 			return;
 		}
 
 		// report Ont service version?
-		if ( Util.yes(req.request, "_version")  ) {
+		if ( Util.yes(req.params, "_version")  ) {
 			miscDispatcher.reportOntVersion(req.request, req.response);
 			return;
 		}
 
 		// report aquaportal rest url for orrclient?
-		if ( Util.yes(req.request, "_aqrest")  ) {
+		if ( Util.yes(req.params, "_aqrest")  ) {
 			miscDispatcher.reportAquaportalRestUrl(req.request, req.response);
 			return;
 		}
 
 		// dispatch list of ontologies?
-		if ( Util.yes(req.request, "list")  ) {
-			miscDispatcher.listOntologies(req.request, req.response);
+		if ( Util.yes(req.params, "list")  ) {
+			miscDispatcher.listOntologies(req.request, req.params, req.response);
 			return;
 		}
 
 		// dispatch list of vocabularies?
-		if ( Util.yes(req.request, "vocabs")  ) {
-			miscDispatcher.listVocabularies(req.request, req.response);
+		if ( Util.yes(req.params, "vocabs")  ) {
+			miscDispatcher.listVocabularies(req.params, req.response);
 			return;
 		}
 
 		// dispatch list of mappings?
-		if ( Util.yes(req.request, "mappings")  ) {
-			miscDispatcher.listMappings(req.request, req.response);
+		if ( Util.yes(req.params, "mappings")  ) {
+			miscDispatcher.listMappings(req.params, req.response);
 			return;
 		}
 
 		// if the "_lpath" parameter is included, reply with full local path of ontology file
 		// (this is just a quick way to help orrportal to so some of its stuff ;)
-		if ( Util.yes(req.request, "_lpath") ) {
+		if ( Util.yes(req.params, "_lpath") ) {
 			miscDispatcher.resolveGetLocalPath(req.request, req.response);
 			return;
 		}
 
 		// if the "_csv" parameter is included, reply with contents of associated CSV file
 		// (this is just a quick way to help orrportal to so some of its stuff ;)
-		if ( Util.yes(req.request, "_csv") ) {
+		if ( Util.yes(req.params, "_csv") ) {
 			miscDispatcher.resolveGetCsv(req.request, req.response);
 			return;
 		}
 
 		// if the "_versions" parameter is included, reply with a list of the available
 		// version associated with the req.request
-		if ( Util.yes(req.request, "_versions") ) {
+		if ( Util.yes(req.params, "_versions") ) {
 			miscDispatcher.resolveGetVersions(req.request, req.response);
 			return;
 		}
 
 		// if the "_debug" parameter is included, show some info about the URI parse
 		// and the ontology from the database (but do not serve the contents)
-		if ( Util.yes(req.request, "_debug") ) {
+		if ( Util.yes(req.params, "_debug") ) {
 			miscDispatcher.resolveUriDebug(req.request, req.response);
 			return;
 		}
 
 		// load an ontology into the graph?
-		if ( Util.yes(req.request, "_lo")  ) {
+		if ( Util.yes(req.params, "_lo")  ) {
 			_loadOntologyIntoGraph(req);
 			return;
 		}
 
 		// reload triple store?
-		if ( Util.yes(req.request, "_reload")  ) {
+		if ( Util.yes(req.params, "_reload")  ) {
 			_reload(req);
 			return;
 		}
 		// reindex triple store?
-		if ( Util.yes(req.request, "_reidx")  ) {
+		if ( Util.yes(req.params, "_reidx")  ) {
 			_reindex(req);
 			return;
 		}
 		// clear triple store?
-		if ( Util.yes(req.request, "_clear")  ) {
+		if ( Util.yes(req.params, "_clear")  ) {
 			_clear(req);
 			return;
 		}
 
 		// get users RDF?
-		if ( Util.yes(req.request, "_usrsrdf")  ) {
+		if ( Util.yes(req.params, "_usrsrdf")  ) {
 			adminDispatcher.getUsersRdf(req);
 			return;
 		}
 
 		// dispatch a db-query?
-		if ( Util.yes(req.request, "dbquery")  ) {
-			Util.doDbQuery(req.request, req.response, db);
+		if ( Util.yes(req.params, "dbquery")  ) {
+			Util.doDbQuery(req.request, req.params, req.response, db);
 			return;
 		}
 
 		// "ontology exists" request?
-		if ( Util.yes(req.request, "oe") ) {
-			String uri = Util.getParam(req.request, "oe", "");
+		if ( Util.yes(req.params, "oe") ) {
+			String uri = Util.getParam(req.params, "oe", "");
 			_dispatchIsOntologyRegistered(uri);
 			return;
 		}
@@ -238,9 +238,9 @@ public class OntServlet extends HttpServlet {
 		}
 
 		// if the "uri" parameter is included, resolve by the given URI
-		if ( Util.yes(req.request, "uri") ) {
+		if ( Util.yes(req.params, "uri") ) {
 			// get (ontology or entity) URI from the parameter:
-			String ontOrEntUri = Util.getParam(req.request, "uri", "");
+			String ontOrEntUri = Util.getParam(req.params, "uri", "");
 			if ( ontOrEntUri.length() == 0 ) {
 				req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing uri parameter");
 				return;
@@ -253,26 +253,26 @@ public class OntServlet extends HttpServlet {
 		}
 
 		// dispatch a sparql-query?
-		if ( Util.yes(req.request, "sparql")  ) {
-			sparqlDispatcher.execute(req.request, req.response);
+		if ( Util.yes(req.params, "sparql")  ) {
+			sparqlDispatcher.execute(req.request, req.params, req.response);
 			return;
 		}
 
 
 		// get user information?
-		if ( Util.yes(req.request, "_usri")  ) {
+		if ( Util.yes(req.params, "_usri")  ) {
 			_getUserInfo(req);
 			return;
 		}
 
 		// unregister ontology?
-		if ( Util.yes(req.request, "_unr")  ) {
+		if ( Util.yes(req.params, "_unr")  ) {
 			_unregisterOntology(req);
 			return;
 		}
 
 		// mark testing ontology?
-		if ( Util.yes(req.request, "_mkt")  ) {
+		if ( Util.yes(req.params, "_mkt")  ) {
             _markTestingOntology(req);
 			return;
 		}
@@ -292,18 +292,8 @@ public class OntServlet extends HttpServlet {
 		if ( ! resolved ) {
 			// try to resolve request as a regular resource.
 			regularFileDispatcher.dispatch(req.servletContext, req.request, req.response);
-			return;
 		}
 
-//		//////////////////////////////////////////////////////////////////////
-//		// old dispatching:
-//
-//		if ( Util.yes(req.request, "ur2")  ) {
-//			uriResolver2.service(req);
-//		}
-//		else {
-//			uriResolver.service(req);
-//		}
 	}
 
 	/**
@@ -468,7 +458,7 @@ public class OntServlet extends HttpServlet {
 			}
 
 			// Else: try to dispatch as it were an entity URI (not complete ontology).
-			return uriDispatcher.dispatchEntityUri(req.request, req.response, ontOrEntUri,
+			return uriDispatcher.dispatchEntityUri(req.request, req.params, req.response, ontOrEntUri,
 					req.outFormat
 			);
 		}
@@ -603,92 +593,6 @@ public class OntServlet extends HttpServlet {
 	}
 
 	/**
-	 * Dispatches the given uri.
-	 * If the uri corresponds to a stored ontology, then the ontology is resolved
-	 * as it were a regular self-served ontology.
-	 * If the uri corresponds to an entity (ie, that can be resolved to a non-empty result using SPARQL),
-	 * then it is dispatched here.
-	 * Otherwise, return false--not dispatched here.
-	 *
-	 * @return true iff dispatch completed here.
-	 */
-	@SuppressWarnings("unused")
-	// TODO remove this old method.  Actual method is _dispatchUri
-	private boolean _dispatchUri_Old(OntRequest req, String ontOrEntUri) throws ServletException, IOException {
-
-		if ( log.isDebugEnabled() ) {
-			log.debug("_dispatchUri: ontOrEntUri=" +ontOrEntUri);
-		}
-
-		// TODO (#158: analytics) under preliminary testing
-		analytics.trackPageview(ontOrEntUri);
-
-		OntologyInfo ontology = null;
-
-		// explicit version?
-		if ( req.version != null ) {
-			//
-			// Dispatch explicit version request.
-			//
-			log.debug("Explicit version requested: " +req.version);
-
-			if ( req.mmiUri != null ) {
-				if ( req.mmiUri.getVersion() != null ) {
-					//
-					// Both, versioned URI and "version" parameter given.
-					// Check that the two components are equal.
-					//
-					if ( req.version.equals(req.mmiUri.getVersion()) ) {
-						ontology = db.getOntologyVersion(ontOrEntUri, req.version);
-					}
-					else {
-						// versioned request AND explicit version parameter -> BAD REQUEST:
-						req.response.sendError(HttpServletResponse.SC_BAD_REQUEST,
-								"Versioned URI and \"version\" parameter requested simultaneously; both values must be equal.");
-						return true;
-					}
-				}
-				else {
-					// unversioned request.  Get most recent
-					ontology = db.getMostRecentOntologyVersion(req.mmiUri);
-				}
-			}
-			else {
-				// possibly a re-hosted ontology.
-				ontology = db.getOntologyVersion(ontOrEntUri, req.version);
-			}
-		}
-		else {
-			// No explicit version.
-			log.debug("No explicit version requested.");
-			ontology = _getRegisteredOntology(ontOrEntUri);
-		}
-
-		// see if the given URI corresponds to a registered ontology
-		if ( ontology != null ) {
-			//
-			// yes, it's a stored ontology--dispatch as if it were a regular call to resolve the ontology
-
-			if ( log.isDebugEnabled() ) {
-				log.debug("dispatching "+ ontOrEntUri+ " as whole ontology (not entity)");
-			}
-
-			// use ontology member in req and make sure the Uri attribute is set
-			req.ontology = ontology;
-			req.ontology.setUri(ontOrEntUri);
-			uriResolver2.serviceForOntology();
-			return true;
-		}
-		else {
-			// try to dispatch entity URI (not complete ontology).
-			return uriDispatcher.dispatchEntityUri(req.request, req.response, ontOrEntUri,
-					req.outFormat
-			);
-		}
-	}
-
-
-	/**
 	 * Gets a registered ontology
 	 *
 	 * @param potentialOntUri The URI that will be used to try to find a corresponding registered
@@ -758,68 +662,6 @@ public class OntServlet extends HttpServlet {
 		}
 		return ontology;
 	}
-
-	/**
-	 * Gets a registered ontology
-	 *
-	 * @param potentialOntUri The URI that will be used to try to find a corresponding registered
-	 *                     ontology.
-	 * @return the ontology if found; null if not found.
-	 * @throws ServletException
-	 */
-	@SuppressWarnings("unused")
-	// TODO remove this old method.  Actual method is _getRegisteredOntology
-	private OntologyInfo _getRegisteredOntology_Old(String potentialOntUri) throws ServletException {
-		if ( log.isDebugEnabled() ) {
-			log.debug("getRegisteredOntology: potentialOntUri=" +potentialOntUri);
-		}
-
-		OntologyInfo ontology = null;
-		if ( OntUtil.isOntResolvableUri(potentialOntUri) ) {
-
-			if ( log.isDebugEnabled() ) {
-				log.debug("getRegisteredOntology: isOntResolvableUri.");
-			}
-
-			try {
-				MmiUri mmiUri = new MmiUri(potentialOntUri);
-				if ( mmiUri.getVersion() == null ) {
-					// unversioned request.  Get most recent
-					if ( log.isDebugEnabled() ) {
-						log.debug("getRegisteredOntology: unversioned request.");
-					}
-
-					ontology = db.getMostRecentOntologyVersion(mmiUri);
-				}
-				else {
-					// versioned request. Just try to use the argument as given:
-					if ( log.isDebugEnabled() ) {
-						log.debug("getRegisteredOntology: versioned request.");
-					}
-
-					ontology = db.getOntology(potentialOntUri);
-				}
-			}
-			catch (URISyntaxException e) {
-				// Not an MmiUri. Just try to use the argument as given:
-				if ( log.isDebugEnabled() ) {
-					log.debug("getRegisteredOntology: not an MmiUri.");
-				}
-
-				ontology = db.getOntology(potentialOntUri);
-			}
-		}
-		else {
-			if ( log.isDebugEnabled() ) {
-				log.debug("getRegisteredOntology: is NOT OntResolvableUri.");
-			}
-
-			ontology = db.getOntology(potentialOntUri);
-		}
-
-		return ontology;
-	}
-
 
 	/**
 	 * Gets the output format according to the given MmiUri and other request parameters.
@@ -943,13 +785,13 @@ public class OntServlet extends HttpServlet {
 	 * The value is taken as the URI of the ontology.
 	 */
 	private void _loadOntologyIntoGraph(OntRequest req) throws ServletException, IOException {
-		String ontUri = Util.getParam(req.request, "_lo", "");
+		String ontUri = Util.getParam(req.params, "_lo", "");
 		if ( ontUri.length() == 0 ) {
 			req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing value for _lo parameter");
 			return;
 		}
 
-		String graphId = Util.getParam(req.request, "_gi", null);
+		String graphId = Util.getParam(req.params, "_gi", null);
 
 		// explicit version?
 		if ( req.version != null ) {
@@ -991,7 +833,7 @@ public class OntServlet extends HttpServlet {
 	private void _getUserInfo(OntRequest req) throws ServletException, IOException {
 		StringBuilder result = new StringBuilder();
 
-		String ontUri = Util.getParam(req.request, "_usri", "");
+		String ontUri = Util.getParam(req.params, "_usri", "");
 		if ( ontUri.length() == 0 ) {
 			result.append("ERROR: missing username");
 		}
@@ -1028,7 +870,7 @@ public class OntServlet extends HttpServlet {
 	 */
 	private void _reindex(OntRequest req) throws ServletException, IOException {
 		if ("POST".equalsIgnoreCase(req.request.getMethod())) {
-			String _reidx = Util.getParam(req.request, "_reidx", "");
+			String _reidx = Util.getParam(req.params, "_reidx", "");
 			boolean wait = _reidx.length() == 0 || _reidx.equals("wait");
 			tripleStore.reindex(wait);
 		}
@@ -1065,7 +907,7 @@ public class OntServlet extends HttpServlet {
 	 */
 	private void _unregisterOntology(OntRequest req) throws ServletException, IOException {
 
-		String ontUri = Util.getParam(req.request, "_unr", "");
+		String ontUri = Util.getParam(req.params, "_unr", "");
 		if ( ontUri.length() == 0 ) {
 			req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing ontology URI");
 			return;
@@ -1075,7 +917,7 @@ public class OntServlet extends HttpServlet {
 		// This is based on the parameter "version" or the versioned URI, as appropriate.
 
 		// version from parameter "version" if given:
-		String version = Util.getParam(req.request, "version", null);
+		String version = Util.getParam(req.params, "version", null);
 
 		// version from versioned ontology mmiUri, if given:
 		String version2 = null;
@@ -1183,17 +1025,17 @@ public class OntServlet extends HttpServlet {
 
 	private void _doMarkTestingOntology(OntRequest req) throws ServletException, IOException {
 
-		String ontUri = Util.getParam(req.request, "_mkt", "");
+		String ontUri = Util.getParam(req.params, "_mkt", "");
 		if ( ontUri.length() == 0 ) {
 			req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing ontology URI");
 			return;
 		}
-		String version = Util.getParam(req.request, "version", "");
+		String version = Util.getParam(req.params, "version", "");
 		if ( version.length() == 0 ) {
 			req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing version");
 			return;
 		}
-		String testingStr = Util.getParam(req.request, "testing", "");
+		String testingStr = Util.getParam(req.params, "testing", "");
 		if ( testingStr.length() == 0 || (!testingStr.equals("true") && !testingStr.equals("false"))) {
 			req.response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing or invalid testing");
 			return;
