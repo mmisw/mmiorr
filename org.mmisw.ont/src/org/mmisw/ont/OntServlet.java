@@ -273,10 +273,10 @@ public class OntServlet extends HttpServlet {
                 Util.doDbQuery(req.request, req.params, req.response, db);
                 return;
             }
+        }
 
-            if ( _dispatchAuthority() ) {
-                return;
-            }
+        if ( _dispatchAuthority() ) {
+            return;
         }
 
 		boolean resolved = false;

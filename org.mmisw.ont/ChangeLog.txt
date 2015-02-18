@@ -4,6 +4,9 @@ $Id$
 
 ChangeLog
 
+2015-02-17  2.3.1
+  - fix #347 /ont/<authority> not resolving
+
 2015-02-08  2.3.0
   - more efficient inspection of request parameters
 
