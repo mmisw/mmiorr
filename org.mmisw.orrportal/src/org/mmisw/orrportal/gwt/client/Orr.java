@@ -216,15 +216,32 @@ public class Orr {
 	    String historyToken = History.getToken();
 	    Orr.log("history token = [" +historyToken+ "]");
 	    if ( historyToken != null && historyToken.trim().length() > 0 ) {
-	    	History.fireCurrentHistoryState();
+            if (historyToken.startsWith(PortalConsts.T_REGISTERED_BY_AUTHORITY)
+             || historyToken.startsWith(PortalConsts.T_REGISTERED_BY_USER)
+             || historyToken.startsWith(PortalConsts.T_SEARCH_ONTS)
+             || historyToken.startsWith(PortalConsts.T_SEARCH_TERMS)
+            ) {
+                // #346 - not only for "authority search" (/ba/*), but in general for operations requiring
+                // the list of ontologies to be loaded, we fire the history state change after loading
+                portalMainPanel.dispatchMainPanel2(new Runnable() {
+                    public void run() {
+	    	            History.fireCurrentHistoryState();
+                    }
+                });
+            }
+            else {
+                History.fireCurrentHistoryState();
+            }
 	    }
 	    else {
 	    	portalMainPanel.dispatchMainPage("");
 	    }
 	}
 
-	
-	public static void refreshListAllOntologies() {
+    /**
+     * @param run post-action
+     */
+	public static void refreshListAllOntologies(final Runnable run) {
 		
 		AsyncCallback<GetAllOntologiesResult> callback = new AsyncCallback<GetAllOntologiesResult>() {
 
@@ -237,6 +254,9 @@ public class Orr {
 					ontologyInfos = result.getOntologyList();
 					Orr.log("ORR: Got list of registered ontologies: " +ontologyInfos.size());
 					portalMainPanel.refreshedListAllOntologies(ontologyInfos);
+                    if (run != null) {
+                        run.run();
+                    }
 				}
 				else {
 					Orr.log("Error getting list of ontologies: " +result.getError());

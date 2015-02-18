@@ -411,7 +411,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	}
 
 	private void dispatchMainPanel(boolean reloadList, final String searchString) {
-		Orr.log("__dispatchMainPanel: reloadList=" +reloadList);
+		Orr.log("__dispatchMainPanel: reloadList=" + reloadList);
 		OntologyPanel ontologyPanel = pctrl.getOntologyPanel();
 		if ( ontologyPanel != null ) {
 			ontologyPanel.cancel();
@@ -427,7 +427,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 
 	    if ( reloadList ) {
 	    	bodyPanel.add(new HTML("<i>Refreshing...</i>"));
-	    	Orr.refreshListAllOntologies();
+	    	Orr.refreshListAllOntologies(null);
 	    }
 	    else {
 	    	bodyPanel.add(browsePanel);
@@ -442,13 +442,38 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	    	}
 	    }
 		DeferredCommand.addCommand(new Command() {
-			public void execute() {
-				controlsPanel.dispatchSearchOntologies(searchString);
-			}
-		});
+            public void execute() {
+                controlsPanel.dispatchSearchOntologies(searchString);
+            }
+        });
 	}
 
-	private void dispatchOntologyPanel(final RegisteredOntologyInfo ontologyInfo, final boolean versionExplicit) {
+    /**
+     * similar to dispatchMainPanel(boolean, String) but allowing a more general post-action, which
+     * would be a preferred mechanism in general, but for now we are just focusing on fixing
+     * #321 ""more graceful handling of browser navigation including history"
+     * @param run
+     */
+    public void dispatchMainPanel2(Runnable run) {
+        Orr.log("__dispatchMainPanel2");
+        OntologyPanel ontologyPanel = pctrl.getOntologyPanel();
+        if ( ontologyPanel != null ) {
+            ontologyPanel.cancel();
+            pctrl.setOntologyInfo(null);
+            pctrl.setOntologyPanel(null);
+        }
+
+        interfaceType = InterfaceType.BROWSE;
+        controlsPanel.showMenuBar(interfaceType);
+        headerPanel.updateLinks(interfaceType);
+
+        bodyPanel.clear();
+
+        bodyPanel.add(new HTML("<i>Refreshing...</i>"));
+        Orr.refreshListAllOntologies(run);
+    }
+
+    private void dispatchOntologyPanel(final RegisteredOntologyInfo ontologyInfo, final boolean versionExplicit) {
 		String ontologyUri = ontologyInfo.getUri();
 		Orr.log("dispatchOntologyPanel:  ontologyUri=" +ontologyUri);
 
