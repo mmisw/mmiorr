@@ -2,6 +2,10 @@ org.mmisw.orrportal: MMI ORR Portal
 Carlos Rueda  -  http://marinemetadata.org
 $Id$
 
+2015-03-21  2.4.0
+  - internal: to simplify build process, merge orrclient code into this project:
+       git mv org.mmisw.orrclient/src/org/mmisw/orrclient org.mmisw.orrportal/src/org/mmisw/
+
 2015-02-17  2.3.1
   - regression fixed issue #321 "more graceful handling of browser navigation including history".
     regression was that upon fresh load of the webapp with any of the history tokens operating
