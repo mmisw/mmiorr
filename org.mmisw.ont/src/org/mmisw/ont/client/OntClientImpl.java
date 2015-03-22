@@ -146,8 +146,7 @@ class OntClientImpl implements IOntClient {
 	public SignInResult createUpdateUserAccount(Map<String, String> values)
 			throws Exception {
 
-		UserAccountManager uacu = new UserAccountManager(values);
-		return uacu.doIt();
+        return repoClient.createUpdateUserAccount(values);
 	}
 
 }

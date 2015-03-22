@@ -1,4 +1,4 @@
-package org.mmisw.ont.client;
+package org.mmisw.ont.client.repoclient.bioportal;
 
 
 import java.util.ArrayList;
@@ -11,6 +11,7 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.ont.client.SignInResult;
 import org.mmisw.ont.client.util.XmlAccessor;
 
 
@@ -31,7 +32,6 @@ class UserAccountManager {
 	
 	/**
 	 * Constructor.
-	 * @param create true to create new account; false to update existing account.
 	 * @param values
 	 */
 	UserAccountManager(Map<String,String> values) {
@@ -42,11 +42,10 @@ class UserAccountManager {
 	
 	/** makes the request and return the response from the server 
 	 * @throws Exception */
-	private String doPost() throws Exception {
+	private String doPost(String aquaportalRestUrl) throws Exception {
 		String applicationid = "4ea81d74-8960-4525-810b-fa1baab576ff";
 		log.info("applicationid=" +applicationid);
 
-		String aquaportalRestUrl = OntClientUtil.getAquaportalRestUrl();
 		String restUrl = aquaportalRestUrl + USERS;
 		
 		values.put("applicationid", applicationid);
@@ -106,8 +105,8 @@ class UserAccountManager {
 	 * @return
 	 * @throws Exception 
 	 */
-	SignInResult doIt() throws Exception  {
-		String response = doPost();
+	SignInResult doIt(String aquaportalRestUrl) throws Exception  {
+		String response = doPost(aquaportalRestUrl);
 
 		response = response.replaceAll("\\s+", " ");
 		log.info("----response=" +response);
