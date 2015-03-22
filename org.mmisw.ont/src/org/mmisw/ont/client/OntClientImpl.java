@@ -7,6 +7,8 @@ import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.OntVersion;
 
 import com.hp.hpl.jena.ontology.OntModel;
+import org.mmisw.ont.client.repoclient.RepoClient;
+import org.mmisw.ont.client.repoclient.bioportal.BioportalClient;
 
 /**
  * Implementation of OntClient operations.
@@ -19,6 +21,7 @@ class OntClientImpl implements IOntClient {
 	private final Log log = LogFactory.getLog(OntClientImpl.class);
 
 	private final OntReadOnlyConfiguration config;
+	private final RepoClient repoClient;
 
 	private static IOntClient _instance;
 
@@ -60,6 +63,8 @@ class OntClientImpl implements IOntClient {
 	private OntClientImpl(OntClientConfiguration config) throws Exception {
 		// copy the given configuration:
 		this.config = new OntReadOnlyConfiguration(config);
+
+        this.repoClient = new BioportalClient(OntClientUtil.getAquaportalRestUrl(this.config));
 
 		log.info("Ont library version = " + OntVersion.getVersion() + " ("
 				+ OntVersion.getBuild() + ")");
@@ -135,8 +140,7 @@ class OntClientImpl implements IOntClient {
 
 	public SignInResult getSession(String userName, String userPassword)
 			throws Exception {
-		UserAuthenticator ua = new UserAuthenticator(userName, userPassword);
-		return ua.getSession();
+		return repoClient.getSession(userName, userPassword);
 	}
 
 	public SignInResult createUpdateUserAccount(Map<String, String> values)

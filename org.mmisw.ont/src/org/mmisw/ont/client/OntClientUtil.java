@@ -75,8 +75,11 @@ class OntClientUtil {
 	 *         happens while trying to parse the retrieved value.
 	 */
 	static String getAquaportalRestUrl() throws Exception {
+		return getAquaportalRestUrl(_config());
+	}
+	static String getAquaportalRestUrl(OntClientConfiguration config) throws Exception {
 		if ( aquaportalRestUrl == null ) {
-			String ontServiceUrl = _config().getOntServiceUrl();
+			String ontServiceUrl = config.getOntServiceUrl();
 			String ontServiceRequest = ontServiceUrl + "?_aqrest";
 			String test = HttpUtil.getAsString(ontServiceRequest);
 			test = test.trim();
@@ -85,7 +88,7 @@ class OntClientUtil {
 		}
 		return aquaportalRestUrl;
 	}
-	
+
 	
 	/**
 	 * Determines if the URI corresponds to a registered ontology.

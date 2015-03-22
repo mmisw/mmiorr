@@ -1,4 +1,4 @@
-package org.mmisw.ont.client;
+package org.mmisw.ont.client.repoclient.bioportal;
 
 
 import org.apache.commons.httpclient.HttpClient;
@@ -7,43 +7,34 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.ont.client.SignInResult;
 import org.mmisw.ont.client.util.XmlAccessor;
 
 
 /** 
  * A helper to authenticate a user.
- * 
- * @author Carlos Rueda
  */
 class UserAuthenticator {
 	/** the authentication piece for the REST call */
 	private static final String AUTH     = "/auth";
 
 	private final Log log = LogFactory.getLog(UserAuthenticator.class);
-	
-	private String userName;
-	private String userPassword;
-	
-	
-	/**
-	 * Constructor.
-	 * @param userName
-	 * @param userPassword
-	 */
-	UserAuthenticator(String userName, String userPassword) {
-		this.userName = userName;
-		this.userPassword = userPassword;
+
+    private final String aquaportalRestUrl;
+
+
+    UserAuthenticator(String aquaportalRestUrl) {
+		this.aquaportalRestUrl = aquaportalRestUrl;
 	}
 	
 	/** makes the request and returns the response from the server 
 	 * @throws Exception
 	 */
-	private String authenticate() throws Exception {
+	private String authenticate(String userName, String userPassword) throws Exception {
 		String applicationid = "4ea81d74-8960-4525-810b-fa1baab576ff";
 		log.info("authenticating username=" +userName+ " password=" +userPassword.replaceAll(".", "*"));
 		log.info("applicationid=" +applicationid);
 		
-		String aquaportalRestUrl = OntClientUtil.getAquaportalRestUrl();
 		String authRestUrl = aquaportalRestUrl + AUTH;
 		log.info("authentication REST URL =" +authRestUrl);
 		
@@ -89,8 +80,8 @@ class UserAuthenticator {
 	 * @return
 	 * @throws Exception 
 	 */
-	SignInResult getSession() throws Exception  {
-		String response = authenticate();
+    public SignInResult getSession(String userName, String userPassword) throws Exception {
+		String response = authenticate(userName, userPassword);
 
 		response = response.replaceAll("\\s+", " ");
 		log.info("----response=" +response);
