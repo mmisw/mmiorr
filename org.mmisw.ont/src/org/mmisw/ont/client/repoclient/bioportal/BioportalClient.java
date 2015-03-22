@@ -1,5 +1,6 @@
 package org.mmisw.ont.client.repoclient.bioportal;
 
+import org.mmisw.ont.OntologyInfo;
 import org.mmisw.ont.client.SignInResult;
 import org.mmisw.ont.client.repoclient.RepoClient;
 
@@ -42,4 +43,15 @@ public class BioportalClient implements RepoClient {
         return ontUploader.create(aquaportalRestUrl);
     }
 
+    @Override
+    public String unregisterOntology(OntologyInfo ontology) throws Exception {
+        String sessionId = "9c188a9b8de0fe0c21b9322b72255fb939a68bb2";
+        OntologyDeleter del = new OntologyDeleter(sessionId, ontology.getId());
+        return del.execute(aquaportalRestUrl);
+    }
+
+    @Override
+    public String toString() {
+        return "BioportalClient{" + aquaportalRestUrl + "}";
+    }
 }

@@ -20,7 +20,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.admin.AdminDispatcher;
-import org.mmisw.ont.admin.OntologyDeleter;
+import org.mmisw.ont.client.repoclient.RepoClient;
+import org.mmisw.ont.client.repoclient.bioportal.BioportalClient;
 import org.mmisw.ont.db.Db;
 import org.mmisw.ont.mmiuri.MmiUri;
 import org.mmisw.ont.sparql.SparqlDispatcher;
@@ -68,6 +69,8 @@ public class OntServlet extends HttpServlet {
 
 	private final Analytics analytics = Analytics.getInstance();
 
+    private RepoClient repoClient;
+
 
 	private final ThreadLocal<OntRequest> perThreadOntRequest = new ThreadLocal<OntRequest>();
 
@@ -96,10 +99,12 @@ public class OntServlet extends HttpServlet {
 			log.info(OntVersion.getFullTitle()+ ": init complete.");
 		}
 		catch (Exception ex) {
-			log.error("Cannot initialize: " +ex.getMessage(), ex);
+			log.error("Cannot initialize: " + ex.getMessage(), ex);
 			throw new ServletException("Cannot initialize", ex);
 		}
 
+        repoClient = new BioportalClient(OntConfig.Prop.AQUAPORTAL_REST_URL.getValue());
+        log.info("repoClient=" + repoClient);
 	}
 
 	public void destroy() {
@@ -981,13 +986,9 @@ public class OntServlet extends HttpServlet {
 			return;
 		}
 
-		// TODO capture sessionId appropriately
-		String sessionId = "9c188a9b8de0fe0c21b9322b72255fb939a68bb2";
-		OntologyDeleter del = new OntologyDeleter(sessionId , ontology.getId());
-
 		String result;
 		try {
-			result = del.execute();
+			result = repoClient.unregisterOntology(ontology);
 		}
 		catch (Exception e) {
 			throw new ServletException("Error requesting deletion", e);

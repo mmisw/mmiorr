@@ -1,5 +1,6 @@
 package org.mmisw.ont.client.repoclient;
 
+import org.mmisw.ont.OntologyInfo;
 import org.mmisw.ont.client.SignInResult;
 
 import java.util.Map;
@@ -15,4 +16,6 @@ public interface RepoClient {
                 String ontologyId, String ontologyUserId,
                 Map<String, String> values
     ) throws Exception;
+
+    String unregisterOntology(OntologyInfo ontology) throws Exception;
 }
