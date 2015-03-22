@@ -1,58 +1,49 @@
 #!/usr/bin/make
 
-ONTDIR=org.mmisw.ont
-ONTJAR=${ONTDIR}/org.mmisw.ont.client.jar
-ONTWAR=${ONTDIR}/_generated/ont.war
+ONT_DIR        = org.mmisw.ont
+ONT_CLIENT_JAR = ${ONT_DIR}/org.mmisw.ont.client.jar
+ONT_WAR        = ${ONT_DIR}/_generated/ont.war
 
-CLNDIR=org.mmisw.orrclient
-CLNLIB=${CLNDIR}/base_war/WEB-INF/lib
-CLNJAR=${CLNDIR}/_generated/org.mmisw.orrclient.jar
+ORR_DIR        = org.mmisw.orrportal
+ORR_LIB_DIR    = ${ORR_DIR}/base_war/WEB-INF/lib
+ORR_WAR        = ${ORR_DIR}/_generated/orr.war
 
-PTLDIR=org.mmisw.orrportal
-PTLLIB=${PTLDIR}/base_war/WEB-INF/lib
-PTLWAR=${PTLDIR}/_generated/orr.war
+TOMCAT         = ~/Software/apache-tomcat-7.0.57
 
-TOMCAT=~/Software/apache-tomcat-7.0.57
+###################################################
 
+ont: ${ONT_WAR}
 
-clean:
-	rm -f out/ontclient-built
-	
-ont: ${ONTJAR}
-	
-${ONTJAR}: out/ontclient-built
+orr: ${ORR_WAR}
 
-out/ontclient-built:
-	mkdir -p out
-	@echo "__________ ${ONTDIR} ___________" 
-	cd ${ONTDIR} && ant clean && ant && ant client-lib
-	touch out/ontclient-built
+${ONT_WAR}:
+	@echo "__________ ${ONT_DIR} ___________"
+	cd ${ONT_DIR} && ant clean && ant
 
-	
-orrclient: ${CLNJAR}
+${ORR_WAR}: ${ONT_CLIENT_JAR}
+	@echo "__________ ${ORR_DIR} ___________"
+	cp ${ONT_CLIENT_JAR} ${ORR_LIB_DIR}
+	cd ${ORR_DIR} && ant clean && ant
 
-${CLNJAR}: ${ONTJAR}
-	@echo "__________ ${CLNDIR} ___________"
-	cp ${ONTJAR} ${CLNLIB}
-	cd ${CLNDIR} && ant clean && ant jar-no-tests
-	touch out/orrclient-lib-built
-	
-	
-orrportal: ${PTLWAR}
-
-${PTLWAR}: ${ONTJAR} ${CLNJAR}
-	@echo "__________ ${PTLDIR} ___________"
-	cp ${ONTJAR} ${PTLLIB}	
-	cp ${CLNJAR} ${PTLLIB}
-	cd ${PTLDIR} && ant clean && ant
-	touch orr-war-built
-	
-	
-deploy-all: deploy-ont deploy-orr
+${ONT_CLIENT_JAR}:
+	@echo "__________ ${ONT_DIR} ___________"
+	cd ${ONT_DIR} && ant client-lib
 
 deploy-ont:
-	cp ${ONTWAR} ${TOMCAT}/webapps/
-	
-deploy-orr:
-	cp ${PTLWAR} ${TOMCAT}/webapps/
+	cp ${ONT_WAR} ${TOMCAT}/webapps/
 
+deploy-orr:
+	cp ${ORR_WAR} ${TOMCAT}/webapps/
+
+deploy-all: deploy-ont deploy-orr
+
+clean-ont:
+	rm -f ${ONT_WAR}
+
+clean-orr:
+	rm -f ${ORR_WAR}
+
+clean-ontclient:
+	rm -f ${ONT_CLIENT_JAR}
+
+clean-all: clean-ont clean-ontclient clean-orr
