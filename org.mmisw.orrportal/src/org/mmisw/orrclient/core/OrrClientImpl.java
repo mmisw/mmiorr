@@ -2453,13 +2453,12 @@ public class OrrClientImpl implements IOrrClient {
 			}
 			
 			// OK, now do the actual registration:
-			OntologyUploader createOnt = new OntologyUploader(uri, fileName, rdf, 
-					loginResult,
-					ontologyId, ontologyUserId,
-					newValues
-			);
-			String res = createOnt.create();
-			
+            String res = uploadOntology(uri, fileName, rdf,
+                    loginResult,
+                    ontologyId, ontologyUserId,
+                    newValues
+            );
+
 			if ( res.startsWith("OK") ) {
 				registerOntologyResult.setUri(uri);
 				registerOntologyResult.setInfo(res);
@@ -2547,13 +2546,12 @@ public class OrrClientImpl implements IOrrClient {
 			
 			
 			// OK, now do the actual registration:
-			OntologyUploader createOnt = new OntologyUploader(uri, fileName, rdf, 
-					loginResult,
-					ontologyId, ontologyUserId,
-					newValues
-			);
-			String res = createOnt.create();
-			
+            String res = uploadOntology(uri, fileName, rdf,
+                    loginResult,
+                    ontologyId, ontologyUserId,
+                    newValues
+            );
+
 			if ( res.startsWith("OK") ) {
 				registerOntologyResult.setUri(uri);
 				registerOntologyResult.setInfo(res);
@@ -2681,13 +2679,12 @@ public class OrrClientImpl implements IOrrClient {
 			}
 			
 			// OK, now do the actual registration:
-			OntologyUploader createOnt = new OntologyUploader(uri, fileName, rdf, 
+            String res = uploadOntology(uri, fileName, rdf,
 					loginResult,
 					ontologyId, ontologyUserId,
 					newValues
 			);
-			String res = createOnt.create();
-			
+
 			if ( res.startsWith("OK") ) {
 				registerOntologyResult.setUri(uri);
 				registerOntologyResult.setInfo(res);
@@ -3107,7 +3104,7 @@ public class OrrClientImpl implements IOrrClient {
 		InternalOntologyResult result = new InternalOntologyResult();
 		
 		try {
-			InternalManager.prepareUsersOntology(this, loginResult, result);
+			InternalManager.prepareUsersOntology(this, ontClient, loginResult, result);
 		}
 		catch (Exception e) {
 			String error = e.getMessage();
@@ -3122,7 +3119,7 @@ public class OrrClientImpl implements IOrrClient {
 		InternalOntologyResult result = new InternalOntologyResult();
 		
 		try {
-			InternalManager.createGroupsOntology(this, loginResult, result);
+			InternalManager.createGroupsOntology(this, ontClient, loginResult, result);
 		}
 		catch (Exception e) {
 			String error = e.getMessage();
@@ -3222,4 +3219,23 @@ public class OrrClientImpl implements IOrrClient {
             ;
 		}
 	}
+
+
+    private String uploadOntology(String uri, String fileName, String RDF,
+                                  LoginResult loginResult,
+                                  String ontologyId, String ontologyUserId,
+                                  Map<String, String> values
+    ) throws Exception {
+        SignInResult signInResult = new SignInResult();
+        signInResult.setSessionId(loginResult.getSessionId());
+        signInResult.setUserId(loginResult.getUserId());
+        signInResult.setUserName(loginResult.getUserName());
+        signInResult.setUserRole(loginResult.getUserRole());
+
+        return ontClient.uploadOntology(uri, fileName, RDF,
+                signInResult,
+                ontologyId, ontologyUserId,
+                values);
+    }
+
 }

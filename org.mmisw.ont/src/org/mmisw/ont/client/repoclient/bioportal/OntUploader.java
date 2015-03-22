@@ -1,4 +1,4 @@
-package org.mmisw.ont.client;
+package org.mmisw.ont.client.repoclient.bioportal;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,6 +18,7 @@ import org.apache.commons.httpclient.methods.multipart.PartSource;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.ont.client.SignInResult;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
 
@@ -28,7 +29,7 @@ import com.hp.hpl.jena.vocabulary.DC;
  * 
  * @author Carlos Rueda
  */
-public class OntUploader {
+class OntUploader {
 	
 	static final String ONTOLOGIES  = "/ontologies";
 
@@ -52,14 +53,13 @@ public class OntUploader {
 	 * @param uri
 	 * @param fileName
 	 * @param RDF Contents of the ontology
-	 * @param userId
-	 * @param sessionId
+	 * @param signInResult
 	 * @param ontologyId Aquaportal ontology ID when creating a new version.
 	 * 
 	 * @param values   Used to fill in some of the fields in the aquaportal request
 	 * @throws Exception
 	 */
-	public OntUploader(String uri, String fileName, String RDF, 
+	OntUploader(String uri, String fileName, String RDF,
 			SignInResult signInResult,
 			String ontologyId, String ontologyUserId,
 			Map<String, String> values
@@ -86,11 +86,10 @@ public class OntUploader {
 	 *         
 	 * @throws Exception
 	 */
-	public String create()	throws Exception {
+	String create(String aquaportalRestUrl)	throws Exception {
 		
 		String sessionId = signInResult.getSessionId();
 		
-		String aquaportalRestUrl = OntClientUtil.getAquaportalRestUrl();
 		String ontologiesRestUrl = aquaportalRestUrl + ONTOLOGIES;
 		if ( log.isDebugEnabled() ) {
 			log.debug("ontologiesRestUrl = " +ontologiesRestUrl);

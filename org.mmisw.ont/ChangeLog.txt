@@ -5,9 +5,10 @@ $Id$
 ChangeLog
 
 2015-03-21  2.4.0
-  - start refactoring for repository access
+  - repository access refactoring
       - getSession
       - createUpdateUserAccount
+      - uploadOntology
 
 2015-02-17  2.3.1
   - fix #347 /ont/<authority> not resolving

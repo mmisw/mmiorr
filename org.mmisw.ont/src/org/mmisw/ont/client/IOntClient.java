@@ -222,5 +222,12 @@ public interface IOntClient {
 	 */
 	public SignInResult createUpdateUserAccount(Map<String,String> values)
 	throws Exception;
-	
+
+
+    String uploadOntology(String uri, String fileName, String RDF,
+                          SignInResult signInResult,
+                          String ontologyId, String ontologyUserId,
+                          Map<String, String> values
+    ) throws Exception;
+
 }

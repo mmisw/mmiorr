@@ -26,4 +26,20 @@ public class BioportalClient implements RepoClient {
         return uacu.doIt(aquaportalRestUrl);
 
     }
+
+    @Override
+    public String uploadOntology(String uri, String fileName, String RDF,
+                          SignInResult signInResult,
+                          String ontologyId, String ontologyUserId,
+                          Map<String, String> values
+    ) throws Exception {
+
+        OntUploader ontUploader = new OntUploader(uri, fileName, RDF,
+                signInResult,
+                ontologyId, ontologyUserId,
+                values);
+
+        return ontUploader.create(aquaportalRestUrl);
+    }
+
 }

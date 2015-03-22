@@ -2,27 +2,26 @@ package org.mmisw.orrclient.core;
 
 import java.util.Map;
 
-import org.mmisw.ont.client.OntUploader;
-import org.mmisw.ont.client.SignInResult;
+//import org.mmisw.ont.client.OntUploader;
+//import org.mmisw.ont.client.SignInResult;
 import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
 
 /** 
  * A helper class to upload ontologies into the repository.
- * 
- * @author Carlos Rueda
+ *
+ * OBSOLETE CLASS
  */
 class OntologyUploader {
 	
-	private SignInResult signInResult;
-	private OntUploader ontUploader;
+//	private SignInResult signInResult;
+//	private OntUploader ontUploader;
 	
 	/**
 	 * Constructor.
 	 * @param uri
 	 * @param fileName
 	 * @param RDF Contents of the ontology
-	 * @param userId
-	 * @param sessionId
+	 * @param loginResult
 	 * @param ontologyId Aquaportal ontology ID when creating a new version.
 	 * 
 	 * @param values   Used to fill in some of the fields in the aquaportal request
@@ -33,7 +32,10 @@ class OntologyUploader {
 			String ontologyId, String ontologyUserId,
 			Map<String, String> values
 	) throws Exception {
+
+        throw new RuntimeException("OBSOLETE CLASS");
 		
+/*
 		signInResult = new SignInResult();
 		signInResult.setSessionId(loginResult.getSessionId());
 		signInResult.setUserId(loginResult.getUserId());
@@ -41,6 +43,7 @@ class OntologyUploader {
 		signInResult.setUserRole(loginResult.getUserRole());
 
 		ontUploader = new OntUploader(uri, fileName, RDF, signInResult, ontologyId, ontologyUserId, values) ;
+*/
 	}
 	
 	
@@ -54,6 +57,7 @@ class OntologyUploader {
 	 * @throws Exception
 	 */
 	String create()	throws Exception {
-		return ontUploader.create();
+        throw new RuntimeException("OBSOLETE CLASS");
+//		return ontUploader.create();
 	}
 }

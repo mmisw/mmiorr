@@ -149,4 +149,15 @@ class OntClientImpl implements IOntClient {
         return repoClient.createUpdateUserAccount(values);
 	}
 
+    public String uploadOntology(String uri, String fileName, String RDF,
+                          SignInResult signInResult,
+                          String ontologyId, String ontologyUserId,
+                          Map<String, String> values
+    ) throws Exception {
+        return repoClient.uploadOntology(uri, fileName, RDF,
+                signInResult,
+                ontologyId, ontologyUserId,
+                values);
+    }
+
 }

@@ -10,6 +10,8 @@ import java.util.TimeZone;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.JenaUtil2;
+import org.mmisw.ont.client.IOntClient;
+import org.mmisw.ont.client.SignInResult;
 import org.mmisw.ont.client.util.AquaUtil;
 import org.mmisw.ont.mmiuri.MmiUri;
 import org.mmisw.ont.vocabulary.Omv;
@@ -45,7 +47,8 @@ public class InternalManager {
 	 */
 	static void prepareUsersOntology(
 			IOrrClient orrClient,
-			LoginResult loginResult, 
+			IOntClient ontClient,
+			LoginResult loginResult,
 			InternalOntologyResult result
 	) throws Exception {
 		
@@ -82,14 +85,13 @@ public class InternalManager {
 		String fileName = AquaUtil.getAquaportalFilename(unversUsersUri);
 		
 		// register:
-		OntologyUploader createOnt = new OntologyUploader(
-				generatedUsersUri, fileName, rdf, 
-				loginResult,
-				ontologyId, ontologyUserId,
-				newValues
-		);
-		String res = createOnt.create();
-		
+        String res = uploadOntology(ontClient,
+                generatedUsersUri, fileName, rdf,
+                loginResult,
+                ontologyId, ontologyUserId,
+                newValues
+        );
+
 		if ( res.startsWith("OK") ) {
 			result.setUri(unversUsersUri);
 			result.setInfo(res);
@@ -148,7 +150,8 @@ public class InternalManager {
 	 */
 	static void createGroupsOntology(
 			IOrrClient orrClient,
-			LoginResult loginResult, 
+			IOntClient ontClient,
+			LoginResult loginResult,
 			InternalOntologyResult result
 	) throws Exception {
 		
@@ -181,14 +184,13 @@ public class InternalManager {
 		
 		String rdf = _getGroupsRdf(versionedUsersUri, version);
 		// register:
-		OntologyUploader createOnt = new OntologyUploader(
-				versionedUsersUri , fileName, rdf , 
-				loginResult,
-				ontologyId, ontologyUserId,
-				newValues
-		);
-		String res = createOnt.create();
-		
+        String res = uploadOntology(ontClient,
+                versionedUsersUri, fileName, rdf,
+                loginResult,
+                ontologyId, ontologyUserId,
+                newValues
+        );
+
 		if ( res.startsWith("OK") ) {
 			result.setUri(unversGroupsUri);
 			result.setInfo(res);
@@ -241,6 +243,7 @@ public class InternalManager {
 //	 */
 //	static void createGroup(
 //			IOrrClient server,
+//			IOntClient ontClient,
 //			LoginResult loginResult,
 //			String groupId,
 //			String groupDescription,
@@ -271,14 +274,13 @@ public class InternalManager {
 //		String fileName = AquaUtil.getAquaportalFilename(unversGroupsUri);
 //		
 //		// register:
-//		OntologyUploader createOnt = new OntologyUploader(
+//		String res = uploadOntology(ontClient,
 //				generatedUsersUri, fileName, rdf, 
 //				loginResult,
 //				ontologyId, ontologyUserId,
 //				newValues
 //		);
-//		String res = createOnt.create();
-//		
+//
 //		if ( res.startsWith("OK") ) {
 //			result.setUri(unversGroupsUri);
 //			result.setInfo(res);
@@ -296,5 +298,24 @@ public class InternalManager {
 //			result.setError(res);
 //		}
 //	}
+
+
+    private static String uploadOntology(IOntClient ontClient,
+                                         String uri, String fileName, String RDF,
+                                         LoginResult loginResult,
+                                         String ontologyId, String ontologyUserId,
+                                         Map<String, String> values
+    ) throws Exception {
+        SignInResult signInResult = new SignInResult();
+        signInResult.setSessionId(loginResult.getSessionId());
+        signInResult.setUserId(loginResult.getUserId());
+        signInResult.setUserName(loginResult.getUserName());
+        signInResult.setUserRole(loginResult.getUserRole());
+
+        return ontClient.uploadOntology(uri, fileName, RDF,
+                signInResult,
+                ontologyId, ontologyUserId,
+                values);
+    }
 
 }

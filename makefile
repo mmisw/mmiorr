@@ -20,10 +20,14 @@ ${ONT_WAR}:
 	@echo "__________ ${ONT_DIR} ___________"
 	cd ${ONT_DIR} && ant clean && ant
 
-${ORR_WAR}: ${ONT_CLIENT_JAR}
+${ORR_WAR}: ont-client ont
 	@echo "__________ ${ORR_DIR} ___________"
-	cp ${ONT_CLIENT_JAR} ${ORR_LIB_DIR}
 	cd ${ORR_DIR} && ant clean && ant
+
+ont-client: ${ONT_CLIENT_JAR}
+
+copy-ont-client:
+	cp ${ONT_CLIENT_JAR} ${ORR_LIB_DIR}
 
 ${ONT_CLIENT_JAR}:
 	@echo "__________ ${ONT_DIR} ___________"
