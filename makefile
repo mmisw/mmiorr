@@ -12,6 +12,8 @@ TOMCAT         = ~/Software/apache-tomcat-7.0.57
 
 ###################################################
 
+all: ont ont-client orr
+
 ont: ${ONT_WAR}
 
 ont-client: ${ONT_DIR}/${ONT_CLIENT_JAR}
@@ -20,18 +22,18 @@ orr: ${ORR_WAR}
 
 ${ONT_WAR}:
 	@echo "__________ ${ONT_DIR} ___________"
-	cd ${ONT_DIR} && ant clean && ant
+	cd ${ONT_DIR} && mkdir -p _generated && ant clean && ant
 
 ${ORR_WAR}: copy-ont-client ont
 	@echo "__________ ${ORR_DIR} ___________"
-	cd ${ORR_DIR} && ant clean && ant
+	cd ${ORR_DIR} && mkdir -p _generated && ant clean && ant
 
 copy-ont-client: ont-client
 	cp ${ONT_DIR}/${ONT_CLIENT_JAR} ${ORR_LIB_DIR}
 
 ${ONT_DIR}/${ONT_CLIENT_JAR}:
 	@echo "__________ ${ONT_DIR} ___________"
-	cd ${ONT_DIR} && ant client-lib
+	cd ${ONT_DIR} && mkdir -p _generated &&  ant client-lib
 
 #######################################################
 

@@ -2,9 +2,9 @@
 <project name="orrportal" default="war" basedir=".">
 
   <property file="version.properties" />
-  <property file="build.properties" />	
+  <property file="build.properties" />
   <property name="build.dir" value="_generated"/>
-	
+
   <property name="gwt.style" value="OBFUSCATED"/>
 
   <!-- set classpath -->
@@ -19,12 +19,12 @@
 	<pathelement path="${GWT_HOME}/gwt-dev-linux.jar"/>
 	<pathelement path="${GWT_HOME}/gwt-dev-mac.jar"/>
 	<pathelement path="${GWT_HOME}/gwt-dev-win.jar"/>
-  	
+
 	<fileset dir="base_war/WEB-INF/lib">
 		<include name="*.jar" />
 		<include name="jena/*.jar" />
 	</fileset>
-  	
+
   </path>
 
 	<target name="init">
@@ -77,11 +77,11 @@
   <target name="compile" depends="init">
     <mkdir dir="bin"/>
     <mkdir dir="${build.dir}/classes"/>
-    <javac srcdir="src" destdir="${build.dir}/classes" 
+    <javac srcdir="src" destdir="${build.dir}/classes"
     	includes="**/*.java"
-    	excludes="**/JDTCompiler15.java, **/OntologyTableGwt24.java" 
+    	excludes="**/JDTCompiler15.java, **/OntologyTableGwt24.java"
     	debug="on" debuglevel="lines,vars,source"
-    	source="1.5" target="1.5">
+    	source="1.7" target="1.7">
       <classpath refid="project.class.path"/>
     </javac>
   </target>
@@ -121,7 +121,7 @@
 			</fileset>
 		</copy>
 
-		<copy file="base_war/WEB-INF/web.xml" 
+		<copy file="base_war/WEB-INF/web.xml"
 			tofile="${build.dir}/tmp.WebContent/WEB-INF/web.xml" overwrite="true">
 			<filterset>
 				<filter token="orrportal.app.version"        value="${orrportal.app.version}" />
@@ -142,7 +142,7 @@
 			</filterset>
 		</copy>
 
-		<copy file="base_war/WEB-INF/classes/log4j.xml" 
+		<copy file="base_war/WEB-INF/classes/log4j.xml"
 			tofile="${build.dir}/tmp.WebContent/WEB-INF/classes/log4j.xml" overwrite="true">
 			<filterset>
 				<filter token="orrportal.app.logfilepath"       value="${orrportal.app.logfilepath}" />
@@ -153,7 +153,7 @@
 			</filterset>
 		</copy>
 
-		<copy file="src/org/mmisw/orrportal/gwt/public/index.jsp" 
+		<copy file="src/org/mmisw/orrportal/gwt/public/index.jsp"
 			tofile="${build.dir}/tmp.WebContent/index.jsp" overwrite="true">
 			<filterset>
 				<filter token="ga_snippet"  value="${ga_snippet}" />
@@ -168,18 +168,18 @@
                 </lib>
         	    <lib dir="base_war/WEB-INF/lib/jena" />
         </war>
-    	
+
         <delete includeEmptyDirs="true" failonerror="false">
                 <fileset dir="${build.dir}/tmp.WebContent" />
         </delete>
-    	
-    </target>     	
+
+    </target>
 
 	<target name="deploy-war" depends="war" description="copies the WAR to ${appserver.deploy.dir}">
 		<copy file="${build.dir}/orr.war" todir="${appserver.deploy.dir}" preservelastmodified="true" />
 	</target>
 
-	
+
   <target name="clean">
     <delete file="base_war/WEB-INF/lib/org.mmisw.orrportal.gwt.jar"/>
     <delete>

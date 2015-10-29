@@ -7,8 +7,6 @@ http://mmisw.org/
 
 http://marinemetadata.org/semanticframework
 
-Note that the original code repository was https://code.google.com/p/mmisw/
-
 **Community** — You can participate in mmisw development in many possible ways. Please drop us a note about your interest: techlead at marinemetadata org.
 
 **Issues** — [This is the place to go](https://github.com/mmisw/mmiorr/issues) to report or check on bugs and feature requests.
