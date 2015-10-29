@@ -86,14 +86,14 @@ import com.hp.hpl.jena.vocabulary.RDF;
 
 /**
  * Implementation of OrrClient operations.
- * 
+ *
  * @author Carlos Rueda
  * @version $Id$
  */
 public class OrrClientImpl implements IOrrClient {
-	
+
 	private static final Log log = LogFactory.getLog(OrrClientImpl.class);
-	
+
 	private static final String LISTALL = "?listall";
 
 	/** Ontology URI prefix including root: */
@@ -104,23 +104,23 @@ public class OrrClientImpl implements IOrrClient {
 
 	private final OrrReadOnlyConfiguration config;
 	private final File previewDir;
-	
+
 	private static IOrrClient _instance;
-	
+
 	private IOntClient ontClient;
-	
-	
+
+
 	/**
 	 * Initializes the library.
 	 * This must be called before any other library operation.
-	 * 
-	 * @param config 
+	 *
+	 * @param config
 	 *         The configuration for the library. Note that a copy is made internally.
 	 *         Subsequent changes to the given configuration will not have any effect. If you
 	 *         need to change any configuration parameters, the library will need to be
 	 *         initialized again.
 	 *         Pass a null reference to use a default configuration.
-	 *          
+	 *
 	 * @return A library interface object.
 	 * @throws Exception if an error occurs
 	 */
@@ -131,7 +131,7 @@ public class OrrClientImpl implements IOrrClient {
 		_instance = new OrrClientImpl(config);
 		return _instance;
 	}
-	
+
 	/**
 	 * Returns the library interface object created by {@link #init(OrrClientConfiguration)}.
 	 * @return the library interface object created by {@link #init(OrrClientConfiguration)}.
@@ -143,17 +143,17 @@ public class OrrClientImpl implements IOrrClient {
 	private OrrClientImpl(OrrClientConfiguration config) throws Exception {
 		// copy the given configuration:
 		this.config = new OrrReadOnlyConfiguration(config);
-		
+
 		defaultNamespaceRoot = config.getOntServiceUrl();
 		log.info("basic init " +appInfo.getAppName()+ "...");
 		appInfo.setVersion(OrrClientVersion.getVersion());
 		appInfo.setBuild(OrrClientVersion.getBuild());
 		log.info(appInfo.toString());
 		log.info("ontServiceUrl = " +config.getOntServiceUrl());
-		
+
 		OntClientConfiguration ontClientConfig = new OntClientConfiguration();
 		ontClientConfig.setOntServiceUrl(config.getOntServiceUrl());
-		
+
 		ontClient = IOntClient.Manager.init(ontClientConfig);
 		OntServiceUtil.setOntClient(ontClient);
 		log.info("Ont library version = " +OntVersion.getVersion()+ " (" +OntVersion.getBuild()+ ")");
@@ -161,10 +161,10 @@ public class OrrClientImpl implements IOrrClient {
 		if ( config.getPreviewDirectory() == null ) {
 			throw new Exception(OrrClientConfiguration.class.getSimpleName()+ " does not indicate the preview directory");
 		}
-		
+
 		previewDir = _createDirectory(config.getPreviewDirectory());
 	}
-	
+
 	private static File _createDirectory(String dirname) throws Exception {
 		File file = new File(dirname);
 		if ( file.isDirectory() ) {
@@ -180,11 +180,11 @@ public class OrrClientImpl implements IOrrClient {
 		return file;
 	}
 
-	
+
 	/**
 	 * Gets a read-only version of the configuration given at creation time.
 	 * Any setXXX call on this configuration object will throw UnsupportedOperationException.
-	 * If you need to change the configuration for the OrrClient library, you will need to 
+	 * If you need to change the configuration for the OrrClient library, you will need to
 	 * re-create the OrrClient object.
 	 * @return a read-only version of the configuration given at creation time.
 	 */
@@ -195,53 +195,53 @@ public class OrrClientImpl implements IOrrClient {
 	public void destroy() {
 		log.info(appInfo+ ": destroy called.\n\n");
 	}
-	
+
 	public AppInfo getAppInfo() {
 		return appInfo;
 	}
-	
+
 
 	private MetadataBaseInfo metadataBaseInfo = null;
-	
+
 	public MetadataBaseInfo getMetadataBaseInfo(
 			boolean includeVersion, String resourceTypeClassUri,
 			String authorityClassUri) {
-		
-		
+
+
 		if ( metadataBaseInfo == null ) {
 			if ( log.isDebugEnabled() ) {
 				log.debug("preparing base info ...");
 			}
-			
+
 			metadataBaseInfo = new MetadataBaseInfo();
-			
+
 //			metadataBaseInfo.setResourceTypeUri(Omv.acronym.getURI());
 			metadataBaseInfo.setResourceTypeUri(OmvMmi.hasResourceType.getURI());
-			
+
 			metadataBaseInfo.setAuthorityAbbreviationUri(OmvMmi.origMaintainerCode.getURI());
-			
+
 			MdHelper.prepareGroups(includeVersion, resourceTypeClassUri, authorityClassUri);
 			AttrGroup[] attrGroups = MdHelper.getAttrGroups();
 			metadataBaseInfo.setAttrGroups(attrGroups);
-			
+
 			metadataBaseInfo.setAuthorityAttrDef(MdHelper.getAuthorityAttrDef());
-			
+
 			metadataBaseInfo.setResourceTypeAttrDef(MdHelper.getResourceTypeAttrDef());
-			
+
 			metadataBaseInfo.setUriAttrDefMap(MdHelper.getUriAttrDefMap());
-			
+
 			if ( log.isDebugEnabled() ) {
 				log.debug("preparing base info ... DONE");
 			}
 		}
-		
+
 		return metadataBaseInfo;
 	}
 
 	public AttrDef refreshOptions(AttrDef attrDef) {
 		return MdHelper.refreshOptions(attrDef);
 	}
-	
+
 	private static RegisteredOntologyInfo _createOntologyInfo(
 			String ontologyUri,   // = toks[0];
 			String displayLabel,  // = toks[1];
@@ -259,7 +259,7 @@ public class OrrClientImpl implements IOrrClient {
 			String shortName
 	) {
 		RegisteredOntologyInfo registeredOntologyInfo = new RegisteredOntologyInfo();
-		
+
 		registeredOntologyInfo.setUri(ontologyUri);
 		registeredOntologyInfo.setDisplayLabel(displayLabel);
 		registeredOntologyInfo.setType(type);
@@ -276,42 +276,42 @@ public class OrrClientImpl implements IOrrClient {
 		registeredOntologyInfo.setShortName(shortName);
 
 		_setHostingType(registeredOntologyInfo);
-		
+
 		return registeredOntologyInfo;
 	}
-	
-	
+
+
 	/**
 	 * Gets the ontologies from the registry as a map { unversionedUri -> list of OntologyInfos }.
 	 * Elements in each list are sorted by descending versionNumber.
-	 * 
+	 *
 	 *  @param onlyThisUnversionedUri If this is not null, only this URI (assumed to be unversioned) will be considered,
 	 *         so the returned map will at most contain just that single key,
 	 */
 	private Map<String, List<RegisteredOntologyInfo>> _getUnversionedToOntologyInfoListMap(String onlyThisUnversionedUri) throws Exception {
-		
+
 		// unversionedUri -> list of corresponding OntologyInfos
 		Map<String, List<RegisteredOntologyInfo>> unversionedToVersioned = new LinkedHashMap<String, List<RegisteredOntologyInfo>>();
-		
+
 		String uri = config.getOntServiceUrl()+ LISTALL;
-		
+
 		if ( log.isDebugEnabled() ) {
 			log.debug("getUnversionedToVersioned. uri= " +uri);
 		}
 
 		String response = _getAsString(uri, Integer.MAX_VALUE);
-		
+
 		String[] lines = response.split("\n|\r\n|\r");
 		for ( String line : lines ) {
 			// remove leading and trailing quote:
 			line = line.replaceAll("^'|'$", "");
-			
+
 			if ( line.trim().length() == 0 ) {
 				continue;
 			}
-			
+
 			String[] toks = line.trim().split("'\\|'");
-			
+
 			String ontologyUri =  toks[0];
 			String displayLabel  = toks[1];
 			String type          = toks[2];
@@ -326,7 +326,7 @@ public class OrrClientImpl implements IOrrClient {
 			String unversionedUri;
 			String authority;
 			String shortName;
-			
+
 			if ( OntServiceUtil.isOntResolvableUri(ontologyUri) ) {
 				try {
 					MmiUri mmiUri = new MmiUri(ontologyUri);
@@ -336,8 +336,8 @@ public class OrrClientImpl implements IOrrClient {
 				}
 				catch (URISyntaxException e) {
 					// shouldn't happen.
-					
-					String error = "Shouldn't happen: ont-resolvable URI is not an MmiUri: " 
+
+					String error = "Shouldn't happen: ont-resolvable URI is not an MmiUri: "
 						+ontologyUri+ "  Error: " +e.getMessage();
 					log.error("getUnversionedToOntologyInfoListMap: " +error, e);
 					continue;
@@ -353,7 +353,7 @@ public class OrrClientImpl implements IOrrClient {
 			if ( onlyThisUnversionedUri != null && ! onlyThisUnversionedUri.equals(unversionedUri) ) {
 				continue;
 			}
-			
+
 			RegisteredOntologyInfo registeredOntologyInfo = _createOntologyInfo(
 					ontologyUri,
 					displayLabel,
@@ -365,7 +365,7 @@ public class OrrClientImpl implements IOrrClient {
 					userName,
 					ontologyId,
                     versionStatus,
-					
+
 					unversionedUri,
 					authority,
 					shortName
@@ -379,9 +379,9 @@ public class OrrClientImpl implements IOrrClient {
 			}
 			versionedList.add(registeredOntologyInfo);
 			registeredOntologyInfo.setUnversionedUri(unversionedUri);
-			
+
 		}
-		
+
 		// sort all lists by descending versionNumber
 		Comparator<RegisteredOntologyInfo> comparator = new Comparator<RegisteredOntologyInfo>() {
 			public int compare(RegisteredOntologyInfo arg0, RegisteredOntologyInfo arg1) {
@@ -392,8 +392,8 @@ public class OrrClientImpl implements IOrrClient {
 			List<RegisteredOntologyInfo> versionedList = unversionedToVersioned.get(unversionedUri);
 			Collections.sort(versionedList, comparator);
 		}
-		
-		
+
+
 		if ( log.isDebugEnabled() ) {
 			log.debug("getUnversionedToOntologyInfoListMap: " +unversionedToVersioned.size()+ " ontologies.");
 		}
@@ -402,11 +402,11 @@ public class OrrClientImpl implements IOrrClient {
 		return unversionedToVersioned;
 	}
 
-	
+
 	private static void _setHostingType(RegisteredOntologyInfo registeredOntologyInfo) {
 		String uri = registeredOntologyInfo.getUri();
 		boolean ontResolvableUri = OntServiceUtil.isOntResolvableUri(uri);
-		
+
 		HostingType hostingType;
 		if ( ontResolvableUri ) {
 			hostingType = HostingType.FULLY_HOSTED;
@@ -415,7 +415,7 @@ public class OrrClientImpl implements IOrrClient {
 			hostingType = HostingType.RE_HOSTED;
 		}
 		// TODO: Determine HostingType.INDEXED case.
-		
+
 		registeredOntologyInfo.setHostingType(hostingType);
 
         if(log.isTraceEnabled()) {
@@ -423,7 +423,7 @@ public class OrrClientImpl implements IOrrClient {
                       "-> hostingType=" + hostingType);
         }
 	}
-	
+
 	public GetAllOntologiesResult getAllOntologies(boolean includeAllVersions) {
 		GetAllOntologiesResult result = new GetAllOntologiesResult();
 		try {
@@ -437,22 +437,22 @@ public class OrrClientImpl implements IOrrClient {
 		}
 		return result;
 	}
-		
-	
+
+
 	private List<RegisteredOntologyInfo> _doGetAllOntologies(boolean includeAllVersions) throws Exception {
 		// {unversionedUri -> list of versioned URIs }  for all unversioned URIs ontologies
 		Map<String, List<RegisteredOntologyInfo>> unversionedToVersioned = _getUnversionedToOntologyInfoListMap(null);
-		
+
 		// the list to be returned
 		List<RegisteredOntologyInfo> onts = new ArrayList<RegisteredOntologyInfo>();
-		
+
 		for ( String unversionedUri : unversionedToVersioned.keySet() ) {
 
 			List<RegisteredOntologyInfo> versionedList = unversionedToVersioned.get(unversionedUri);
-			
+
 			// copy first element, ie., most recent ontology version, for the entry in the main list;
 			// Note: the Uri of this main entry is set equal to the UnversionedUri property:
-			
+
 			RegisteredOntologyInfo mostRecent = versionedList.get(0);
 			RegisteredOntologyInfo registeredOntologyInfo = _createOntologyInfo(
 					mostRecent.getUnversionedUri(),      // NOTE: UnversionedURI for the URI
@@ -471,50 +471,50 @@ public class OrrClientImpl implements IOrrClient {
 					mostRecent.getShortName()
 			);
 
-			// if requested, include all versions: 
+			// if requested, include all versions:
 			if ( includeAllVersions ) {
 				registeredOntologyInfo.getPriorVersions().addAll(versionedList);
 			}
-			
+
 			// add this main entry to returned list:
 			onts.add(registeredOntologyInfo);
 		}
-		
+
 		return onts;
 	}
-	
-	
+
+
 	public ResolveUriResult resolveUri(String uri) {
 		ResolveUriResult resolveUriResult = new ResolveUriResult(uri);
-		
+
 		// try ontology:
 		RegisteredOntologyInfo roi = getOntologyInfo(uri);
 		if ( roi != null && roi.getError() == null ) {
 			resolveUriResult.setRegisteredOntologyInfo(roi);
 			return resolveUriResult;
 		}
-		
+
 		// try term:
 		_getEntityInfo(uri, resolveUriResult);
-		
+
 		return resolveUriResult;
 	}
-	
+
 	private void _getEntityInfo(String uri, ResolveUriResult resolveUriResult) {
-		
+
 		// NOTE that the query needs to be against Ont, and not in this module (as those done by QueryUtil),
 		// because the query needs to be against all registered ontologies.
-		
-		String query = 
+
+		String query =
 			"SELECT DISTINCT ?prop ?value " +
 			"WHERE { <" +uri+ "> ?prop ?value . }"
 		;
 		String format = "csv";
-		
+
 		if ( log.isDebugEnabled() ) {
 			log.debug(" format=" +format+ " query=[" +query+ "]");
 		}
-		
+
 		String result;
 		try {
 			result = OntServiceUtil.runSparqlQuery(query, format, "text/plain");
@@ -524,13 +524,13 @@ public class OrrClientImpl implements IOrrClient {
 			resolveUriResult.setError(error);
 			return;
 		}
-		
+
 		if ( log.isDebugEnabled() ) {
 			log.debug("RESULT=" +result);
 		}
-		
+
 		boolean ok = true;
-		
+
 		CSVReader reader = new CSVReader(new StringReader(result));
 		List<String[]> lines;
 		try {
@@ -542,34 +542,34 @@ public class OrrClientImpl implements IOrrClient {
 			resolveUriResult.setError(error);
 			return;
 		}
-		
+
 		if (lines.size() > 0) {
 			String[] line = lines.get(0);
 			if (line.length > 0 && line[0].toLowerCase().startsWith("error:") ) {
 				ok = false;
 			}
 		}
-		
+
 		if ( ok ) {
 			EntityInfo entityInfo = new EntityInfo();
-			
+
 			for (String[] toks : lines) {
 				if ( toks.length != 2 ) {
 					continue;
 				}
 				String prop = _removeBrackets(toks[0]);
 				String value = _removeBrackets(toks[1]);
-				
+
 				if ("prop".equals(prop) && "value".equals(value)) {
 					continue;
 				}
-				
+
 				Resource propResource = ResourceFactory.createResource(prop);
-				
+
 				PropValue pv = new PropValue();
 				pv.setPropName(propResource.getLocalName());
 				pv.setPropUri(prop);
-				
+
 				if ( _isAbsoluteUri(value) ) {
 					pv.setValueUri(value);
 					Resource objResource = ResourceFactory.createResource(value);
@@ -578,10 +578,10 @@ public class OrrClientImpl implements IOrrClient {
 				else {
 					pv.setValueName(value);
 				}
-				
+
 				entityInfo.getProps().add(pv);
 			}
-			
+
 			int size = entityInfo.getProps().size();
 			if ( size > 0 ) {
 				entityInfo.setUri(uri);
@@ -625,7 +625,7 @@ public class OrrClientImpl implements IOrrClient {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Does the string represent a valid URL?
 	 */
@@ -639,16 +639,16 @@ public class OrrClientImpl implements IOrrClient {
 		}
 		return false;
 	}
-	
+
 	public ExternalOntologyInfo getExternalOntologyInfo(String ontologyUri) {
 
 		log.debug("getExternalOntologyInfo: ontologyUri=" +ontologyUri);
-		
+
 		ExternalOntologyInfo oi = new ExternalOntologyInfo();
-		
+
 		oi.setUri(ontologyUri);
 		oi.setDisplayLabel(ontologyUri);
-		
+
 		String error = null;
 		Exception ex = null;
 		try {
@@ -673,21 +673,21 @@ public class OrrClientImpl implements IOrrClient {
 		oi.setError(error);
 		return oi;
 	}
-	
+
 	public RegisteredOntologyInfo getOntologyInfo(String ontologyUri) {
-		
+
 		log.debug("getOntologyInfo: ontologyUri=" +ontologyUri);
-		
+
 		String[] toks = ontologyUri.split("\\?");
 		ontologyUri = toks[0];
-		
+
 		String version = null;
 		if ( toks.length > 1 && toks[1].startsWith("version=") ) {
 			version = toks[1].substring("version=".length());
 		}
-		
+
 		log.debug("getOntologyInfo: ontologyUri=" +ontologyUri+ "  version=" +version);
-		
+
 		if ( OntServiceUtil.isOntResolvableUri(ontologyUri) ) {
 			try {
 				MmiUri mmiUri = new MmiUri(ontologyUri);
@@ -719,7 +719,7 @@ public class OrrClientImpl implements IOrrClient {
 	}
 
 	private RegisteredOntologyInfo _getOntologyInfoFromMmiUri(String ontologyUri, MmiUri mmiUri, String version) {
-		try {	
+		try {
 			// get elements associated with the unversioned form of the requested URI:
 			String unversOntologyUri = mmiUri.copyWithVersion(null).getOntologyUri();
 			boolean includeAllVersions = true;
@@ -733,10 +733,10 @@ public class OrrClientImpl implements IOrrClient {
 			return oi;
 		}
 	}
-	
+
 	/**
 	 * Get info about a registered ontology using unversion and explicit version parameters.
-	 * 
+	 *
 	 * @param ontologyUri           original requested URI
 	 * @param unversOntologyUri     corresponding unversioned form
 	 * @param version               explicit version
@@ -750,7 +750,7 @@ public class OrrClientImpl implements IOrrClient {
 		Map<String, List<RegisteredOntologyInfo>> unversionedToVersioned = _getUnversionedToOntologyInfoListMap(unversOntologyUri);
 
 		log.debug("getOntologyInfoWithVersionParams: getUnversionedToOntologyInfoListMap => " +unversionedToVersioned);
-		
+
 		if ( unversionedToVersioned.isEmpty() ) {
 			return null; // not found
 		}
@@ -759,7 +759,7 @@ public class OrrClientImpl implements IOrrClient {
 		// get the list of ontologies with same unversioned URI
 		List<RegisteredOntologyInfo> list = unversionedToVersioned.values().iterator().next();
 
-		// Three cases: 
+		// Three cases:
 		//
 		//  a) explicit version given: search for exact match using 'version' field
 		//
@@ -771,7 +771,7 @@ public class OrrClientImpl implements IOrrClient {
 
 
 		RegisteredOntologyInfo foundRoi = null;
-		
+
 		if ( version != null ) {
 			if ( log.isDebugEnabled() ) {
 				log.debug(getClass().getSimpleName()+ "getOntologyInfoWithVersionParams case a) version = " +version);
@@ -790,12 +790,12 @@ public class OrrClientImpl implements IOrrClient {
 			}
 			// b) unversioned URI request, eg., http://mmisw.org/ont/seadatanet/qualityFlag
 			// just return first entry in list
-			
+
 			// do not alter the first entry in the list!
 //			RegisteredOntologyInfo oi = list.get(0);
 //			oi.setUri(oi.getUnversionedUri());
 //			foundRoi = oi;
-			
+
 			// here is how it should be done:
 			RegisteredOntologyInfo mostRecent = list.get(0);
 			foundRoi = _createOntologyInfo(
@@ -814,7 +814,7 @@ public class OrrClientImpl implements IOrrClient {
 					mostRecent.getAuthority(),
 					mostRecent.getShortName()
 			);
-			
+
 		}
 		else {
 			if ( log.isDebugEnabled() ) {
@@ -829,21 +829,21 @@ public class OrrClientImpl implements IOrrClient {
 				}
 			}
 		}
-		
+
 		if ( foundRoi != null && includeAllVersions ) {
 			foundRoi.getPriorVersions().addAll(list);
 		}
-		
+
 		return foundRoi;
 	}
 
-	
+
 	public RegisteredOntologyInfo getOntologyMetadata(RegisteredOntologyInfo registeredOntologyInfo, String version) {
-		
+
 		if ( log.isDebugEnabled() ) {
 			log.debug("getOntologyMetadata(RegisteredOntologyInfo): loading model");
 		}
-		
+
 		OntModel ontModel;
 		try {
 			ontModel = OntServiceUtil.retrieveModel(registeredOntologyInfo.getUri(), version);
@@ -860,7 +860,7 @@ public class OrrClientImpl implements IOrrClient {
 			log.debug("getOntologyMetadata(RegisteredOntologyInfo): getting metadata");
 		}
 		MetadataExtractor.prepareOntologyMetadata(metadataBaseInfo, ontModel, registeredOntologyInfo);
-		
+
 		registeredOntologyInfo.setSize(ontModel.size());
 		if ( log.isDebugEnabled() ) {
 			log.debug("getOntologyMetadata(RegisteredOntologyInfo): ontology size=" + registeredOntologyInfo.getSize());
@@ -871,11 +871,11 @@ public class OrrClientImpl implements IOrrClient {
 
 
 	public RegisteredOntologyInfo getOntologyContents(RegisteredOntologyInfo registeredOntologyInfo, String version) {
-		
+
 		if ( log.isDebugEnabled() ) {
 			log.debug("getOntologyContents(RegisteredOntologyInfo): loading model");
 		}
-		
+
 		OntModel ontModel;
 		try {
 			ontModel = OntServiceUtil.retrieveModel(registeredOntologyInfo.getUri(), version);
@@ -894,12 +894,12 @@ public class OrrClientImpl implements IOrrClient {
 		}
 		MetadataExtractor.prepareOntologyMetadata(metadataBaseInfo, ontModel, registeredOntologyInfo);
 
-		
+
 		// Data
 		if ( log.isDebugEnabled() ) {
 			log.debug("getOntologyContents(RegisteredOntologyInfo): getting entities");
 		}
-		
+
 		try {
 			OntInfoUtil.getEntities(registeredOntologyInfo, ontModel);
 		}
@@ -909,9 +909,9 @@ public class OrrClientImpl implements IOrrClient {
 			registeredOntologyInfo.setError(error);
 			return registeredOntologyInfo;
 		}
-		
+
 		return registeredOntologyInfo;
-	
+
 	}
 
 
@@ -932,23 +932,23 @@ public class OrrClientImpl implements IOrrClient {
 	        meth.releaseConnection();
 	    }
 	}
-	
-	
+
+
 	// TODO this mechanism copied from MmiUri (in ont project).
-	private static final Pattern VERSION_PATTERN = 
+	private static final Pattern VERSION_PATTERN =
 				Pattern.compile("^\\d{4}(\\d{2}(\\d{2})?)?(T\\d{2})?(\\d{2}(\\d{2})?)?$");
 
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
-	
+
 	public CreateOntologyResult createOntology(CreateOntologyInfo createOntologyInfo) {
-		
+
 		HostingType hostingType = createOntologyInfo.getHostingType();
 		log.info("createOntology: called. hostingType = " +hostingType);
-		
+
 		CreateOntologyResult createOntologyResult = null;
-		
+
 		if ( hostingType != null ) {
 			// use of this attribute indicates to use the new method
 			createOntologyResult = _createOntology_newMethod(createOntologyInfo);
@@ -956,17 +956,17 @@ public class OrrClientImpl implements IOrrClient {
 		else {
 			createOntologyResult = _createOntology_oldMethod(createOntologyInfo);
 		}
-		
+
 		return createOntologyResult;
 	}
 
-	
+
 	private CreateOntologyResult _createOntology_newMethod(CreateOntologyInfo createOntologyInfo) {
-		
+
 		final HostingType hostingType = createOntologyInfo.getHostingType();
-		
+
 		CreateOntologyResult createOntologyResult = new CreateOntologyResult();
-		
+
 		if ( createOntologyInfo.getMetadataValues() == null ) {
 			String error = "Unexpected: createOntologyInfo.getMetadataValues returned null. Please report this bug";
 			createOntologyResult.setError(error);
@@ -975,7 +975,7 @@ public class OrrClientImpl implements IOrrClient {
 		}
 
 		createOntologyResult.setCreateOntologyInfo(createOntologyInfo);
-		
+
 		switch ( hostingType ) {
 			case FULLY_HOSTED:
 				return _createOntologyFullyHosted(createOntologyInfo, createOntologyResult);
@@ -989,23 +989,23 @@ public class OrrClientImpl implements IOrrClient {
 			}
 		}
 	}
-	
-	
+
+
 	private CreateOntologyResult _createOntologyFullyHosted(CreateOntologyInfo createOntologyInfo, CreateOntologyResult createOntologyResult) {
-		
+
 		Map<String, String> newValues = createOntologyInfo.getMetadataValues();
 		assert ( newValues != null ) ;
-		
+
 		DataCreationInfo dataCreationInfo = createOntologyInfo.getDataCreationInfo();
 		assert ( dataCreationInfo instanceof OtherDataCreationInfo ) ;
 		final OtherDataCreationInfo otherDataCreationInfo = (OtherDataCreationInfo) dataCreationInfo;
 		final TempOntologyInfo tempOntologyInfo = otherDataCreationInfo.getTempOntologyInfo();
 
-		
+
 		// to check if this is going to be a new submission (if ontologyId == null) or, otherwise, a new version.
 		final String ontologyId = createOntologyInfo.getPriorOntologyInfo().getOntologyId();
-		
-		
+
+
 		final String namespaceRoot = defaultNamespaceRoot;
 		final String orgAbbreviation = createOntologyInfo.getAuthority();
 		final String shortName = createOntologyInfo.getShortName();
@@ -1048,19 +1048,19 @@ public class OrrClientImpl implements IOrrClient {
 			String originalShortName = roi.getShortName();
 
 			if ( ! Util2.checkUriKeyCombinationForNewVersion(
-					originalOrgAbbreviation, originalShortName, 
+					originalOrgAbbreviation, originalShortName,
 					orgAbbreviation, shortName, createOntologyResult) ) {
 				return createOntologyResult;
 			}
 		}
-		
-		
+
+
 		////////////////////////////////////////////////////////////////////////////
 		// section to create the ontology the base:
-		
+
 		// external ontology case: the base ontology is already available, just use it
 		// by setting the full path in the createOntologyResult:
-			
+
 		String full_path;
 
 		if ( tempOntologyInfo != null ) {
@@ -1068,7 +1068,7 @@ public class OrrClientImpl implements IOrrClient {
 			full_path = tempOntologyInfo.getFullPath();
 		}
 		else {
-			// No new contents. Only possible way for this to happen is that this is 
+			// No new contents. Only possible way for this to happen is that this is
 			// a new version of an existing ontology.
 
 			if ( ontologyId != null ) {
@@ -1087,16 +1087,16 @@ public class OrrClientImpl implements IOrrClient {
 		}
 		createOntologyResult.setFullPath(full_path);
 
-		
+
 		// current date:
 		final Date date = new Date(System.currentTimeMillis());
-		
+
 		///////////////////////////////////////////////////////////////////
 		// creation date:
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		final String creationDate = sdf.format(date);
-		
+
 
 		///////////////////////////////////////////////////////////////////
 		// version:
@@ -1118,8 +1118,8 @@ public class OrrClientImpl implements IOrrClient {
 			sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 			version = sdf.format(date);
 		}
-		
-		
+
+
 		////////////////////////////////////////////
 		// load  model
 
@@ -1136,7 +1136,7 @@ public class OrrClientImpl implements IOrrClient {
 			log.info("Loading model: " +full_path);
 
 			File file = new File(full_path);
-			
+
 			try {
 				model = Util2.loadModelWithCheckingUtf8(file, null);
 			}
@@ -1146,18 +1146,18 @@ public class OrrClientImpl implements IOrrClient {
 				createOntologyResult.setError(error);
 				return createOntologyResult;
 			}
-			
+
 			// get original namespace associated with the ontology, if any:
 			uriForEmpty = Util2.getDefaultNamespace(model, file, createOntologyResult);
 			// 2009-12-21: previously returning error if uriForEmpty==null. Not anymore; see below.
-			
+
 			newContentsFileName = file.getName();
 		}
 		else {
 			// NO new contents.
 			// Use contents from prior version.
 			PriorOntologyInfo priorVersionInfo = createOntologyInfo.getPriorOntologyInfo();
-			
+
 			try {
 				model = OntServiceUtil.retrieveModel(createOntologyInfo.getUri(), priorVersionInfo.getVersionNumber());
 			}
@@ -1167,7 +1167,7 @@ public class OrrClientImpl implements IOrrClient {
 				createOntologyResult.setError(error);
 				return createOntologyResult;
 			}
-			
+
 			uriForEmpty = model.getNsPrefixURI("");
 			if ( uriForEmpty == null ) {
 				// Shouldn't happen -- we're reading in an already registered version.
@@ -1182,13 +1182,13 @@ public class OrrClientImpl implements IOrrClient {
 			newContentsFileName = uriForEmpty.replaceAll(":|/|\\\\", "_");
 		}
 
-			
+
 		final String original_ns_ = uriForEmpty;
-		
+
 		String ns_;
 		String base_;
 
-		
+
 		final String finalUri = namespaceRoot + "/" +
 		orgAbbreviation + "/" +
 		version + "/" +
@@ -1212,15 +1212,15 @@ public class OrrClientImpl implements IOrrClient {
 		else {
 			log.info("createOntologyFullyHosted: no original namespace, so no transfer will be done.");
 		}
-		
 
-		
-		
+
+
+
 		/////////////////////////////////////////////////////////////////
 		// Is there an existing OWL.Ontology individual?
 		// TODO Note that ONLY the first OWL.Ontology individual is considered.
 		Resource ontRes = JenaUtil2.getFirstIndividual(model, OWL.Ontology);
-		List<Statement> prexistStatements = null; 
+		List<Statement> prexistStatements = null;
 		if ( ontRes != null ) {
 			prexistStatements = new ArrayList<Statement>();
 			log.info("Getting pre-existing properties for OWL.Ontology individual: " +ontRes.getURI());
@@ -1228,32 +1228,32 @@ public class OrrClientImpl implements IOrrClient {
 			while ( iter.hasNext() ) {
 				Statement st = iter.nextStatement();
 				prexistStatements.add(st);
-			}	
+			}
 		}
 
-		
+
 		// The new OntModel that will contain the pre-existing attributes (if any),
 		// plus the new and updated attributes:
 		final OntModel newOntModel = _createOntModel(model);
 		final Ontology ont_ = newOntModel.createOntology(base_);
 		log.info("New ontology created with namespace " + ns_ + " base " + base_);
 		newOntModel.setNsPrefix("", ns_);
-		
+
 		// set preferred prefixes:
 		Map<String, String> preferredPrefixMap = MdHelper.getPreferredPrefixMap();
 		for ( String uri : preferredPrefixMap.keySet() ) {
 			String prefix = preferredPrefixMap.get(uri);
 			newOntModel.setNsPrefix(prefix, uri);
 		}
-		
-		
+
+
 		// Set internal attributes, which are updated in the newValues map itself
 		// so we facilite the processing below:
 		newValues.put(Omv.version.getURI(), version);
-		
+
 		newValues.put(Omv.creationDate.getURI(), creationDate);
-		
-		
+
+
 		// set some properties from the explicit values
 		newValues.put(OmvMmi.origMaintainerCode.getURI(), orgAbbreviation);
 
@@ -1277,26 +1277,26 @@ public class OrrClientImpl implements IOrrClient {
 					log.info(" Removing pre-existing values for predicate: " +prd+ " because of new value " +newValue);
 					newOntModel.removeAll(ont_, prd, null);
 				}
-			}	
-			
-			
+			}
+
+
 			if ( ! createOntologyResult.isPreserveOriginalBaseNamespace() ) {
-				
-				// 
+
+				//
 				// Only, when we're creating a new model, ie., per the new namespace, do the following removals.
-				// (If we did this on a model with the same original namespace, we would remove the owl:Ontology 
+				// (If we did this on a model with the same original namespace, we would remove the owl:Ontology
 				// entry altogether and get an "rdf:Description" instead.
 				//
-				
+
 				log.info("Removing original OWL.Ontology individual");
 				ontRes.removeProperties();
 				// TODO the following may be unnecesary but doesn't hurt:
-				model.remove(ontRes, RDF.type, OWL.Ontology); 
+				model.remove(ontRes, RDF.type, OWL.Ontology);
 			}
 		}
 
-		
-		
+
+
 		///////////////////////////////////////////////////////
 		// Update attributes in model:
 
@@ -1314,32 +1314,32 @@ public class OrrClientImpl implements IOrrClient {
 				ont_.addProperty(prop, value);
 			}
 		}
-		
 
 
-		// Set the missing DC attrs that have defined e	equivalent MMI attrs: 
+
+		// Set the missing DC attrs that have defined e	equivalent MMI attrs:
 		Util2.setDcAttributes(ont_);
-		
+
 		////////////////////////////////////////////////////////////////////////
-		// Done with the model. 
+		// Done with the model.
 		////////////////////////////////////////////////////////////////////////
-		
+
 		// Get resulting string:
 		JenaUtil2.removeUnusedNsPrefixes(model);
 		String rdf = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV") ;  // XXX newOntModel);
-		
+
 		if ( log.isDebugEnabled() ) {
 			if ( createOntologyResult.isPreserveOriginalBaseNamespace() ) {
 				log.debug(rdf);
 			}
 		}
-		
+
 		log.debug("createOntology: setting URI: " +base_);
 		createOntologyResult.setUri(base_);
-		
+
 
 		// write new contents to a new file under previewDir:
-		
+
 		File reviewedFile = new File(previewDir, newContentsFileName);
 		createOntologyResult.setFullPath(reviewedFile.getAbsolutePath());
 
@@ -1354,30 +1354,32 @@ public class OrrClientImpl implements IOrrClient {
 		ontModel = ModelFactory.createOntologyModel(ontModel.getSpecification(), ontModel);
 		return ontModel;
 	}
-	
 
-	
+
+
 	private CreateOntologyResult _createOntologyReHosted(CreateOntologyInfo createOntologyInfo, CreateOntologyResult createOntologyResult) {
-		
+
 		Map<String, String> newValues = createOntologyInfo.getMetadataValues();
 		assert ( newValues != null ) ;
-		
+
 		DataCreationInfo dataCreationInfo = createOntologyInfo.getDataCreationInfo();
 		assert ( dataCreationInfo instanceof OtherDataCreationInfo ) ;
 		final OtherDataCreationInfo otherDataCreationInfo = (OtherDataCreationInfo) dataCreationInfo;
 		final TempOntologyInfo tempOntologyInfo = otherDataCreationInfo.getTempOntologyInfo();
 
-		
+
 		// to check if this is going to be a new submission (if ontologyId == null) or, otherwise, a new version.
 		final String ontologyId = createOntologyInfo.getPriorOntologyInfo().getOntologyId();
-		
-		
+
+		final String ontUri = createOntologyInfo.getUri();
+
+
 		////////////////////////////////////////////////////////////////////////////
 		// section to create the ontology the base:
-		
+
 		// external ontology case: the base ontology is already available, just use it
 		// by setting the full path in the createOntologyResult:
-			
+
 		String full_path;
 
 		if ( tempOntologyInfo != null ) {
@@ -1385,7 +1387,7 @@ public class OrrClientImpl implements IOrrClient {
 			full_path = tempOntologyInfo.getFullPath();
 		}
 		else {
-			// No new contents. Only possible way for this to happen is that this is 
+			// No new contents. Only possible way for this to happen is that this is
 			// a new version of an existing ontology.
 
 			if ( ontologyId != null ) {
@@ -1404,16 +1406,16 @@ public class OrrClientImpl implements IOrrClient {
 		}
 		createOntologyResult.setFullPath(full_path);
 
-		
+
 		// current date:
 		final Date date = new Date(System.currentTimeMillis());
-		
+
 		///////////////////////////////////////////////////////////////////
 		// creation date:
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		final String creationDate = sdf.format(date);
-		
+
 
 		///////////////////////////////////////////////////////////////////
 		// version:
@@ -1435,8 +1437,8 @@ public class OrrClientImpl implements IOrrClient {
 			sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 			version = sdf.format(date);
 		}
-		
-		
+
+
 		////////////////////////////////////////////
 		// load  model
 
@@ -1454,7 +1456,7 @@ public class OrrClientImpl implements IOrrClient {
 			log.info("Loading model: " +full_path);
 
 			File file = new File(full_path);
-			
+
 			try {
 				model = Util2.loadModelWithCheckingUtf8(file, null);
 			}
@@ -1464,20 +1466,36 @@ public class OrrClientImpl implements IOrrClient {
 				createOntologyResult.setError(error);
 				return createOntologyResult;
 			}
-			
+
+			// fix #354: first try getting the ontology resource by ontUri from the model:
+			ont = model.getOntology(ontUri);
+			if (ont != null) {
+				if (log.isDebugEnabled()) {
+					log.debug("#354: _createOntologyReHosted: got ontology object by ontUri=" + ontUri);
+				}
+				uriForEmpty = ontUri;
+			}
+			else {
+				// else, simply use the previous logic to get the ontology:
+				if (log.isDebugEnabled()) {
+					log.debug("#354: _createOntologyReHosted: dit not get ontology object by ontUri=" + ontUri);
+				}
+
 			ont = JenaUtil2.getOntology(model);
-			
+
 			// get original namespace associated with the ontology, if any:
 			uriForEmpty = Util2.getDefaultNamespace(model, file, createOntologyResult);
 			// 2009-12-21: previously returning error if uriForEmpty==null. Not anymore; see below.
-			
+
+			}
+
 			newContentsFileName = file.getName();
 		}
 		else {
 			// NO new contents.
 			// Use contents from prior version.
 			PriorOntologyInfo priorVersionInfo = createOntologyInfo.getPriorOntologyInfo();
-			
+
 			try {
 				model = OntServiceUtil.retrieveModel(createOntologyInfo.getUri(), priorVersionInfo.getVersionNumber());
 			}
@@ -1487,7 +1505,7 @@ public class OrrClientImpl implements IOrrClient {
 				createOntologyResult.setError(error);
 				return createOntologyResult;
 			}
-			
+
 			ont = JenaUtil2.getOntology(model);
 			if ( ont == null ) {
 				// Shouldn't happen -- we're reading in an already registered version.
@@ -1503,12 +1521,9 @@ public class OrrClientImpl implements IOrrClient {
 			newContentsFileName = uriForEmpty.replaceAll(":|/|\\\\", "_");
 		}
 
-			
-		
 		final String original_base_ = uriForEmpty == null ? null : JenaUtil2.removeTrailingFragment(uriForEmpty);
 
 		// and this is the info for the requested URI:
-		final String ontUri = createOntologyInfo.getUri();
 		final String ns_ = JenaUtil2.appendFragment(ontUri);
 		final String base_ = JenaUtil2.removeTrailingFragment(ontUri);
 
@@ -1523,10 +1538,10 @@ public class OrrClientImpl implements IOrrClient {
 			createOntologyResult.setError(error);
 			return createOntologyResult;
 		}
-		
+
 		/////////////////////////////////////////////////////////////////
 		// If there is an pre-existing Ontology resource, get the associated statements:
-		List<Statement> prexistStatements = null; 
+		List<Statement> prexistStatements = null;
 		if ( ont != null ) {
 			prexistStatements = new ArrayList<Statement>();
 			if ( log.isDebugEnabled() ) {
@@ -1536,10 +1551,10 @@ public class OrrClientImpl implements IOrrClient {
 			while ( iter.hasNext() ) {
 				Statement st = iter.nextStatement();
 				prexistStatements.add(st);
-			}	
+			}
 		}
 
-		
+
 		// The new OntModel that will contain the pre-existing attributes (if any),
 		// plus the new and updated attributes:
 		final OntModel newOntModel = OntModelUtil.createOntModel(base_, model);
@@ -1547,12 +1562,12 @@ public class OrrClientImpl implements IOrrClient {
 		if ( log.isDebugEnabled() ) {
 			log.debug("New ontology created with namespace " + ns_ + " base " + base_);
 		}
-		
+
 		// Set internal attributes, which are updated in the newValues map itself
 		// so we facilite the processing below:
 		newValues.put(Omv.version.getURI(), version);
 		newValues.put(Omv.creationDate.getURI(), creationDate);
-		
+
 
 		//////////////////////////////////////////////////
 		// transfer any preexisting attributes, and then remove all properties from
@@ -1577,12 +1592,12 @@ public class OrrClientImpl implements IOrrClient {
 					}
 					newOntModel.removeAll(ont_, prd, null);
 				}
-			}	
-			
+			}
+
 		}
 
-		
-		
+
+
 		///////////////////////////////////////////////////////
 		// Update attributes in model:
 
@@ -1600,33 +1615,33 @@ public class OrrClientImpl implements IOrrClient {
 				ont_.addProperty(prop, value);
 			}
 		}
-		
 
 
-		// Set the missing DC attrs that have defined e	equivalent MMI attrs: 
+
+		// Set the missing DC attrs that have defined e	equivalent MMI attrs:
 		Util2.setDcAttributes(ont_);
-		
+
 		////////////////////////////////////////////////////////////////////////
-		// Done with the model. 
+		// Done with the model.
 		////////////////////////////////////////////////////////////////////////
-		
+
 		// Get resulting string:
 		JenaUtil2.removeUnusedNsPrefixes(model);
 		String rdf = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV") ;  // XXX newOntModel);
-		
+
 		if ( log.isDebugEnabled() ) {
 			log.debug(rdf);
 		}
-		
+
 		log.debug("createOntology: setting URI: " +base_);
 		createOntologyResult.setUri(base_);
-		
+
 
 		// write new contents to a new file under previewDir:
-		
+
 		File reviewedFile = new File(previewDir, newContentsFileName);
 		createOntologyResult.setFullPath(reviewedFile.getAbsolutePath());
-		
+
 		_writeRdfToFile(rdf, reviewedFile, createOntologyResult);
 
 		// Done.
@@ -1634,9 +1649,9 @@ public class OrrClientImpl implements IOrrClient {
 		return createOntologyResult;
 	}
 
-	
-	
-	
+
+
+
 	private void _writeRdfToFile(String rdf, File reviewedFile, CreateOntologyResult createOntologyResult) {
 		PrintWriter os;
 		try {
@@ -1651,7 +1666,7 @@ public class OrrClientImpl implements IOrrClient {
 			return;
 		}
 		catch (UnsupportedEncodingException e) {
-			String error = "Unexpected: cannot create file in UTF-8 encoding: " +reviewedFile; 
+			String error = "Unexpected: cannot create file in UTF-8 encoding: " +reviewedFile;
 			log.info(error);
 			createOntologyResult.setError(error);
 			return;
@@ -1669,88 +1684,88 @@ public class OrrClientImpl implements IOrrClient {
 		}
 	}
 
-	
+
 	// TODO remove when new mechanism is in place.
 	@SuppressWarnings("deprecation")
 	private CreateOntologyResult _createOntology_oldMethod(CreateOntologyInfo createOntologyInfo) {
-			
+
 		CreateOntologyResult createOntologyResult = new CreateOntologyResult();
-		
+
 		DataCreationInfo dataCreationInfo = createOntologyInfo.getDataCreationInfo();
 		if ( dataCreationInfo == null ) {
 			createOntologyResult.setError("No data creation info provided! (please report this bug)");
 			return createOntologyResult;
 		}
-		
+
 
 		createOntologyResult.setCreateOntologyInfo(createOntologyInfo);
-		
+
 		// to check if this is going to be a new submission (if ontologyId == null) or, otherwise, a new version.
 		final String ontologyId = createOntologyInfo.getPriorOntologyInfo().getOntologyId();
-		
-		
+
+
 		//{pons      pons: sections related with preserveOriginalBaseNamespace
-		
+
 		// this flag will be only true in the case where an external ontology is to be registered
 		// and the user indicates that the original base namespace be preserved.
 		createOntologyResult.setPreserveOriginalBaseNamespace(false);
-		
+
 		if ( dataCreationInfo instanceof OtherDataCreationInfo ) {
 			OtherDataCreationInfo odci = (OtherDataCreationInfo) dataCreationInfo;
 			TempOntologyInfo toi = odci.getTempOntologyInfo();
 			createOntologyResult.setPreserveOriginalBaseNamespace(toi != null && toi.isPreserveOriginalBaseNamespace());
 		}
 
-		
+
 		if ( ! createOntologyResult.isPreserveOriginalBaseNamespace() ) {
 			// Note: if this is the submission of a new version (ontologyId != null) of an "external" (ie, re-hosted)
 			// ontology, then set this flag to true
 			if ( ontologyId != null && ! OntServiceUtil.isOntResolvableUri(createOntologyInfo.getUri()) ) {
 				createOntologyResult.setPreserveOriginalBaseNamespace(true);
-				
+
 				// TODO However, note that we're goint to preserve the URI of the given ontology in this submission,
 				// which may not coincide with the previous one.
 			}
 		}
 		//}pons
 
-		
+
 		Map<String, String> newValues = createOntologyInfo.getMetadataValues();
-		
+
 		////////////////////////////////////////////
 		// check for errors
-		
+
 		if ( createOntologyResult.getError() != null ) {
 			log.info(": error: " +createOntologyResult.getError());
 			return createOntologyResult;
 		}
-		
-		
+
+
 		if ( newValues == null ) {
 			String error = "Unexpected: no new values assigned for review. Please report this bug";
 			createOntologyResult.setError(error );
 			log.info(error);
 			return createOntologyResult;
 		}
-		
-		
+
+
 		final String namespaceRoot = defaultNamespaceRoot;
-		
+
 		final String orgAbbreviation = newValues.get(OmvMmi.origMaintainerCode.getURI());
 		String shortName = newValues.get(Omv.acronym.getURI());
 		// TODO: shortName taken NOT from acronym but from a new field explicitly for the shortName piece
 
 		if ( ! createOntologyResult.isPreserveOriginalBaseNamespace() ) {
 			//pons: check the following if regular assignment of namespace
-			
+
 			if ( orgAbbreviation == null ) {
 				log.info("missing origMaintainerCode");
 				createOntologyResult.setError("missing origMaintainerCode");
 				return createOntologyResult;
 			}
-			
+
 			if ( shortName == null ) {
-				
+
 				if ( ontologyId == null ) {
 					// This is a new submission.
 					log.info("missing acronym (to be used as shortName)");
@@ -1777,28 +1792,28 @@ public class OrrClientImpl implements IOrrClient {
 				// We need to check the shortName+orgAbbreviation combination as any changes here
 				// would imply a *new* ontology, not a new version.
 				//
-				
+
 				String originalOrgAbbreviation = createOntologyInfo.getAuthority();
 				String originalShortName = createOntologyInfo.getShortName();
-				
+
 				if ( ! Util2.checkUriKeyCombinationForNewVersion(
-						originalOrgAbbreviation, originalShortName, 
+						originalOrgAbbreviation, originalShortName,
 						orgAbbreviation, shortName, createOntologyResult) ) {
 					return createOntologyResult;
 				}
 			}
 		}
 		// Else: see below, where we obtain the original namespace.
-		
-		
+
+
 		////////////////////////////////////////////////////////////////////////////
 		// section to create the ontology the base:
-		
+
 		if ( dataCreationInfo instanceof VocabularyDataCreationInfo ) {
 			// vocabulary (voc2rdf) case:
-			
+
 			VocabularyDataCreationInfo vocabularyDataCreationInfo = (VocabularyDataCreationInfo) dataCreationInfo;
-			
+
 			_createTempVocabularyOntology(createOntologyInfo, vocabularyDataCreationInfo, createOntologyResult);
 			if ( createOntologyResult.getError() != null ) {
 				return createOntologyResult;
@@ -1806,9 +1821,9 @@ public class OrrClientImpl implements IOrrClient {
 		}
 		else if (  dataCreationInfo instanceof MappingDataCreationInfo ) {
 			// mapping (vine case):
-			
+
 			MappingDataCreationInfo mappingDataCreationInfo = (MappingDataCreationInfo) dataCreationInfo;
-			
+
 			_createTempMappingOntology(createOntologyInfo, mappingDataCreationInfo, createOntologyResult);
 			if ( createOntologyResult.getError() != null ) {
 				return createOntologyResult;
@@ -1818,20 +1833,20 @@ public class OrrClientImpl implements IOrrClient {
 		else if (  dataCreationInfo instanceof OtherDataCreationInfo) {
 			// external ontology case: the base ontology is already available, just use it
 			// by setting the full path in the createOntologyResult:
-			
+
 			OtherDataCreationInfo otherDataCreationInfo = (OtherDataCreationInfo) dataCreationInfo;
 			TempOntologyInfo tempOntologyInfo = otherDataCreationInfo.getTempOntologyInfo();
-			
+
 			String full_path;
-			
+
 			if ( tempOntologyInfo != null ) {
 				// new contents were provided. Use that:
 				full_path = tempOntologyInfo.getFullPath();
 			}
 			else {
-				// No new contents. Only possible way for this to happen is that this is 
+				// No new contents. Only possible way for this to happen is that this is
 				// a new version of an existing ontology.
-				
+
 				if ( ontologyId != null ) {
 					// Just indicate a null full_path; see below.
 					full_path = null;
@@ -1844,7 +1859,7 @@ public class OrrClientImpl implements IOrrClient {
 					log.info(error);
 					return createOntologyResult;
 				}
-				
+
 			}
 			createOntologyResult.setFullPath(full_path);
 		}
@@ -1854,16 +1869,16 @@ public class OrrClientImpl implements IOrrClient {
 			return createOntologyResult;
 		}
 
-		
+
 		// current date:
 		final Date date = new Date(System.currentTimeMillis());
-		
+
 		///////////////////////////////////////////////////////////////////
 		// creation date:
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		final String creationDate = sdf.format(date);
-		
+
 
 		///////////////////////////////////////////////////////////////////
 		// version:
@@ -1885,8 +1900,8 @@ public class OrrClientImpl implements IOrrClient {
 			sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 			version = sdf.format(date);
 		}
-		
-		
+
+
 		////////////////////////////////////////////
 		// load  model
 
@@ -1903,7 +1918,7 @@ public class OrrClientImpl implements IOrrClient {
 			log.info("Loading model: " +full_path);
 
 			File file = new File(full_path);
-			
+
 			try {
 				model = Util2.loadModelWithCheckingUtf8(file, null);
 			}
@@ -1913,7 +1928,7 @@ public class OrrClientImpl implements IOrrClient {
 				createOntologyResult.setError(error);
 				return createOntologyResult;
 			}
-			
+
 			uriForEmpty = Util2.getDefaultNamespace(model, file, createOntologyResult);
 
 			if ( uriForEmpty == null ) {
@@ -1922,14 +1937,14 @@ public class OrrClientImpl implements IOrrClient {
 				createOntologyResult.setError(error);
 				return createOntologyResult;
 			}
-			
+
 			newContentsFileName = file.getName();
 		}
 		else {
 			// NO new contents.
 			// Use contents from prior version.
 			PriorOntologyInfo priorVersionInfo = createOntologyInfo.getPriorOntologyInfo();
-			
+
 			try {
 				model = OntServiceUtil.retrieveModel(createOntologyInfo.getUri(), priorVersionInfo.getVersionNumber());
 			}
@@ -1939,7 +1954,7 @@ public class OrrClientImpl implements IOrrClient {
 				createOntologyResult.setError(error);
 				return createOntologyResult;
 			}
-			
+
 			uriForEmpty = model.getNsPrefixURI("");
 			if ( uriForEmpty == null ) {
 				// Shouldn't happen -- we're reading in an already registered version.
@@ -1954,26 +1969,26 @@ public class OrrClientImpl implements IOrrClient {
 			newContentsFileName = uriForEmpty.replaceAll(":|/|\\\\", "_");
 		}
 
-			
 
-		
+
+
 		log.info("createOntology: using '" +uriForEmpty+ "' as base URI");
-		
+
 		final String original_ns_ = uriForEmpty;
 		log.info("original namespace: " +original_ns_);
 
-		
+
 		String ns_;
 		String base_;
 
-		
+
 		if ( createOntologyResult.isPreserveOriginalBaseNamespace() ) {
 			//pons:  just use original namespace
 			ns_ = original_ns_;
 			base_ = JenaUtil2.removeTrailingFragment(ns_);
-			
+
 			///////////////////////////////////////////////////////
-			
+
 			if ( ontologyId == null ) {
 				// This is a new submission. We need to check for any conflict with a preexisting
 				// ontology in the repository with the same URI, base_
@@ -1989,31 +2004,31 @@ public class OrrClientImpl implements IOrrClient {
 			///////////////////////////////////////////////////////
 		}
 		else {
-			
+
 			final String finalUri = namespaceRoot + "/" +
 										orgAbbreviation + "/" +
 										version + "/" +
 										shortName;
-										
+
 			ns_ = JenaUtil2.appendFragment(finalUri);
 			base_ = JenaUtil2.removeTrailingFragment(finalUri);
-			
-			
+
+
 			log.info("Setting prefix \"\" for URI " + ns_);
 			model.setNsPrefix("", ns_);
-			
-			
+
+
 			// Update statements  according to the new namespace:
 			Util2.replaceNameSpace(model, original_ns_, ns_);
-			
+
 		}
-		
-		
+
+
 		/////////////////////////////////////////////////////////////////
 		// Is there an existing OWL.Ontology individual?
 		// TODO Note that ONLY the first OWL.Ontology individual is considered.
 		Resource ontRes = JenaUtil2.getFirstIndividual(model, OWL.Ontology);
-		List<Statement> prexistStatements = null; 
+		List<Statement> prexistStatements = null;
 		if ( ontRes != null ) {
 			prexistStatements = new ArrayList<Statement>();
 			log.info("Getting pre-existing properties for OWL.Ontology individual: " +ontRes.getURI());
@@ -2021,30 +2036,30 @@ public class OrrClientImpl implements IOrrClient {
 			while ( iter.hasNext() ) {
 				Statement st = iter.nextStatement();
 				prexistStatements.add(st);
-			}	
+			}
 		}
 
-		
+
 		// The new OntModel that will contain the pre-existing attributes (if any),
 		// plus the new and updated attributes:
 		final OntModel newOntModel = _createOntModel(model);
 		final Ontology ont_ = newOntModel.createOntology(base_);
 		log.info("New ontology created with namespace " + ns_ + " base " + base_);
 		newOntModel.setNsPrefix("", ns_);
-		
+
 		// set preferred prefixes:
 		Map<String, String> preferredPrefixMap = MdHelper.getPreferredPrefixMap();
 		for ( String uri : preferredPrefixMap.keySet() ) {
 			String prefix = preferredPrefixMap.get(uri);
 			newOntModel.setNsPrefix(prefix, uri);
 		}
-		
-		
+
+
 		// Set internal attributes, which are updated in the newValues map itself
 		// so we facilite the processing below:
 		newValues.put(Omv.uri.getURI(), base_);
 		newValues.put(Omv.version.getURI(), version);
-		
+
 		newValues.put(Omv.creationDate.getURI(), creationDate);
 
 
@@ -2067,26 +2082,26 @@ public class OrrClientImpl implements IOrrClient {
 					log.info(" Removing pre-existing values for predicate: " +prd+ " because of new value " +newValue);
 					newOntModel.removeAll(ont_, prd, null);
 				}
-			}	
-			
-			
+			}
+
+
 			if ( ! createOntologyResult.isPreserveOriginalBaseNamespace() ) {
-				
-				// 
+
+				//
 				// Only, when we're creating a new model, ie., per the new namespace, do the following removals.
-				// (If we did this on a model with the same original namespace, we would remove the owl:Ontology 
+				// (If we did this on a model with the same original namespace, we would remove the owl:Ontology
 				// entry altogether and get an "rdf:Description" instead.
 				//
-				
+
 				log.info("Removing original OWL.Ontology individual");
 				ontRes.removeProperties();
 				// TODO the following may be unnecesary but doesn't hurt:
-				model.remove(ontRes, RDF.type, OWL.Ontology); 
+				model.remove(ontRes, RDF.type, OWL.Ontology);
 			}
 		}
 
-		
-		
+
+
 		///////////////////////////////////////////////////////
 		// Update attributes in model:
 
@@ -2104,32 +2119,32 @@ public class OrrClientImpl implements IOrrClient {
 				ont_.addProperty(prop, value);
 			}
 		}
-		
 
 
-		// Set the missing DC attrs that have defined e	equivalent MMI attrs: 
+
+		// Set the missing DC attrs that have defined e	equivalent MMI attrs:
 		Util2.setDcAttributes(ont_);
-		
+
 		////////////////////////////////////////////////////////////////////////
-		// Done with the model. 
+		// Done with the model.
 		////////////////////////////////////////////////////////////////////////
-		
+
 		// Get resulting string:
 		JenaUtil2.removeUnusedNsPrefixes(model);
 		String rdf = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV") ;  // XXX newOntModel);
-		
+
 		if ( log.isDebugEnabled() ) {
 			if ( createOntologyResult.isPreserveOriginalBaseNamespace() ) {
 				log.debug(rdf);
 			}
 		}
-		
+
 		log.debug("createOntology: setting URI: " +base_);
 		createOntologyResult.setUri(base_);
-		
+
 
 		// write new contents to a new file under previewDir:
-		
+
 		File reviewedFile = new File(previewDir, newContentsFileName);
 		createOntologyResult.setFullPath(reviewedFile.getAbsolutePath());
 
@@ -2144,14 +2159,14 @@ public class OrrClientImpl implements IOrrClient {
 	 * This creates a new vocabulary ontology under the previewDir directory with the given info.
 	 * @param createOntologyInfo
 	 * @param vocabularyCreationInfo
-	 * @param createVocabResult 
+	 * @param createVocabResult
 	 */
 	private void _createTempVocabularyOntology(
 			CreateOntologyInfo createOntologyInfo,
 			VocabularyDataCreationInfo vocabularyCreationInfo,
 			CreateOntologyResult createVocabResult
 	) {
-		
+
 		VocabCreator vocabCreator;
 		try {
 			vocabCreator = new VocabCreator(createOntologyInfo, vocabularyCreationInfo);
@@ -2162,16 +2177,16 @@ public class OrrClientImpl implements IOrrClient {
 			createVocabResult.setError(error);
 			return;
 		}
-		
+
 		vocabCreator.createOntology(createVocabResult);
 	}
 
-	
+
 	/**
 	 * This creates a new mapping ontology under the previewDir directory with the given info.
 	 * @param createOntologyInfo
 	 * @param mappingDataCreationInfo
-	 * @param createVocabResult 
+	 * @param createVocabResult
 	 */
 	private void _createTempMappingOntology(
 			CreateOntologyInfo createOntologyInfo,
@@ -2189,11 +2204,11 @@ public class OrrClientImpl implements IOrrClient {
 			createVocabResult.setError(error);
 			return;
 		}
-		
+
 		ontCreator.createOntology(createVocabResult);
 	}
 
-	
+
 	public RegisterOntologyResult registerOntology(CreateOntologyResult createOntologyResult, LoginResult loginResult) {
 		RegisterOntologyResult registerOntologyResult = null;
 
@@ -2326,17 +2341,17 @@ public class OrrClientImpl implements IOrrClient {
                 log.debug("no recipients to send email: " + notifyEmailsFilename);
             }
         }
-		
+
 		return registerOntologyResult;
-	
+
 	}
 
 	public RegisterOntologyResult registerOntology_newMethod(CreateOntologyResult createOntologyResult, LoginResult loginResult) {
 		final HostingType hostingType = createOntologyResult.getCreateOntologyInfo().getHostingType();
-		
+
 		log.info("registerOntology: called. hostingType = " +hostingType);
 		RegisterOntologyResult registerOntologyResult = new RegisterOntologyResult();
-		
+
 		switch ( hostingType ) {
 			case FULLY_HOSTED:
 				return registerOntologyFullyHosted(createOntologyResult, registerOntologyResult, loginResult);
@@ -2351,15 +2366,15 @@ public class OrrClientImpl implements IOrrClient {
 		}
 
 	}
-	
+
 	public RegisterOntologyResult registerOntologyFullyHosted(CreateOntologyResult createOntologyResult, RegisterOntologyResult registerOntologyResult, LoginResult loginResult) {
-	
+
 		String full_path = createOntologyResult.getFullPath();
-		
+
 		log.info("registerOntology: Reading in temporary file: " +full_path);
-		
+
 		File file = new File(full_path);
-		
+
 		// Get resulting model:
 		String rdf;
 		try {
@@ -2372,10 +2387,10 @@ public class OrrClientImpl implements IOrrClient {
 			registerOntologyResult.setError(error);
 			return registerOntologyResult;
 		}
-		
+
 		// ok, we have our ontology:
-		
-		
+
+
 		//////////////////////////////////////////////////////////////////////////
 		// finally, do actual registration to MMI registry
 
@@ -2384,26 +2399,26 @@ public class OrrClientImpl implements IOrrClient {
 		assert uri != null;
 		assert loginResult.getUserId() != null;
 		assert loginResult.getSessionId() != null;
-		
+
 		log.info(": registering URI: " +uri+ " ...");
 
 		CreateOntologyInfo createOntologyInfo = createOntologyResult.getCreateOntologyInfo();
 
 		String ontologyId = createOntologyInfo.getPriorOntologyInfo().getOntologyId();
 		String ontologyUserId = createOntologyInfo.getPriorOntologyInfo().getOntologyUserId();
-		
+
 		if ( ontologyId != null ) {
 			log.info("Will create a new version for ontologyId = " +ontologyId+ ", userId=" +ontologyUserId);
 		}
-		
-		
+
+
 		Map<String, String> newValues = createOntologyInfo .getMetadataValues();
-		
+
 
 		try {
 			// this is to get the filename for the registration
 			String fileName = new URL(uri).getPath();
-			
+
 			//
 			// make sure the fileName ends with ".owl" as the aquaportal back-end seems
 			// to add that fixed extension in some operations (at least in the parse operation)
@@ -2414,25 +2429,25 @@ public class OrrClientImpl implements IOrrClient {
 				}
 				fileName += ".owl";
 			}
-			
-			
+
+
 			if ( ontologyId == null ) {
 				//
 				// Submission of a new ontology (not version of a registered one)
 				//
-				
+
 				// We are about to do the actual registration. But first, re-check that there is NO a preexisting
 				// ontology that may conflict with this one.
 				// NOTE: this check has been done already in the review operation; however, we repeat it here
 				// in case there is a new registration done by other user in the meantime. Of course, we
 				// are NOT completely solving the potential concurrency problem with this re-check; we are just
 				// reducing the chances of that event.
-				
-				
+
+
 				// TODO: the following can be simplified by obtaining the unversioned form of the URI and
 				// calling Util2.checkNoPreexistingOntology(unversionedUri, registerOntologyResult)
 
-				final String namespaceRoot = newValues.get("namespaceRoot") != null 
+				final String namespaceRoot = newValues.get("namespaceRoot") != null
 						? newValues.get("namespaceRoot")
 						:  defaultNamespaceRoot;
 
@@ -2451,7 +2466,7 @@ public class OrrClientImpl implements IOrrClient {
 				// as any change in the contents of the metadata forces the user to explicitly
 				// do the "review" operation, which already takes care of that check.
 			}
-			
+
 			// OK, now do the actual registration:
             String res = uploadOntology(uri, fileName, rdf,
                     loginResult,
@@ -2462,7 +2477,7 @@ public class OrrClientImpl implements IOrrClient {
 			if ( res.startsWith("OK") ) {
 				registerOntologyResult.setUri(uri);
 				registerOntologyResult.setInfo(res);
-				
+
 				// issue #168 fix:
 				// request that the ontology be loaded in the "ont" graph:
 				OntServiceUtil.loadOntologyInGraph(uri, null);
@@ -2475,23 +2490,23 @@ public class OrrClientImpl implements IOrrClient {
 			ex.printStackTrace();
 			registerOntologyResult.setError(ex.getClass().getName()+ ": " +ex.getMessage());
 		}
-		
+
 		log.info("registerOntologyResult = " +registerOntologyResult);
 
-		
+
 		return registerOntologyResult;
 	}
 
 
 	// TODO
 	public RegisterOntologyResult registerOntologyReHosted(CreateOntologyResult createOntologyResult, RegisterOntologyResult registerOntologyResult, LoginResult loginResult) {
-		
+
 		String full_path = createOntologyResult.getFullPath();
-		
+
 		log.info("registerOntology: Reading in temporary file: " +full_path);
-		
+
 		File file = new File(full_path);
-		
+
 		// Get resulting model:
 		String rdf;
 		try {
@@ -2503,10 +2518,10 @@ public class OrrClientImpl implements IOrrClient {
 			registerOntologyResult.setError(error);
 			return registerOntologyResult;
 		}
-		
+
 		// ok, we have our ontology:
-		
-		
+
+
 		//////////////////////////////////////////////////////////////////////////
 		// finally, do actual registration to MMI registry
 
@@ -2515,26 +2530,26 @@ public class OrrClientImpl implements IOrrClient {
 		assert uri != null;
 		assert loginResult.getUserId() != null;
 		assert loginResult.getSessionId() != null;
-		
+
 		log.info(": registering ...");
 
 		CreateOntologyInfo createOntologyInfo = createOntologyResult.getCreateOntologyInfo();
 
 		String ontologyId = createOntologyInfo.getPriorOntologyInfo().getOntologyId();
 		String ontologyUserId = createOntologyInfo.getPriorOntologyInfo().getOntologyUserId();
-		
+
 		if ( ontologyId != null ) {
 			log.info("Will create a new version for ontologyId = " +ontologyId+ ", userId=" +ontologyUserId);
 		}
-		
-		
+
+
 		Map<String, String> newValues = createOntologyInfo .getMetadataValues();
-		
+
 
 		try {
-			
+
 			String fileName = new URL(uri).getPath();
-			
+
 			//
 			// make sure the fileName ends with ".owl" as the aquaportal back-end seems
 			// to add that fixed extension in some operations (at least in the parse operation)
@@ -2543,8 +2558,8 @@ public class OrrClientImpl implements IOrrClient {
 				log.info("register: setting file extension to .owl per aquaportal requirement.");
 				fileName += ".owl";
 			}
-			
-			
+
+
 			// OK, now do the actual registration:
             String res = uploadOntology(uri, fileName, rdf,
                     loginResult,
@@ -2555,7 +2570,7 @@ public class OrrClientImpl implements IOrrClient {
 			if ( res.startsWith("OK") ) {
 				registerOntologyResult.setUri(uri);
 				registerOntologyResult.setInfo(res);
-				
+
 				// issue #168 fix:
 				// request that the ontology be loaded in the "ont" graph:
 				OntServiceUtil.loadOntologyInGraph(uri, null);
@@ -2568,23 +2583,23 @@ public class OrrClientImpl implements IOrrClient {
 			ex.printStackTrace();
 			registerOntologyResult.setError(ex.getClass().getName()+ ": " +ex.getMessage());
 		}
-		
+
 		if ( log.isDebugEnabled() ) {
 			log.debug("registerOntologyResult = " +registerOntologyResult);
 		}
-		
+
 		return registerOntologyResult;
 	}
 
-	
+
 	public RegisterOntologyResult registerOntology_oldMethod(CreateOntologyResult createOntologyResult, LoginResult loginResult) {
 		RegisterOntologyResult registerOntologyResult = new RegisterOntologyResult();
-		
-		
+
+
 		String full_path = createOntologyResult.getFullPath();
-		
+
 		log.info("registerOntology: Reading in temporary file: " +full_path);
-		
+
 		File file = new File(full_path);
 		if ( ! file.canRead() ) {
 			String error = "Unexpected: cannot read: " +full_path;
@@ -2592,7 +2607,7 @@ public class OrrClientImpl implements IOrrClient {
 			registerOntologyResult.setError(error);
 			return registerOntologyResult;
 		}
-		
+
 		// Get resulting model:
 		String rdf;
 		try {
@@ -2605,10 +2620,10 @@ public class OrrClientImpl implements IOrrClient {
 			registerOntologyResult.setError(error);
 			return registerOntologyResult;
 		}
-		
+
 		// ok, we have our ontology:
-		
-		
+
+
 		//////////////////////////////////////////////////////////////////////////
 		// finally, do actual registration to MMI registry
 
@@ -2618,26 +2633,26 @@ public class OrrClientImpl implements IOrrClient {
 		assert uri != null;
 		assert loginResult.getUserId() != null;
 		assert loginResult.getSessionId() != null;
-		
+
 		log.info(": registering ...");
 
 		CreateOntologyInfo createOntologyInfo = createOntologyResult.getCreateOntologyInfo();
 
 		String ontologyId = createOntologyInfo.getPriorOntologyInfo().getOntologyId();
 		String ontologyUserId = createOntologyInfo.getPriorOntologyInfo().getOntologyUserId();
-		
+
 		if ( ontologyId != null ) {
 			log.info("Will create a new version for ontologyId = " +ontologyId+ ", userId=" +ontologyUserId);
 		}
-		
-		
+
+
 		Map<String, String> newValues = createOntologyInfo .getMetadataValues();
-		
+
 
 		try {
-			
+
 			String fileName = new URL(uri).getPath();
-			
+
 			//
 			// make sure the fileName ends with ".owl" as the aquaportal back-end seems
 			// to add that fixed extension in some operations (at least in the parse operation)
@@ -2646,8 +2661,8 @@ public class OrrClientImpl implements IOrrClient {
 				log.info("register: setting file extension to .owl per aquaportal requirement.");
 				fileName += ".owl";
 			}
-			
-			
+
+
 			if ( ! createOntologyResult.isPreserveOriginalBaseNamespace() ) {
 				// We are about to do the actual registration. But first, re-check that there is NO a preexisting
 				// ontology that may conflict with this one.
@@ -2656,18 +2671,18 @@ public class OrrClientImpl implements IOrrClient {
 				// are NOT completely solving the potential concurrency problem with this re-check; we are just
 				// reducing the chances of that event.
 				if ( ontologyId == null ) {
-					
-					final String namespaceRoot = newValues.get("namespaceRoot") != null 
+
+					final String namespaceRoot = newValues.get("namespaceRoot") != null
 							? newValues.get("namespaceRoot")
 							:  defaultNamespaceRoot;
-	
+
 					final String orgAbbreviation = newValues.get(OmvMmi.origMaintainerCode.getURI());
 					final String shortName = newValues.get(Omv.acronym.getURI());
-	
+
 					if ( ! Util2.checkNoPreexistingOntology(namespaceRoot, orgAbbreviation, shortName, registerOntologyResult) ) {
 						return registerOntologyResult;
 					}
-	
+
 				}
 				else {
 					// This is a submission of a *new version* of an existing ontology.
@@ -2677,7 +2692,7 @@ public class OrrClientImpl implements IOrrClient {
 					// do the "review" operation, which already takes care of that check.
 				}
 			}
-			
+
 			// OK, now do the actual registration:
             String res = uploadOntology(uri, fileName, rdf,
 					loginResult,
@@ -2688,7 +2703,7 @@ public class OrrClientImpl implements IOrrClient {
 			if ( res.startsWith("OK") ) {
 				registerOntologyResult.setUri(uri);
 				registerOntologyResult.setInfo(res);
-				
+
 				// issue #168 fix:
 				// request that the ontology be loaded in the "ont" graph:
 				OntServiceUtil.loadOntologyInGraph(uri, null);
@@ -2701,50 +2716,50 @@ public class OrrClientImpl implements IOrrClient {
 			ex.printStackTrace();
 			registerOntologyResult.setError(ex.getClass().getName()+ ": " +ex.getMessage());
 		}
-		
+
 		log.info("registerOntologyResult = " +registerOntologyResult);
 
-		
+
 		return registerOntologyResult;
 	}
 
-	
-	
-	
+
+
+
 	public TempOntologyInfo getTempOntologyInfo(
-			String fileType, String filename, 
+			String fileType, String filename,
 			boolean includeContents, boolean includeRdf
 	) {
 		TempOntologyInfo tempOntologyInfo = new TempOntologyInfo();
-		
+
 		if ( metadataBaseInfo == null ) {
 			tempOntologyInfo.setError(OrrClientImpl.class.getSimpleName()+ " not properly initialized. Please report this bug. (metadataBaseInfo not initialized)");
 			return tempOntologyInfo;
 		}
-		
+
 		TempOntologyHelper tempOntologyHelper = new TempOntologyHelper(metadataBaseInfo);
 		tempOntologyHelper.getTempOntologyInfo(fileType, filename, tempOntologyInfo, includeRdf);
-		
+
 		if ( tempOntologyInfo.getError() != null ) {
 			return tempOntologyInfo;
 		}
-		
+
 		if ( includeContents ) {
 			_getOntologyContents(tempOntologyInfo);
 		}
-		
+
 		return tempOntologyInfo;
 	}
-	
+
 	/** similar to {@link #getOntologyContents(RegisteredOntologyInfo)} but reading the model
 	 * from the internal path.
 	 */
 	private TempOntologyInfo _getOntologyContents(TempOntologyInfo tempOntologyInfo) {
-		
+
 		if ( log.isDebugEnabled() ) {
 			log.debug("_getOntologyContents(TempOntologyInfo): loading model");
 		}
-		
+
 		String full_path = tempOntologyInfo.getFullPath();
 		File file = new File(full_path );
 		String uriFile = file.toURI().toString();
@@ -2768,12 +2783,12 @@ public class OrrClientImpl implements IOrrClient {
 		}
 		MetadataExtractor.prepareOntologyMetadata(metadataBaseInfo, ontModel, tempOntologyInfo);
 
-		
+
 		// Data
 		if ( log.isDebugEnabled() ) {
 			log.debug("_getOntologyContents(TempOntologyInfo): getting entities");
 		}
-		
+
 		try {
 			OntInfoUtil.getEntities(tempOntologyInfo, ontModel);
 		}
@@ -2783,34 +2798,34 @@ public class OrrClientImpl implements IOrrClient {
 			tempOntologyInfo.setError(error);
 			return tempOntologyInfo;
 		}
-		
-		
+
+
 		return tempOntologyInfo;
-	
+
 	}
 
-	
+
 	////////////////////////////////////////////////////////////////////////////////////////////
 	// VINE:
-	
+
 	public List<RelationInfo> getDefaultVineRelationInfos() {
 		if ( log.isDebugEnabled() ) {
 			log.debug("getDefaultVineRelationInfos starting");
 		}
-	
+
 		List<RelationInfo> relInfos = VineUtil.getDefaultVineRelationInfos();
-		
+
 		if ( log.isDebugEnabled() ) {
 			log.debug("getDefaultVineRelationInfos returning: " +relInfos);
 		}
 
 		return relInfos;
 	}
-	
-	
+
+
 	////////////////////////////////////////////////////////////////////////////////////////////
 	// Search:
-	
+
 	public SparqlQueryResult runSparqlQuery(SparqlQueryInfo query) {
 		SparqlQueryResult sparqlQueryResult = new SparqlQueryResult();
 		try {
@@ -2833,13 +2848,13 @@ public class OrrClientImpl implements IOrrClient {
 		return sparqlQueryResult;
 	}
 
-	
+
 	// login:
-	
-	
+
+
 	public LoginResult authenticateUser(String userName, String userPassword) {
 		LoginResult loginResult = new LoginResult();
-		
+
 		log.info(": authenticating user " +userName+ " ...");
 		try {
 			SignInResult signInResult = ontClient.getSession(userName, userPassword);
@@ -2853,12 +2868,12 @@ public class OrrClientImpl implements IOrrClient {
 		}
 
 		return loginResult;
-		
+
 	}
-	
+
 	public ResetPasswordResult resetUserPassword(String username) {
 		ResetPasswordResult result = new ResetPasswordResult();
-		
+
 		// Issue 258:"reset password in effect but lost if error while sending email"
 		// Part of the fix is to first check the mail account parameters are given:
 		final String mail_user = config.getMailUser();
@@ -2888,11 +2903,11 @@ public class OrrClientImpl implements IOrrClient {
 			result.setError("No email associated with username: " +username);
 			return result;
 		}
-		
+
 		///////////////////////////////////////////////////////////////
 		// get new password
 		String newPassword = Util2.generatePassword();
-		
+
 		///////////////////////////////////////////////////////////////
 		// update password in back-end
 		Map<String, String> values = userInfoResult.getProps();
@@ -2904,11 +2919,11 @@ public class OrrClientImpl implements IOrrClient {
 			result.setError(updatePwResult.getError());
 			return result;
 		}
-		
-		
+
+
 		///////////////////////////////////////////////////////////////
 		// send email with new password
-		
+
 		boolean debug = false;
 		final String from = "MMI-ORR <techlead@marinemetadata.org>";
 		final String replyTo = "techlead@marinemetadata.org";
@@ -2920,7 +2935,7 @@ public class OrrClientImpl implements IOrrClient {
 				"Password: " +newPassword+ "\n" +
 				"\n"
 		;
-		
+
 		try {
 			MailSender.sendMessage(mail_user, mail_password, debug , from, email, replyTo, subject, text);
 			result.setEmail(email);
@@ -2930,14 +2945,14 @@ public class OrrClientImpl implements IOrrClient {
 			result.setError(error);
 			log.error(error, e);
 		}
-		
+
 		return result;
 	}
 
-	
+
 	public UserInfoResult getUserInfo(String username) {
 		UserInfoResult result = new UserInfoResult();
-		
+
 		try {
 			Map<String, String> props = OntServiceUtil.getUserInfo(username);
 			result.setProps(props);
@@ -2947,14 +2962,14 @@ public class OrrClientImpl implements IOrrClient {
 			result.setError(error);
 			log.error(error, e);
 		}
-		
+
 		return result;
 	}
-	
-	
+
+
 	public CreateUpdateUserAccountResult createUpdateUserAccount(Map<String,String> values) {
 		CreateUpdateUserAccountResult result = new CreateUpdateUserAccountResult();
-		
+
 		String email = values.get("email");
 		if ( email != null ) {
 			try {
@@ -2966,7 +2981,7 @@ public class OrrClientImpl implements IOrrClient {
 				return result;
 			}
 		}
-		
+
 		try {
 			SignInResult signInResult = ontClient.createUpdateUserAccount(values);
 			final LoginResult loginResult = new LoginResult();
@@ -2984,9 +2999,9 @@ public class OrrClientImpl implements IOrrClient {
 			result.setError(error);
 			log.error(error, e);
 		}
-		
+
 		return result;
-		
+
 	}
 
     private final static String notifyEmailsFilename = "/etc/mmiorr/notifyemails";
@@ -3087,22 +3102,22 @@ public class OrrClientImpl implements IOrrClient {
             log.error(error, e);
         }
     }
-	
+
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	// OOI CI semantic prototype
 	public RegisterOntologyResult registerOntologyDirectly(
-			LoginResult loginResult, 
+			LoginResult loginResult,
 			RegisteredOntologyInfo registeredOntologyInfo,
-			CreateOntologyInfo createOntologyInfo, 
+			CreateOntologyInfo createOntologyInfo,
 			String graphId
 	) {
 		return OoiCi.registerOntologyDirectly(loginResult, registeredOntologyInfo, createOntologyInfo, graphId);
 	}
 
-	
+
 	public InternalOntologyResult prepareUsersOntology(LoginResult loginResult) {
 		InternalOntologyResult result = new InternalOntologyResult();
-		
+
 		try {
 			InternalManager.prepareUsersOntology(this, ontClient, loginResult, result);
 		}
@@ -3111,13 +3126,13 @@ public class OrrClientImpl implements IOrrClient {
 			result.setError(error);
 			log.error(error, e);
 		}
-		
+
 		return result;
 	}
 
 	public InternalOntologyResult createGroupsOntology(LoginResult loginResult) {
 		InternalOntologyResult result = new InternalOntologyResult();
-		
+
 		try {
 			InternalManager.createGroupsOntology(this, ontClient, loginResult, result);
 		}
@@ -3126,16 +3141,16 @@ public class OrrClientImpl implements IOrrClient {
 			result.setError(error);
 			log.error(error, e);
 		}
-		
+
 		return result;
 	}
-	
-	
+
+
 	public UnregisterOntologyResult unregisterOntology(LoginResult loginResult, RegisteredOntologyInfo oi) {
 		UnregisterOntologyResult result = new UnregisterOntologyResult();
-		
+
 		log.debug("unregisterOntology called.");
-		
+
 		if ( loginResult == null || ! loginResult.isAdministrator() ) {
 			String error = "Unregister ontology: Only an administrator can perform this operation.";
 			log.debug(error);
@@ -3151,7 +3166,7 @@ public class OrrClientImpl implements IOrrClient {
 
 		String error = null;
 		Throwable thr = null;
-		
+
 		try {
 			if ( ! OntServiceUtil.unregisterOntology(ontUri, version) ) {
 				error = "Unregister ontology: Ont service could not perform the removal. " +
@@ -3163,7 +3178,7 @@ public class OrrClientImpl implements IOrrClient {
 			error = e.getMessage();
 			thr = e;
 		}
-		
+
 		if ( error != null ) {
 			log.debug(error, thr);
 			result.setError(error);
@@ -3172,9 +3187,9 @@ public class OrrClientImpl implements IOrrClient {
 		else {
 			result.setInfo("Unregistration completed.");
 		}
-		
+
 		return result;
-		
+
 	}
 
 	public String markTestingOntology(LoginResult loginResult, RegisteredOntologyInfo oi, boolean markTesting) {
