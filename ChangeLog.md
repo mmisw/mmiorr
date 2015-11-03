@@ -1,5 +1,8 @@
 ## change log ##
 
+* 2015-11-02: orrportal 2.5.2
+  - remove unused org.mmisw.orrportal.gwt.server.Util
+  
 * 2015-10-29: orrportal 2.5.1
   - fix #354 "error registering the SSN sensor ontology"
     The createOntologyInfo.getUri() now has precedence to retrieve the ontology resource from the model.
