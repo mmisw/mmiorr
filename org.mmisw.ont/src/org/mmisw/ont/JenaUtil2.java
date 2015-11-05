@@ -38,33 +38,33 @@ import com.hp.hpl.jena.vocabulary.RDF;
 
 /**
  * Various supporting Jena-based operations.
- * <p> 
+ * <p>
  * Some of these methods adapted from edu.drexel.util.rdf.JenaUtil.
- * 
+ *
  * @author Carlos Rueda
  */
 public class JenaUtil2 {
 	private JenaUtil2() {}
 
-	
+
 	private static final Log log = LogFactory.getLog(JenaUtil2.class);
 
 	/** Fragment separator.
-	 * 
+	 *
 	 * This is related with Issue 27: URIs have # signs instead of / before terms:
 	 *    http://code.google.com/p/mmisw/issues/detail?id=27
-	 *    
+	 *
 	 * 2008-11-14: re-setting to slash (/) to do more tests.
 	 */
 	private static final String FRAG_SEPARATOR = "/" ;   // "#";
-	
+
 	/**
 	 * Adds a fragment separator to the given URI if it doesn't end already with a fragment separator.
-	 * 
+	 *
 	 * <p>
 	 * This is similar to JenaUtil.getURIForNS(String uri) (which always uses hash, #).
 	 * The name appendFragment better reflects what this method actually does.
-	 * 
+	 *
 	 * @param uri  A URI
 	 * @return The URI with a trailing fragment separator.
 	 */
@@ -74,25 +74,25 @@ public class JenaUtil2 {
 		}
 		return uri;
 	}
-	
+
 	/**
 	 * Removes any trailing fragment separators from the given URI.
-	 * 
+	 *
 	 * <p>
 	 * This is similar to JenaUtil.getURIForBase(String uri) (which always uses hash, #).
 	 * The name removeTrailingFragment better reflects what this method actually does.
-	 * 
+	 *
 	 * @param uri  A URI
 	 * @return The URI without any trailing fragment separators.
 	 */
 	public static String removeTrailingFragment(String uri) {
 		return uri.replaceAll("(/|#)+$", "");
 	}
-	
-	
+
+
 	/**
 	 * Replacement for JenaUtil.getOntModelAsString(OntModel model).
-	 */	
+	 */
 	public static String getOntModelAsString(Model model, String lang) {
 		StringWriter sw = new StringWriter();
 		RDFWriter writer = model.getWriter(lang);
@@ -109,17 +109,17 @@ public class JenaUtil2 {
 		return sw.getBuffer().toString();
 
 	}
-	
-	
+
+
 	/**
 	 * Removes the unused prefixes (except "") from the model.
-	 * 
+	 *
 	 * @param model the model to be updated.
 	 */
 	public static void removeUnusedNsPrefixes(Model model) {
 		// will containg the used prefixes:
 		Set<String> usedPrefixes = new HashSet<String>();
-		
+
 		for ( NsIterator ns = model.listNameSpaces(); ns.hasNext(); ) {
 			String namespace = ns.nextNs();
 			String prefix = model.getNsURIPrefix(namespace);
@@ -127,7 +127,7 @@ public class JenaUtil2 {
 				usedPrefixes.add(prefix);
 			}
 		}
-		
+
 		// now remove all prefix from the model except the ones in usedPrefixes;
 		// also, do not remove the empty prefix ("")
 		Map<String,String> pm = model.getNsPrefixMap();
@@ -140,12 +140,32 @@ public class JenaUtil2 {
 	}
 
 	/**
+	 * Retrieves the value of a given property from the given Ontology resource.
+	 * @param ontology
+	 * @param prop Property
+	 * @return value of the property, or null if missing.
+	 */
+	public static String getOntologyPropertyValue(Ontology ontology, Property prop) {
+		if ( ontology == null ) {
+			return null;
+		}
+		RDFNode node = ontology.getPropertyValue(prop);
+		if ( node == null ) {
+			return null;
+		}
+		return node.toString();
+	}
+
+	/**
 	 * Retrieves the value of a given property in the firt ontology resource in the model.
 	 * @param ontModel
 	 * @param prop Property
 	 * @return value of the property, or null if missing.
+	 * @deprecated use getOntologyPropertyValue(Ontology ontology, Property prop)
 	 */
+	@Deprecated
 	public static String getOntologyPropertyValue(OntModel ontModel, Property prop) {
+		if (true) throw new UnsupportedOperationException();
 		Ontology ontology = getOntology(ontModel);
 		if ( ontology == null ) {
 			return null;
@@ -157,30 +177,31 @@ public class JenaUtil2 {
 		return node.toString();
 	}
 
-	
+
 	/**
 	 * Gets the first Ontology associated with the base model of the given model.
 	 * <p>
-	 * 
+	 *
 	 * See <a href="http://jena.sourceforge.net/ontology/#metadata">this jena doc</a>
-	 * 
+	 *
 	 * @param ontModel
 	 * @return the found Ontology or null.
 	 */
 	public static Ontology getOntology(OntModel ontModel) {
-		
+		if (true) throw new UnsupportedOperationException();
+
 		OntModel mBase = ModelFactory.createOntologyModel(
                 OntModelSpec.OWL_MEM, ontModel.getBaseModel() );
 
 		Ontology ont = null;
-		
+
 		ExtendedIterator<Ontology> iter = mBase.listOntologies();
 		try {
 			if ( iter.hasNext() ) {
 				ont = iter.next();
 			}
 
-			if ( log.isDebugEnabled() ) { 
+			if ( log.isDebugEnabled() ) {
 				if ( ont != null ) {
 					if ( iter.hasNext() ) {
 						Ontology ont2 = iter.next();
@@ -201,11 +222,28 @@ public class JenaUtil2 {
 
 		return ont;
 	}
-	
-	
+
+
 	/**
 	 * Uses Omv.creationDate to get a string suitable for Omv.version
-	 * 
+	 *
+	 * @param ontology the ontology resource
+	 * @return string in version format taken from value of creationDate; null if Omv.creationDate
+	 *         value not available or cannot be parsed.
+	 */
+	public static String getVersionFromCreationDate(Ontology ontology) {
+		String version = null;
+		String creationDate = getOntologyPropertyValue(ontology, Omv.creationDate);
+		if ( creationDate != null ) {
+			version = _getVersionFromCreationDate(creationDate);
+		}
+
+		return version;
+	}
+
+	/**
+	 * Uses Omv.creationDate to get a string suitable for Omv.version
+	 *
 	 * @param model the model
 	 * @return string in version format taken from value of creationDate; null if Omv.creationDate
 	 *         value not available or cannot be parsed.
@@ -217,21 +255,21 @@ public class JenaUtil2 {
 		if ( creationDate != null ) {
 			version = _getVersionFromCreationDate(creationDate);
 		}
-		
+
 		return version;
 	}
 
-	
+
 	/**
 	 * Obtains the version (appropriate format) from the given creationDate value.
-	 * 
+	 *
 	 * @param creationDate creationDate value
 	 * @return string in version format taken from value of creationDate; null if this cannot be parsed.
 	 */
 	private static String _getVersionFromCreationDate(String creationDate) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-		
+
 		Date date = null;
 		try {
 			date = sdf.parse(creationDate);
@@ -242,25 +280,60 @@ public class JenaUtil2 {
 		if ( date == null ) {
 			return null;
 		}
-		
+
 		sdf = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		String version = sdf.format(date);
-		
+
 		return version;
 	}
 
-	
-	
-	/** 
+
+
+	/**
+	 * Sets Omv.version value if missing from the given ontology resource, taking the value from Omv.creationDate
+	 * @param ontology
+	 * @return the value of omv.version assigned to the ontology; null if no
+	 * assignment was performed.
+	 */
+	public static String setVersionFromCreationDateIfNecessary(Ontology ontology) {
+		if ( ontology == null ) {
+			return null;
+		}
+		RDFNode node = ontology.getPropertyValue(Omv.version);
+		if ( node != null ) {
+			// already assigned; keep it:
+			return null;
+		}
+		// omv.version not assigned; try to use omv.creationDate:
+		node = ontology.getPropertyValue(Omv.creationDate);
+		if ( node == null ) {
+			// not available, return with no changes:
+			return null;
+		}
+
+		String creationDate = node.toString();
+		String version = _getVersionFromCreationDate(creationDate);
+		if ( version != null ) {
+			Literal versionLit = ResourceFactory.createPlainLiteral(version);
+			ontology.setPropertyValue(Omv.version, versionLit);
+			return version;
+		}
+		return null;
+	}
+
+	/**
 	 * Sets Omv.version value if missing from the first ontology resource in the
 	 * given model, taking the value from Omv.creationDate
 	 * @param ontModel
 	 * @return the value of omv.version assigned to the ontology; null if no
 	 * assignment was performed.
+	 * @deprecated use setVersionFromCreationDateIfNecessary(Ontology ontology)
 	 */
+	@Deprecated
 	// Method created as part of the fix to issue #252: "omv:version gone?".
 	public static String setVersionFromCreationDateIfNecessary(OntModel ontModel) {
+		if (true) throw new UnsupportedOperationException();
 		Ontology ontology = getOntology(ontModel);
 		if ( ontology == null ) {
 			return null;
@@ -276,7 +349,7 @@ public class JenaUtil2 {
 			// not available, return with no changes:
 			return null;
 		}
-		
+
 		String creationDate = node.toString();
 		String version = _getVersionFromCreationDate(creationDate);
 		if ( version != null ) {

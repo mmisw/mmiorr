@@ -993,6 +993,9 @@ public class OrrClientImpl implements IOrrClient {
 
 	private CreateOntologyResult _createOntologyFullyHosted(CreateOntologyInfo createOntologyInfo, CreateOntologyResult createOntologyResult) {
 
+		final String createOntUri = createOntologyInfo.getUri();
+		log.debug("#356 _createOntologyFullyHosted; createOntologyInfo.getUri()=" + createOntUri);
+
 		Map<String, String> newValues = createOntologyInfo.getMetadataValues();
 		assert ( newValues != null ) ;
 
@@ -1148,7 +1151,7 @@ public class OrrClientImpl implements IOrrClient {
 			}
 
 			// get original namespace associated with the ontology, if any:
-			uriForEmpty = Util2.getDefaultNamespace(model, file, createOntologyResult);
+			uriForEmpty = Util2.getDefaultNamespace2(model, file, createOntologyResult);
 			// 2009-12-21: previously returning error if uriForEmpty==null. Not anymore; see below.
 
 			newContentsFileName = file.getName();
@@ -1218,8 +1221,17 @@ public class OrrClientImpl implements IOrrClient {
 
 		/////////////////////////////////////////////////////////////////
 		// Is there an existing OWL.Ontology individual?
-		// TODO Note that ONLY the first OWL.Ontology individual is considered.
-		Resource ontRes = JenaUtil2.getFirstIndividual(model, OWL.Ontology);
+		Resource ontRes = null;
+		if ( original_ns_ != null ) {
+			String originalOntologyUri = JenaUtil2.removeTrailingFragment(original_ns_);
+			ontRes = model.getOntology(originalOntologyUri);
+			log.debug("#356: createOntologyFullyHosted: model.getOntology(" +originalOntologyUri+ ") = " + ontRes);
+		}
+		//else {
+		//  // #356: don't do this; arbitrarily some OWL.Ontology individual would be considered
+		//	ontRes = JenaUtil2.getFirstIndividual(model, OWL.Ontology);
+		//}
+
 		List<Statement> prexistStatements = null;
 		if ( ontRes != null ) {
 			prexistStatements = new ArrayList<Statement>();
@@ -1467,7 +1479,7 @@ public class OrrClientImpl implements IOrrClient {
 				return createOntologyResult;
 			}
 
-			// fix #354: first try getting the ontology resource by ontUri from the model:
+			// fix #354: get ontology resource by ontUri from the model:
 			ont = model.getOntology(ontUri);
 			if (ont != null) {
 				if (log.isDebugEnabled()) {
@@ -1476,17 +1488,7 @@ public class OrrClientImpl implements IOrrClient {
 				uriForEmpty = ontUri;
 			}
 			else {
-				// else, simply use the previous logic to get the ontology:
-				if (log.isDebugEnabled()) {
-					log.debug("#354: _createOntologyReHosted: dit not get ontology object by ontUri=" + ontUri);
-				}
-
-			ont = JenaUtil2.getOntology(model);
-
-			// get original namespace associated with the ontology, if any:
-			uriForEmpty = Util2.getDefaultNamespace(model, file, createOntologyResult);
-			// 2009-12-21: previously returning error if uriForEmpty==null. Not anymore; see below.
-
+				uriForEmpty = null;
 			}
 
 			newContentsFileName = file.getName();
@@ -1506,11 +1508,11 @@ public class OrrClientImpl implements IOrrClient {
 				return createOntologyResult;
 			}
 
-			ont = JenaUtil2.getOntology(model);
+			ont = model.getOntology(ontUri);  // #356 get Ontology for the specific URI
 			if ( ont == null ) {
 				// Shouldn't happen -- we're reading in an already registered version.
-				String error = "error while getting Ontology resource a registered version. " +
-						"Please report this bug.";
+				String error = "#356: _createOntologyReHosted: dit not get ontology object from previous " +
+						"version by ontUri=" + ontUri + ". Please report this bug.";
 				log.info(error);
 				createOntologyResult.setError(error);
 				return createOntologyResult;
@@ -1558,7 +1560,7 @@ public class OrrClientImpl implements IOrrClient {
 		// The new OntModel that will contain the pre-existing attributes (if any),
 		// plus the new and updated attributes:
 		final OntModel newOntModel = OntModelUtil.createOntModel(base_, model);
-		final Ontology ont_ = JenaUtil2.getOntology(newOntModel);
+		final Ontology ont_ = newOntModel.getOntology(ontUri);
 		if ( log.isDebugEnabled() ) {
 			log.debug("New ontology created with namespace " + ns_ + " base " + base_);
 		}
@@ -1688,6 +1690,8 @@ public class OrrClientImpl implements IOrrClient {
 	// TODO remove when new mechanism is in place.
 	@SuppressWarnings("deprecation")
 	private CreateOntologyResult _createOntology_oldMethod(CreateOntologyInfo createOntologyInfo) {
+
+		log.warn("~~~~CALLED _createOntology_oldMethod");
 
 		CreateOntologyResult createOntologyResult = new CreateOntologyResult();
 
@@ -1929,7 +1933,8 @@ public class OrrClientImpl implements IOrrClient {
 				return createOntologyResult;
 			}
 
-			uriForEmpty = Util2.getDefaultNamespace(model, file, createOntologyResult);
+			uriForEmpty = Util2.getDefaultNamespace2(model, file, createOntologyResult);
+			log.debug("#356 _createOntology_oldMethod: now using getDefaultNamespace2, got uriForEmpty=" + uriForEmpty);
 
 			if ( uriForEmpty == null ) {
 				String error = "Cannot get base URI for the ontology";
@@ -2593,6 +2598,9 @@ public class OrrClientImpl implements IOrrClient {
 
 
 	public RegisterOntologyResult registerOntology_oldMethod(CreateOntologyResult createOntologyResult, LoginResult loginResult) {
+
+		log.warn("~~~~CALLED registerOntology_oldMethod");
+
 		RegisterOntologyResult registerOntologyResult = new RegisterOntologyResult();
 
 

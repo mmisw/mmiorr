@@ -25,10 +25,10 @@ import com.hp.hpl.jena.vocabulary.OWL;
  */
 class MetadataExtractor {
 	private MetadataExtractor() {}
-	
-	
+
+
 	private static final Log log = LogFactory.getLog(MetadataExtractor.class);
-	
+
 	/**
 	 * Does the preparation by reading the model from the given URI.
 	 * @param uriModel URI of the model to be loaded
@@ -38,35 +38,37 @@ class MetadataExtractor {
 	static String prepareOntologyMetadata(
 			MetadataBaseInfo metadataBaseInfo,
 			OntModel model, BaseOntologyInfo ontologyInfo) {
-		
+
+		final String ontologyUri = ontologyInfo.getUri();
+
 		if ( log.isDebugEnabled() ) {
-			log.debug("prepareOntologyMetadata: ontologyUri=" +ontologyInfo.getUri());
+			log.debug("prepareOntologyMetadata: ontologyUri=" +ontologyUri);
 		}
-		
+
 		OntologyMetadata ontologyMetadata = ontologyInfo.getOntologyMetadata();
 
-		Resource ontRes = JenaUtil2.getFirstIndividual(model, OWL.Ontology);
-		
+		Resource ontRes = model.getOntology(ontologyUri);
+
 		StringBuilder moreDetails = new StringBuilder();
-		
+
 		Map<String, Property> uriPropMap = MdHelper.getUriPropMap();
 		Map<String,String> originalValues = new HashMap<String, String>();
-		
+
 		if ( ontRes != null ) {
 			//
 			// Get values from the existing ontology resource
 			//
 			for ( AttrGroup attrGroup : metadataBaseInfo.getAttrGroups() ) {
 				for ( AttrDef attrDef : attrGroup.getAttrDefs() ) {
-					
+
 					// get value of MMI property:
 					Property mmiProp = uriPropMap.get(attrDef.getUri());
 					String prefixedMmi = MdHelper.prefixedName(mmiProp);
 					String value = JenaUtil2.getValue(ontRes, mmiProp);
-					
+
 					// DC equivalent, which is obtained if necessary
 					Property dcProp = null;
-					
+
 					if (value == null) {
 						// try a DC equivalent to use:
 						dcProp = MdHelper.getEquivalentDcProperty(mmiProp);
@@ -74,16 +76,16 @@ class MetadataExtractor {
 							value = JenaUtil2.getValue(ontRes, dcProp);
 						}
 					}
-					
+
 					if ( value != null ) {
-						
+
 						// get value:
 						if ( log.isDebugEnabled() ) {
 							log.debug("Assigning: " +attrDef.getUri()+ " = " + value);
 						}
 						originalValues.put(attrDef.getUri(), value);
-						
-						// Special case: Omv.acronym/OmvMmi.shortNameUri  
+
+						// Special case: Omv.acronym/OmvMmi.shortNameUri
 						if ( Omv.acronym.getURI().equals(attrDef.getUri()) ) {
 							// add also the value of OmvMmi.shortNameUri:
 							String shortNameValue = JenaUtil2.getValue(ontRes, OmvMmi.shortNameUri);
@@ -92,8 +94,8 @@ class MetadataExtractor {
 							}
 							originalValues.put(OmvMmi.shortNameUri.getURI(), shortNameValue);
 						}
-						
-						
+
+
 
 						// add detail:
 						if ( dcProp != null ) {
@@ -109,7 +111,7 @@ class MetadataExtractor {
 							if ( dcProp != null ) {
 								String prefixedDc = MdHelper.prefixedName(dcProp);
 								_addDetail(moreDetails, prefixedMmi, "not present", "and " +prefixedDc+ " not present either");
-							}	
+							}
 							else {
 								_addDetail(moreDetails, prefixedMmi, "not present", " not equivalent DC");
 							}
@@ -132,7 +134,7 @@ class MetadataExtractor {
 				}
 			}
 		}
-		
+
 		// add the new details if any:
 		if ( moreDetails.length() > 0 ) {
 			String details = ontologyMetadata.getDetails();
@@ -143,9 +145,9 @@ class MetadataExtractor {
 				ontologyMetadata.setDetails(details + "\n" +moreDetails.toString());
 			}
 		}
-		
+
 		ontologyMetadata.setOriginalValues(originalValues);
-		
+
 		// associate the original base URI:
 		String uri = model.getNsPrefixURI("");
 		if ( uri != null ) {
@@ -156,13 +158,13 @@ class MetadataExtractor {
 		// OK:
 		return null;
 	}
-	
+
 
 	private static void _addDetail(StringBuilder details, String a1, String a2, String a3) {
-		String str = a1 + "|" + a2 + "|" + a3; 
+		String str = a1 + "|" + a2 + "|" + a3;
 		log.info(str);
 		details.append(str + "\n");
 	}
-	
+
 
 }
