@@ -1691,6 +1691,8 @@ public class OrrClientImpl implements IOrrClient {
 	@SuppressWarnings("deprecation")
 	private CreateOntologyResult _createOntology_oldMethod(CreateOntologyInfo createOntologyInfo) {
 
+		log.warn("~~~~CALLED _createOntology_oldMethod");
+
 		CreateOntologyResult createOntologyResult = new CreateOntologyResult();
 
 		DataCreationInfo dataCreationInfo = createOntologyInfo.getDataCreationInfo();
@@ -1931,7 +1933,8 @@ public class OrrClientImpl implements IOrrClient {
 				return createOntologyResult;
 			}
 
-			uriForEmpty = Util2.getDefaultNamespace(model, file, createOntologyResult);
+			uriForEmpty = Util2.getDefaultNamespace2(model, file, createOntologyResult);
+			log.debug("#356 _createOntology_oldMethod: now using getDefaultNamespace2, got uriForEmpty=" + uriForEmpty);
 
 			if ( uriForEmpty == null ) {
 				String error = "Cannot get base URI for the ontology";
@@ -2595,6 +2598,9 @@ public class OrrClientImpl implements IOrrClient {
 
 
 	public RegisterOntologyResult registerOntology_oldMethod(CreateOntologyResult createOntologyResult, LoginResult loginResult) {
+
+		log.warn("~~~~CALLED registerOntology_oldMethod");
+
 		RegisterOntologyResult registerOntologyResult = new RegisterOntologyResult();
 
 

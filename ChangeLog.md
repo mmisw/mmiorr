@@ -2,6 +2,7 @@
 
 * 2015-11-04: orrportal 2.5.2
   - Adjustments re #356 "incorrect handling when multiple ontologies in OntModel"
+    - more use of Util2.getDefaultNamespace2, which only tries namespace of empty prefix and xml:base
   	- OrrClientImpl._createOntologyFullyHosted: more direct mechanism to get Ontology resource
   	- OrrClientImpl._createOntologyReHosted:    more direct mechanism to get Ontology resource
   

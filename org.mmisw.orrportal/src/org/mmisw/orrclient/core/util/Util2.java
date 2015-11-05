@@ -639,7 +639,9 @@ public class Util2 {
 	 * @param file
 	 * @param baseResult
 	 * @return
+	 * @deprecated use getDefaultNamespace2
 	 */
+	@Deprecated
 	public static String getDefaultNamespace(OntModel model, File file, Errorable baseResult) {
 
 		// See issues #213, #174
