@@ -643,7 +643,7 @@ public class Util2 {
 	 */
 	@Deprecated
 	public static String getDefaultNamespace(OntModel model, File file, Errorable baseResult) {
-
+		if (true) throw new UnsupportedOperationException();
 		// See issues #213, #174
 
 		// try the first ontology resource, if any:

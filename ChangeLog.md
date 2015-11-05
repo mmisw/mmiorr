@@ -1,5 +1,8 @@
 ## change log ##
 
+* 2015-11-05: ont\&orrportal 2.5.2
+  - more adjustments to fix #356 "incorrect handling when multiple ontologies in OntModel"
+  	 
 * 2015-11-04: orrportal 2.5.2
   - Adjustments re #356 "incorrect handling when multiple ontologies in OntModel"
     - more use of Util2.getDefaultNamespace2, which only tries namespace of empty prefix and xml:base

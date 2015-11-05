@@ -100,13 +100,15 @@ public class TempOntologyHelper {
 
 		log.debug("#356 getTempOntologyInfo: now using getDefaultNamespace2, got uriForEmpty=" + uriForEmpty);
 
-		tempOntologyInfo.setUri(uriForEmpty);
+		tempOntologyInfo.setUri(null);
 		if ( uriForEmpty != null ) {
+			final String ontologyUri = JenaUtil2.removeTrailingFragment(uriForEmpty);
+			tempOntologyInfo.setUri(ontologyUri);
 
-			tempOntologyInfo.setIsOntResolvable(OntServiceUtil.isOntResolvableUri(uriForEmpty));
+			tempOntologyInfo.setIsOntResolvable(OntServiceUtil.isOntResolvableUri(ontologyUri));
 
 			// get shortName as the last piece in the path but discarding any query piece
-			String path = uriForEmpty;
+			String path = ontologyUri;
 			int idx = Math.max(Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\')), path.lastIndexOf(':'));
 			String shortName = idx < 0 ? path : path.substring(idx + 1);
 			int idxQ = shortName.lastIndexOf('?');
@@ -167,8 +169,10 @@ public class TempOntologyHelper {
 	 */
 	private String prepareOntologyInfoFromUri(String uriModel, TempOntologyInfo tempOntologyInfo) {
 
+		final String ontologyUri = tempOntologyInfo.getUri();
 		if ( log.isDebugEnabled() ) {
-			log.debug("prepareOntologyInfoFromUri: uriModel=" +uriModel);
+			log.debug("prepareOntologyInfoFromUri: uriModel=" +uriModel +
+					" tempOntologyInfo.uri=" + ontologyUri);
 		}
 
 		OntModel model;
@@ -186,7 +190,7 @@ public class TempOntologyHelper {
 			debugOntModel(model);
 		}
 
-		Resource ontRes = JenaUtil2.getFirstIndividual(model, OWL.Ontology);
+		Resource ontRes = ontologyUri != null ? model.getOntology(ontologyUri) : null;
 
 		StringBuilder moreDetails = new StringBuilder();
 

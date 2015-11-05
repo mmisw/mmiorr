@@ -27,50 +27,53 @@ import com.hp.hpl.jena.vocabulary.RDF;
 
 /**
  * Gets the "unversioned" version of an ontology.
- * 
+ *
  * @author Carlos Rueda
  */
 public class UnversionedConverter {
-	
+
 	// 2009-06-03 Disabling the alteration of attribute values (so the contents will be exactly
 	// as those of the versioned ontology):
 	private static boolean ALTERATE_ANNOTATIONS = false;
 
 	private static final Log log = LogFactory.getLog(UnversionedConverter.class);
-	
-	
+
+
 	/**
 	 * Gets the "unversioned" version of a model.
 	 * See issue #24.
-	 * 
+	 *
 	 * @param model original model.
 	 * @param mmiUri The URI of the corresponding latest version.
 	 * @return the unversioned version. null if an error occurs, which will be logged.
 	 */
 	public static OntModel getUnversionedModel(OntModel model, MmiUri mmiUri) {
-		
+
 		//
 		// NOTE: I'm copying/adapting code from OrrServiceImpl.review(..):
 		//
-		
-		
+
+
 		///////////////////////////////////////////////////////////////////
 		// creation date:
 		final Date date = new Date(System.currentTimeMillis());
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		final String creationDate = sdf.format(date);
-		
+
 
 		///////////////////////////////////////////////////////////////////
 		// version:
 		// bug #243 String version = "Latest terms per " +mmiUri.getVersion();
-		String version = JenaUtil2.getOntologyPropertyValue(model, Omv.version);
-		
+		// #356: get property from the concrete Ontology:
+		Ontology ontology = model.getOntology(mmiUri.getOntologyUri());
+		String version = JenaUtil2.getOntologyPropertyValue(ontology, Omv.version);
+
 		// issue 252: "omv:version gone?"
 		// if Omv.version value is missing, "recover" it from omv:creationDate
 		if ( version == null ) {
-			version = JenaUtil2.getVersionFromCreationDate(model);
+			// #356: get version from the concrete Ontology:
+			version = JenaUtil2.getVersionFromCreationDate(ontology);
 			log.info("Using omv.creationDate to assign omv.version: " +version);
 		}
 
@@ -96,14 +99,14 @@ public class UnversionedConverter {
 			String error = "Unexpected error: No namespace for prefix \"\"";
 			log.error(error);
 			return null;
-			
+
 			// This case was manifested with the platform.owl ontology.
 		}
-		
+
 		if ( log.isDebugEnabled() ) {
 			log.debug("review: model.getNsPrefixURI(\"\") = " +uriForEmpty);
 		}
-		
+
 		// Why using JenaUtil.getURIForNS(uriForEmpty) to get the namespace?
 		// model.getNsPrefixURI("") should provide the base namespace, in fact,
 		// I verified that this call gives the right URI associated with "" in two
@@ -113,7 +116,7 @@ public class UnversionedConverter {
 		// I just take the reported URI as given by model.getNsPrefixURI(""):
 		final String original_ns_ = uriForEmpty;
 
-		
+
 //		log.info("original namespace: " +original_ns_);
 //		log.info("Setting prefix \"\" for URI " + ns_);
 		model.setNsPrefix("", ns_);
@@ -121,16 +124,20 @@ public class UnversionedConverter {
 			log.debug("     new namespace: " +ns_);
 		}
 
-		
+
 		// Update statements  according to the new namespace:
 		_replaceNameSpace(model, original_ns_, ns_);
 
-		
+
 		/////////////////////////////////////////////////////////////////
 		// Is there an existing OWL.Ontology individual?
-		// TODO Note that ONLY the first OWL.Ontology individual is considered.
-		Resource ontRes = JenaUtil2.getFirstIndividual(model, OWL.Ontology);
-		List<Statement> prexistStatements = null; 
+		String originalOntologyUri = JenaUtil2.removeTrailingFragment(original_ns_);
+		Resource ontRes = model.getOntology(originalOntologyUri);
+		log.debug("#356: createOntologyFullyHosted: model.getOntology(" +originalOntologyUri+ ") = " + ontRes);
+		//  // #356: don't do this; arbitrarily some OWL.Ontology individual would be considered
+		//	ontRes = JenaUtil2.getFirstIndividual(model, OWL.Ontology);
+		//}
+		List<Statement> prexistStatements = null;
 		if ( ontRes != null ) {
 			prexistStatements = new ArrayList<Statement>();
 //			log.info("Getting pre-existing properties for OWL.Ontology individual: " +ontRes.getURI());
@@ -138,10 +145,10 @@ public class UnversionedConverter {
 			while ( iter.hasNext() ) {
 				Statement st = iter.nextStatement();
 				prexistStatements.add(st);
-			}	
+			}
 		}
 
-		
+
 		// The new OntModel that will contain the pre-existing attributes (if any),
 		// plus the new and updated attributes:
 		final OntModel newOntModel = ModelFactory.createOntologyModel(model.getSpecification(), model);
@@ -152,19 +159,19 @@ public class UnversionedConverter {
 			log.debug("New ontology created with namespace " + ns_ + " base " + base_);
 		}
 		newOntModel.setNsPrefix("", ns_);
-		
-		
+
+
 		//////////////////////////////////////////////////////////////////////////
 		// set new values for the unversioned version:
 		Map<String, String> newValues = new HashMap<String, String>();
-		
+
 		// Set internal attributes, which are updated in the newValues map itself
 		// so we facilite the processing below:
 		newValues.put(Omv.uri.getURI(), base_);
 		if ( version != null ) {
 			newValues.put(Omv.version.getURI(), version);
 		}
-		
+
 		newValues.put(Omv.creationDate.getURI(), creationDate);
 
 
@@ -181,12 +188,12 @@ public class UnversionedConverter {
 				String newValue = newValues.get(prd.getURI());
 				if ( newValue == null || newValue.trim().length() == 0 ) {
 					// not assigned above.
-					
+
 					if ( ALTERATE_ANNOTATIONS ) {
 						// See if it's one of the ones to be modified:
 						if ( Omv.description.getURI().equals(prd.getURI()) ) {
 							// transfer modified description:
-							String description = 
+							String description =
 								"An unversioned ontology containing the latest terms as of the request time, " +
 								"for the ontology containing: " +st.getObject();
 //							log.info("  Transferring modified description: " +st.getSubject()+ " :: " +prd+ " :: " +description);
@@ -194,7 +201,7 @@ public class UnversionedConverter {
 						}
 						else if ( Omv.name.getURI().equals(prd.getURI()) ) {
 							// transfer modified title:
-							String title = 
+							String title =
 								"Unversioned form of: " +st.getObject();
 //							log.info("  Transferring modified title: " +st.getSubject()+ " :: " +prd+ " :: " +title);
 							newOntModel.add(ont_, st.getPredicate(), title);
@@ -214,19 +221,19 @@ public class UnversionedConverter {
 				else {
 //					log.info(" Not Transferring: " +prd+ " from previous version because new value " +newValue);
 				}
-			}	
-			
+			}
+
 //			log.info("Removing original OWL.Ontology individual");
 			ontRes.removeProperties();
 			// TODO the following may be unnecesary but doesn't hurt:
-			model.remove(ontRes, RDF.type, OWL.Ontology); 
+			model.remove(ontRes, RDF.type, OWL.Ontology);
 		}
 
-		
-		
+
+
 		///////////////////////////////////////////////////////
 		// Update attributes in model:
-		
+
 		ont_.addProperty(Omv.uri, base_);
 		if ( version != null ) {
 			ont_.addProperty(Omv.version, version);
@@ -234,31 +241,31 @@ public class UnversionedConverter {
 		ont_.addProperty(Omv.creationDate, creationDate);
 
 		////////////////////////////////////////////////////////////////////////
-		// Done with the model. 
+		// Done with the model.
 		////////////////////////////////////////////////////////////////////////
-		
+
 		return model;
 	}
-	
+
 	/**
 	 * Replaces a namespace in a model.
-	 * 
+	 *
 	 * @param model Model to be updated.
-	 * @param oldNameSpace 
+	 * @param oldNameSpace
 	 * @param newNameSpace
 	 */
 	private static void _replaceNameSpace(OntModel model, String oldNameSpace, String newNameSpace) {
-		
+
 		if ( log.isDebugEnabled() ) {
 			log.debug(" REPLACING NAMESPACE " +oldNameSpace+ " WITH " +newNameSpace);
 		}
-		
+
 		// old statements to be removed:
-		List<Statement> o_stmts = new ArrayList<Statement>(); 
-		
+		List<Statement> o_stmts = new ArrayList<Statement>();
+
 		// new statements to be added:
-		List<Statement> n_stmts = new ArrayList<Statement>(); 
-		
+		List<Statement> n_stmts = new ArrayList<Statement>();
+
 		// check all statements in the model:
 		StmtIterator existingStmts = model.listStatements();
 		while ( existingStmts.hasNext() ) {
@@ -266,10 +273,10 @@ public class UnversionedConverter {
 			Resource sbj = o_stmt.getSubject();
 			Property prd = o_stmt.getPredicate();
 			RDFNode obj = o_stmt.getObject();
-			
+
 			// will indicate that o_stmt is affected by the namespace change:
 			boolean any_change = false;
-			
+
 			// the new triplet, initialized with the existing statement:
 			Resource n_sbj = sbj;
 			Property n_prd = prd;
@@ -299,12 +306,12 @@ public class UnversionedConverter {
 				n_stmts.add(n_stmt);
 			}
 		}
-		
+
 		// add the new statements
 		for ( Statement n_stmt : n_stmts ) {
 			model.add(n_stmt);
 		}
-		
+
 		// remove the old statements
 		for ( Statement o_stmt : o_stmts ) {
 			model.remove(o_stmt);
