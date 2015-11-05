@@ -1,5 +1,10 @@
 ## change log ##
 
+* 2015-11-04: orrportal 2.5.2
+  - Adjustments re #356 "incorrect handling when multiple ontologies in OntModel"
+  	- OrrClientImpl._createOntologyFullyHosted: more direct mechanism to get Ontology resource
+  	- OrrClientImpl._createOntologyReHosted:    more direct mechanism to get Ontology resource
+  
 * 2015-11-02: orrportal 2.5.2
   - remove unused org.mmisw.orrportal.gwt.server.Util
   

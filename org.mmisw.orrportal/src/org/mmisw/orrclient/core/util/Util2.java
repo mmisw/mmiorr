@@ -44,7 +44,7 @@ import com.hp.hpl.jena.shared.JenaException;
 
 /**
  * Misc utilities.
- * 
+ *
  * @author Carlos Rueda
  */
 public class Util2 {
@@ -52,7 +52,7 @@ public class Util2 {
 	private static final Log log = LogFactory.getLog(Util2.class);
 
 	/** The list of languages recognized by Jena's method model.read(String, String lang).
-	 * @see #loadModelWithCheckingUtf8(File, String)  
+	 * @see #loadModelWithCheckingUtf8(File, String)
 	 */
 	public static final List<String> JENA_LANGS = Collections.unmodifiableList(Arrays.asList(
 		"RDF/XML",
@@ -60,47 +60,47 @@ public class Util2 {
 		"N-TRIPLE",
 		"TURTLE"
 	));
-	
+
 	/** The default language when reading files with Jena */
 	public static final String JENA_DEFAULT_LANG = JENA_LANGS.get(0);
-	
-	
+
+
 	/**
 	 * Checks the preexistence of an ontology to determine the possible conflict with an ontology that
 	 * is about to be uploaded as *new*.
-	 * 
+	 *
 	 * @param namespaceRoot    host-domain + ontologyRoot
-	 * 
+	 *
 	 * @param orgAbbreviation  Part of the key combination
 	 * @param shortName        Part of the key combination
-	 * 
+	 *
 	 * @param result setError will be called on this object in case an ontology exists with the given parameters
 	 *           or if any error occurred while doing the check.
-	 * 
+	 *
 	 * @return true if there is NO existing ontology with the given parameters; false if there IS an existing
 	 *            ontology OR some error occurred.  If false is returned, result.getError() will be non-null.
 	 */
 	public static boolean checkNoPreexistingOntology(String namespaceRoot, String orgAbbreviation, String shortName, BaseResult result) {
 		// See issue 63: http://code.google.com/p/mmisw/issues/detail?id=63
-		
+
 		// the (unversioned) URI to check for preexisting ontology:
 		String possibleOntologyUri = namespaceRoot + "/" +
         							orgAbbreviation + "/" +
         							shortName;
-		
+
 		return checkNoPreexistingOntology(possibleOntologyUri, result);
 	}
-	
-	
+
+
 	/**
 	 * Checks the preexistence of an ontology to determine the possible conflict with an ontology that
 	 * is about to be uploaded as *new*.
-	 * 
+	 *
 	 * @param possibleOntologyUri URI to test.
-	 * 
+	 *
 	 * @param result setError will be called on this object in case an ontology exists with the given parameters
 	 *           or if any error occurred while doing the check.
-	 * 
+	 *
 	 * @return true if there is NO existing ontology with the given parameter; false if there IS an existing
 	 *            ontology OR some error occurred.  If false is returned, result.getError() will be non-null.
 	 */
@@ -108,9 +108,9 @@ public class Util2 {
 		if ( log.isDebugEnabled() ) {
 			log.debug("New submission; checking for preexisting ontology with unversioned URI: " +possibleOntologyUri);
 		}
-		
+
 		boolean possibleOntologyExists = false;
-		
+
 		// we just need to know whether this URI resolves against the registry:
 		try {
 			possibleOntologyExists = OntServiceUtil.isRegisteredOntologyUri(possibleOntologyUri);
@@ -122,14 +122,14 @@ public class Util2 {
 			result.setError(info+ "\n\n Please try later.");
 			return false;
 		}
-		
+
 		if ( possibleOntologyExists ) {
 			String info = "There is already a registered ontology with URI: " +possibleOntologyUri;
-			
+
 			if ( log.isDebugEnabled() ) {
 				log.debug(info);
 			}
-			
+
 			result.setError(info+ "\n\n" +
 					"Note: if you want to submit a new version for the above ontology, " +
 					"then you would need to browse to that entry in the main repository interface " +
@@ -137,35 +137,35 @@ public class Util2 {
 			);
 			return false;
 		}
-		
+
 		// OK, no preexisting ontology:
 		return true;
 	}
 
 	/**
 	 * Checks the new ontology URI key combination for possible changes.
-	 * 
+	 *
 	 * @param namespaceRoot    host-domain + ontologyRoot
-	 * 
+	 *
 	 * @param originalOrgAbbreviation  Part of the original key combination
 	 * @param originalShortName        Part of the original key combination
-	 * 
+	 *
 	 * @param orgAbbreviation  Part of the key combination
 	 * @param shortName        Part of the key combination
-	 * 
+	 *
 	 * @param result setError will be called on this object if there are any changes in the key combination.
-	 * 
-	 * @return true if OK. 
+	 *
+	 * @return true if OK.
 	 *         false if there IS any error (result.getError() will be non-null).
 	 */
 	public static boolean checkUriKeyCombinationForNewVersion(
-			String originalOrgAbbreviation, String originalShortName, 
+			String originalOrgAbbreviation, String originalShortName,
 			String orgAbbreviation, String shortName, BaseResult result) {
-		
+
 		// See issue 98: http://code.google.com/p/mmisw/issues/detail?id=98
 		//               "new version allows the shortName and authority to be changed"
-		
-		
+
+
 		if ( originalOrgAbbreviation == null ) {
 			result.setError("No original authority given!");
 			return false;
@@ -174,8 +174,8 @@ public class Util2 {
 			result.setError("No short name given!");
 			return false;
 		}
-		
-		
+
+
 		StringBuffer error = new StringBuffer();
 
 		if ( ! originalOrgAbbreviation.equals(orgAbbreviation) ) {
@@ -187,14 +187,14 @@ public class Util2 {
 			error.append("\n   New resource type: \"" +shortName+ "\"" +
 					"  Original: \"" +originalShortName+ "\"");
 		}
-		
+
 		if ( error.length() > 0 ) {
 			String info = "Key component(s) for the ontology URI have changed: " +error;
-			
+
 			if ( log.isDebugEnabled() ) {
 				log.debug(info);
 			}
-			
+
 			result.setError(info+ "\n\n" +
 					"The ontology would be submitted as a new entry in the repository " +
 					"and not as a new version of the base ontology. " +
@@ -205,25 +205,25 @@ public class Util2 {
 			);
 			return false;
 		}
-		
+
 		// OK:
 		return true;
 	}
 
 	/**
 	 * Determines if the given resource is "located" in the given namespace.
-	 * 
+	 *
 	 * <p>
 	 * If namespace ends with '/' or '#', this will be true iff namespace.equals(resource.getNameSpace()).
 	 * Otherwise, this will be true iff resource.getNameSpace() without the trailing
-	 * separator ('/' or '#', if any) is equal to namespace. 
+	 * separator ('/' or '#', if any) is equal to namespace.
 	 * @param resource
 	 * @param namespace
 	 * @return
 	 */
 	private static boolean _inNamespace(Resource resource, String namespace) {
 		String resourceNamespace = resource.getNameSpace();
-		
+
 		if ( namespace.endsWith("/") || namespace.endsWith("#") ) {
 			return namespace.equals(resourceNamespace);
 		}
@@ -231,35 +231,35 @@ public class Util2 {
 			return resourceNamespace != null && namespace.equals(resourceNamespace.replaceAll("(/|#)$", ""));
 		}
 	}
-	
+
 	/**
 	 * Replaces any statement having an element in the given oldNameSpace with a
 	 * correponding statement in the new namespace.
 	 * <p>
 	 * (Doesn't jena have a utility for doing this?)
-	 * 
+	 *
 	 * @param model
 	 * @param oldNameSpace
 	 * @param newNameSpace
 	 */
 	// TODO: Use function from "ont" project (the utility is replicated here for the moment)
 	public static void replaceNameSpace(OntModel model, String oldNameSpace, String newNameSpace) {
-		
+
 		//log.debug(" REPLACING NS " +oldNameSpace+ " WITH " +newNameSpace);
-		
+
 		// old statements to be removed:
-		List<Statement> o_stmts = new ArrayList<Statement>(); 
-		
+		List<Statement> o_stmts = new ArrayList<Statement>();
+
 		// new statements to be added:
-		List<Statement> n_stmts = new ArrayList<Statement>(); 
-		
+		List<Statement> n_stmts = new ArrayList<Statement>();
+
 		StmtIterator existingStmts = model.listStatements();
 		while ( existingStmts.hasNext() ) {
 			Statement o_stmt = existingStmts.nextStatement();
 			Resource sbj = o_stmt.getSubject();
 			Property prd = o_stmt.getPredicate();
 			RDFNode obj = o_stmt.getObject();
-			
+
 			boolean any_change = false;
 			Resource n_sbj = sbj;
 			Property n_prd = prd;
@@ -291,31 +291,31 @@ public class Util2 {
 				//log.debug(" #### " +o_stmt);
 			}
 		}
-		
+
 		for ( Statement n_stmt : n_stmts ) {
 			model.add(n_stmt);
 		}
-		
+
 		for ( Statement o_stmt : o_stmts ) {
 			model.remove(o_stmt);
 		}
 	}
 
 	/**
-	 * Sets the missing DC attrs that have defined equivalent MMI attrs: 
+	 * Sets the missing DC attrs that have defined equivalent MMI attrs:
 	 */
 	public static void setDcAttributes(Ontology ont_) {
 		for ( Property dcProp : MdHelper.getDcPropertiesWithMmiEquivalences() ) {
-			
+
 			// does dcProp already have an associated value?
-			String value = JenaUtil2.getValue(ont_, dcProp); 
-			
+			String value = JenaUtil2.getValue(ont_, dcProp);
+
 			if ( value == null || value.trim().length() == 0 ) {
-				// No.  
+				// No.
 				// Then, take the value from the equivalent MMI attribute if defined:
 				Property mmiProp = MdHelper.getEquivalentMmiProperty(dcProp);
 				value = JenaUtil2.getValue(ont_, mmiProp);
-				
+
 				if ( value != null && value.trim().length() > 0 ) {
 					// we have a value for DC from the equivalente MMI attr.
 					if ( log.isDebugEnabled() ) {
@@ -327,15 +327,15 @@ public class Util2 {
 		}
 	}
 
-	
+
 	/**
 	 * Reads an RDF file.
 	 * @param file the file to read in
 	 * @return the contents of the text file.
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public static String readRdf(File file) throws IOException {
-		
+
 		// make sure the file can be loaded as a model:
 		String uriFile = file.toURI().toString();
 		try {
@@ -345,9 +345,9 @@ public class Util2 {
 			String error = ex.getClass().getName()+ " : " +ex.getMessage();
 			throw new IOException(error);
 		}
-		
 
-		
+
+
 		BufferedReader is = null;
 		try {
 			is = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
@@ -369,13 +369,13 @@ public class Util2 {
 	 * then it checks if the problem is related with the parsing or UTF-8 encoding.
 	 * The idea is to be a bit more specific about the UTF-8-related error if that's the most
 	 * likely case.
-	 * 
+	 *
 	 * @param file the file to read in
 	 * @return the contents of the text file.
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public static String readRdfWithCheckingUtf8(File file) throws IOException {
-		
+
 		// make sure the file can be loaded as a model:
 		String uriFile = file.toURI().toString();
 		try {
@@ -386,11 +386,11 @@ public class Util2 {
 			String errorMessage = getXmlParseExceptionErrorMessage(jenaExc);
 			if ( errorMessage != null ) {
 				// Ok, we know it's a parse exception and we could throw error right here;
-				
+
 				// But let's try to capture what the possible charsets are:
 				// TODO: this re-test may be adding significant processing time especially for large
 				// files--the overall detection/verification mechanism should a one-pass thing.
-				
+
 				try {
 					Utf8Util.verifyUtf8(file);
 				}
@@ -398,17 +398,17 @@ public class Util2 {
 					String utfError = utfExc.getMessage();
 					errorMessage += "\n\n" + utfError;
 				}
-				
+
 				if ( log.isDebugEnabled() ) {
 					log.debug("readRdfWithCheckingUtf8: " +errorMessage);
 				}
-				
+
 				throw new IOExceptionWithCause(errorMessage, jenaExc);
 			}
-			
-			// the following verifyUtf8 was done before I wrote and called the getXmlParseExceptionErrorMessage 
+
+			// the following verifyUtf8 was done before I wrote and called the getXmlParseExceptionErrorMessage
 			// method above;   just keeping the verifyUtf8 here although perhaps it's redundant:
-			
+
 			// perhaps because not UTF-8? Try the check directly:
 			try {
 				Utf8Util.verifyUtf8(file);
@@ -424,7 +424,7 @@ public class Util2 {
 			String error = jenaExc.getClass().getName()+ " : " +jenaExc.getMessage();
 			throw new IOException(error);
 		}
-		
+
 		InputStream is = null;
 		try {
 			is = new FileInputStream(file);
@@ -439,25 +439,25 @@ public class Util2 {
 
 	/**
 	 * Reads an ontology from a file.
-	 *  
+	 *
 	 * If Jena fails to load the file,
 	 * then it checks if the problem is related with the encoding UTF-8.
 	 * The idea is to be a bit more specific about the UTF-8-related error if that's the most
 	 * likely case.
-	 * 
+	 *
 	 * @param file
 	 * @param lang A language recognized by Jena. See {@link #JENA_LANGS}.
 	 * @return
-	 * @throw IllegalArgumentException if lang is not a valid language. 
+	 * @throw IllegalArgumentException if lang is not a valid language.
 	 * @throws IOException
 	 */
 	public static OntModel loadModelWithCheckingUtf8(File file, String lang) throws IOException {
-		
+
 		if ( lang != null && ! JENA_LANGS.contains(lang) ) {
 			throw new IllegalArgumentException("lang argument must be null or one of " +JENA_LANGS);
 		}
-		
-		
+
+
 		String uriFile = file.toURI().toString();
 		try {
 			OntModel model = _loadModel(uriFile, lang, false);
@@ -469,10 +469,10 @@ public class Util2 {
 			if ( errorMessage != null ) {
 				throw new IOExceptionWithCause(errorMessage, jenaExc);
 			}
-			
-			// the following verifyUtf8 was done before I wrote and called the getXmlParseExceptionErrorMessage 
+
+			// the following verifyUtf8 was done before I wrote and called the getXmlParseExceptionErrorMessage
 			// method above;   just keeping the verifyUtf8 here although perhaps it's redundant:
-			
+
 			// perhaps because not UTF-8? Try the check directly:
 			try {
 				Utf8Util.verifyUtf8(file);
@@ -486,9 +486,9 @@ public class Util2 {
 			// other kind of problem:
 			String error = jenaExc.getClass().getName()+ " : " +jenaExc.getMessage();
 			throw new IOExceptionWithCause(error, jenaExc);
-		}	
+		}
 	}
-	
+
 	private static OntModel _loadModel(String uriModel, String lang, boolean processImports) {
 
 		OntModel model = null;
@@ -516,14 +516,14 @@ public class Util2 {
 
 		String xmlbase = null;
 		String namespace = null;
-		
+
 		if ( base != null ) {
 			xmlbase = JenaUtil2.removeTrailingFragment(base);
 			namespace = JenaUtil2.appendFragment(base);
 		}
-		
+
 		FileOutputStream out = new FileOutputStream(file);
-		
+
 		try {
 			if ( false ) {
 				model.write(out, "RDF/XML-ABBREV", base);
@@ -548,7 +548,7 @@ public class Util2 {
 
 
 
-	
+
 	/**
 	 * Helper to determine it's a SAXParseException so we can provide a bit of more
 	 * information.
@@ -559,12 +559,12 @@ public class Util2 {
 		if ( ! (jenaExc instanceof JenaException ) ) {
 			return null;
 		}
-		
+
 		Throwable cause = jenaExc.getCause();
 		if ( ! (cause instanceof SAXParseException ) ) {
 			return null;
 		}
-		
+
 		SAXParseException spe = (SAXParseException) cause;
 		String errorMessage = spe.getMessage() +
 			"\n  Line number: " + spe.getLineNumber()+" Column number: " +spe.getColumnNumber()
@@ -573,20 +573,57 @@ public class Util2 {
 		;
 
 		return errorMessage;
-			
+
 	}
 
 	/**
-	 * Returns the URI associated with xml:base, if defined in the document. If xml:base is not defined, 
-	 * then it returns file.toURI().toString(). 
-	 * See  
+	 * Returns the URI associated with xml:base, if defined in the document. If xml:base is not defined,
+	 * then it returns file.toURI().toString().
+	 * See
 	 * <a href="http://www.w3.org/TR/2003/PR-rdf-syntax-grammar-20031215/#section-Syntax-ID-xml-base"
 	 * >this section in the RDF/XML systax spec</a>.
-	 * 
+	 *
 	 * @param file   Used to obtain xml:base from its contents, if any, or the URI of the file itself.
 	 * @param baseResult  setError(e) will be called if not value can be obtained
 	 * @return  the namespace.  null in case of not finding any value.
 	 */
+
+	/**
+	 * Gets the namespace associated with the given model/file. The first namespace according to
+	 * the following sequence is returned:
+	 * <ul>
+	 * <li> namespace associated with the empty prefix, if any;
+	 * <li> URI of the xml:base of the document, if any;
+	 * <li> null, otherwise.
+	 * </ul>
+	 */
+	public static String getDefaultNamespace2(OntModel model, File file, Errorable baseResult) {
+
+		// try namespace of the empty prefix, if any:
+		String namespace = model.getNsPrefixURI("");
+		if ( namespace != null ) {
+			return namespace;
+
+		}
+
+		// try the xml:base:
+		try {
+			String rdf;
+			rdf = readRdf(file);
+			URI xmlBaseUri = XmlBaseExtractor.getXMLBase(new InputSource(new StringReader(rdf)));
+			if ( xmlBaseUri != null ) {
+				namespace = xmlBaseUri.toString();
+				return namespace;
+			}
+		}
+		catch (Exception e) {
+			String error = "error while trying to read xml:base attribute: " +e.getMessage();
+			log.warn(error, e);
+			baseResult.setError(error);
+		}
+
+		return null;
+	}
 
 	/**
 	 * Gets the namespace associated with the given model. The first namespace according to
@@ -597,7 +634,7 @@ public class Util2 {
 	 * <li> URI of the xml:base of the document, if any;
 	 * <li> null, otherwise.
 	 * </ul>
-	 * 
+	 *
 	 * @param model
 	 * @param file
 	 * @param baseResult
@@ -606,19 +643,19 @@ public class Util2 {
 	public static String getDefaultNamespace(OntModel model, File file, Errorable baseResult) {
 
 		// See issues #213, #174
-		
+
 		// try the first ontology resource, if any:
 		Ontology ont = JenaUtil2.getOntology(model);
 		if ( ont != null ) {
-			String namespace = ont.getURI();	
+			String namespace = ont.getURI();
 			return namespace;
 		}
-		
+
 		// try namespace of the empty prefix, if any:
 		String namespace = model.getNsPrefixURI("");
 		if ( namespace != null ) {
 			return namespace;
-			
+
 		}
 
 		// finally, try the xml:base:
@@ -636,21 +673,21 @@ public class Util2 {
 			log.warn(error, e);
 			baseResult.setError(error);
 		}
-		
-		
+
+
 		return null;
 	}
-	
+
 
 //	OLD getDefaultNamespace
 //	/**
 //	 * Returns <code>model.getNsPrefixURI("")</code> if it's non-null; otherwise the URI
-//	 * associated with xml:base, if defined in the document. If xml:base is not defined, 
-//	 * then it returns file.toURI().toString(). 
-//	 * See for example  
+//	 * associated with xml:base, if defined in the document. If xml:base is not defined,
+//	 * then it returns file.toURI().toString().
+//	 * See for example
 //	 * <a href="http://www.w3.org/TR/2003/PR-rdf-syntax-grammar-20031215/#section-Syntax-ID-xml-base"
 //	 * >this section in the RDF/XML systax spec</a>.
-//	 * 
+//	 *
 //	 * @param model  to call <code>model.getNsPrefixURI("")</code>
 //	 * @param file   if necessary, used to obtain xml:base if any, or the URI of the file itself.
 //	 * @param baseResult  setError(e) will be called if not value can be obtained
@@ -682,17 +719,17 @@ public class Util2 {
 //				return null;
 //			}
 //		}
-//		
+//
 //		return namespace;
 //	}
 
 
 	private static Random random = new Random();
-	
+
 	public static String generatePassword() {
 		final int len = 7;
 		StringBuilder sb = new StringBuilder();
-		
+
 		while ( sb.length() < len ) {
 			int nn;
 			if ( random.nextDouble() < 2./3 ) {
