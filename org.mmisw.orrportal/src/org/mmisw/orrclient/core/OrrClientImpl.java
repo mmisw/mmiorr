@@ -1525,8 +1525,6 @@ public class OrrClientImpl implements IOrrClient {
 
 		final String original_base_ = uriForEmpty == null ? null : JenaUtil2.removeTrailingFragment(uriForEmpty);
 
-		// and this is the info for the requested URI:
-		final String ns_ = JenaUtil2.appendFragment(ontUri);
 		final String base_ = JenaUtil2.removeTrailingFragment(ontUri);
 
 		log.info("createOntologyReHosted: original namespace: " +original_base_);
@@ -1562,7 +1560,7 @@ public class OrrClientImpl implements IOrrClient {
 		final OntModel newOntModel = OntModelUtil.createOntModel(base_, model);
 		final Ontology ont_ = newOntModel.getOntology(ontUri);
 		if ( log.isDebugEnabled() ) {
-			log.debug("New ontology created with namespace " + ns_ + " base " + base_);
+			log.debug("New ontology created with namespace " + newOntModel.getNsPrefixURI("") + " base " + base_);
 		}
 
 		// Set internal attributes, which are updated in the newValues map itself
