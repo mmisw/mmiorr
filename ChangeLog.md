@@ -1,5 +1,10 @@
 ## change log ##
 
+* 2015-11-06: ont\&orrportal 2.5.2
+  - fix #359 "namespace for empty prefix not retained in re-hosted registration"
+    Also verified fully-hosted submission continue to work correctly (in this case, as usual, with 
+    translation to using the `/` fragment separator regardless of original separator.
+    
 * 2015-11-05: ont\&orrportal 2.5.2
   - more adjustments to fix #356 "incorrect handling when multiple ontologies in OntModel"
   	 

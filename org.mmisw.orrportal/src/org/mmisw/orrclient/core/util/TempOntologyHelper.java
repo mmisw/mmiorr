@@ -291,13 +291,6 @@ public class TempOntologyHelper {
 
 		tempOntologyInfo.getOntologyMetadata().setOriginalValues(originalValues);
 
-		// associate the original base URI:
-		String uri = model.getNsPrefixURI("");
-		if ( uri != null ) {
-			String base_ = JenaUtil2.removeTrailingFragment(uri);
-			tempOntologyInfo.setUri(base_);
-		}
-
 		// OK:
 		return null;
 	}
