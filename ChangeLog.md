@@ -2,6 +2,8 @@
 
 * 2015-11-06: ont\&orrportal 2.5.3
   - refactoring in orrportal to facilitate possible reimplementation of interface against repository
+  	- extract Manager from IOrrClient such that it becomes easier to replace the implementation in 
+  	  new factory OrrClientFactory.
     - extract some basic definitions from ont-client library into a new ont-defs library.
   
 * 2015-11-06: ont\&orrportal 2.5.2

@@ -17,6 +17,7 @@ import org.mmisw.ont.mmiuri.MmiUri;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.orrclient.IOrrClient;
 import org.mmisw.orrclient.OrrClientConfiguration;
+import org.mmisw.orrclient.OrrClientFactory;
 import org.mmisw.orrclient.core.util.OntServiceUtil;
 import org.mmisw.orrclient.gwt.client.rpc.InternalOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
@@ -27,23 +28,23 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 /**
  * Functionality related with internal information (users, groups, permissions, issues)
- * 
+ *
  * <p>
  * Status: preliminary implementation
- * 
+ *
  * @author Carlos Rueda
  */
 public class InternalManager {
-	
+
 	private static final Log log = LogFactory.getLog(InternalManager.class);
-	
-	
+
+
 	/**
 	 * Prepares the users instantiation ontology.
 	 * @param orrClient Used to obtain previous version, if any.
 	 * @param loginResult Only the administrator can perform this operation.
 	 * @param result to return the result of the operation
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	static void prepareUsersOntology(
 			IOrrClient orrClient,
@@ -51,26 +52,26 @@ public class InternalManager {
 			LoginResult loginResult,
 			InternalOntologyResult result
 	) throws Exception {
-		
+
 		log.debug("prepareUsersOntology called.");
-		
+
 		if ( loginResult == null || ! loginResult.isAdministrator() ) {
 			result.setError("Only an administrator can perform this operation.");
 			return;
 		}
-		
+
 		// get the user RDF from the Ont service:
 		String rdf = OntServiceUtil.getUsersRdf();
-		
+
 		// get the users RDF URI, assumed to be versioned:
 		String generatedUsersUri = _getUsersUri(rdf);
 		MmiUri mmiUri = new MmiUri(generatedUsersUri);
 		String version = mmiUri.getVersion();
-		
-		// unversioned URI for purposes of geting possible prior version, set up auqportal filename, 
+
+		// unversioned URI for purposes of geting possible prior version, set up auqportal filename,
 		// graphId, and report it in the result back to caller:
 		final String unversUsersUri = mmiUri.copyWithVersion(null).getOntologyUri();
-		
+
 		// info from previous version if any:
 		String ontologyId = null;
 		String ontologyUserId = null;
@@ -79,11 +80,11 @@ public class InternalManager {
 			ontologyId = usersOntology.getOntologyId();
 			ontologyUserId = usersOntology.getOntologyUserId();
 		}
-		
+
 		// set some associated attributes for the registration:
 		Map<String, String> newValues = _getValues(loginResult, "MMI ORR Users", version);
 		String fileName = AquaUtil.getAquaportalFilename(unversUsersUri);
-		
+
 		// register:
         String res = uploadOntology(ontClient,
                 generatedUsersUri, fileName, rdf,
@@ -95,14 +96,14 @@ public class InternalManager {
 		if ( res.startsWith("OK") ) {
 			result.setUri(unversUsersUri);
 			result.setInfo(res);
-			
+
 			// TODO: indicate graph for the internal information.
 			// for now, only associting with graph of the same URI, so we indicate null here::
 			String graphId = null;
-			
+
 			// request that the ontology be loaded in the desired graph:
 			OntServiceUtil.loadOntologyInGraph(unversUsersUri, graphId);
-			
+
 			log.info("prepareUsersOntology = " +result);
 		}
 		else {
@@ -116,7 +117,7 @@ public class InternalManager {
 		final Model model = ModelFactory.createDefaultModel();
 		model.read(new StringReader(rdf), null);
 		String ns = model.getNsPrefixURI("");
-		
+
 		String uri = JenaUtil2.removeTrailingFragment(ns);
 		return uri;
 	}
@@ -124,11 +125,11 @@ public class InternalManager {
 
 	private static Map<String, String> _getValues(LoginResult loginResult, String name, String version) {
 		Map<String, String> values = new HashMap<String, String>();
-		
+
 		values.put(Omv.name.getURI(), name);
 		values.put(Omv.hasCreator.getURI(), loginResult.getUserName());
 		values.put(Omv.version.getURI(), version);
-		
+
 		return values;
 	}
 
@@ -146,7 +147,7 @@ public class InternalManager {
 	 * @param orrClient Used to obtain previous version, if any.
 	 * @param loginResult Only the administrator can perform this operation.
 	 * @param result to return the result of the operation
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	static void createGroupsOntology(
 			IOrrClient orrClient,
@@ -154,23 +155,23 @@ public class InternalManager {
 			LoginResult loginResult,
 			InternalOntologyResult result
 	) throws Exception {
-		
+
 		log.debug("createGroupsOntology called.");
-		
+
 		if ( loginResult == null || ! loginResult.isAdministrator() ) {
 			result.setError("Only an administrator can perform this operation.");
 			return;
 		}
-		
+
 		String ontServiceUrl = _config().getOntServiceUrl();
 		final String unversGroupsUri = ontServiceUrl+ "/mmiorr-internal/groups";
-		
+
 		RegisteredOntologyInfo groupsOntology = orrClient.getOntologyInfo(unversGroupsUri);
 		if ( groupsOntology != null ) {
 			result.setError(unversGroupsUri+ ": ontology already registered.");
 			return;
 		}
-		
+
 		final String ontologyId = null;
 		final String ontologyUserId = null;
 
@@ -178,10 +179,10 @@ public class InternalManager {
 		// set some associated attributes for the registration:
 		Map<String, String> newValues = _getValues(loginResult, "MMI ORR Groups",  version);
 		String fileName = AquaUtil.getAquaportalFilename(unversGroupsUri);
-		
+
 		// the versioned form for the registration:
 		String versionedUsersUri = new MmiUri(unversGroupsUri).copyWithVersion(version).getOntologyUri();
-		
+
 		String rdf = _getGroupsRdf(versionedUsersUri, version);
 		// register:
         String res = uploadOntology(ontClient,
@@ -194,23 +195,23 @@ public class InternalManager {
 		if ( res.startsWith("OK") ) {
 			result.setUri(unversGroupsUri);
 			result.setInfo(res);
-			
+
 			// TODO: indicate graph for the internal information.
 			// for now, only associting with graph of the same URI, so we indicate null here:
 			String graphId = null;
-			
+
 			// request that the ontology be loaded in the desired graph:
 			OntServiceUtil.loadOntologyInGraph(unversGroupsUri, graphId);
-			
+
 			log.info("createGroupsOntology = " +result);
 		}
 		else {
 			result.setError(res);
 		}
 	}
-	
+
 	private static OrrClientConfiguration _config() {
-		OrrClientConfiguration config = IOrrClient.Manager.getOrrClient().getConfiguration();
+		OrrClientConfiguration config = OrrClientFactory.getOrrClient().getConfiguration();
 		return config;
 	}
 
@@ -219,16 +220,16 @@ public class InternalManager {
 	 */
 	private static String _getGroupsRdf(String versionedUsersUri, String version) {
 		final String MMIORR_NS = "http://mmisw.org/ont/mmi/mmiorr/";
-		
+
 		log.debug("_getGroupsRdf called.");
-		
+
 		String ontServiceUrl = _config().getOntServiceUrl();
 		final String groups_ns = ontServiceUrl+ "/mmiorr-internal/" +version+ "/groups/";
-		
+
 		final Model model = ModelFactory.createDefaultModel();
 		model.setNsPrefix("mmiorr", MMIORR_NS);
 		model.setNsPrefix("", groups_ns);
-		
+
 		String result = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV");
 		return result;
 	}
@@ -239,7 +240,7 @@ public class InternalManager {
 //	 * @param server Used to obtain previous version, if any.
 //	 * @param loginResult Only the administrator can perform this operation.
 //	 * @param result to return the result of the operation
-//	 * @throws Exception 
+//	 * @throws Exception
 //	 */
 //	static void createGroup(
 //			IOrrClient server,
@@ -249,33 +250,33 @@ public class InternalManager {
 //			String groupDescription,
 //			InternalOntologyResult result
 //	) throws Exception {
-//		
+//
 //		log.debug("createGroup called.");
-//		
+//
 //		if ( loginResult == null || ! loginResult.isAdministrator() ) {
 //			result.setError("Only an administrator can perform this operation.");
 //			return;
 //		}
-//		
+//
 //		final String unversGroupsUri = _config().getOntServiceUrl()+ "/mmiorr-internal/groups";
-//		
+//
 //		RegisteredOntologyInfo groupsOntology = server.getOntologyInfo(unversGroupsUri);
 //		if ( groupsOntology == null ) {
 //			result.setError(unversGroupsUri+ ": does not exist.");
 //			return;
 //		}
-//		
+//
 //		String ontologyId = groupsOntology.getOntologyId();
 //		String ontologyUserId = groupsOntology.getOntologyUserId();
-//		
+//
 //		String version = _getVersionCurrentTime();
 //		// set some associated attributes for the registration:
 //		Map<String, String> newValues = _getValues(loginResult, "MMI ORR Groups",  version);
 //		String fileName = AquaUtil.getAquaportalFilename(unversGroupsUri);
-//		
+//
 //		// register:
 //		String res = uploadOntology(ontClient,
-//				generatedUsersUri, fileName, rdf, 
+//				generatedUsersUri, fileName, rdf,
 //				loginResult,
 //				ontologyId, ontologyUserId,
 //				newValues
@@ -284,14 +285,14 @@ public class InternalManager {
 //		if ( res.startsWith("OK") ) {
 //			result.setUri(unversGroupsUri);
 //			result.setInfo(res);
-//			
+//
 //			// TODO: indicate graph for the internal information.
 //			// for now, only associting with graph of the same URI:
 //			String graphId = unversGroupsUri;
-//			
+//
 //			// request that the ontology be loaded in the desired graph:
 //			OntServiceUtil.loadOntologyInGraph(unversGroupsUri, graphId);
-//			
+//
 //			log.info("prepareUsersOntology = " +result);
 //		}
 //		else {
