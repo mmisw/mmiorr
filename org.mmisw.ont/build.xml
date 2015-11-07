@@ -56,6 +56,20 @@
 	</target>
 
 	<!-- ==================================================================== -->
+	<!-- defs library -->
+
+	<target name="defs-lib" depends="compile" description="creates the ont.defs library">
+		<mkdir dir="${build.dir}/lib" />
+		<jar destfile="org.mmisw.ont.defs.jar">
+			<fileset dir="${build.dir}/classes">
+				<include name="org/mmisw/ont/mmiuri/MmiUri.class" />
+				<include name="org/mmisw/ont/vocabulary/**/*.class" />
+				<include name="org/mmisw/ont/JenaUtil2.class" />
+			</fileset>
+		</jar>
+	</target>
+
+	<!-- ==================================================================== -->
 	<!-- client library -->
 
 	<target name="client-lib" depends="compile" description="creates the MMI Ont Client library">
@@ -64,9 +78,6 @@
 			<fileset dir="${build.dir}/classes">
 				<include name="org/mmisw/ont/OntVersion.class" />
 				<include name="org/mmisw/ont/version.properties" />
-				<include name="org/mmisw/ont/mmiuri/MmiUri.class" />
-				<include name="org/mmisw/ont/vocabulary/**/*.class" />
-				<include name="org/mmisw/ont/JenaUtil2.class" />
 				<include name="org/mmisw/ont/client/**/*.class" />
 			</fileset>
 		</jar>
