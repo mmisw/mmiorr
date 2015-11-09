@@ -1,6 +1,7 @@
 package org.mmisw.orrclient.gwt.client.rpc;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * Spec of a SPARQL query.
@@ -88,5 +89,14 @@ public class SparqlQueryInfo implements Serializable {
 		this.infer = infer;
 		return this;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "SparqlQueryInfo{" +
+				"query=" + query +
+				", infer=" + infer +
+				", format=" + format +
+				", acceptEntries=" + Arrays.toString(acceptEntries) +
+				'}';
+	}
 }
