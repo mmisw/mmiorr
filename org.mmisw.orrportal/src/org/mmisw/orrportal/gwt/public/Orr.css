@@ -410,3 +410,19 @@ body {
   filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#f6f6f6');
   background-color:#ffffff;
 }
+
+table.inline2 {
+  font-size: normal;
+  background-color: #ffffff;
+  border-spacing: 0px;
+  border-collapse: collapse;
+}
+table.inline2 th {
+  padding: 8px !important;
+  border: 1px solid #8cacbb !important;
+  background-color: #dee7ec !important;
+}
+table.inline2 td {
+  padding: 8px !important;
+  border: 1px solid #8cacbb !important;
+}
