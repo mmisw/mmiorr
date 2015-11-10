@@ -2,10 +2,10 @@ build.properties
 _generated
 
 org.mmisw.ont/WebContent/WEB-INF/lib/org.mmisw.ont.jar
+org.mmisw.ont/org.mmisw.ont.defs.jar
 org.mmisw.ont/org.mmisw.ont.client.jar
-org.mmisw.orrclient/base_war/WEB-INF/lib/org.mmisw.ont.client.jar
+org.mmisw.orrportal/base_war/WEB-INF/lib/org.mmisw.ont.defs.jar
 org.mmisw.orrportal/base_war/WEB-INF/lib/org.mmisw.ont.client.jar
-org.mmisw.orrportal/base_war/WEB-INF/lib/org.mmisw.orrclient.jar
 org.mmisw.orrportal/base_war/WEB-INF/lib/org.mmisw.orrportal.gwt.jar
 org.mmisw.orrportal/www
 

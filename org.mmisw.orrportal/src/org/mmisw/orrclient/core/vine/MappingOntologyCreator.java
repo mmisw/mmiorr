@@ -12,8 +12,8 @@ import org.mmisw.ont.JenaUtil2;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.ont.vocabulary.Vine;
-import org.mmisw.orrclient.IOrrClient;
 import org.mmisw.orrclient.OrrClientConfiguration;
+import org.mmisw.orrclient.OrrClientFactory;
 import org.mmisw.orrclient.core.MdHelper;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
@@ -33,7 +33,7 @@ import com.hp.hpl.jena.vocabulary.RDF;
 
 /**
  * Creates a mapping ontology.
- * 
+ *
  * @author Carlos Rueda
  */
 public class MappingOntologyCreator {
@@ -46,39 +46,39 @@ public class MappingOntologyCreator {
 	private static final boolean USE_VINE_STATEMENT = true;
 
 	private String namespaceRoot;
-	
+
 	private String orgAbbreviation;
 	private String shortName;
 
 	private String finalUri;
-	
+
 	private String finalShortName;
 
 
 	private Map<String, String> values;
-	
-	
+
+
 	private OntModel newOntModel;
 	private String ns_;
 	private String base_;
 
 	private final Log log = LogFactory.getLog(MappingOntologyCreator.class);
-	
+
 	private Set<String> namespaces;
 	private List<Mapping> mappings;
-	
+
 	private final String uniqueBaseName = _createUniqueBaseName();
 
-	
+
 	private static OrrClientConfiguration _config() {
-		OrrClientConfiguration config = IOrrClient.Manager.getOrrClient().getConfiguration();
+		OrrClientConfiguration config = OrrClientFactory.getOrrClient().getConfiguration();
 		return config;
 	}
-	
 
-	
+
+
 	/**
-	 * 
+	 *
 	 * @param createOntologyInfo      Metadata for the ontology
 	 * @param mappingDataCreationInfo    Data for the ontology
 	 */
@@ -86,19 +86,19 @@ public class MappingOntologyCreator {
 			CreateOntologyInfo createOntologyInfo,
 			MappingDataCreationInfo mappingDataCreationInfo
 	)  {
-		
+
 		Map<String, String> values = createOntologyInfo.getMetadataValues();
-		
+
 		this.namespaces = mappingDataCreationInfo.getNamespaces();
 		this.mappings = mappingDataCreationInfo.getMappings();
-		
+
 		String ontServiceUrl = _config().getOntServiceUrl();
 		this.namespaceRoot = ontServiceUrl;
 		this.orgAbbreviation = createOntologyInfo.getAuthority();
 		this.shortName = createOntologyInfo.getShortName();
-		
+
 		this.values = values;
-		
+
 		if ( log.isDebugEnabled() ) {
 			log.debug("!!!!!!!!!!!!!!!! MappingOntologyCreator: metadata values = " +values+ "\n" +
 					" number of mappings = " +mappings.size());
@@ -107,18 +107,18 @@ public class MappingOntologyCreator {
 		if ( orgAbbreviation == null ) {
 			orgAbbreviation = values.get(OmvMmi.origMaintainerCode.getURI());
 		}
-		
+
 		if ( shortName == null ) {
 			shortName = values.get(Omv.acronym.getURI());
 		}
 
 	}
-	
+
 	public void createOntology(CreateOntologyResult createVocabResult) {
 		if ( log.isDebugEnabled() ) {
 			log.debug("MappingOntologyCreator.createOntology");
 		}
-		
+
 		//
 		// generate RDF:
 		//
@@ -133,7 +133,7 @@ public class MappingOntologyCreator {
 			return;
 		}
 		String rdf = _getOntologyStringXml();
-		
+
 
 		// now save the RDF:
 		String full_path = _config().getVoc2rdfDirectory() + getPathOnServer();
@@ -143,7 +143,7 @@ public class MappingOntologyCreator {
 			os.close();
 		}
 		catch (IOException ex) {
-			String msg = "Error writing generated RDF file: " +full_path; 
+			String msg = "Error writing generated RDF file: " +full_path;
 			log.error(msg, ex);
 			createVocabResult.setError(msg);
 			return;
@@ -152,26 +152,26 @@ public class MappingOntologyCreator {
 		// OK:
 		createVocabResult.setFullPath(full_path);
 	}
-	
+
 	private OntModel _createOntModel() {
 		OntModel ontModel = JenaUtil2.createDefaultOntModel();
-		
+
 		// TODO: from the previous code based on OwlModel, ie.,
 //		ontModel = new OwlModel(ontModel);
 		// it seems the following "layer" is unnecesary. So, returning JenaUtil2.createDefaultOntModel()
 		// directly should be fine.
-		
+
 		ontModel = ModelFactory.createOntologyModel(ontModel.getSpecification(), ontModel);
-		
+
 		return ontModel;
 	}
-	
+
 	private void processCreateOntology() throws Exception {
 
 		newOntModel = _createOntModel();
 		ns_ = JenaUtil2.appendFragment(finalUri);
 		base_ = JenaUtil2.removeTrailingFragment(finalUri);
-		
+
 		// set NS prefixes:
 		newOntModel.setNsPrefix("", ns_);
 		Map<String, String> preferredPrefixMap = MdHelper.getPreferredPrefixMap();
@@ -179,7 +179,7 @@ public class MappingOntologyCreator {
 			String prefix = preferredPrefixMap.get(uri);
 			newOntModel.setNsPrefix(prefix, uri);
 		}
-		
+
 		Ontology ont = newOntModel.createOntology(base_);
 		if ( log.isDebugEnabled() ) {
 			log.debug("New ontology created with namespace " + ns_ + " base " + base_);
@@ -187,10 +187,10 @@ public class MappingOntologyCreator {
 
 		// Indicate VINE as the engineering tool:
 		ont.addProperty(Omv.usedOntologyEngineeringTool, OmvMmi.vine);
-		
+
 		// add any desired owl:imports
 		_addImports(ont);
-		
+
 		Map<String, Property> uriPropMap = MdHelper.getUriPropMap();
 		for ( String uri : values.keySet() ) {
 			String value = values.get(uri);
@@ -203,48 +203,48 @@ public class MappingOntologyCreator {
 				ont.addProperty(prop, value.trim());
 			}
 		}
-		
+
 		// set Omv.uri from final
 		ont.addProperty(Omv.uri, finalUri);
-		
+
 		// TODO set Omv.acronym from something
 		ont.addProperty(Omv.acronym, "ACRONYM");
-		
-		
+
+
 		String fullTitle = values.get("fullTitle");
 		if ( fullTitle != null ) {
 			ont.addProperty(Omv.name, fullTitle);
 		}
-		
+
 		String creator = values.get("creator");
 		if ( creator != null ) {
 			ont.addProperty(Omv.hasCreator, creator);
 		}
-		
+
 		String briefDescription = values.get("briefDescription");
 		if ( briefDescription != null ) {
 			ont.addProperty(Omv.description, briefDescription);
 		}
-		
+
 		if ( orgAbbreviation != null && orgAbbreviation.trim().length() > 0 ) {
 			ont.addProperty(OmvMmi.origMaintainerCode, orgAbbreviation.trim());
 		}
-		
+
 		createContents();
 	}
 
 
 	/** adds an owl:import for each namespace in namespaces, if any */
 	private void _addImports(Ontology ont) {
-		
+
 		if ( ADD_VINE_IMPORT ) {
 			ont.addImport(ResourceFactory.createResource(JenaUtil2.removeTrailingFragment(Vine.NS)));
 		}
-		
+
 		if ( namespaces == null ) {
 			return;
 		}
-		
+
 		for ( String namespace : namespaces ) {
 			ont.addImport(ResourceFactory.createResource(JenaUtil2.removeTrailingFragment(namespace)));
 		}
@@ -252,21 +252,21 @@ public class MappingOntologyCreator {
 
 
 	private void createContents() {
-		
+
 		for ( Mapping mapping : mappings ) {
 			String left = mapping.getLeft();
 			String relation = mapping.getRelation();
 			String right = mapping.getRight();
-			
+
 			Resource r = newOntModel.createResource(left);
 			Property p = newOntModel.createProperty(relation);
 			RDFNode o = newOntModel.createResource(right);
-			
+
 			Map<String, String> md = mapping.getMetadata();
 
 			_createMapping(r, p, o, md);
 		}
-		
+
 	}
 
 	/**
@@ -277,11 +277,11 @@ public class MappingOntologyCreator {
 	 * @param o
 	 */
 	private void _createMapping(Resource r, Property p, RDFNode o, Map<String, String> md) {
-		
+
 		// the resource representing the statement (r,p,o):
 		Resource stmtRsr;
-		
-		if ( USE_VINE_STATEMENT ) { 
+
+		if ( USE_VINE_STATEMENT ) {
 			// use vine:Statement
 			stmtRsr = _createVineMappingStatement(newOntModel, r, p, o);
 		}
@@ -291,7 +291,7 @@ public class MappingOntologyCreator {
 			newOntModel.add(stmt);
 			stmtRsr = stmt.createReifiedStatement();
 		}
-		
+
 		if ( md != null ) {
 			for ( String uri : md.keySet() ) {
 				String value = md.get(uri);
@@ -309,7 +309,7 @@ public class MappingOntologyCreator {
 			res.addProperty(Vine.subject, s);
 			res.addProperty(Vine.predicate, p);
 			res.addProperty(Vine.object, o);
-			// note, also add the direct mapping statement, which may be redundant if 
+			// note, also add the direct mapping statement, which may be redundant if
 			// appropriate reasoner rules over Vine properties are in place, but this
 			// will be OK in general.
 			model.add(s, p, o);
@@ -319,7 +319,7 @@ public class MappingOntologyCreator {
 			res = model.createResource(RDF.Statement);
 			res.addProperty(RDF.subject, s);
 			res.addProperty(RDF.predicate, p);
-			res.addProperty(RDF.object, o);			
+			res.addProperty(RDF.object, o);
 		}
 		return res;
 	}
@@ -329,31 +329,31 @@ public class MappingOntologyCreator {
 
 		// If given, ontologyUri will take precedence (see VocabPanel)
 		String ontologyUri = values.get("ontologyUri");
-		
+
 		if ( ontologyUri != null ) {
 			log.debug("Using given ontologyUri and finalUri: " +ontologyUri);
 			finalUri = ontologyUri.replaceAll("(/|\\\\)+$", "");
 		}
 		else {
 			// remove any trailing slashes
-			namespaceRoot = namespaceRoot.replaceAll("(/|\\\\)+$", "");  
-			
+			namespaceRoot = namespaceRoot.replaceAll("(/|\\\\)+$", "");
+
 			//
 			// replace any colon (:) in the pieces that go to the ontology URI
 			// with underscores (_):
 			//
-			
+
 			String orgAbbrev = orgAbbreviation.replaceAll("\\s+", "").replace(':', '_');
-			
+
 			finalUri = namespaceRoot + "/" + orgAbbrev;
-			
-			
+
+
 			finalShortName = shortName.toLowerCase().replace(':', '_');
 			finalUri += "/" + finalShortName;
 		}
-		
+
 		// see createProperties()
-		
+
 		if ( log.isDebugEnabled() ) {
 			log.debug("setFinalUri: " +finalUri);
 		}
@@ -371,9 +371,9 @@ public class MappingOntologyCreator {
 		return uniqueBaseName;
 	}
 
-	
+
 	/**
-	 * TODO createUniqueBaseName(): need a more robust way to get a unique name. 
+	 * TODO createUniqueBaseName(): need a more robust way to get a unique name.
 	 */
 	private static String _createUniqueBaseName() {
 		return String.valueOf(System.currentTimeMillis());

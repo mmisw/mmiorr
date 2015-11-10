@@ -14,8 +14,8 @@ import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.JenaUtil2;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
-import org.mmisw.orrclient.IOrrClient;
 import org.mmisw.orrclient.OrrClientConfiguration;
+import org.mmisw.orrclient.OrrClientFactory;
 import org.mmisw.orrclient.core.util.StringManipulationUtil;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
@@ -34,15 +34,15 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
  * Dispatchs the conversion.
- * 
+ *
  * <p>
  * TODO This could be superseded by the new voc2skos functionality.
- * 
+ *
  * <p>
  * Adapted from org.mmi.web.MetadataBean. Note that changes have been kept to a minimum, basically
  * to whatever is strictly necessary to make the whole thing work. Time permitting, this will be
  * cleaned up at some point.
- * 
+ *
  * @author Carlos Rueda
  */
 public class VocabCreator {
@@ -58,12 +58,12 @@ public class VocabCreator {
 	private String fieldSeparator;
 
 	private String namespaceRoot;
-	
+
 	// To set TransProperties.NS
 	private String finalUri;
-	
+
 	private String finalShortName;
-	
+
 	public String getFinalUri() {
 		return finalUri;
 	}
@@ -85,47 +85,47 @@ public class VocabCreator {
 
 	private final Log log = LogFactory.getLog(VocabCreator.class);
 
-	
-	
+
+
 	private final Map<String, String> values;
-	
-	
+
+
 	private Resource[] res;
 	private OntModel newOntModel;
 	private String ns_;
 	private String base_;
 
 	private OntClass classForTerms;
-	
+
 	private StringManipulationUtil stringManipulation = new StringManipulationUtil();
 
 	/** Is the key for the terms to be used exclusively as the term URI? */
 	private boolean keyIsUri = false;
-	
-	
+
+
 	/**
-	 * TODO createUniqueBaseName(): need a more robust way to get a unique name. 
+	 * TODO createUniqueBaseName(): need a more robust way to get a unique name.
 	 */
 	private static String _createUniqueBaseName() {
 		return String.valueOf(System.currentTimeMillis());
 
 	}
 	private final String uniqueBaseName = _createUniqueBaseName();
-	
-	
+
+
 	//////////////////////////////////////////////////////////////////////////////////////
-	
-	
+
+
 	private String _createAscii() {
 
 		final String SEPARATOR = ",";
 		final String QUOTE = "\"";
-		
+
 		fieldSeparator = "csv";
-		
+
 		String sep;
 		StringBuilder sb = new StringBuilder();
-		
+
 		List<String> header = vocabularyDataCreationInfo.getColNames();
 		sep = "";
 		for (String str : header ) {
@@ -133,12 +133,12 @@ public class VocabCreator {
 			sep = SEPARATOR;
 		}
 		sb.append("\n");
-		
+
 		List<List<String>> rows = vocabularyDataCreationInfo.getRows();
 		for ( List<String> values : rows ) {
-			
+
 			int col = 0;
-			
+
 			sep = "";
 			for (String str : values ) {
 				if ( col == header.size() ) { // no more values than columns as indicated in header
@@ -148,7 +148,7 @@ public class VocabCreator {
 				sep = SEPARATOR;
 				col++;
 			}
-			
+
 			// missing cols?
 			for ( ; col < header.size(); col++ ) {           // fill with blanks
 				sb.append(sep + QUOTE + "" + QUOTE);
@@ -156,14 +156,14 @@ public class VocabCreator {
 			}
 			sb.append("\n");
 		}
-		
+
 		String ascii = sb.toString();
 		return ascii;
 	}
-	
-	
+
+
 	/**
-	 * 
+	 *
 	 * @param createOntologyInfo      Metadata for the ontology
 	 * @param vocabularyDataCreationInfo    Data for the ontology
 	 * @throws Exception If verification of UTF-8 fails
@@ -175,35 +175,35 @@ public class VocabCreator {
 
 
 		this.vocabularyDataCreationInfo = vocabularyDataCreationInfo;
-		
-		
+
+
 		Map<String, String> values = createOntologyInfo.getMetadataValues();
-		
-		
+
+
 		String ontServiceUrl = _config().getOntServiceUrl();
 		this.namespaceRoot = ontServiceUrl;
 		this.orgAbbreviation = createOntologyInfo.getAuthority();
 		this.shortName = createOntologyInfo.getShortName();
-		
+
 		this.primaryClass = vocabularyDataCreationInfo.getClassName();
 		this.ascii = _createAscii();
 		this.values = values;
-		
+
 		log.info("!!!!!!!!!!!!!!!! VocabCreator: values = " +values);
 		log.info("setting primary class " + primaryClass);
-		
+
 		if ( orgAbbreviation == null ) {
 			orgAbbreviation = values.get(OmvMmi.origMaintainerCode.getURI());
 		}
-		
+
 		if ( shortName == null ) {
 			shortName = values.get(Omv.acronym.getURI());
 		}
-		
+
 	}
-	
+
 	private static OrrClientConfiguration _config() {
-		OrrClientConfiguration config = IOrrClient.Manager.getOrrClient().getConfiguration();
+		OrrClientConfiguration config = OrrClientFactory.getOrrClient().getConfiguration();
 		return config;
 	}
 
@@ -226,7 +226,7 @@ public class VocabCreator {
 			return;
 		}
 		String rdf = getOntologyStringXml();
-		
+
 		//
 		// before saving the RDF, save a copy of the text contents:
 		//
@@ -254,7 +254,7 @@ public class VocabCreator {
 			os.close();
 		}
 		catch (IOException ex) {
-			String msg = "Error writing generated RDF file: " +full_path; 
+			String msg = "Error writing generated RDF file: " +full_path;
 			log.error(msg, ex);
 			createVocabResult.setError(msg);
 			return;
@@ -263,31 +263,31 @@ public class VocabCreator {
 		// OK:
 		createVocabResult.setFullPath(full_path);
 	}
-	
+
 	private OntModel _createOntModel() {
 		OntModel ontModel = JenaUtil2.createDefaultOntModel();
-		
+
 		// TODO: from the previous code based on OwlModel, ie.,
 //		ontModel = new OwlModel(ontModel);
 		// it seems the following "layer" is unnecesary. So, returning JenaUtil2.createDefaultOntModel()
 		// directly should be fine.
-		
+
 		ontModel = ModelFactory.createOntologyModel(ontModel.getSpecification(), ontModel);
-		
+
 		return ontModel;
 	}
-	
+
 
 	private void processCreateOntology() throws Exception {
 
 		// TODO instead of getPreviewDirectory, use a "tmp" directory explicitly
 		String fileInText = _config().getPreviewDirectory() + uniqueBaseName + ".txt";
 		saveInFile(fileInText);
-		
+
 		newOntModel = _createOntModel();
 		ns_ = JenaUtil2.appendFragment(finalUri);
 		base_ = JenaUtil2.removeTrailingFragment(finalUri);
-		
+
 		// set NS prefixes:
 		newOntModel.setNsPrefix("", ns_);
 		Map<String, String> preferredPrefixMap = MdHelper.getPreferredPrefixMap();
@@ -295,14 +295,14 @@ public class VocabCreator {
 			String prefix = preferredPrefixMap.get(uri);
 			newOntModel.setNsPrefix(prefix, uri);
 		}
-		
+
 		Ontology ont = newOntModel.createOntology(base_);
 		log.info("New ontology created with namespace " + ns_ + " base " + base_);
 
 		// Indicate Voc2RDF as the engineering tool:
 		ont.addProperty(Omv.usedOntologyEngineeringTool, OmvMmi.voc2rdf);
 
-		
+
 		Map<String, Property> uriPropMap = MdHelper.getUriPropMap();
 		for ( String uri : values.keySet() ) {
 			String value = values.get(uri).trim();
@@ -316,48 +316,48 @@ public class VocabCreator {
 				ont.addProperty(prop, value);
 			}
 		}
-		
+
 		// set Omv.uri from final
 		ont.addProperty(Omv.uri, finalUri);
-		
+
 		// set Omv.acronym from primaryClass
 		ont.addProperty(Omv.acronym, primaryClass);
-		
+
 		String classUri = values.get("classUri");
 		if ( classUri != null ) {
 			ont.addProperty(OmvMmi.shortNameUri, classUri);
 		}
-		
+
 		// fixed issue #120: "title doesn't get carried forward"
 		// problem was that Omv.name was assigned BOTH the class name and the fulltitle.
 		// Only the fullTitle is now assigned.
-//		ont.addProperty(Omv.name, 
+//		ont.addProperty(Omv.name,
 //		setFirstUpperCase(cleanStringforID(primaryClass)) + " Vocabulary");
 		String fullTitle = values.get("fullTitle");
 		if ( fullTitle != null ) {
 			ont.addProperty(Omv.name, fullTitle);
 		}
-		
+
 		String creator = values.get("creator");
 		if ( creator != null ) {
 			ont.addProperty(Omv.hasCreator, creator);
 		}
-		
+
 		String briefDescription = values.get("briefDescription");
 		if ( briefDescription != null ) {
 			ont.addProperty(Omv.description, briefDescription);
 		}
-		
+
 		if ( orgAbbreviation != null && orgAbbreviation.trim().length() > 0 ) {
 			ont.addProperty(OmvMmi.origMaintainerCode, orgAbbreviation.trim());
 		}
-		
+
 		createOntologIndividuals();
 	}
 
 
-	
-	
+
+
 	private void createOntologIndividuals() throws Exception {
 
 		List<String> header     = vocabularyDataCreationInfo.getColNames();
@@ -411,8 +411,8 @@ public class VocabCreator {
 		}
 
 	}
-	
-	
+
+
 	private void createNotHierarchyIndividual(Individual ind, List<String> row) throws Exception {
 
 		if (ind != null) {
@@ -447,7 +447,7 @@ public class VocabCreator {
 
 	}
 
-	
+
 	private ObjectProperty getPropertyForARangeClass(OntClass cs) {
 		String nameOfProperty = "has" + cs.getLocalName();
 		ObjectProperty op = newOntModel.createObjectProperty(cs.getNameSpace()
@@ -469,16 +469,16 @@ public class VocabCreator {
 
 	/**
 	 * Creates an individual from the given column (id) in the given row.
-	 * 
+	 *
 	 * Note: colons are OK for the name of an individual (issue #124).
-	 * This is especially relevant when the first column is going to exclusively 
+	 * This is especially relevant when the first column is going to exclusively
 	 * determine the URI for each term (issue #135)
-	 * 
+	 *
 	 * @param row
 	 * @param id
 	 * @param cs
 	 * @return
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	private Individual createIndividual(List<String> row, int id, OntClass cs) throws Exception {
 
@@ -486,14 +486,14 @@ public class VocabCreator {
 		if (isGood(str)) {
 			boolean allowColon = true;
 			String resourceString;
-			
+
 			if ( id == 0 && keyIsUri ) {
-				
+
 				// OLD:
 				//// just use the simple name given in this column
 				////resourceString = getGoodName(row, id, allowColon).toLowerCase();
-				
-				// New: regarding Issue #164 "Keep periods and case in term URI" and 
+
+				// New: regarding Issue #164 "Keep periods and case in term URI" and
 				// more generally, just check that it's a valid URI and do no conversions at all
 				String uri = str;
 				try {
@@ -510,7 +510,7 @@ public class VocabCreator {
 				//resourceString = ns_ + getGoodName(row, id, allowColon).toLowerCase();
 				resourceString = ns_ + getGoodName(str, allowColon);
 			}
-			
+
 			Individual ind = newOntModel.createIndividual(resourceString, cs);
 			ind.addProperty(RDFS.label, str);
 			log.info("ind created " + ind);
@@ -520,15 +520,15 @@ public class VocabCreator {
 	}
 
 
-	
+
 	private DatatypeProperty createDatatypeProperty(String str, int id) {
 		boolean allowColon = false;
-		
+
 		String keyName = str;
 		// #221 retain the original camelCase in the URLs
 		//String goodName = getGoodName(row, id, allowColon).toLowerCase();
 		String goodName = getGoodName(str, allowColon);
-		
+
 		if ( id == 0 && keyName.equalsIgnoreCase("uri")) {
 			// use the key values in this column as the complet URI of each term.
 			keyIsUri = true;
@@ -537,7 +537,7 @@ public class VocabCreator {
 				log.debug("first column labeled 'uri', so will use column values as full URIs for the terms");
 			}
 		}
-		
+
 		String resourceString = ns_ + goodName ;
 		log.info("datatype Property created " + resourceString);
 		DatatypeProperty p = newOntModel.createDatatypeProperty(resourceString);
@@ -558,23 +558,23 @@ public class VocabCreator {
 
 	}
 
-	
-	
+
+
 	private OntClass createClassNameGiven() {
 		//		String resourceString = finalUri + setFirstUpperCase(cleanStringforID(primaryClass));
-		
+
 		boolean allowColon = false;
 		String firtUcClass = setFirstUpperCase(cleanStringforID(primaryClass, allowColon));
 		String resourceString = ns_ + firtUcClass ;
 
 		OntClass cls = newOntModel.createClass(resourceString);
-		
+
 		log.info("KKKKKKKKKKKKKK cls.getNameSpace() = " +cls.getNameSpace());
 		log.info("KKKKKKKKKKKKKK cls.getLocalName() = " +cls.getLocalName());
-		
+
 		cls.addProperty(RDFS.label, primaryClass);
 		log.info("class created " + resourceString);
-		
+
 		return cls;
 
 	}
@@ -585,41 +585,41 @@ public class VocabCreator {
 	}
 
 
-	
-	
-	
+
+
+
 	private void setFinalUri() {
 
 		// If given, ontologyUri will take precedence (see VocabPanel)
 		String ontologyUri = values.get("ontologyUri");
-		
+
 		if ( ontologyUri != null ) {
 			log.debug("Using given ontologyUri and finalUri: " +ontologyUri);
 			finalUri = ontologyUri.replaceAll("(/|\\\\)+$", "");
 		}
 		else {
 			// remove any trailing slashes
-			namespaceRoot = namespaceRoot.replaceAll("(/|\\\\)+$", "");  
-			
+			namespaceRoot = namespaceRoot.replaceAll("(/|\\\\)+$", "");
+
 			//
 			// replace any colon (:) in the pieces that go to the ontology URI
 			// with underscores (_):
 			//
-			
+
 			String orgAbbrev = orgAbbreviation.replaceAll("\\s+", "").replace(':', '_');
-			
+
 			finalUri = namespaceRoot + "/" + orgAbbrev;
-			
+
 			if ( version != null ) {
 				finalUri +=  "/" + version;
 			}
-			
+
 			finalShortName = shortName.toLowerCase().replace(':', '_');
 			finalUri += "/" + finalShortName;
 		}
-		
+
 		// see createProperties()
-		
+
 		log.info("setFinalUri: " +finalUri);
 	}
 
