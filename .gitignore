@@ -1,6 +1,7 @@
 build.properties
 _generated
 
+org.mmisw.orrportal/mmiorr.conf
 org.mmisw.ont/WebContent/WEB-INF/lib/org.mmisw.ont.jar
 org.mmisw.ont/org.mmisw.ont.defs.jar
 org.mmisw.ont/org.mmisw.ont.client.jar
