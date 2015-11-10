@@ -67,6 +67,14 @@ public class CreateOntologyInfo implements Serializable {
 			return versionNumber;
 		}
 
+		@Override
+		public String toString() {
+			return "PriorOntologyInfo{" +
+					"ontologyId='" + ontologyId + '\'' +
+					", ontologyUserId='" + ontologyUserId + '\'' +
+					", versionNumber='" + versionNumber + '\'' +
+					'}';
+		}
 	}
 	
 	private PriorOntologyInfo priorOntologyInfo;
@@ -196,5 +204,15 @@ public class CreateOntologyInfo implements Serializable {
 		this.baseOntologyInfo = baseOntologyInfo;
 	}
 	
-
+	@Override
+	public String toString() {
+		return "CreateOntologyInfo{" +
+				"hostingType=" + hostingType +
+				", authority='" + authority + '\'' +
+				", shortName='" + shortName + '\'' +
+				", metadataValues=" + metadataValues +
+				", priorOntologyInfo=" + priorOntologyInfo +
+				", uri='" + uri + '\'' +
+				'}';
+	}
 }
