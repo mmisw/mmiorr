@@ -120,8 +120,8 @@ public class OrrClientProxy  {
 
 
 	public MetadataBaseInfo getMetadataBaseInfo(boolean includeVersion) {
-		String resourceTypeClassUri = PortalConfig.Prop.RESOURCE_TYPE_CLASS.getValue();
-		String authorityClassUri = PortalConfig.Prop.AUTHORITY_CLASS.getValue();
+		String resourceTypeClassUri = OrrConfig.instance().resourceTypeClass;
+		String authorityClassUri    = OrrConfig.instance().authorityClass;
 
 		return orrClient.getMetadataBaseInfo(includeVersion, resourceTypeClassUri, authorityClassUri);
 	}

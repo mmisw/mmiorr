@@ -19,13 +19,6 @@ public class PortalConfig {
 		VERSION                       ("orrportal.app.version", "pendVersion"),
 		BUILD                         ("orrportal.app.build", "pendBuild"),
 
-		/** URI of the OWL class: resource type */
-		RESOURCE_TYPE_CLASS           ("orrportal.resourcetype.class", "http://mmisw.org/ont/mmi/resourcetype/ResourceType"),
-		
-		/** URI of the OWL class: authority  */
-		AUTHORITY_CLASS               ("orrportal.authority.class", "http://mmisw.org/ont/mmi/authority/Authority"),
-		
-		
 		/** Google analytics UA number (aka web property ID) */
 		GA_UA_NUMBER                  ("ga.uanumber", null, false),
 

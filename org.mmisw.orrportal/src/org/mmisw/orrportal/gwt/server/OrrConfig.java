@@ -61,16 +61,26 @@ public class OrrConfig {
   /** AllegroGraph triplestore SPARQL endpoint. If null, then a triple store in memory is used. */
   public final String agraphSparql;
 
+  /** URI of the ResourceType OWL class:
+   * Instances of this class are used to populate the corresponding selection GUI component */
+  public final String resourceTypeClass;
+
+  /** URI of the Authority OWL class:
+   * Instances of this class are used to populate the corresponding selection GUI component */
+  public final String authorityClass;
+
   @Override
   public String toString() {
     return "OrrConfig{\n" +
-        "  ontServiceUrl=" + ontServiceUrl + '\n' +
-        "  workspaceDir =" + workspaceDir + '\n' +
-        "  preUploadsDir=" + preUploadsDir + '\n' +
-        "  voc2rdfDir   =" + voc2rdfDir + '\n' +
-        "  previewDir   =" + previewDir + '\n' +
-        "  emailUsername=" + emailUsername + '\n' +
-        "  agraphSparql =" + agraphSparql +
+        "  ontServiceUrl      = " + ontServiceUrl + '\n' +
+        "  workspaceDir       = " + workspaceDir + '\n' +
+        "  preUploadsDir      = " + preUploadsDir + '\n' +
+        "  voc2rdfDir         = " + voc2rdfDir + '\n' +
+        "  previewDir         = " + previewDir + '\n' +
+        "  emailUsername      = " + emailUsername + '\n' +
+        "  resourceTypeClass  = " + resourceTypeClass + '\n' +
+        "  authorityClass     = " + authorityClass + '\n' +
+        "  agraphSparql       = " + agraphSparql +
         '}';
   }
 
@@ -89,6 +99,9 @@ public class OrrConfig {
     else {
       emailUsername = emailPassword = null;
     }
+
+    resourceTypeClass = cfg.getString("resourceType.class");
+    authorityClass    = cfg.getString("authority.class");
 
     agraphSparql = cfg.hasPath("agraph.sparql") ? cfg.getString("agraph.sparql") : null;
   }
