@@ -51,8 +51,6 @@ public class OrrConfig {
    * file is stored here) */
   public final File previewDir;
 
-  public final File resourceDir;
-
   public final String agraphSparql;
 
   public final String emailUsername;
@@ -65,7 +63,6 @@ public class OrrConfig {
         "  preUploadsDir=" + preUploadsDir + '\n' +
         "  voc2rdfDir   =" + voc2rdfDir + '\n' +
         "  previewDir   =" + previewDir + '\n' +
-        "  resourceDir  =" + resourceDir + '\n' +
         "  agraphSparql =" + agraphSparql + '\n' +
         "  emailUsername=" + emailUsername +
         '}';
@@ -77,7 +74,6 @@ public class OrrConfig {
     preUploadsDir = prepareDir(workspaceDir, "ontmd/preuploads");
     voc2rdfDir    = prepareDir(workspaceDir, "ontmd/preuploads/voc2rdf");
     previewDir    = prepareDir(workspaceDir, "ontmd/previews");
-    resourceDir   = prepareDir(workspaceDir, "ontmd/resources");
 
     if(cfg.hasPath("email")) {
       emailUsername = cfg.getString("email.username");
