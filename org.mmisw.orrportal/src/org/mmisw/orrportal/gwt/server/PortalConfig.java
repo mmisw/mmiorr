@@ -28,9 +28,6 @@ public class PortalConfig {
 		
 		APPSERVER_HOST                ("appserver.host", "http://localhost:8080"),
 		
-		/** URL of "Ont" URI resolution service */
-		ONT_SERVICE_URL                ("ont.service.url", "http://localhost:8080/ont"),
-
 
 		/** Google analytics UA number (aka web property ID) */
 		GA_UA_NUMBER                  ("ga.uanumber", null, false),
