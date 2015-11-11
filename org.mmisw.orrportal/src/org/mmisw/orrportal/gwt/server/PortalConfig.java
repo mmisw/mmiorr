@@ -19,9 +19,6 @@ public class PortalConfig {
 		VERSION                       ("orrportal.app.version", "pendVersion"),
 		BUILD                         ("orrportal.app.build", "pendBuild"),
 
-		/** where voc2rdf-generated files are stored: */
-		VOC2RDF_DIR             ("orrportal.voc2rdf.dir", "/Users/Shared/mmiregistry/ontmd/preuploads/voc2rdf/"),
-		
 		/** where the previewed files are stored: */
 		PREVIEW_DIR             ("orrportal.preview.dir", "/Users/Shared/mmiregistry/ontmd/previews/"),
 		

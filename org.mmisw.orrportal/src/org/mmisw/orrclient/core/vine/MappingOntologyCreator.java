@@ -1,5 +1,6 @@
 package org.mmisw.orrclient.core.vine;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.MappingDataCreationInfo;
 import org.mmisw.orrclient.gwt.client.rpc.vine.Mapping;
+import org.mmisw.orrportal.gwt.server.OrrConfig;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.Ontology;
@@ -136,7 +138,7 @@ public class MappingOntologyCreator {
 
 
 		// now save the RDF:
-		String full_path = _config().getVoc2rdfDirectory() + getPathOnServer();
+		File full_path = new File(OrrConfig.instance().voc2rdfDir, getPathOnServer());
 		try {
 			FileWriter os = new FileWriter(full_path);
 			os.write(rdf);
@@ -150,7 +152,7 @@ public class MappingOntologyCreator {
 		}
 
 		// OK:
-		createVocabResult.setFullPath(full_path);
+		createVocabResult.setFullPath(full_path.getAbsolutePath());
 	}
 
 	private OntModel _createOntModel() {
@@ -271,7 +273,6 @@ public class MappingOntologyCreator {
 
 	/**
 	 * Creates and adds to the model the mapping statement.
-	 * @param mapping
 	 * @param r
 	 * @param p
 	 * @param o

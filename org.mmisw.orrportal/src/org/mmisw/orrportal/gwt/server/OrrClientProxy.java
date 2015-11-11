@@ -42,7 +42,7 @@ public class OrrClientProxy  {
 
 	/**
 	 * Returns the instance of this class, note the it will be null
-	 * if {@link #createInstance(String, String)} has not been called.
+	 * if {@link #createInstance()} has not been called.
 	 * @return
 	 */
 	public static OrrClientProxy getInstance() {
@@ -84,7 +84,6 @@ public class OrrClientProxy  {
 		// parameters from our config object for the OrrClientConfiguration:
 		String ontServiceUrl = PortalConfig.Prop.ONT_SERVICE_URL.getValue();
 		String previewDirectory = PortalConfig.Prop.PREVIEW_DIR.getValue();
-		String voc2rdfDirectory = PortalConfig.Prop.VOC2RDF_DIR.getValue();
 		String mailUser = PortalConfig.Prop.MAIL_USER.getValue();
 		String mailPassword = PortalConfig.Prop.MAIL_PASSWORD.getValue();
 
@@ -94,7 +93,6 @@ public class OrrClientProxy  {
 		OrrClientConfiguration occ = new OrrClientConfiguration();
 		occ.setOntServiceUrl(ontServiceUrl);
 		occ.setPreviewDirectory(previewDirectory);
-		occ.setVoc2rdfDirectory(voc2rdfDirectory);
 		occ.setMailUser(mailUser);
 		occ.setMailPassword(mailPassword);
 		orrClient = OrrClientFactory.init(occ);

@@ -44,7 +44,9 @@ public class OrrConfig {
    * when starting the process of submitting an ontology to the repository) */
   public final File preUploadsDir;
 
+  /** where voc2rdf-generated files are stored: (the converted RDF file is stored here) */
   public final File voc2rdfDir;
+
   public final File previewDir;
   public final File resourceDir;
 

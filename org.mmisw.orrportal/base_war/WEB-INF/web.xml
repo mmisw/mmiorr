@@ -26,11 +26,6 @@
 		</init-param>
 		
 		<init-param>
-			<param-name>orrportal.voc2rdf.dir</param-name>
-			<param-value>@orrportal.voc2rdf.dir@</param-value>
-		</init-param>
-		
-		<init-param>
 			<param-name>orrportal.preview.dir</param-name>
 			<param-value>@orrportal.preview.dir@</param-value>
 		</init-param>

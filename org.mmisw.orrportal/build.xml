@@ -134,7 +134,6 @@
 				<filter token="orrportal.app.build"          value="${orrportal.app.build}" />
 				<filter token="appserver.host"           value="${appserver.host}" />
 				<filter token="ont.service.url"          value="${ont.service.url}" />
-				<filter token="orrportal.voc2rdf.dir"        value="${orrportal.voc2rdf.dir}" />
 				<filter token="orrportal.preview.dir"        value="${orrportal.preview.dir}" />
 				<filter token="orrportal.resource.dir"       value="${orrportal.resource.dir}" />
 				<filter token="orrportal.resourcetype.class" value="${orrportal.resourcetype.class}" />

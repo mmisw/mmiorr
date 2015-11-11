@@ -20,6 +20,7 @@ import org.mmisw.orrclient.core.util.StringManipulationUtil;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.VocabularyDataCreationInfo;
+import org.mmisw.orrportal.gwt.server.OrrConfig;
 
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.Individual;
@@ -230,8 +231,8 @@ public class VocabCreator {
 		//
 		// before saving the RDF, save a copy of the text contents:
 		//
-		final String voc2rdfDirectory = _config().getVoc2rdfDirectory();
-		String full_path_csv = voc2rdfDirectory + getPathOnServer() + ".csv";
+		final File voc2rdfDirectory = OrrConfig.instance().voc2rdfDir;
+		File full_path_csv = new File(voc2rdfDirectory, getPathOnServer() + ".csv");
 		log.debug("saving copy of text contents in " + full_path_csv);
 		try {
 			FileOutputStream os = new FileOutputStream(full_path_csv);
@@ -246,7 +247,7 @@ public class VocabCreator {
 		}
 
 		// now save the RDF:
-		String full_path = voc2rdfDirectory + getPathOnServer();
+		File full_path = new File(voc2rdfDirectory, getPathOnServer());
 		log.debug("saving RDF in " + full_path);
 		try {
 			FileOutputStream os = new FileOutputStream(full_path);
@@ -261,7 +262,7 @@ public class VocabCreator {
 		}
 
 		// OK:
-		createVocabResult.setFullPath(full_path);
+		createVocabResult.setFullPath(full_path.getAbsolutePath());
 	}
 
 	private OntModel _createOntModel() {
