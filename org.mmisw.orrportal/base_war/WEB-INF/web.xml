@@ -36,16 +36,6 @@
 		</init-param>
 
 		<init-param>
-			<param-name>mail.usr</param-name>
-			<param-value>@mail.usr@</param-value>
-		</init-param>
-
-		<init-param>
-			<param-name>mail.pw</param-name>
-			<param-value>@mail.pw@</param-value>
-		</init-param>
-
-		<init-param>
 			<param-name>ga.uanumber</param-name>
 			<param-value>@ga.uanumber@</param-value>
 		</init-param>

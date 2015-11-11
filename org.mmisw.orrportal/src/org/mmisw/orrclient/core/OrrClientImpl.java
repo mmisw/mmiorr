@@ -2271,8 +2271,8 @@ public class OrrClientImpl implements IOrrClient {
                     }
                     Thread t = new Thread() {
                         public void run() {
-                            final String mail_user = config.getMailUser();
-                            final String mail_password = config.getMailPassword();
+                            final String mail_user     = OrrConfig.instance().emailUsername;
+                            final String mail_password = OrrConfig.instance().emailPassword;
                             if ( mail_user == null || mail_user.equals("-") ) {
                                 String error = "Email server account not configured. Please report this bug. (u)";
                                 log.error(error);
@@ -2863,8 +2863,8 @@ public class OrrClientImpl implements IOrrClient {
 
 		// Issue 258:"reset password in effect but lost if error while sending email"
 		// Part of the fix is to first check the mail account parameters are given:
-		final String mail_user = config.getMailUser();
-		final String mail_password = config.getMailPassword();
+		final String mail_user     = OrrConfig.instance().emailUsername;
+		final String mail_password = OrrConfig.instance().emailPassword;
 		if ( mail_user == null || mail_user.equals("-") ) {
 			String error = "Email server account not configured. Please report this bug. (u)";
 			result.setError(error);
@@ -3049,8 +3049,8 @@ public class OrrClientImpl implements IOrrClient {
     }
 
     private void _sendEmail(String subject, String header, Map<String, String> data, Set<String> recipients) {
-        final String mail_user = config.getMailUser();
-        final String mail_password = config.getMailPassword();
+        final String mail_user     = OrrConfig.instance().emailUsername;
+        final String mail_password = OrrConfig.instance().emailPassword;
         if ( mail_user == null || mail_user.equals("-") ) {
             String error = "Email server account not configured. Please report this bug. (u)";
             log.error(error);

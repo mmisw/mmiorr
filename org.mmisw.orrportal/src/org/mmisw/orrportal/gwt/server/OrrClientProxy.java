@@ -83,16 +83,12 @@ public class OrrClientProxy  {
 
 		// parameters from our config object for the OrrClientConfiguration:
 		String ontServiceUrl = PortalConfig.Prop.ONT_SERVICE_URL.getValue();
-		String mailUser = PortalConfig.Prop.MAIL_USER.getValue();
-		String mailPassword = PortalConfig.Prop.MAIL_PASSWORD.getValue();
 
 		portalBaseInfo = _prepareBaseInfo();
 
 		// create OrrClientConfiguration and initialize orrclient library:
 		OrrClientConfiguration occ = new OrrClientConfiguration();
 		occ.setOntServiceUrl(ontServiceUrl);
-		occ.setMailUser(mailUser);
-		occ.setMailPassword(mailPassword);
 		orrClient = OrrClientFactory.init(occ);
 
 		log.info("Using: " +orrClient.getAppInfo());

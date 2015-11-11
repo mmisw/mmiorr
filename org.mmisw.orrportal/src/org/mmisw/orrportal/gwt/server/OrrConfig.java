@@ -53,6 +53,7 @@ public class OrrConfig {
 
   public final String agraphSparql;
 
+  /** email account information used for user account management and notifications. */
   public final String emailUsername;
   public final String emailPassword;
 

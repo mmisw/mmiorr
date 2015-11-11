@@ -106,8 +106,6 @@
 				<filter token="ont.service.url" value="${ont.service.url}" />
 				<filter token="orrportal.resourcetype.class" value="${orrportal.resourcetype.class}" />
 				<filter token="orrportal.authority.class" value="${orrportal.authority.class}" />
-				<filter token="mail.usr" value="${mail.usr}" />
-				<filter token="mail.pw" value="${mail.pw}" />
 				<filter token="ga.uanumber" value="${ga.uanumber}" />
 			</filterset>
 		</copy>

@@ -31,13 +31,7 @@ public class PortalConfig {
 		/** URL of "Ont" URI resolution service */
 		ONT_SERVICE_URL                ("ont.service.url", "http://localhost:8080/ont"),
 
-		// Note: when I test the password reset functionality from within eclipse, I put the correct 
-		// mail values here. This is because I haven't found an easy way to get these from 
-		// build.properties (perhaps GWT 2.x has better support for this situation). 
-		MAIL_USER                     ("mail.usr", "-"),
-		MAIL_PASSWORD                 ("mail.pw",  "-"),
-		
-		
+
 		/** Google analytics UA number (aka web property ID) */
 		GA_UA_NUMBER                  ("ga.uanumber", null, false),
 
@@ -112,13 +106,7 @@ public class PortalConfig {
 				}
 				prop.setValue(value);
 				if ( log != null && log.isDebugEnabled() ) {
-					if ( Prop.MAIL_PASSWORD == prop ) {
-						// do not show passwords:
-						log.debug(prop.getName()+ " = " +"XXXXX");
-					}
-					else {
-						log.debug(prop.getName()+ " = " +value);						
-					}
+					log.debug(prop.getName()+ " = " +value);
 				}
 			}
 		}
