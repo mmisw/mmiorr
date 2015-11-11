@@ -9,7 +9,6 @@ public class PortalBaseInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private String ontServiceUrl;
-	private String gaUaNumber;
 
 	public PortalBaseInfo() {}
 
@@ -25,21 +24,4 @@ public class PortalBaseInfo implements Serializable {
   public void setOntServiceUrl(String ontServiceUrl) {
     this.ontServiceUrl = ontServiceUrl;
   }
-
-  /**
-   * Sets the google analytics UA number
-   * @param gaUaNumber
-   */
-  public void setGaUaNumber(String gaUaNumber) {
-    this.gaUaNumber = gaUaNumber;
-  }
-
-  /**
-	 * Gets the google analytics UA number
-	 * @return the google analytics UA number
-	 */
-	public String getGaUaNumber() {
-		return gaUaNumber;
-	}
-	
 }

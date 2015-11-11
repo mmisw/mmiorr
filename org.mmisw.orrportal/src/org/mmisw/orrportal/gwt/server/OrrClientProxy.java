@@ -96,7 +96,6 @@ public class OrrClientProxy  {
 	private PortalBaseInfo _prepareBaseInfo() {
 		PortalBaseInfo pbi = new PortalBaseInfo();
 		pbi.setOntServiceUrl(OrrConfig.instance().ontServiceUrl);
-		pbi.setGaUaNumber(PortalConfig.Prop.GA_UA_NUMBER.getValue());
 		log.info("portal base info: done.");
 		return pbi;
 	}

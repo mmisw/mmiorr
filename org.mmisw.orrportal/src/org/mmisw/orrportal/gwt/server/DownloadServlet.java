@@ -34,7 +34,6 @@ public class DownloadServlet extends HttpServlet {
 		super.init();
 		log.info("initializing download service ...");
 		try {
-			PortalConfig.getInstance().init(getServletConfig(), null, true);
 			downloadsDir = OrrConfig.instance().voc2rdfDir;
 			log.info("downloadsDir = " +downloadsDir);
 		}

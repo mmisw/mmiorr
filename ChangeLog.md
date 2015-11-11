@@ -2,6 +2,7 @@
 
 * 2015-11-11: orrportal 2.5.4
   - preparations for #353 "streamline installation of ORR system"
+    - simpler handling of the "ga.uanumber" build property. As part of this, remove PortalConfig, not needed anymore.
     - remove "orrportal.resourcetype.class" and "orrportal.authority.class" build properties; they are
       now specified in (template.)mmiorr.conf 
   	- remove unused "appserver.host" build parameter; remove obsolete ont-browser reference; simplify PortalBaseInfo

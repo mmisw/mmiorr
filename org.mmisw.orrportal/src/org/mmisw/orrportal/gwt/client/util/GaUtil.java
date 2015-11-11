@@ -14,7 +14,7 @@ public class GaUtil {
 	
 	private static boolean enabled() {
 		if ( enabled == null ) {
-			String gaUaNumber = Orr.getPortalBaseInfo().getGaUaNumber();
+			String gaUaNumber = getGaUaNumber();
 			enabled = Boolean.valueOf(gaUaNumber != null && gaUaNumber.trim().length() > 0);
 			Orr.log("GA enabled=" +enabled+ " (gaUaNumber = " +gaUaNumber+ ")");
 		}
@@ -40,11 +40,16 @@ public class GaUtil {
 			_trackPageview();
 		}
 	}
+
+	// see ga_snippet.js
+	private static native String getGaUaNumber() /*-{
+		return $wnd.gaUaNumber;
+	}-*/ ;
 	
 	private static native void _trackPageview() /*-{
 		$wnd._gaq.push(['_trackPageview']);
 	}-*/ ;
-	
+
 	public static void trackPageview(String pageName) {
 		if ( enabled() ) {
 			if ( ! pageName.startsWith("/") ) {

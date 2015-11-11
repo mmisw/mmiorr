@@ -1,6 +1,7 @@
 	<script type="text/javascript">
+	  var gaUaNumber = '${ga.uanumber}';
 	  var _gaq = _gaq || [];
-	  _gaq.push(['_setAccount', '${ga.uanumber}']);
+	  _gaq.push(['_setAccount', gaUaNumber]);
 	  _gaq.push(['_trackPageview']);
 	
 	  (function() {

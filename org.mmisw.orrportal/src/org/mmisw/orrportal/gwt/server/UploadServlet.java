@@ -44,7 +44,6 @@ public class UploadServlet extends HttpServlet {
 		log.info("initializing " +getClass().getSimpleName()+ " service ...");
 		try {
 			OrrConfig.init();
-			PortalConfig.getInstance().init(getServletConfig(), null, true);
 			preUploadsDir = OrrConfig.instance().preUploadsDir;
 			log.info("preUploadsDir = " +preUploadsDir);
 		}

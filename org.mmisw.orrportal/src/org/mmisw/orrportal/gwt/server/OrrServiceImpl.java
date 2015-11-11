@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
 import org.apache.commons.logging.Log;
@@ -67,9 +66,6 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 		try {
 			OrrConfig.init();
 
-			ServletConfig servletConfig = getServletConfig();
-			PortalConfig.getInstance().init(servletConfig, log, true);
-			
 			appInfo.setVersion(OrrVersion.getVersion());
 			appInfo.setBuild(OrrVersion.getBuild());
 			
@@ -262,7 +258,6 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 	private PortalBaseInfo _prepareBaseInfo() {
 		PortalBaseInfo pbi = new PortalBaseInfo();
 		pbi.setOntServiceUrl(OrrConfig.instance().ontServiceUrl);
-		pbi.setGaUaNumber(PortalConfig.Prop.GA_UA_NUMBER.getValue());
 		log.info("portal base info: done.");
 		return pbi;
 	}
