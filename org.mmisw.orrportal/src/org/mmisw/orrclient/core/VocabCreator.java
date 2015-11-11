@@ -14,8 +14,6 @@ import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.JenaUtil2;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
-import org.mmisw.orrclient.OrrClientConfiguration;
-import org.mmisw.orrclient.OrrClientFactory;
 import org.mmisw.orrclient.core.util.StringManipulationUtil;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
@@ -181,7 +179,7 @@ public class VocabCreator {
 		Map<String, String> values = createOntologyInfo.getMetadataValues();
 
 
-		String ontServiceUrl = _config().getOntServiceUrl();
+		String ontServiceUrl = OrrConfig.instance().ontServiceUrl;
 		this.namespaceRoot = ontServiceUrl;
 		this.orgAbbreviation = createOntologyInfo.getAuthority();
 		this.shortName = createOntologyInfo.getShortName();
@@ -201,11 +199,6 @@ public class VocabCreator {
 			shortName = values.get(Omv.acronym.getURI());
 		}
 
-	}
-
-	private static OrrClientConfiguration _config() {
-		OrrClientConfiguration config = OrrClientFactory.getOrrClient().getConfiguration();
-		return config;
 	}
 
 	public void createOntology(CreateOntologyResult createVocabResult) {

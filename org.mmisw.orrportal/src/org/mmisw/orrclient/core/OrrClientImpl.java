@@ -28,7 +28,6 @@ import org.mmisw.ont.mmiuri.MmiUri;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.orrclient.IOrrClient;
-import org.mmisw.orrclient.OrrClientConfiguration;
 import org.mmisw.orrclient.core.ontmodel.OntModelUtil;
 import org.mmisw.orrclient.core.util.MailSender;
 import org.mmisw.orrclient.core.util.OntServiceUtil;
@@ -103,7 +102,6 @@ public class OrrClientImpl implements IOrrClient {
 
 	private final AppInfo appInfo = new AppInfo("OrrClient Library");
 
-	private final OrrReadOnlyConfiguration config;
 	private final File previewDir;
 
 	private static IOrrClient _instance;
@@ -112,65 +110,37 @@ public class OrrClientImpl implements IOrrClient {
 
 
 	/**
-	 * Initializes the library.
-	 * This must be called before any other library operation.
-	 *
-	 * @param config
-	 *         The configuration for the library. Note that a copy is made internally.
-	 *         Subsequent changes to the given configuration will not have any effect. If you
-	 *         need to change any configuration parameters, the library will need to be
-	 *         initialized again.
-	 *         Pass a null reference to use a default configuration.
-	 *
-	 * @return A library interface object.
-	 * @throws Exception if an error occurs
+	 * Creates and returns the instance of this class.
 	 */
-	public static IOrrClient init(OrrClientConfiguration config) throws Exception {
-		if ( config == null ) {
-			config = new OrrClientConfiguration();
-		}
-		_instance = new OrrClientImpl(config);
+	public static IOrrClient init() throws Exception {
+		_instance = new OrrClientImpl();
 		return _instance;
 	}
 
 	/**
-	 * Returns the library interface object created by {@link #init(OrrClientConfiguration)}.
-	 * @return the library interface object created by {@link #init(OrrClientConfiguration)}.
+	 * Returns the instance of this class.
 	 */
 	public static IOrrClient getInstance() {
 		return _instance;
 	}
 
-	private OrrClientImpl(OrrClientConfiguration config) throws Exception {
-		// copy the given configuration:
-		this.config = new OrrReadOnlyConfiguration(config);
+	private OrrClientImpl() throws Exception {
 
-		defaultNamespaceRoot = config.getOntServiceUrl();
+		defaultNamespaceRoot = OrrConfig.instance().ontServiceUrl;
 		log.info("basic init " +appInfo.getAppName()+ "...");
 		appInfo.setVersion(OrrClientVersion.getVersion());
 		appInfo.setBuild(OrrClientVersion.getBuild());
 		log.info(appInfo.toString());
-		log.info("ontServiceUrl = " +config.getOntServiceUrl());
+		log.info("ontServiceUrl = " +OrrConfig.instance().ontServiceUrl);
 
 		OntClientConfiguration ontClientConfig = new OntClientConfiguration();
-		ontClientConfig.setOntServiceUrl(config.getOntServiceUrl());
+		ontClientConfig.setOntServiceUrl(OrrConfig.instance().ontServiceUrl);
 
 		ontClient = IOntClient.Manager.init(ontClientConfig);
 		OntServiceUtil.setOntClient(ontClient);
 		log.info("Ont library version = " +OntVersion.getVersion()+ " (" +OntVersion.getBuild()+ ")");
 
 		previewDir = OrrConfig.instance().previewDir;
-	}
-
-	/**
-	 * Gets a read-only version of the configuration given at creation time.
-	 * Any setXXX call on this configuration object will throw UnsupportedOperationException.
-	 * If you need to change the configuration for the OrrClient library, you will need to
-	 * re-create the OrrClient object.
-	 * @return a read-only version of the configuration given at creation time.
-	 */
-	public OrrClientConfiguration getConfiguration() {
-		return config;
 	}
 
 	public void destroy() {
@@ -274,7 +244,7 @@ public class OrrClientImpl implements IOrrClient {
 		// unversionedUri -> list of corresponding OntologyInfos
 		Map<String, List<RegisteredOntologyInfo>> unversionedToVersioned = new LinkedHashMap<String, List<RegisteredOntologyInfo>>();
 
-		String uri = config.getOntServiceUrl()+ LISTALL;
+		String uri = OrrConfig.instance().ontServiceUrl + LISTALL;
 
 		if ( log.isDebugEnabled() ) {
 			log.debug("getUnversionedToVersioned. uri= " +uri);
@@ -2247,7 +2217,7 @@ public class OrrClientImpl implements IOrrClient {
                         }
                     }
                     else {
-                        withUriParam = config.getOntServiceUrl() + "?uri=" + ontologyUri;
+                        withUriParam = OrrConfig.instance().ontServiceUrl + "?uri=" + ontologyUri;
                     }
 
                     data.put("URI", ontologyUri);

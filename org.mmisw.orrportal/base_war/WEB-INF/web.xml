@@ -21,11 +21,6 @@
 		</init-param>
 		
 		<init-param>
-			<param-name>ont.service.url</param-name>
-			<param-value>@ont.service.url@</param-value>
-		</init-param>
-		
-		<init-param>
 			<param-name>orrportal.resourcetype.class</param-name>
 			<param-value>@orrportal.resourcetype.class@</param-value>
 		</init-param>

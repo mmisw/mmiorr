@@ -13,8 +13,6 @@ import org.mmisw.ont.JenaUtil2;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.ont.vocabulary.Vine;
-import org.mmisw.orrclient.OrrClientConfiguration;
-import org.mmisw.orrclient.OrrClientFactory;
 import org.mmisw.orrclient.core.MdHelper;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
@@ -72,13 +70,6 @@ public class MappingOntologyCreator {
 	private final String uniqueBaseName = _createUniqueBaseName();
 
 
-	private static OrrClientConfiguration _config() {
-		OrrClientConfiguration config = OrrClientFactory.getOrrClient().getConfiguration();
-		return config;
-	}
-
-
-
 	/**
 	 *
 	 * @param createOntologyInfo      Metadata for the ontology
@@ -94,7 +85,7 @@ public class MappingOntologyCreator {
 		this.namespaces = mappingDataCreationInfo.getNamespaces();
 		this.mappings = mappingDataCreationInfo.getMappings();
 
-		String ontServiceUrl = _config().getOntServiceUrl();
+		String ontServiceUrl = OrrConfig.instance().ontServiceUrl;
 		this.namespaceRoot = ontServiceUrl;
 		this.orgAbbreviation = createOntologyInfo.getAuthority();
 		this.shortName = createOntologyInfo.getShortName();

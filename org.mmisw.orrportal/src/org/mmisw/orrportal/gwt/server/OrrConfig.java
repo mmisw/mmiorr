@@ -37,6 +37,9 @@ public class OrrConfig {
   }
 
 
+  /** URL of the MMI Ont service. */
+  public final String ontServiceUrl;
+
   /** Main workspace parent directory */
   public final File workspaceDir;
 
@@ -51,27 +54,30 @@ public class OrrConfig {
    * file is stored here) */
   public final File previewDir;
 
-  public final String agraphSparql;
-
   /** email account information used for user account management and notifications. */
   public final String emailUsername;
   public final String emailPassword;
 
+  /** AllegroGraph triplestore SPARQL endpoint. If null, then a triple store in memory is used. */
+  public final String agraphSparql;
+
   @Override
   public String toString() {
     return "OrrConfig{\n" +
+        "  ontServiceUrl=" + ontServiceUrl + '\n' +
         "  workspaceDir =" + workspaceDir + '\n' +
         "  preUploadsDir=" + preUploadsDir + '\n' +
         "  voc2rdfDir   =" + voc2rdfDir + '\n' +
         "  previewDir   =" + previewDir + '\n' +
-        "  agraphSparql =" + agraphSparql + '\n' +
-        "  emailUsername=" + emailUsername +
+        "  emailUsername=" + emailUsername + '\n' +
+        "  agraphSparql =" + agraphSparql +
         '}';
   }
 
   private OrrConfig(Config cfg) {
-    workspaceDir = prepareDir(cfg.getString("workspace"));
+    ontServiceUrl = cfg.getString("ont.service.url");
 
+    workspaceDir = prepareDir(cfg.getString("workspace"));
     preUploadsDir = prepareDir(workspaceDir, "ontmd/preuploads");
     voc2rdfDir    = prepareDir(workspaceDir, "ontmd/preuploads/voc2rdf");
     previewDir    = prepareDir(workspaceDir, "ontmd/previews");

@@ -73,7 +73,7 @@ public class CreationTest extends VineTestCase {
 
 	public void testCreate() throws Exception {
 
-		OrrClientFactory.init(null);
+		OrrClientFactory.init();
 
 		CreateOntologyResult result = _createOntology(ontologyUri);
 		assertNull("No error in creating mapping ontology", result.getError());

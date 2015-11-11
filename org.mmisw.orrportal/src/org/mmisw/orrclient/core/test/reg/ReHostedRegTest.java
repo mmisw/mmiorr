@@ -7,7 +7,6 @@ import org.junit.BeforeClass;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.orrclient.IOrrClient;
-import org.mmisw.orrclient.OrrClientConfiguration;
 import org.mmisw.orrclient.OrrClientFactory;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
@@ -71,9 +70,7 @@ public class ReHostedRegTest extends BaseTestCase {
 	private void _testRegister(String filename, String prefix) throws Exception {
 
 		log.info("=============== INIT OrrClient =================");
-		OrrClientConfiguration config = new  OrrClientConfiguration();
-		config.setOntServiceUrl(ONT_SERVICE_URL);
-		IOrrClient orrClient = OrrClientFactory.init(config);
+		IOrrClient orrClient = OrrClientFactory.init();
 		orrClient.getMetadataBaseInfo(false, resourceTypeClassUri, authorityClassUri);
 
 

@@ -6,7 +6,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.orrclient.IOrrClient;
-import org.mmisw.orrclient.OrrClientConfiguration;
 import org.mmisw.orrclient.OrrClientFactory;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
@@ -81,15 +80,9 @@ public class OrrClientProxy  {
 	private OrrClientProxy() throws Exception {
 		log.info("initializing " +getClass().getSimpleName()+ "...");
 
-		// parameters from our config object for the OrrClientConfiguration:
-		String ontServiceUrl = PortalConfig.Prop.ONT_SERVICE_URL.getValue();
-
 		portalBaseInfo = _prepareBaseInfo();
 
-		// create OrrClientConfiguration and initialize orrclient library:
-		OrrClientConfiguration occ = new OrrClientConfiguration();
-		occ.setOntServiceUrl(ontServiceUrl);
-		orrClient = OrrClientFactory.init(occ);
+		orrClient = OrrClientFactory.init();
 
 		log.info("Using: " +orrClient.getAppInfo());
 	}
