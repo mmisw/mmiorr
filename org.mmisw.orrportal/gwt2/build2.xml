@@ -29,7 +29,7 @@
 
 	<target name="init">
 		<tstamp>
-			<format property="orrportal.app.build" pattern="yyyyMMddHHmm" />
+			<format property="orrportal.build" pattern="yyyyMMddHHmm" />
 		</tstamp>
 	</target>
 
@@ -41,6 +41,13 @@
 			includeantruntime="false">
 			<classpath refid="project.class.path" />
 		</javac>
+		<copy file="${BASE}/src/org/mmisw/orrportal/gwt/server/version.properties" failonerror="true"
+			  tofile="${build.dir}/classes/org/mmisw/orrportal/gwt/server/version.properties" overwrite="true">
+			<filterset>
+				<filter token="orrportal.version" value="${orrportal.version}" />
+				<filter token="orrportal.build" value="${orrportal.build}" />
+			</filterset>
+		</copy>
 	</target>
 
 	<target name="jar" depends="compile" description="Package up the project as a jar">
@@ -48,6 +55,7 @@
 		<jar destfile="${BASE}/war/WEB-INF/lib/org.mmisw.orrportal.gwt.jar">
 			<fileset dir="${build.dir}/classes">
 				<include name="**/*.class" />
+				<include name="**/*.properties" />
 			</fileset>
 		</jar>
 	</target>
@@ -100,8 +108,6 @@
 
 		<copy file="${BASE}/gwt2/web2.xml" tofile="${BASE}/war/WEB-INF/web.xml" overwrite="true">
 			<filterset>
-				<filter token="orrportal.app.version" value="${orrportal.app.version}" />
-				<filter token="orrportal.app.build" value="${orrportal.app.build}" />
 				<filter token="ga.uanumber" value="${ga.uanumber}" />
 			</filterset>
 		</copy>

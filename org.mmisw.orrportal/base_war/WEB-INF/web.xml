@@ -6,15 +6,7 @@
 	<servlet>
 		<servlet-name>orrService</servlet-name>
 		<servlet-class>org.mmisw.orrportal.gwt.server.OrrServiceImpl</servlet-class>
-		<init-param>
-			<param-name>orrportal.app.version</param-name>
-			<param-value>@orrportal.app.version@</param-value>
-		</init-param>
-		<init-param>
-			<param-name>orrportal.app.build</param-name>
-			<param-value>@orrportal.app.build@</param-value>
-		</init-param>
-		
+
 		<init-param>
 			<param-name>ga.uanumber</param-name>
 			<param-value>@ga.uanumber@</param-value>

@@ -16,9 +16,6 @@ public class PortalConfig {
 	 */
 	public enum Prop {
 		
-		VERSION                       ("orrportal.app.version", "pendVersion"),
-		BUILD                         ("orrportal.app.build", "pendBuild"),
-
 		/** Google analytics UA number (aka web property ID) */
 		GA_UA_NUMBER                  ("ga.uanumber", null, false),
 

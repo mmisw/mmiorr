@@ -70,8 +70,8 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 			ServletConfig servletConfig = getServletConfig();
 			PortalConfig.getInstance().init(servletConfig, log, true);
 			
-			appInfo.setVersion(PortalConfig.Prop.VERSION.getValue());
-			appInfo.setBuild(PortalConfig.Prop.BUILD.getValue());
+			appInfo.setVersion(OrrVersion.getVersion());
+			appInfo.setBuild(OrrVersion.getBuild());
 			
 			log.info(appInfo.toString());
 

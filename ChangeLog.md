@@ -5,6 +5,7 @@
     - remove "orrportal.resourcetype.class" and "orrportal.authority.class" build properties; they are
       now specified in (template.)mmiorr.conf 
   	- remove unused "appserver.host" build parameter; remove obsolete ont-browser reference; simplify PortalBaseInfo
+  - version/build properties now captured in a version.properties file in the classpath
   - simplify OrrServiceImpl by directly interacting with the IOrrClient implementation (avoiding OrrClientProxy)
   
 * 2015-11-10: orrportal 2.5.4
