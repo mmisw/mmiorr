@@ -132,7 +132,6 @@
 			<filterset>
 				<filter token="orrportal.app.version"        value="${orrportal.app.version}" />
 				<filter token="orrportal.app.build"          value="${orrportal.app.build}" />
-				<filter token="appserver.host"           value="${appserver.host}" />
 				<filter token="orrportal.resourcetype.class" value="${orrportal.resourcetype.class}" />
 				<filter token="orrportal.authority.class"    value="${orrportal.authority.class}" />
 				<filter token="ga.uanumber"              value="${ga.uanumber}" />

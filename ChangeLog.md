@@ -2,6 +2,7 @@
 
 * 2015-11-11: orrportal 2.5.4
   - simplify OrrServiceImpl by directly interacting with the IOrrClient implementation (avoiding OrrClientProxy)
+  - remove unused "appserver.host" build parameter; remove obsolete ont-browser reference; simplify PortalBaseInfo
   
 * 2015-11-10: orrportal 2.5.4
   - preparations for #353 "streamline installation of ORR system"

@@ -16,11 +16,6 @@
 		</init-param>
 		
 		<init-param>
-			<param-name>appserver.host</param-name>
-			<param-value>@appserver.host@</param-value>
-		</init-param>
-		
-		<init-param>
 			<param-name>orrportal.resourcetype.class</param-name>
 			<param-value>@orrportal.resourcetype.class@</param-value>
 		</init-param>

@@ -26,9 +26,6 @@ public class PortalConfig {
 		AUTHORITY_CLASS               ("orrportal.authority.class", "http://mmisw.org/ont/mmi/authority/Authority"),
 		
 		
-		APPSERVER_HOST                ("appserver.host", "http://localhost:8080"),
-		
-
 		/** Google analytics UA number (aka web property ID) */
 		GA_UA_NUMBER                  ("ga.uanumber", null, false),
 

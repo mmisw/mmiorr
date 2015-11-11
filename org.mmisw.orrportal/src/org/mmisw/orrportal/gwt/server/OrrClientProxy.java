@@ -29,6 +29,8 @@ import org.mmisw.orrclient.gwt.client.vocabulary.AttrDef;
 import org.mmisw.orrportal.gwt.client.rpc.PortalBaseInfo;
 
 
+// TODO remove this class, along with DirectRegistrationServlet
+
 /**
  * A proxy object that creates, configures and interacts with the OrrClient object.
  *
@@ -93,7 +95,6 @@ public class OrrClientProxy  {
 
 	private PortalBaseInfo _prepareBaseInfo() {
 		PortalBaseInfo pbi = new PortalBaseInfo();
-		pbi.setAppServerUrl(PortalConfig.Prop.APPSERVER_HOST.getValue());
 		pbi.setOntServiceUrl(OrrConfig.instance().ontServiceUrl);
 		pbi.setGaUaNumber(PortalConfig.Prop.GA_UA_NUMBER.getValue());
 		log.info("portal base info: done.");
