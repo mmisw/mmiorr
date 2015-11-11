@@ -24,14 +24,9 @@ public class OrrClientConfiguration {
 	 * Creates a copy.
 	 */
 	public OrrClientConfiguration(OrrClientConfiguration config) {
-		this.previewDirectory = config.getPreviewDirectory();
 		this.ontServiceUrl = config.getOntServiceUrl();
 		this.mailUser = config.getMailUser();
 		this.mailPassword = config.getMailPassword();
-	}
-	
-	public String getPreviewDirectory() {
-		return previewDirectory;
 	}
 	
 	public String getOntServiceUrl() {

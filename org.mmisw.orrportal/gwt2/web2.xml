@@ -26,11 +26,6 @@
 		</init-param>
 		
 		<init-param>
-			<param-name>orrportal.preview.dir</param-name>
-			<param-value>@orrportal.preview.dir@</param-value>
-		</init-param>
-		
-		<init-param>
 			<param-name>orrportal.resource.dir</param-name>
 			<param-value>@orrportal.resource.dir@</param-value>
 		</init-param>

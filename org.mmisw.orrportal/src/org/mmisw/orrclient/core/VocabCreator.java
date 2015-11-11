@@ -282,7 +282,7 @@ public class VocabCreator {
 	private void processCreateOntology() throws Exception {
 
 		// TODO instead of getPreviewDirectory, use a "tmp" directory explicitly
-		String fileInText = _config().getPreviewDirectory() + uniqueBaseName + ".txt";
+		File fileInText = new File(OrrConfig.instance().previewDir, uniqueBaseName + ".txt");
 		saveInFile(fileInText);
 
 		newOntModel = _createOntModel();
@@ -625,7 +625,7 @@ public class VocabCreator {
 	}
 
 
-	private void saveInFile(String fileLocation) throws Exception {
+	private void saveInFile(File fileLocation) throws Exception {
 		String str = getAscii();
 		FileOutputStream os = new FileOutputStream(fileLocation);
 		IOUtils.write(str, os, "UTF-8");

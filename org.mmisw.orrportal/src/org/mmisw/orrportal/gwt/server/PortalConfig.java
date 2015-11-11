@@ -19,9 +19,6 @@ public class PortalConfig {
 		VERSION                       ("orrportal.app.version", "pendVersion"),
 		BUILD                         ("orrportal.app.build", "pendBuild"),
 
-		/** where the previewed files are stored: */
-		PREVIEW_DIR             ("orrportal.preview.dir", "/Users/Shared/mmiregistry/ontmd/previews/"),
-		
 		/** where the resource files are stored: */
 		RESOURCES_DIR           ("orrportal.resource.dir", "/Users/Shared/mmiregistry/ontmd/resources/"),
 		

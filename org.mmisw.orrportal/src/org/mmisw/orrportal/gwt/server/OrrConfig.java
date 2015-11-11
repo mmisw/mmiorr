@@ -47,7 +47,10 @@ public class OrrConfig {
   /** where voc2rdf-generated files are stored: (the converted RDF file is stored here) */
   public final File voc2rdfDir;
 
+  /** where the reviewed files are stored: (once a review operation is completed, the resulting
+   * file is stored here) */
   public final File previewDir;
+
   public final File resourceDir;
 
   public final String agraphSparql;

@@ -82,6 +82,7 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
+import org.mmisw.orrportal.gwt.server.OrrConfig;
 
 
 /**
@@ -158,28 +159,8 @@ public class OrrClientImpl implements IOrrClient {
 		OntServiceUtil.setOntClient(ontClient);
 		log.info("Ont library version = " +OntVersion.getVersion()+ " (" +OntVersion.getBuild()+ ")");
 
-		if ( config.getPreviewDirectory() == null ) {
-			throw new Exception(OrrClientConfiguration.class.getSimpleName()+ " does not indicate the preview directory");
-		}
-
-		previewDir = _createDirectory(config.getPreviewDirectory());
+		previewDir = OrrConfig.instance().previewDir;
 	}
-
-	private static File _createDirectory(String dirname) throws Exception {
-		File file = new File(dirname);
-		if ( file.isDirectory() ) {
-			// OK, the directory already exists
-			return file;
-		}
-		if ( file.exists() ) {
-			throw new Exception("Indicated path already exists but it's not a directory: " +dirname);
-		}
-		if ( ! file.mkdirs() ) {
-			throw new Exception("Cannot create directory: " +dirname);
-		}
-		return file;
-	}
-
 
 	/**
 	 * Gets a read-only version of the configuration given at creation time.

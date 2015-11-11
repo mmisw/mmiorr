@@ -73,7 +73,6 @@ public class ReHostedRegTest extends BaseTestCase {
 		log.info("=============== INIT OrrClient =================");
 		OrrClientConfiguration config = new  OrrClientConfiguration();
 		config.setOntServiceUrl(ONT_SERVICE_URL);
-		config.setPreviewDirectory(PREVIEW_DIRECTORY);
 		IOrrClient orrClient = OrrClientFactory.init(config);
 		orrClient.getMetadataBaseInfo(false, resourceTypeClassUri, authorityClassUri);
 
