@@ -44,13 +44,7 @@ public class PortalConfig {
 		
 		/** URL of "Ont" URI resolution service */
 		ONT_SERVICE_URL                ("ont.service.url", "http://localhost:8080/ont"),
-		
-		/** URL of Ontology Browser service.
-		 * Note: it's required;  use the "-" value in build.properties to disable this functionality.
-		 */
-		ONTBROWSER_SERVICE_URL         ("ontbrowser.service.url", "http://localhost:8080/browser"),
-		
-		
+
 		// Note: when I test the password reset functionality from within eclipse, I put the correct 
 		// mail values here. This is because I haven't found an easy way to get these from 
 		// build.properties (perhaps GWT 2.x has better support for this situation). 
@@ -141,14 +135,6 @@ public class PortalConfig {
 					}
 				}
 			}
-			
-			// actually, if the ontbrowser property value does not start with "http", then
-			// it is ignored.
-			String ontbrowserUrl = Prop.ONTBROWSER_SERVICE_URL.getValue();
-			if ( ! ontbrowserUrl.toLowerCase().startsWith("http") ) {
-				Prop.ONTBROWSER_SERVICE_URL.setValue(null);
-			}
-
 		}
 	}
 

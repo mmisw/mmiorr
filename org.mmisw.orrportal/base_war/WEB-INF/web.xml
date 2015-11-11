@@ -26,11 +26,6 @@
 		</init-param>
 		
 		<init-param>
-			<param-name>ontbrowser.service.url</param-name>
-			<param-value>@ontbrowser.service.url@</param-value>
-		</init-param>
-		
-		<init-param>
 			<param-name>orrportal.workspace.dir</param-name>
 			<param-value>@orrportal.workspace.dir@</param-value>
 		</init-param>
