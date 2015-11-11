@@ -37,6 +37,7 @@ public class OrrConfig {
   }
 
 
+  /** Main workspace parent directory */
   public final File workspaceDir;
 
   /** where the "pre-loaded" files are stored: (a pre-loaded file is one that the user uploads

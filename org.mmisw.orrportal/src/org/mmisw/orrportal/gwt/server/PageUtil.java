@@ -33,7 +33,7 @@ public class PageUtil {
     }
 
     private String include(String filename) {
-        String workspaceDir = PortalConfig.Prop.WORKSPACE_DIR.getValue();
+        File workspaceDir = OrrConfig.instance().workspaceDir;
         File file = new File(workspaceDir, filename);
         String contents = readFile(file);
         if (contents == null) {
