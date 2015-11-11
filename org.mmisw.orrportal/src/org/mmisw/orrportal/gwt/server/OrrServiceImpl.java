@@ -1,6 +1,5 @@
 package org.mmisw.orrportal.gwt.server;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -9,8 +8,6 @@ import java.util.regex.Pattern;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.orrclient.gwt.client.rpc.AppInfo;
@@ -66,22 +63,8 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 		super.init();
 		log.info("initializing " +appInfo.getAppName()+ "...");
 
-		Config baseAppConfig = ConfigFactory.load();
-		String configFilename = baseAppConfig.getString("configFile");
-		if (configFilename == null) {
-			throw new ServletException("Could not retrieve configuration parameter: configFile");
-		}
-		log.info("Loading configuration from " + configFilename);
-		File configFile = new File(configFilename);
-		if (!configFile.canRead()) {
-			throw new ServletException("Could not read configuration file: " + configFile);
-		}
-
-		Config cfg = ConfigFactory.parseFile(configFile);
-
 		try {
-			OrrConfig.load(cfg);
-			log.info("Loaded OrrConfig: " + OrrConfig.instance());
+			OrrConfig.init();
 
 			ServletConfig servletConfig = getServletConfig();
 			PortalConfig.getInstance().init(servletConfig, log, true);

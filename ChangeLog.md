@@ -4,6 +4,7 @@
   - preparations for #353 "streamline installation of ORR system"
   	- add template.mmiorr.conf and typesafe config library
   	- add application.conf and OrrConfig
+  	- remove "orrportal.pre.uploads.dir" build property; it's now a runtime property dependent on workspace directory.
   
 * 2015-11-06: ont\&orrportal 2.5.3
   - refactoring in orrportal to facilitate possible reimplementation of interface against repository
