@@ -1,5 +1,8 @@
 ## change log ##
 
+* 2015-11-11: orrportal 2.5.4
+  - simplify OrrServiceImpl by directly interacting with the IOrrClient implementation (avoiding OrrClientProxy)
+  
 * 2015-11-10: orrportal 2.5.4
   - preparations for #353 "streamline installation of ORR system"
   	- add template.mmiorr.conf and typesafe config library

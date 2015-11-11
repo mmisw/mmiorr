@@ -10,6 +10,8 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.orrclient.IOrrClient;
+import org.mmisw.orrclient.OrrClientFactory;
 import org.mmisw.orrclient.gwt.client.rpc.AppInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
@@ -39,17 +41,16 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
  * Implementation of the OrrService interface. 
- * 
- * @author Carlos Rueda
- * @version $Id$
  */
 public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 	private static final long serialVersionUID = 1L;
 
 	
 	private final AppInfo appInfo = new AppInfo("ORR Portal");
-	
-	private OrrClientProxy orrClient;
+
+	private PortalBaseInfo portalBaseInfo;
+
+	private IOrrClient orrClient;
 	
 	
 	private final Log log = LogFactory.getLog(OrrServiceImpl.class);
@@ -73,9 +74,10 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 			appInfo.setBuild(PortalConfig.Prop.BUILD.getValue());
 			
 			log.info(appInfo.toString());
-			
-			// orrclient initialization
-			orrClient = OrrClientProxy.createInstance();
+
+			portalBaseInfo = _prepareBaseInfo();
+
+			orrClient = OrrClientFactory.init();
 		}
 		catch (Exception ex) {
 			log.error("Cannot initialize: " +ex.getMessage(), ex);
@@ -102,7 +104,7 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 
 	
 	public PortalBaseInfo getPortalBaseInfo() {
-		return orrClient.getBaseInfo();
+		return portalBaseInfo;
 	}
 	
 	public GetAllOntologiesResult getAllOntologies(boolean includePriorVersions) {
@@ -110,7 +112,10 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 	}
 	
 	public MetadataBaseInfo getMetadataBaseInfo(boolean includeVersion) {
-		return orrClient.getMetadataBaseInfo(includeVersion);
+		String resourceTypeClassUri = PortalConfig.Prop.RESOURCE_TYPE_CLASS.getValue();
+		String authorityClassUri = PortalConfig.Prop.AUTHORITY_CLASS.getValue();
+
+		return orrClient.getMetadataBaseInfo(includeVersion, resourceTypeClassUri, authorityClassUri);
 	}
 
 	public ResolveUriResult resolveUri(String uri) {
@@ -252,4 +257,14 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 		return orrClient.markTestingOntology(loginResult, oi, markTesting);
 	}
 
+	///////////////////////////////////////////////////////////////////////////
+
+	private PortalBaseInfo _prepareBaseInfo() {
+		PortalBaseInfo pbi = new PortalBaseInfo();
+		pbi.setAppServerUrl(PortalConfig.Prop.APPSERVER_HOST.getValue());
+		pbi.setOntServiceUrl(OrrConfig.instance().ontServiceUrl);
+		pbi.setGaUaNumber(PortalConfig.Prop.GA_UA_NUMBER.getValue());
+		log.info("portal base info: done.");
+		return pbi;
+	}
 }
