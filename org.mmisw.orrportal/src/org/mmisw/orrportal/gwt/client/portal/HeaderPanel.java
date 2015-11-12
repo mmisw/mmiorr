@@ -3,8 +3,8 @@ package org.mmisw.orrportal.gwt.client.portal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.core.client.GWT;
 import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
-import org.mmisw.orrportal.gwt.client.Orr;
 import org.mmisw.orrportal.gwt.client.portal.PortalMainPanel.InterfaceType;
 import org.mmisw.orrportal.gwt.client.util.OrrUtil;
 
@@ -29,6 +29,8 @@ public class HeaderPanel extends FlexTable {
 
 	private static final String HELP_LINK = "http://marinemetadata.org/orr";
 	private static final String TOU_LINK = "http://marinemetadata.org/orr/tou";
+
+	private static final String logoLocation = GWT.getModuleBaseURL() + "images/logo.png";
 
 	private HorizontalPanel linksPanel1 = new HorizontalPanel();
 	private HorizontalPanel linksPanel2 = new HorizontalPanel();
@@ -76,9 +78,9 @@ public class HeaderPanel extends FlexTable {
 		flexPanel.setWidth("100%");
 //		flexPanel.setBorderWidth(1);
 		int row = 0;
-		
+
 		flexPanel.getFlexCellFormatter().setRowSpan(row, 0, 2);
-		flexPanel.setWidget(row, 0, Orr.images.mmior().createImage());
+		flexPanel.setWidget(row, 0, new HTML("<img src=\"" + logoLocation + "\">"));
 		flexPanel.getFlexCellFormatter().setWidth(row, 0, "10%");
 		flexPanel.getFlexCellFormatter().setAlignment(row, 0, 
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE

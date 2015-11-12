@@ -21,8 +21,7 @@ PageUtil pageUtil = new PageUtil(getServletContext());
   		document.write("<img src=\"images/loading.gif\"> Loading...");
   	</script>
 	<noscript>
-		The MMI ORR Portal requires JavaScript enabled in your web browser.<br/> 
-		Enable JavaScript and then refresh this page.
+		This application requires JavaScript enabled in your web browser.<br/>
 	</noscript>
   </div>
   

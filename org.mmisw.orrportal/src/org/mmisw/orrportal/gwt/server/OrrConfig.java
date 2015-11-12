@@ -25,7 +25,7 @@ public class OrrConfig {
       throw new ServiceConfigurationError("Could not read configuration file: " + configFile);
     }
 
-    Config cfg = ConfigFactory.parseFile(configFile);
+    Config cfg = ConfigFactory.parseFile(configFile).resolve();
 
     orrConfig = new OrrConfig(cfg);
     log.info("Loaded OrrConfig: " + orrConfig);
@@ -58,6 +58,10 @@ public class OrrConfig {
   public final String emailUsername;
   public final String emailPassword;
 
+  /** absolute file location of image shown in the upper left corner of the page. */
+  public final String brandingLogo;
+  public final String brandingAppTitle;
+
   /** AllegroGraph triplestore SPARQL endpoint. If null, then a triple store in memory is used. */
   public final String agraphSparql;
 
@@ -78,6 +82,8 @@ public class OrrConfig {
         "  voc2rdfDir         = " + voc2rdfDir + '\n' +
         "  previewDir         = " + previewDir + '\n' +
         "  emailUsername      = " + emailUsername + '\n' +
+        "  brandingLogo       = " + brandingLogo + '\n' +
+        "  brandingAppTitle   = " + brandingAppTitle + '\n' +
         "  resourceTypeClass  = " + resourceTypeClass + '\n' +
         "  authorityClass     = " + authorityClass + '\n' +
         "  agraphSparql       = " + agraphSparql +
@@ -99,6 +105,9 @@ public class OrrConfig {
     else {
       emailUsername = emailPassword = null;
     }
+
+    brandingLogo     = cfg.hasPath("branding.logo") ? cfg.getString("branding.logo") : null;
+    brandingAppTitle = cfg.hasPath("branding.app.title") ? cfg.getString("branding.app.title") : null;
 
     resourceTypeClass = cfg.getString("resourceType.class");
     authorityClass    = cfg.getString("authority.class");

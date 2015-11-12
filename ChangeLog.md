@@ -2,6 +2,7 @@
 
 * 2015-11-11: orrportal 2.5.4
   - preparations for #353 "streamline installation of ORR system"
+    - new "branding.logo" configuration parameter that allows to overwrite the default MMI ORR logo
     - simpler handling of the "ga.uanumber" build property. As part of this, remove PortalConfig, not needed anymore.
     - remove "orrportal.resourcetype.class" and "orrportal.authority.class" build properties; they are
       now specified in (template.)mmiorr.conf 

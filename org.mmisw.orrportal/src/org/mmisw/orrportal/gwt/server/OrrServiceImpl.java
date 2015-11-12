@@ -1,5 +1,7 @@
 package org.mmisw.orrportal.gwt.server;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -7,6 +9,7 @@ import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.orrclient.IOrrClient;
@@ -56,8 +59,7 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 	
 	
 	/**
-	 * Prepares the application info, and configures and initializes the
-	 * orrclient library.
+	 * Initializes the application.
 	 */
 	public void init() throws ServletException {
 		super.init();
@@ -65,13 +67,14 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 
 		try {
 			OrrConfig.init();
+			prepareLogo();
 
 			appInfo.setVersion(OrrVersion.getVersion());
 			appInfo.setBuild(OrrVersion.getBuild());
 			
 			log.info(appInfo.toString());
 
-			portalBaseInfo = _prepareBaseInfo();
+			portalBaseInfo = prepareBaseInfo();
 
 			orrClient = OrrClientFactory.init();
 		}
@@ -255,10 +258,32 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 
 	///////////////////////////////////////////////////////////////////////////
 
-	private PortalBaseInfo _prepareBaseInfo() {
+	private PortalBaseInfo prepareBaseInfo() {
 		PortalBaseInfo pbi = new PortalBaseInfo();
 		pbi.setOntServiceUrl(OrrConfig.instance().ontServiceUrl);
 		log.info("portal base info: done.");
 		return pbi;
+	}
+
+	/**
+	 * Generates the "images/logo.png" file under the servlet context as a copy of either the original
+	 * mmiorr.png logo or, if given, the path to a PNG file indicated with the branding.logo
+	 * configuration parameter.
+	 * See {@link org.mmisw.orrportal.gwt.client.portal.HeaderPanel}.
+	 */
+	private void prepareLogo() {
+		String brandingLogo = OrrConfig.instance().brandingLogo;
+		String sourcePath = brandingLogo != null ? brandingLogo : getServletContext().getRealPath("images/mmiorr.png");
+		String targetPath = getServletContext().getRealPath("images/logo.png");
+		log.info("prepareLogo: copying " + sourcePath + " to " + targetPath);
+		try (
+				FileInputStream sourceStream = new FileInputStream(sourcePath);
+				FileOutputStream targetStream = new FileOutputStream(targetPath);
+		) {
+			IOUtils.copy(sourceStream, targetStream);
+		}
+		catch (Exception ex) {
+			log.error("error preparing logo file " + targetPath, ex);
+		}
 	}
 }
