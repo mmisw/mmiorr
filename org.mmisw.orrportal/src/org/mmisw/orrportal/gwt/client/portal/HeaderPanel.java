@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
+import org.mmisw.orrportal.gwt.client.Orr;
 import org.mmisw.orrportal.gwt.client.portal.PortalMainPanel.InterfaceType;
 import org.mmisw.orrportal.gwt.client.util.OrrUtil;
 
@@ -28,7 +29,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class HeaderPanel extends FlexTable {
 
 	private static final String HELP_LINK = "http://marinemetadata.org/orr";
-	private static final String TOU_LINK = "http://marinemetadata.org/orr/tou";
+	private static final String TOU_LINK = Orr.getPortalBaseInfo().getTouUrl();
 
 	private static final String logoLocation = GWT.getModuleBaseURL() + "images/logo.png";
 
@@ -139,8 +140,11 @@ public class HeaderPanel extends FlexTable {
 		}
 		
 		widgets.add(helpButton);
-		widgets.add(touButton);
-		
+
+		if (TOU_LINK != null && TOU_LINK.length() > 0) {
+			widgets.add(touButton);
+		}
+
 		if ( loginResult == null ) {
 			if ( type != InterfaceType.USER_ACCOUNT ) {
 				accountLink.setText("Create account");

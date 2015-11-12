@@ -262,6 +262,7 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 	private PortalBaseInfo prepareBaseInfo() {
 		PortalBaseInfo pbi = new PortalBaseInfo();
 		pbi.setOntServiceUrl(OrrConfig.instance().ontServiceUrl);
+		pbi.setTouUrl(OrrConfig.instance().brandingTouUrl);
 		log.info("portal base info: done.");
 		return pbi;
 	}

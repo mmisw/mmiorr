@@ -60,7 +60,13 @@ public class OrrConfig {
 
   /** absolute file location of image shown in the upper left corner of the page. */
   public final String brandingLogo;
+
+  /** string used in page's <title> and some other places */
   public final String brandingAppTitle;
+
+  /** "Terms of Use" link.
+   * Only has effect (with omission in the UI if undefined) if the logo is also overwritten. */
+  public final String brandingTouUrl;
 
   /** AllegroGraph triplestore SPARQL endpoint. If null, then a triple store in memory is used. */
   public final String agraphSparql;
@@ -84,6 +90,7 @@ public class OrrConfig {
         "  emailUsername      = " + emailUsername + '\n' +
         "  brandingLogo       = " + brandingLogo + '\n' +
         "  brandingAppTitle   = " + brandingAppTitle + '\n' +
+        "  brandingTouUrl     = " + brandingTouUrl + '\n' +
         "  resourceTypeClass  = " + resourceTypeClass + '\n' +
         "  authorityClass     = " + authorityClass + '\n' +
         "  agraphSparql       = " + agraphSparql +
@@ -108,6 +115,8 @@ public class OrrConfig {
 
     brandingLogo     = cfg.hasPath("branding.logo") ? cfg.getString("branding.logo") : null;
     brandingAppTitle = cfg.hasPath("branding.app.title") ? cfg.getString("branding.app.title") : null;
+    brandingTouUrl   = brandingLogo == null ? "http://marinemetadata.org/orr/tou"
+        : cfg.hasPath("branding.tou.url") ? cfg.getString("branding.tou.url") : null;
 
     resourceTypeClass = cfg.getString("resourceType.class");
     authorityClass    = cfg.getString("authority.class");

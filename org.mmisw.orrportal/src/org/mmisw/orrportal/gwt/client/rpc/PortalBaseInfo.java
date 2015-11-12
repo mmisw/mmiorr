@@ -9,6 +9,7 @@ public class PortalBaseInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private String ontServiceUrl;
+	private String touUrl;
 
 	public PortalBaseInfo() {}
 
@@ -23,5 +24,13 @@ public class PortalBaseInfo implements Serializable {
    */
   public void setOntServiceUrl(String ontServiceUrl) {
     this.ontServiceUrl = ontServiceUrl;
+  }
+
+  public String getTouUrl() {
+    return touUrl;
+  }
+
+  public void setTouUrl(String touUrl) {
+    this.touUrl = touUrl;
   }
 }
