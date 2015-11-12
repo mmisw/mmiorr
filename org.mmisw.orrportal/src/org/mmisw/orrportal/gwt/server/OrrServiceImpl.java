@@ -68,6 +68,7 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 		try {
 			OrrConfig.init();
 			prepareLogo();
+			preparePoweredBy();
 
 			appInfo.setVersion(OrrVersion.getVersion());
 			appInfo.setBuild(OrrVersion.getBuild());
@@ -284,6 +285,15 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 		}
 		catch (Exception ex) {
 			log.error("error preparing logo file " + targetPath, ex);
+		}
+	}
+	/**
+	 * If branding.logo is given, adjusts the application name to start with "Powered by"
+	 */
+	private void preparePoweredBy() {
+		String brandingLogo = OrrConfig.instance().brandingLogo;
+		if (brandingLogo != null) {
+			appInfo.setAppName("Powered by " + appInfo.getAppName());
 		}
 	}
 }

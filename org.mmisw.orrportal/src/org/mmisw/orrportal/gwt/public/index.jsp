@@ -8,7 +8,7 @@ PageUtil pageUtil = new PageUtil(getServletContext());
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <title>MMI Ontology Registry and Repository</title>
+    <%=pageUtil.includeHeadTitle()%>
     <script type="text/javascript" language="javascript" src="org.mmisw.orrportal.gwt.Orr.nocache.js"></script>
 @ga_snippet@
   </head>
