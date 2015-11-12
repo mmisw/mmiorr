@@ -85,12 +85,6 @@ public class OrrClientProxy  {
 		portalBaseInfo = _prepareBaseInfo();
 
 		orrClient = OrrClientFactory.init();
-
-		log.info("Using: " +orrClient.getAppInfo());
-	}
-
-	public PortalBaseInfo getBaseInfo() {
-		return portalBaseInfo;
 	}
 
 	private PortalBaseInfo _prepareBaseInfo() {

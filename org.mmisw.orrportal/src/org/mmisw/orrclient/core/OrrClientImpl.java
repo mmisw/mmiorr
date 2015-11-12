@@ -37,7 +37,6 @@ import org.mmisw.orrclient.core.util.ontinfo.OntInfoUtil;
 import org.mmisw.orrclient.core.util.ontype.OntTypeUtil;
 import org.mmisw.orrclient.core.vine.MappingOntologyCreator;
 import org.mmisw.orrclient.core.vine.VineUtil;
-import org.mmisw.orrclient.gwt.client.rpc.AppInfo;
 import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo.PriorOntologyInfo;
@@ -100,8 +99,6 @@ public class OrrClientImpl implements IOrrClient {
 	private static String defaultNamespaceRoot;
 
 
-	private final AppInfo appInfo = new AppInfo("OrrClient Library");
-
 	private final File previewDir;
 
 	private static IOrrClient _instance;
@@ -127,10 +124,6 @@ public class OrrClientImpl implements IOrrClient {
 	private OrrClientImpl() throws Exception {
 
 		defaultNamespaceRoot = OrrConfig.instance().ontServiceUrl;
-		log.info("basic init " +appInfo.getAppName()+ "...");
-		appInfo.setVersion(OrrClientVersion.getVersion());
-		appInfo.setBuild(OrrClientVersion.getBuild());
-		log.info(appInfo.toString());
 		log.info("ontServiceUrl = " +OrrConfig.instance().ontServiceUrl);
 
 		OntClientConfiguration ontClientConfig = new OntClientConfiguration();
@@ -142,15 +135,6 @@ public class OrrClientImpl implements IOrrClient {
 
 		previewDir = OrrConfig.instance().previewDir;
 	}
-
-	public void destroy() {
-		log.info(appInfo+ ": destroy called.\n\n");
-	}
-
-	public AppInfo getAppInfo() {
-		return appInfo;
-	}
-
 
 	private MetadataBaseInfo metadataBaseInfo = null;
 

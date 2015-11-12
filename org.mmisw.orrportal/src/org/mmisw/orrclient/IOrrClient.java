@@ -3,7 +3,6 @@ package org.mmisw.orrclient;
 import java.util.List;
 import java.util.Map;
 
-import org.mmisw.orrclient.gwt.client.rpc.AppInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.CreateUpdateUserAccountResult;
@@ -31,11 +30,6 @@ import org.mmisw.orrclient.gwt.client.vocabulary.AttrDef;
  * @author Carlos Rueda
  */
 public interface IOrrClient {
-
-	/**
-	 * Gets basic application info.
-	 */
-	AppInfo getAppInfo();
 
 	/**
 	 * Gets all (latest versions of the) ontologies in the registry.
