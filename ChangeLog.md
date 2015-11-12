@@ -4,7 +4,7 @@
   - implement #351 "Branding"
     - new "branding.logo" configuration parameter that allows to overwrite the default MMI ORR logo
     - Application name in the footer prefixed with "Powered by" if branding.logo is given
-    - new "branding.app.title" configuration parameter that allows to overwrite <title> of the page
+    - new "branding.app.title" configuration parameter that allows to overwrite `<title>` of the page
     - new "branding.tou.url" configuration parameter that allows to overwrite the "Terms of Use" link.
       Only has effect if branding.logo is given.
     
