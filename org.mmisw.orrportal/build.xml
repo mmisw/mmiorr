@@ -2,6 +2,7 @@
 <project name="orrportal" default="war" basedir=".">
 
 	<property file="version.properties" />
+	<property file="local.build.properties" />
 	<property file="build.properties" />
 	<property name="build.dir" value="_generated"/>
 

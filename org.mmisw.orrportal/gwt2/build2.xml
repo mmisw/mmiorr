@@ -3,6 +3,7 @@
 
 	<property name="BASE" value=".." />
 	<property file="${BASE}/version.properties" />
+	<property file="${BASE}/local.build.properties" />
 	<property file="${BASE}/build.properties" />
 
 	<property name="build.dir" value="_generated" />

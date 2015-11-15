@@ -1,5 +1,9 @@
 ## change log ##
 
+* 2015-11-15: ont\&orrportal 2.5.4
+  - preparations for #353 "streamline installation of ORR system"
+    - use build.properties as master and local.build.properties for local overwrites
+	
 * 2015-11-11: orrportal 2.5.4
   - implement #351 "Branding"
     - new "branding.logo" configuration parameter that allows to overwrite the default MMI ORR logo

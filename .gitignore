@@ -1,4 +1,4 @@
-build.properties
+local.build.properties
 _generated
 
 org.mmisw.orrportal/mmiorr.conf
