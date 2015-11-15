@@ -68,9 +68,6 @@ public class OrrConfig {
    * Only has effect (with omission in the UI if undefined) if the logo is also overwritten. */
   public final String brandingTouUrl;
 
-  /** AllegroGraph triplestore SPARQL endpoint. If null, then a triple store in memory is used. */
-  public final String agraphSparql;
-
   /** URI of the ResourceType OWL class:
    * Instances of this class are used to populate the corresponding selection GUI component */
   public final String resourceTypeClass;
@@ -92,8 +89,7 @@ public class OrrConfig {
         "  brandingAppTitle   = " + brandingAppTitle + '\n' +
         "  brandingTouUrl     = " + brandingTouUrl + '\n' +
         "  resourceTypeClass  = " + resourceTypeClass + '\n' +
-        "  authorityClass     = " + authorityClass + '\n' +
-        "  agraphSparql       = " + agraphSparql +
+        "  authorityClass     = " + authorityClass +
         '}';
   }
 
@@ -120,8 +116,6 @@ public class OrrConfig {
 
     resourceTypeClass = cfg.getString("resourceType.class");
     authorityClass    = cfg.getString("authority.class");
-
-    agraphSparql = cfg.hasPath("agraph.sparql") ? cfg.getString("agraph.sparql") : null;
   }
 
   private static File prepareDir(String dirName) {
