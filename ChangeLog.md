@@ -1,5 +1,33 @@
 ## change log ##
 
+* 2015-11-15: ont\&orrportal 2.5.4
+  - preparations for #353 "streamline installation of ORR system"
+    - use build.properties as master and local.build.properties for local overwrites
+	
+* 2015-11-11: orrportal 2.5.4
+  - implement #351 "Branding"
+    - new "branding.logo" configuration parameter that allows to overwrite the default MMI ORR logo
+    - Application name in the footer prefixed with "Powered by" if branding.logo is given
+    - new "branding.app.title" configuration parameter that allows to overwrite `<title>` of the page
+    - new "branding.tou.url" configuration parameter that allows to overwrite the "Terms of Use" link.
+      Only has effect if branding.logo is given.
+    
+  - preparations for #353 "streamline installation of ORR system"
+    - simpler handling of the "ga.uanumber" build property. As part of this, remove PortalConfig, not needed anymore.
+    - remove "orrportal.resourcetype.class" and "orrportal.authority.class" build properties; they are
+      now specified in (template.)mmiorr.conf 
+  	- remove unused "appserver.host" build parameter; remove obsolete ont-browser reference; simplify PortalBaseInfo
+  
+  - remove obsolete OrrClientVersion
+  - version/build properties now captured in a version.properties file in the classpath
+  - simplify OrrServiceImpl by directly interacting with the IOrrClient implementation (avoiding OrrClientProxy)
+  
+* 2015-11-10: orrportal 2.5.4
+  - preparations for #353 "streamline installation of ORR system"
+  	- add template.mmiorr.conf and typesafe config library
+  	- add application.conf and OrrConfig
+  	- remove "orrportal.pre.uploads.dir" build property; it's now a runtime property dependent on workspace directory.
+  
 * 2015-11-06: ont\&orrportal 2.5.3
   - refactoring in orrportal to facilitate possible reimplementation of interface against repository
   	- extract Manager from IOrrClient such that it becomes easier to replace the implementation in 

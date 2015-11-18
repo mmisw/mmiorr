@@ -153,7 +153,7 @@ public class PortalControl {
 	}
 
 	public ExternalViewersInfo getExternalViewersInfo(BaseOntologyInfo oi, boolean includeVersion) {
-		String ontbrowserUrl = Orr.getPortalBaseInfo().getOntbrowserServiceUrl();
+		String ontbrowserUrl = null; // no more ont-browser utility included
 		if ( ontbrowserUrl == null || ontbrowserUrl.trim().length() == 0 ) {
 			return null;
 		}

@@ -9,8 +9,6 @@ import com.google.gwt.user.client.ui.ImageBundle;
  */
 public interface OrrPortalImageBundle extends ImageBundle {
 	
-	public AbstractImagePrototype mmior();
-	
 	/** From: <a href="http://www.sanbaldo.com/wordpress/1/ajax_gif/
 	 *  >http://www.sanbaldo.com/wordpress/1/ajax_gif/</a>
 	 */

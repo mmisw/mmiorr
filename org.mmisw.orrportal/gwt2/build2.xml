@@ -3,6 +3,7 @@
 
 	<property name="BASE" value=".." />
 	<property file="${BASE}/version.properties" />
+	<property file="${BASE}/local.build.properties" />
 	<property file="${BASE}/build.properties" />
 
 	<property name="build.dir" value="_generated" />
@@ -29,7 +30,7 @@
 
 	<target name="init">
 		<tstamp>
-			<format property="orrportal.app.build" pattern="yyyyMMddHHmm" />
+			<format property="orrportal.build" pattern="yyyyMMddHHmm" />
 		</tstamp>
 	</target>
 
@@ -41,6 +42,13 @@
 			includeantruntime="false">
 			<classpath refid="project.class.path" />
 		</javac>
+		<copy file="${BASE}/src/org/mmisw/orrportal/gwt/server/version.properties" failonerror="true"
+			  tofile="${build.dir}/classes/org/mmisw/orrportal/gwt/server/version.properties" overwrite="true">
+			<filterset>
+				<filter token="orrportal.version" value="${orrportal.version}" />
+				<filter token="orrportal.build" value="${orrportal.build}" />
+			</filterset>
+		</copy>
 	</target>
 
 	<target name="jar" depends="compile" description="Package up the project as a jar">
@@ -48,6 +56,7 @@
 		<jar destfile="${BASE}/war/WEB-INF/lib/org.mmisw.orrportal.gwt.jar">
 			<fileset dir="${build.dir}/classes">
 				<include name="**/*.class" />
+				<include name="**/*.properties" />
 			</fileset>
 		</jar>
 	</target>
@@ -100,19 +109,6 @@
 
 		<copy file="${BASE}/gwt2/web2.xml" tofile="${BASE}/war/WEB-INF/web.xml" overwrite="true">
 			<filterset>
-				<filter token="orrportal.app.version" value="${orrportal.app.version}" />
-				<filter token="orrportal.app.build" value="${orrportal.app.build}" />
-				<filter token="appserver.host" value="${appserver.host}" />
-				<filter token="ont.service.url" value="${ont.service.url}" />
-				<filter token="ontbrowser.service.url" value="${ontbrowser.service.url}" />
-				<filter token="orrportal.pre.uploads.dir" value="${orrportal.pre.uploads.dir}" />
-				<filter token="orrportal.voc2rdf.dir" value="${orrportal.voc2rdf.dir}" />
-				<filter token="orrportal.preview.dir" value="${orrportal.preview.dir}" />
-				<filter token="orrportal.resource.dir" value="${orrportal.resource.dir}" />
-				<filter token="orrportal.resourcetype.class" value="${orrportal.resourcetype.class}" />
-				<filter token="orrportal.authority.class" value="${orrportal.authority.class}" />
-				<filter token="mail.usr" value="${mail.usr}" />
-				<filter token="mail.pw" value="${mail.pw}" />
 				<filter token="ga.uanumber" value="${ga.uanumber}" />
 			</filterset>
 		</copy>

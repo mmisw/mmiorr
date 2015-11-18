@@ -6,7 +6,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.orrclient.IOrrClient;
-import org.mmisw.orrclient.OrrClientConfiguration;
 import org.mmisw.orrclient.OrrClientFactory;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
@@ -30,6 +29,8 @@ import org.mmisw.orrclient.gwt.client.vocabulary.AttrDef;
 import org.mmisw.orrportal.gwt.client.rpc.PortalBaseInfo;
 
 
+// TODO remove this class, along with DirectRegistrationServlet
+
 /**
  * A proxy object that creates, configures and interacts with the OrrClient object.
  *
@@ -42,7 +43,7 @@ public class OrrClientProxy  {
 
 	/**
 	 * Returns the instance of this class, note the it will be null
-	 * if {@link #createInstance(String, String)} has not been called.
+	 * if {@link #createInstance()} has not been called.
 	 * @return
 	 */
 	public static OrrClientProxy getInstance() {
@@ -81,37 +82,14 @@ public class OrrClientProxy  {
 	private OrrClientProxy() throws Exception {
 		log.info("initializing " +getClass().getSimpleName()+ "...");
 
-		// parameters from our config object for the OrrClientConfiguration:
-		String ontServiceUrl = PortalConfig.Prop.ONT_SERVICE_URL.getValue();
-		String previewDirectory = PortalConfig.Prop.PREVIEW_DIR.getValue();
-		String voc2rdfDirectory = PortalConfig.Prop.VOC2RDF_DIR.getValue();
-		String mailUser = PortalConfig.Prop.MAIL_USER.getValue();
-		String mailPassword = PortalConfig.Prop.MAIL_PASSWORD.getValue();
-
 		portalBaseInfo = _prepareBaseInfo();
 
-		// create OrrClientConfiguration and initialize orrclient library:
-		OrrClientConfiguration occ = new OrrClientConfiguration();
-		occ.setOntServiceUrl(ontServiceUrl);
-		occ.setPreviewDirectory(previewDirectory);
-		occ.setVoc2rdfDirectory(voc2rdfDirectory);
-		occ.setMailUser(mailUser);
-		occ.setMailPassword(mailPassword);
-		orrClient = OrrClientFactory.init(occ);
-
-		log.info("Using: " +orrClient.getAppInfo());
-	}
-
-	public PortalBaseInfo getBaseInfo() {
-		return portalBaseInfo;
+		orrClient = OrrClientFactory.init();
 	}
 
 	private PortalBaseInfo _prepareBaseInfo() {
 		PortalBaseInfo pbi = new PortalBaseInfo();
-		pbi.setAppServerUrl(PortalConfig.Prop.APPSERVER_HOST.getValue());
-		pbi.setOntServiceUrl(PortalConfig.Prop.ONT_SERVICE_URL.getValue());
-		pbi.setOntbrowserServiceUrl(PortalConfig.Prop.ONTBROWSER_SERVICE_URL.getValue());
-		pbi.setGaUaNumber(PortalConfig.Prop.GA_UA_NUMBER.getValue());
+		pbi.setOntServiceUrl(OrrConfig.instance().ontServiceUrl);
 		log.info("portal base info: done.");
 		return pbi;
 	}
@@ -135,8 +113,8 @@ public class OrrClientProxy  {
 
 
 	public MetadataBaseInfo getMetadataBaseInfo(boolean includeVersion) {
-		String resourceTypeClassUri = PortalConfig.Prop.RESOURCE_TYPE_CLASS.getValue();
-		String authorityClassUri = PortalConfig.Prop.AUTHORITY_CLASS.getValue();
+		String resourceTypeClassUri = OrrConfig.instance().resourceTypeClass;
+		String authorityClassUri    = OrrConfig.instance().authorityClass;
 
 		return orrClient.getMetadataBaseInfo(includeVersion, resourceTypeClassUri, authorityClassUri);
 	}

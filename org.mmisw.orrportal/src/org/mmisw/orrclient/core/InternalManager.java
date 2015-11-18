@@ -16,8 +16,6 @@ import org.mmisw.ont.client.util.AquaUtil;
 import org.mmisw.ont.mmiuri.MmiUri;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.orrclient.IOrrClient;
-import org.mmisw.orrclient.OrrClientConfiguration;
-import org.mmisw.orrclient.OrrClientFactory;
 import org.mmisw.orrclient.core.util.OntServiceUtil;
 import org.mmisw.orrclient.gwt.client.rpc.InternalOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
@@ -25,6 +23,7 @@ import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import org.mmisw.orrportal.gwt.server.OrrConfig;
 
 /**
  * Functionality related with internal information (users, groups, permissions, issues)
@@ -163,7 +162,7 @@ public class InternalManager {
 			return;
 		}
 
-		String ontServiceUrl = _config().getOntServiceUrl();
+		String ontServiceUrl = OrrConfig.instance().ontServiceUrl;
 		final String unversGroupsUri = ontServiceUrl+ "/mmiorr-internal/groups";
 
 		RegisteredOntologyInfo groupsOntology = orrClient.getOntologyInfo(unversGroupsUri);
@@ -210,11 +209,6 @@ public class InternalManager {
 		}
 	}
 
-	private static OrrClientConfiguration _config() {
-		OrrClientConfiguration config = OrrClientFactory.getOrrClient().getConfiguration();
-		return config;
-	}
-
 	/**
 	 * Responds the basic RDF for groups.
 	 */
@@ -223,7 +217,7 @@ public class InternalManager {
 
 		log.debug("_getGroupsRdf called.");
 
-		String ontServiceUrl = _config().getOntServiceUrl();
+		String ontServiceUrl = OrrConfig.instance().ontServiceUrl;
 		final String groups_ns = ontServiceUrl+ "/mmiorr-internal/" +version+ "/groups/";
 
 		final Model model = ModelFactory.createDefaultModel();

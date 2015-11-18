@@ -1,15 +1,19 @@
 package org.mmisw.orrportal.gwt.server;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mmisw.orrclient.IOrrClient;
+import org.mmisw.orrclient.OrrClientFactory;
 import org.mmisw.orrclient.gwt.client.rpc.AppInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
@@ -39,40 +43,41 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
  * Implementation of the OrrService interface. 
- * 
- * @author Carlos Rueda
- * @version $Id$
  */
 public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 	private static final long serialVersionUID = 1L;
 
 	
 	private final AppInfo appInfo = new AppInfo("ORR Portal");
-	
-	private OrrClientProxy orrClient;
+
+	private PortalBaseInfo portalBaseInfo;
+
+	private IOrrClient orrClient;
 	
 	
 	private final Log log = LogFactory.getLog(OrrServiceImpl.class);
 	
 	
 	/**
-	 * Prepares the application info, and configures and initializes the
-	 * orrclient library.
+	 * Initializes the application.
 	 */
 	public void init() throws ServletException {
 		super.init();
 		log.info("initializing " +appInfo.getAppName()+ "...");
-		ServletConfig servletConfig = getServletConfig();
+
 		try {
-			PortalConfig.getInstance().init(servletConfig, log, true);
-			
-			appInfo.setVersion(PortalConfig.Prop.VERSION.getValue());
-			appInfo.setBuild(PortalConfig.Prop.BUILD.getValue());
+			OrrConfig.init();
+			prepareLogo();
+			preparePoweredBy();
+
+			appInfo.setVersion(OrrVersion.getVersion());
+			appInfo.setBuild(OrrVersion.getBuild());
 			
 			log.info(appInfo.toString());
-			
-			// orrclient initialization
-			orrClient = OrrClientProxy.createInstance();
+
+			portalBaseInfo = prepareBaseInfo();
+
+			orrClient = OrrClientFactory.init();
 		}
 		catch (Exception ex) {
 			log.error("Cannot initialize: " +ex.getMessage(), ex);
@@ -99,7 +104,7 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 
 	
 	public PortalBaseInfo getPortalBaseInfo() {
-		return orrClient.getBaseInfo();
+		return portalBaseInfo;
 	}
 	
 	public GetAllOntologiesResult getAllOntologies(boolean includePriorVersions) {
@@ -107,7 +112,10 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 	}
 	
 	public MetadataBaseInfo getMetadataBaseInfo(boolean includeVersion) {
-		return orrClient.getMetadataBaseInfo(includeVersion);
+		String resourceTypeClassUri = OrrConfig.instance().resourceTypeClass;
+		String authorityClassUri    = OrrConfig.instance().authorityClass;
+
+		return orrClient.getMetadataBaseInfo(includeVersion, resourceTypeClassUri, authorityClassUri);
 	}
 
 	public ResolveUriResult resolveUri(String uri) {
@@ -249,4 +257,44 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 		return orrClient.markTestingOntology(loginResult, oi, markTesting);
 	}
 
+	///////////////////////////////////////////////////////////////////////////
+
+	private PortalBaseInfo prepareBaseInfo() {
+		PortalBaseInfo pbi = new PortalBaseInfo();
+		pbi.setOntServiceUrl(OrrConfig.instance().ontServiceUrl);
+		pbi.setTouUrl(OrrConfig.instance().brandingTouUrl);
+		log.info("portal base info: done.");
+		return pbi;
+	}
+
+	/**
+	 * Generates the "images/logo.png" file under the servlet context as a copy of either the original
+	 * mmiorr.png logo or, if given, the path to a PNG file indicated with the branding.logo
+	 * configuration parameter.
+	 * See {@link org.mmisw.orrportal.gwt.client.portal.HeaderPanel}.
+	 */
+	private void prepareLogo() {
+		String brandingLogo = OrrConfig.instance().brandingLogo;
+		String sourcePath = brandingLogo != null ? brandingLogo : getServletContext().getRealPath("images/mmiorr.png");
+		String targetPath = getServletContext().getRealPath("images/logo.png");
+		log.info("prepareLogo: copying " + sourcePath + " to " + targetPath);
+		try (
+				FileInputStream sourceStream = new FileInputStream(sourcePath);
+				FileOutputStream targetStream = new FileOutputStream(targetPath);
+		) {
+			IOUtils.copy(sourceStream, targetStream);
+		}
+		catch (Exception ex) {
+			log.error("error preparing logo file " + targetPath, ex);
+		}
+	}
+	/**
+	 * If branding.logo is given, adjusts the application name to start with "Powered by"
+	 */
+	private void preparePoweredBy() {
+		String brandingLogo = OrrConfig.instance().brandingLogo;
+		if (brandingLogo != null) {
+			appInfo.setAppName("Powered by " + appInfo.getAppName());
+		}
+	}
 }

@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,7 +43,6 @@ public class DirectRegistrationServlet extends UploadServlet {
 	public void init() throws ServletException {
 		super.init();
 		log.info("initializing " +getClass().getSimpleName()+ "...");
-		ServletConfig servletConfig = getServletConfig();
 		try {
 			orrClient = OrrClientProxy.getInstance();
 			
@@ -53,8 +51,6 @@ public class DirectRegistrationServlet extends UploadServlet {
 				System.out.println(logMsg);
 				log.info(logMsg);
 				
-				PortalConfig.getInstance().init(servletConfig, log, true);
-
 				// orrclient initialization
 				orrClient = OrrClientProxy.createInstance();
 			}

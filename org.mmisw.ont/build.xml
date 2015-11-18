@@ -2,6 +2,7 @@
 <project name="ont" default="war" basedir=".">
 
 	<property file="version.properties" />
+	<property file="local.build.properties" />
 	<property file="build.properties" />
 	<property name="build.dir" value="_generated" />
 
@@ -19,7 +20,7 @@
 	</path>
 
 	<target name="init">
-		<fail unless="aquaportal.jdbc.password" />
+		<fail unless="bioportal.jdbc.password" />
 		<tstamp>
 		    <format property="ont.build" pattern="yyyyMMddHHmm" />
 		</tstamp>
@@ -125,27 +126,36 @@
 		<copy file="WebContent/META-INF/context.xml"
 			tofile="${build.dir}/tmp.WebContent/META-INF/context.xml" overwrite="true">
 			<filterset>
-				<filter token="aquaportal.datasource.name" value="${aquaportal.datasource.name}" />
-				<filter token="aquaportal.jdbc.driver" value="${aquaportal.jdbc.driver}" />
-				<filter token="aquaportal.jdbc.username" value="${aquaportal.jdbc.username}" />
-				<filter token="aquaportal.jdbc.password" value="${aquaportal.jdbc.password}" />
-				<filter token="aquaportal.jdbc.url" value="${aquaportal.jdbc.url}" />
-				<filter token="aquaportal.jdbc.maxactive" value="${aquaportal.jdbc.maxactive}" />
-				<filter token="aquaportal.jdbc.maxidle" value="${aquaportal.jdbc.maxidle}" />
-				<filter token="aquaportal.jdbc.maxwait" value="${aquaportal.jdbc.maxwait}" />
+				<filter token="aquaportal.datasource.name" value="${bioportal.datasource.name}" />
+				<filter token="aquaportal.jdbc.driver"     value="${bioportal.jdbc.driver}" />
+				<filter token="aquaportal.jdbc.username"   value="${bioportal.jdbc.username}" />
+				<filter token="aquaportal.jdbc.password"   value="${bioportal.jdbc.password}" />
+				<filter token="aquaportal.jdbc.url"        value="${bioportal.jdbc.url}" />
+				<filter token="aquaportal.jdbc.maxactive"  value="${bioportal.jdbc.maxactive}" />
+				<filter token="aquaportal.jdbc.maxidle"    value="${bioportal.jdbc.maxidle}" />
+				<filter token="aquaportal.jdbc.maxwait"    value="${bioportal.jdbc.maxwait}" />
 			</filterset>
 		</copy>
 
 		<copy file="WebContent/WEB-INF/web.xml"
 			tofile="${build.dir}/tmp.WebContent/WEB-INF/web.xml" overwrite="true">
 			<filterset>
-				<filter token="appserver.host"   value="${appserver.host}" />
-				<filter token="portal.service.url"  value="${portal.service.url}" />
-				<filter token="aquaportal.datasource.name" value="${aquaportal.datasource.name}" />
-				<filter token="aquaportal.uploads.directory" value="${aquaportal.uploads.directory}" />
-				<filter token="aquaportal.voc2rdf.dir" value="${aquaportal.voc2rdf.dir}" />
-				<filter token="aquaportal.datasource" value="${aquaportal.datasource}" />
-				<filter token="aquaportal.rest.url" value="${aquaportal.rest.url}" />
+				<filter token="appserver.host"               value="${appserver.host}" />
+				<filter token="portal.service.url"           value="${portal.service.url}" />
+
+				<filter token="aquaportal.datasource.name"   value="${bioportal.datasource.name}" />
+				<filter token="aquaportal.uploads.directory" value="${bioportal.uploads.directory}" />
+				<filter token="aquaportal.voc2rdf.dir"       value="${bioportal.voc2rdf.dir}" />
+				<filter token="aquaportal.datasource"        value="${bioportal.datasource}" />
+				<filter token="aquaportal.rest.url"          value="${bioportal.rest.url}" />
+
+				<filter token="agraph.version"    value="${agraph.version}" />
+				<filter token="agraph.host"       value="${agraph.host}" />
+				<filter token="agraph.port"       value="${agraph.port}" />
+				<filter token="agraph.ts.dir"     value="${agraph.ts.dir}" />
+				<filter token="agraph.ts.name"    value="${agraph.ts.name}" />
+				<filter token="agraph.username"   value="${agraph.username}" />
+				<filter token="agraph.password"   value="${agraph.password}" />
 
 				<filter token="virtuoso.host" value="${virtuoso.host}" />
 				<filter token="virtuoso.username" value="${virtuoso.username}" />
@@ -153,14 +163,6 @@
 
 				<filter token="jena.tdb.dir" value="${jena.tdb.dir}" />
 				<filter token="jena.tdb.assembler" value="${jena.tdb.assembler}" />
-
-				<filter token="agraph.version" value="${agraph.version}" />
-				<filter token="agraph.host" value="${agraph.host}" />
-				<filter token="agraph.port" value="${agraph.port}" />
-				<filter token="agraph.ts.dir" value="${agraph.ts.dir}" />
-				<filter token="agraph.ts.name" value="${agraph.ts.name}" />
-				<filter token="agraph.username" value="${agraph.username}" />
-				<filter token="agraph.password" value="${agraph.password}" />
 
 				<filter token="ont.internal.dir"   value="${ont.internal.dir}" />
 				<filter token="ga.uanumber"   value="${ga.uanumber}" />

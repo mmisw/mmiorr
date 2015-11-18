@@ -3,7 +3,6 @@ package org.mmisw.orrclient;
 import java.util.List;
 import java.util.Map;
 
-import org.mmisw.orrclient.gwt.client.rpc.AppInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.CreateUpdateUserAccountResult;
@@ -31,21 +30,6 @@ import org.mmisw.orrclient.gwt.client.vocabulary.AttrDef;
  * @author Carlos Rueda
  */
 public interface IOrrClient {
-
-	/**
-	 * Gets a read-only version of the configuration object given at creation time.
-	 * Any setXXX call on this configuration object will throw UnsupportedOperationException.
-	 * If you need to change the configuration for the OrrClient library, you will need to
-	 * re-create the OrrClient object.
-	 * @return a read-only version of the configuration given at creation time.
-	 */
-	public OrrClientConfiguration getConfiguration();
-
-
-	/**
-	 * Gets basic application info.
-	 */
-	AppInfo getAppInfo();
 
 	/**
 	 * Gets all (latest versions of the) ontologies in the registry.

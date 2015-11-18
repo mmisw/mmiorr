@@ -14,12 +14,11 @@ import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.JenaUtil2;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
-import org.mmisw.orrclient.OrrClientConfiguration;
-import org.mmisw.orrclient.OrrClientFactory;
 import org.mmisw.orrclient.core.util.StringManipulationUtil;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.VocabularyDataCreationInfo;
+import org.mmisw.orrportal.gwt.server.OrrConfig;
 
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.Individual;
@@ -180,7 +179,7 @@ public class VocabCreator {
 		Map<String, String> values = createOntologyInfo.getMetadataValues();
 
 
-		String ontServiceUrl = _config().getOntServiceUrl();
+		String ontServiceUrl = OrrConfig.instance().ontServiceUrl;
 		this.namespaceRoot = ontServiceUrl;
 		this.orgAbbreviation = createOntologyInfo.getAuthority();
 		this.shortName = createOntologyInfo.getShortName();
@@ -200,11 +199,6 @@ public class VocabCreator {
 			shortName = values.get(Omv.acronym.getURI());
 		}
 
-	}
-
-	private static OrrClientConfiguration _config() {
-		OrrClientConfiguration config = OrrClientFactory.getOrrClient().getConfiguration();
-		return config;
 	}
 
 	public void createOntology(CreateOntologyResult createVocabResult) {
@@ -230,8 +224,8 @@ public class VocabCreator {
 		//
 		// before saving the RDF, save a copy of the text contents:
 		//
-		final String voc2rdfDirectory = _config().getVoc2rdfDirectory();
-		String full_path_csv = voc2rdfDirectory + getPathOnServer() + ".csv";
+		final File voc2rdfDirectory = OrrConfig.instance().voc2rdfDir;
+		File full_path_csv = new File(voc2rdfDirectory, getPathOnServer() + ".csv");
 		log.debug("saving copy of text contents in " + full_path_csv);
 		try {
 			FileOutputStream os = new FileOutputStream(full_path_csv);
@@ -246,7 +240,7 @@ public class VocabCreator {
 		}
 
 		// now save the RDF:
-		String full_path = voc2rdfDirectory + getPathOnServer();
+		File full_path = new File(voc2rdfDirectory, getPathOnServer());
 		log.debug("saving RDF in " + full_path);
 		try {
 			FileOutputStream os = new FileOutputStream(full_path);
@@ -261,7 +255,7 @@ public class VocabCreator {
 		}
 
 		// OK:
-		createVocabResult.setFullPath(full_path);
+		createVocabResult.setFullPath(full_path.getAbsolutePath());
 	}
 
 	private OntModel _createOntModel() {
@@ -281,7 +275,7 @@ public class VocabCreator {
 	private void processCreateOntology() throws Exception {
 
 		// TODO instead of getPreviewDirectory, use a "tmp" directory explicitly
-		String fileInText = _config().getPreviewDirectory() + uniqueBaseName + ".txt";
+		File fileInText = new File(OrrConfig.instance().previewDir, uniqueBaseName + ".txt");
 		saveInFile(fileInText);
 
 		newOntModel = _createOntModel();
@@ -624,7 +618,7 @@ public class VocabCreator {
 	}
 
 
-	private void saveInFile(String fileLocation) throws Exception {
+	private void saveInFile(File fileLocation) throws Exception {
 		String str = getAscii();
 		FileOutputStream os = new FileOutputStream(fileLocation);
 		IOUtils.write(str, os, "UTF-8");

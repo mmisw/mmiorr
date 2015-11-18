@@ -24,6 +24,15 @@ public class PageUtil {
         this.servletContext = servletContext;
     }
 
+    public String includeHeadTitle() {
+        String title = "MMI Ontology Registry and Repository";
+        String brandingAppTitle = OrrConfig.instance().brandingAppTitle;
+        if (brandingAppTitle != null) {
+            title = brandingAppTitle.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+        }
+        return "<title>" + title + "</title>";
+    }
+
     public String includeTop() {
         return include("_btop.html");
     }
@@ -33,7 +42,7 @@ public class PageUtil {
     }
 
     private String include(String filename) {
-        String workspaceDir = PortalConfig.Prop.WORKSPACE_DIR.getValue();
+        File workspaceDir = OrrConfig.instance().workspaceDir;
         File file = new File(workspaceDir, filename);
         String contents = readFile(file);
         if (contents == null) {

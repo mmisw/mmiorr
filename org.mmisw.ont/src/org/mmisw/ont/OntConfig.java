@@ -50,11 +50,11 @@ public class OntConfig {
 		
 		AGRAPH_VERSION                ("agraph.version", false),
 		AGRAPH_HOST                   ("agraph.host", false),
-		AGRAPH_PORT                   ("agraph.port"),
-		AGRAPH_TS_DIR                 ("agraph.ts.dir"),
-		AGRAPH_TS_NAME                ("agraph.ts.name"),
-		AGRAPH_USERNAME               ("agraph.username"),
-		AGRAPH_PASSWORD               ("agraph.password"),
+		AGRAPH_PORT                   ("agraph.port", false),
+		AGRAPH_TS_DIR                 ("agraph.ts.dir", false),
+		AGRAPH_TS_NAME                ("agraph.ts.name", false),
+		AGRAPH_USERNAME               ("agraph.username", false),
+		AGRAPH_PASSWORD               ("agraph.password", false),
 		
 		ONT_INTERNAL_DIR              ("ont.internal.dir"),
 		

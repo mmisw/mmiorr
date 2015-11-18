@@ -8,7 +8,7 @@ PageUtil pageUtil = new PageUtil(getServletContext());
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <title>MMI Ontology Registry and Repository</title>
+    <%=pageUtil.includeHeadTitle()%>
     <script type="text/javascript" language="javascript" src="org.mmisw.orrportal.gwt.Orr.nocache.js"></script>
 @ga_snippet@
   </head>
@@ -21,8 +21,7 @@ PageUtil pageUtil = new PageUtil(getServletContext());
   		document.write("<img src=\"images/loading.gif\"> Loading...");
   	</script>
 	<noscript>
-		The MMI ORR Portal requires JavaScript enabled in your web browser.<br/> 
-		Enable JavaScript and then refresh this page.
+		This application requires JavaScript enabled in your web browser.<br/>
 	</noscript>
   </div>
   

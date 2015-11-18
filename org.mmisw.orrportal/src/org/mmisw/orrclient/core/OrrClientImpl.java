@@ -28,7 +28,6 @@ import org.mmisw.ont.mmiuri.MmiUri;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.orrclient.IOrrClient;
-import org.mmisw.orrclient.OrrClientConfiguration;
 import org.mmisw.orrclient.core.ontmodel.OntModelUtil;
 import org.mmisw.orrclient.core.util.MailSender;
 import org.mmisw.orrclient.core.util.OntServiceUtil;
@@ -38,7 +37,6 @@ import org.mmisw.orrclient.core.util.ontinfo.OntInfoUtil;
 import org.mmisw.orrclient.core.util.ontype.OntTypeUtil;
 import org.mmisw.orrclient.core.vine.MappingOntologyCreator;
 import org.mmisw.orrclient.core.vine.VineUtil;
-import org.mmisw.orrclient.gwt.client.rpc.AppInfo;
 import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo.PriorOntologyInfo;
@@ -82,6 +80,7 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
+import org.mmisw.orrportal.gwt.server.OrrConfig;
 
 
 /**
@@ -100,9 +99,6 @@ public class OrrClientImpl implements IOrrClient {
 	private static String defaultNamespaceRoot;
 
 
-	private final AppInfo appInfo = new AppInfo("OrrClient Library");
-
-	private final OrrReadOnlyConfiguration config;
 	private final File previewDir;
 
 	private static IOrrClient _instance;
@@ -111,95 +107,34 @@ public class OrrClientImpl implements IOrrClient {
 
 
 	/**
-	 * Initializes the library.
-	 * This must be called before any other library operation.
-	 *
-	 * @param config
-	 *         The configuration for the library. Note that a copy is made internally.
-	 *         Subsequent changes to the given configuration will not have any effect. If you
-	 *         need to change any configuration parameters, the library will need to be
-	 *         initialized again.
-	 *         Pass a null reference to use a default configuration.
-	 *
-	 * @return A library interface object.
-	 * @throws Exception if an error occurs
+	 * Creates and returns the instance of this class.
 	 */
-	public static IOrrClient init(OrrClientConfiguration config) throws Exception {
-		if ( config == null ) {
-			config = new OrrClientConfiguration();
-		}
-		_instance = new OrrClientImpl(config);
+	public static IOrrClient init() throws Exception {
+		_instance = new OrrClientImpl();
 		return _instance;
 	}
 
 	/**
-	 * Returns the library interface object created by {@link #init(OrrClientConfiguration)}.
-	 * @return the library interface object created by {@link #init(OrrClientConfiguration)}.
+	 * Returns the instance of this class.
 	 */
 	public static IOrrClient getInstance() {
 		return _instance;
 	}
 
-	private OrrClientImpl(OrrClientConfiguration config) throws Exception {
-		// copy the given configuration:
-		this.config = new OrrReadOnlyConfiguration(config);
+	private OrrClientImpl() throws Exception {
 
-		defaultNamespaceRoot = config.getOntServiceUrl();
-		log.info("basic init " +appInfo.getAppName()+ "...");
-		appInfo.setVersion(OrrClientVersion.getVersion());
-		appInfo.setBuild(OrrClientVersion.getBuild());
-		log.info(appInfo.toString());
-		log.info("ontServiceUrl = " +config.getOntServiceUrl());
+		defaultNamespaceRoot = OrrConfig.instance().ontServiceUrl;
+		log.info("ontServiceUrl = " +OrrConfig.instance().ontServiceUrl);
 
 		OntClientConfiguration ontClientConfig = new OntClientConfiguration();
-		ontClientConfig.setOntServiceUrl(config.getOntServiceUrl());
+		ontClientConfig.setOntServiceUrl(OrrConfig.instance().ontServiceUrl);
 
 		ontClient = IOntClient.Manager.init(ontClientConfig);
 		OntServiceUtil.setOntClient(ontClient);
 		log.info("Ont library version = " +OntVersion.getVersion()+ " (" +OntVersion.getBuild()+ ")");
 
-		if ( config.getPreviewDirectory() == null ) {
-			throw new Exception(OrrClientConfiguration.class.getSimpleName()+ " does not indicate the preview directory");
-		}
-
-		previewDir = _createDirectory(config.getPreviewDirectory());
+		previewDir = OrrConfig.instance().previewDir;
 	}
-
-	private static File _createDirectory(String dirname) throws Exception {
-		File file = new File(dirname);
-		if ( file.isDirectory() ) {
-			// OK, the directory already exists
-			return file;
-		}
-		if ( file.exists() ) {
-			throw new Exception("Indicated path already exists but it's not a directory: " +dirname);
-		}
-		if ( ! file.mkdirs() ) {
-			throw new Exception("Cannot create directory: " +dirname);
-		}
-		return file;
-	}
-
-
-	/**
-	 * Gets a read-only version of the configuration given at creation time.
-	 * Any setXXX call on this configuration object will throw UnsupportedOperationException.
-	 * If you need to change the configuration for the OrrClient library, you will need to
-	 * re-create the OrrClient object.
-	 * @return a read-only version of the configuration given at creation time.
-	 */
-	public OrrClientConfiguration getConfiguration() {
-		return config;
-	}
-
-	public void destroy() {
-		log.info(appInfo+ ": destroy called.\n\n");
-	}
-
-	public AppInfo getAppInfo() {
-		return appInfo;
-	}
-
 
 	private MetadataBaseInfo metadataBaseInfo = null;
 
@@ -293,7 +228,7 @@ public class OrrClientImpl implements IOrrClient {
 		// unversionedUri -> list of corresponding OntologyInfos
 		Map<String, List<RegisteredOntologyInfo>> unversionedToVersioned = new LinkedHashMap<String, List<RegisteredOntologyInfo>>();
 
-		String uri = config.getOntServiceUrl()+ LISTALL;
+		String uri = OrrConfig.instance().ontServiceUrl + LISTALL;
 
 		if ( log.isDebugEnabled() ) {
 			log.debug("getUnversionedToVersioned. uri= " +uri);
@@ -2266,7 +2201,7 @@ public class OrrClientImpl implements IOrrClient {
                         }
                     }
                     else {
-                        withUriParam = config.getOntServiceUrl() + "?uri=" + ontologyUri;
+                        withUriParam = OrrConfig.instance().ontServiceUrl + "?uri=" + ontologyUri;
                     }
 
                     data.put("URI", ontologyUri);
@@ -2290,8 +2225,8 @@ public class OrrClientImpl implements IOrrClient {
                     }
                     Thread t = new Thread() {
                         public void run() {
-                            final String mail_user = config.getMailUser();
-                            final String mail_password = config.getMailPassword();
+                            final String mail_user     = OrrConfig.instance().emailUsername;
+                            final String mail_password = OrrConfig.instance().emailPassword;
                             if ( mail_user == null || mail_user.equals("-") ) {
                                 String error = "Email server account not configured. Please report this bug. (u)";
                                 log.error(error);
@@ -2882,8 +2817,8 @@ public class OrrClientImpl implements IOrrClient {
 
 		// Issue 258:"reset password in effect but lost if error while sending email"
 		// Part of the fix is to first check the mail account parameters are given:
-		final String mail_user = config.getMailUser();
-		final String mail_password = config.getMailPassword();
+		final String mail_user     = OrrConfig.instance().emailUsername;
+		final String mail_password = OrrConfig.instance().emailPassword;
 		if ( mail_user == null || mail_user.equals("-") ) {
 			String error = "Email server account not configured. Please report this bug. (u)";
 			result.setError(error);
@@ -3068,8 +3003,8 @@ public class OrrClientImpl implements IOrrClient {
     }
 
     private void _sendEmail(String subject, String header, Map<String, String> data, Set<String> recipients) {
-        final String mail_user = config.getMailUser();
-        final String mail_password = config.getMailPassword();
+        final String mail_user     = OrrConfig.instance().emailUsername;
+        final String mail_password = OrrConfig.instance().emailPassword;
         if ( mail_user == null || mail_user.equals("-") ) {
             String error = "Email server account not configured. Please report this bug. (u)";
             log.error(error);
