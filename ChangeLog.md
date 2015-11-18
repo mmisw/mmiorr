@@ -1,6 +1,6 @@
 ## change log ##
 
-* 2015-11-18: ont\&orrportal 2.5.5
+* 2015-11-18: ont\&orrportal 2.5.6
   - Fix \#311 "strange case when mapping to http://mmisw.org/ont/cf" 
   	- disable loading of imported ontologies in two places
 		- OntClientUtil.retrieveModel
@@ -12,10 +12,14 @@
 	  URIs having a trailing slash (or hash). Now the resulting local name must be non-empty, meaning
 	  that a trailing slash (or hash) in the URI will *not* determine the extraction of the 
 	  namespace, but rather any previous such separator.
+	- Went ahead and implemented my suggested "simple solution": exclude the ontologies themselves in 
+	  any found entities so no mappings can be created against them using the Vine interface.
 	  
 	- Related adjustments:
 		- MappingDataCreationInfo: use "URI" terminology (referring to the mapped ontologies) as opposed to "namespace". 
           This is more consistent with the actual effect of creating the owl:Import's, which are for actual ontology URIs, not namespaces
+        - re-enabled vine unit tests
+        
   
 * 2015-11-15: ont\&orrportal 2.5.4
   - preparations for #353 "streamline installation of ORR system"

@@ -129,12 +129,13 @@ public class SearchGroup extends VerticalPanel {
 		// TODO use a parameter to apply case-sensitive or not
 		text = text.toLowerCase();
 
-		// vocabUris: used to exclude them as found entities
+		// #311: vocabUris: used to exclude them as found entities.
+		// Note, only for this purpose we capture these URIs without any trailing separator. See below.
 		Set<String> vocabUris = new HashSet<String>();
 		for (BaseOntologyInfo ont : selectedVocabs ) {
-			vocabUris.add(ont.getUri());
+			vocabUris.add(ont.getUri().replaceAll("(/|#)+$", ""));
 		}
-		Orr.log("search: vocabUris=" +vocabUris);
+		Orr.log("search: vocabUris (w/o any trailing separators): " +vocabUris);
 
 		// TODO get these flags from parameters
 		boolean useLocalName = true;
@@ -194,24 +195,28 @@ public class SearchGroup extends VerticalPanel {
 				boolean add = false;
 
 				// check localName
-				if ( (useLocalName && entityInfo.getLocalName().toLowerCase().indexOf(text) >= 0) ) {
+				if ((useLocalName && entityInfo.getLocalName().toLowerCase().indexOf(text) >= 0)) {
 					add = true;
 				}
 
 				// check props
-				if ( !add && useProps ) {
+				if (!add && useProps) {
 					List<PropValue> props = entityInfo.getProps();
-					for ( PropValue pv : props ) {
+					for (PropValue pv : props) {
 						String str = pv.getValueName();
 						add = str != null && str.toLowerCase().indexOf(text) >= 0;
-						if ( add ) {
+						if (add) {
 							break;
 						}
 					}
 				}
 
-				if ( add && !vocabUris.contains(entityInfo.getUri())) {
-					foundEntities.add(entityInfo);
+				if (add) {
+					// #311: do not add the entity if its URI is equal (modulo trailing separator) to any of the vocabUris:
+					String entUri = entityInfo.getUri().replaceAll("(/|#)+$", "");
+					if (!vocabUris.contains(entUri)) {
+						foundEntities.add(entityInfo);
+					}
 				}
 			}
 		}
