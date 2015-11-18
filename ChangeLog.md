@@ -1,14 +1,18 @@
 ## change log ##
 
-* 2015-11-17: ont\&orrportal 2.5.5
-  - Re \#311 disable loading of imported ontologies in two places
-  	- OntClientUtil.retrieveModel
-  	- OntInfoUtil.loadModel
-    (My recollection is that we are in general avoiding loading any imports
-    when processing any ontology; not sure why those places missed the setting.)
-    Note: while this change makes the UI responsive again, there's still the need
-    to better handle the extraction of namespaces from the term URIs having a trailing
-    slash.
+* 2015-11-18: ont\&orrportal 2.5.5
+  - Fix \#311 "strange case when mapping to http://mmisw.org/ont/cf" 
+  	- disable loading of imported ontologies in two places
+		- OntClientUtil.retrieveModel
+		- OntInfoUtil.loadModel
+		so the UI responsive again (in particular with http://mmisw.org/ont/bodc/MMI_Cf_2_NVS2_mapping)
+		(My recollection is that we are in general avoiding loading any imports
+		when processing any ontology; not sure why those places missed the setting.)
+	- in BaseOntInfo._createMappingOntologyData fix extraction of namespaces from the term 
+	  URIs having a trailing slash (or hash). Now the resulting local name must be non-empty, meaning
+	  that a trailing slash (or hash) in the URI will *not* determine the extraction of the 
+	  namespace, but rather any previous such separator.
+	- 
   
 * 2015-11-15: ont\&orrportal 2.5.4
   - preparations for #353 "streamline installation of ORR system"

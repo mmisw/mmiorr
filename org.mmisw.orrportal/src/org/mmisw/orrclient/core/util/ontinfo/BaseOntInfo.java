@@ -27,13 +27,13 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
  * Base implementation with common stuff.
- * 
+ *
  * @author Carlos Rueda
  */
 abstract class BaseOntInfo implements IOntInfo {
-	
+
 	// Addresses in part #290 - "Alphabetized order while editing vocabulary table" but
-	// the effect here is just to display the table in order; the actual editing will 
+	// the effect here is just to display the table in order; the actual editing will
 	// not necessarily preserve the order of the terms mainly upon row insertions.
 	private static final Comparator<IndividualInfo> individualComparator = new Comparator<IndividualInfo>() {
 		public int compare(IndividualInfo arg0, IndividualInfo arg1) {
@@ -44,7 +44,7 @@ abstract class BaseOntInfo implements IOntInfo {
 	/**
 	 * Helper to get the localName of an entity given the entityUri and
 	 * the URI of an ontology to see if the entity "belongs" to the ontology.
-	 * 
+	 *
 	 * @param entityUri
 	 * @param ontologyUri
 	 * @return
@@ -67,15 +67,15 @@ abstract class BaseOntInfo implements IOntInfo {
 	/**
 	 * Helper to obtain the localname from a URI.
 	 * This is the last suffix after the rightmost slash (/) or hash (#).
-	 * 
+	 *
 	 * <p>
  	 * Examples:<br/>
- 	 * uri="http://example.org/onts/myont#someterm" result="someterm" <br/> 
- 	 * uri="http://example.org/otherterm" result="otherterm" <br/> 
-	 * 
+ 	 * uri="http://example.org/onts/myont#someterm" result="someterm" <br/>
+ 	 * uri="http://example.org/otherterm" result="otherterm" <br/>
+	 *
 	 * @param uri
 	 * @return  the last suffix after the rightmost slash (/) or hash (#),
-	 *         or the same given uri if none of these characters is present. 
+	 *         or the same given uri if none of these characters is present.
 	 */
 	protected static String _getLocalName(String uri) {
 		int idx_slash = uri.lastIndexOf('/');
@@ -100,34 +100,34 @@ abstract class BaseOntInfo implements IOntInfo {
 
 		for ( PropertyInfo propertyInfo : properties ) {
 			String domainClassUri = propertyInfo.getDomainUri();
-			
+
 			if ( domainClassUri == null ) {
 				continue;
 			}
-			
+
 			// search corresponding classInfo in classes:
 			ClassInfo domainClassInfo = null;
-			
+
 			for ( ClassInfo classInfo : classes ) {
 				if ( domainClassUri.equals(classInfo.getUri()) ) {
 					domainClassInfo = classInfo;
 					break;
 				}
 			}
-			
+
 			if ( domainClassInfo != null ) {
 				propertyInfo.setDomainClassInfo(domainClassInfo);
 			}
 		}
 	}
 
-	
+
 	protected static OntologyData _createMappingOntologyData(
-			BaseOntologyData baseOntologyData, 
+			BaseOntologyData baseOntologyData,
 			List<Mapping> mappings,
 			List<IndividualInfo> individuals
 	) {
-		
+
 		List<String> namespaces = new ArrayList<String>();
 
 		// add the namespaces corresponding to the already provided mappings:
@@ -160,7 +160,7 @@ abstract class BaseOntInfo implements IOntInfo {
 		}
 		// get corresponding RelationInfos
 		List<RelationInfo> relInfos = VineUtil.getVineRelationInfos(useSkos);
-		
+
 		MappingOntologyData ontologyData = new MappingOntologyData();
 		ontologyData.setNamespaces(namespaces);
 		ontologyData.setMappings(mappings);
@@ -169,24 +169,28 @@ abstract class BaseOntInfo implements IOntInfo {
 
 		return ontologyData;
 	}
-	
+
 	/** adds the namespace associated with the uri to the given set.
-	 * It uses the given localName as a basis if non-null; otherwhise it gets the local name
-	 * from the uri as the last fragment starting with slash or hash.
-	 * 
+	 * It uses the given localName as a basis if non-null;
+	 * otherwise it gets the local name from the uri as the last non-empty
+	 * (see #311) fragment starting right after a slash or hash.
+	 *
 	 * It does nothing if uri starts with "urn:" (ignoring case).
 	 */
 	private static void _addNamespace(List<String> namespaces, String uri, String localName) {
-		
+
 		if ( uri == null || uri.toLowerCase().startsWith("urn:") ) {
 			return;
 		}
-		
+
+
 		String ns;
-		
+		final int uriLen = uri.length();
 		if ( localName == null ) {
-			int idx_slash = uri.lastIndexOf('/');
-			int idx_hash = uri.lastIndexOf('#');
+			// #311: the -2 below is to exclude last character in case it is '/' or '#' so
+			// we avoid ending up with empty local names in the rest of the processing
+			int idx_slash = uri.lastIndexOf('/', uriLen - 2);
+			int idx_hash = uri.lastIndexOf('#', uriLen - 2);
 			if ( idx_slash >= 0 || idx_hash >= 0 ) {
 				int idx = Math.max(idx_slash, idx_hash);
 				//localName = uri.substring(idx);
@@ -198,11 +202,10 @@ abstract class BaseOntInfo implements IOntInfo {
 			}
 		}
 		else {
-			int uriLen = uri.length();
 			int locLen = +1 + localName.length();   // +1 to also omit the separator
 			ns = uriLen > locLen ? uri.substring(0, uriLen - locLen) : "";
 		}
-		
+
 		ns = ns.trim();
 		if ( ns.length() > 0 && ! namespaces.contains(ns) ) {
 			namespaces.add(ns);
@@ -214,13 +217,13 @@ abstract class BaseOntInfo implements IOntInfo {
 
 	protected static OntologyData _createVocabularyOntologyData(BaseOntologyData baseData) {
 		VocabularyOntologyData ontologyData = new VocabularyOntologyData();
-		
+
 		ontologyData.setBaseOntologyData(baseData);
-		
-		
+
+
 		Map<String, ClassData> classMap = new HashMap<String, ClassData>();
-		
-		List<PropertyInfo> properties = baseData.getProperties();		
+
+		List<PropertyInfo> properties = baseData.getProperties();
 		for ( PropertyInfo entity : properties ) {
 			if ( ! entity.isDatatypeProperty() ) {
 				continue;
@@ -230,7 +233,7 @@ abstract class BaseOntInfo implements IOntInfo {
 			if ( classUri == null ) {
 				continue;
 			}
-			
+
 			ClassData classData = classMap.get(classUri);
 			if ( classData == null ) {
 				classData = new ClassData();
@@ -239,58 +242,58 @@ abstract class BaseOntInfo implements IOntInfo {
 				classData.setClassInfo(entity.getDomainClassInfo());
 				classData.setDatatypeProperties(new ArrayList<String>());
 			}
-			
+
 			classData.getDatatypeProperties().add(entity.getLocalName());
 		}
-		
+
 		// add the found classes and add corresponding individuals:
 
 		List<ClassData> classes = new ArrayList<ClassData>();
 		ontologyData.setClasses(classes);
-		
+
 		for ( String classUri : classMap.keySet() ) {
 			ClassData classData = classMap.get(classUri);
 			classes.add(classData);
-			
+
 			// add individuals whose type is classUri
-			
+
 			List<IndividualInfo> individuals = new ArrayList<IndividualInfo>();
 			classData.setIndividuals(individuals);
-			
+
 			List<IndividualInfo> individualInfos = baseData.getIndividuals();
-			
+
 			Collections.sort(individualInfos, individualComparator);
-			
+
 			for ( IndividualInfo individualInfo : individualInfos ) {
 				String individualClass = individualInfo.getClassUri();
 				if ( classUri.equals(individualClass) ) {
 					individuals.add(individualInfo);
 				}
 			}
-			
+
 			_putKeyColumnAsFirst(classData, individuals);
 		}
-		
+
 		return ontologyData;
 	}
 
 
 	/**
-	 * the following is an attempt to guess the datatype property that was used 
-	 * as the 'key', so as to put that column as the first. 
+	 * the following is an attempt to guess the datatype property that was used
+	 * as the 'key', so as to put that column as the first.
 	 * The strategy is to see what datatype property corresponds to rdfs:label.
-	 * 
+	 *
 	 * <p>
 	 * TODO Remove this mechanims once #240 "preserve column order" is implemented.
-	 * 
+	 *
 	 * @param classData
 	 * @param individuals
 	 */
 	private static void _putKeyColumnAsFirst(ClassData classData, List<IndividualInfo> individuals) {
 		// diffFlags[col] will be true if the corresponding column does not seem to coincide
 		// with value of rdfs:label
-		boolean[] diffFlags = null;    
-		
+		boolean[] diffFlags = null;
+
 		// but we do the check for a maximum of individuals:
 		final int maxIndivs = 20;
 		int indivNum = 0;
@@ -298,27 +301,27 @@ abstract class BaseOntInfo implements IOntInfo {
 
 			// will contain the value of RDFS.label.getURI() if any:
 			String rdfsLabelValue = null;
-			
+
 			Map<String, String> vals = new HashMap<String, String>();
 			List<PropValue> props = individualInfo.getProps();
 			for ( PropValue pv : props ) {
-				
+
 				if ( RDFS.label.getURI().equals(pv.getPropUri()) ) {
 					rdfsLabelValue = pv.getValueName();
 				}
-				
+
 				vals.put(pv.getPropName(), pv.getValueName());
 			}
-			
+
 			if ( rdfsLabelValue == null ) {
 				// do not continue making the check.
 				break;
 			}
-			
+
 			// let's ignore case, and replace spaces with underscores for purposes of
 			// the comparison below
 			rdfsLabelValue = rdfsLabelValue.toLowerCase().replace(' ', '_');
-			
+
 			List<String> datatypeProperties = classData.getDatatypeProperties();
 			int numCols = datatypeProperties.size();
 			if ( diffFlags == null ) {
@@ -331,12 +334,12 @@ abstract class BaseOntInfo implements IOntInfo {
 				}
 				diffFlags[i] = diffFlags[i] || !rdfsLabelValue.equals(colValue);
 			}
-			
+
 			if ( ++indivNum >= maxIndivs ) {
 				break;
 			}
 		}
-		
+
 		if ( diffFlags != null ) {
 			// now, pick first column whose values coincided with rdfs:label:
 			int foundColumn = -1;
@@ -355,18 +358,15 @@ abstract class BaseOntInfo implements IOntInfo {
 				datatypeProperties.add(0, keyColumnName);
 			}
 		}
-		
+
 	}
 
 	protected static OntologyData _createOtherOntologyData(BaseOntologyData baseOntologyData) {
 		OtherOntologyData ontologyData = new OtherOntologyData();
 		ontologyData.setBaseOntologyData(baseOntologyData);
-		// TODO 
+		// TODO
 		return ontologyData;
 	}
-
-
-
 
 }
 
