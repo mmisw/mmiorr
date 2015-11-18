@@ -335,7 +335,7 @@ public class Util {
 
 	/**
 	 * Returns a string that can be used as a link.
-	 * If it is an MmiUri, a ".html" is appended;
+	 * If the value is ont-resolvable and an MmiUri, a ".html" is appended;
 	 * otherwise, if it is a valid URL, it is returned as it is;
 	 * otherwise, null is returned.
 	 *
@@ -343,13 +343,16 @@ public class Util {
 	 * @return the string that can be used as a link as stated above; null if value is not a URL.
 	 */
 	public static String getLink(String value) {
-		// try mmiUri:
-		try {
-			MmiUri mmiUri = new MmiUri(value);
-			return mmiUri.getTermUri() + ".html";
-		}
-		catch (URISyntaxException e1) {
-			// ignore. Try URL below.
+		if (OntUtil.isOntResolvableUri(value)) {
+			// try mmiUri:
+			try {
+				MmiUri mmiUri = new MmiUri(value);
+				return mmiUri.getTermUri() + ".html";
+			}
+			catch (URISyntaxException e1) {
+				// ignore. Try URL below.
+			}
+
 		}
 
 		// try regular URL:

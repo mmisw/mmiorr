@@ -1,6 +1,11 @@
 ## change log ##
 
 * 2015-11-18: ont\&orrportal 2.5.6
+  - Fix \#367 "unwanted '.html' on the end"
+    ...ont.util.Util.getLink was not considering that the value should be ont-resolvable to append the .html, only that 
+    it was an MmiUri (which a URI like http://vocab.nerc.ac.uk/collection/P07/current/M4KOX5A0/ satisfies. 
+    
+* 2015-11-18: ont\&orrportal 2.5.6
   - Fix \#311 "strange case when mapping to http://mmisw.org/ont/cf" 
   	- disable loading of imported ontologies in two places
 		- OntClientUtil.retrieveModel
