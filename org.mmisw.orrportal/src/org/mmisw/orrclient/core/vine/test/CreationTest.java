@@ -30,6 +30,7 @@ import org.mmisw.orrclient.gwt.client.rpc.vine.Mapping;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.vocabulary.RDFS;
+import org.mmisw.orrportal.gwt.server.OrrConfig;
 
 
 /**
@@ -46,9 +47,11 @@ public class CreationTest extends VineTestCase {
 	private final String shortName = "vinetest1";
 	private final String ontologyUri = "http://localhost:8080/ont/" +authority+ "/" +shortName;
 
-	private final String namespace1 = "http://example.org/ontologyOne/";
-	private final String namespace2 = "http://example.org/ontologyTwo/";
-	private final Set<String> namespaces = new HashSet<String>(Arrays.asList(namespace1, namespace2));
+	private final String uri1 = "http://example.org/ontologyOne";
+	private final String uri2 = "http://example.org/ontologyTwo";
+	private final Set<String> uris = new HashSet<>(Arrays.asList(uri1, uri2));
+	private final String namespace1 = uri1 + "/";
+	private final String namespace2 = uri2 + "/";
 	private final String[][]  mapps = {
 		{ namespace1 + "termAAAAAA", Skos.exactMatch.getURI(), namespace2 + "termPPPPPP" },
 		{ namespace1 + "termBBBBBB", Skos.closeMatch.getURI(), namespace2 + "termQQQQQQ" },
@@ -72,7 +75,7 @@ public class CreationTest extends VineTestCase {
 
 
 	public void testCreate() throws Exception {
-
+		OrrConfig.init();
 		OrrClientFactory.init();
 
 		CreateOntologyResult result = _createOntology(ontologyUri);
@@ -99,7 +102,7 @@ public class CreationTest extends VineTestCase {
 	private CreateOntologyResult _createOntology(String ontologyUri) throws Exception {
 
 		MappingDataCreationInfo mdci = new MappingDataCreationInfo();
-		mdci.setNamespaces(namespaces);
+		mdci.setUris(uris);
 		List<Mapping> mappings = new ArrayList<Mapping>();
 		mdci.setMappings(mappings);
 
@@ -156,8 +159,7 @@ public class CreationTest extends VineTestCase {
 
 	private void _verifyImports(OntModel ontModel) {
 		Set<String> imported = ontModel.listImportedOntologyURIs();
-		for ( String namespace : namespaces ) {
-			String uri = JenaUtil2.removeTrailingFragment(namespace);
+		for ( String uri : uris ) {
 			assertTrue("namespace is owl:import'ed", imported.contains(uri));
 		}
 	}

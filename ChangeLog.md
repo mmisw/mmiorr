@@ -12,7 +12,10 @@
 	  URIs having a trailing slash (or hash). Now the resulting local name must be non-empty, meaning
 	  that a trailing slash (or hash) in the URI will *not* determine the extraction of the 
 	  namespace, but rather any previous such separator.
-	- 
+	  
+	- Related adjustments:
+		- MappingDataCreationInfo: use "URI" terminology (referring to the mapped ontologies) as opposed to "namespace". 
+          This is more consistent with the actual effect of creating the owl:Import's, which are for actual ontology URIs, not namespaces
   
 * 2015-11-15: ont\&orrportal 2.5.4
   - preparations for #353 "streamline installation of ORR system"
