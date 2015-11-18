@@ -133,6 +133,11 @@ class OntClientUtil {
 		String str = resolveOntologyUri(uriModel, version, "application/rdf+xml");
 		
 		OntModel model = createDefaultOntModel();
+
+		// #311
+		model.setDynamicImports(false);
+		model.getDocumentManager().setProcessImports(false);
+
 		uriModel = JenaUtil2.removeTrailingFragment(uriModel);
 		
 		StringReader sr = new StringReader(str);

@@ -1,5 +1,15 @@
 ## change log ##
 
+* 2015-11-17: ont\&orrportal 2.5.5
+  - Re \#311 disable loading of imported ontologies in two places
+  	- OntClientUtil.retrieveModel
+  	- OntInfoUtil.loadModel
+    (My recollection is that we are in general avoiding loading any imports
+    when processing any ontology; not sure why those places missed the setting.)
+    Note: while this change makes the UI responsive again, there's still the need
+    to better handle the extraction of namespaces from the term URIs having a trailing
+    slash.
+  
 * 2015-11-15: ont\&orrportal 2.5.4
   - preparations for #353 "streamline installation of ORR system"
     - use build.properties as master and local.build.properties for local overwrites
