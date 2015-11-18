@@ -123,7 +123,7 @@
 	<target name="war-skip-gwt" depends="jar, ga, do-war">
 	</target>
 
-	<target name="war" depends="jar, gwt-compile, ga, do-war">
+	<target name="war" depends="jar, gwt-compile, ga, do-war, remove-tmp.WebContent">
 	</target>
 
 	<target name="do-war">
@@ -171,10 +171,12 @@
 			<lib dir="base_war/WEB-INF/lib/jena" />
 		</war>
 
+	</target>
+
+	<target name="remove-tmp.WebContent">
 		<delete includeEmptyDirs="true" failonerror="false">
 			<fileset dir="${build.dir}/tmp.WebContent" />
 		</delete>
-
 	</target>
 
 	<target name="deploy-war" depends="war" description="copies the WAR to ${appserver.deploy.dir}">
@@ -188,6 +190,31 @@
 			<fileset dir="${build.dir}" includes="**/*.class"/>
 		</delete>
 	</target>
+
+	<!-- ==================================================================== -->
+	<!-- tests -->
+
+	<macrodef name="testing">
+		<attribute name="sources" />
+		<sequential>
+			<junit printsummary="yes" haltonfailure="yes" fork="yes" showoutput="yes" outputtoformatters="no">
+				<formatter type="plain" usefile="no" />
+				<classpath refid="project.class.path" />
+				<classpath path="${build.dir}/classes" />
+				<classpath path="${build.dir}/tmp.WebContent/WEB-INF/classes" />
+				<batchtest>
+					<fileset dir="src">
+						<include name="@{sources}" />
+					</fileset>
+				</batchtest>
+			</junit>
+		</sequential>
+	</macrodef>
+
+	<target name="tests" depends="do-war">
+		<testing sources="**/vine/test/*Test.java" />
+	</target>
+
 
 
 	<target name="shell" >
