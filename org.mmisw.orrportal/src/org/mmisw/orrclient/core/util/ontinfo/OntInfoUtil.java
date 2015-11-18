@@ -8,6 +8,8 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.JenaUtil2;
 import org.mmisw.orrclient.core.util.Utf8Util;
 import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyInfo;
@@ -106,7 +108,7 @@ public class OntInfoUtil {
 	 * @throws Exception
 	 */
 	private static OntModel loadModel(String uriModel) throws Exception {
-		
+		log.debug("Loading model '" + uriModel + "' with processImports=" +false);
 		URL url = new URL(uriModel);
 		InputStream is = url.openStream();
 		
@@ -114,6 +116,11 @@ public class OntInfoUtil {
 		Utf8Util.verifyUtf8(bytes);
 		
 		OntModel model = createDefaultOntModel();
+
+		// #311
+		model.setDynamicImports(false);
+		model.getDocumentManager().setProcessImports(false);
+
 		uriModel = JenaUtil2.removeTrailingFragment(uriModel);
 		
 		StringReader sr = new StringReader(new String(bytes, "UTF-8"));
@@ -133,5 +140,7 @@ public class OntInfoUtil {
 
 		return model;
 	}
+
+	private static final Log log = LogFactory.getLog(OntInfoUtil.class);
 }
 
