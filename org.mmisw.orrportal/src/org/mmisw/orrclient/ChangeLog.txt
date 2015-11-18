@@ -3,6 +3,11 @@ Carlos Rueda  -  http://marinemetadata.org
 Created: 2009-05-13
 $Id$
 
+2015-11-18
+	THIS FILE NOT MAINTAINED ANYMORE.
+	For reference, just moved from a former separate orrclient module (whose code
+	was integrated into the orrportal directly).
+
 2015-02-08  2.3.0
   - sync and link with ont 2.3.0
 
@@ -12,9 +17,9 @@ $Id$
 2013-02-16  2.0.41.beta
 	- 308: immediately show vocabulary contents
 	  Added size attribute to BaseIntologyInfo class. This attribute could be associated in all
-	  methods dealing with retrieval of ontology information but for now only set in 
+	  methods dealing with retrieval of ontology information but for now only set in
 	  OrrClientImpl.getOntologyMetadata.
-	  
+
 2013-02-11  2.0.39.beta
 	- fix issue 309: Special charater issue
 	  VocabCreator: wrong encoding used!
@@ -25,16 +30,16 @@ $Id$
 2012-09-05  2.0.34.beta
 	- 299: Not consistent assignment of short-hand prefixes in mapping tool
 	  MappingOntologyData: use List<String> for the namespaces (instead of Set<String>).
-	  BaseOntologyInfo._createMappingOntologyData: to collect the namespaces, scan the mapping 
-	  subjects first so the first short-hand letters are given to the left hand-side in the ORR interface. 
-	  
+	  BaseOntologyInfo._createMappingOntologyData: to collect the namespaces, scan the mapping
+	  subjects first so the first short-hand letters are given to the left hand-side in the ORR interface.
+
 	- OntInfo._getMappings: sort the mappings lexicographically by <left><relation><right>
 
 2012-08-27  2.0.33.beta
 	- 298: Load of external ontology for mapping does not use content negotiation
 	  OrrClientImpl.getExternalOntologyInfo now uses new supporting routine OntInfoUtil.loadExternalModel
 	  to first load the model in a way that performs content negotiation.
- 
+
 2012-08-27  2.0.30.beta
 	- more adjustments to support mappings against external ontologies
 	- version sync with the other modules
@@ -45,7 +50,7 @@ $Id$
 	  even when VineMain.getOntologyInfo(uri) returns null (meaning it's an external ontology).
 
 2012-08-21  2.0.29.beta
-	- Initial additions to facilitate mappings against external ontologies. 
+	- Initial additions to facilitate mappings against external ontologies.
 	- New ExternalOntologyInfo as subclass of BaseOntologyInfo
 	- IOrrClient: new operation: ExternalOntologyInfo getExternalOntologyInfo(String ontologyUri)
 
@@ -54,7 +59,7 @@ $Id$
 	  BaseOntologyData: include member: List<EntityInfo> subjects
 	  OntInfo: new _getSubject based on Jena's OntModel.listSubjects
 	- EntityInfo: add hashCode and equals (based exclusively on the URI member) to facilitate collections operations.
-	  
+
 2012-08-18  2.0.27.beta
 	- OrrClientImpl: Prevent possible NPE when there is no URI for original_base_.
 	  The NPE happended when trying to upload a new version of the re-hosted
@@ -62,11 +67,11 @@ $Id$
 	  do not provide information to extract a base URI.
 
 2012-06-20  2.0.26.beta
-	- BaseOntInfo: Sort term table by the ID (localName) of the terms. Addresses in 
+	- BaseOntInfo: Sort term table by the ID (localName) of the terms. Addresses in
 	  part #290 - "Alphabetized order while editing vocabulary table" but the effect
-	  here is just to display the table in order; the actual editing will 
+	  here is just to display the table in order; the actual editing will
 	  not necessarily preserve the order of the terms mainly upon row insertions.
-	
+
 2012-04-03  2.0.24.beta
 	- 'infer' parameter for queries was added.
 	- version sync with the other modules.
@@ -90,24 +95,24 @@ $Id$
 	  "Re-hosted ontology not showing metadata." Current functionality is not
 	  affected at all. (but the excluded files, which are modified copies of existing
 	  sources, are not ready to be incorporated.)
-	  A good part of the issue has to do with the handling of the trailing slash that 
-	  is present in the ontology that is failing here. In summary, the handling of 
-	  possible trailing fragment in ontologies (including the xml:base and the namespace 
-	  for the empty prefix) NEEDS a careful revisit and redesign.  
+	  A good part of the issue has to do with the handling of the trailing slash that
+	  is present in the ontology that is failing here. In summary, the handling of
+	  possible trailing fragment in ontologies (including the xml:base and the namespace
+	  for the empty prefix) NEEDS a careful revisit and redesign.
 	- Syncing with ont on 2.0.17.beta
-	
+
 2011-03-24  2.0.16.beta
 	- bug fix: possible NPE in OntTypeUtil.determineType().
 	  Exposed while trying to upload new version of CF vocab released today.
 	- build.xml: explicitly compiling with source="1.5" target="1.5"
-	
-	
-	
+
+
+
 2010-10-28  2.0.15.beta
 	- new GetAllOntologiesResult for the getAllOntologies operation.
-	
 
-Some TODOs 
+
+Some TODOs
   - Regarding #287 "concurrency"
  	- in OrrClientImpl, review:
  	  metadataBaseInfo: looks like there is no need to assign this "on demand" but rather
@@ -115,11 +120,11 @@ Some TODOs
  	  of the library.
  	  Related with this, capture the parameters (resourceTypeClassUri, authorityClassUri)
  	  in OrrClientConfiguration
- 
+
   - OrrClientImpl.LISTALL: this operation should be encapsulated in the OntClient library.
     In general, review that all operations that are requests to the Ont service be provided
     by corresponding OntClient methods.
-    
+
 
 
 2010-10-28  2.0.14.beta
@@ -127,15 +132,15 @@ Some TODOs
 
 2010-10-27  2.0.14.beta
 	- No changes here - sync'ing version with Ont service.
-	
+
 2010-09-29  2.0.9.beta
-	- UserAccountCreatorUpdater implementation moved to Ont library with name UserAccountManager, 
-	  and new implementation here based on that (which is via the corresponding 
+	- UserAccountCreatorUpdater implementation moved to Ont library with name UserAccountManager,
+	  and new implementation here based on that (which is via the corresponding
 	  IOntClient.createUpdateUserAccount operation). See OrrClientImpl.createUpdateUserAccount.
-	  
+
 	- The above was the remaining (direct) dependency on the aquaportal rest endpoint in this module.
 	  So, OntServiceUtil.getAquaportalRestUrl() removed.
-	
+
 
 
 2010-09-28  2.0.8.beta
@@ -152,12 +157,12 @@ Some TODOs
 			<artifactId>ontclient</artifactId>
 			<version>2.0.8.beta-SNAPSHOT</version>
 		</dependency>
-	- Just deployed: 
+	- Just deployed:
 	  https://oss.sonatype.org/content/repositories/snapshots/org/mmisw/orrclient/2.0.8.beta-SNAPSHOT/
 
 
 2010-09-27  2.0.8.beta
-	General refactoring with the (new) Ont client library: 
+	General refactoring with the (new) Ont client library:
 	- Using new Ont client library: org.mmisw.ont.client.jar, which replaces
 	  org.mmisw.ont.vocabulary.jar, org.mmisw.ont.misc.jar, org.mmisw.ont.mmiuri.jar
 	- vocabularies Skos and Skos2 moved to Ont module (now included in the Ont client library)
@@ -177,31 +182,31 @@ Some TODOs
 	- New service IOrrClient.getOntologyMetadata that only retrieves the metadata.
 	- The existing getOntologyContents retrives both the metadata and the data. The client
 	  can now first retrieve the metadata and later the data.
-	  
+
 	- As part of the review, removed unused operation getEntities(RegisteredOntologyInfo).
-	
-	
-		
+
+
+
 2010-09-22  2.0.6.beta
-	- some minor adjustments related with UTF-8 
-	
+	- some minor adjustments related with UTF-8
+
 2010-09-12  2.0.5.beta
 	- removed org.mmi.ont.util.jar: no longer needed; related operations now provided by Ont's
 	  org.mmisw.ont.misc.jar library (ie., by the JenaUtil2 class).
-	
+
 	- OntModelUtil.getOntology(OntModel ontModel) also moved to JenaUtil2.
-	
+
 	- Removed OntModelUtil.loadModel(String uriModel, boolean processImports): not used anywhere.
-	
-	- Also removed dependency on org.mmi.util.jar library (call ISO8601Date.getCurrentDateBasicFormat). 
+
+	- Also removed dependency on org.mmi.util.jar library (call ISO8601Date.getCurrentDateBasicFormat).
 	  Replaced with MDHelper._getCurrentDateBasicFormat().
-	
+
 2010-09-10   2.0.4.beta
 	- Fixed 280: "Error getting entities" (reported by Roy L.)
 	  OntInfo._getIndividuals.
-	  
-	  
-	  
+
+
+
 2010-09-09   2.0.4.beta
 	- MdHelper: note that MdUtil.readResourceTypes and MdUtil.readAuthorities are now ONLY
 	  called in refreshOptions(AttrDef attrDef);  These calls were removed during the
@@ -209,29 +214,29 @@ Some TODOs
 	  So, clients should call IOrrClient.refreshOptions(AttrDef attrDef) to get the
 	  corresponding options filled in when the attribute has an associated vocabulary,
 	  ie., when attrDef.getOptionsVocabulary() != null.
-	  
-	- OrrClientImpl: create config.getPreviewDirectory() if not already existing.
-	
-	- IOrrClient.getTempOntologyInfo and TempOntologyHelper.getTempOntologyInfo: now work on 
-	  given filename (previously the parameter was named 'uploadResults' since it contained
-	  the xml output from the UploadServlet in the orrportal module was done.). 
-	
-	- Misc: calling xx.class.getClassLoader().setDefaultAssertionStatus(true) for
-	  the various unit tests.	  
 
-	- New test org.mmisw.orrclient.core.test.reg.ReHostedRegTest 
-	
-	
-	
+	- OrrClientImpl: create config.getPreviewDirectory() if not already existing.
+
+	- IOrrClient.getTempOntologyInfo and TempOntologyHelper.getTempOntologyInfo: now work on
+	  given filename (previously the parameter was named 'uploadResults' since it contained
+	  the xml output from the UploadServlet in the orrportal module was done.).
+
+	- Misc: calling xx.class.getClassLoader().setDefaultAssertionStatus(true) for
+	  the various unit tests.
+
+	- New test org.mmisw.orrclient.core.test.reg.ReHostedRegTest
+
+
+
 2010-09-07    2.0.3.beta
 	- some clean-up and fixes.
-	
+
 	- Issue: the CF ontology is displayed as 'vocabulary' but not all properties
 	  are shown in the table.
 	  Diagnostics:  Actually, the CF ontology should NOT be displayed as a "voc2rdf"
 	  vocabulary. Note that the individuals have assoaciated a number of properties
 	  that are NOT defined in the ontology itself (eg. rdfs:comment, skos:prefLabel).
-	  
+
 	  The following changes made to improve a little bit the detection of a "voc2rdf"
 	  ontology:
 	  - OntInfo and OntTypeUtil: To determine if a given model corresponds to a
@@ -239,13 +244,13 @@ Some TODOs
 	    in the model are checked to verify that they ALL are defined in the model.
 	  NOTE: However, a future version should display an ontology like the CF in a
 	  tabular way, and this is related with the pending SKOS support in the UI in general.
-	   
+
 
 
 2010-09-06    2.0.2.beta
 	- some doc
 	- removed deprecated/unused class OrrClientConfig.
-	
+
 	- The aquaportal rest URL is now obtained from the Ont service:
 		- new OntServiceUtil.getAquaportalRestUrl().
 	    - Removed corresp. attribute in OrrClientConfiguration
@@ -258,19 +263,19 @@ Some TODOs
 		- org.mmisw.orrclient.core.IServer --> org.mmisw.orrclient.IOrrClient
 		- org.mmisw.orrclient.core.ServerConfig --> org.mmisw.orrclient.OrrClientConfig
 		- org.mmisw.orrclient.core.Server --> org.mmisw.orrclient.core.OrrClientImpl
-		
+
 	- Updated
 		- templ-pom.xml artifactId: orrclient
 		- version.properties: version property is now orrclient.version
 		- build.xml
-	
+
 	The "exported" types, ie., public for clients of the library, are:
 	- org.mmisw.orrclient.OrrClientConfiguration -- allows to configure the library
 	- org.mmisw.orrclient.IOrrClient.Manager -- initializes the library
 	- org.mmisw.orrclient.IOrrClient -- main interface to the library
 	- and all types in packages org.mmisw.orrclient.gwt.**  -- types handled by the library
-	
-		
+
+
 2010-08-27   2.0.0.beta
 
 	Fixed 276: "original SKOS namespace not retained in new version"
@@ -278,60 +283,60 @@ Some TODOs
 	  of a mapping ontology. That is, if a version of a mapping ontology uses the SKOS
 	  namespace "http://www.w3.org/2008/05/skos#", then any modification/addition of mappings
 	  for a new version will continue to use that namespace.
-	
+
 	- IServer/Server: getVineRelationInfos renamed to getDefaultVineRelationInfos.
 	  getDefaultVineRelationInfos is to be used when creating a brand new mapping ontology.
 	  The SKOS namespace in this case is always "http://www.w3.org/2004/02/skos/core#" (which
 	  is the preferred "official" SKOS (core) namespace).
-	  
+
 	- MappingOntologyData: now with its own associated list of RelationInfos. This relationInfos
 	  are to be determined depending on the contents of the ontology when it already exists, or
 	  on the default relationInfos provided by IServer.getDefaultVineRelationInfos when creating
-	  a new mapping ontology. 
+	  a new mapping ontology.
 
-	Other adjustments:	
+	Other adjustments:
 	- MdHelper: added preferredPrefix.put(Skos2.NS, "skos2")
 	- MappingOntologyCreator now calls JenaUtil2.removeUnusedNsPrefixes
 	- Server: now calls JenaUtil2.removeUnusedNsPrefixes(model).
-	
+
 
 
 2010-08-25   1.9.95.alpha
-	- MappingOntologyCreator: along with the reified vine:Statement, it also adds the 
+	- MappingOntologyCreator: along with the reified vine:Statement, it also adds the
 	  direct statement (s,p,o) to the model.
-	  
-	
+
+
 2010-08-23   1.9.95.alpha
 	- OntInfo._getMetadataForReified: ONLY the following properties are considered for
 	  the extraction of metadata for a mapping:
 	     RDFS.comment, Vine.confidence, and Vine20071128.confidence
-	  NOTE: this of course assumes the following setting: Vine-created ontologies are 
-	  to be handled only by Vine for purposes of creating new versions. 
-	  TODO: Include explanation of this restriction is documentation.	  
-	
-	
+	  NOTE: this of course assumes the following setting: Vine-created ontologies are
+	  to be handled only by Vine for purposes of creating new versions.
+	  TODO: Include explanation of this restriction is documentation.
+
+
 2010-08-21   1.9.95.alpha
 
-	- BaseOntInfo._addNamespace: does nothing if the uri starts with "urn:" 
-	
+	- BaseOntInfo._addNamespace: does nothing if the uri starts with "urn:"
+
 	- Implemented 248: "Include mapped vocabularies in mapping ontology"
 	- MappingOntologyCreator: now adds the owl:import statements.
 	  Note that this uses the new field namespaces in MappingDataCreationInfo.
 	  Unit test updated: ...vine.test.CreationTest.
-	
-	
+
+
 2010-08-20   1.9.95.alpha
 	Removed dependencies on GWT:
-	
+
 	- NOTE: IServer.gwt.xml is retained so this module can still work as a GWT module. This
 	  file can be as simple as just containing ``<module/>'' as the default settings correspond
-	  to the canonical GWT 1.5.x directory layout (in particular for the client translatable code). 
-	
+	  to the canonical GWT 1.5.x directory layout (in particular for the client translatable code).
+
 	- Unused class org.mmisw.iserver.gwt.client.util.QueryUtil (note, a GWT client-side class, not
-	  to confuse with the one below) moved to the portal module (aka ontmd): 
+	  to confuse with the one below) moved to the portal module (aka ontmd):
 	  org.mmisw.ontmd.gwt.client.util.query.QueryUtil.
-	  This class was not used in this module and was the only one with actual dependency on GWT 
-	  (com.google.gwt.json.client.*). Although not currently used anywhere, I moved it to ontmd 
+	  This class was not used in this module and was the only one with actual dependency on GWT
+	  (com.google.gwt.json.client.*). Although not currently used anywhere, I moved it to ontmd
 	  as a more natural place while I decide what to do with that code.
 	- Removed gwt-user.jar from the classpath in my eclipse env --> OK
 	- sample.build.properties/build.xml: removed references to GWT --> OK
@@ -341,8 +346,8 @@ Some TODOs
 
 	Removed unused "webapp" element  (iserver does no define any servlet):
 	- ./base_war/WEB_INF/web.xml removed.
-	
-	
+
+
 	Maven deployment of the library:
 	- Now, the whole library is deployed (not just the core package)--there's no need to separate.
 	- The ant target is now just "deploy" (not "deploy-core").
@@ -354,59 +359,59 @@ Some TODOs
 			<version>1.9.95.alpha-SNAPSHOT</version>
 		</dependency>
 	  Just tested this for the watchdog module --> OK
-	- See 2010-08-06 note below. 
-	
-	
+	- See 2010-08-06 note below.
+
+
 	- Utf8Util.isUtf8(bytes) mainly based on the result of the basic conversion
 	  to string using a java.nio.charset.CharsetDecoder assuming UTF-8.
-	
-	
+
+
 
 2010-08-19   1.9.95.alpha
-	- org.mmisw.iserver.core.util.QueryUtil moved/renamed to: 
+	- org.mmisw.iserver.core.util.QueryUtil moved/renamed to:
 	  org.mmisw.iserver.core.util.ontinfo.OntInfoUtil
-	  
+
 	- Introduced IOntInfo (for refactoring of OntInfoUtil functionality) with implementations:
 		- OntInfoOld: basically with original implementation in QueryUtil
 		- OntInfo: better implementation
 	- OntInfoUtil.impl points to the actual implementation
-	
+
 	Removed the following unused methods:
 	- IServer/Server: List<EntityInfo> getEntities(String ontologyUri)
 	- OntInfoUtil: List<EntityInfo> getEntities(String ontologyUri, OntModel ontModel)
 	- OntInfoUtil: List<IndividualInfo> _getIndividuals(List<IndividualInfo> entities, OntModel ontModel, String ontologyUri)
 	- IOntQuery:   List<EntityInfo> getEntities(String ontologyUri, OntModel ontModel)
-	
+
 	Many improvements including better determination of ontology type, in particular
 	mappings (Vine) and other refactorings and clean-up. More unit tests.
-	
-	
+
+
 2010-08-18   1.9.95.alpha
 
 	- Skos: added the xxxxMatch properties.
-	
+
 	- Server.getVineRelationInfos:  Now using the URIs defined by the Skos class.
 	  Note in particular that the SKOS namespace is: http://www.w3.org/2004/02/skos/core#
 	  which follows the August 18 2009 W3C Recommendation, see http://www.w3.org/TR/skos-reference/
-	  
+
 	  Previously, this method used the http://www.w3.org/2008/05/skos# namespace. This, in
 	  contrast, is a document "still under development and content may be subject to change."
-	  Since some VINE mapping ontologies with this SKOS namespace may still exist out there, 
+	  Since some VINE mapping ontologies with this SKOS namespace may still exist out there,
 	  a detection of VINE mapping ontologies should consider the two namespaces.
-	  
+
 	- Preparations to determine the OntologyType for a given ontology
-	  
-	  
+
+
 
 2010-08-16   1.9.94.alpha
 	Some further attempts to better detect UTF8 potential problems.
 	See http://code.google.com/p/mmisw/issues/detail?id=253
 	    http://code.google.com/p/mmisw/issues/detail?id=274
-	
+
 	See QueryUtil._addProps:
-		added the try-catch-warn. It happened that the CSV below had a record spanning two rows; 
+		added the try-catch-warn. It happened that the CSV below had a record spanning two rows;
 		the second row started in the middle of a comment, which was taken as the URI of the entity.
-	
+
 	Utf8Util: I've refactored this to allow multiple implementations of the basic charset
 	detection. Now, besides the one based on jchardet, there is one based on the ICU project,
 	which is the one enabled from now on.
@@ -415,50 +420,50 @@ Some TODOs
 	After this, it does charset detection, but perhaps a successful _utf8toString(bytes) should
 	be enough (and only do the charset detection if there is an exception).
 	TODO: revisit this later on.
-	
-	So, quick observations re. resource/utf8/SEACOOS_Revisions(2).csv:
-	
-	This file is detected as UTF-8 by the ``file'' command:
-	$ file resource/utf8/SEACOOS_Revisions\(2\).csv 
-	resource/utf8/SEACOOS_Revisions(2).csv: UTF-8 Unicode English text, with very long lines, with CRLF line terminators	
 
-	And detected as follows by the two detectors (via the Utf8Util program): 
+	So, quick observations re. resource/utf8/SEACOOS_Revisions(2).csv:
+
+	This file is detected as UTF-8 by the ``file'' command:
+	$ file resource/utf8/SEACOOS_Revisions\(2\).csv
+	resource/utf8/SEACOOS_Revisions(2).csv: UTF-8 Unicode English text, with very long lines, with CRLF line terminators
+
+	And detected as follows by the two detectors (via the Utf8Util program):
 	CharsetDetectorIcu: Detected charsets: [UTF-8, ISO-8859-1, ISO-8859-2, ISO-8859-9, Shift_JIS]
-	CharsetDetectorJcd: Detected charsets: [UTF-8, windows-1252]	
-	
-	
+	CharsetDetectorJcd: Detected charsets: [UTF-8, windows-1252]
+
+
 
 2010-08-06  1.9.92.alpha
 
-	- Created ad hoc maven POM (resource/templ-pom.xml) to deploy the iserver.core library, which 
+	- Created ad hoc maven POM (resource/templ-pom.xml) to deploy the iserver.core library, which
 	  I'm starting to use in the (already maven-ized) watchdog module, but later in other modules.
-	  
-	  ``ant deploy-core'' copies resource/templ-pom.xml into _generated/tmp-pom.xml with 
+
+	  ``ant deploy-core'' copies resource/templ-pom.xml into _generated/tmp-pom.xml with
 	  replacement of the iserver version; then calls `mvn --file _generated/tmp-pom.xml deploy''.
-	  
+
 	  NOTE: I haven't maven-ized the central ORR projects: the plan is to
 	  first upgrade to GWT 2.x version and do some more complete clean-up.
-	
-	
+
+
 2010-08-05
 	Completed issue #133 "allow to do narrower-than hierarquies trees with indentation simple files"
-	
+
 	- Moved Voc2Skos to org.mmisw.iserver.core.voc2skos/ (previously under org.mmisw.iserver.core.util)
 	- Created unit tests org.mmisw.iserver.core.voc2skos.test.Voc2SkosTest with required resources
 	  under resource/voc2skos/.
 	- Added target voc2skosTests to build.xml
-	
-	 
+
+
 2010-08-04
 	Issue #133 "allow to do narrower-than hierarquies trees with indentation simple files"
-	
+
 	Now also processing indentation. The resulting SKOS file below passes the validation
 	at http://demo.semantic-web.at:8080/SkosServices/index
 	The only warning is:
 		Missing Language Tags: Found 9 occurrences of prefLabel without language tag.
 		Handles missing language tags of all sorts of SKOS labels and textual content.
 	TODO which is expected as no language tags are yet incorporated in the process.
-	
+
 	The example input is now (see resource/voc2skos-example.csv):
 		-----------------------------------------------------------------------------------
 		ontologyURI = "http://example.org/myont"
@@ -466,13 +471,13 @@ Some TODOs
 
 		skos:prefLabel = "My preferred label for Foo"
 		skos:definition = "This is a demo skos:definition for concept Foo"
-		
+
 		indent.string = "  "
 		indent.property = skos:narrower
-		
-		separator = ","    
-		
-		ID             ,skos:prefLabel ,skos:definition           ,myProperty 
+
+		separator = ","
+
+		ID             ,skos:prefLabel ,skos:definition           ,myProperty
 		conceptA       ,concept A      ,concept A definition      ,my value for concept A
 		  conceptA1    ,concept A1     ,concept A1 definition     ,my value for concept A1
 		    conceptA1a ,concept A1a    ,concept A1a definition    ,my value for concept A1a
@@ -482,9 +487,9 @@ Some TODOs
 		  conceptB1    ,concept B1     ,concept B1 definition     ,my value for concept B1
 		conceptC       ,concept C      ,concept C definition      ,my value for concept C
 		-----------------------------------------------------------------------------------
-	
+
 	The output is in resource/voc2skos-example.rdf
-	
+
 	NOTE: Voc2Skos.saveOntModelXML: passing namespace to 'xmlbase' property because
 	this seems to propely generate the URIs for the various entities. If base is used
 	(ie., for an xmlbase with no trailing fragment separator), then the entity URIs are messed up.
@@ -498,47 +503,47 @@ Some TODOs
 	then, the entities look like:
 		<owl:Class rdf:about="myont/Foo"> ...
 		<Foo rdf:about="myont/conceptB"> ...
-	
+
 	TODO what's going on? a Jena bug?
-	
-	
-	
+
+
+
 2010-08-03  1.9.92.alpha
 
 	Issue #133 "allow to do narrower-than hierarquies trees with indentation simple files"
-	
+
 	The approach is to use the "load external ontology" functionality to also allow the
 	import of a CSV file into an (SKOS) ontology. The registration itself is done in "RDF/XML".
-	
+
 	An example of a file that can be processed is:
-		--------------------------------------------------------------------	
+		--------------------------------------------------------------------
 		# test input for voc2skos
-		
+
 		class.id = ConceptFoo
 		class.prefLabel = Concept Foo
-		
+
 		# the terms:
-		ID,     skos:prefLabel  , rdfs:comment,     canonical_units    
+		ID,     skos:prefLabel  , rdfs:comment,     canonical_units
 		myid1,  my pref label 1 , my description 1, m/s
 		myid2,  my pref label 2 , my description 2, baz
 		--------------------------------------------------------------------
-	
+
 	See new class Voc2Skos.
-	
-	
-	The following operation has been generalized to also allow the source file to be 
+
+
+	The following operation has been generalized to also allow the source file to be
 	in any of the languages recognized by Jena.
-	
+
 	- IServer.getTempOntologyInfo(
-			String fileType, String uploadResults, 
+			String fileType, String uploadResults,
 			boolean includeContents, boolean includeRdf)
-	  and associated signatures in its implementation, now with new parameter 'fileType' 
+	  and associated signatures in its implementation, now with new parameter 'fileType'
 	  indicating the type of the file associated with the uploadResults.
-	  
+
 	  Previously, the code always assumed "RDF/XML" contents according to
-	  the call to Jena's model.read method, which by default uses that language.  
-	  Now, the fileType parameter can be any of the languages recognized by Jena 
-	  (see Utils2.JENA_LANGS), but also a special fileType, "voc2skos", which is handled 
+	  the call to Jena's model.read method, which by default uses that language.
+	  Now, the fileType parameter can be any of the languages recognized by Jena
+	  (see Utils2.JENA_LANGS), but also a special fileType, "voc2skos", which is handled
 	  by the new class Voc2Skos. See dispatch in TempOntologyHelper.getTempOntologyInfo.
 
 
@@ -555,25 +560,25 @@ Some TODOs
 		here: use the value of OmvMmi.hasContentCreator to fill in contact_name if such
 		value is available; otherwise, just use the value of Omv.hasCreator or DC.creator
 		as was done prior to this change.
-	  
+
 
 2010-07-23   1.9.9.alpha
 	- QueryUtil: accept "csv" (besides "json") to parse result.
-	
+
 	NOTE: Since the use of the AllegroGraph, the Ont service is not honoring the "json" ouput format
 	for SPARQL queries (instead it replies in "csv" format).  The SmlMor module (sensorML editor)
 	is issuing queries with requested "json" format and calling QueryUtil.parseResult to parse the
-	result, which was only processing "json".  The quick fix is to request "csv" and parse "csv." 
+	result, which was only processing "json".  The quick fix is to request "csv" and parse "csv."
 	The real fix for the "json" format is still pending in the Ont service,
 	see http://code.google.com/p/mmisw/issues/detail?id=261
-	
-	
+
+
 2010-06-29   1.9.8.alpha   (note: syncing version with Ont and orr modules)
 	Upgraded Jena library to 2.6.3:
 	As a general approach, I'm removing all the "old" libraries that have a corresponding JAR in the
 	new version of Jena, and then using the ones coming with Jena:
-	
-	- Removed "old" jars from base_war/WEB_INF/lib/ associated with Jena 2.5.6 that have versions 
+
+	- Removed "old" jars from base_war/WEB_INF/lib/ associated with Jena 2.5.6 that have versions
 	  in the new Jena:
 		-rw-r--r--  1 carueda  staff   358085 Aug 20  2008 log4j-1.2.12.jar
 		-rw-r--r--  1 carueda  staff   121070 Oct 13  2008 junit.jar
@@ -584,7 +589,7 @@ Some TODOs
 		-rw-r--r--  1 carueda  staff  3147374 Oct 28  2008 icu4j_3_4.jar
 		-rw-r--r--  1 carueda  staff  1405635 Oct 28  2008 arq.jar
 		-rw-r--r--  1 carueda  staff   151637 Oct 28  2008 arq-extra.jar
-	
+
 	- base_war/WEB_INF/lib/jena/ new directory containing ALL(*) the jars associated with the latest
 	  version of Jena, which is 2.6.3:
 		-rw-r--r--@ 1 carueda  staff  1203860 Feb  5  2009 xercesImpl-2.7.1.jar
@@ -601,55 +606,55 @@ Some TODOs
 		-rw-r--r--@ 1 carueda  staff  1680523 May 28 14:26 arq-2.8.4.jar
 		-rw-r--r--@ 1 carueda  staff  1900385 Jun  1 14:31 jena-2.6.3.jar
 		-rw-r--r--@ 1 carueda  staff  1506473 Jun  1 14:32 jena-2.6.3-tests.jar
-	(*) I'm just following the indication in Jena-2.6.3/doc/readme.html: "Installation: ... set the Java 
+	(*) I'm just following the indication in Jena-2.6.3/doc/readme.html: "Installation: ... set the Java
 	classpath to include all the JAR files in the JENAROOT/lib/ directory."
-	
+
 2010-06-29
 	New src/org/mmisw/iserver/core/version.properties which is a template that build.xml uses
 	to create ${build.dir}/classes/org/mmisw/iserver/core/version.properties, which ServerConfig
 	now uses to initialize Prop.VERSION and Prop.BUILD.  AppInfo now includes a 'build' attribute.
 	IServer.getAppInfo() now returns accurate version information.
-	
-	
+
+
 2010-06-17   1.9.4.alpha
 	Issue 258:"reset password in effect but lost if error while sending email"
-	- Server.resetUserPassword: Part of the fix is to first check the mail account 
+	- Server.resetUserPassword: Part of the fix is to first check the mail account
 	  parameters are given.
-	  
+
 
 2010-06-15   1.9.2.alpha    (note: syncing version with Ont and orr modules)
 	Issue #252: "omv:version gone?"
 	- MdHelper.static { uriPropMap.put(Omv.version.getURI(), Omv.version); }
 	  With this assignment, new ontologies (either created with voc2rdf, vine, or uploaded
 	  both fully-hosted and rehosted, will have the omv:version property assigned to the ontology resource.
-	  
-	  
-	  Note: This is part of the solution as the already registered ontologies with no omv:version 
+
+
+	  Note: This is part of the solution as the already registered ontologies with no omv:version
 	  will need some other mechanism to re-assign it.
-	
-	
+
+
 2010-06-14   1.9.0.alpha
 	Issue #242: "admin interface to remove an ontology" implemented:
 	- Changes in Ont module completed.
 	- Changes in this iserver module completed.
 
 2009-12-28   1.8.1.alpha
-	- preliminary Server.createGroupsOntology (management of internal resources still under revision) 
+	- preliminary Server.createGroupsOntology (management of internal resources still under revision)
 
 2009-12-24   1.8.0.alpha
 	- Server.prepareUsersOntology(LoginResult loginResult) now reports the URI, which is given by the Ont service.
-	  
-	  
+
+
 2009-12-23   1.8.0.alpha
 	Preparing for handling "internal" ontologies. An internal ontology provides supporting information
-	for the MMI ORR. 
+	for the MMI ORR.
 
 	- New service Server.prepareUsersOntology(LoginResult loginResult, String usersUri)
 
 
 2009-12-22   1.7.3.alpha
 	- TempOntologyInfo: removed 'namespace' attribute; the 'uri' one is used instead.
-	
+
 
 2009-12-21   1.7.2.alpha
 	Fixed Issue #213: ontology with hash fragment separator not handled appropriately
@@ -659,20 +664,20 @@ Some TODOs
 		- namespace associated with the empty prefix, if any;
 		- URI of the xml:base of the document, if any;
 		- null, otherwise.
-		
+
 	To properly handle a new submission with *no* original namespace associated (as determined by
 		Util2.getDefaultNamespace), now the returned null is accepted and handled in:
 		- TempOntologyHelper.getTempOntologyInfo: it just leaves the namespace and shortName null.
 		- Server.createOntologyFullyHosted, no transfer to new namespace is necessary (nothing to be transferred);
 	  But note that the namespace *is* required in Server.createOntologyReHosted.
-		
+
 	- TempOntologyInfo: new field isOntResolvable that a client (the ORR portal) can use to determine whether
-	  it's appropriate to register an ontology in re-hosted mode. Set by TempOntologyHelper.getTempOntologyInfo. 
-	  
+	  it's appropriate to register an ontology in re-hosted mode. Set by TempOntologyHelper.getTempOntologyInfo.
+
 	- QueryUtil.getEntities(BaseOntologyInfo baseOntologyInfo, OntModel ontModel): If the ontology URI is
 	  Ont resolvable, apply the ad hoc rules to determine type of ontology; otherwise (ie., the ontology is
 	  re-hosted), always create the "other" type of ontology data.
-	  
+
 
 2009-11-30   1.7.0.alpha
 	- Setting version to 1.7.0.alpha reflecting all the 1.6.1+ changes below.
@@ -683,8 +688,8 @@ Some TODOs
 2009-11-24   1.6.2.alpha6
 	- UserAccountCreatorUpdater: detect duplicate username error to report a more
 	  meaningful error message.
-	  
-	
+
+
 2009-11-24   1.6.2.alpha5
 	Issue #222 - duplicate of issue #43: Handle non-UTF8 and UTF8 inputs
 	- NO conversions are attempted (I wrote some preliminary code for that but it's now
@@ -694,56 +699,56 @@ Some TODOs
 	  to complement the message with the possible charsets.
 	- Tested with resource/theme-windows-1250.owl (a file in windows-1250 encoding)
 	- In general, the handling of UTF-8 should be complete now.
-	  
-	
+
+
 2009-11-18   1.6.2.alpha5
 	- OntologyUploader: set "UTF-8" charset explicitly to the filePart
 
 2009-11-17   1.6.2.alpha5
 	Issue #222 - duplicate of issue #43: Handle non-UTF8 and UTF8 inputs
-	
+
 	New Utf8Util.readFileWithConversionToUtf8: tested internally but yet to be called at
 	appropriate places.  TODO
-	
+
 	Committed:
 		Util2.java
 		Utf8Util.java
 		ReadFileResult.java (new)
-		
+
 	Modified locally but not yet committed (as they need updates):
 		- Server.java
 		- TempOntologyHelper.java
-	
+
 	***NOTE: update the following text about a preliminary approach***
-	
+
 	- Not yet doing any conversion. But I did the following change to check for UTF-8 because
 	  the attached theme.owl is actually read by Jena without problem event though that the
 	  file does not pass the UTF-8 test.
-	  
+
 	  New utility methods:
 	  	- Util2.readRdfWithCheckingUtf8(File file)
 	  	- Util2.loadModelWithCheckingUtf8(File file)
 	  These two methods first try to read the model using Jena immediately; if this is OK, then
 	  just continue with that. But if the Jena call fails, then, these methods do the UTF-8 test
 	  in an attempt to be more specific about the cause of the load error.
-	  
+
 	  Well, also fixed the following:
 	  In the process of creating the temporary file in ServerConfig.ONTMD_PREVIEW_DIR from the one
 	  coming fron the upload step (see PortalConfig.Prop.ONTMD_PRE_UPLOADS in ontmd module),
 	  the FileWriter was created with the default charset. Now creating with "UTF-8" explicitly.
 	  See Server._writeRdfToFile
-	***  
-	
-	
-	
-	
+	***
+
+
+
+
 2009-11-13   1.6.2.alpha4
 	Issue #221 retain the original camelCase in the URLs
 	- VocabCreator: removed toLowerCase conversions in:
 		createIndividual
 		createDatatypeProperty
-		
-	
+
+
 2009-11-10   1.6.2.alpha2
 	Issue #214: "Direct registration of ontology"
 	- providing service Server.registerOntologyDirectly
@@ -758,45 +763,45 @@ Some TODOs
 2009-11-03   1.6.0.alpha
 	- Setting version to 1.6.0.alpha reflecting all the 1.5.0.alpha30 changes below.
 	  This is also sync'ed with ontmd module.
-	  
+
 	- MdHelper: making Omv.acronym a required attribute since it is used for the shortName
 	 component.
-	 
+
 2009-11-02  1.5.0.alpha30
 	- new client-side QueryUtil to parse a query response
 
 
 2009-10-20   1.5.0.alpha30
 	- MdHelper: added Omv.reference and Omv.acronym to the general_attr_list so some
-	  dependent parts on this list can "see" these properties as well. 
-	
-	
+	  dependent parts on this list can "see" these properties as well.
+
+
 2009-10-19   1.5.0.alpha30
 	- RegisteredOntologyInfo: added hostingType attribute, which is assigned by
 	  Server._createOntologyInfo
-	  
-	  
+
+
 2009-10-07   1.5.0.alpha30
 	issue #99 Normalize theme/topic/class throughout interface
 		- MdHelper:
-			- Omv.acronym to be used for what is supposed to be: "A short name by which an ontology 
+			- Omv.acronym to be used for what is supposed to be: "A short name by which an ontology
 		  	  is formally known."
 		  	- Resource type captured with OmvMmi.hasResourceType
-		  	
+
 	 Issue 177: Re-hosting option is not clear
 		- New HostingType and corresponding attribute in CreateOntologyInfo
 		- New OntModelUtil to create and update OntModel objects
-		- Server: 
+		- Server:
 			- preparing new methods for createOntology (createOntology_newMethod) and
 		  	  registerOntology (registerOntology_newMethod).  These are called when the
 		  	  hostingType attribute is specified (as a way to test the new methods).
-		  	  
+
 			- createOntologyFullyHosted: preliminary tests OK
 			- registerOntologyFullyHosted: preliminary tests OK
-			  	
+
 			- createOntologyReHosted: preliminary tests OK
 			- registerOntologyReHosted: preliminary tests OK
-		  	
+
 
 
 2009-10-06   1.5.0.alpha30
@@ -804,47 +809,47 @@ Some TODOs
 		MdHelper.prepareGroups: Creating AttrDef for omv:reference.
 		Note that I'm only creating the AttrDef but no including it in any group; the reason
 		is that this attribute will be accessed directly from the new wizard-like interface in the portal.
-		
+
 	- New HostingType enumeration
-	- New CreateOntologyInfo.hostingType attribute; when this is given (non-null), it used by the new 
+	- New CreateOntologyInfo.hostingType attribute; when this is given (non-null), it used by the new
 	  methods in Server to createOntology() and registerOntology().
-	  
+
 
 2009-10-02   1.5.0.alpha30
 	- MdHelper and MetadataBaseInfo: Exposing more elements to clients
 
 	- TempOntologyInfo: now with a shortName attribute taken from the xmlbase
-	- CreateOntologyInfo: now with a baseOntologyInfo attribute which is info about the 
+	- CreateOntologyInfo: now with a baseOntologyInfo attribute which is info about the
 	  ontology used as starting point, if any.
-	  
+
 2009-10-01   1.5.0.alpha30
 	- Moved displayLabel from RegisteredOntologyInfo to its superclass BaseOntologyInfo
 	  (so, a TempOntologyInfo can also have a displayLabel).
-	  
-	  
+
+
 2009-09-30   1.5.0.alpha30
 	- Removed JenaUtil2 in this module (which was a replication of a class in the
 	  "ont: module); now using org.mmisw.ont.misc.jar (generated by "ont").
-	
+
 	- TempOntologyInfo: now with an xmlBase attribute. This is a preliminary change for a better
 	  approach to examine an external ontology, in particular, to get the base URI associated with
-	  the external ontology. 
-	  TODO consider implementing a getBaseUri operation (in JenaUtil2) to check for the xml:base. 
+	  the external ontology.
+	  TODO consider implementing a getBaseUri operation (in JenaUtil2) to check for the xml:base.
 	  If there is no xml:base, get the URI of the Ontology resource in the (base model in the file).
-	  If there is no such resource, what to do? 
-	  See http://jena.sourceforge.net/ontology/#metadata 
-	
-	
+	  If there is no such resource, what to do?
+	  See http://jena.sourceforge.net/ontology/#metadata
+
+
 2009-09-29   1.5.0.alpha29   (alpha23-28 skipped to sync with ontmd)
 	Fixed issue #192 "wrong versioned/unversioned response"
 		Util2.replaceNameSpace now uses Util2._inNamespace(Resource resource, String namespace)
 		to determine when a resource is "located" in a given namespace.
-		
+
 	Fixed Issue #193 "list of versions include unversioned"
 		getOntologyInfoWithVersionParams: in case b), the first entry in the list was altered; now
 		a copy is made, which is assigned the unversioned URI.
-	
-	
+
+
 2009-09-18   1.5.0.alpha22
 	- New support to resolve term URIs. This is generalized for both ontology URIs and
 	  term URIs via a new class ResolveUriResult and service Server.resolveUri(uri).
@@ -852,8 +857,8 @@ Some TODOs
 	- _getEntityInfo: The resolution of a term URI is based on the query:
 	    SELECT ?prop ?value WHERE { <URI> ?prop ?value . }
 	  against the Ont service (which maintains the ontological graph).
-	  
-	 
+
+
 2009-09-11   1.5.0.alpha21
 	- General user account management, login, and password reset completed:
 		Fixed issue #176: login issue - forgot password user name
@@ -863,7 +868,7 @@ Some TODOs
 	- Check email address before creating/updating a user account. Ideally, a full verification
 	  would include using the email (eg., sending some special URL that the user can click to
 	  verify/activate his/her account).
-		
+
 	- TODO Next: use cookies to keep the session (Issue #154)
 
 
@@ -871,7 +876,7 @@ Some TODOs
 
 	- New UserAccountCreatorUpdater
 	- New Server.createUpdateUserAccount
-	
+
 	- Renamed Config to ServerConfig
 	- ServerConfig: new properties: MAIL_USER, MAIL_PASSWORD
 	- New MailSender helper to send new password to a user ({activation,mail}.jar included)
@@ -879,57 +884,57 @@ Some TODOs
 		LoginResult authenticateUser(String userName, String userPassword);
 		ResetPasswordResult resetUserPassword(String username);
 		UserInfoResult getUserInfo(String username);
-	
-	
-	
+
+
+
 2009-09-08  1.5.0.alpha18
 	- Fix for issue #174 and general improvement in related functionality:
 	  Util2.getDefaultNamespace:   (note: OntModel parameter removed)
 		Now, the sequence to determine the URI for the submitted ontology is:
-		
+
 		- the URI associated with xml:base in the document, if given;
 		or
 		- the URI of the file containing the ontology
-		
+
 		See http://www.w3.org/TR/2003/PR-rdf-syntax-grammar-20031215/#section-Syntax-ID-xml-base
 
 		(So, note that the URI associated with the empty prefix (xmlns=xx) is NOT considered
-		any more in this operation. Getting the URI from xmlns=xx was the mechanism in the legacy 
-		MMI related code).	
-	
+		any more in this operation. Getting the URI from xmlns=xx was the mechanism in the legacy
+		MMI related code).
+
 
 2009-09-03  1.5.0.alpha17   (sync'ed with ontmd version;  alpha13-16 skipped here)
 	Fixed issue #168: Submitted ontology not included for SPARQL query processing
 	- Using the new "ont" service to load an ontology in the graph (via "_lo" parameter).
 	- OntServiceUtil.loadOntologyInGraph: to make the request
-	- Server.registerOntology: call to OntServiceUtil.loadOntologyInGraph 
-	
-	
+	- Server.registerOntology: call to OntServiceUtil.loadOntologyInGraph
+
+
 2009-09-01  1.5.0.alpha12
 	- Server: new operation: SparqlQueryResult runSparqlQuery(SparqlQueryInfo query)
-	
-	
+
+
 2009-08-28  1.5.0.alpha11
 	- Server.getOntologyContents(RegisteredOntologyInfo registeredOntologyInfo, String version):
-	  added version parameter to specify the desired version; this param can be null. 
+	  added version parameter to specify the desired version; this param can be null.
 	  If version == null:
 	  	if the associated getUri is *unversioned*, then the obtained ontology is the latest version
 	  	if it is *versioned*, then that version is retrieved.
 	  If version != null:
 	  	then, that version is retrieved.
-	- The above change done during the enabling of the VINE tool in the portal. 
-	
+	- The above change done during the enabling of the VINE tool in the portal.
+
 	- MappingOntologyCreator: Indicate VINE as the engineering tool:
 		ont.addProperty(Omv.usedOntologyEngineeringTool, OmvMmi.vine);
-	
+
 	- VocabCreator: Indicate Voc2RDF as the engineering tool:
 		ont.addProperty(Omv.usedOntologyEngineeringTool, OmvMmi.voc2rdf);
-	
-	
+
+
 2009-08-27  1.5.0.alpha11
 	- RegisteredOntologyInfo, EntityInfo: Removed transient field 'code' -- client should use its own mechanism.
-	
-	
+
+
 2009-08-26  1.5.0.alpha11
 	VINE: Adding elements to incorporate VINE functionality.
 	- package org.mmisw.iserver.gwt.client.rpc.vine
@@ -938,7 +943,7 @@ Some TODOs
 	- TODO: Define precise info required for a mapping from this server side,
 	perhaps separating the attributes of a RelationInfo from the mapping; just use
 	the relation URI to link the two.
-	
+
 	More updates:  (still incomplete)
 	- new MappingOntologyCreator (similar to VocabCreator)
 	- enabling MappingDataCreationInfo processing
@@ -951,10 +956,10 @@ Some TODOs
 
 2009-08-25  1.5.0.alpha9
 	issue #148: "Need property to capture "creator/author of original source vocabulary""
-	- MdHelper: 
-		- changed label and tooltip for hasCreator: 
+	- MdHelper:
+		- changed label and tooltip for hasCreator:
 		     "Ontology creator" ->  "..person that created the ontology representation"
-		- added OmvMmi.hasContentCreator with label and tooltip: 
+		- added OmvMmi.hasContentCreator with label and tooltip:
 			"Content creator" -> "..person that created the contents reflected in the ontology"
 
 2008-08-24  1.5.0.alpha8
@@ -964,81 +969,81 @@ Some TODOs
 	- Server.createOntology: when tempOntologyInfo == null, it uses createOntologyInfo.getPriorOntologyInfo()
 	  to retrieve the model directly and determine the uriForEmpty, from which the temporary
 	  filename is also determined.
-		
-		
+
+
 2008-08-16  1.5.0.alpha7
 	issue 162: "External ontology considered to be internal"
 	- OntServiceUtil.isOntResolvableUri(String uri): uses the ont.service.url
 	  config parameter to determine if a given URI is resolvable by the deployed "ont" service.
 	  This returns true iff uri.startsWith(value of ont.service.url parameter).
 	  (there's a similar method in "ont" module)
-	  
+
 	- Added CreateOntologyInfo.uri member to "remember" previous URI when registerig a new version.
-	
+
 	NOTE: Suppose an external ontology whose contents are recognized by the "vocabulary (ie., voc2rd)" format.
 	Currently, there is no check for the "external" property so the usual elements (authority, shortName, etc)
 	are used to create the class name in the vocabulary. Should we support this, or perhaps just handle as
 	"other" any external ontology?  The latter seems definitely simpler to provide.
-	
+
 
 2008-08-13  1.5.0.alpha6
 	- Issue #164 Keep periods and case in term URI
 		- More in general, if the first column given to VocCreator is named "uri," the values
 		  are just checked for validity (according to java.net.URI constructor), and now
-		  no conversions at all are performed. 
-		  
-	- CreateOntologyInfo and RegisteredOntologyInfo: removed namespaceRoot attribute -- this 
+		  no conversions at all are performed.
+
+	- CreateOntologyInfo and RegisteredOntologyInfo: removed namespaceRoot attribute -- this
 	  was added in a preliminary approach to handle re-hosting. It is not necessary anymore.
-	
-	
+
+
 2008-08-10  1.5.0.alpha5
 	Processing "version" parameter  (issue #159)
 		- Server.getOntologyInfo(String ontologyUri): parses the string to extract version parameter, if any.
-		
+
 	Fixed replication of ontology attributes when creating a new version:
 		- Server.createOntology(CreateOntologyInfo): newOntModel.removeAll(ont_, prd, null) is called when
 		  there is a new value for the corresponding property.
-		  TODO Note: We are always replacing the values; we may eventually consider a mechanism to allow 
+		  TODO Note: We are always replacing the values; we may eventually consider a mechanism to allow
 		  actual *addition" of more values for the same predicate.
-		  
+
 	Server.getOntologyInfo(String ontologyUri): always include all versions. (note that the flag was
 	called includePriorVersions originally)
-	 
-	
+
+
 2008-08-07:
 	- Checking pre-existing registered ontology when trying to submit a new one:
 		Util2.checkNoPreexistingOntology(String possibleOntologyUri, BaseResult result)
 		Server.createOntology(CreateOntologyInfo createOntologyInfo)
 		OntServiceUtil.isRegisteredOntologyUri(String uriModel, String... acceptEntries)
 		Util2.checkNoPreexistingOntology(String possibleOntologyUri, BaseResult result)
-	
-	
+
+
 2000-08-03:   1.5.0.alpha4
 	- Server.createOntology(CreateOntologyInfo): Do NOT remove "original OWL.Ontology individual"
 	  if where are in re-hosting mode (createOntologyResult.isPreserveOriginalBaseNamespace).
-	  If we did this on a model with the same original namespace, we would remove the owl:Ontology 
+	  If we did this on a model with the same original namespace, we would remove the owl:Ontology
 	  entry altogether and get an "rdf:Description" instead.
-	  
+
 	- Having weird RPC-related error "connection refused", which seems a GWT problem:
 	  the asynchronous call registerOntology(CreateOntologyResult, LoginResult) on the client
 	  does not get called to the server side.
-	  
+
 	  Fixed: Config.Prop.BIOPORTAL_REST_URL was not appropriately initialized from Server.
 	  The default value (localhost based) caused the "connection refused".  This was very hard
 	  to detect as the log info in the server was not showing anything!
-	
-	
-	
+
+
+
 2000-08-01,03:   1.5.0.alpha3 (was 1.5.0.alpha2)
 	Server.getInstance(String ontServiceUrl, String bioportalRestUrl): now with parameters indicating
 	the "Ont" service URL and the BioPortal REST base URL (these were previously hard-coded).
 		- Config: added corresponding attributes
-		- Corresponding updates in: OntologyUploader, VocabCreator, OntServiceUtil. 
-		
-2009-07-31  
+		- Corresponding updates in: OntologyUploader, VocabCreator, OntServiceUtil.
+
+2009-07-31
 	1.5.0.alpha2
 	Continuing with "re-hosting" feature:
-	
+
 	- OntServiceUtil: new class with utility to resolve an ontology URI against the "Ont" service
 	  but using the "uri" parameter, instead of trying to use the URI itself.
 	- JenaUtil2.retrieveModel: based on service above.
@@ -1047,54 +1052,54 @@ Some TODOs
 		  Note that the same (re-hosted) URI string is handled as both the versioned and unversioned,
 		  TODO define versioning mechanism!
 		- getOntologyContents: now uses JenaUtil2.retrieveModel
-		- Other changes related with namespaceRoot, see below. 
-		
-	  
+		- Other changes related with namespaceRoot, see below.
+
+
 	- Some new attributes and various change under experimentation regarding user-given namespaceRoot
-	  to construct the ontology URI:   
-	  (NOTE: all of this may be reverted when general re-hosting mechanism is completed) 
+	  to construct the ontology URI:
+	  (NOTE: all of this may be reverted when general re-hosting mechanism is completed)
 		CreateOntologyInfo.namespaceRoot
 		RegisteredOntologyInfo.namespaceRoot
 		MetadataBaseInfo.authorityAbbreviationUri
 		Util2: checks for duplicate URI
 		VocabCreator: uses Server.DEFAULT_NAMESPACE_ROOT
-		
-		
+
+
 	- new OntServiceUtil.getOntServiceUrl()
-	
+
 	- JenaUtil2.removeTrailingFragment: not only / but also trailing # is removed.  This change
 	  responds to the re-hosting request.
-	  
+
 	- Added createOntologyResult.isPreserveOriginalBaseNamespace for convenience: it's set up in
 	  createOntology and also used in registerOntology
-	
+
 2009-07-26
-	
+
 	Preparations for re-hosting of external ontology:
 		"Re-hosting" means that the original base namespace of the submitted ontology is preserved.
 		Basically, the whole ontology is un-changed except for new metadata elements.
-	
+
 	- TempOntologyInfo: new attribute preserveOriginalBaseNamespace
 	  See ontmd project (portal) for how the flag is captured and included in the corresponding
 	  TempOntologyInfo object.
-	  
+
 	- Server.createOntology(CreateOntologyInfo): uses the preserveOriginalBaseNamespace flag to
 	  keep original base namespace or apply the regular asssignment of the MMISW-based namespace
 	  as usual.
-	  
+
 	- Basic submission is now handled. I'm testing this with a simple ontology with base namespace
 	  http://EXAMPLE.org/abc/example
-	  
-	- Next: complement other actions with registered "external" ontology, eg., "resolve" the 
-	  ontology for display purposes ... 
-	
-	
+
+	- Next: complement other actions with registered "external" ontology, eg., "resolve" the
+	  ontology for display purposes ...
+
+
 2009-06-07
-	- QueryUtil._setDomainClassesForProperties: checking for null to avoid a NPE with 
+	- QueryUtil._setDomainClassesForProperties: checking for null to avoid a NPE with
 	  http://mmisw.org/ont/univmemphis/sensor
 	  TODO Check why the domain uri has not been assigned for the propertyInfo.
-	  
-	  
+
+
 2009-06-06
 	- Utf8Util: new utilities (based on jchardet) to detect/verify the required UTF-8 charset
 	  for any external stream to be incorporated in the registry (no attempts to do any automated
@@ -1104,13 +1109,13 @@ Some TODOs
 		  UTF-8 already; however, this is a general sanity check that can be useful in the case of
 		  any previously registered entry that may not be UTF-8.
 		- before the conversion from CSV in VocabCreator
-		- when trying to create an ontology from an external ontology file 
-		
+		- when trying to create an ontology from an external ontology file
+
 	- Util renamed to QueryUtil
-	
+
 	- XmlBaseExtractor: removed a strange ``throw new SAXException("No xml:base")'' in the original code;
 	  this exception was thrown even when an xml:base element has already been found!
-	  
+
 	- Fixed issue #140: "ontologies with no declared namespace for empty prefix are not accepted"
 		Util2.getDefaultNamespace(OntModel model, File file, BaseResult baseResult): now return
 		the first non-null value in the following order:
@@ -1118,9 +1123,9 @@ Some TODOs
 			- XmlBaseExtractor.getXMLBase(...)
 			- file.toURI().toString()
 		See http://www.w3.org/TR/2003/PR-rdf-syntax-grammar-20031215/#section-Syntax-ID-xml-base
-		
-		
-	  
+
+
+
 
 2009-06-05
 	- several adjustments as the main operations are completed
@@ -1132,18 +1137,18 @@ Some TODOs
 	- Implemented the "loading" of local file into working space. This is capture in a TempOntologyInfo.
 	  (note the uploading operation is still implemented in the ontmd module).
 	- Other preparations for registration of an "other" ontology (not vine, nor voc2rdf).
-	
-	
+
+
 2009-06-03
 	- Instead of using CreateOntologyInfo as a base class for the various types of ontologies to be
 	  created (currently only "vocabulary", but later "mapping" and "regular externally given ontology"),
 	  it now contains a DataCreationInfo member. This DataCreationInfo will serve as the basis for extension
 	  fot the various types of ontologies.
-	  
+
 	- fixed issue #140: "ontologies with no declared namespace for empty prefix are not accepted"
 	  If default namespace is not defined, try using xml:base's URI. TODO: test!
-	  
-	  
+
+
 2009-06-02
 	- getAllOntologies(boolean includePriorVersions) and getOntologyInfo(String ontologyUri) complemented
 	  with auxiliary Map<String, List<OntologyInfo>> getUnversionedToOntologyInfoListMap(String onlyThisUnversionedUri).
@@ -1152,42 +1157,42 @@ Some TODOs
 		- getAllOntologies(boolean includePriorVersions): main entries in the returned list at UNversioned;
 		  the sublist of priorVersions are in versioned form *including* the most recent.
 		  Elements in the priorVersion list are sorted by descending dataCreated so the most recent is first.
-	
+
 2009-06-01
 	- Added OntologyInfo getOntologyInfo(String ontologyUri).
-	
+
 2009-05-31
-	- Util.getEntities(OntologyInfo ontologyInfo, OntModel ontModel): assign ClassInfo object 
-	  corresponding to the domain of each property so it's easier to get associated attributes. 
-	  
+	- Util.getEntities(OntologyInfo ontologyInfo, OntModel ontModel): assign ClassInfo object
+	  corresponding to the domain of each property so it's easier to get associated attributes.
+
 	- Many changes for including editing and creation of new version of a vocabulary ontology
-	
+
 2009-05-25
 	- Support to handle different types of ontology data: vocabulary, mapping, and other, although
 	  this is based on some heuristics; a better mechanism should be implemented (idea is to use
 	  a particular ontology metadata property that indicates the type of ontology, for example
 	  omv:usedOntologyEngineeringTool.
-	
-	
+
+
 2009-05-24
 	- getAllOntologies now return only the latest versions of all ontologies as the main entries
 	  of the list; and, optionally, the prior versiones will be included in the internal property
 	  priorVersions.
-	  
-	  
+
+
 2009-05-23
 	- included most of metadata management here (from ontmd module)
 
 2009-05-22
 	- Added username attribute to OntologyInfo
-	
-	- Added service getEntities(String ontologyUri), which btw facilitates current refactoring. 
-	 
+
+	- Added service getEntities(String ontologyUri), which btw facilitates current refactoring.
+
 2009-05-13
 	Module extracted from vine prototype. The goal is to unify the various operations to the
 	server through this module.
 	Note: this module provides the serializable objects required for the communication and
 	a set of core types to be used on the server side.
-	
+
 	This is initially to be used by OntMd to provide the "portal" interface. Later,
 	vine itself will be integrated.

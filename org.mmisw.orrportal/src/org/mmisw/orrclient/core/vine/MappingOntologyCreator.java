@@ -64,7 +64,7 @@ public class MappingOntologyCreator {
 
 	private final Log log = LogFactory.getLog(MappingOntologyCreator.class);
 
-	private Set<String> namespaces;
+	private Set<String> uris;
 	private List<Mapping> mappings;
 
 	private final String uniqueBaseName = _createUniqueBaseName();
@@ -82,7 +82,7 @@ public class MappingOntologyCreator {
 
 		Map<String, String> values = createOntologyInfo.getMetadataValues();
 
-		this.namespaces = mappingDataCreationInfo.getNamespaces();
+		this.uris = mappingDataCreationInfo.getUris();
 		this.mappings = mappingDataCreationInfo.getMappings();
 
 		String ontServiceUrl = OrrConfig.instance().ontServiceUrl;
@@ -227,19 +227,17 @@ public class MappingOntologyCreator {
 	}
 
 
-	/** adds an owl:import for each namespace in namespaces, if any */
+	/** adds an owl:import for each uri in uris, if any */
 	private void _addImports(Ontology ont) {
 
 		if ( ADD_VINE_IMPORT ) {
-			ont.addImport(ResourceFactory.createResource(JenaUtil2.removeTrailingFragment(Vine.NS)));
+			ont.addImport(ResourceFactory.createResource(Vine.URI));
 		}
 
-		if ( namespaces == null ) {
-			return;
-		}
-
-		for ( String namespace : namespaces ) {
-			ont.addImport(ResourceFactory.createResource(JenaUtil2.removeTrailingFragment(namespace)));
+		if ( uris != null ) {
+			for ( String uri : uris ) {
+				ont.addImport(ResourceFactory.createResource(uri));
+			}
 		}
 	}
 

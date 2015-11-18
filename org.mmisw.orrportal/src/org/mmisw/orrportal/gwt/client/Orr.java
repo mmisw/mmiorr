@@ -34,11 +34,11 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Main elements supporting the ORR Portal application.
- * 
+ *
  * @author Carlos Rueda
  */
 public class Orr {
-	
+
 	/** Interface for asynchronous calls to the ORR back-end. */
 	public static OrrServiceAsync service;
 
@@ -47,15 +47,15 @@ public class Orr {
 
 	/**
 	 * Initialization method.
-	 * 
+	 *
 	 * @param logSpec
 	 */
 	static void init(String logSpec) {
-		
+
 		if ( logSpec != null ) {
 			_logger = new OrrLogger(logSpec);
 		}
-		
+
 		Orr.log("Util.getLocationProtocol() = " + OrrUtil.getLocationProtocol()
 		    + "\nUtil.getLocationHost()     = " + OrrUtil.getLocationHost()
 		    + "\nGWT.getHostPageBaseURL()   = " + GWT.getHostPageBaseURL()
@@ -69,7 +69,7 @@ public class Orr {
 		_getService();
 	}
 
-	
+
 	/**
 	 * Once initialized ({@link #init(boolean)}), call this method to launch the application.
 	 * @param params
@@ -100,7 +100,7 @@ public class Orr {
 		Orr.service.getAppInfo(callback);
 	}
 
-	
+
 	/**
 	 * (2)
 	 */
@@ -122,12 +122,12 @@ public class Orr {
 		Orr.service.getPortalBaseInfo(callback);
 	}
 
-	
+
 	/**
 	 * (3)
 	 */
 	private static void _getMetadataBaseInfo(final Map<String, String> params) {
-		
+
 		AsyncCallback<MetadataBaseInfo> callback = new AsyncCallback<MetadataBaseInfo>() {
 
 			public void onFailure(Throwable thr) {
@@ -138,7 +138,7 @@ public class Orr {
 			public void onSuccess(MetadataBaseInfo result) {
 				Orr.log("ORR: Got MetadataBaseInfo");
 				metadataBaseInfo  = result;
-				
+
 				UserInfo userInfo = CookieMan.getUserInfo();
 				if ( userInfo != null && userInfo.getPassword() != null ) {
 					_loginRememberedUser(userInfo, params);
@@ -148,13 +148,13 @@ public class Orr {
 				}
 			}
 		};
-		
+
 		boolean includeVersion = params != null && "y".equals(params.get("_xv"));
 		Orr.log("ORR: Getting MetadataBaseInfo ... includeVersion= " +includeVersion+ " ...");
 		Orr.service.getMetadataBaseInfo(includeVersion, callback);
 	}
-	
-	
+
+
 	/**
 	 * (4)
 	 */
@@ -183,22 +183,22 @@ public class Orr {
 				// now start the GUI:
 				_startGui(params, loginResult);
 			}
-			
+
 		};
 		Orr.log("ORR: authenticating remembered user in this computer: " +userInfo.getUsername()+ " ...");
 		Orr.service.authenticateUser(userInfo.getUsername(), userInfo.getPassword(), callback);
 	}
-	
-	
+
+
 	/**
 	 * (5)
 	 */
 	private static void _startGui(final Map<String, String> params, LoginResult loginResult) {
-		
+
 		Orr.log("ORR: starting GUI.  loginResult=" +loginResult);
-		
+
 		PortalControl.getInstance().setLoginResult(loginResult);
-		
+
 		// TODO: remove this parameter once PortalMainPanel does not need it
 		List<RegisteredOntologyInfo> ontologyInfos = new ArrayList<RegisteredOntologyInfo>();
 		portalMainPanel = new PortalMainPanel(params, ontologyInfos);
@@ -206,13 +206,13 @@ public class Orr {
 
 		// set the logingResult but do not trigger any updates:
 		portalMainPanel.setLoginResult(loginResult);
-		
-		
+
+
 		Widget fullPanel = _createFullPanel(portalMainPanel);
 		OrrUtil.removeLoadingMessage();
 		_addToMainPanel(fullPanel);
-		
-		
+
+
 	    String historyToken = History.getToken();
 	    Orr.log("history token = [" +historyToken+ "]");
 	    if ( historyToken != null && historyToken.trim().length() > 0 ) {
@@ -242,7 +242,7 @@ public class Orr {
      * @param run post-action
      */
 	public static void refreshListAllOntologies(final Runnable run) {
-		
+
 		AsyncCallback<GetAllOntologiesResult> callback = new AsyncCallback<GetAllOntologiesResult>() {
 
 			public void onFailure(Throwable thr) {
@@ -260,22 +260,22 @@ public class Orr {
 				}
 				else {
 					Orr.log("Error getting list of ontologies: " +result.getError());
-					Window.alert("Error getting list of ontologies. Please try again later." 
+					Window.alert("Error getting list of ontologies. Please try again later."
 							+ "\n\n" +result.getError()
 					);
 				}
 			}
-			
+
 		};
 		portalMainPanel.showRefreshingMessage();
 		Orr.log("ORR: Getting list of registered ontologies ... includePriorVersions= " +includePriorVersions+ " ...");
 		Orr.service.getAllOntologies(includePriorVersions, callback);
 	}
 
-	
-	
-	
-	
+
+
+
+
 	private static Widget _createFullPanel(PortalMainPanel portalMainPanel) {
 		VerticalPanel panel = new VerticalPanel();
 //		panel.setBorderWidth(1);
@@ -299,10 +299,14 @@ public class Orr {
 		versionPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
 		versionPanel.add(versionHtml);
 		panel.add(versionPanel);
-		
+
 		return panel;
 	}
 
+
+	public static boolean isLogEnabled() {
+		return _logger != null;
+	}
 
 	/**
 	 * Logs a message. This always calls GWT.log(msg, null) but also handles an ad hoc logging
@@ -323,15 +327,15 @@ public class Orr {
 	static Widget getLogWidget() {
 		return _logger == null ? null : _logger.getWidget();
 	}
-	
+
 	public static void refreshOptions(AttrDef attr, AsyncCallback<AttrDef> callback) {
 		assert attr.getOptionsVocabulary() != null ;
 		// refresh options
 		Orr.log("ORR: refreshing options of " +attr.getUri());
 		Orr.service.refreshOptions(attr, callback);
 	}
-    
-	
+
+
 	public static MetadataBaseInfo getMetadataBaseInfo() {
 		return metadataBaseInfo;
 	}
@@ -339,7 +343,7 @@ public class Orr {
 	public static PortalBaseInfo getPortalBaseInfo() {
 		return portalBaseInfo;
 	}
-	
+
 
 	private static void _getService() {
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "orrService";
@@ -357,31 +361,31 @@ public class Orr {
 		RootPanel.get("main").add(w);
 		// OLD RootPanel.get().add(w);
 	}
-	
-	
+
+
 	///////////////////////////////////////////////////////////////////////////////
 	// private variables
 	///////////////////////////////////////////////////////////////////////////////
-	
+
 	// buffer for logging in the client interface; used only if a certain parameter is given
 	private static OrrLogger _logger;
-	
+
 	private static AppInfo appInfo = new AppInfo("MMI Portal");
 	private static PortalBaseInfo portalBaseInfo;
 
-	private static String footer; 
-	
+	private static String footer;
+
 	private static MetadataBaseInfo metadataBaseInfo;
-	
+
 	private static PortalMainPanel portalMainPanel;
-	
-	
+
+
 	// for getAllOntologies
 	private static final boolean includePriorVersions = true;
 
 	private static List<RegisteredOntologyInfo> ontologyInfos;
 
-	
+
 	// non-instanceable
 	private Orr() {}
 }
