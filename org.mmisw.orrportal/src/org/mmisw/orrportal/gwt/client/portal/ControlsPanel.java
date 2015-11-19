@@ -4,9 +4,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.google.gwt.core.client.GWT;
 import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
 import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
-import org.mmisw.orrportal.gwt.client.Orr;
 import org.mmisw.orrportal.gwt.client.portal.PortalControl.ExternalViewersInfo;
 import org.mmisw.orrportal.gwt.client.portal.PortalMainPanel.InterfaceType;
 import org.mmisw.orrportal.gwt.client.util.MyDialog;
@@ -119,8 +119,7 @@ public class ControlsPanel extends HorizontalPanel {
 
 	private void _prepareSearchTermsButtons() {
 		controls.setBorderWidth(0);
-		String ontServiceUrl = Orr.getPortalBaseInfo().getOntServiceUrl();
-		String sparqlPage = ontServiceUrl+ "/sparql.html";
+		String sparqlPage = GWT.getModuleBaseURL() + "sparql/";
 		HTML sparqlButton = new HTML("<blockquote><a target=\"_blank\" href=\"" +sparqlPage+
 				"\">Advanced search with SPARQL</a></blockquote>");
 		controls.add(sparqlButton);

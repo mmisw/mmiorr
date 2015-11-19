@@ -182,6 +182,13 @@
 			</filterset>
 		</copy>
 
+		<copy file="WebContent/sparql.html"
+			tofile="${build.dir}/tmp.WebContent/sparql.html" overwrite="true">
+			<filterset>
+				<filter token="sparqlUi" value="${portal.service.url}/sparql/" />
+			</filterset>
+		</copy>
+
 		<copy todir="${build.dir}/tmp.web-inf-lib" flatten="true">
 			<fileset dir="WebContent/WEB-INF/lib">
 				<include name="**/*.jar" />

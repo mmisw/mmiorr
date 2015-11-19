@@ -1,5 +1,11 @@
 ## change log ##
 
+* 2015-11-19: ont\&orrportal 2.5.7
+  - Complete \#351 "Branding" and advance \#371 "improve UI for SPARQL queries"
+    - orrportal: New query UI under `/sparql/`. Branding elements included (logo, title). 
+      This new UI uses [YASGUI](http://doc.yasgui.org/).
+    - ont: the old `/sparql.html` now redirects to `${portal.service.url}/sparql/`
+
 * 2015-11-18: ont\&orrportal 2.5.6
   - Fix \#367 "unwanted '.html' on the end"
     ...ont.util.Util.getLink was not considering that the value should be ont-resolvable to append the .html, only that 

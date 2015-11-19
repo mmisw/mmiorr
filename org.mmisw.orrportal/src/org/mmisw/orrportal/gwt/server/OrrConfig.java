@@ -58,6 +58,9 @@ public class OrrConfig {
   public final String emailUsername;
   public final String emailPassword;
 
+  /** URL of SPARQL endpoint. */
+  public final String sparqlEndpoint;
+
   /** absolute file location of image shown in the upper left corner of the page. */
   public final String brandingLogo;
 
@@ -85,6 +88,7 @@ public class OrrConfig {
         "  voc2rdfDir         = " + voc2rdfDir + '\n' +
         "  previewDir         = " + previewDir + '\n' +
         "  emailUsername      = " + emailUsername + '\n' +
+        "  sparqlEndpoint     = " + sparqlEndpoint + '\n' +
         "  brandingLogo       = " + brandingLogo + '\n' +
         "  brandingAppTitle   = " + brandingAppTitle + '\n' +
         "  brandingTouUrl     = " + brandingTouUrl + '\n' +
@@ -108,6 +112,8 @@ public class OrrConfig {
     else {
       emailUsername = emailPassword = null;
     }
+
+    sparqlEndpoint   = cfg.hasPath("sparql.endpoint") ? cfg.getString("sparql.endpoint") : null;
 
     brandingLogo     = cfg.hasPath("branding.logo") ? cfg.getString("branding.logo") : null;
     brandingAppTitle = cfg.hasPath("branding.app.title") ? cfg.getString("branding.app.title") : null;

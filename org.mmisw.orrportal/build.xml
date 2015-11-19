@@ -162,6 +162,13 @@
 			</filterset>
 		</copy>
 
+		<copy file="src/org/mmisw/orrportal/gwt/public/sparql/index.jsp"
+			  tofile="${build.dir}/tmp.WebContent/sparql/index.jsp" overwrite="true">
+			<filterset>
+				<filter token="ga_snippet"  value="${ga_snippet}" />
+			</filterset>
+		</copy>
+
 		<war warfile="${build.dir}/orr.war" webxml="${build.dir}/tmp.WebContent/WEB-INF/web.xml">
 			<fileset dir="www/org.mmisw.orrportal.gwt.Orr" />
 			<fileset dir="${build.dir}/tmp.WebContent" />
