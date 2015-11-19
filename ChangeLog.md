@@ -3,7 +3,15 @@
 * 2015-11-18: ont\&orrportal 2.5.6
   - Fix \#367 "unwanted '.html' on the end"
     ...ont.util.Util.getLink was not considering that the value should be ont-resolvable to append the .html, only that 
-    it was an MmiUri (which a URI like http://vocab.nerc.ac.uk/collection/P07/current/M4KOX5A0/ satisfies. 
+    it was an MmiUri (which a URI like http://vocab.nerc.ac.uk/collection/P07/current/M4KOX5A0/ satisfies.
+    
+  - Fix \#366 "space in term URI causes malformed SPARQL query"
+    UriDispatcher now "fixes" each URI prior to instantiating the SPARQL query by replacing spaces with underscores.
+    Note: although it would probably be more correct to respond with an explicit error, the practical solution
+    is to just replace each space with an underscore and let the query be processed. This could be documented.
+    Relevant information:
+      - http://stackoverflow.com/a/9056636/830737 
+      - http://answers.semanticweb.com/questions/8244/how-do-you-handle-non-iri-compatible-urirefs
     
 * 2015-11-18: ont\&orrportal 2.5.6
   - Fix \#311 "strange case when mapping to http://mmisw.org/ont/cf" 
