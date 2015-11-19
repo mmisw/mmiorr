@@ -11,7 +11,7 @@ import org.apache.commons.logging.Log;
 
 /**
  * Some utilities for the main page, index.jsp.
- * 
+ *
  * @author Carlos Rueda
  */
 public class PageUtil {
@@ -31,6 +31,10 @@ public class PageUtil {
             title = brandingAppTitle.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
         }
         return "<title>" + title + "</title>";
+    }
+
+    public String getSparqlEndpoint() {
+        return OrrConfig.instance().sparqlEndpoint;
     }
 
     public String includeTop() {
