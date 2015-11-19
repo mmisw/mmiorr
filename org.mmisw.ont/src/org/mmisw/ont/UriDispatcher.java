@@ -123,8 +123,7 @@ public class UriDispatcher {
 		String query = PROPS_CONSTRUCT_QUERY_TEMPLATE.replace("{E}", fixUriForQuery(entityUri));
 
 		// note, pass null so the caller can continue the dispatch if the query gets empty result
-		String requestedEntity = null;
-		return sparqlDispatcher.execute(request, params, response, query, requestedEntity, outFormat);
+		return sparqlDispatcher.execute(request, params, response, query, null, outFormat);
 	}
 
 
@@ -138,9 +137,10 @@ public class UriDispatcher {
 	)
 	throws ServletException, IOException {
 
-		String query = PROPS_SELECT_QUERY_TEMPLATE.replace("{E}", fixUriForQuery(entityUri));
+		entityUri = fixUriForQuery(entityUri);
+		String query = PROPS_SELECT_QUERY_TEMPLATE.replace("{E}", entityUri);
 
-		// note, pass null so the caller can continue the dispatch if the query gets empty result
+		// note, pass the non-null (and fixed) entityUri so a 404 is generated if the query's result is empty:
 		String requestedEntity = entityUri;
 		return sparqlDispatcher.execute(request, params, response, query, requestedEntity, outFormat);
 	}
