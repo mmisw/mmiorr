@@ -2,6 +2,7 @@ package org.mmisw.ont;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -45,6 +46,30 @@ public class UriDispatcher {
 	private static final String PROPS_CONSTRUCT_QUERY_TEMPLATE =
 		"CONSTRUCT { <{E}> ?prop ?value }" +
 		"    WHERE { <{E}> ?prop ?value . }"
+	;
+
+	/**
+	 * Simple regex to verify that a URI is an IRI for purposes of its direct use in SPARQL query.
+	 * See http://www.w3.org/TR/rdf-sparql-query/#QSynIRI
+	 * Note: this pattern is only about the characters that are allowed, not about the structure of the IRI.
+	 * Also, for simplicity, it excludes any space as determined by java via the "\\s" regex; this
+	 * may not exactly match the specification but should be good enough for our purposes.
+	 */
+	static final Pattern goodIriCharactersPattern = Pattern.compile("[^\\s<>\"{}|\\\\^`]*");
+
+	/** Alternate SELECT Query template to obtain all properties associated with an entity
+	 * whose URI cannot be used directly per SPARQL restrictions */
+	private static final String PROPS_SELECT_QUERY_TEMPLATE_ALTERNATE =
+		"SELECT ?property ?value " +
+		"WHERE { ?s ?property ?value FILTER (str(?s) = \"{E}\") } " +
+		"ORDER BY ?property"
+	;
+
+	/** Alternate CONSTRUCT Query template to obtain all properties associated with an entity
+	 * whose URI cannot be used directly per SPARQL restrictions */
+	private static final String PROPS_CONSTRUCT_QUERY_TEMPLATE_ALTERNATE =
+		"CONSTRUCT { ?s ?property ?value } " +
+		"    WHERE { ?s ?property ?value FILTER (str(?s) = \"{E}\") } . }"
 	;
 
 
@@ -101,17 +126,6 @@ public class UriDispatcher {
 		}
 	}
 
-
-	/**
-	 * Replaces spaces with underscores.
-	 */
-	private String fixUriForQuery(String uri) {
-		if (log.isDebugEnabled() && uri.matches(".*\\s.*")) {
-			log.debug("fixing uri for SPARQL query because it contains spaces: '" + uri + "'");
-		}
-		return uri.replaceAll("\\s", "_");
-	}
-
 	/**
 	 * Dispatches with a CONSTRUCT query.
 	 * @return true iff dispatch completed here.
@@ -120,7 +134,10 @@ public class UriDispatcher {
 		String entityUri, String outFormat)
 	throws IOException, ServletException {
 
-		String query = PROPS_CONSTRUCT_QUERY_TEMPLATE.replace("{E}", fixUriForQuery(entityUri));
+		String template = goodIriCharactersPattern.matcher(entityUri).matches()
+				? PROPS_CONSTRUCT_QUERY_TEMPLATE
+				: PROPS_CONSTRUCT_QUERY_TEMPLATE_ALTERNATE;
+		String query = template.replace("{E}", entityUri);
 
 		// note, pass null so the caller can continue the dispatch if the query gets empty result
 		return sparqlDispatcher.execute(request, params, response, query, null, outFormat);
@@ -137,11 +154,12 @@ public class UriDispatcher {
 	)
 	throws ServletException, IOException {
 
-		entityUri = fixUriForQuery(entityUri);
-		String query = PROPS_SELECT_QUERY_TEMPLATE.replace("{E}", entityUri);
+		String template = goodIriCharactersPattern.matcher(entityUri).matches()
+				? PROPS_SELECT_QUERY_TEMPLATE
+				: PROPS_SELECT_QUERY_TEMPLATE_ALTERNATE;
+		String query = template.replace("{E}", entityUri);
 
-		// note, pass the non-null (and fixed) entityUri so a 404 is generated if the query's result is empty:
-		String requestedEntity = entityUri;
-		return sparqlDispatcher.execute(request, params, response, query, requestedEntity, outFormat);
+		// note, pass the non-null entityUri as requestedEntity so a 404 is generated if the query's result is empty:
+		return sparqlDispatcher.execute(request, params, response, query, entityUri, outFormat);
 	}
 }

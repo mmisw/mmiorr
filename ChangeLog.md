@@ -1,5 +1,10 @@
 ## change log ##
 
+* 2015-11-20: ont\&orrportal 2.5.7
+  - implement correct fix to \#366 "space in term URI causes malformed SPARQL query"
+    A goodIriCharactersPattern regex is now used to determine which template to use for the entity query.
+    In any case, the original requested URI is *not* altered at all!
+     
 * 2015-11-19: ont\&orrportal 2.5.7
   - Complete \#351 "Branding" and advance \#371 "improve UI for SPARQL queries"
     - orrportal: New query UI under `/sparql/`. Branding elements included (logo, title). 
