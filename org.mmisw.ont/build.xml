@@ -108,8 +108,12 @@
 		<testing sources="**/mmiuri/test/*Test.java" />
 	</target>
 
+	<target name="miscTests" depends="jar">
+		<testing sources="**/ont/*Test.java" />
+	</target>
+
 	<!-- all tests -->
-	<target name="tests" depends="mmiuriTests" description="runs the available tests"/>
+	<target name="tests" depends="mmiuriTests, miscTests" description="runs the available tests"/>
 
 
 	<target name="prepare2war" depends="tests">
