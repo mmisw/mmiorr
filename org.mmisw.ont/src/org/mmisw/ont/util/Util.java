@@ -1,9 +1,6 @@
 package org.mmisw.ont.util;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -24,6 +21,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import au.com.bytecode.opencsv.CSVReader;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -239,33 +237,22 @@ public class Util {
 
 		html.append("<table class=\"inline2\">\n");
 
+		CSVReader reader = new CSVReader(new StringReader(csv));
+		List<String[]> lines;
+		try {
+			lines = reader.readAll();
+		}
+		catch (IOException e) {
+			// Should not happen.
+			String error = "Unexpected error while parsing CSV: " +e.getMessage();
+			log.error(error, e);
+			html.append("<tr><th>").append(error).append("</th></tr></table>");
+			return html.toString();
+		}
+
 		String thtd = "th";
-		String[] lines = csv.split("\n|\r\n");
-		for (String line : lines) {
-			if (line.startsWith("\"") && line.endsWith("\"")) {
-				line = line.substring(1, line.length() -1);
-			}
 
-            /* the following conditional split is because AllegroGraph mixes non-quoted
-             * with quoted fields for the Content-Type: application/processed-csv, for
-             * example:
-             *   http http://mmisw.org:10035/repositories/mmiorr\?infer\=false\&query\=SELECT+DISTINCT+%3Fproperty+%3Fvalue+WHERE+%7B+%3Chttp%3A%2F%2Fmmisw.org%2Font%2Fmmitest%2Fparameter%2FParameter%3E+%3Fproperty+%3Fvalue+.+%7D+ORDER+BY+%3Fproperty "Accept: application/processed-csv"
-             *   HTTP/1.1 200 OK
-             *   Cache-control: max-age=0, must-revalidate
-             *   Connection: keep-alive
-             *   Content-Encoding: gzip
-             *   Content-Type: application/processed-csv; charset=UTF-8
-             *   Date: Wed, 18 Jun 2014 03:08:54 GMT
-             *   Etag: 2c3000000000000000
-             *   Server: AllegroServe/1.3.19
-             *   Transfer-Encoding: chunked
-             *
-             *   property,value
-             *   "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>","<http://www.w3.org/2002/07/owl#Class>"
-             *   "<http://www.w3.org/2000/01/rdf-schema#label>","parameter"
-             */
-			String[] cols = line.indexOf('"') >= 0 ? line.split("\",\"") : line.split(",");
-
+		for (String[] cols : lines) {
 			html.append("<tr>");
 
 			for (String col : cols) {
