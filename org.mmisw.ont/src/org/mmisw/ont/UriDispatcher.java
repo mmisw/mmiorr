@@ -69,7 +69,7 @@ public class UriDispatcher {
 	 * whose URI cannot be used directly per SPARQL restrictions */
 	private static final String PROPS_CONSTRUCT_QUERY_TEMPLATE_ALTERNATE =
 		"CONSTRUCT { ?s ?property ?value } " +
-		"    WHERE { ?s ?property ?value FILTER (str(?s) = \"{E}\") } . }"
+		"    WHERE { ?s ?property ?value FILTER (str(?s) = \"{E}\") }"
 	;
 
 
