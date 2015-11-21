@@ -6,7 +6,7 @@ import java.net.URLEncoder;
 import org.mmisw.ont.client.util.HttpUtil;
 import org.mmisw.ont.client.util.HttpUtil.HttpResponse;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.opencsv.CSVReader;
 
 public class QueryTest extends Common {
 
@@ -25,7 +25,7 @@ public class QueryTest extends Common {
 
 		/*
 		 * The response upon a non acceptable request says:
-		 * 
+		 *
 		 * No suitable response format available. (Supported formats:
 		 * application/json, application/x-lisp-structured-expression,
 		 * text/integer, application/sparql-results+xml,
@@ -63,7 +63,7 @@ public class QueryTest extends Common {
 			_showJson(httpResponse.body);
 		}
 	}
-	
+
 	private static void _selectCsv() throws Exception {
 		final String query = "SELECT ?prop ?value WHERE { <http://mmisw.org/ont/ooici/ooiionroles/IntegratedObservatoryOperator> ?prop ?value . }";
 
@@ -84,7 +84,7 @@ public class QueryTest extends Common {
 
 		System.out.println("-----Original response body------");
 		System.out.println(httpResponse.body);
-		
+
 		System.out.println("-------Parsing with CSVReader------");
 		CSVReader reader = new CSVReader(new StringReader(httpResponse.body));
 	    String[] line;
@@ -93,6 +93,6 @@ public class QueryTest extends Common {
 	    		System.out.println("\t" + col);
 	    	}
 	    	System.out.println();
-	    }		
+	    }
 	}
 }

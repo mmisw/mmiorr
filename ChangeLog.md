@@ -3,6 +3,7 @@
 * 2015-11-20: ont\&orrportal 2.5.7
   - Fix \#350 "search for 'dataset' produces some literals as subjects"
     Simply do a correct parsing of the CSV!
+  - BTW, update opencsv to 3.6 from 2.3 (see note in BaseParser)
      
   - implement correct fix to \#366 "space in term URI causes malformed SPARQL query"
     A goodIriCharactersPattern regex is now used to determine which template to use for the entity query.
