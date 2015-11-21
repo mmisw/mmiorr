@@ -68,7 +68,7 @@ import org.mmisw.orrclient.gwt.client.rpc.vine.RelationInfo;
 import org.mmisw.orrclient.gwt.client.vocabulary.AttrDef;
 import org.mmisw.orrclient.gwt.client.vocabulary.AttrGroup;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.opencsv.CSVReader;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.Ontology;
