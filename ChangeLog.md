@@ -1,5 +1,15 @@
 ## change log ##
 
+* 2015-11-24: orrportal 2.5.9
+  - Fix \#315 "leaving page with edited mappings causes them to be lost"
+    PortalMainPanel.onHistoryChanged: add logic to handles the confirmation 
+    about abandoning ongoing edits or upload operation upon change in browser history.
+    The strategy is to return to the previous history token when the user decides
+    to stay in the ongoing edit or upload operation. A flag (returningToOngoingEdit) 
+    helps with not doing any of the usual interface preparations upon navigating
+    back to the associated previous token.
+  - Also consider upload operations in onWindowClosing
+    
 * 2015-11-23: orrportal 2.5.8
   - Fix \#349 "support OWL/XML format in upload operation (was: errors uploading ice-of-land-origin ontology)"
     - Accept "OWL/XML" as an additional format in the Upload operation

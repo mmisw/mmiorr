@@ -57,6 +57,17 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	};
 
 
+	private static final String ABANDON_CONFIRMATION =
+			"If any, all edits will be lost.\n" +
+			"Proceed?";
+
+	/** #315: upon change in the browser history, these two variables help with
+	 * prompting user for confirmation prior to abandoning edits or ongoing
+	 * upload operation, ang returning to the associated history token.
+	 */
+	private String currentHistoryToken;      // token to return to if canceling abandon
+	private boolean returningToOngoingEdit;  // to handle the 2nd associated history change
+
 	private final PortalControl pctrl;
 
 	private final HeaderPanel headerPanel = new HeaderPanel();
@@ -83,6 +94,8 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 			public String onWindowClosing() {
 				if ( interfaceType == InterfaceType.ONTOLOGY_EDIT_NEW_VERSION
 				||   interfaceType == InterfaceType.ONTOLOGY_EDIT_NEW
+				||   interfaceType == InterfaceType.UPLOAD_NEW_VERSION
+				||   interfaceType == InterfaceType.UPLOAD_ONTOLOGY
 				) {
 					return "If any, all edits will be lost";
 				}
@@ -102,6 +115,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		pctrl = PortalControl.getInstance();
 		pctrl.setPortalMainPanel(this);
 
+		currentHistoryToken = History.getToken();
 		History.addHistoryListener(this);
 
 		LoginResult loginResult = pctrl.getLoginResult();
@@ -253,6 +267,12 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		Orr.log("onHistoryChanged: historyToken: [" +historyToken+ "]");
 		historyToken = historyToken.trim();
 
+		if (returnToOngoingEdit(historyToken)) {
+			return;
+		}
+
+		currentHistoryToken = historyToken;
+
 		// TODO trackPageview or trackEvent?
 		GaUtil.trackPageview(historyToken);
 
@@ -345,7 +365,53 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 		}
 	}
 
+	/**
+	 * Handles the confirmation about abandoning ongoing edits or
+	 * upload operation upon change in browser history.
+	 *
+	 * @param historyToken
+	 * 					the history token the browser has just arrived to.
+   *
+	 * @return true to indicate that the user wants to continue where she was.
+	 *         false to indicate to just proceed processing the new history token.
+	 */
+	private boolean returnToOngoingEdit(String historyToken) {
+		Orr.log("#315 returnToOngoingEdit: " +
+				"historyToken: [" +historyToken+ "]  " +
+				"previous=[" +currentHistoryToken+ "]  " +
+				"returningToOngoingEdit=" + returningToOngoingEdit
+		);
 
+		if (returningToOngoingEdit) {
+			// this is the 2nd call associated with the actual token we should return
+			// to when the user decided to continue on the ongoing change action.
+			returningToOngoingEdit = false;
+			return true;
+		}
+
+		if (historyToken.equals(currentHistoryToken)) {
+			// should not happen because there's no history change, but just in case.
+			return false;
+		}
+
+		Orr.log("returnToOngoingEdit: interfaceType=" +interfaceType);
+		if ( interfaceType == InterfaceType.ONTOLOGY_EDIT_NEW_VERSION
+		||   interfaceType == InterfaceType.ONTOLOGY_EDIT_NEW
+		||   interfaceType == InterfaceType.UPLOAD_NEW_VERSION
+		||   interfaceType == InterfaceType.UPLOAD_ONTOLOGY
+		) {
+			if (Window.confirm(ABANDON_CONFIRMATION)) {
+				return false;
+			}
+
+			// set this flag to also return true in next call
+			returningToOngoingEdit = true;
+			History.newItem(currentHistoryToken);
+			return true;
+		}
+
+		return false;
+	}
 
 	private void dispatchUserAccount(boolean accountJustCreated) {
 		OntologyPanel ontologyPanel = pctrl.getOntologyPanel();
@@ -740,9 +806,6 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	}
 
 
-
-
-
 	public  void reviewAndRegister(OntologyPanel ontologyPanel) {
 		if ( ontologyPanel != null ) {
 			ontologyPanel.reviewAndRegister();
@@ -751,12 +814,18 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 
 
 	public void cancelEdit(OntologyPanel ontologyPanel) {
+		Orr.log("#315 cancelEdit: returningToOngoingEdit=" +returningToOngoingEdit);
+
+		// this is a "cancel" request *not* via the browser history, so
+		// unset this flag to avoid double confirmation
+		returningToOngoingEdit = false;
+
 		switch ( interfaceType ) {
 			case ONTOLOGY_EDIT_NEW_VERSION:
 			case ONTOLOGY_EDIT_NEW:
 			case UPLOAD_ONTOLOGY:
 			case UPLOAD_NEW_VERSION:
-				if ( ! Window.confirm("Any edits will be lost") ) {
+				if ( ! Window.confirm(ABANDON_CONFIRMATION) ) {
 					return;
 				}
 				break;
@@ -775,9 +844,9 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 
 			case ONTOLOGY_EDIT_NEW:
 			case UPLOAD_ONTOLOGY:
+				interfaceType = InterfaceType.BROWSE;
 				History.newItem(PortalConsts.T_BROWSE);
 				// TODO remove the following
-//				interfaceType = InterfaceType.BROWSE;
 //			    controlsPanel.showMenuBar(interfaceType);
 //			    headerPanel.updateLinks(interfaceType);
 //			    bodyPanel.clear();
@@ -802,7 +871,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 
 			default:
 				// shouldn't happen. just return;
-				return;
+				Orr.log("#315 cancelEdit: shouldn't happen interfaceType=" +interfaceType);
 		}
 	}
 
