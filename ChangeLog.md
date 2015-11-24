@@ -1,5 +1,19 @@
 ## change log ##
 
+* 2015-11-23: orrportal 2.5.8
+  - Fix \#349 "support OWL/XML format in upload operation (was: errors uploading ice-of-land-origin ontology)"
+    - Accept "OWL/XML" as an additional format in the Upload operation
+    - Via a new OwlApiHelper class use OWL API library to load the uploaded file and internally convert it 
+      to RDF/XML to then simply use Jena to load the model.
+    Note: Using OWL API v3.4.5 (2013-07-26); I tried a much more recent version but it brings 
+    *a lot* of dependencies and, worse, make the whole ORR application fail to load or 
+    operate normally possibly because of conflicts with other already used libraries.
+    Didn't investigate much but once I noted that http://mowl-power.cs.man.ac.uk:8080/converter/
+    worked fine to convert the ice-of-land-origin ontology and that it said it used OWL API 
+    Version 3.4.5-SNAPSHOT, I decided just to try the 3.4.5 version available from the sourceforge 
+    download page. Only adding owlapi-distribution-3.4.5.jar to the classpath was enough.
+    
+    
 * 2015-11-20: ont\&orrportal 2.5.7
   - Fix \#350 "search for 'dataset' produces some literals as subjects"
     Simply do a correct parsing of the CSV!

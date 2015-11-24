@@ -10,6 +10,7 @@ import org.mmisw.ont.JenaUtil2;
 import org.mmisw.ont.vocabulary.Omv;
 import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.orrclient.core.MdHelper;
+import org.mmisw.orrclient.core.owl.OwlApiHelper;
 import org.mmisw.orrclient.core.voc2skos.Voc2Skos;
 import org.mmisw.orrclient.gwt.client.rpc.MetadataBaseInfo;
 import org.mmisw.orrclient.gwt.client.rpc.TempOntologyInfo;
@@ -21,7 +22,6 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.vocabulary.OWL;
 
 /**
  * Helper to read a temporary (uploaded into working space) ontology.
@@ -55,6 +55,9 @@ public class TempOntologyHelper {
 			else if ( "voc2skos".equals(fileType) ) {
 				model = Voc2Skos.loadOntModel(file);
 				// Note that we save this model in RDF/XML-ABBREV with a special method below.
+			}
+			else if ( "OWL/XML".equals(fileType) ) {
+				model = OwlApiHelper.loadOntModel(file);
 			}
 			else {
 				String error = "Unexpected FileType. Please report this bug. " + "(" +fileType+ ")";
