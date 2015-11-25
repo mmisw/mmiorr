@@ -1,6 +1,7 @@
 ## change log ##
 
 * 2015-11-24: orrportal 2.5.9
+  - add notify.recipientsFilename config parameter for filename with list of email addresses to be notified of registrations.
   - configuration additions related with information used in emails
   
   - Fix \#315 "leaving page with edited mappings causes them to be lost"

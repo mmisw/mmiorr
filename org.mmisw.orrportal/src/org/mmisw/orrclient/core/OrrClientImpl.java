@@ -2168,21 +2168,24 @@ public class OrrClientImpl implements IOrrClient {
             // TODO update to reuse auxiliary methods introduced later
 
             final Set<String> recipients = new LinkedHashSet<String>();
-            try {
-                File f = new File(notifyEmailsFilename);
-                FileInputStream is = new FileInputStream(f);
-                for (Object line: IOUtils.readLines(is)) {
-                    String email = String.valueOf(line).trim();
-                    if (email.length() > 0 && !email.startsWith("#")) {
-                        recipients.add(email);
-                    }
-                }
-                IOUtils.closeQuietly(is);
-            }
-            catch (Exception e) {
-                log.warn("could not read in: " + notifyEmailsFilename, e);
-            }
 
+						final String notifyEmailsFilename = OrrConfig.instance().notifyEmailsFilename;
+						if (notifyEmailsFilename != null) {
+							try {
+								File f = new File(notifyEmailsFilename);
+								FileInputStream is = new FileInputStream(f);
+								for (Object line : IOUtils.readLines(is)) {
+									String email = String.valueOf(line).trim();
+									if (email.length() > 0 && !email.startsWith("#")) {
+										recipients.add(email);
+									}
+								}
+								IOUtils.closeQuietly(is);
+							}
+							catch (Exception e) {
+								log.warn("could not read in: " + notifyEmailsFilename, e);
+							}
+						}
             if (recipients.size() > 0) {
                 final Map<String, String> data = new LinkedHashMap<String, String>();
                 try {
@@ -2945,29 +2948,30 @@ public class OrrClientImpl implements IOrrClient {
 
 	}
 
-    private final static String notifyEmailsFilename = "/etc/mmiorr/notifyemails";
-
 	private Set<String> _getRecipients() {
-        final Set<String> recipients = new LinkedHashSet<String>();
-        try {
-            File f = new File(notifyEmailsFilename);
-            FileInputStream is = new FileInputStream(f);
-            for (Object line: IOUtils.readLines(is)) {
-                String email = String.valueOf(line).trim();
-                if (email.length() > 0 && !email.startsWith("#")) {
-                    recipients.add(email);
-                }
-            }
-            IOUtils.closeQuietly(is);
-        }
-        catch (Exception e) {
-            log.warn("could not read in: " + notifyEmailsFilename, e);
-        }
-        if (recipients.size() == 0) {
-            log.debug("no recipients to send email: " + notifyEmailsFilename);
-        }
-        return recipients;
-    }
+		final Set<String> recipients = new LinkedHashSet<>();
+		String notifyEmailsFilename = OrrConfig.instance().notifyEmailsFilename;
+		if (notifyEmailsFilename != null) {
+			try {
+				File f = new File(notifyEmailsFilename);
+				FileInputStream is = new FileInputStream(f);
+				for (Object line : IOUtils.readLines(is)) {
+					String email = String.valueOf(line).trim();
+					if (email.length() > 0 && !email.startsWith("#")) {
+						recipients.add(email);
+					}
+				}
+				IOUtils.closeQuietly(is);
+			}
+			catch (Exception e) {
+				log.warn("could not read in: " + notifyEmailsFilename, e);
+			}
+		}
+		if (recipients.size() == 0) {
+				log.debug("no recipients to send email: " + notifyEmailsFilename);
+		}
+			return recipients;
+	}
 
 	private void _notifyUserCreated(final LoginResult loginResult) {
         Thread t = new Thread() {
@@ -3025,7 +3029,8 @@ public class OrrClientImpl implements IOrrClient {
             text += "\n    " + key + ": " + data.get(key);
         }
         text += "\n\n";
-        text += "(you have received this email because your address is included in " +notifyEmailsFilename + ")";
+        text += "(you have received this email because your address is included in "
+						+OrrConfig.instance().notifyEmailsFilename + ")";
 
         String to = "", comma = "";
         for (String recipient : recipients) {
