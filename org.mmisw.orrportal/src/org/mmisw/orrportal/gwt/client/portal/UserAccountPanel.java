@@ -31,17 +31,17 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Panel for showing/creating/updating a user account.
- * 
+ *
  * @author Carlos Rueda
  */
 public class UserAccountPanel extends VerticalPanel {
 	private static final int MIN_PW_LENGHT = 6;
 
 	private final HorizontalPanel widget = new HorizontalPanel();
-	
+
 	private final CellPanel container = new VerticalPanel();
-	
-	
+
+
 	private static class Entry {
 		String label;
 		TextBox tb;
@@ -50,24 +50,24 @@ public class UserAccountPanel extends VerticalPanel {
 			this.label = label;
 			this.tb = tb;
 		}
-		
+
 	}
 	private final Map<String,Entry> tbs = new LinkedHashMap<String, Entry>();
-	
-	
-	
+
+
+
 	private final PushButton createUpdateButton = new PushButton("Create/Update", new ClickListener() {
 		public void onClick(Widget sender) {
 			createUpdate();
 		}
 	});
 
-	
+
 	private final HTML statusLabel = new HTML("");
 
 	private boolean accountJustCreated;
-	
-	
+
+
 	private void _addTb(String name, String label) {
 		TextBox tb = new TextBox();
 		tb.setWidth("200px");
@@ -78,9 +78,9 @@ public class UserAccountPanel extends VerticalPanel {
 		tb.setWidth("200px");
 		tbs.put(name, new Entry(label, tb));
 	}
-	
+
 	public UserAccountPanel() {
-		
+
 		_addTb("username", "Username");
 		_addTb("firstname", "First name");
 		_addTb("lastname", "Last name");
@@ -88,20 +88,20 @@ public class UserAccountPanel extends VerticalPanel {
 		_addTb("phone", "Phone");
 		_addPwTb("password", "Password");
 		_addPwTb("password2", "Verify password");
-		
-		
+
+
 		widget.setWidth("600px");
 		widget.setHorizontalAlignment(ALIGN_CENTER);
-		
+
 		container.setSpacing(4);
 		DecoratorPanel decPanel = new DecoratorPanel();
 	    decPanel.setWidget(container);
 	    widget.add(decPanel);
 
 	    container.add(createForm());
-	    
+
 	    statusLabel.setHeight("20px");
-	    
+
 	    KeyboardListener kl = new KeyboardListenerAdapter() {
 	    	@Override
 			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
@@ -112,16 +112,16 @@ public class UserAccountPanel extends VerticalPanel {
 	    		}
 			}
 	    };
-	    
+
 	    for ( Entry entry : tbs.values() ) {
 	    	entry.tb.addKeyboardListener(kl);
 	    }
 	}
-	
+
 	public Widget getWidget() {
 		return widget;
 	}
-	
+
 	public void dispatch(boolean accountJustCreated) {
 		this.accountJustCreated = accountJustCreated;
 		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
@@ -140,7 +140,7 @@ public class UserAccountPanel extends VerticalPanel {
 			dispatchCreate();
 		}
 		final TextBox tb2Focus = tbs.get(nameToFocus).tb;
-		
+
 		// use a timer to make the userPanel focused (there must be a better way)
 		new Timer() {
 			public void run() {
@@ -150,9 +150,9 @@ public class UserAccountPanel extends VerticalPanel {
 		}.schedule(700);
 
 	}
-	
+
 	private void dispatchUpdate(String username) {
-		
+
 		AsyncCallback<UserInfoResult> callback = new AsyncCallback<UserInfoResult>() {
 
 			public void onFailure(Throwable ex) {
@@ -187,14 +187,14 @@ public class UserAccountPanel extends VerticalPanel {
 				}
 				_enable(true);
 			}
-			
+
 		};
-		
+
 	    _enable(false);
-	    Orr.service.getUserInfo(username, callback );	
+	    Orr.service.getUserInfo(username, callback );
 	}
-	
-	
+
+
 	private void dispatchCreate() {
 		_enable(true);
 	}
@@ -202,74 +202,66 @@ public class UserAccountPanel extends VerticalPanel {
 	private Widget createForm() {
 		FlexTable panel = new FlexTable();
 		panel.setCellSpacing(5);
-		
-		int row = 0;
-		
-		panel.getFlexCellFormatter().setColSpan(row, 0, 3);
-		panel.setWidget(row, 0, new HTML("<strong>Your account in the MMI Ontology Registry and Repository</strong>"));
-		panel.getFlexCellFormatter().setAlignment(row, 0, 
-				HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE
-		);
-		row++;
 
-		
+		int row = 0;
+
 		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
 		String userLoggedIn = (loginResult != null && loginResult.getError() == null) ?
 				loginResult.getUserName() : null;
-		
+
 		HTML tipForPassword = null;
-		
+
 		for ( String name : tbs.keySet() ) {
-			Entry entry = tbs.get(name); 
+			Entry entry = tbs.get(name);
 			TextBox tb = entry.tb;
-			
+
 			if ( (tb instanceof PasswordTextBox) && userLoggedIn != null && tipForPassword == null ) {
 				tipForPassword = new HTML("<font color=\"gray\"><i>Fill in the following if you want to change your password:</i></font>");
 				panel.getFlexCellFormatter().setColSpan(row, 0, 3);
 				panel.setWidget(row, 0, tipForPassword);
-				panel.getFlexCellFormatter().setAlignment(row, 0, 
+				panel.getFlexCellFormatter().setAlignment(row, 0,
 						HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 				);
 				row++;
 			}
-			
+
 			panel.setWidget(row, 0, new Label(entry.label+ ":"));
 
 			panel.setWidget(row, 1, tb);
-			panel.getFlexCellFormatter().setAlignment(row, 0, 
+			panel.getFlexCellFormatter().setAlignment(row, 0,
 					HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
 			);
-			panel.getFlexCellFormatter().setAlignment(row, 1, 
+			panel.getFlexCellFormatter().setAlignment(row, 1,
 					HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 			);
-			
+
 			row++;
-			
+
 		}
 
 		panel.getFlexCellFormatter().setColSpan(row, 0, 3);
 		panel.setWidget(row, 0, statusLabel);
-		panel.getFlexCellFormatter().setAlignment(row, 0, 
+		panel.getFlexCellFormatter().setAlignment(row, 0,
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		row++;
-		
+
 		createUpdateButton.setText(userLoggedIn == null ? "Create" : "Update");
 		HorizontalPanel loginCell = new HorizontalPanel();
 		loginCell.add(createUpdateButton);
 		panel.getFlexCellFormatter().setColSpan(row, 0, 3);
 		panel.setWidget(row, 0, loginCell);
-		panel.getFlexCellFormatter().setAlignment(row, 0, 
+		panel.getFlexCellFormatter().setAlignment(row, 0,
 				HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		row++;
-		
-		
+
+
 		tbs.get("username").tb.setFocus(true);
 		return panel;
 	}
-	
-	
+
+
 	private void statusMessage(String msg) {
 		statusLabel.setHTML("<font color=\"green\">" +msg+ "</font>");
 	}
@@ -278,12 +270,12 @@ public class UserAccountPanel extends VerticalPanel {
 		tbs.get("username").tb.setFocus(true);
 		tbs.get("username").tb.selectAll();
 	}
-	
+
 	private void statusError(String error) {
 		statusLabel.setHTML("<font color=\"red\">" +error+ "</font>");
 	}
 
-	
+
 	private Map<String,String> checkFields(String userName) {
 		Map<String,String> values = new HashMap<String,String>();
 		for (  String name : tbs.keySet() ) {
@@ -291,11 +283,11 @@ public class UserAccountPanel extends VerticalPanel {
 			TextBox tb = entry.tb;
 			String value = tb.getText().trim();
 			values.put(name, value);
-			
+
 			if ( tb instanceof PasswordTextBox ) {
 				continue;  // passwords checked below
 			}
-			
+
 			if ( value.length() == 0 ) {
 				// Issue 226: Phone field is required
 				// allow the following to be empty (optional):
@@ -317,9 +309,9 @@ public class UserAccountPanel extends VerticalPanel {
 				}
 			}
 		}
-		
+
 		boolean checkPassword = true;
-		
+
 		if ( userName != null ) {
 			// Update. do not check passwords if both fields are empty:
 			if ( values.get("password").length() == 0 && values.get("password2").length() == 0 ) {
@@ -345,30 +337,30 @@ public class UserAccountPanel extends VerticalPanel {
 				return null;
 			}
 		}
-		
+
 		return values;
 	}
-	
-	
+
+
 	private void justCheck() {
-		
+
 		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
 		String userName = null;
-			
+
 		if ( loginResult != null && loginResult.getError() == null ) {
 			userName = loginResult.getUserName();
 		}
 
 		checkFields(userName);
 	}
-	
+
 	private void createUpdate() {
-		
+
 		LoginResult loginResult = PortalControl.getInstance().getLoginResult();
 		String userName = null;
 		String userId = null;
 		String sessionId = null;
-			
+
 		if ( loginResult != null && loginResult.getError() == null ) {
 			userName = loginResult.getUserName();
 			userId = loginResult.getUserId();
@@ -376,15 +368,15 @@ public class UserAccountPanel extends VerticalPanel {
 		}
 
 		Map<String, String> values = checkFields(userName);
-		
+
 		if ( values != null ) {
 			doCreateUpdate(userId, sessionId, values);
 		}
 	}
-	
-	
+
+
 	private void doCreateUpdate(final String userId, String sessionId, Map<String,String> values) {
-		
+
 		AsyncCallback<CreateUpdateUserAccountResult> callback = new AsyncCallback<CreateUpdateUserAccountResult>() {
 
 			public void onFailure(Throwable ex) {
@@ -410,7 +402,7 @@ public class UserAccountPanel extends VerticalPanel {
 				_enable(true);
 			}
 		};
-		
+
 		if (userId != null ) {
 			values.put("id", userId);
 			values.put("sessionid", sessionId);
@@ -430,12 +422,12 @@ public class UserAccountPanel extends VerticalPanel {
 		Orr.service.createUpdateUserAccount(values, callback);
 	}
 
-	
+
 	private void _enable(boolean enable) {
 		createUpdateButton.setEnabled(enable);
 	}
-	
-	
+
+
 	private void _cancelKey() {
 	    for ( Entry entry : tbs.values() ) {
 	    	entry.tb.cancelKey();

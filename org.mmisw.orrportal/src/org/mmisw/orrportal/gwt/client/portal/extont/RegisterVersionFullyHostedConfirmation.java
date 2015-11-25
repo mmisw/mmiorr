@@ -9,15 +9,15 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
  * The end page when the user indicates fully hosting type
- * 
+ *
  * @author Carlos Rueda
  */
 class RegisterVersionFullyHostedConfirmation extends BasePage {
 	private static final String ONT_URI = "XXXX";
-	
-	private static final String INFO_TEMPLATE = 
+
+	private static final String INFO_TEMPLATE =
 		"<br/>" +
-		"MMI ORR is ready to register the new version of your ontology in <b>fully hosted</b> mode." +
+		"Ready to register the new version of your ontology in <b>fully hosted</b> mode." +
 		"<br/>" +
 		"<br/>" +
 		"Ontology URI: <b>" +ONT_URI+ "</b> " +
@@ -26,35 +26,35 @@ class RegisterVersionFullyHostedConfirmation extends BasePage {
 		"Click Back to change any information." +
 		"<br/>" +
 		"<br/>" +
-		"Click Finish to complete the registration." 
+		"Click Finish to complete the registration."
 		;
 
 
 	private VerticalPanel contents = new VerticalPanel();
-	
-	
+
+
 	RegisterVersionFullyHostedConfirmation(RegisterVersionWizard wizard) {
 		super(wizard, true, false, true);
 		contents.setSize("650px", "200px");
 		addContents(contents);
-		
+
 		finishButton.setEnabled(true);
 		recreate();
 	}
-	
-	
+
+
 	private void recreate() {
 		contents.clear();
-		
+
 		FlexTable panel = new FlexTable();
 		panel.setWidth("100%");
 		int row = 0;
-		
+
 		String ontologyUri = getWizard().getOntologyUri();
 		assert ontologyUri != null;
-		
+
 		panel.setWidget(row, 0, new HTML(INFO_TEMPLATE.replaceFirst(ONT_URI, ontologyUri)));
-		panel.getFlexCellFormatter().setAlignment(row, 0, 
+		panel.getFlexCellFormatter().setAlignment(row, 0,
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		row++;

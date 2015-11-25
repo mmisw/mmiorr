@@ -184,6 +184,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 				}
 
 				public void show() {
+					loginPanel.clearPassword();
 					// use a timer to make the userPanel focused (there must be a better way)
 					new Timer() {
 						public void run() {
