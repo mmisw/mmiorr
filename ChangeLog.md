@@ -5,6 +5,8 @@
     Additional handling including a message like "please try again later ..if the problem persists
     contact the administrator." But note that the likely problem is actually from inappropriate configuration.
     
+  - Re \#351, several edits in titles and hints to not refer in particular to the "MMI ORR"; instead rely on the branding
+    provided by the main logo and title of the page.
   - add notify.recipientsFilename config parameter for filename with list of email addresses to be notified of registrations.
   - configuration additions related with information used in emails
   

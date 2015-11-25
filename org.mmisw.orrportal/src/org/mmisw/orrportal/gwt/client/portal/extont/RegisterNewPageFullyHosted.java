@@ -15,18 +15,18 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * The end page when the user indicates fully hosting type
- * 
+ *
  * @author Carlos Rueda
  */
 class RegisterNewPageFullyHosted extends BasePage {
 	private static final String ONT_SERVICE_URL_FRAG = "XXXX";
-	
-	private static final String INFO_TEMPLATE = 
+
+	private static final String INFO_TEMPLATE =
 		"<br/>" +
-		"You have chosen to have this ontology <b>fully hosted</b> at the MMI ORR." +
+		"You have chosen to have this ontology <b>fully hosted</b> in this repository." +
 		"<br/>" +
 		"<br/>" +
-		"MMI ORR will assign an <b>" +ONT_SERVICE_URL_FRAG+ "</b>-based namespace to your ontology. " +
+		"An <b>" +ONT_SERVICE_URL_FRAG+ "</b>-based namespace will be assigned to your ontology. " +
 		"<br/>" +
 		"<br/>" +
 		"Please, provide the following information to compose the final URI for your ontology. " +
@@ -37,35 +37,35 @@ class RegisterNewPageFullyHosted extends BasePage {
 
 	private VerticalPanel contents = new VerticalPanel();
 	AuthorityShortNamePanel authorityShortNamePanel = new AuthorityShortNamePanel(this);
-	
-	
+
+
 	RegisterNewPageFullyHosted(RegisterNewWizard wizard) {
 		super(wizard, true, true, false);
 		contents.setSize("650px", "200px");
 		addContents(contents);
-		
+
 		nextButton.setEnabled(false);
 		recreate();
 	}
-	
-	
+
+
 	private void recreate() {
 		contents.clear();
-		
+
 		FlexTable panel = new FlexTable();
 		panel.setWidth("100%");
 		int row = 0;
-		
+
 		String ontServiceUrl = Orr.getPortalBaseInfo().getOntServiceUrl();
-		
+
 		panel.setWidget(row, 0, new HTML(INFO_TEMPLATE.replaceFirst(ONT_SERVICE_URL_FRAG, ontServiceUrl)));
-		panel.getFlexCellFormatter().setAlignment(row, 0, 
+		panel.getFlexCellFormatter().setAlignment(row, 0,
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		row++;
 
 		panel.setWidget(row, 0, authorityShortNamePanel);
-		panel.getFlexCellFormatter().setAlignment(row, 0, 
+		panel.getFlexCellFormatter().setAlignment(row, 0,
 				HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE
 		);
 		row++;
@@ -89,7 +89,7 @@ class RegisterNewPageFullyHosted extends BasePage {
 		if ( ! _checkComponent("short name", shortName) ) {
 			return;
 		}
-		
+
 		if ( fullCheck ) {
 			// Check resulting URI against the registry
 			String ontServiceUrl = Orr.getPortalBaseInfo().getOntServiceUrl() + "/";
@@ -97,7 +97,7 @@ class RegisterNewPageFullyHosted extends BasePage {
 			resolveUri(uri);
 		}
 	}
-	
+
 	private boolean  _checkComponent(String compName, String value) {
 		if ( value.length() == 0 ) {
 			statusHtml.setHTML("<font color=\"red\">Please specify the " +compName+ " component</font>");
@@ -110,7 +110,7 @@ class RegisterNewPageFullyHosted extends BasePage {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Requests an ontology or term to the back-end to verify that it is not registered
 	 * (either as an ontology or a term).
@@ -129,7 +129,7 @@ class RegisterNewPageFullyHosted extends BasePage {
 
 			public void onSuccess(ResolveUriResult resolveUriResult) {
 				Orr.log("RegisterExternalOntologyPageFullyHosted <" +uri+ ">: call completed.");
-				
+
 				String error = null;
 				if ( resolveUriResult == null ) {
 					// OK, not found.
@@ -146,12 +146,12 @@ class RegisterNewPageFullyHosted extends BasePage {
 					error = "There is a semantic entity in the repository identified with this URI";
 				}
 				//Else: OK, not found.
-				
+
 				if ( error != null ) {
 					statusHtml.setHTML("<font color=\"red\">" +error+ "</font>");
 				    return;
 				}
-				
+
 				// OK
 				statusHtml.setHTML("<font color=\"green\">Resulting URI is OK.</font> " +
 						"<br/>" +

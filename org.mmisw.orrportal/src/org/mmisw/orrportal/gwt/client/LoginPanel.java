@@ -103,13 +103,6 @@ public class LoginPanel {
 
 		int row = 0;
 
-		panel.getFlexCellFormatter().setColSpan(row, 0, 3);
-		panel.setWidget(row, 0, new HTML("<strong>Your account in the MMI Ontology Registry and Repository</strong>"));
-		panel.getFlexCellFormatter().setAlignment(row, 0,
-				HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE
-		);
-		row++;
-
 		createUsernameAndPasswordTextBoxes();
 
 		panel.setWidget(row, 0, new Label("Username:"));
@@ -215,9 +208,14 @@ public class LoginPanel {
 		statusLabel.setHTML("<font color=\"green\">" +msg+ "</font>");
 	}
 
+	public void clearPassword() {
+		userPassword.setText("");
+	}
+
 	public void getFocus() {
 		_enable(true);
 		statusLabel.setHTML("");
+		userPassword.setText("");
 		userName.setFocus(true);
 		userName.selectAll();
 	}
