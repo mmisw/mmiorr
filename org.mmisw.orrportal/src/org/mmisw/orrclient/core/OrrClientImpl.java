@@ -2239,8 +2239,8 @@ public class OrrClientImpl implements IOrrClient {
                             }
 
                             boolean debug = false;
-                            final String from    = "MMI-ORR <techlead@marinemetadata.org>";
-                            final String replyTo = "techlead@marinemetadata.org";
+                            final String from    = OrrConfig.instance().emailFrom;
+                            final String replyTo = OrrConfig.instance().emailReplyTo;
                             final String subject = "Ontology registered";
 
                             String text = "The following ontology has been registered:\n";
@@ -2866,10 +2866,10 @@ public class OrrClientImpl implements IOrrClient {
 		// send email with new password
 
 		boolean debug = false;
-		final String from = "MMI-ORR <techlead@marinemetadata.org>";
-		final String replyTo = "techlead@marinemetadata.org";
+		final String from = OrrConfig.instance().emailFrom;
+		final String replyTo = OrrConfig.instance().emailReplyTo;
 		final String subject = "Password reset";
-		final String text = "Your MMI ORR password has been reset.\n" +
+		final String text = "Your password has been reset.\n" +
 				"\n" +
 				"Username: " +username+ "\n" +
 				"   email: " +email+ "\n" +
@@ -3017,8 +3017,8 @@ public class OrrClientImpl implements IOrrClient {
         }
 
         boolean debug = false;
-        final String from    = "MMI-ORR <techlead@marinemetadata.org>";
-        final String replyTo = "techlead@marinemetadata.org";
+        final String from    = OrrConfig.instance().emailFrom;
+        final String replyTo = OrrConfig.instance().emailReplyTo;
 
         String text = header + "\n";
         for (String key: data.keySet()) {

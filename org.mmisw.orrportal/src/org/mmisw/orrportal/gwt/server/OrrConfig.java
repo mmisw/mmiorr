@@ -57,6 +57,8 @@ public class OrrConfig {
   /** email account information used for user account management and notifications. */
   public final String emailUsername;
   public final String emailPassword;
+  public final String emailFrom;
+  public final String emailReplyTo;
 
   /** URL of SPARQL endpoint. */
   public final String sparqlEndpoint;
@@ -88,6 +90,8 @@ public class OrrConfig {
         "  voc2rdfDir         = " + voc2rdfDir + '\n' +
         "  previewDir         = " + previewDir + '\n' +
         "  emailUsername      = " + emailUsername + '\n' +
+        "  emailFrom          = " + emailFrom + '\n' +
+        "  emailReplyTo       = " + emailReplyTo + '\n' +
         "  sparqlEndpoint     = " + sparqlEndpoint + '\n' +
         "  brandingLogo       = " + brandingLogo + '\n' +
         "  brandingAppTitle   = " + brandingAppTitle + '\n' +
@@ -105,13 +109,10 @@ public class OrrConfig {
     voc2rdfDir    = prepareDir(workspaceDir, "ontmd/preuploads/voc2rdf");
     previewDir    = prepareDir(workspaceDir, "ontmd/previews");
 
-    if(cfg.hasPath("email")) {
-      emailUsername = cfg.getString("email.username");
-      emailPassword = cfg.getString("email.password");
-    }
-    else {
-      emailUsername = emailPassword = null;
-    }
+    emailUsername = cfg.getString("email.account.username");
+    emailPassword = cfg.getString("email.account.password");
+    emailFrom     = cfg.getString("email.from");
+    emailReplyTo  = cfg.getString("email.replyTo");
 
     sparqlEndpoint   = cfg.hasPath("sparql.endpoint") ? cfg.getString("sparql.endpoint") : null;
 

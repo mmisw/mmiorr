@@ -1,6 +1,8 @@
 ## change log ##
 
 * 2015-11-24: orrportal 2.5.9
+  - configuration additions related with information used in emails
+  
   - Fix \#315 "leaving page with edited mappings causes them to be lost"
     PortalMainPanel.onHistoryChanged: add logic to handles the confirmation 
     about abandoning ongoing edits or upload operation upon change in browser history.
