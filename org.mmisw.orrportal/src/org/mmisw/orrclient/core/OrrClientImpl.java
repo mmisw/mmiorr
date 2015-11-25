@@ -2885,7 +2885,11 @@ public class OrrClientImpl implements IOrrClient {
 			result.setEmail(email);
 		}
 		catch (Exception e) {
-			String error = "Error sending email: " +e.getMessage();
+			String error = "Error sending email. Please try again later." +
+					"<br/>" +
+					"If the problem persists please contact the administrator." +
+					"<br/>" +
+					"Error: " +e.getMessage();
 			result.setError(error);
 			log.error(error, e);
 		}

@@ -1,6 +1,10 @@
 ## change log ##
 
 * 2015-11-24: orrportal 2.5.9
+  - Fix \#258 "reset password in effect but lost if error while sending email"
+    Additional handling including a message like "please try again later ..if the problem persists
+    contact the administrator." But note that the likely problem is actually from inappropriate configuration.
+    
   - add notify.recipientsFilename config parameter for filename with list of email addresses to be notified of registrations.
   - configuration additions related with information used in emails
   
