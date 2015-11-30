@@ -17,7 +17,6 @@ import org.mmisw.orrclient.gwt.client.vocabulary.AttrGroup;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.OWL;
 
 /**
  * Helper to extract metadata from an ontology model.
@@ -31,9 +30,6 @@ class MetadataExtractor {
 
 	/**
 	 * Does the preparation by reading the model from the given URI.
-	 * @param uriModel URI of the model to be loaded
-	 * @param ontologyInfoPre  The object to be completed
-	 * @return
 	 */
 	static String prepareOntologyMetadata(
 			MetadataBaseInfo metadataBaseInfo,
@@ -47,7 +43,7 @@ class MetadataExtractor {
 
 		OntologyMetadata ontologyMetadata = ontologyInfo.getOntologyMetadata();
 
-		Resource ontRes = model.getOntology(ontologyUri);
+		final Resource ontRes = ontologyUri != null ? model.getOntology(ontologyUri) : null;
 
 		StringBuilder moreDetails = new StringBuilder();
 
