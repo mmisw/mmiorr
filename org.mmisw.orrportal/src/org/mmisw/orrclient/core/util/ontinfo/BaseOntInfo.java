@@ -52,7 +52,7 @@ abstract class BaseOntInfo implements IOntInfo {
 	protected static String _getLocalName(String entityUri, String ontologyUri) {
 		String localName;
 		// is ontologyUri a prefix of entityUri?
-		if ( entityUri.indexOf(ontologyUri) == 0 ) {
+		if ( ontologyUri != null && entityUri.indexOf(ontologyUri) == 0 ) {
 			localName = entityUri.substring(ontologyUri.length());
 			// remove any leading separator:
 			localName = localName.replaceAll("^(/|#)+", "");

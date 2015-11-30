@@ -1,5 +1,8 @@
 ## change log ##
 
+* 2015-11-30: orrportal 2.6.0
+  - Fix \#383 "Upload of ontology file without ontology resource causes error"
+  
 * 2015-11-24: orrportal 2.5.9
   - Fix \#258 "reset password in effect but lost if error while sending email"
     Additional handling including a message like "please try again later ..if the problem persists

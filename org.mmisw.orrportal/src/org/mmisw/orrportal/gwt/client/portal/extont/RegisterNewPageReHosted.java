@@ -66,12 +66,13 @@ class RegisterNewPageReHosted extends BasePage {
 		final String uri = tempOntologyInfo != null ? tempOntologyInfo.getUri() : null;
 		if ( uri == null ) {
 			error = "<font color=\"red\">" +
-				"Error: your file cannot be registered. " +
+				"Sorry, your file cannot be registered. " +
 				"</font>" +
 				"<br/>" +
 				"A URI is required to register your ontology in re-hosted mode, and this URI " +
-				"is obtained from the contents of your file. However, no appropriate namespace was found " +
-				"in your file."
+				"is obtained from the contents of your file. However, no appropriate namespace was found. " +
+				"You can edit your file to either provide an XML namespace for the empty prefix, " +
+				"or specify an xml:base. Then re-try uploading."
 			;
 		}
 		else if ( tempOntologyInfo.isOntResolvable() ) {
