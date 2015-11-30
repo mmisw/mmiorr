@@ -1,6 +1,11 @@
 ## change log ##
 
 * 2015-11-30: orrportal 2.6.0
+  - Fix \#386 "empty 'Synopsis of ontology contents' for some entries"
+    - ontologies displayed with empty synopsis of contents were those having no classes, individuals or properties. 
+    - The fix is to also display the subjects
+    - in all cases the subsection heading is now included even if with zero elements.
+     
   - Fix \#383 "Upload of ontology file without associated URI causes error for re-hosting"
   
 * 2015-11-24: orrportal 2.5.9
