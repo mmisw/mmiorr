@@ -120,8 +120,8 @@ public class ControlsPanel extends HorizontalPanel {
 	private void _prepareSearchTermsButtons() {
 		controls.setBorderWidth(0);
 		String sparqlPage = GWT.getModuleBaseURL() + "sparql/";
-		HTML sparqlButton = new HTML("<blockquote><a target=\"_blank\" href=\"" +sparqlPage+
-				"\">Advanced search with SPARQL</a></blockquote>");
+		HTML sparqlButton = new HTML("&nbsp;&nbsp;Use the keyword search below or open the <a href=\"" +sparqlPage+
+				"\">Advanced search with SPARQL</a> interface");
 		controls.add(sparqlButton);
 	}
 
