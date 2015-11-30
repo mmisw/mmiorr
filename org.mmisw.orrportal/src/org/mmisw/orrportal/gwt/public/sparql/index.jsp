@@ -13,12 +13,14 @@ PageUtil pageUtil = new PageUtil(getServletContext());
 <body>
 <%=pageUtil.includeTop()%>
 
+<a href="..">
 <img src="../images/logo.png" />
+</a>
 
 <div style="margin: 5px; font-family: Arial, sans-serif">
     Edit, submit, and view the results of <a target="_blank" href="http://en.wikipedia.org/wiki/SPARQL">SPARQL</a>
     queries against the repository.
-    <span style="color:gray;font-size:small">
+    <span style="color:gray;font-size:x-small">
         (Powered by
         <a target="_blank" href="http://doc.yasgui.org/" style="color:gray">YASGUI</a>.)
     </span>
@@ -29,7 +31,6 @@ PageUtil pageUtil = new PageUtil(getServletContext());
 <script>
     YASGUI.YASQE.defaults.sparql.endpoint = "<%=pageUtil.getSparqlEndpoint()%>";
     YASGUI.YASQE.defaults.sparql.acceptHeaderGraph = "application/rdf+xml";
-    YASGUI.YASQE.defaults.createShareLink = null;  // doesn't seem to work
     YASGUI.defaults.catalogueEndpoints = [];
     YASGUI(document.getElementById("editor"));
 </script>

@@ -1,6 +1,10 @@
 ## change log ##
 
 * 2015-11-30: orrportal 2.6.0
+  - complete \#371 "improve UI for SPARQL queries"
+    - in \#st page: msg adjustment; no \_blank target for sparql/ link;
+    - in sparql/ page: link to main page.
+  
   - Fix \#386 "empty 'Synopsis of ontology contents' for some entries"
     - ontologies displayed with empty synopsis of contents were those having no classes, individuals or properties. 
     - The fix is to also display the subjects
