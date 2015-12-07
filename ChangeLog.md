@@ -1,7 +1,12 @@
 ## change log ##
 
-* 2015-12-07: orrportal 2.6.1
-  - remove some unused/obsolete code
+* 2015-12-07: 
+  - ont 2.6.1
+    - MiscDispatcher.listAll now sets ontology type to "other" for non Ont-resolvable entries (previously it 
+      always defaulted to "vocabulary"
+    
+  - orrportal 2.6.1
+    - remove some unused/obsolete code
 
 * 2015-11-30: orrportal 2.6.0
   - complete \#371 "improve UI for SPARQL queries"
