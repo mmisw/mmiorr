@@ -11,10 +11,8 @@ import org.mmisw.orrclient.gwt.client.rpc.DataCreationInfo;
 import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
 import org.mmisw.orrclient.gwt.client.rpc.MappingOntologyData;
 import org.mmisw.orrclient.gwt.client.rpc.OntologyMetadata;
-import org.mmisw.orrclient.gwt.client.rpc.OtherOntologyData;
 import org.mmisw.orrclient.gwt.client.rpc.RegisterOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
-import org.mmisw.orrclient.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.VocabularyOntologyData;
 import org.mmisw.orrclient.gwt.client.rpc.vine.RelationInfo;
 import org.mmisw.orrportal.gwt.client.DataPanel;
@@ -287,51 +285,6 @@ public class OntologyPanel extends VerticalPanel implements IOntologyPanel {
 	
 	
 	
-
-	/**
-	 * Prepares the panel for creation of an ontology from a local file to
-	 * be uploaded.
-	 * 
-	 * @param createOntologyInfo If non-null, info for the new ontology is taken from here.
-	 * 
-	 * TODO NOTE: This is a new parameter in this method while I complete the new "registration of
-	 * external" ontology functionality.
-	 */
-	void createNewFromFile(CreateOntologyInfo createOntologyInfo) {
-		createNewBase();
-		
-		OtherOntologyData otherOntologyData = null;
-		
-		BaseOntologyInfo baseOntologyInfo = createOntologyInfo != null ? createOntologyInfo.getBaseOntologyInfo() : null;
-		if ( baseOntologyInfo instanceof TempOntologyInfo ) {
-			// TODO check actual type of ontology data? It should be OtherOntologyData in this case.
-			otherOntologyData = (OtherOntologyData) baseOntologyInfo.getOntologyData();
-		}
-		else {
-			// create (empty) data for the ontologyInfo
-			otherOntologyData = new OtherOntologyData();
-		}
-		
-		ontologyInfo.setOntologyData(otherOntologyData);
-
-		// create dataPanel
-		dataPanel = new DataPanel(false);
-		
-		TempOntologyInfo tempOntologyInfo = (baseOntologyInfo instanceof TempOntologyInfo)
-		                                  ? (TempOntologyInfo) baseOntologyInfo
-		                                  : null;
-		                                  
-		dataPanel.updateWith(tempOntologyInfo, ontologyInfo, false);
-		
-		dataDisclosure.setContent(dataPanel);
-		
-		enable(true);
-	}
-
-
-	
-	
-
 
 	void updateInterface(InterfaceType interfaceType) {
 		

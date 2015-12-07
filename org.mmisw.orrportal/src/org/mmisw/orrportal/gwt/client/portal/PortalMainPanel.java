@@ -3,16 +3,7 @@ package org.mmisw.orrportal.gwt.client.portal;
 import java.util.List;
 import java.util.Map;
 
-import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyInfo;
-import org.mmisw.orrclient.gwt.client.rpc.EntityInfo;
-import org.mmisw.orrclient.gwt.client.rpc.HostingType;
-import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
-import org.mmisw.orrclient.gwt.client.rpc.OntologyData;
-import org.mmisw.orrclient.gwt.client.rpc.OtherOntologyData;
-import org.mmisw.orrclient.gwt.client.rpc.RegisterOntologyResult;
-import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
-import org.mmisw.orrclient.gwt.client.rpc.ResolveUriResult;
-import org.mmisw.orrclient.gwt.client.rpc.UnregisterOntologyResult;
+import org.mmisw.orrclient.gwt.client.rpc.*;
 import org.mmisw.orrportal.gwt.client.LoginPanel;
 import org.mmisw.orrportal.gwt.client.Orr;
 import org.mmisw.orrportal.gwt.client.portal.admin.AdminPanel;
@@ -740,7 +731,22 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 
 			RegisteredOntologyInfo roi = (RegisteredOntologyInfo) ontologyInfo;
 			OntologyData ontologyData = roi.getOntologyData();
-			if ( ontologyData instanceof OtherOntologyData ) {
+			if (Orr.isLogEnabled()) {
+				Orr.log("editNewVersion: uri=" +roi.getUri()+ " ontologyData=" +ontologyData
+						+ (ontologyData != null ? " " +ontologyData.getClass().getName() : "")
+						+ " type=" + roi.getType());
+			}
+			boolean isOtherType;
+			if (ontologyData == null) {
+				// use the associated type when the content hasn't been loaded:
+				isOtherType = OntologyType.OTHER == roi.getType();
+			}
+			else {
+				// otherwise just use the kind of contents (as in previous version of this logic)
+				isOtherType = ontologyData instanceof OtherOntologyData;
+			}
+
+			if ( isOtherType ) {
 				dispatchUploadNewVersionOntology(roi);
 				return;
 			}

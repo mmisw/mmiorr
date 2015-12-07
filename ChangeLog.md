@@ -1,5 +1,14 @@
 ## change log ##
 
+* 2015-12-07: ont\&orrportal 2.6.1
+  - Fix \#390 "edit new version of uploaded ontology asks for inline editing of contents"
+    PortalMainPanel.editNewVersion: use the associated type when the content hasn't been loaded to determine how
+    to dispatch the editing
+  - MiscDispatcher.listAll now sets ontology type to "other" for non Ont-resolvable entries (previously it 
+    always defaulted to "vocabulary"
+  
+  - remove some unused/obsolete code
+  
 * 2015-11-30: orrportal 2.6.0
   - complete \#371 "improve UI for SPARQL queries"
     - in \#st page: msg adjustment; no \_blank target for sparql/ link;

@@ -29,6 +29,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mmisw.ont.db.Db;
 import org.mmisw.ont.mmiuri.MmiUri;
+import org.mmisw.ont.util.OntUtil;
 import org.mmisw.ont.util.Util;
 
 import com.hp.hpl.jena.ontology.Individual;
@@ -472,25 +473,30 @@ public class MiscDispatcher {
 	        	// mapping or vocabulary?
 	        	// TODO: a more robust mechanism to determine the type of an ontology.
 
-	        	// assume "vocabulary"
-	        	String type = "vocabulary";
+	        	String type;
 
-	        	try {
-	        		MmiUri mmiUri = new MmiUri(ontologyUri);
+						if (OntUtil.isOntResolvableUri(ontologyUri)) {
+	        		// here as in old code.
 
-	        		String topic = mmiUri.getTopic().toLowerCase();
-	        		if (_isMappingAccordingToTopic(topic)) {
-	        			type = "mapping";
-	        		}
-	        	}
-	    		catch (URISyntaxException e) {
-	    			// <re-host> initially, exception ignored as "shouldn't happen"
-	    			//
-	    			//log.error("Shouldn't happen", e);
-	    			// continue;
-	    			//
-	    			// but now, it could be a re-hosted ontology, so let fall through
-	    		}
+							// assume "vocabulary"
+							type = "vocabulary";
+
+							try {
+								MmiUri mmiUri = new MmiUri(ontologyUri);
+
+								String topic = mmiUri.getTopic().toLowerCase();
+								if (_isMappingAccordingToTopic(topic)) {
+									type = "mapping";
+								}
+							}
+							catch (URISyntaxException ignore) {
+							}
+						}
+						else {
+							type = "other";
+							// that is, for re-hosted simply set type to "other"
+						}
+
 
 	    		// always VERSIONED form:
 	    		out.println(

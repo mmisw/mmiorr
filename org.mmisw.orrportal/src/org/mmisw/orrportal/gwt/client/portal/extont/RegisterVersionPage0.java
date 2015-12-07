@@ -15,22 +15,18 @@ import com.google.gwt.user.client.ui.Widget;
  * In this page the user indicates whether a new file will be uploaded for the
  * new version.
  * 
- * TODO not implemented yet
- * 
  * @author Carlos Rueda
  */
 class RegisterVersionPage0 extends BasePage {
 	
 	private VerticalPanel contents = new VerticalPanel();
 	
-	private CheckBox uploadFileRb = new CheckBox("I will upload ontology file for the new version");
+	private CheckBox uploadFileRb = new CheckBox("I will upload an ontology file for the new version");
 	
 
 	/**
 	 * Creates the ontology panel where the initial ontology can be loaded
 	 * and its original contents displayed.
-	 * 
-	 * @param allowLoadOptions
 	 */
 	RegisterVersionPage0(RegisterVersionWizard wizard) {
 		super(wizard, false, true);

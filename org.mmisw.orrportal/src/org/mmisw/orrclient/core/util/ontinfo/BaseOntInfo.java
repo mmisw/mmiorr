@@ -30,7 +30,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  *
  * @author Carlos Rueda
  */
-abstract class BaseOntInfo implements IOntInfo {
+abstract class BaseOntInfo {
 
 	// Addresses in part #290 - "Alphabetized order while editing vocabulary table" but
 	// the effect here is just to display the table in order; the actual editing will
