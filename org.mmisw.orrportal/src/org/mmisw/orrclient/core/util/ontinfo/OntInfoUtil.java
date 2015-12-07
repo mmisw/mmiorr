@@ -26,8 +26,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
  */
 public class OntInfoUtil {
 	
-	// the actual implementation (TODO remove old impl OntInfoOld )
-	private static final IOntInfo impl = new OntInfo();
+	private static final OntInfo ontInfo = new OntInfo();
 	
 	
 	/**
@@ -43,7 +42,7 @@ public class OntInfoUtil {
 			ontModel = loadModel(ontologyUri);
 		}
 
-		return impl.getEntities(baseOntologyInfo, ontModel);
+		return ontInfo.getEntities(baseOntologyInfo, ontModel);
 	}
 	
 	/**

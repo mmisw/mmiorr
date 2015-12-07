@@ -1,5 +1,8 @@
 ## change log ##
 
+* 2015-12-07: orrportal 2.6.1
+  - remove some unused/obsolete code
+
 * 2015-11-30: orrportal 2.6.0
   - complete \#371 "improve UI for SPARQL queries"
     - in \#st page: msg adjustment; no \_blank target for sparql/ link;
