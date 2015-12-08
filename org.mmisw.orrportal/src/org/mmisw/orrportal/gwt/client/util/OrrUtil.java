@@ -77,6 +77,10 @@ public class OrrUtil {
 	
 	
 
+	public static native String getGlobal(String varName) /*-{
+    return $wnd[varName];
+	}-*/ ;
+
     static native String getLocationSearch() /*-{
 	    return $wnd.location.search;
 	}-*/ ;

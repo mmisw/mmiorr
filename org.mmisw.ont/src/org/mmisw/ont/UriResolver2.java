@@ -2,6 +2,7 @@ package org.mmisw.ont;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URISyntaxException;
 
 import javax.servlet.ServletException;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.hp.hpl.jena.ontology.Ontology;
 import net.jcip.annotations.ThreadSafe;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mmisw.ont.db.Db;
@@ -189,6 +191,19 @@ public class UriResolver2 {
 				}
 
 				String portalServiceUrl = OntConfig.Prop.PORTAL_SERVICE_URL.getValue();
+
+				if (OntServlet._364) {
+					String html = OntServlet.getPortalMainHtml(portalServiceUrl, ontologyUri);
+					if ( log.isDebugEnabled() ) {
+						log.debug("For ontologyUri=" + ontologyUri+ " SERVING:\n\t|" + html.replaceAll("\n", "\n\t|"));
+					}
+					ontReq.response.setContentType("text/html");
+					StringReader is = new StringReader(html);
+					ServletOutputStream sos = ontReq.response.getOutputStream();
+					IOUtils.copy(is, sos);
+					os.close();
+					return;
+				}
 
 				String url = portalServiceUrl+ "/#" +ontologyUri;
 				if ( log.isDebugEnabled() ) {

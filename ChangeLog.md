@@ -1,5 +1,22 @@
 ## change log ##
 
+* 2015-12-07: ont\&orrportal 2.6.2
+  Preparations for \#364 "dispatch portal functionality through ont-based URL directly"
+  - For now the new dispatch in orrportal depends on the auxiliary js global variable `__rUri` being defined. 
+    This in turn depends on the new (interim) `OntServlet._364` flag on the Ont module.
+    When this is true, instead of redirection, Ont generates HTML with `<base href=".../orr/">` pointing to the 
+    portal UI. 
+  - Most of the links in orrportal are adjusted for the new dispatch so they reflect the intended "ont" (instead
+    of the "orr" for the portal).
+  - Pending links include: "advanced sparql UI" (and from there the links back to the main list)
+  - Other pending aspects: 
+    - if possible "inherit" any login session from the orrportal URL to the "Ont" one so the user don't have to login again.
+    - for any "bookmarks" out there, redirect from the orrportal to the "ont" service, for example:
+      - `http://mmisw.org/orr/#http://mmisw.org/ont/cf/parameter -> http://mmisw.org/ont/cf/parameter` 
+      - `http://mmisw.org/orr/#http://purl.oclc.org/NET/ssnx/ssn -> http://mmisw.org/ont?uri=http://purl.oclc.org/NET/ssnx/ssn`
+      The idea here is to define a new app only for the purposes of the redirection, while deploying the updated 
+      "orrportal" with any name different from the one traditionally used for the portal.
+
 * 2015-12-07: ont\&orrportal 2.6.1
   - Fix \#390 "edit new version of uploaded ontology asks for inline editing of contents"
     PortalMainPanel.editNewVersion: use the associated type when the content hasn't been loaded to determine how

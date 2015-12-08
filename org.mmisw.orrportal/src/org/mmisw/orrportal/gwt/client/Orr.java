@@ -39,6 +39,9 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class Orr {
 
+	// #364 "dispatch portal functionality through ont-based URL directly"
+	public static String rUri;
+
 	/** Interface for asynchronous calls to the ORR back-end. */
 	public static OrrServiceAsync service;
 
@@ -56,11 +59,14 @@ public class Orr {
 			_logger = new OrrLogger(logSpec);
 		}
 
+		rUri = OrrUtil.getGlobal("__rUri");
+
 		Orr.log("Util.getLocationProtocol() = " + OrrUtil.getLocationProtocol()
 		    + "\nUtil.getLocationHost()     = " + OrrUtil.getLocationHost()
 		    + "\nGWT.getHostPageBaseURL()   = " + GWT.getHostPageBaseURL()
 		    + "\nGWT.getModuleBaseURL()     = " + GWT.getModuleBaseURL()
 		    + "\nGWT.getModuleName()        = " + GWT.getModuleName()
+				+ "\nOrrUtil.getGlobal('__rUri')= " + rUri
 		);
 //		String baseUrl = OrrUtil.getLocationProtocol() + "//" + OrrUtil.getLocationHost();
 //		baseUrl = baseUrl.replace("/+$", ""); // remove trailing slashes
@@ -71,7 +77,7 @@ public class Orr {
 
 
 	/**
-	 * Once initialized ({@link #init(boolean)}), call this method to launch the application.
+	 * Once initialized ({@link #init(String)}), call this method to launch the application.
 	 * @param params
 	 */
 	static void launch(Map<String, String> params) {
@@ -234,6 +240,10 @@ public class Orr {
             }
 	    }
 	    else {
+        if (rUri != null && rUri.length() > 0) {
+          portalMainPanel.resolveUri(rUri);
+          return;
+        }
 	    	portalMainPanel.dispatchMainPage("");
 	    }
 	}
@@ -322,7 +332,7 @@ public class Orr {
 
 	/**
 	 * Gets a widget with controls for the logging information.
-	 * Returns null if {@link #init(boolean)} was called with no logging.
+	 * Returns null if {@link #init(String)} was called with no logging.
 	 */
 	static Widget getLogWidget() {
 		return _logger == null ? null : _logger.getWidget();
@@ -344,6 +354,14 @@ public class Orr {
 		return portalBaseInfo;
 	}
 
+	public static String getOntServiceUrl() {
+		return portalBaseInfo.getOntServiceUrl();
+	}
+
+	public static boolean isOntResolvableUri(String uri) {
+		String ontServiceUrl = portalBaseInfo.getOntServiceUrl();
+		return uri.toLowerCase().startsWith(ontServiceUrl.toLowerCase());
+	}
 
 	private static void _getService() {
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "orrService";

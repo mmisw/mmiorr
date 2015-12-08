@@ -1089,4 +1089,43 @@ public class OntServlet extends HttpServlet {
 		os.close();
 	}
 
+	// #364 "dispatch portal functionality through ont-based URL directly"
+	// dev convenience: flag while completing this implementation
+	public static final boolean _364 = false;
+
+	public static String getPortalMainHtml(String portalServiceUrl, String repositoryUri) {
+		portalServiceUrl = portalServiceUrl.replaceAll("/*$", "");
+		String title = repositoryUri.length() > 0 ? repositoryUri : "MMI ORR";
+		return PortalHtmlTemplate
+				.replace("{{portalServiceUrl}}", portalServiceUrl)
+				.replace("{{title}}", title)
+				.replace("{{repositoryUri}}", repositoryUri)
+		;
+	}
+	private static final String PortalHtmlTemplate =
+			"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n" +
+					"<html>\n" +
+					"<head>\n" +
+					"<base href=\"{{portalServiceUrl}}/\" >\n" +
+					"<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">\n" +
+					"<title>{{title}}</title>\n" +
+					"<script>\n" +
+					"  var __rUri = '{{repositoryUri}}';\n" +
+					"</script>\n" +
+					"<script type=\"text/javascript\" language=\"javascript\" src=\"org.mmisw.orrportal.gwt.Orr.nocache.js\"></script>\n" +
+					"</head>\n" +
+					"<body>\n" +
+					"<div id=\"loading\" align=\"center\"><br/>\n" +
+					"<script>\n" +
+					"document.write(\"<img src=\\\"images/loading.gif\\\"> Loading...\");\n" +
+					"</script>\n" +
+					"<noscript>\n" +
+					"This application requires JavaScript enabled in your web browser.<br/>\n" +
+					"</noscript>\n" +
+					"</div>\n" +
+					"<iframe src=\"javascript:''\"  id=\"__gwt_historyFrame\"  style=\"width:0;height:0;border:0\"></iframe>\n" +
+					"<div id=\"main\">\n" +
+					"</div>\n" +
+					"</body>\n" +
+					"</html>\n";
 }
