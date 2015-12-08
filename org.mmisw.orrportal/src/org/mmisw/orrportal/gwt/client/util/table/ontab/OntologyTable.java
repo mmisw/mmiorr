@@ -1,9 +1,9 @@
 package org.mmisw.orrportal.gwt.client.util.table.ontab;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
+import com.google.gwt.user.client.ui.*;
 import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
 import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
 import org.mmisw.orrportal.gwt.client.Orr;
@@ -13,20 +13,6 @@ import org.mmisw.orrportal.gwt.client.util.table.IQuickInfo;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.FocusPanel;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.MenuBar;
-import com.google.gwt.user.client.ui.MenuItem;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * ontology table.
@@ -295,17 +281,27 @@ public class OntologyTable extends BaseOntologyTable {
 			String version = _getVersion(oi);
 			
 			String tooltip = uri;
-			String historyToken = uri;
-			
+			String link = uri;
+
 			if ( includeVersionInLinks ) {
-				historyToken += "?version=" +version;
+				link += "?version=" +version;
 				tooltip += "   \nversion: " +version;
 			}
 			
 			Widget nameWidget;
 			
-			Hyperlink nameLink = new Hyperlink(name, historyToken);
-			Hyperlink uriLink = new Hyperlink(uri, historyToken);
+			Widget nameLink, uriLink;
+			if (Orr.rUri != null) {
+				if (!Orr.isOntResolvableUri(link)) {
+					link = Orr.getPortalBaseInfo().getOntServiceUrl() + "?uri=" + link;
+				}
+				nameLink = new Anchor(name, link);
+				uriLink = new Anchor(uri, link);
+			}
+			else {
+				nameLink = new Hyperlink(name, link);
+				uriLink = new Hyperlink(uri, link);
+			}
 			
 			boolean isTesting = OrrUtil.isTestingOntology(oi);
 			boolean isInternal = isTesting ? false : OrrUtil.isInternalOntology(oi);
@@ -324,11 +320,11 @@ public class OntologyTable extends BaseOntologyTable {
 
 			nameWidget.setTitle(tooltip);
 
-			if ( clickListenerToHyperlinks != null ) {
-				nameLink.addClickListener(clickListenerToHyperlinks);
+			if ( clickListenerToHyperlinks != null && nameLink instanceof Hyperlink) {
+				((Hyperlink) nameLink).addClickListener(clickListenerToHyperlinks);
 				// issue #257:"version selection window remains open"
 				// the listener was not added to the uri. Fixed.
-				uriLink.addClickListener(clickListenerToHyperlinks);
+				((Hyperlink) uriLink).addClickListener(clickListenerToHyperlinks);
 			}
 				
 			int col = 0;

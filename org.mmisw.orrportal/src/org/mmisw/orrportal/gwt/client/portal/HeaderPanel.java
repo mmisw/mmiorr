@@ -4,22 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.*;
 import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
 import org.mmisw.orrportal.gwt.client.Orr;
 import org.mmisw.orrportal.gwt.client.portal.PortalMainPanel.InterfaceType;
 import org.mmisw.orrportal.gwt.client.util.OrrUtil;
 
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.PushButton;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Portal header panel.
@@ -39,9 +30,10 @@ public class HeaderPanel extends FlexTable {
 	private Widget adminLink = new Hyperlink("<b>Admin</b>", true, PortalConsts.T_ADMIN);
 	
 	private Widget browseLink = new Hyperlink("Browse", PortalConsts.T_BROWSE);
+
 	private Widget searchLink = new Hyperlink("Search terms", PortalConsts.T_SEARCH_TERMS);
 	
-	private Hyperlink accountLink = new Hyperlink("Create account", PortalConsts.T_USER_ACCOUNT);
+	private Widget accountLink = new Hyperlink("Create account", PortalConsts.T_USER_ACCOUNT);
 	
 //	private Widget signInLink = new Hyperlink("Sign in", PortalConsts.T_SIGN_IN);
 	private Widget signInLink = new HButton("Sign in",
@@ -68,7 +60,15 @@ public class HeaderPanel extends FlexTable {
 	
 	HeaderPanel() {
 		super();
-		
+
+		if (Orr.rUri != null) {
+			String ontUrl = Orr.getOntServiceUrl();
+			browseLink = new Anchor("Browse", ontUrl);
+			searchLink = new Anchor("Search terms", ontUrl + "#" + PortalConsts.T_SEARCH_TERMS);
+			adminLink = new Anchor("Admin", ontUrl + "#" + PortalConsts.T_ADMIN);
+			accountLink = new Anchor("Create account", ontUrl + "#" + PortalConsts.T_USER_ACCOUNT);
+		}
+
 		adminLink.setTitle("Administrative interface");
 		searchLink.setTitle("Allows to search terms in all registered ontologies");
 		
@@ -110,10 +110,20 @@ public class HeaderPanel extends FlexTable {
 		List<Widget> widgets2 = new ArrayList<Widget>();
 		
 		if ( loginResult != null ) {
-			accountLink.setText(loginResult.getUserName());
+			if (accountLink instanceof Anchor) {
+				((Anchor) accountLink).setText(loginResult.getUserName());
+			}
+			else {
+				((Hyperlink) accountLink).setText(loginResult.getUserName());
+			}
 		}
 		else if ( type != InterfaceType.USER_ACCOUNT ) {
-			accountLink.setText("Create account");
+			if (accountLink instanceof Anchor) {
+				((Anchor) accountLink).setText("Create account");
+			}
+			else {
+				((Hyperlink) accountLink).setText("Create account");
+			}
 		}
 
 		boolean editing = false;
@@ -147,7 +157,12 @@ public class HeaderPanel extends FlexTable {
 
 		if ( loginResult == null ) {
 			if ( type != InterfaceType.USER_ACCOUNT ) {
-				accountLink.setText("Create account");
+				if (accountLink instanceof Anchor) {
+					((Anchor) accountLink).setText("Create account");
+				}
+				else {
+					((Hyperlink) accountLink).setText("Create account");
+				}
 				widgets.add(accountLink);
 				widgets.add(signInLink);
 			}

@@ -901,7 +901,7 @@ public class PortalMainPanel extends VerticalPanel implements HistoryListener {
 	 * panel, ontology or term.
 	 * @param uri
 	 */
-	private void resolveUri(final String uri) {
+	public void resolveUri(final String uri) {
 		AsyncCallback<ResolveUriResult> callback = new AsyncCallback<ResolveUriResult>() {
 			public void onFailure(Throwable thr) {
 				String error = thr.getClass().getName()+ ": " +thr.getMessage();

@@ -1,9 +1,6 @@
 package org.mmisw.ont;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -57,7 +54,23 @@ class RegularFileDispatcher {
 		//       request.getRequestURI()         = /ont/
 		//       request.getContextPath()        = /ont
 		if ( requestedUri.replaceAll("/*$", "").equals(contextPath) ) {
-			// this is a "root" request. respond with information about this service:
+			// this is a "root" request.
+
+			if (OntServlet._364) {
+				String portalServiceUrl = OntConfig.Prop.PORTAL_SERVICE_URL.getValue();
+				String html = OntServlet.getPortalMainHtml(portalServiceUrl, "");
+				if ( log.isDebugEnabled() ) {
+					log.debug("For 'root' request SERVING:\n\t|" + html.replaceAll("\n", "\n\t|"));
+				}
+				response.setContentType("text/html");
+				StringReader is = new StringReader(html);
+				ServletOutputStream sos = response.getOutputStream();
+				IOUtils.copy(is, sos);
+				sos.close();
+				return;
+			}
+
+			// respond with information about this service:
 			_showServiceInfo(request, response);
 			return;
 		}
