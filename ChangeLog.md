@@ -1,5 +1,19 @@
 ## change log ##
 
+* 2015-12-08:
+  Re \#364 "dispatch portal functionality through ont-based URL directly"
+  Although the general desired behavior is already implemented, here are some observations that make the
+  completion of this task not as straightforward.
+  - While it would be great re-use any login session from "orr" in "ont" (so the user doesn't have 
+    to login again), this is not possible as neither app is a subdirectory of the other.
+  - As it is right now, once logged in under "ont", the user would have to login again for any other "ont" based URL. 
+    A solution to this is to make the "login" action go to a route at the "ont" root so, once the users logs in,
+    the session can be inherited for any other sub-path. (Currently the login action opens a dialog.)
+  - So far, not too bad. The above would require some additional effort but can be implemented.
+  - However, during local testing I've seen an occasional GWT error that seems to happen, in some cases, when trying 
+    to navigate to another page while ontology information is being loaded. Unfortunately there's no additional
+    information anywhere when this happens!
+  
 * 2015-12-07: ont\&orrportal 2.6.2
   Preparations for \#364 "dispatch portal functionality through ont-based URL directly"
   - For now the new dispatch in orrportal depends on the auxiliary js global variable `__rUri` being defined. 
@@ -10,7 +24,6 @@
     of the "orr" for the portal).
   - Pending links include: "advanced sparql UI" (and from there the links back to the main list)
   - Other pending aspects: 
-    - if possible "inherit" any login session from the orrportal URL to the "Ont" one so the user don't have to login again.
     - for any "bookmarks" out there, redirect from the orrportal to the "ont" service, for example:
       - `http://mmisw.org/orr/#http://mmisw.org/ont/cf/parameter -> http://mmisw.org/ont/cf/parameter` 
       - `http://mmisw.org/orr/#http://purl.oclc.org/NET/ssnx/ssn -> http://mmisw.org/ont?uri=http://purl.oclc.org/NET/ssnx/ssn`
