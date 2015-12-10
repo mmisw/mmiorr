@@ -74,6 +74,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
 
   private OrrClientImpl2() throws Exception {
     super();
+    orrOntUrl = config.orrOntServiceUrl;
     cfg = readConfig();
     log.info("OrrClientImpl2 created");
   }
@@ -84,7 +85,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
     List<RegisteredOntologyInfo> onts = new ArrayList<>();
 
     // TODO
-    String url = config.ontServiceUrl + "/api/v0/ont";
+    String url = orrOntUrl + "/api/v0/ont";
     log.info("GET all onts url=" +url);
 
     GetMethod method = new GetMethod(url);
@@ -198,7 +199,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
   public LoginResult authenticateUser(String userName, String userPassword) {
     log.info("authenticating username=" +userName+ " password=*");
     LoginResult loginResult = new LoginResult();
-    String authRestUrl = config.ontServiceUrl + "/api/v0/user/auth";
+    String authRestUrl = orrOntUrl + "/api/v0/user/auth";
     log.info("authentication REST URL =" +authRestUrl);
 
     PostMethod method = new PostMethod(authRestUrl);
@@ -261,7 +262,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
   protected Map<String,String> getUserInfoMap(String username) throws Exception {
 
     log.info("getUserInfoMap username=" +username);
-    String url = config.ontServiceUrl + "/api/v0/user/" + username;
+    String url = orrOntUrl + "/api/v0/user/" + username;
     log.info("GET user info url=" +url);
 
     GetMethod method = new GetMethod(url);
@@ -326,7 +327,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
 
     log.debug("getOntologyInfo: ontologyUri=" +ontologyUri+ "  version=" +version);
 
-    String url = config.ontServiceUrl + "/api/v0/ont";
+    String url = orrOntUrl + "/api/v0/ont";
 
     GetMethod method = new GetMethod(url);
     HttpClient client = createHttpClient();
@@ -1130,7 +1131,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
 
     log.debug("isRegisteredOntologyUri: ontologyUri=" +ontologyUri+ "  version=" +version);
 
-    String url = config.ontServiceUrl + "/api/v0/ont";
+    String url = orrOntUrl + "/api/v0/ont";
 
     GetMethod method = new GetMethod(url);
     HttpClient client = createHttpClient();
@@ -1598,7 +1599,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
   }
 
   private boolean loadOntologyInGraph(String ontologyUri, String graphId) throws Exception {
-    String url = config.ontServiceUrl + "/api/v0/ts";
+    String url = orrOntUrl + "/api/v0/ts";
 
     PostMethod method = new PostMethod(url);
     HttpClient client = createHttpClient();
@@ -1745,7 +1746,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
         ontologyId, ontologyUserId,
         values);
 
-    String url = config.ontServiceUrl + "/api/v0/ont";
+    String url = orrOntUrl + "/api/v0/ont";
     return ontUploader.create(url);
 
   }
@@ -1810,9 +1811,9 @@ public class OrrClientImpl2 extends OrrClientImplBase {
   }
 
   private String resolveOntologyUri(String uriModel, String version, String... acceptEntries) throws Exception {
-    String ontServiceUrl = config.ontServiceUrl + "/api/v0/ont";
+    String ontRoute = orrOntUrl + "/api/v0/ont";
     uriModel = URLEncoder.encode(uriModel, "UTF-8");
-    String ontServiceRequest = ontServiceUrl + "?uri=" +uriModel;
+    String ontServiceRequest = ontRoute + "?uri=" +uriModel;
     if ( version != null ) {
       ontServiceRequest += "&version=" +version;
     }
@@ -1853,6 +1854,8 @@ public class OrrClientImpl2 extends OrrClientImplBase {
     }
     return sb.toString();
   }
+
+  private final String orrOntUrl;
 
   private final Gson gson = new Gson();
   private final Config cfg;

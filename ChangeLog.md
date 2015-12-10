@@ -1,5 +1,12 @@
 ## change log ##
 
+* 2015-12-10: orrportal 2.7.0 - \#361 Preparations for "build and test portal version against orr-ont endpoint"
+  - good testing of traditional ont-based portal (after the refactoring).
+  - development of new implementation can continue and be tested with a separate deployment
+    where the interim flag `OrrClientFactory._361` and config parameter `orr-ont.service.url` are set,
+    (the new specific config parameter is needed as multiple deployments of the portal on the same machine will
+    be using the same config file.)
+  
 * 2015-12-09: orrportal 2.7.x - \#361 Preparations for "build and test portal version against orr-ont endpoint"
   - Refactoring to extract some general stuff from OrrClientImpl into new OrrClientImplBase 
   - New OrrClientImpl2 for the implementation against orr-ont (still incomplete)

@@ -2,15 +2,16 @@ package org.mmisw.orrclient;
 
 import org.mmisw.orrclient.core.OrrClientImpl;
 import org.mmisw.orrclient.core.OrrClientImpl2;
-import org.mmisw.orrportal.gwt.server.OrrConfig;
 
 /**
  * Obtains the IOrrClient implementation
  */
 public class OrrClientFactory {
+  // interim flag to facilitate impl/testing of OrrClientImpl2
+  private static final boolean _361 = false;
+
   public static IOrrClient init() throws Exception {
-    // the check with "/orr-ont" is just ad hoc during initial impl/testing of OrrClientImpl2
-    if (OrrConfig.instance().ontServiceUrl.endsWith("/orr-ont")) {
+    if (_361) {
       return OrrClientImpl2.init();
     }
     else {

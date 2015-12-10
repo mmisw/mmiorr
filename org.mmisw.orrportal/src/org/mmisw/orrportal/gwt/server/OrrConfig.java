@@ -40,6 +40,9 @@ public class OrrConfig {
   /** URL of the MMI Ont service. */
   public final String ontServiceUrl;
 
+  /** URL of the orr-ont service. Interim prop to allow co-existence with the previous one */
+  public final String orrOntServiceUrl;
+
   /** Main workspace parent directory */
   public final File workspaceDir;
 
@@ -88,6 +91,7 @@ public class OrrConfig {
   public String toString() {
     return "OrrConfig{\n" +
         "  ontServiceUrl      = " + ontServiceUrl + '\n' +
+        "  orrOntServiceUrl   = " + orrOntServiceUrl + '\n' +
         "  workspaceDir       = " + workspaceDir + '\n' +
         "  preUploadsDir      = " + preUploadsDir + '\n' +
         "  voc2rdfDir         = " + voc2rdfDir + '\n' +
@@ -107,6 +111,7 @@ public class OrrConfig {
 
   private OrrConfig(Config cfg) {
     ontServiceUrl = cfg.getString("ont.service.url");
+    orrOntServiceUrl = cfg.hasPath("orr-ont.service.url") ? cfg.getString("orr-ont.service.url") : null;
 
     workspaceDir = prepareDir(cfg.getString("workspace"));
     preUploadsDir = prepareDir(workspaceDir, "ontmd/preuploads");
