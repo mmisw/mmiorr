@@ -8,7 +8,6 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.regex.Pattern;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -31,12 +30,10 @@ import org.mmisw.orrclient.IOrrClient;
 import org.mmisw.orrclient.core.ontmodel.OntModelUtil;
 import org.mmisw.orrclient.core.util.MailSender;
 import org.mmisw.orrclient.core.util.OntServiceUtil;
-import org.mmisw.orrclient.core.util.TempOntologyHelper;
 import org.mmisw.orrclient.core.util.Util2;
 import org.mmisw.orrclient.core.util.ontinfo.OntInfoUtil;
 import org.mmisw.orrclient.core.util.ontype.OntTypeUtil;
 import org.mmisw.orrclient.core.vine.MappingOntologyCreator;
-import org.mmisw.orrclient.core.vine.VineUtil;
 import org.mmisw.orrclient.gwt.client.rpc.BaseOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.CreateOntologyInfo.PriorOntologyInfo;
@@ -51,7 +48,6 @@ import org.mmisw.orrclient.gwt.client.rpc.InternalOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.LoginResult;
 import org.mmisw.orrclient.gwt.client.rpc.MappingDataCreationInfo;
 import org.mmisw.orrclient.gwt.client.rpc.MetadataBaseInfo;
-import org.mmisw.orrclient.gwt.client.rpc.OntologyType;
 import org.mmisw.orrclient.gwt.client.rpc.OtherDataCreationInfo;
 import org.mmisw.orrclient.gwt.client.rpc.PropValue;
 import org.mmisw.orrclient.gwt.client.rpc.RegisterOntologyResult;
@@ -64,9 +60,6 @@ import org.mmisw.orrclient.gwt.client.rpc.TempOntologyInfo;
 import org.mmisw.orrclient.gwt.client.rpc.UnregisterOntologyResult;
 import org.mmisw.orrclient.gwt.client.rpc.UserInfoResult;
 import org.mmisw.orrclient.gwt.client.rpc.VocabularyDataCreationInfo;
-import org.mmisw.orrclient.gwt.client.rpc.vine.RelationInfo;
-import org.mmisw.orrclient.gwt.client.vocabulary.AttrDef;
-import org.mmisw.orrclient.gwt.client.vocabulary.AttrGroup;
 
 import com.opencsv.CSVReader;
 
@@ -84,22 +77,13 @@ import org.mmisw.orrportal.gwt.server.OrrConfig;
 
 
 /**
- * Implementation of OrrClient operations.
- *
- * @author Carlos Rueda
- * @version $Id$
+ * Implementation against the traditional "ont".
  */
-public class OrrClientImpl implements IOrrClient {
+public class OrrClientImpl extends OrrClientImplBase {
 
 	private static final Log log = LogFactory.getLog(OrrClientImpl.class);
 
 	private static final String LISTALL = "?listall";
-
-	/** Ontology URI prefix including root: */
-	private static String defaultNamespaceRoot;
-
-
-	private final File previewDir;
 
 	private static IOrrClient _instance;
 
@@ -114,107 +98,16 @@ public class OrrClientImpl implements IOrrClient {
 		return _instance;
 	}
 
-	/**
-	 * Returns the instance of this class.
-	 */
-	public static IOrrClient getInstance() {
-		return _instance;
-	}
-
 	private OrrClientImpl() throws Exception {
-
-		defaultNamespaceRoot = OrrConfig.instance().ontServiceUrl;
-		log.info("ontServiceUrl = " +OrrConfig.instance().ontServiceUrl);
-
+		super();
 		OntClientConfiguration ontClientConfig = new OntClientConfiguration();
 		ontClientConfig.setOntServiceUrl(OrrConfig.instance().ontServiceUrl);
 
 		ontClient = IOntClient.Manager.init(ontClientConfig);
 		OntServiceUtil.setOntClient(ontClient);
 		log.info("Ont library version = " +OntVersion.getVersion()+ " (" +OntVersion.getBuild()+ ")");
-
-		previewDir = OrrConfig.instance().previewDir;
+		log.info("OrrClientImpl created");
 	}
-
-	private MetadataBaseInfo metadataBaseInfo = null;
-
-	public MetadataBaseInfo getMetadataBaseInfo(
-			boolean includeVersion, String resourceTypeClassUri,
-			String authorityClassUri) {
-
-
-		if ( metadataBaseInfo == null ) {
-			if ( log.isDebugEnabled() ) {
-				log.debug("preparing base info ...");
-			}
-
-			metadataBaseInfo = new MetadataBaseInfo();
-
-//			metadataBaseInfo.setResourceTypeUri(Omv.acronym.getURI());
-			metadataBaseInfo.setResourceTypeUri(OmvMmi.hasResourceType.getURI());
-
-			metadataBaseInfo.setAuthorityAbbreviationUri(OmvMmi.origMaintainerCode.getURI());
-
-			MdHelper.prepareGroups(includeVersion, resourceTypeClassUri, authorityClassUri);
-			AttrGroup[] attrGroups = MdHelper.getAttrGroups();
-			metadataBaseInfo.setAttrGroups(attrGroups);
-
-			metadataBaseInfo.setAuthorityAttrDef(MdHelper.getAuthorityAttrDef());
-
-			metadataBaseInfo.setResourceTypeAttrDef(MdHelper.getResourceTypeAttrDef());
-
-			metadataBaseInfo.setUriAttrDefMap(MdHelper.getUriAttrDefMap());
-
-			if ( log.isDebugEnabled() ) {
-				log.debug("preparing base info ... DONE");
-			}
-		}
-
-		return metadataBaseInfo;
-	}
-
-	public AttrDef refreshOptions(AttrDef attrDef) {
-		return MdHelper.refreshOptions(attrDef);
-	}
-
-	private static RegisteredOntologyInfo _createOntologyInfo(
-			String ontologyUri,   // = toks[0];
-			String displayLabel,  // = toks[1];
-			OntologyType type,    // = toks[2];
-			String userId,        // = toks[3];
-			String contactName,   // = toks[4];
-			String versionNumber, // = toks[5];
-			String dateCreated,   // = toks[6];
-			String userName,      // = toks[7];
-			String ontologyId,    // = toks[8];
-			String versionStatus, // = toks[9];
-
-			String unversionedUri,
-			String authority,
-			String shortName
-	) {
-		RegisteredOntologyInfo registeredOntologyInfo = new RegisteredOntologyInfo();
-
-		registeredOntologyInfo.setUri(ontologyUri);
-		registeredOntologyInfo.setDisplayLabel(displayLabel);
-		registeredOntologyInfo.setType(type);
-		registeredOntologyInfo.setUserId(userId);
-		registeredOntologyInfo.setContactName(contactName);
-		registeredOntologyInfo.setVersionNumber(versionNumber);
-		registeredOntologyInfo.setDateCreated(dateCreated);
-		registeredOntologyInfo.setUsername(userName);
-		registeredOntologyInfo.setOntologyId(ontologyId, userId);
-		registeredOntologyInfo.setVersionStatus(versionStatus);
-
-		registeredOntologyInfo.setUnversionedUri(unversionedUri);
-		registeredOntologyInfo.setAuthority(authority);
-		registeredOntologyInfo.setShortName(shortName);
-
-		_setHostingType(registeredOntologyInfo);
-
-		return registeredOntologyInfo;
-	}
-
 
 	/**
 	 * Gets the ontologies from the registry as a map { unversionedUri -> list of OntologyInfos }.
@@ -262,7 +155,7 @@ public class OrrClientImpl implements IOrrClient {
 			String authority;
 			String shortName;
 
-			if ( OntServiceUtil.isOntResolvableUri(ontologyUri) ) {
+			if ( isOntResolvableUri(ontologyUri) ) {
 				try {
 					MmiUri mmiUri = new MmiUri(ontologyUri);
 					authority = mmiUri.getAuthority();
@@ -338,27 +231,6 @@ public class OrrClientImpl implements IOrrClient {
 	}
 
 
-	private static void _setHostingType(RegisteredOntologyInfo registeredOntologyInfo) {
-		String uri = registeredOntologyInfo.getUri();
-		boolean ontResolvableUri = OntServiceUtil.isOntResolvableUri(uri);
-
-		HostingType hostingType;
-		if ( ontResolvableUri ) {
-			hostingType = HostingType.FULLY_HOSTED;
-		}
-		else {
-			hostingType = HostingType.RE_HOSTED;
-		}
-		// TODO: Determine HostingType.INDEXED case.
-
-		registeredOntologyInfo.setHostingType(hostingType);
-
-        if(log.isTraceEnabled()) {
-            log.trace("_setHostingType: '" + uri + "' ontResolvableUri: " + ontResolvableUri +
-                      "-> hostingType=" + hostingType);
-        }
-	}
-
 	public GetAllOntologiesResult getAllOntologies(boolean includeAllVersions) {
 		GetAllOntologiesResult result = new GetAllOntologiesResult();
 		try {
@@ -374,7 +246,7 @@ public class OrrClientImpl implements IOrrClient {
 	}
 
 
-	private List<RegisteredOntologyInfo> _doGetAllOntologies(boolean includeAllVersions) throws Exception {
+	protected List<RegisteredOntologyInfo> _doGetAllOntologies(boolean includeAllVersions) throws Exception {
 		// {unversionedUri -> list of versioned URIs }  for all unversioned URIs ontologies
 		Map<String, List<RegisteredOntologyInfo>> unversionedToVersioned = _getUnversionedToOntologyInfoListMap(null);
 
@@ -623,7 +495,7 @@ public class OrrClientImpl implements IOrrClient {
 
 		log.debug("getOntologyInfo: ontologyUri=" +ontologyUri+ "  version=" +version);
 
-		if ( OntServiceUtil.isOntResolvableUri(ontologyUri) ) {
+		if ( isOntResolvableUri(ontologyUri) ) {
 			try {
 				MmiUri mmiUri = new MmiUri(ontologyUri);
 				return _getOntologyInfoFromMmiUri(ontologyUri, mmiUri, version);
@@ -867,12 +739,6 @@ public class OrrClientImpl implements IOrrClient {
 	        meth.releaseConnection();
 	    }
 	}
-
-
-	// TODO this mechanism copied from MmiUri (in ont project).
-	private static final Pattern VERSION_PATTERN =
-				Pattern.compile("^\\d{4}(\\d{2}(\\d{2})?)?(T\\d{2})?(\\d{2}(\\d{2})?)?$");
-
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
@@ -1277,7 +1143,7 @@ public class OrrClientImpl implements IOrrClient {
 
 		if ( log.isDebugEnabled() ) {
 			if ( createOntologyResult.isPreserveOriginalBaseNamespace() ) {
-				log.debug(rdf);
+				debugRdf("", rdf);
 			}
 		}
 
@@ -1565,7 +1431,7 @@ public class OrrClientImpl implements IOrrClient {
 		String rdf = JenaUtil2.getOntModelAsString(model, "RDF/XML-ABBREV") ;  // XXX newOntModel);
 
 		if ( log.isDebugEnabled() ) {
-			log.debug(rdf);
+			debugRdf("", rdf);
 		}
 
 		log.debug("createOntology: setting URI: " +base_);
@@ -1583,42 +1449,6 @@ public class OrrClientImpl implements IOrrClient {
 
 		return createOntologyResult;
 	}
-
-
-
-
-	private void _writeRdfToFile(String rdf, File reviewedFile, CreateOntologyResult createOntologyResult) {
-		PrintWriter os;
-		try {
-			// #43: Handle non-UTF8 inputs
-			// keep "UTF-8" character for consistency:
-			os = new PrintWriter(reviewedFile, "UTF-8");
-		}
-		catch (FileNotFoundException e) {
-			String error = "Unexpected: cannot open file for writing: " +reviewedFile;
-			log.info(error);
-			createOntologyResult.setError(error);
-			return;
-		}
-		catch (UnsupportedEncodingException e) {
-			String error = "Unexpected: cannot create file in UTF-8 encoding: " +reviewedFile;
-			log.info(error);
-			createOntologyResult.setError(error);
-			return;
-		}
-		StringReader is = new StringReader(rdf);
-		try {
-			IOUtils.copy(is, os);
-			os.flush();
-		}
-		catch (IOException e) {
-			String error = "Unexpected: IO error while writing to: " +reviewedFile;
-			log.info(error);
-			createOntologyResult.setError(error);
-			return;
-		}
-	}
-
 
 	// TODO remove when new mechanism is in place.
 	@SuppressWarnings("deprecation")
@@ -1657,7 +1487,7 @@ public class OrrClientImpl implements IOrrClient {
 		if ( ! createOntologyResult.isPreserveOriginalBaseNamespace() ) {
 			// Note: if this is the submission of a new version (ontologyId != null) of an "external" (ie, re-hosted)
 			// ontology, then set this flag to true
-			if ( ontologyId != null && ! OntServiceUtil.isOntResolvableUri(createOntologyInfo.getUri()) ) {
+			if ( ontologyId != null && ! isOntResolvableUri(createOntologyInfo.getUri()) ) {
 				createOntologyResult.setPreserveOriginalBaseNamespace(true);
 
 				// TODO However, note that we're goint to preserve the URI of the given ontology in this submission,
@@ -2073,7 +1903,7 @@ public class OrrClientImpl implements IOrrClient {
 
 		if ( log.isDebugEnabled() ) {
 			if ( createOntologyResult.isPreserveOriginalBaseNamespace() ) {
-				log.debug(rdf);
+				debugRdf("", rdf);
 			}
 		}
 
@@ -2193,7 +2023,7 @@ public class OrrClientImpl implements IOrrClient {
                     String version = null;
                     String withUriParam = null;
 
-                    if ( OntServiceUtil.isOntResolvableUri(ontologyUri) ) {
+                    if ( isOntResolvableUri(ontologyUri) ) {
                         // prefer to show the unversioned URI
                         try {
                             MmiUri mmiUri = new MmiUri(ontologyUri);
@@ -2532,7 +2362,6 @@ public class OrrClientImpl implements IOrrClient {
 		return registerOntologyResult;
 	}
 
-
 	public RegisterOntologyResult registerOntology_oldMethod(CreateOntologyResult createOntologyResult, LoginResult loginResult) {
 
 		log.warn("~~~~CALLED registerOntology_oldMethod");
@@ -2667,106 +2496,6 @@ public class OrrClientImpl implements IOrrClient {
 		return registerOntologyResult;
 	}
 
-
-
-
-	public TempOntologyInfo getTempOntologyInfo(
-			String fileType, String filename,
-			boolean includeContents, boolean includeRdf
-	) {
-		TempOntologyInfo tempOntologyInfo = new TempOntologyInfo();
-
-		if ( metadataBaseInfo == null ) {
-			tempOntologyInfo.setError(OrrClientImpl.class.getSimpleName()+ " not properly initialized. Please report this bug. (metadataBaseInfo not initialized)");
-			return tempOntologyInfo;
-		}
-
-		TempOntologyHelper tempOntologyHelper = new TempOntologyHelper(metadataBaseInfo);
-		tempOntologyHelper.getTempOntologyInfo(fileType, filename, tempOntologyInfo, includeRdf);
-
-		if ( tempOntologyInfo.getError() != null ) {
-			return tempOntologyInfo;
-		}
-
-		if ( includeContents ) {
-			_getOntologyContents(tempOntologyInfo);
-		}
-
-		return tempOntologyInfo;
-	}
-
-	/** similar to {@link #getOntologyContents(RegisteredOntologyInfo)} but reading the model
-	 * from the internal path.
-	 */
-	private TempOntologyInfo _getOntologyContents(TempOntologyInfo tempOntologyInfo) {
-
-		if ( log.isDebugEnabled() ) {
-			log.debug("_getOntologyContents(TempOntologyInfo): loading model");
-		}
-
-		String full_path = tempOntologyInfo.getFullPath();
-		File file = new File(full_path );
-		String uriFile = file.toURI().toString();
-		log.info("Loading model: " +uriFile);
-
-		OntModel ontModel;
-		try {
-			ontModel = JenaUtil2.loadModel(uriFile, false);
-		}
-		catch (Throwable ex) {
-			String error = "Unexpected error: " +ex.getClass().getName()+ " : " +ex.getMessage();
-			log.info(error);
-			tempOntologyInfo.setError(error);
-			return tempOntologyInfo;
-		}
-
-
-		// Metadata:
-		if ( log.isDebugEnabled() ) {
-			log.debug("_getOntologyContents(TempOntologyInfo): getting metadata");
-		}
-		MetadataExtractor.prepareOntologyMetadata(metadataBaseInfo, ontModel, tempOntologyInfo);
-
-
-		// Data
-		if ( log.isDebugEnabled() ) {
-			log.debug("_getOntologyContents(TempOntologyInfo): getting entities");
-		}
-
-		try {
-			OntInfoUtil.getEntities(tempOntologyInfo, ontModel);
-		}
-		catch (Exception e) {
-			String error = "Error loading model: " +e.getMessage();
-			log.error(error, e);
-			tempOntologyInfo.setError(error);
-			return tempOntologyInfo;
-		}
-
-
-		return tempOntologyInfo;
-
-	}
-
-
-	////////////////////////////////////////////////////////////////////////////////////////////
-	// VINE:
-
-	public List<RelationInfo> getDefaultVineRelationInfos() {
-		if ( log.isDebugEnabled() ) {
-			log.debug("getDefaultVineRelationInfos starting");
-		}
-
-		List<RelationInfo> relInfos = VineUtil.getDefaultVineRelationInfos();
-
-		if ( log.isDebugEnabled() ) {
-			log.debug("getDefaultVineRelationInfos returning: " +relInfos);
-		}
-
-		return relInfos;
-	}
-
-
 	////////////////////////////////////////////////////////////////////////////////////////////
 	// Search:
 
@@ -2897,23 +2626,9 @@ public class OrrClientImpl implements IOrrClient {
 		return result;
 	}
 
-
-	public UserInfoResult getUserInfo(String username) {
-		UserInfoResult result = new UserInfoResult();
-
-		try {
-			Map<String, String> props = OntServiceUtil.getUserInfo(username);
-			result.setProps(props);
-		}
-		catch (Exception e) {
-			String error = "error getting user information: " +e.getMessage();
-			result.setError(error);
-			log.error(error, e);
-		}
-
-		return result;
+	protected Map<String,String> getUserInfoMap(String username) throws Exception {
+		return OntServiceUtil.getUserInfo(username);
 	}
-
 
 	public CreateUpdateUserAccountResult createUpdateUserAccount(Map<String,String> values) {
 		CreateUpdateUserAccountResult result = new CreateUpdateUserAccountResult();
@@ -2951,107 +2666,6 @@ public class OrrClientImpl implements IOrrClient {
 		return result;
 
 	}
-
-	private Set<String> _getRecipients() {
-		final Set<String> recipients = new LinkedHashSet<>();
-		String notifyEmailsFilename = OrrConfig.instance().notifyEmailsFilename;
-		if (notifyEmailsFilename != null) {
-			try {
-				File f = new File(notifyEmailsFilename);
-				FileInputStream is = new FileInputStream(f);
-				for (Object line : IOUtils.readLines(is)) {
-					String email = String.valueOf(line).trim();
-					if (email.length() > 0 && !email.startsWith("#")) {
-						recipients.add(email);
-					}
-				}
-				IOUtils.closeQuietly(is);
-			}
-			catch (Exception e) {
-				log.warn("could not read in: " + notifyEmailsFilename, e);
-			}
-		}
-		if (recipients.size() == 0) {
-				log.debug("no recipients to send email: " + notifyEmailsFilename);
-		}
-			return recipients;
-	}
-
-	private void _notifyUserCreated(final LoginResult loginResult) {
-        Thread t = new Thread() {
-            public void run() {
-                final Set<String> recipients = _getRecipients();
-                if (recipients.size() == 0) {
-                    return;
-                }
-                final Map<String, String> data = new LinkedHashMap<String, String>();
-                String username = loginResult.getUserName();
-                data.put("username", username);
-                try {
-                    Map<String,String> userInfo = ontClient.getUserInfo(username);
-                    String[] skip = {"username", "id", "date_created"};
-                    for (String k: skip) {
-                        if (userInfo.containsKey(k)) {
-                            userInfo.remove(k);
-                        }
-                    }
-                    data.putAll(userInfo);
-                }
-                catch (Exception e) {
-                    log.warn("getUserInfo: username=" + username+ ": " +e.getMessage());
-                }
-
-                _sendEmail("User created/updated",
-                        "The following user account has been created or updated:",
-                        data, recipients);
-            }
-        };
-        t.setDaemon(true);
-        t.start();
-    }
-
-    private void _sendEmail(String subject, String header, Map<String, String> data, Set<String> recipients) {
-        final String mail_user     = OrrConfig.instance().emailUsername;
-        final String mail_password = OrrConfig.instance().emailPassword;
-        if ( mail_user == null || mail_user.equals("-") ) {
-            String error = "Email server account not configured. Please report this bug. (u)";
-            log.error(error);
-            return;
-        }
-        if ( mail_password == null || mail_password.equals("-") ) {
-            String error = "Email server account not configured. Please report this bug. (p)";
-            log.error(error);
-            return;
-        }
-
-        boolean debug = false;
-        final String from    = OrrConfig.instance().emailFrom;
-        final String replyTo = OrrConfig.instance().emailReplyTo;
-
-        String text = header + "\n";
-        for (String key: data.keySet()) {
-            text += "\n    " + key + ": " + data.get(key);
-        }
-        text += "\n\n";
-        text += "(you have received this email because your address is included in "
-						+OrrConfig.instance().notifyEmailsFilename + ")";
-
-        String to = "", comma = "";
-        for (String recipient : recipients) {
-            to += comma + recipient;
-            comma = ",";
-        }
-        log.debug("sending email to notify event: " +data+ "; recipients: " +to);
-        try {
-            MailSender.sendMessage(mail_user, mail_password, debug, from, to, replyTo, subject, text);
-            log.debug("email sent to notify event: " + data + "; recipients: " + to);
-        }
-        catch (Exception e) {
-            String error = "Error sending email to notify event: " + data
-                    + "; recipients: " +to+ ": " +e.getMessage();
-            log.error(error, e);
-        }
-    }
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	// OOI CI semantic prototype
