@@ -108,8 +108,6 @@ public class TempOntologyHelper {
 			final String ontologyUri = JenaUtil2.removeTrailingFragment(uriForEmpty);
 			tempOntologyInfo.setUri(ontologyUri);
 
-			tempOntologyInfo.setIsOntResolvable(OntServiceUtil.isOntResolvableUri(ontologyUri));
-
 			// get shortName as the last piece in the path but discarding any query piece
 			String path = ontologyUri;
 			int idx = Math.max(Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\')), path.lastIndexOf(':'));
