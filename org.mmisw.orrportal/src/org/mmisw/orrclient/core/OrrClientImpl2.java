@@ -86,13 +86,17 @@ public class OrrClientImpl2 extends OrrClientImplBase {
 
     // TODO
     String url = orrOntUrl + "/api/v0/ont";
-    log.info("GET all onts url=" +url);
+    if (log.isDebugEnabled()) {
+      log.debug("GET all onts url=" + url);
+    }
 
     GetMethod method = new GetMethod(url);
     HttpClient client = createHttpClient();
-    includeAutorization(method);
+    //includeAuthorization(method);
 
-    log.info("Executing " + method.getName());
+    if (log.isDebugEnabled()) {
+      log.debug("Executing " + method.getName());
+    }
 
     try {
       int status = client.executeMethod(method);
@@ -155,7 +159,9 @@ public class OrrClientImpl2 extends OrrClientImplBase {
 
     if ( includeAllVersions ) {
       Object versionsObj = map.get("versions");
-      log.info("_createRegisteredOntologyInfo, map.versions=" + versionsObj);
+      if (log.isDebugEnabled()) {
+        log.debug("_createRegisteredOntologyInfo, map.versions=" + versionsObj);
+      }
       if (versionsObj instanceof List<?>) {
         // TODO get details for each of the versions. At this point we are using the
         // same details as the latest version, only with the version piece updated ...
@@ -197,14 +203,19 @@ public class OrrClientImpl2 extends OrrClientImplBase {
 
   @Override
   public LoginResult authenticateUser(String userName, String userPassword) {
-    log.info("authenticating username=" +userName+ " password=*");
-    LoginResult loginResult = new LoginResult();
     String authRestUrl = orrOntUrl + "/api/v0/user/auth";
-    log.info("authentication REST URL =" +authRestUrl);
+    LoginResult loginResult = new LoginResult();
+
+    if (log.isDebugEnabled()) {
+      log.debug("authenticating username=" +userName+ " authRestUrl=" +authRestUrl);
+    }
+
+    Map<String,String> payload = new HashMap<>();
+    payload.put("userName", userName);
+    payload.put("password", userPassword);
+    String json = gson.toJson(payload);
 
     PostMethod method = new PostMethod(authRestUrl);
-    String json = String.format("{\"userName\": \"%s\",\"password\": \"%s\"}",
-        userName, userPassword);
 
     try {
       StringRequestEntity requestEntity = new StringRequestEntity(
@@ -216,16 +227,20 @@ public class OrrClientImpl2 extends OrrClientImplBase {
 
       HttpClient client = createHttpClient();
 
-      log.info("Executing " + method.getName());
+      if (log.isDebugEnabled()) {
+        log.debug("Executing " + method.getName());
+      }
 
       int status = client.executeMethod(method);
 
       String msg = method.getResponseBodyAsString();
 
       if (status == HttpStatus.SC_OK) {
-        log.info("Authentication complete, response=[" + msg + "]");
         Map<String, String> map = gson.fromJson(msg, Map.class);
-        log.info("Authentication complete, map=" + map);
+
+        if (log.isDebugEnabled()) {
+          log.debug("Authentication complete, response=[" + msg + "] map=" + map);
+        }
 
         loginResult.setUserName(userName);
         loginResult.setSessionId("SESSION_ID_TODO");
@@ -241,8 +256,9 @@ public class OrrClientImpl2 extends OrrClientImplBase {
       }
       else {
         String statusText = HttpStatus.getStatusText(status);
-        log.info("Authentication failed, status text=" + statusText);
-        log.info("Authentication failed, response=" + msg);
+        if (log.isDebugEnabled()) {
+          log.debug("Authentication failed, statusText=" + statusText + " response=" + msg);
+        }
         if ( msg == null ) {
           msg = statusText;
         }
@@ -261,15 +277,18 @@ public class OrrClientImpl2 extends OrrClientImplBase {
 
   protected Map<String,String> getUserInfoMap(String username) throws Exception {
 
-    log.info("getUserInfoMap username=" +username);
     String url = orrOntUrl + "/api/v0/user/" + username;
-    log.info("GET user info url=" +url);
+    if (log.isDebugEnabled()) {
+      log.debug("getUserInfoMap username=" +username+ " url=" +url);
+    }
 
     GetMethod method = new GetMethod(url);
     HttpClient client = createHttpClient();
-    includeAutorization(method);
+    includeAuthorization(method);
 
-    log.info("Executing " + method.getName());
+    if (log.isDebugEnabled()) {
+      log.debug("Executing " + method.getName());
+    }
 
     try {
       int status = client.executeMethod(method);
@@ -299,10 +318,14 @@ public class OrrClientImpl2 extends OrrClientImplBase {
     return client;
   }
 
-  private void includeAutorization(HttpMethodBase method) {
+  private void includeAuthorization(HttpMethodBase method) {
     String username = cfg.getString("todo.username");  // FIXME
     String password = cfg.getString("todo.password");  // FIXME
-    log.debug("includeAutorization: username=" + username + " password=" + password);
+
+    if (log.isDebugEnabled()) {
+      log.debug("includeAuthorization: username=" + username + " password=*");
+    }
+
     try {
       String encoded = DatatypeConverter.printBase64Binary((username + ":" + password).getBytes("UTF-8"));
       method.addRequestHeader(new Header("Authorization", "Basic " + encoded));
@@ -315,8 +338,6 @@ public class OrrClientImpl2 extends OrrClientImplBase {
   @Override
   public RegisteredOntologyInfo getOntologyInfo(String ontologyUri) {
 
-    log.info("getOntologyInfo ontologyUri=" +ontologyUri);
-
     String[] toks = ontologyUri.split("\\?");
     ontologyUri = toks[0];
 
@@ -325,13 +346,15 @@ public class OrrClientImpl2 extends OrrClientImplBase {
       version = toks[1].substring("version=".length());
     }
 
-    log.debug("getOntologyInfo: ontologyUri=" +ontologyUri+ "  version=" +version);
+    if (log.isDebugEnabled()) {
+      log.debug("getOntologyInfo: ontologyUri=" +ontologyUri+ "  version=" +version);
+    }
 
     String url = orrOntUrl + "/api/v0/ont";
 
     GetMethod method = new GetMethod(url);
     HttpClient client = createHttpClient();
-    includeAutorization(method);
+    //includeAuthorization(method);
 
     List<NameValuePair> params = new ArrayList<>();
     params.add(new NameValuePair("uri", ontologyUri));
@@ -343,8 +366,9 @@ public class OrrClientImpl2 extends OrrClientImplBase {
 
     NameValuePair[] data = params.toArray(new NameValuePair[params.size()]);
     method.setQueryString(data);
-    if (log.isInfoEnabled()) {
-      log.info(debugMethod(method, params));
+
+    if (log.isDebugEnabled()) {
+      log.debug(debugMethod(method, params));
     }
 
     RegisteredOntologyInfo roi = new RegisteredOntologyInfo();
@@ -356,7 +380,9 @@ public class OrrClientImpl2 extends OrrClientImplBase {
         String msg = method.getResponseBodyAsString();
 
         Map<String, Object> map = gson.fromJson(msg, Map.class);
-        log.info("getOntologyInfo complete, map=" + map);
+        if (log.isDebugEnabled()) {
+          log.debug("getOntologyInfo complete, map=" + map);
+        }
         roi = _createRegisteredOntologyInfo(map, true);
       }
       else {
@@ -380,7 +406,9 @@ public class OrrClientImpl2 extends OrrClientImplBase {
 
   @Override
   public ResolveUriResult resolveUri(String uri) {
-    log.debug("resolveUri uri=" + uri);
+    if (log.isDebugEnabled()) {
+      log.debug("resolveUri uri=" + uri);
+    }
     ResolveUriResult resolveUriResult = new ResolveUriResult(uri);
 
     // try ontology:
@@ -486,8 +514,10 @@ public class OrrClientImpl2 extends OrrClientImplBase {
   @Override
   public SparqlQueryResult runSparqlQuery(SparqlQueryInfo queryInfo) {
 
-    log.debug("runSparqlQuery: query=" +queryInfo);
-
+    if (log.isDebugEnabled()) {
+      log.debug("runSparqlQuery: query=" + queryInfo);
+    }
+    String url = config.sparqlEndpoint;
 
     SparqlQueryResult sparqlQueryResult = new SparqlQueryResult();
 
@@ -496,7 +526,6 @@ public class OrrClientImpl2 extends OrrClientImplBase {
     final String[] acceptEntries = queryInfo.getAcceptEntries();
 
     try {
-      String url = cfg.getString("agraph.sparql");
       GetMethod method = new GetMethod(url);
 
       List<NameValuePair> params = new ArrayList<>();
@@ -516,8 +545,8 @@ public class OrrClientImpl2 extends OrrClientImplBase {
 
       NameValuePair[] data = params.toArray(new NameValuePair[params.size()]);
       method.setQueryString(data);
-      if (log.isInfoEnabled()) {
-        log.info(debugMethod(method, params));
+      if (log.isDebugEnabled()) {
+        log.debug(debugMethod(method, params));
       }
 
       try {
@@ -565,7 +594,6 @@ public class OrrClientImpl2 extends OrrClientImplBase {
         names.add(String.valueOf(obj));
       }
     }
-    log.debug("~~~names=" + names);
 
     html.append("<tr>");
     for(String name: names) {
@@ -586,7 +614,12 @@ public class OrrClientImpl2 extends OrrClientImplBase {
         }
       }
     }
-    log.debug("~~~values=" + values);
+    if (log.isDebugEnabled()) {
+      log.debug("~~~names=" + names + " values=" +
+          (values.size() < 10 ? values :
+              values.subList(0, 2) + " [...] " + values.subList(values.size() - 3, values.size()))
+      );
+    }
 
     for(List<String> vals: values) {
       html.append("<tr>");
@@ -659,7 +692,9 @@ public class OrrClientImpl2 extends OrrClientImplBase {
 
   @Override
   public CreateOntologyResult createOntology(CreateOntologyInfo createOntologyInfo) {
-    log.info("createOntology: called. createOntologyInfo = " +createOntologyInfo);
+    if (log.isDebugEnabled()) {
+      log.debug("createOntology: called. createOntologyInfo = " + createOntologyInfo);
+    }
     final HostingType hostingType = createOntologyInfo.getHostingType();
 
     if (hostingType == null) {
@@ -681,7 +716,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
     if ( createOntologyInfo.getMetadataValues() == null ) {
       String error = "Unexpected: createOntologyInfo.getMetadataValues returned null. Please report this bug";
       createOntologyResult.setError(error);
-      log.info(error);
+      log.error(error);
       return createOntologyResult;
     }
 
@@ -695,7 +730,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
       default: {
         String error = "Hosting type "+hostingType+ " NOT yet implemented.";
         createOntologyResult.setError(error);
-        log.info(error);
+        log.error(error);
         return createOntologyResult;
       }
     }
@@ -704,7 +739,9 @@ public class OrrClientImpl2 extends OrrClientImplBase {
   private CreateOntologyResult _createOntologyFullyHosted(CreateOntologyInfo createOntologyInfo, CreateOntologyResult createOntologyResult) {
 
     final String createOntUri = createOntologyInfo.getUri();
-    log.debug("#356 _createOntologyFullyHosted; createOntologyInfo.getUri()=" + createOntUri);
+    if (log.isDebugEnabled()) {
+      log.debug("#356 _createOntologyFullyHosted; createOntologyInfo.getUri()=" + createOntUri);
+    }
 
     Map<String, String> newValues = createOntologyInfo.getMetadataValues();
     assert ( newValues != null ) ;
@@ -727,14 +764,14 @@ public class OrrClientImpl2 extends OrrClientImplBase {
     if ( orgAbbreviation == null ) {
       // should not happen.
       String error = "missing authority abbreviation";
-      log.info(error);
+      log.error(error);
       createOntologyResult.setError(error);
       return createOntologyResult;
     }
     if ( shortName == null ) {
       // should not happen.
       String error = "missing short name";
-      log.info(error);
+      log.error(error);
       createOntologyResult.setError(error);
       return createOntologyResult;
     }
@@ -793,7 +830,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
         String error = "Unexpected: Submission of new ontology, but not contents were provided. " +
             "This should be detected before submission. Please report this bug";
         createOntologyResult.setError(error);
-        log.info(error);
+        log.error(error);
         return createOntologyResult;
       }
 
@@ -820,7 +857,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
       boolean ok = VERSION_PATTERN.matcher(version).find();
       if ( ! ok ) {
         String error = "Given version is invalid: " +version;
-        log.info(error);
+        log.error(error);
         createOntologyResult.setError(error);
         return createOntologyResult;
       }
@@ -846,7 +883,9 @@ public class OrrClientImpl2 extends OrrClientImplBase {
       // Get model from the new contents.
       //
       full_path = createOntologyResult.getFullPath();
-      log.info("Loading model: " +full_path);
+      if (log.isDebugEnabled()) {
+        log.debug("Loading model: " + full_path);
+      }
 
       File file = new File(full_path);
 
@@ -855,7 +894,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
       }
       catch ( Throwable ex ) {
         String error = "Unexpected error: " +ex.getClass().getName()+ " : " +ex.getMessage();
-        log.info(error);
+        log.error(error);
         createOntologyResult.setError(error);
         return createOntologyResult;
       }
@@ -876,7 +915,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
       }
       catch (Exception e) {
         String error = "error while retrieving registered ontology: " +e.getMessage();
-        log.info(error, e);
+        log.error(error, e);
         createOntologyResult.setError(error);
         return createOntologyResult;
       }
@@ -886,7 +925,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
         // Shouldn't happen -- we're reading in an already registered version.
         String error = "error while getting URI for empty prefix for a registered version. " +
             "Please report this bug.";
-        log.info(error);
+        log.error(error);
         createOntologyResult.setError(error);
         return createOntologyResult;
       }
@@ -911,19 +950,23 @@ public class OrrClientImpl2 extends OrrClientImplBase {
     base_ = JenaUtil2.removeTrailingFragment(finalUri);
 
 
-    log.info("Setting prefix \"\" for URI " + ns_);
+    if (log.isDebugEnabled()) {
+      log.debug("Setting prefix \"\" for URI " + ns_);
+    }
     model.setNsPrefix("", ns_);
 
 
     if ( original_ns_ != null ) {
       // Update statements  according to the new namespace:
-      log.info("createOntologyFullyHosted: original namespace: '" +uriForEmpty+ "'. " +
-          "Elements here will be transferred to new namespace " +ns_
-      );
+      if (log.isDebugEnabled()) {
+        log.debug("createOntologyFullyHosted: original namespace: '" + uriForEmpty + "'. " +
+            "Elements here will be transferred to new namespace " + ns_
+        );
+      }
       Util2.replaceNameSpace(model, original_ns_, ns_);
     }
     else {
-      log.info("createOntologyFullyHosted: no original namespace, so no transfer will be done.");
+      log.debug("createOntologyFullyHosted: no original namespace, so no transfer will be done.");
     }
 
 
@@ -935,7 +978,9 @@ public class OrrClientImpl2 extends OrrClientImplBase {
     if ( original_ns_ != null ) {
       String originalOntologyUri = JenaUtil2.removeTrailingFragment(original_ns_);
       ontRes = model.getOntology(originalOntologyUri);
-      log.debug("#356: createOntologyFullyHosted: model.getOntology(" +originalOntologyUri+ ") = " + ontRes);
+      if (log.isDebugEnabled()) {
+        log.debug("#356: createOntologyFullyHosted: model.getOntology(" + originalOntologyUri + ") = " + ontRes);
+      }
     }
     //else {
     //  // #356: don't do this; arbitrarily some OWL.Ontology individual would be considered
@@ -944,8 +989,10 @@ public class OrrClientImpl2 extends OrrClientImplBase {
 
     List<Statement> prexistStatements = null;
     if ( ontRes != null ) {
-      prexistStatements = new ArrayList<Statement>();
-      log.info("Getting pre-existing properties for OWL.Ontology individual: " +ontRes.getURI());
+      prexistStatements = new ArrayList<>();
+      if (log.isDebugEnabled()) {
+        log.debug("Getting pre-existing properties for OWL.Ontology individual: " + ontRes.getURI());
+      }
       StmtIterator iter = ontRes.listProperties();
       while ( iter.hasNext() ) {
         Statement st = iter.nextStatement();
@@ -958,7 +1005,9 @@ public class OrrClientImpl2 extends OrrClientImplBase {
     // plus the new and updated attributes:
     final OntModel newOntModel = _createOntModel(model);
     final Ontology ont_ = newOntModel.createOntology(base_);
-    log.info("New ontology created with namespace " + ns_ + " base " + base_);
+    if (log.isDebugEnabled()) {
+      log.debug("New ontology created with namespace " + ns_ + " base " + base_);
+    }
     newOntModel.setNsPrefix("", ns_);
 
     // set preferred prefixes:
@@ -992,11 +1041,15 @@ public class OrrClientImpl2 extends OrrClientImplBase {
         //
         String newValue = newValues.get(prd.getURI());
         if ( newValue == null || newValue.trim().length() == 0 ) {
-          log.info("  Transferring: " +st.getSubject()+ " :: " +prd+ " :: " +st.getObject());
+          if (log.isDebugEnabled()) {
+            log.debug("  Transferring: " + st.getSubject() + " :: " + prd + " :: " + st.getObject());
+          }
           newOntModel.add(ont_, prd, st.getObject());
         }
         else {
-          log.info(" Removing pre-existing values for predicate: " +prd+ " because of new value " +newValue);
+          if (log.isDebugEnabled()) {
+            log.debug(" Removing pre-existing values for predicate: " + prd + " because of new value " + newValue);
+          }
           newOntModel.removeAll(ont_, prd, null);
         }
       }
@@ -1010,7 +1063,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
         // entry altogether and get an "rdf:Description" instead.
         //
 
-        log.info("Removing original OWL.Ontology individual");
+        log.debug("Removing original OWL.Ontology individual");
         ontRes.removeProperties();
         // TODO the following may be unnecesary but doesn't hurt:
         model.remove(ontRes, RDF.type, OWL.Ontology);
@@ -1028,11 +1081,15 @@ public class OrrClientImpl2 extends OrrClientImplBase {
       if ( value.length() > 0 ) {
         Property prop = uriPropMap.get(uri);
         if ( prop == null ) {
-          log.info("No property found for uri='" +uri+ "'");
+          if (log.isDebugEnabled()) {
+            log.debug("No property found for uri='" + uri + "'");
+          }
           continue;
         }
 
-        log.info(" Assigning: " +uri+ " = " +value);
+        if (log.isDebugEnabled()) {
+          log.debug(" Assigning: " + uri + " = " + value);
+        }
         ont_.addProperty(prop, value);
       }
     }
@@ -1135,7 +1192,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
 
     GetMethod method = new GetMethod(url);
     HttpClient client = createHttpClient();
-    includeAutorization(method);
+    //includeAuthorization(method);
 
     List<NameValuePair> params = new ArrayList<>();
     params.add(new NameValuePair("uri", ontologyUri));
@@ -1147,8 +1204,8 @@ public class OrrClientImpl2 extends OrrClientImplBase {
 
     NameValuePair[] data = params.toArray(new NameValuePair[params.size()]);
     method.setQueryString(data);
-    if (log.isInfoEnabled()) {
-      log.info(debugMethod(method, params));
+    if (log.isDebugEnabled()) {
+      log.debug(debugMethod(method, params));
     }
 
     try {
@@ -1213,7 +1270,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
         String error = "Unexpected: Submission of new ontology, but not contents were provided. " +
             "This should be detected before submission. Please report this bug";
         createOntologyResult.setError(error);
-        log.info(error);
+        log.error(error);
         return createOntologyResult;
       }
 
@@ -1240,7 +1297,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
       boolean ok = VERSION_PATTERN.matcher(version).find();
       if ( ! ok ) {
         String error = "Given version is invalid: " +version;
-        log.info(error);
+        log.error(error);
         createOntologyResult.setError(error);
         return createOntologyResult;
       }
@@ -1267,7 +1324,9 @@ public class OrrClientImpl2 extends OrrClientImplBase {
       // Get model from the new contents.
       //
       full_path = createOntologyResult.getFullPath();
-      log.info("Loading model: " +full_path);
+      if (log.isDebugEnabled()) {
+        log.debug("Loading model: " + full_path);
+      }
 
       File file = new File(full_path);
 
@@ -1276,7 +1335,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
       }
       catch ( Throwable ex ) {
         String error = "Unexpected error: " +ex.getClass().getName()+ " : " +ex.getMessage();
-        log.info(error);
+        log.error(error);
         createOntologyResult.setError(error);
         return createOntologyResult;
       }
@@ -1305,7 +1364,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
       }
       catch (Exception e) {
         String error = "error while retrieving registered ontology: " +e.getMessage();
-        log.info(error, e);
+        log.error(error, e);
         createOntologyResult.setError(error);
         return createOntologyResult;
       }
@@ -1315,7 +1374,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
         // Shouldn't happen -- we're reading in an already registered version.
         String error = "#356: _createOntologyReHosted: dit not get ontology object from previous " +
             "version by ontUri=" + ontUri + ". Please report this bug.";
-        log.info(error);
+        log.error(error);
         createOntologyResult.setError(error);
         return createOntologyResult;
       }
@@ -1329,7 +1388,9 @@ public class OrrClientImpl2 extends OrrClientImplBase {
 
     final String base_ = JenaUtil2.removeTrailingFragment(ontUri);
 
-    log.info("createOntologyReHosted: original namespace: " +original_base_);
+    if (log.isDebugEnabled()) {
+      log.debug("createOntologyReHosted: original namespace: " + original_base_);
+    }
     if ( original_base_ != null && ! original_base_.equals(base_) ) {
       // In this re-hosted case, we force the original URI and the new URI to be the same.
       // This may happen only in the case of a submission of a new version.
@@ -1409,11 +1470,15 @@ public class OrrClientImpl2 extends OrrClientImplBase {
       if ( value != null && value.trim().length() > 0 ) {
         Property prop = uriPropMap.get(uri);
         if ( prop == null ) {
-          log.info("No property found for uri='" +uri+ "'");
+          if (log.isDebugEnabled()) {
+            log.debug("No property found for uri='" + uri + "'");
+          }
           continue;
         }
 
-        log.info(" Assigning: " +uri+ " = " +value);
+        if (log.isDebugEnabled()) {
+          log.debug(" Assigning: " + uri + " = " + value);
+        }
         ont_.addProperty(prop, value);
       }
     }
@@ -1457,7 +1522,9 @@ public class OrrClientImpl2 extends OrrClientImplBase {
     CreateOntologyInfo createOntologyInfo = createOntologyResult.getCreateOntologyInfo();
 
     final HostingType hostingType = createOntologyInfo.getHostingType();
-    log.info("registerOntology: called. hostingType = " +hostingType);
+    if (log.isDebugEnabled()) {
+      log.debug("registerOntology: called. hostingType = " + hostingType);
+    }
 
     if (hostingType == null) {
       // should not happen
@@ -1476,7 +1543,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
         // should not happen
         String error = "Hosting type "+hostingType+ " not implemented.";
         registerOntologyResult.setError(error);
-        log.info(error);
+        log.error(error);
         return registerOntologyResult;
       }
     }
@@ -1486,7 +1553,9 @@ public class OrrClientImpl2 extends OrrClientImplBase {
 
     String full_path = createOntologyResult.getFullPath();
 
-    log.info("registerOntology: Reading in temporary file: " +full_path);
+    if (log.isDebugEnabled()) {
+      log.debug("registerOntology: Reading in temporary file: " + full_path);
+    }
 
     File file = new File(full_path);
 
@@ -1498,7 +1567,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
     }
     catch (Throwable e) {
       String error = "Unexpected: error while reading from: " +full_path+ " : " +e.getMessage();
-      log.info(error);
+      log.error(error);
       registerOntologyResult.setError(error);
       return registerOntologyResult;
     }
@@ -1515,7 +1584,9 @@ public class OrrClientImpl2 extends OrrClientImplBase {
     assert loginResult.getUserId() != null;
     assert loginResult.getSessionId() != null;
 
-    log.info(": registering URI: " +uri+ " ...");
+    if (log.isDebugEnabled()) {
+      log.debug(": registering URI: " + uri + " ...");
+    }
 
     CreateOntologyInfo createOntologyInfo = createOntologyResult.getCreateOntologyInfo();
 
@@ -1523,7 +1594,9 @@ public class OrrClientImpl2 extends OrrClientImplBase {
     String ontologyUserId = createOntologyInfo.getPriorOntologyInfo().getOntologyUserId();
 
     if ( ontologyId != null ) {
-      log.info("Will create a new version for ontologyId = " +ontologyId+ ", userId=" +ontologyUserId);
+      if (log.isDebugEnabled()) {
+        log.debug("Will create a new version for ontologyId = " + ontologyId + ", userId=" + ontologyUserId);
+      }
     }
 
 
@@ -1592,7 +1665,9 @@ public class OrrClientImpl2 extends OrrClientImplBase {
       registerOntologyResult.setError(ex.getClass().getName()+ ": " +ex.getMessage());
     }
 
-    log.info("registerOntologyResult = " +registerOntologyResult);
+    if (log.isDebugEnabled()) {
+      log.debug("registerOntologyResult = " + registerOntologyResult);
+    }
 
 
     return registerOntologyResult;
@@ -1603,7 +1678,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
 
     PostMethod method = new PostMethod(url);
     HttpClient client = createHttpClient();
-    includeAutorization(method);
+    includeAuthorization(method);
 
     List<NameValuePair> params = new ArrayList<>();
     params.add(new NameValuePair("uri", ontologyUri));
@@ -1614,8 +1689,8 @@ public class OrrClientImpl2 extends OrrClientImplBase {
 
     NameValuePair[] data = params.toArray(new NameValuePair[params.size()]);
     method.setQueryString(data);
-    if (log.isInfoEnabled()) {
-      log.info(debugMethod(method, params));
+    if (log.isDebugEnabled()) {
+      log.debug(debugMethod(method, params));
     }
 
     try {
@@ -1637,7 +1712,9 @@ public class OrrClientImpl2 extends OrrClientImplBase {
 
     String full_path = createOntologyResult.getFullPath();
 
-    log.info("registerOntology: Reading in temporary file: " +full_path);
+    if (log.isDebugEnabled()) {
+      log.debug("registerOntology: Reading in temporary file: " + full_path);
+    }
 
     File file = new File(full_path);
 
@@ -1648,7 +1725,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
     }
     catch (Throwable e) {
       String error = "Unexpected: error while reading from: " +full_path+ " : " +e.getMessage();
-      log.info(error);
+      log.error(error);
       registerOntologyResult.setError(error);
       return registerOntologyResult;
     }
@@ -1665,7 +1742,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
     assert loginResult.getUserId() != null;
     assert loginResult.getSessionId() != null;
 
-    log.info(": registering ...");
+    log.error(": registering ...");
 
     CreateOntologyInfo createOntologyInfo = createOntologyResult.getCreateOntologyInfo();
 
@@ -1673,7 +1750,9 @@ public class OrrClientImpl2 extends OrrClientImplBase {
     String ontologyUserId = createOntologyInfo.getPriorOntologyInfo().getOntologyUserId();
 
     if ( ontologyId != null ) {
-      log.info("Will create a new version for ontologyId = " +ontologyId+ ", userId=" +ontologyUserId);
+      if (log.isDebugEnabled()) {
+        log.debug("Will create a new version for ontologyId = " + ontologyId + ", userId=" + ontologyUserId);
+      }
     }
 
 
@@ -1683,16 +1762,6 @@ public class OrrClientImpl2 extends OrrClientImplBase {
     try {
 
       String fileName = new URL(uri).getPath();
-
-      //
-      // make sure the fileName ends with ".owl" as the aquaportal back-end seems
-      // to add that fixed extension in some operations (at least in the parse operation)
-      //
-      if ( ! fileName.toLowerCase().endsWith(".owl") ) {
-        log.info("register: setting file extension to .owl per aquaportal requirement.");
-        fileName += ".owl";
-      }
-
 
       // OK, now do the actual registration:
       String res = uploadOntology(uri, fileName, rdf,
@@ -1885,7 +1954,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
      * @param signInResult
      * @param ontologyId Aquaportal ontology ID when creating a new version.
      *
-     * @param values   Used to fill in some of the fields in the aquaportal request
+     * @param values   Used to fill in some of the fields for the request
      * @throws Exception
      */
     OntUploader(String uri, String fileName, String RDF,
@@ -1944,21 +2013,21 @@ public class OrrClientImpl2 extends OrrClientImplBase {
         Part[] parts = partList.toArray(new Part[partList.size()]);
         post.setRequestEntity(new MultipartRequestEntity(parts, post.getParams()));
         HttpClient client = createHttpClient();
-        includeAutorization(post);
+        includeAuthorization(post);
 
-        log.info("Executing POST ...");
+        log.debug("Executing POST ...");
 
         String msg;
         int status = client.executeMethod(post);
         if (status == HttpStatus.SC_CREATED) {
           msg = post.getResponseBodyAsString();
-//				log.info("Upload complete, response=" + msg);
+  				//log.debug("Upload complete, response=" + msg);
           msg = "OK:" +msg;
         }
         else {
           String body = post.getResponseBodyAsString();
           msg = HttpStatus.getStatusText(status);
-          log.info("Upload failed, status=" + status+ ": " +msg+ "\n" +body);
+          log.error("Upload failed, status=" + status+ ": " +msg+ "\n" +body);
           msg = "ERROR:" +msg+ "\n" +body ;
         }
 

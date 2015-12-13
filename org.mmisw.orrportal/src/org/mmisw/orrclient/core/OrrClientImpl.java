@@ -231,21 +231,6 @@ public class OrrClientImpl extends OrrClientImplBase {
 	}
 
 
-	public GetAllOntologiesResult getAllOntologies(boolean includeAllVersions) {
-		GetAllOntologiesResult result = new GetAllOntologiesResult();
-		try {
-			List<RegisteredOntologyInfo> list = _doGetAllOntologies(includeAllVersions);
-			result.setOntologyList(list);
-		}
-		catch (Throwable ex) {
-			String error = "Error getting list of all ontologies: " +ex.getMessage();
-			log.warn(error, ex);
-			result.setError(error);
-		}
-		return result;
-	}
-
-
 	protected List<RegisteredOntologyInfo> _doGetAllOntologies(boolean includeAllVersions) throws Exception {
 		// {unversionedUri -> list of versioned URIs }  for all unversioned URIs ontologies
 		Map<String, List<RegisteredOntologyInfo>> unversionedToVersioned = _getUnversionedToOntologyInfoListMap(null);

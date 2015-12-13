@@ -9,7 +9,6 @@ import org.mmisw.ont.vocabulary.OmvMmi;
 import org.mmisw.orrclient.IOrrClient;
 import org.mmisw.orrclient.core.util.MailSender;
 import org.mmisw.orrclient.core.util.TempOntologyHelper;
-import org.mmisw.orrclient.core.util.Util2;
 import org.mmisw.orrclient.core.util.ontinfo.OntInfoUtil;
 import org.mmisw.orrclient.core.vine.VineUtil;
 import org.mmisw.orrclient.gwt.client.rpc.*;
@@ -19,7 +18,6 @@ import org.mmisw.orrclient.gwt.client.vocabulary.AttrGroup;
 import org.mmisw.orrportal.gwt.server.OrrConfig;
 
 import java.io.*;
-import java.net.URL;
 import java.util.*;
 import java.util.regex.Pattern;
 
