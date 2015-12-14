@@ -105,7 +105,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
       if (status == HttpStatus.SC_OK) {
         List<Object> list = gson.fromJson(msg, List.class);
         for (Object obj: list) {
-          System.out.println("---- " + obj);
+          //log.debug("---- " + obj);
           if (obj instanceof Map) {
             Map<String, String> map = (Map<String, String>) obj;
             RegisteredOntologyInfo registeredOntologyInfo = _createRegisteredOntologyInfo(map, includeAllVersions);
@@ -159,7 +159,7 @@ public class OrrClientImpl2 extends OrrClientImplBase {
 
     if ( includeAllVersions ) {
       Object versionsObj = map.get("versions");
-      if (log.isDebugEnabled()) {
+      if (log.isDebugEnabled() && versionsObj != null) {
         log.debug("_createRegisteredOntologyInfo, map.versions=" + versionsObj);
       }
       if (versionsObj instanceof List<?>) {
@@ -227,6 +227,8 @@ public class OrrClientImpl2 extends OrrClientImplBase {
 
       HttpClient client = createHttpClient();
 
+      includeAuthorization(method, userName, userPassword);
+
       if (log.isDebugEnabled()) {
         log.debug("Executing " + method.getName());
       }
@@ -239,7 +241,8 @@ public class OrrClientImpl2 extends OrrClientImplBase {
         Map<String, String> map = gson.fromJson(msg, Map.class);
 
         if (log.isDebugEnabled()) {
-          log.debug("Authentication complete, response=[" + msg + "] map=" + map);
+          log.debug("Authentication complete, response=`" + msg + "` map=" + map +
+                    "response headers=" + Arrays.asList(method.getResponseHeaders()));
         }
 
         loginResult.setUserName(userName);
@@ -321,11 +324,12 @@ public class OrrClientImpl2 extends OrrClientImplBase {
   private void includeAuthorization(HttpMethodBase method) {
     String username = cfg.getString("todo.username");  // FIXME
     String password = cfg.getString("todo.password");  // FIXME
-
+    includeAuthorization(method, username, password);
+  }
+  private void includeAuthorization(HttpMethodBase method, String username, String password) {
     if (log.isDebugEnabled()) {
-      log.debug("includeAuthorization: username=" + username + " password=*");
+      log.debug("includeAuthorization: username=" + username + " password=" + password);
     }
-
     try {
       String encoded = DatatypeConverter.printBase64Binary((username + ":" + password).getBytes("UTF-8"));
       method.addRequestHeader(new Header("Authorization", "Basic " + encoded));
@@ -615,10 +619,13 @@ public class OrrClientImpl2 extends OrrClientImplBase {
       }
     }
     if (log.isDebugEnabled()) {
-      log.debug("~~~names=" + names + " values=" +
-          (values.size() < 10 ? values :
-              values.subList(0, 2) + " [...] " + values.subList(values.size() - 3, values.size()))
-      );
+      int size = values.size();
+      log.debug(String.format("~~~names=%s values(%d)=%s",
+          names,
+          size,
+          (size < 10 ? values :
+              values.subList(0, 2) + " [...] " + values.subList(size - 3, values.size()))
+      ));
     }
 
     for(List<String> vals: values) {

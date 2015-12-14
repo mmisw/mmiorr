@@ -316,10 +316,10 @@ public abstract class OrrClientImplBase implements IOrrClient {
 
     registeredOntologyInfo.setHostingType(hostingType);
 
-    if(log.isTraceEnabled()) {
-      log.trace("_setHostingType: '" + uri + "' ontResolvableUri: " + ontResolvableUri +
-          "-> hostingType=" + hostingType);
-    }
+    //if(log.isTraceEnabled()) {
+    //  log.trace("_setHostingType: '" + uri + "' ontResolvableUri: " + ontResolvableUri +
+    //      "-> hostingType=" + hostingType);
+    //}
   }
 
 

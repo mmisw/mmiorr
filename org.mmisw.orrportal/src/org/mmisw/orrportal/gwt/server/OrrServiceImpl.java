@@ -2,12 +2,16 @@ package org.mmisw.orrportal.gwt.server;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -218,6 +222,8 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 	// Search:
 	
 	public SparqlQueryResult runSparqlQuery(SparqlQueryInfo query) {
+		//if (log.isDebugEnabled()) log.debug("runSparqlQuery: " + debugHeaders());
+		if (log.isDebugEnabled()) log.debug("runSparqlQuery: " + debugCookies());
 		return orrClient.runSparqlQuery(query);
 	}
 
@@ -225,6 +231,8 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 	// login
 	
 	public LoginResult authenticateUser(String userName, String userPassword) {
+		//if (log.isDebugEnabled()) log.debug("authenticateUser: " +debugHeaders());
+		if (log.isDebugEnabled()) log.debug("authenticateUser: " +debugCookies());
 		return orrClient.authenticateUser(userName, userPassword);
 	}
 	
@@ -296,5 +304,42 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 		if (brandingLogo != null) {
 			appInfo.setAppName("Powered by " + appInfo.getAppName());
 		}
+	}
+
+	private String debugCookies() {
+		HttpServletRequest req = getThreadLocalRequest();
+		Cookie[] cookies = req.getCookies();
+		StringBuilder sb = new StringBuilder("cookies:");
+		for(Cookie cookie: cookies) {
+			String name = cookie.getName();
+			String value = cookie.getValue();
+			String domain = cookie.getDomain();
+			String path = cookie.getPath();
+			sb.append(String.format("\n  %-18s = %s domain=%s path=%s", name, value, domain, path));
+		}
+		HttpSession session = req.getSession(false);
+		if (session != null) {
+			sb.append(String.format("\nsession = %s", session.getId()));
+		}
+		return sb.toString();
+	}
+
+	private String debugHeaders() {
+		HttpServletRequest req = getThreadLocalRequest();
+		StringBuilder sb = new StringBuilder("headers:");
+		Enumeration<String> hns = req.getHeaderNames();
+		while (hns.hasMoreElements()) {
+			String name = hns.nextElement();
+			sb.append(String.format("\n  %-16s = [", name));
+			Enumeration<String> vals = req.getHeaders(name);
+			String comma = "";
+			while (vals.hasMoreElements()) {
+				String val = vals.nextElement();
+				sb.append(comma).append(val);
+				comma = ", ";
+			}
+			sb.append("]");
+		}
+		return sb.toString();
 	}
 }

@@ -61,16 +61,15 @@ public class Orr {
 
 		rUri = OrrUtil.getGlobal("__rUri");
 
-		Orr.log("Util.getLocationProtocol() = " + OrrUtil.getLocationProtocol()
-		    + "\nUtil.getLocationHost()     = " + OrrUtil.getLocationHost()
-		    + "\nGWT.getHostPageBaseURL()   = " + GWT.getHostPageBaseURL()
-		    + "\nGWT.getModuleBaseURL()     = " + GWT.getModuleBaseURL()
-		    + "\nGWT.getModuleName()        = " + GWT.getModuleName()
-				+ "\nOrrUtil.getGlobal('__rUri')= " + rUri
-		);
-//		String baseUrl = OrrUtil.getLocationProtocol() + "//" + OrrUtil.getLocationHost();
-//		baseUrl = baseUrl.replace("/+$", ""); // remove trailing slashes
-//		Orr.log("baseUrl = " + baseUrl);
+		if (isLogEnabled()) {
+			Orr.log("Util.getLocationProtocol() = " + OrrUtil.getLocationProtocol()
+					+ "\nUtil.getLocationHost()     = " + OrrUtil.getLocationHost()
+					+ "\nGWT.getHostPageBaseURL()   = " + GWT.getHostPageBaseURL()
+					+ "\nGWT.getModuleBaseURL()     = " + GWT.getModuleBaseURL()
+					+ "\nGWT.getModuleName()        = " + GWT.getModuleName()
+					+ "\nOrrUtil.getGlobal('__rUri')= " + rUri
+			);
+		}
 
 		_getService();
 	}
@@ -372,12 +371,8 @@ public class Orr {
 		Orr.log("ORR:    orrService " + service);
 	}
 
-	/**
-	 * Adds a widget to the "main" element in the document.
-	 */
 	private static void _addToMainPanel(Widget w) {
 		RootPanel.get("main").add(w);
-		// OLD RootPanel.get().add(w);
 	}
 
 
