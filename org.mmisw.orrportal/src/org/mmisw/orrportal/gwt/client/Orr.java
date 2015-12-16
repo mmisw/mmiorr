@@ -18,6 +18,7 @@ import org.mmisw.orrportal.gwt.client.portal.PortalMainPanel;
 import org.mmisw.orrportal.gwt.client.rpc.OrrService;
 import org.mmisw.orrportal.gwt.client.rpc.OrrServiceAsync;
 import org.mmisw.orrportal.gwt.client.rpc.PortalBaseInfo;
+import org.mmisw.orrportal.gwt.client.rpc2.OrrOntServiceAsync;
 import org.mmisw.orrportal.gwt.client.util.OrrUtil;
 
 import com.google.gwt.core.client.GWT;
@@ -44,6 +45,9 @@ public class Orr {
 
 	/** Interface for asynchronous calls to the ORR back-end. */
 	public static OrrServiceAsync service;
+
+	/** #361 ongoing: for direct interface operations against orr-ont */
+	public static OrrOntServiceAsync service2;
 
 	public static OrrPortalImageBundle images = (OrrPortalImageBundle) GWT
 				.create(OrrPortalImageBundle.class);
@@ -72,6 +76,11 @@ public class Orr {
 		}
 
 		_getService();
+
+		if (false) {
+			service2 = new OrrOntServiceAsync();
+			Orr.log("using OrrOntServiceAsync");
+		}
 	}
 
 
@@ -278,7 +287,12 @@ public class Orr {
 		};
 		portalMainPanel.showRefreshingMessage();
 		Orr.log("ORR: Getting list of registered ontologies ... includePriorVersions= " +includePriorVersions+ " ...");
-		Orr.service.getAllOntologies(includePriorVersions, callback);
+		if (Orr.service2 != null) {
+		  Orr.service2.getAllOntologies(includePriorVersions, callback);
+		}
+		else {
+		  Orr.service.getAllOntologies(includePriorVersions, callback);
+		}
 	}
 
 

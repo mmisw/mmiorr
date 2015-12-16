@@ -10,6 +10,9 @@
       <!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
       <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
 
+      <inherits name="com.google.gwt.http.HTTP"/>
+      <inherits name="com.google.gwt.json.JSON"/>
+
       <!-- orrclient module                                           -->
       <inherits name='org.mmisw.orrclient.gwt.OrrClient'/>
 

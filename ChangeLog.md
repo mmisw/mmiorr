@@ -1,5 +1,10 @@
 ## change log ##
 
+* 2015-12-15: orrportal 2.7.0 - \#361 Preparations for "build and test portal version against orr-ont endpoint"
+  - looking into supporting this through direct interaction with orr-ont endpoint from front-end
+  - new OrrOntServiceAsync class (with similar interface as OrrServiceAsync) for the specific operations 
+    against orr-ont; initially with `getAllOntologies`.
+   
 * 2015-12-10: orrportal 2.7.0 - \#361 Preparations for "build and test portal version against orr-ont endpoint"
   - good testing of traditional ont-based portal (after the refactoring).
   - development of new implementation can continue and be tested with a separate deployment
