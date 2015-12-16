@@ -47,7 +47,7 @@
 	</target>
 
 	<target name="gwt-compile" description="Compile gwt stuff">
-		<java classname="com.google.gwt.dev.GWTCompiler" fork="true">
+		<java classname="com.google.gwt.dev.GWTCompiler" fork="true" failonerror="true">
 			<classpath>
 				<pathelement path="src"/>
 				<pathelement path="base_war/WEB-INF/lib/org.mmisw.orrportal.gwt.jar"/>
