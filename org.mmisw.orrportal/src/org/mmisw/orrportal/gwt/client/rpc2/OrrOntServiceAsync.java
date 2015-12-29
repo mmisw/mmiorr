@@ -3,10 +3,7 @@ package org.mmisw.orrportal.gwt.client.rpc2;
 import com.google.gwt.http.client.*;
 import com.google.gwt.json.client.*;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import org.mmisw.orrclient.gwt.client.rpc.GetAllOntologiesResult;
-import org.mmisw.orrclient.gwt.client.rpc.HostingType;
-import org.mmisw.orrclient.gwt.client.rpc.OntologyType;
-import org.mmisw.orrclient.gwt.client.rpc.RegisteredOntologyInfo;
+import org.mmisw.orrclient.gwt.client.rpc.*;
 import org.mmisw.orrportal.gwt.client.Orr;
 
 import java.util.ArrayList;
@@ -18,8 +15,10 @@ import java.util.List;
  */
 public class OrrOntServiceAsync {
 
+  private final String orrOntUrl = "http://localhost:8080/orr-ont";
+
   public void getAllOntologies(final boolean includeAllVersions, final AsyncCallback<GetAllOntologiesResult> callback) {
-    String url = "http://localhost:8080/orr-ont/api/v0/ont";
+    String url = orrOntUrl + "/api/v0/ont";
 
     Orr.log("OrrOntServiceAsync: getAllOntologies");
 
@@ -64,6 +63,49 @@ public class OrrOntServiceAsync {
     }
   }
 
+  public void resolveUri(final String uri, final AsyncCallback<ResolveUriResult> callback) {
+    String url = orrOntUrl + "/api/v0/ont";
+
+    String[] toks = uri.split("\\?");
+    final String ontologyUri = toks[0];
+
+    url += "?uri=" +ontologyUri;
+
+    String version = null;
+    if ( toks.length > 1 && toks[1].startsWith("version=") ) {
+      version = toks[1].substring("version=".length());
+      url += "&version=" +version;
+    }
+
+    final ResolveUriResult resolveUriResult = new ResolveUriResult(uri);
+
+    Orr.log("OrrOntServiceAsync: resolveUri: url=" +url);
+
+    RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
+
+    try {
+      builder.sendRequest(null, new RequestCallback() {
+        public void onError(Request request, Throwable ex) {
+          callback.onFailure(ex);
+        }
+
+        public void onResponseReceived(Request request, Response response) {
+
+          int status = response.getStatusCode();
+          String msg = response.getText();
+          Orr.log("OrrOntServiceAsync: getAllOntologies: status=" +status+ " text=" +msg);
+
+          resolveUriResult.setUri(ontologyUri);
+
+
+          callback.onSuccess(resolveUriResult);
+        }
+      });
+    }
+    catch (RequestException ex) {
+      callback.onFailure(ex);
+    }
+  }
 
   private RegisteredOntologyInfo _createRegisteredOntologyInfo(JSONObject map, boolean includeAllVersions) {
     String uri  = getOrEmpty(map, "uri");
