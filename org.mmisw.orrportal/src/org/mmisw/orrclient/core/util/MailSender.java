@@ -11,6 +11,7 @@ import javax.mail.PasswordAuthentication;
 import javax.mail.Authenticator;
 
 import com.sun.mail.smtp.SMTPTransport;
+import org.mmisw.orrportal.gwt.server.OrrConfig;
 
 /**
  * Helper to send email.
@@ -19,12 +20,6 @@ import com.sun.mail.smtp.SMTPTransport;
  */
 // Based on JavaMail demo programs by Max Spivak and Bill Shannon
 public class MailSender {
-	//
-	// TODO (low priority) get these params from a configuration resource
-	private static final String mailer = "MMI-ORR";
-	private static final String mailhost = "smtp.gmail.com";
-	private static final String mailport = "465";   //"587"; 
-	private static final String prot = "smtps";
 
 	/**
 	 * Sends a message.
@@ -46,6 +41,11 @@ public class MailSender {
 			String text
 	) throws Exception {
 		
+		final String mailer   = OrrConfig.instance().emailMailer;
+		final String mailhost = OrrConfig.instance().emailServerHost;
+		final String mailport = OrrConfig.instance().emailServerPort;
+		final String prot     = OrrConfig.instance().emailServerProt;
+
 		String cc = null, bcc = null;
 
 		Properties props = System.getProperties();

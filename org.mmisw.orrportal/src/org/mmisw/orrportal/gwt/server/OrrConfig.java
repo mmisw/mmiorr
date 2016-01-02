@@ -57,8 +57,12 @@ public class OrrConfig {
   /** email account information used for user account management and notifications. */
   public final String emailUsername;
   public final String emailPassword;
+  public final String emailServerHost;
+  public final String emailServerPort;
+  public final String emailServerProt;
   public final String emailFrom;
   public final String emailReplyTo;
+  public final String emailMailer;
 
   /** File with list of email addresses (one per line) to be notified of registrations. */
   public final String notifyEmailsFilename;
@@ -93,8 +97,12 @@ public class OrrConfig {
         "  voc2rdfDir         = " + voc2rdfDir + '\n' +
         "  previewDir         = " + previewDir + '\n' +
         "  emailUsername      = " + emailUsername + '\n' +
+        "  emailServerHost    = " + emailServerHost + '\n' +
+        "  emailServerPort    = " + emailServerPort + '\n' +
+        "  emailServerProt    = " + emailServerProt + '\n' +
         "  emailFrom          = " + emailFrom + '\n' +
         "  emailReplyTo       = " + emailReplyTo + '\n' +
+        "  emailMailer        = " + emailMailer + '\n' +
         "  notifyEmailsFilename = " + notifyEmailsFilename + '\n' +
         "  sparqlEndpoint     = " + sparqlEndpoint + '\n' +
         "  brandingLogo       = " + brandingLogo + '\n' +
@@ -115,8 +123,12 @@ public class OrrConfig {
 
     emailUsername = cfg.getString("email.account.username");
     emailPassword = cfg.getString("email.account.password");
+    emailServerHost = cfg.getString("email.server.host");
+    emailServerPort = cfg.getString("email.server.port");
+    emailServerProt = cfg.getString("email.server.prot");
     emailFrom     = cfg.getString("email.from");
     emailReplyTo  = cfg.getString("email.replyTo");
+    emailMailer  = cfg.getString("email.mailer");
 
     notifyEmailsFilename = cfg.hasPath("notify.recipientsFilename")
         ? cfg.getString("notify.recipientsFilename") : null;
