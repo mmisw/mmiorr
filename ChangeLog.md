@@ -1,5 +1,8 @@
 ## change log ##
 
+* 2016-01-01: orrportal 2.6.3: Fix \#400 "more general email settings"
+  - MailSender now uses the new properties from configuration ({template.}mmiorr.conf)
+  
 * 2015-12-08:
   Re \#364 "dispatch portal functionality through ont-based URL directly"
   Although the general desired behavior is already implemented, here are some observations that make the
