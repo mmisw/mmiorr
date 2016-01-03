@@ -9,6 +9,7 @@ PageUtil pageUtil = new PageUtil(getServletContext());
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <%=pageUtil.includeHeadTitle()%>
+    <link rel="shortcut icon" href="images/favicon.ico">
     <script type="text/javascript" language="javascript" src="org.mmisw.orrportal.gwt.Orr.nocache.js"></script>
 @ga_snippet@
   </head>

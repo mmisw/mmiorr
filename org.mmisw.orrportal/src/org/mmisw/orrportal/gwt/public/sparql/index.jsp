@@ -5,6 +5,7 @@ PageUtil pageUtil = new PageUtil(getServletContext());
 <html>
 <head>
 <%=pageUtil.includeHeadTitle()%>
+<link rel="shortcut icon" href="../images/favicon.ico">
 <link href='//cdn.jsdelivr.net/yasgui/2.1.0/yasgui.min.css' rel='stylesheet' type='text/css'/>
 <script src='//cdn.jsdelivr.net/yasgui/2.1.0/yasgui.min.js'></script>
 @ga_snippet@
