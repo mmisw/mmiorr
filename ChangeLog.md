@@ -1,6 +1,7 @@
 ## change log ##
 
 * 2016-01-02: orrportal 2.6.3
+  - include small version of logo (favicon.ico) as part of "Powered by" message
   - add favicon.ico
 
 * 2016-01-01: orrportal 2.6.3: Fix \#400 "more general email settings"

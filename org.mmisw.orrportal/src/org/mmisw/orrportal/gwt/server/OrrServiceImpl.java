@@ -294,7 +294,10 @@ public class OrrServiceImpl extends RemoteServiceServlet implements OrrService {
 	private void preparePoweredBy() {
 		String brandingLogo = OrrConfig.instance().brandingLogo;
 		if (brandingLogo != null) {
-			appInfo.setAppName("Powered by " + appInfo.getAppName());
+			appInfo.setAppName("Powered by "
+					+ "<img src=\"images/favicon12.ico\">"
+					+ appInfo.getAppName()
+			);
 		}
 	}
 }
