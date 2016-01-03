@@ -1,5 +1,8 @@
 ## change log ##
 
+* 2016-01-02: orrportal 2.6.3
+  - add favicon.ico
+
 * 2016-01-01: orrportal 2.6.3: Fix \#400 "more general email settings"
   - MailSender now uses the new properties from configuration ({template.}mmiorr.conf)
   
