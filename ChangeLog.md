@@ -1,5 +1,8 @@
 ## change log ##
 
+* 2016-04-25  orrportal 2.6.4
+  - sparql/index.jsp: use yasgui 2.3.1 with fix to https://github.com/OpenTriply/YASGUI/issues/80
+  
 * 2016-01-02: orrportal 2.6.3
   - include small version of logo (favicon.ico) as part of "Powered by" message
   - add favicon.ico
