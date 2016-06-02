@@ -1,5 +1,10 @@
 ## change log ##
 
+* 2016-06-02  2.6.5
+  - fix #406 "cannot parse response when signing in".
+    For some strange reason, role is now reported under success/data/user/roles/java.lang.String
+    and not under success/data/user/roles/string.  UserAuthenticator.getSession now considers both. 
+  
 * 2016-04-25  orrportal 2.6.4
   - sparql/index.jsp: use yasgui 2.3.1 with fix to https://github.com/OpenTriply/YASGUI/issues/80
   
