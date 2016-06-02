@@ -98,8 +98,25 @@ class UserAuthenticator {
 		String id = xa.getString("success/data/user/id");
 		String username = xa.getString("success/data/user/username");
 		String role = xa.getString("success/data/user/roles/string");
-		
-		
+
+		// fix #406 "cannot parse response when signing in".
+		// For some reason, role is now reported under success/data/user/roles/java.lang.String
+		// and not under success/data/user/roles/string.  Fix: consider both cases as needed.
+		if(log.isInfoEnabled()) {
+			log.info("getSession:\n" +
+					"  sessionId=" +sessionId+ "\n" +
+					"  id="        +id+ "\n" +
+					"  username="  +username+ "\n" +
+					"  role="      +role
+			);
+		}
+		if (role == null || role.trim().length() == 0) {
+			role = xa.getString("success/data/user/roles/java.lang.String");
+			if(log.isInfoEnabled()) {
+				log.info("getSession: from 2nd option: role="+role);
+			}
+		}
+
 		if ( sessionId == null || sessionId.trim().length() == 0
 		||   id == null || id.trim().length() == 0
 		||   username == null || username.trim().length() == 0
