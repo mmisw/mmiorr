@@ -1,5 +1,8 @@
 ## change log ##
 
+* 2016-09-04
+  - Note in readme about *unmaintained* status of this repo and pointers to new repos.
+
 * 2016-06-02  2.6.5
   - fix #406 "cannot parse response when signing in".
     For some strange reason, role is now reported under success/data/user/roles/java.lang.String
